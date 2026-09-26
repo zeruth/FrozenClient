@@ -12,6 +12,8 @@
 #include "util/SFile.hpp"
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
+#include "world/map/CMapObjDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
 #include <cmath>
 #include <tempest/Intersect.hpp>
 #include <tempest/Ray.hpp>
@@ -254,7 +256,7 @@ bool CMapObj::PointInGroupBounds(const C3Vector& point, uint32_t groupIndex, flo
 // Where a segment crosses from one group into another. This is the query that tells the client
 // which room it is in: not by asking what the segment hits, but by finding the last PORTAL it
 // passes through, which is the only thing that actually connects two groups.
-void CMapObj::QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* outGroups,
+bool CMapObj::QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* outGroups,
                                   int32_t fromPoint) {
     // The ray form the plane intersection wants, plus the length so distances can go back out as
     // the fraction the caller passed in.
@@ -360,6 +362,161 @@ void CMapObj::QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* 
     if (found) {
         *t = nearest * invLength;
     }
+
+    return found;
+}
+
+// ref: FUN_007d59b0
+int32_t QuerySegmentMapObjs(const C3Vector& start, const C3Vector& end, float maxT,
+                            CMapObjDef** outDefs, uint32_t* outGroups) {
+    // How far along the segment each slot has found something. A later hit only counts if it is
+    // nearer, which is what makes the nested building win over the one containing it.
+    float nearest[2] = { maxT, maxT };
+
+    outDefs[0] = nullptr;
+    outDefs[1] = nullptr;
+    outGroups[0] = 0xffff;
+    outGroups[1] = 0xffff;
+    outGroups[2] = 0xffff;
+    outGroups[3] = 0xffff;
+
+    // The window QuerySegmentPortals starts with, and the slack a portal hit has to beat a geometry
+    // hit by. DAT_00a40314 and DAT_009e8cd0.
+    static const float PORTAL_WINDOW = 1.0499999523162842f;
+    static const float NEARER_SLACK = 9.999999747378752e-05f;
+
+    // Every placed building. The reference walks the list inside the uniqueId hash table rather
+    // than a list of its own -- Storm's hash keeps one -- so this walk is that same walk.
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def;
+         def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (def->m_flags & 0x20) {
+            continue;
+        }
+
+        // Flag 0x400 sends the result to the second slot. Not a distance or an order -- the flag.
+        uint32_t slot = (def->m_flags & 0x400) ? 1 : 0;
+
+        // World-space bounds first, because it rejects almost everything for almost nothing.
+        if (!SegmentIntersectsBox(def->m_bounds, start, end)) {
+            continue;
+        }
+
+        CMapObj* mapObj = def->m_mapObj;
+
+        if (!mapObj) {
+            continue;
+        }
+
+        // Into the building's own space, where its bounds and BSP live. Everything below is local,
+        // so no hit needs transforming back.
+        C3Vector localStart = start * def->m_inversePlacement;
+        C3Vector localEnd = end * def->m_inversePlacement;
+
+        if (!mapObj->SegmentVsBounds(localStart, localEnd)) {
+            continue;
+        }
+
+        C3Segment segment;
+        segment.start = localStart;
+        segment.end = localEnd;
+
+        // Whether the group that was hit is an exterior one, which disqualifies the whole slot.
+        uint8_t exterior = 0;
+
+        // Every group this def actually placed, through the links the groups hold on it.
+        for (auto link = def->m_defGroupLinkList.Head(); link;
+             link = def->m_defGroupLinkList.Next(link)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+            if (!defGroup) {
+                continue;
+            }
+
+            uint32_t groupIndex = defGroup->m_groupIndex;
+
+            CMapObjGroup* group = mapObj->GetGroup(groupIndex, 0);
+
+            if (!group) {
+                continue;
+            }
+
+            // Exterior, skybox and the rest: a group with any of these is not a room.
+            if (group->m_flags & 0x410080) {
+                continue;
+            }
+
+            if (!mapObj->SegmentVsGroupBounds(localStart, localEnd, groupIndex)) {
+                continue;
+            }
+
+            CMapObjGroup::s_hitFlags = 0;
+            CMapObjGroup::s_hitRecordCount = 0;
+            CMapObjGroup::s_hitFacePoolCount = 0;
+            CMapObjGroup::s_hitIndexPoolCount = 0;
+            CMapObjGroup::s_unk7538 = 0;
+
+            // The reference hands a throwaway byte here -- it points at the top byte of its own
+            // maxT argument, which nothing reads afterwards.
+            uint8_t scratch = 0;
+
+            // No placement: the segment is already in this building's space, so a hit needs no
+            // transform, and the def is what owns the hit.
+            if (group->QuerySegment(segment, &nearest[slot], 0, 0, &scratch, nullptr, def)) {
+                exterior = (group->m_flags >> 3) & 1;
+
+                outDefs[slot] = def;
+                outGroups[slot * 2] = groupIndex;
+                outGroups[slot * 2 + 1] = 0xffff;
+            }
+        }
+
+        // Then the portals, which can put the answer in a room the geometry walk did not reach --
+        // a doorway the segment passes through rather than a floor it lands on.
+        float portalT = PORTAL_WINDOW;
+        uint32_t portalGroups[2] = { 0xffff, 0xffff };
+
+        if (mapObj->QuerySegmentPortals(segment, &portalT, portalGroups, 0)
+            && portalT - nearest[slot] < NEARER_SLACK) {
+            SMOGroupInfo* info = mapObj->GroupInfo(portalGroups[0]);
+
+            if (info) {
+                exterior = (info->flags >> 3) & 1;
+            }
+
+            nearest[slot] = portalT;
+
+            outDefs[slot] = def;
+            outGroups[slot * 2] = portalGroups[0];
+
+            // The far side of the portal is kept only when it is a room too.
+            SMOGroupInfo* farInfo = mapObj->GroupInfo(portalGroups[1]);
+
+            outGroups[slot * 2 + 1] = (farInfo && !(farInfo->flags & 0x8))
+                ? portalGroups[1]
+                : 0xffff;
+        }
+
+        if (exterior) {
+            outDefs[slot] = nullptr;
+        }
+    }
+
+    // Nothing ordinary, but something flagged: move it down so slot 0 is always the answer.
+    if (!outDefs[0]) {
+        if (!outDefs[1]) {
+            return 0;
+        }
+
+        outDefs[0] = outDefs[1];
+        outGroups[0] = outGroups[2];
+        outGroups[1] = outGroups[3];
+
+        outDefs[1] = nullptr;
+        outGroups[2] = 0;
+        outGroups[3] = 0;
+    }
+
+    return 1;
 }
 
 // ----------------------------------------------------------------------------------------------

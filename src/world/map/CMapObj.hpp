@@ -55,6 +55,22 @@ static_assert(sizeof(SMOGroupInfo) == 0x20, "SMOGroupInfo is 32 bytes");
 // map object code, so it lives here. ref: FUN_007f9480
 int32_t SegmentIntersectsBox(const CAaBox& box, const C3Vector& start, const C3Vector& end);
 
+// Which buildings, and which room of each, a segment passes into. This is what tells the client it
+// is indoors: the camera drops a short segment straight down, and whatever group it lands in is the
+// room it is standing in.
+//
+// Reports up to TWO results, and the slot is chosen by the def's own flag 0x400 rather than by
+// order or distance, so a flagged building never displaces an ordinary one. `outDefs` takes two
+// defs and `outGroups` four group indices -- per slot, the group hit and a second group when the
+// hit came through a portal -- with 0xffff meaning none. Returns whether anything was found, and
+// when only the flagged slot was filled it is moved down to slot 0 first, so a caller that wants
+// one answer can just read slot 0.
+//
+// A hit on an EXTERIOR group (MOGP flag 0x8) discards that slot: standing on a building's outside
+// surface is not being inside it. ref: FUN_007d59b0
+int32_t QuerySegmentMapObjs(const C3Vector& start, const C3Vector& end, float maxT,
+                            CMapObjDef** outDefs, uint32_t* outGroups);
+
 // MOPT: one portal, 20 bytes. The vertices are MOPV entries.
 struct SMOPortal {
     uint16_t startVertex;       // +0x00
@@ -387,8 +403,12 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         //
         // `fromPoint` switches the per-group filter from "does the segment touch this group's
         // bounds" to "is the segment's start inside them", which is what a caller asking where a
-        // point IS wants rather than what it passes through. ref: FUN_007af280
-        void QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* outGroups,
+        // point IS wants rather than what it passes through.
+        //
+        // Returns whether anything was crossed. Ghidra types this void, which is wrong: the flag is
+        // loaded into AL at 0x007af4f6 and survives the epilogue untouched, and the one caller does
+        // test it. ref: FUN_007af280
+        bool QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* outGroups,
                                  int32_t fromPoint);
 
         // What the streaming and visibility passes ask a root about itself and its groups. Each

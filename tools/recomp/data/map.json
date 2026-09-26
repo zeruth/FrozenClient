@@ -49403,6 +49403,22 @@
   "refSize": 47,
   "status": "ported"
  },
+ "007d59b0": {
+  "branchRatio": 0.72,
+  "constOverlap": 0.088,
+  "faithful": true,
+  "fidelity": 0.9,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "QuerySegmentMapObjs",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 793,
+  "status": "ported"
+ },
  "007d6690": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
