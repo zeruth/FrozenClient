@@ -3050,6 +3050,7 @@ addr	how	frozen	evidence
 007cbd70	annotated	CMapObjGroup::FreeBuffers	tag in src/world/map/CMapObj.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
 007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
@@ -3845,7 +3846,6 @@ addr	how	frozen	evidence
 008b12d0	string	ItemSubClassRec::GetFilename	unique "DBFilesClient\ItemSubClass.dbc"
 008b1940	string	ItemVisualsRec::GetFilename	unique "DBFilesClient\ItemVisuals.dbc"
 008b2710	string	LiquidTypeRec::GetFilename	unique "DBFilesClient\LiquidType.dbc"
-008b2a90	string	LiquidMaterialRec::GetFilename	unique "DBFilesClient\LiquidMaterial.dbc"
 008b2b10	string	LoadingScreensRec::GetFilename	unique "DBFilesClient\LoadingScreens.dbc"
 008b3aa0	string	MapRec::GetFilename	unique "DBFilesClient\Map.dbc"
 008b4810	string	NameGenRec::GetFilename	unique "DBFilesClient\NameGen.dbc"

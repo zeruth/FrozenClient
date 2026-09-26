@@ -4,6 +4,7 @@
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
+#include "world/map/MapLowDetail.hpp"
 #include "world/map/CMapAreaMed.hpp"
 #include "world/map/CMapBaseObj.hpp"
 #include "world/map/CMapChunk.hpp"
@@ -150,6 +151,8 @@ class CMap {
         // is not ported: every entry is null, so the shadow levels fall through to no shader
         static CGxShader* s_terrain2PixelShaders[0x60];
         static CGxShader* s_terrain2PcfPixelShaders[0x20];
+        // The map's .wdl: the low-detail height grid per tile and the far-away buildings.
+        static CMapLowDetail s_lowDetail;
         static CGxPool* s_lowDetailIndexPool;             // DAT_00cdfffc
         static CGxBuf* s_lowDetailIndexBuf;               // DAT_00cdfff8
         static int32_t s_terrainShadersDirty;             // DAT_00d1d058

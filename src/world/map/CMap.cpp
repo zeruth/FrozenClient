@@ -3,6 +3,7 @@
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
+#include "world/map/MapLowDetail.hpp"
 #include "world/map/CMapAreaMed.hpp"
 #include "world/map/CMapCacheLight.hpp"
 #include "world/map/CMapChunk.hpp"
@@ -102,6 +103,7 @@ CGxShader* CMap::s_terrainEnvPixelShader[1];
 CGxShader* CMap::s_terrain1PixelShaders[0x20];
 CGxShader* CMap::s_terrain1wPixelShaders[8];
 CGxShader* CMap::s_terrainShadowMapPixelShader[1];
+CMapLowDetail CMap::s_lowDetail;
 CGxPool* CMap::s_lowDetailIndexPool;
 CGxBuf* CMap::s_lowDetailIndexBuf;
 int32_t CMap::s_terrainShadersDirty;
@@ -167,7 +169,7 @@ void CMap::Load(const char* mapName, int32_t mapID) {
     CMap::s_streamingMode = SFile::IsStreamingMode() | SFile::IsStreamingTrial();
     bool waitAll = CMap::s_streamingMode == 0;
 
-    // TODO FUN_007cc310(s_mapPath, s_mapName): the WDL
+    CMap::s_lowDetail.Load(CMap::s_mapPath, CMap::s_mapName);
     CMap::LoadWdt();
     // TODO FUN_007bd540(): the .tex cache
     // TODO FUN_007f2790(mapID)

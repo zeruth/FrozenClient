@@ -44368,7 +44368,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::AddDetailDoodads",
-  "frozenSize": 120,
+  "frozenSize": 114,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 19,
@@ -44544,7 +44544,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderDetailDoodads",
-  "frozenSize": 1435,
+  "frozenSize": 696,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 756,
@@ -45623,8 +45623,8 @@
  "007b1270": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -45668,8 +45668,8 @@
  "007b1b50": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -45714,7 +45714,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.444,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -45789,7 +45789,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.571,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -46984,12 +46984,13 @@
   "status": "ported"
  },
  "007bdb10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.714,
+  "branchRatio": 0.727,
+  "constOverlap": 0.021,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapStaticEntity.cpp"
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
   ],
   "frozen": "CMapStaticEntity::Place",
   "frozenSize": 567,
@@ -47066,13 +47067,13 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.474,
+  "fidelity": 0.526,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Load",
-  "frozenSize": 433,
+  "frozenSize": 442,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 339,
@@ -47536,7 +47537,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocAreaLow",
-  "frozenSize": 0,
+  "frozenSize": 140,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 75,
@@ -47607,12 +47608,13 @@
   "status": "ported"
  },
  "007c21e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/CMapDoodadDef.cpp"
+   "src/world/map/CMapDoodadDef.cpp",
+   "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapDoodadDef::CMapDoodadDef",
   "frozenSize": 275,
@@ -48693,6 +48695,22 @@
   "refSize": 151,
   "status": "ported"
  },
+ "007cc310": {
+  "branchRatio": 0.389,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.615,
+  "files": [
+   "src/world/map/MapLowDetail.cpp",
+   "src/world/map/maplowdetail.cpp"
+  ],
+  "frozen": "CMapLowDetail::Load",
+  "frozenSize": 2217,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 1105,
+  "status": "ported"
+ },
  "007cce00": {
   "branchRatio": 0.308,
   "constOverlap": 0.0,
@@ -48710,12 +48728,13 @@
   "status": "ported"
  },
  "007cde10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::ReleaseSurface",
   "frozenSize": 16,
@@ -48725,12 +48744,13 @@
   "status": "ported"
  },
  "007cde30": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateAnim",
   "frozenSize": 79,
@@ -48740,12 +48760,13 @@
   "status": "ported"
  },
  "007cde80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::GetBounds",
   "frozenSize": 34,
@@ -48755,12 +48776,13 @@
   "status": "ported"
  },
  "007cdf80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::BuildVertices",
   "frozenSize": 227,
@@ -48770,12 +48792,13 @@
   "status": "verified"
  },
  "007ce0b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::GetHeightAt",
   "frozenSize": 276,
@@ -48785,12 +48808,13 @@
   "status": "ported"
  },
  "007ce180": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::ReadTileFlags",
   "frozenSize": 0,
@@ -48800,12 +48824,13 @@
   "status": "ported"
  },
  "007ce1f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CChunkLiquid.cpp"
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::CoversTile",
   "frozenSize": 102,
@@ -49020,11 +49045,13 @@
   "status": "ported"
  },
  "007d3390": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.042,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/detaildoodad.cpp"
+  ],
   "frozen": "DetailDoodad::CreateInstance",
   "frozenSize": 320,
   "how": "callorder",
@@ -49074,7 +49101,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::PrepareRender",
-  "frozenSize": 616,
+  "frozenSize": 318,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 177,
@@ -49097,12 +49124,13 @@
   "status": "ported"
  },
  "007d4f10": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::SetBody",
   "frozenSize": 5,
@@ -60292,7 +60320,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp"
   ],
@@ -60304,12 +60332,13 @@
   "status": "ported"
  },
  "008a3050": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::CMapLiquidData",
   "frozenSize": 12,
@@ -60319,12 +60348,13 @@
   "status": "ported"
  },
  "008a3060": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::HasLiquid",
   "frozenSize": 9,
@@ -60334,12 +60364,13 @@
   "status": "verified"
  },
  "008a3070": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::Chunk",
   "frozenSize": 20,
@@ -60349,12 +60380,13 @@
   "status": "verified"
  },
  "008a3090": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::Layer",
   "frozenSize": 21,
@@ -60364,12 +60396,13 @@
   "status": "verified"
  },
  "008a30b0": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::FishableMask",
   "frozenSize": 0,
@@ -60379,12 +60412,13 @@
   "status": "ported"
  },
  "008a30e0": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::DeepMask",
   "frozenSize": 0,
@@ -60394,12 +60428,13 @@
   "status": "ported"
  },
  "008a3110": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapLiquidData.cpp"
+   "src/world/map/CMapLiquidData.cpp",
+   "src/world/map/cmapliquiddata.cpp"
   ],
   "frozen": "CMapLiquidData::ExistsMask",
   "frozenSize": 20,
@@ -61098,21 +61133,6 @@
    "src/db/rec/liquidtyperec.cpp"
   ],
   "frozen": "LiquidTypeRec::GetFilename",
-  "frozenSize": 8,
-  "how": "string",
-  "module": "ComSatSoundIOSoundEngine.cpp",
-  "refSize": 6,
-  "status": "ported"
- },
- "008b2a90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/db/rec/LiquidMaterialRec.cpp"
-  ],
-  "frozen": "LiquidMaterialRec::GetFilename",
   "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",

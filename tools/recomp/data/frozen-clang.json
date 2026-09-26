@@ -53724,6 +53724,107 @@
 "refs": [],
 "line": 28
 },
+"LiquidMaterialRec::GetFilename": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [],
+"strings": [
+"DBFilesClientLiquidMaterial.dbc"
+],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 4
+},
+"LiquidMaterialRec::GetNumColumns": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"3"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 8
+},
+"LiquidMaterialRec::GetRowSize": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"12"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 12
+},
+"LiquidMaterialRec::NeedIDAssigned": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 16
+},
+"LiquidMaterialRec::GetID": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 20
+},
+"LiquidMaterialRec::SetID": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 24
+},
+"LiquidMaterialRec::Read": {
+"files": [
+"src/db/rec/liquidmaterialrec.cpp"
+],
+"callseq": [
+"SFile::Read",
+"SFile::Read",
+"SFile::Read"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 28
+},
 "LiquidTypeRec::GetFilename": {
 "files": [
 "src/db/rec/liquidtyperec.cpp"
@@ -194631,6 +194732,144 @@
 "refs": [],
 "line": 2091
 },
+"Liquid::CVertexData::~CVertexData": {
+"files": [
+"src/world/map/liquidvertexdata.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [
+"008a32c0"
+],
+"line": 33
+},
+"CChunkLiquid::BuildVertices": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"Liquid::CVertexData::GetHeight"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"8.0f"
+],
+"branches": 2,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 19
+},
+"CChunkLiquid::ReleaseSurface": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 40
+},
+"CChunkLiquid::GetBounds": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"CAaBox::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 50
+},
+"CChunkLiquid::UpdateAnim": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"CWorld::GetTickTimeSec"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 3,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 61
+},
+"CChunkLiquid::ReadTileFlags": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0xf",
+"1",
+"3",
+"6",
+"7",
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 79
+},
+"CChunkLiquid::CoversTile": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"CChunkLiquid::ReadTileFlags",
+"BitArray::IsSet"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 98
+},
+"CChunkLiquid::GetHeightAt": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"Liquid::CVertexData::GetHeight",
+"Liquid::CVertexData::GetHeight",
+"Liquid::CVertexData::GetHeight",
+"Liquid::CVertexData::GetHeight"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 119
+},
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
 "src/world/map/cmapbaseobj.hpp"
@@ -194657,7 +194896,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 135
+"line": 137
 },
 "CMap::Load": {
 "files": [
@@ -194671,6 +194910,7 @@
 "CMap::UnloadAll",
 "SFile::IsStreamingMode",
 "SFile::IsStreamingTrial",
+"CMapLowDetail::Load",
 "CMap::LoadWdt",
 "CMap::Update"
 ],
@@ -194686,7 +194926,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 149
+"line": 151
 },
 "CMap::LoadWdt": {
 "files": [
@@ -194723,7 +194963,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 191
+"line": 193
 },
 "CMap::LoadSettings": {
 "files": [
@@ -194751,7 +194991,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 224
+"line": 226
 },
 "CMap::SetTerrainShaderLevel": {
 "files": [
@@ -194766,7 +195006,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 263
+"line": 265
 },
 "CMap::GetTerrainVertexShader": {
 "files": [
@@ -194783,7 +195023,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 271
+"line": 273
 },
 "CMap::GetTerrainPixelShader": {
 "files": [
@@ -194807,7 +195047,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 282
+"line": 284
 },
 "CMap::GetTerrain0PixelShader": {
 "files": [
@@ -194824,7 +195064,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 308
+"line": 310
 },
 "CMap::MapMemInitialize": {
 "files": [
@@ -194891,7 +195131,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 326
+"line": 328
 },
 "CMap::MapMemInitializeHeaps": {
 "files": [
@@ -194959,7 +195199,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 404
+"line": 406
 },
 "CMap::MapMemAlloc": {
 "files": [
@@ -194978,7 +195218,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 432
+"line": 434
 },
 "CMap::MapMemFree": {
 "files": [
@@ -194997,7 +195237,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 437
+"line": 439
 },
 "CMap::UnlinkDoodadDef": {
 "files": [
@@ -195014,7 +195254,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 442
+"line": 444
 },
 "CMap::AllocMapObj": {
 "files": [
@@ -195030,7 +195270,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 450
+"line": 452
 },
 "CMap::FreeMapObj": {
 "files": [
@@ -195047,7 +195287,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 465
+"line": 467
 },
 "CMap::AllocMapObjGroup": {
 "files": [
@@ -195063,7 +195303,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 474
+"line": 476
 },
 "CMap::FreeMapObjGroup": {
 "files": [
@@ -195080,7 +195320,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 489
+"line": 491
 },
 "CMap::FreeArea": {
 "files": [
@@ -195097,7 +195337,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 498
+"line": 500
 },
 "CMap::FreeAreaMed": {
 "files": [
@@ -195114,7 +195354,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 507
+"line": 509
 },
 "CMap::FreeChunk": {
 "files": [
@@ -195131,7 +195371,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 516
+"line": 518
 },
 "CMap::AllocDoodadDef": {
 "files": [
@@ -195147,7 +195387,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 525
+"line": 527
 },
 "CMap::FreeDoodadDef": {
 "files": [
@@ -195170,7 +195410,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 540
+"line": 542
 },
 "CMap::FreeEntity": {
 "files": [
@@ -195187,7 +195427,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 553
+"line": 555
 },
 "CMap::FreeLight": {
 "files": [
@@ -195203,7 +195443,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 563
+"line": 565
 },
 "CMap::FreeMapObjDefGroup": {
 "files": [
@@ -195220,7 +195460,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 570
+"line": 572
 },
 "CMap::AllocMapObjDef": {
 "files": [
@@ -195236,7 +195476,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 579
+"line": 581
 },
 "CMap::FreeMapObjDef": {
 "files": [
@@ -195254,7 +195494,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 594
+"line": 596
 },
 "CMap::UnlinkMapObjDef": {
 "files": [
@@ -195271,7 +195511,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 606
+"line": 608
 },
 "CMap::FreeChunkLiquid": {
 "files": [
@@ -195288,7 +195528,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 614
+"line": 616
 },
 "CMap::AllocRenderChunk": {
 "files": [
@@ -195309,7 +195549,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 627
+"line": 629
 },
 "CMap::FreeRenderChunk": {
 "files": [
@@ -195326,7 +195566,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 646
+"line": 648
 },
 "CMap::AllocEntity": {
 "files": [
@@ -195344,7 +195584,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 653
+"line": 655
 },
 "CMap::AllocBaseObjLink": {
 "files": [
@@ -195362,7 +195602,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 677
+"line": 679
 },
 "CMap::AllocArea": {
 "files": [
@@ -195380,7 +195620,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 705
+"line": 707
 },
 "CMap::AllocChunk": {
 "files": [
@@ -195398,7 +195638,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 722
+"line": 724
 },
 "CMap::AllocLight": {
 "files": [
@@ -195416,7 +195656,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 739
+"line": 741
 },
 "CMap::AllocMapObjDefGroup": {
 "files": [
@@ -195434,7 +195674,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 756
+"line": 758
 },
 "CMap::ChunkAt": {
 "files": [
@@ -195457,7 +195697,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 780
+"line": 782
 },
 "CMap::GetTerrainLiquid": {
 "files": [
@@ -195489,7 +195729,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 803
+"line": 805
 },
 "CMap::UpdatePendingEntities": {
 "files": [
@@ -195512,7 +195752,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 870
+"line": 872
 },
 "CMap::ForEachDoodadModel": {
 "files": [
@@ -195533,7 +195773,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 906
+"line": 908
 },
 "CMap::BucketEntities": {
 "files": [
@@ -195552,7 +195792,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 946
+"line": 948
 },
 "CMap::AllocChunkLiquid": {
 "files": [
@@ -195570,7 +195810,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 963
+"line": 965
 },
 "CMap::FreeBaseObjLink": {
 "files": [
@@ -195588,7 +195828,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 980
+"line": 982
 },
 "CMap::AllocAreaLow": {
 "files": [
@@ -195604,7 +195844,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 994
+"line": 996
 },
 "CMap::FreeAreaLowObject": {
 "files": [
@@ -195620,7 +195860,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1009
+"line": 1011
 },
 "CMap::FreeAreaLow": {
 "files": [
@@ -195635,7 +195875,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1015
+"line": 1017
 },
 "CMap::CreateArea": {
 "files": [
@@ -195656,7 +195896,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1026
+"line": 1028
 },
 "CMap::UnloadArea": {
 "files": [
@@ -195674,7 +195914,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1055
+"line": 1057
 },
 "CMap::DestroyChunk": {
 "files": [
@@ -195690,7 +195930,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1062
+"line": 1064
 },
 "CMap::AreaDistanceSq": {
 "files": [
@@ -195703,7 +195943,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1069
+"line": 1071
 },
 "CMap::SafeOpen": {
 "files": [
@@ -195725,7 +195965,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1093
+"line": 1095
 },
 "CMap::SafeRead": {
 "files": [
@@ -195749,7 +195989,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1106
+"line": 1108
 },
 "CMap::AsyncLoadCleanup": {
 "files": [
@@ -195765,7 +196005,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1122
+"line": 1124
 },
 "CMap::LoadTexture": {
 "files": [
@@ -195786,7 +196026,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1133
+"line": 1135
 },
 "CMap::Update": {
 "files": [
@@ -195809,7 +196049,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1154
+"line": 1156
 },
 "CMap::UnloadAll": {
 "files": [
@@ -195830,7 +196070,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1181
+"line": 1183
 },
 "CMap::ClearFrameChunkList": {
 "files": [
@@ -195847,7 +196087,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1199
+"line": 1201
 },
 "CMap::UpdateFrameLiquids": {
 "files": [
@@ -195867,7 +196107,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1213
+"line": 1215
 },
 "CMap::Render": {
 "files": [
@@ -195916,7 +196156,7 @@
 "stub": false,
 "lines": 108,
 "refs": [],
-"line": 1234
+"line": 1236
 },
 "CMap::AgeRenderChunks": {
 "files": [
@@ -195937,7 +196177,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1346
+"line": 1348
 },
 "CMap::InitializeRenderChunks": {
 "files": [
@@ -195959,7 +196199,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1373
+"line": 1375
 },
 "CMap::AllocBufEntry": {
 "files": [
@@ -195992,7 +196232,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 1395
+"line": 1397
 },
 "CMap::RecycleBufBlocks": {
 "files": [
@@ -196017,7 +196257,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1473
+"line": 1475
 },
 "CMap::CreateRenderChunkPools": {
 "files": [
@@ -196052,7 +196292,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1505
+"line": 1507
 },
 "CMap::DestroyRenderChunkPools": {
 "files": [
@@ -196070,7 +196310,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1541
+"line": 1543
 },
 "CMap::FreeBufBlocks": {
 "files": [
@@ -196097,7 +196337,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1561
+"line": 1563
 },
 "CMap::ReleaseAllBufEntries": {
 "files": [
@@ -196114,7 +196354,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1596
+"line": 1598
 },
 "CMap::SetupChunkLighting": {
 "files": [
@@ -196137,7 +196377,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1609
+"line": 1611
 },
 "CMap::UpdateDetailDoodads": {
 "files": [
@@ -196150,7 +196390,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1618
+"line": 1620
 },
 "CompareAreaDistance": {
 "files": [
@@ -196167,7 +196407,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1623
+"line": 1625
 },
 "CMap::UpdateAreas": {
 "files": [
@@ -196209,7 +196449,7 @@
 "stub": false,
 "lines": 93,
 "refs": [],
-"line": 1650
+"line": 1652
 },
 "CMap::UpdateAreaChunks": {
 "files": [
@@ -196235,7 +196475,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1747
+"line": 1749
 },
 "CMap::LinkToMapObjDefGroup": {
 "files": [
@@ -196255,7 +196495,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1785
+"line": 1787
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -196270,7 +196510,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1803
+"line": 1805
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -196299,7 +196539,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1819
+"line": 1821
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -196318,7 +196558,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1877
+"line": 1879
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -196337,7 +196577,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1900
+"line": 1902
 },
 "CMapArea::CMapArea": {
 "files": [
@@ -196676,21 +196916,6 @@
 "lines": 3,
 "refs": [],
 "line": 3
-},
-"Liquid::CVertexData::~CVertexData": {
-"files": [
-"src/world/map/liquidvertexdata.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [
-"008a32c0"
-],
-"line": 33
 },
 "CMapChunk::CMapChunk": {
 "files": [
@@ -198097,6 +198322,19 @@
 "refs": [],
 "line": 674
 },
+"CMapDoodadDef::CMapDoodadDef": {
+"files": [
+"src/world/map/cmapdoodaddef.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 7
+},
 "CMapEntity::CMapEntity": {
 "files": [
 "src/world/map/cmapentity.cpp"
@@ -198183,6 +198421,114 @@
 "lines": 42,
 "refs": [],
 "line": 84
+},
+"CMapLiquidData::CMapLiquidData": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 10
+},
+"CMapLiquidData::SetBody": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 15
+},
+"CMapLiquidData::HasLiquid": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 20
+},
+"CMapLiquidData::Chunk": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"16"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 25
+},
+"CMapLiquidData::Layer": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 30
+},
+"CMapLiquidData::FishableMask": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 35
+},
+"CMapLiquidData::DeepMask": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 48
+},
+"CMapLiquidData::ExistsMask": {
+"files": [
+"src/world/map/cmapliquiddata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 62
 },
 "CMap::CreateMapObjDef": {
 "files": [
@@ -201593,6 +201939,1026 @@
 "lines": 66,
 "refs": [],
 "line": 959
+},
+"CMapStaticEntity::Place": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"CAaSphere::CAaSphere",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"CM2Model::GetBoundingBox",
+"CM2Model::GetBoundingSphere",
+"CM2Model::WaitForLoad",
+"CAaBox::operator=",
+"operator*",
+"C3Vector::operator=",
+"TransformBox",
+"CAaBox::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"TransformBox",
+"CAaBox::operator=",
+"C3Vector::C3Vector",
+"operator*",
+"C3Vector::operator="
+],
+"strings": [
+"CMapStaticEntity::Place"
+],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"0x40u",
+"3",
+"4"
+],
+"branches": 8,
+"stub": false,
+"lines": 74,
+"refs": [],
+"line": 14
+},
+"DetailDoodad::ReleaseBuffers": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TSBaseArray<CGxBuf *>::Count",
+"TSBaseArray<CGxBuf *>::operator[]",
+"TSBaseArray<CGxBuf *>::operator[]",
+"TSGrowableArray<CGxBuf *>::SetCount"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 60
+},
+"DetailDoodad::CreateBuffers": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"DetailDoodad::ReleaseBuffers",
+"CVar::GetInt",
+"CGxDevice::PoolCreate",
+"CGxDevice::PoolCreate",
+"TSGrowableArray<CGxBuf *>::Reserve",
+"GxBufCreate",
+"TSGrowableArray<CGxBuf *>::Add",
+"GxBufCreate",
+"TSGrowableArray<CGxBuf *>::Add"
+],
+"strings": [
+"CDetailDoodad_idx",
+"CDetailDoodad_vtx"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 7,
+"stub": false,
+"lines": 53,
+"refs": [],
+"line": 83
+},
+"DetailDoodad::Initialize": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"WowClientDB<GroundEffectDoodadRec>::GetNumRecords",
+"WowClientDB<GroundEffectDoodadRec>::GetRecordByIndex",
+"TSGrowableArray<DetailDoodad::CDoodadModel *>::SetCount",
+"TSBaseArray<DetailDoodad::CDoodadModel *>::operator[]",
+"WowClientDB<GroundEffectDoodadRec>::GetNumRecords",
+"WowClientDB<GroundEffectDoodadRec>::GetRecordByIndex",
+"SMemAlloc",
+"DetailDoodad::CDoodadModel::CDoodadModel",
+"TSBaseArray<DetailDoodad::CDoodadModel *>::operator[]"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\detaildoodad.cpp"
+],
+"consts": [
+"0",
+"0x0",
+"1",
+"64",
+"8"
+],
+"branches": 8,
+"stub": false,
+"lines": 58,
+"refs": [],
+"line": 140
+},
+"DetailDoodad::EnsureModel": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"SStrCopy",
+"SStrCopy",
+"CWorld::GetM2Scene",
+"CM2Scene::CreateModel",
+"CM2Model::SetLoadedCallback"
+],
+"strings": [
+"World\\NoDXT\\Detail\\"
+],
+"consts": [
+"0",
+"260"
+],
+"branches": 3,
+"stub": false,
+"lines": 22,
+"refs": [],
+"line": 201
+},
+"DetailDoodad::OnModelLoaded": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"CM2Model::IsLoaded",
+"CM2Model::WaitForLoad",
+"M2Array<M2Texture>::operator[]",
+"M2Array<char>::Data",
+"CMap::LoadTexture"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 227
+},
+"DetailDoodad::IsReady": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TSBaseArray<DetailDoodad::CDoodadModel *>::Count",
+"TSBaseArray<DetailDoodad::CDoodadModel *>::operator[]",
+"CM2Model::IsLoaded",
+"DetailDoodad::EnsureModel"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 241
+},
+"DetailDoodad::PrepareCell": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"17",
+"3",
+"4",
+"9"
+],
+"branches": 6,
+"stub": false,
+"lines": 71,
+"refs": [],
+"line": 272
+},
+"DetailDoodad::SignedUnit": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"memcpy"
+],
+"strings": [],
+"consts": [
+"0x3f800000",
+"0x7fffff",
+"0x80000000u",
+"2.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 346
+},
+"DetailDoodad::Scatter": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"CMapChunk::DetailDoodadsReady",
+"CVar::GetInt",
+"CRndSeed::CRndSeed",
+"DetailDoodad::SCell::SCell",
+"CRandom::uint32",
+"CRandom::uint32",
+"DetailDoodad::PrepareCell",
+"WowClientDB<GroundEffectTextureRec>::GetRecord",
+"CRandom::uint32",
+"DetailDoodad::SignedUnit",
+"CRandom::uint32",
+"DetailDoodad::SignedUnit",
+"fabsf",
+"fabsf",
+"fabsf",
+"fabsf",
+"fabsf",
+"fabsf",
+"C3Vector::C3Vector",
+"CRandom::uint32",
+"DetailDoodad::SignedUnit",
+"CRandom::uint32",
+"DetailDoodad::SignedUnit",
+"DetailDoodad::AddPlacement"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"0u",
+"0xff000000u",
+"1",
+"1.0f",
+"13",
+"15",
+"16",
+"1u",
+"2",
+"3",
+"4",
+"64",
+"7",
+"8"
+],
+"branches": 27,
+"stub": false,
+"lines": 192,
+"refs": [],
+"line": 358
+},
+"DetailDoodad::AddPlacement": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TSBaseArray<DetailDoodad::CDoodadModel *>::operator[]",
+"CM2Model::IsLoaded",
+"CM2Model::WaitForLoad",
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::Count",
+"TSGrowableArray<DetailDoodad::CDetailDoodadInstAdd>::New",
+"C3Vector::operator=",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0",
+"4"
+],
+"branches": 7,
+"stub": false,
+"lines": 55,
+"refs": [],
+"line": 556
+},
+"DetailDoodad::AcquireBuffers": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TSBaseArray<CGxBuf *>::Count",
+"CGxDevice::BufStream",
+"CGxDevice::BufStream",
+"TSBaseArray<CGxBuf *>::operator[]",
+"TSBaseArray<CGxBuf *>::operator[]",
+"TSGrowableArray<CGxBuf *>::SetCount"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 1,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 618
+},
+"DetailDoodad::RotateBasisAboutZ": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"cosf",
+"sinf"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"3",
+"4",
+"5",
+"6",
+"7",
+"8"
+],
+"branches": 0,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 642
+},
+"DetailDoodad::SlopeBasis": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"sqrtf"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"2",
+"3",
+"4",
+"5",
+"6",
+"7",
+"8"
+],
+"branches": 1,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 664
+},
+"DetailDoodad::ShadeVertexColor": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"CGxDevice::Caps"
+],
+"strings": [],
+"consts": [
+"0x4c",
+"0xb332",
+"0xff",
+"0xff000000u",
+"0xff00ff00u",
+"16",
+"24",
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 694
+},
+"DetailDoodad::FillVertexBuffer": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"CGxDevice::BufLock",
+"TSBaseArray<DetailDoodad::CDetailDoodadInstAdd>::Count",
+"TSBaseArray<DetailDoodad::CDetailDoodadInstAdd>::operator[]",
+"TSBaseArray<DetailDoodad::CDoodadModel *>::operator[]",
+"CM2Model::IsLoaded",
+"CM2Model::WaitForLoad",
+"CM2Model::IsLoaded",
+"CM2Model::WaitForLoad",
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::Data",
+"M2Array<M2Vertex>::Data",
+"DetailDoodad::ShadeVertexColor",
+"DetailDoodad::SlopeBasis",
+"DetailDoodad::RotateBasisAboutZ",
+"cosf",
+"sinf",
+"memcpy",
+"CGxDevice::BufUnlock"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x1",
+"0xfc",
+"0xffff",
+"1",
+"2",
+"3",
+"4",
+"5",
+"6",
+"7",
+"8",
+"9"
+],
+"branches": 8,
+"stub": false,
+"lines": 100,
+"refs": [],
+"line": 722
+},
+"DetailDoodad::FillIndexBuffer": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"CGxDevice::BufLock",
+"TSBaseArray<DetailDoodad::CDetailDoodadInstAdd>::Count",
+"TSBaseArray<DetailDoodad::CDetailDoodadInstAdd>::operator[]",
+"TSBaseArray<DetailDoodad::CDoodadModel *>::operator[]",
+"CM2Model::IsLoaded",
+"CM2Model::WaitForLoad",
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::Data",
+"M2Array<unsigned short>::Count",
+"CGxDevice::BufUnlock"
+],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 29,
+"refs": [],
+"line": 826
+},
+"DetailDoodad::DrawBatch": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TextureGetGxTex",
+"DetailDoodad::AcquireBuffers",
+"DetailDoodad::FillVertexBuffer",
+"GxPrimVertexPtr",
+"DetailDoodad::FillIndexBuffer",
+"CGxDevice::PrimIndexPtr",
+"CGxDevice::RsSet",
+"CGxBatch::CGxBatch",
+"CGxDevice::Draw"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 5,
+"stub": false,
+"lines": 40,
+"refs": [],
+"line": 860
+},
+"DetailDoodad::Draw": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"DetailDoodad::DrawBatch"
+],
+"strings": [],
+"consts": [
+"0",
+"4"
+],
+"branches": 2,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 902
+},
+"DetailDoodad::BuildFadeTexels": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"memset"
+],
+"strings": [],
+"consts": [
+"0",
+"0x00ffffffu",
+"24",
+"4",
+"63",
+"64",
+"8"
+],
+"branches": 3,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 914
+},
+"DetailDoodad::FadeTextureCallback": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"DetailDoodad::BuildFadeTexels"
+],
+"strings": [],
+"consts": [
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 943
+},
+"DetailDoodad::SetupState": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"TextureGetGxTex",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"C44Matrix::C44Matrix",
+"C44Matrix::Scale",
+"C44Matrix::RotateAroundY",
+"C3Vector::C3Vector",
+"C44Matrix::Translate",
+"GxXformSet"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.15f",
+"0.8500000238418579f",
+"1",
+"1.0f",
+"1.5707963705062866f",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 43,
+"refs": [],
+"line": 959
+},
+"DetailDoodad::CreateInstance": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"DetailDoodad::CDetailDoodadData::CDetailDoodadData",
+"DetailDoodad::Scatter",
+"DetailDoodad::ReleaseInstance"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\detaildoodad.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 2,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 1008
+},
+"DetailDoodad::ReleaseInstance": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TSLink<DetailDoodad::CDetailDoodadData>::Unlink",
+"DetailDoodad::CDetailDoodadData::~CDetailDoodadData",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\detaildoodad.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1030
+},
+"Liquid::CMaterialSettings::LoadFromDbc": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"WowClientDB<LiquidTypeRec>::GetRecord",
+"WowClientDB<LiquidMaterialRec>::GetRecord",
+"SStrCopy",
+"Liquid::CMaterialSettings::LoadTextures"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"4"
+],
+"branches": 6,
+"stub": false,
+"lines": 37,
+"refs": [],
+"line": 21
+},
+"Liquid::CMaterialSettings::LoadTextures": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"SStrStrI",
+"CGxTexFlags::CGxTexFlags",
+"CStatus::CStatus",
+"SStrStrI",
+"TextureCreateSolid",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"TSGrowableArray<HOBJECT__ *>::Add",
+"SStrPrintf",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"TSGrowableArray<HOBJECT__ *>::Add",
+"TextureHasPendingData"
+],
+"strings": [
+"%d",
+"procedural"
+],
+"consts": [
+"0",
+"0xff",
+"1"
+],
+"branches": 8,
+"stub": false,
+"lines": 60,
+"refs": [],
+"line": 66
+},
+"Liquid::GetMaterialSettings": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"TSBaseArray<Liquid::CMaterialSettings *>::Count",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"SMemAlloc",
+"Liquid::CMaterialSettings::CMaterialSettings",
+"Liquid::CMaterialSettings::LoadFromDbc",
+"TSGrowableArray<Liquid::CMaterialSettings *>::GrowToFit",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"SMemFree",
+"SysMsgPrintf"
+],
+"strings": [
+"Settings Bank: Liquid type [%d] not found, defaulting to water!",
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidmaterialsettings.cpp"
+],
+"consts": [
+"0x0",
+"1"
+],
+"branches": 5,
+"stub": false,
+"lines": 32,
+"refs": [],
+"line": 130
+},
+"Liquid::GetMaterial": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"WowClientDB<LiquidTypeRec>::GetRecord",
+"SysMsgPrintf",
+"TSBaseArray<Liquid::IMaterial *>::Count",
+"TSBaseArray<Liquid::IMaterial *>::operator[]",
+"TSBaseArray<Liquid::IMaterial *>::operator[]",
+"GxCaps",
+"TSGrowableArray<Liquid::IMaterial *>::GrowToFit",
+"TSBaseArray<Liquid::IMaterial *>::operator[]"
+],
+"strings": [
+"Material Bank: Liquid type [%d] not found, defaulting to water!"
+],
+"consts": [
+"1",
+"3"
+],
+"branches": 3,
+"stub": false,
+"lines": 41,
+"refs": [],
+"line": 173
+},
+"Liquid::ReleaseMaterials": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"TSBaseArray<Liquid::IMaterial *>::Count",
+"TSBaseArray<Liquid::IMaterial *>::operator[]",
+"TSGrowableArray<Liquid::IMaterial *>::SetCount"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 216
+},
+"Liquid::ReleaseMaterialSettings": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"TSBaseArray<Liquid::CMaterialSettings *>::Count",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"TSBaseArray<HOBJECT__ *>::Count",
+"TSBaseArray<HOBJECT__ *>::operator[]",
+"TSBaseArray<HOBJECT__ *>::operator[]",
+"HandleClose",
+"TSGrowableArray<HOBJECT__ *>::SetCount",
+"Liquid::CMaterialSettings::~CMaterialSettings",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"SMemFree",
+"TSBaseArray<Liquid::CMaterialSettings *>::operator[]",
+"TSGrowableArray<Liquid::CMaterialSettings *>::SetCount"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidmaterialsettings.cpp"
+],
+"consts": [
+"0",
+"0x0"
+],
+"branches": 5,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 227
+},
+"Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 8
+},
+"Liquid::CVertexDataMCLQ::GetHeight": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.0f",
+"2",
+"4",
+"8"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 16
+},
+"Liquid::CVertexDataMCLQ::GetDepth": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"2",
+"8"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 26
+},
+"Liquid::CVertexDataMCLQ::GetCoord": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1",
+"8"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 36
+},
+"Liquid::CVertexDataMH2O::CVertexDataMH2O": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 45
+},
+"Liquid::CVertexDataMH2O::GetHeight": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.0f",
+"2",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 55
+},
+"Liquid::CVertexDataMH2O::GetDepth": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0xff",
+"2",
+"4"
+],
+"branches": 3,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 67
+},
+"Liquid::CVertexDataMH2O::GetCoord": {
+"files": [
+"src/world/map/liquidvertexdata.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 85
+},
+"CMapLowDetail::Free": {
+"files": [
+"src/world/map/maplowdetail.cpp"
+],
+"callseq": [
+"CMap::FreeAreaLow",
+"TSBaseArray<CMapObjDef *>::Count",
+"TSBaseArray<CMapObjDef *>::operator[]",
+"TSGrowableArray<CMapObjDef *>::SetCount",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\maplowdetail.cpp"
+],
+"consts": [
+"0",
+"64"
+],
+"branches": 4,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 36
+},
+"CMapLowDetail::Load": {
+"files": [
+"src/world/map/maplowdetail.cpp"
+],
+"callseq": [
+"CMapLowDetail::Free",
+"SStrPrintf",
+"SFile::Open",
+"SFile::GetFileSize",
+"SMemAlloc",
+"SFile::Read",
+"SFile::Close",
+"CMap::AllocAreaLow",
+"sqrtf",
+"TSGrowableArray<CMapObjDef *>::Reserve",
+"TSGrowableArray<CMapObjDef *>::SetCount",
+"C3Vector::C3Vector",
+"CMap::CreateMapObjDef",
+"TSGrowableArray<CMapObjDef *>::Add"
+],
+"strings": [
+"%s\\%s.wdl",
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\maplowdetail.cpp"
+],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"1",
+"100000",
+"12",
+"16",
+"260",
+"64",
+"8"
+],
+"branches": 14,
+"stub": false,
+"lines": 169,
+"refs": [],
+"line": 67
 },
 "VBBList::InitializeLists": {
 "files": [
