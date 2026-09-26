@@ -290,7 +290,7 @@ void FillIndexBuffer(SBatch* batch);
 // Draw one batch, filling whichever of its two buffers is not filled yet. ref: FUN_007b3390
 void DrawBatch(SBatch* batch);
 
-// Draw a chunk's detail doodads, one call per texture it uses. ref: FUN_007b36b0
+// Draw a chunk's detail doodads, one call per texture it uses.
 void Draw(CDetailDoodadData* instance);
 
 // Put the device into the state the grass draws in, and say whether the shader path was taken.

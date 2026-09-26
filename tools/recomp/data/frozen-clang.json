@@ -67265,7 +67265,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1111
+"line": 1110
 },
 "CGxDevice::LightEnable": {
 "files": [
@@ -75671,7 +75671,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 63
+"line": 62
 },
 "CShaderEffect::ComputeLocalLights": {
 "files": [
@@ -194892,20 +194892,22 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 52
+"line": 44
 },
 "CChunkLiquid::ReleaseSurface": {
 "files": [
 "src/world/map/cchunkliquid.cpp"
 ],
-"callseq": [],
+"callseq": [
+"Liquid::CInstance::Release"
+],
 "strings": [],
 "consts": [],
 "branches": 1,
 "stub": false,
-"lines": 6,
+"lines": 7,
 "refs": [],
-"line": 63
+"line": 60
 },
 "CChunkLiquid::GetBounds": {
 "files": [
@@ -194920,7 +194922,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 73
+"line": 71
 },
 "CChunkLiquid::UpdateAnim": {
 "files": [
@@ -194939,7 +194941,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 84
+"line": 82
 },
 "CChunkLiquid::ReadTileFlags": {
 "files": [
@@ -194960,7 +194962,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 104
+"line": 102
 },
 "CChunkLiquid::CoversTile": {
 "files": [
@@ -194976,7 +194978,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 123
+"line": 121
 },
 "CChunkLiquid::GetHeightAt": {
 "files": [
@@ -194997,7 +194999,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 144
+"line": 142
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -196286,7 +196288,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 179,
+"lines": 189,
 "refs": [],
 "line": 1238
 },
@@ -196309,7 +196311,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1421
+"line": 1431
 },
 "CMap::InitializeRenderChunks": {
 "files": [
@@ -196331,7 +196333,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1448
+"line": 1458
 },
 "CMap::AllocBufEntry": {
 "files": [
@@ -196364,7 +196366,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 1470
+"line": 1480
 },
 "CMap::RecycleBufBlocks": {
 "files": [
@@ -196389,7 +196391,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1548
+"line": 1558
 },
 "CMap::CreateRenderChunkPools": {
 "files": [
@@ -196424,7 +196426,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1580
+"line": 1590
 },
 "CMap::DestroyRenderChunkPools": {
 "files": [
@@ -196442,7 +196444,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1616
+"line": 1626
 },
 "CMap::FreeBufBlocks": {
 "files": [
@@ -196469,7 +196471,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1636
+"line": 1646
 },
 "CMap::ReleaseAllBufEntries": {
 "files": [
@@ -196486,7 +196488,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1671
+"line": 1681
 },
 "CMap::SetupChunkLighting": {
 "files": [
@@ -196509,7 +196511,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1684
+"line": 1694
 },
 "CMap::UpdateDetailDoodads": {
 "files": [
@@ -196522,7 +196524,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1693
+"line": 1703
 },
 "CompareAreaDistance": {
 "files": [
@@ -196539,7 +196541,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1698
+"line": 1708
 },
 "CMap::UpdateAreas": {
 "files": [
@@ -196581,7 +196583,7 @@
 "stub": false,
 "lines": 93,
 "refs": [],
-"line": 1725
+"line": 1735
 },
 "CMap::UpdateAreaChunks": {
 "files": [
@@ -196607,7 +196609,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1822
+"line": 1832
 },
 "CMap::LinkToMapObjDefGroup": {
 "files": [
@@ -196627,7 +196629,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1860
+"line": 1870
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -196642,7 +196644,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1878
+"line": 1888
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -196671,7 +196673,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1894
+"line": 1904
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -196690,7 +196692,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1952
+"line": 1962
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -196709,7 +196711,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1975
+"line": 1985
 },
 "CMapArea::CMapArea": {
 "files": [

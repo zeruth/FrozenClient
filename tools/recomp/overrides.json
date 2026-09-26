@@ -3069,5 +3069,9 @@
   "008a1750": {
     "status": "unlinked",
     "note": "Returns the module float at 0x00b23f64, which the liquid draw multiplies into eight of the stage floats (the ones it does NOT multiply by 0x009ed910 instead). A setter at 0x008a1770 writes that global along with the procedural shader suffix, and nothing frozen has found calls it -- so what feeds it is still open. Not ported: porting the value without its writer would bake in whatever it happens to be."
+  },
+  "00872ad0": {
+    "status": "unlinked",
+    "note": "Sets CShaderEffect::s_enableShaders, and GATES it: `s_enableShaders = arg && <the global at 0x00d43020>`, so a caller asking for shaders does not get them unless that capability is set. frozen's CShaderEffect::InitShaderSystem assigns s_enableShaders unconditionally and also sets s_usePcfFiltering, s_fogMul and s_useAlphaRef, so it is not this function and must not be tagged with it -- a definition-order inference bound them together while a stranded tag had shifted the sequence by one, which is how it was noticed. Worth revisiting as a behaviour difference: frozen can turn shaders on where the reference would refuse."
   }
 }

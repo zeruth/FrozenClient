@@ -58,7 +58,6 @@ uint32_t CShaderEffect::s_shadowMode;
 // Reproduced exactly: with w at 0 the shader ignores the slot, so the stale values cannot show.
 //
 // **Built, not seen running**, and this one changes what a lit model looks like.
-// ref: FUN_00872900
 // ref: FUN_007a8a60
 void CShaderEffect::LocalLights::Clear() {
     for (uint32_t i = 0; i < 44; i++) {
@@ -66,6 +65,7 @@ void CShaderEffect::LocalLights::Clear() {
     }
 }
 
+// ref: FUN_00872900
 void CShaderEffect::ComputeLocalLights(LocalLights* localLights, uint32_t localLightsCount, CM2Light** lights, const C3Vector* a4) {
     float* dst = localLights->float0;
     uint32_t i = 0;

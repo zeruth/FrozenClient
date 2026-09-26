@@ -37,15 +37,7 @@ void CChunkLiquid::BuildVertices() {
     }
 }
 
-// ref: FUN_007cde10
 // ref: FUN_007cf9a0
-// NOT CALLED YET, and the reason is only half known. Its own work is done and checked: a
-// bounded run built forty surfaces with every invariant clean. What is not established is what
-// happens once it runs for real, because it reaches the liquid material bank and the machine
-// this was tested on ran out of disk part way through -- after which the COMMITTED BASELINE
-// stops at the same point too, so nothing measured after that separates a real hang from a full
-// disk. Wire it and re-test on a machine with room before believing either way.
-//
 // A layer that is being looked at wants a surface. Asking for one is also what makes it, so a
 // layer keeps asking until it has one; and the timer resets each frame it is seen, which is what
 // keeps the surface alive while it stays in view.
@@ -60,9 +52,15 @@ void CChunkLiquid::UpdateForFrame() {
     this->m_animTime = 0.0f;
 }
 
+// ref: FUN_007cde10
+// Let the surface go. The reference DROPS A REFERENCE here rather than just forgetting the
+// pointer, and until now this did the latter -- so every surface a layer ever built was leaked,
+// along with its geometry factory and environment. The TODO that said otherwise named
+// FUN_008a1ac0, which is CInstance::Release and has been ported for a while.
 void CChunkLiquid::ReleaseSurface() {
     if (this->m_surface) {
-        // TODO FUN_008a1ac0: the Liquid module hands the drawn surface back to its own pool.
+        this->m_surface->Release();
+
         this->m_surface = nullptr;
     }
 }

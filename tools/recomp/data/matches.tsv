@@ -2280,7 +2280,7 @@ addr	how	frozen	evidence
 00682ee0	annotated	CGxDevice::PrimVertexPtr	tag in src/gx/CGxDevice.cpp
 00682f10	annotated	CGxDevice::PrimIndexPtr	tag in src/gx/CGxDevice.cpp
 00682fd0	annotated	CGxDevice::LightGet	tag in src/gx/CGxDevice.cpp
-00683080	annotated	CGxDevice::LightGet	tag in src/gx/CGxDevice.cpp
+00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00683100	annotated	CGxDevice::MasterEnable	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
@@ -3064,7 +3064,7 @@ addr	how	frozen	evidence
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
 007cd850	annotated	BuildVolumes	tag in src/world/map/MapOcclusion.cpp
-007cde10	annotated	CChunkLiquid::UpdateForFrame	tag in src/world/map/CChunkLiquid.cpp
+007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
 007cde80	annotated	CChunkLiquid::GetBounds	tag in src/world/map/CChunkLiquid.cpp
 007cdf80	annotated	CChunkLiquid::BuildVertices	tag in src/world/map/CChunkLiquid.cpp
@@ -3735,8 +3735,7 @@ addr	how	frozen	evidence
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 0086d6d0	annotated	OsTlsGetValue	tag in lib/common/common/thread/OsTls.cpp
 008728c0	annotated	CShaderEffect::SetFixedFunc	tag in src/gx/shader/CShaderEffect.cpp
-00872900	annotated	CShaderEffect::LocalLights::Clear	tag in src/gx/shader/CShaderEffect.cpp
-00872ad0	order	CShaderEffect::ComputeLocalLights	definition order between CShaderEffect::LocalLights::Clear and CShaderEffect::InitShaderSystem in src/gx/shader/CShaderEffect.cpp
+00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
 00872b00	annotated	CShaderEffect::SetWorldViewConstants	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
 00872ce0	callorder	CShaderEffect::InitShaderSystem	same slot between linked calls in 00780f50=CWorld::Initialize

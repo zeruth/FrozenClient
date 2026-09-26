@@ -36372,7 +36372,7 @@
   "status": "ported"
  },
  "00683080": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -36380,8 +36380,8 @@
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
   ],
-  "frozen": "CGxDevice::LightGet",
-  "frozenSize": 224,
+  "frozen": "CGxDevice::LightEnable",
+  "frozenSize": 34,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 36,
@@ -45305,7 +45305,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.222,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
@@ -48171,7 +48171,7 @@
   "branchRatio": 0.371,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.65,
+  "fidelity": 0.7,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -48927,8 +48927,8 @@
    "src/world/map/CChunkLiquid.cpp",
    "src/world/map/cchunkliquid.cpp"
   ],
-  "frozen": "CChunkLiquid::UpdateForFrame",
-  "frozenSize": 47,
+  "frozen": "CChunkLiquid::ReleaseSurface",
+  "frozenSize": 37,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 24,
@@ -54685,8 +54685,8 @@
  "008353d0": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Lighting.cpp",
    "src/model/cm2lighting.cpp"
@@ -59373,24 +59373,8 @@
   "status": "ported"
  },
  "00872900": {
-  "branchRatio": 0.125,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/shader/CShaderEffect.cpp",
-   "src/gx/shader/cshadereffect.cpp"
-  ],
-  "frozen": "CShaderEffect::LocalLights::Clear",
-  "frozenSize": 56,
-  "how": "annotated",
-  "module": "OsClipboard.cpp",
-  "refSize": 453,
-  "status": "ported"
- },
- "00872ad0": {
-  "branchRatio": 0.333,
-  "constOverlap": -1.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.043,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
@@ -59399,9 +59383,9 @@
   ],
   "frozen": "CShaderEffect::ComputeLocalLights",
   "frozenSize": 411,
-  "how": "order",
+  "how": "annotated",
   "module": "OsClipboard.cpp",
-  "refSize": 40,
+  "refSize": 453,
   "status": "ported"
  },
  "00872b00": {
@@ -60711,8 +60695,8 @@
  "008a2240": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/world/map/DetailDoodad.cpp",
    "src/world/map/LiquidSurface.cpp"

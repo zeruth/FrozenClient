@@ -80,11 +80,10 @@ class CChunkLiquid {
         // m_vertexData. ref: FUN_007cdf80
         void BuildVertices();
 
-        // Let the surface go, if one was ever built. ref: FUN_007cde10
         // Make the layer's surface if it has none and mark it seen this frame.
-        // ref: FUN_007cf9a0
         void UpdateForFrame();
 
+        // Let the surface go, if one was ever built.
         void ReleaseSurface();
 
         // The layer's world box: its chunk's, with the height range narrowed to the layer's own.

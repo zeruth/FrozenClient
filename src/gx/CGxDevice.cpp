@@ -1106,7 +1106,6 @@ void CGxDevice::LightSet(uint32_t index, const CGxLight& light, const C3Vector& 
     }
 }
 
-// ref: FUN_00683080
 // ref: FUN_00682fd0
 void CGxDevice::LightGet(uint32_t index, CGxLight& light) {
     const CGxLightState& state = this->m_lights[index];
@@ -1134,6 +1133,7 @@ void CGxDevice::LightGet(uint32_t index, CGxLight& light) {
     light.m_attenuation = state.m_attenuation;
 }
 
+// ref: FUN_00683080
 void CGxDevice::LightEnable(uint32_t index, int32_t enable) {
     CGxLightState& state = this->m_lights[index];
 
