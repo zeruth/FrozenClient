@@ -48897,7 +48897,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::FreeQueryData",
-  "frozenSize": 164,
+  "frozenSize": 0,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 191,

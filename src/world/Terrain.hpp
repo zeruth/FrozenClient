@@ -52,9 +52,8 @@ void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
 class CImVector;
 bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient);
 
-// Is a world position inside an interior WMO room? Shares its containment test with
-// TerrainInteriorAmbientAt, and therefore shares that test's known imprecision -- see the
-// definition before relying on it for anything but a yes/no the player can shrug at.
+// Is a world position inside an interior WMO room? Answered the reference's way, by dropping a
+// segment and asking whether the surface below belongs to a non-exterior group.
 bool TerrainPointIsIndoors(const C3Vector& pos);
 
 #endif

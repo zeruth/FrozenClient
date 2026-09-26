@@ -186,13 +186,6 @@ struct WmoGroup {
     // A second XY grid over ALL triangles, for the indoor test. The shadow grid cannot be reused:
     // it deliberately keeps only up-facing triangles, and deciding whether a point is inside a room
     // needs the ceiling above it, which faces down.
-    std::vector<std::vector<uint32_t>> containGrid;
-    float containCellSize = 0.0f;
-    float containMinX = 0.0f;
-    float containMinY = 0.0f;
-    int32_t containCellsX = 0;
-    int32_t containCellsY = 0;
-    bool containGridBuilt = false;
 
     std::vector<std::vector<uint32_t>> shadowGrid; // cell -> triangle start offsets into `indices`
     float shadowCellSize = 0.0f;
@@ -3834,161 +3827,6 @@ void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg) {
     }
 }
 
-// If the world point lies inside a loaded WMO's interior group, report that WMO's interior ambient.
-// Entities (and the player) standing inside a building are lit by its interior lighting instead of
-// the outdoor sun, exactly as the reference switches a unit's lighting by the volume it occupies.
-// Bucket every triangle of a group into a uniform XY grid, once. Mirrors BuildWmoShadowGrid but
-// without the up-facing filter.
-void BuildWmoContainGrid(WmoGroup& grp) {
-    if (grp.containGridBuilt) {
-        return;
-    }
-
-    grp.containGridBuilt = true;
-
-    if (!grp.indexCount || !grp.positions || !grp.vertexCount) {
-        return;
-    }
-
-    // Vertices are instance-local while the bounds are world-space, so the grid is anchored on the
-    // local extent rather than on boundsMin.
-    float minX = grp.positions[0].x;
-    float minY = grp.positions[0].y;
-    float maxX = minX;
-    float maxY = minY;
-
-    for (uint32_t i = 1; i < grp.vertexCount; i++) {
-        minX = grp.positions[i].x < minX ? grp.positions[i].x : minX;
-        minY = grp.positions[i].y < minY ? grp.positions[i].y : minY;
-        maxX = grp.positions[i].x > maxX ? grp.positions[i].x : maxX;
-        maxY = grp.positions[i].y > maxY ? grp.positions[i].y : maxY;
-    }
-
-    float spanX = maxX - minX;
-    float spanY = maxY - minY;
-
-    if (spanX <= 0.0f || spanY <= 0.0f) {
-        return;
-    }
-
-    const float CELL = 8.0f;
-    const int32_t MAX_CELLS = 128;
-
-    grp.containMinX = minX;
-    grp.containMinY = minY;
-    grp.containCellSize = CELL;
-    grp.containCellsX = static_cast<int32_t>(spanX / CELL) + 1;
-    grp.containCellsY = static_cast<int32_t>(spanY / CELL) + 1;
-
-    while (grp.containCellsX > MAX_CELLS || grp.containCellsY > MAX_CELLS) {
-        grp.containCellSize *= 2.0f;
-        grp.containCellsX = static_cast<int32_t>(spanX / grp.containCellSize) + 1;
-        grp.containCellsY = static_cast<int32_t>(spanY / grp.containCellSize) + 1;
-    }
-
-    grp.containGrid.clear();
-    grp.containGrid.resize(static_cast<size_t>(grp.containCellsX) * grp.containCellsY);
-
-    for (uint32_t i = 0; i + 2 < grp.indexCount; i += 3) {
-        uint16_t a = grp.indices[i];
-        uint16_t b = grp.indices[i + 1];
-        uint16_t c = grp.indices[i + 2];
-
-        if (a >= grp.vertexCount || b >= grp.vertexCount || c >= grp.vertexCount) {
-            continue;
-        }
-
-        const C3Vector& pa = grp.positions[a];
-        const C3Vector& pb = grp.positions[b];
-        const C3Vector& pc = grp.positions[c];
-
-        float tMinX = pa.x < pb.x ? (pa.x < pc.x ? pa.x : pc.x) : (pb.x < pc.x ? pb.x : pc.x);
-        float tMaxX = pa.x > pb.x ? (pa.x > pc.x ? pa.x : pc.x) : (pb.x > pc.x ? pb.x : pc.x);
-        float tMinY = pa.y < pb.y ? (pa.y < pc.y ? pa.y : pc.y) : (pb.y < pc.y ? pb.y : pc.y);
-        float tMaxY = pa.y > pb.y ? (pa.y > pc.y ? pa.y : pc.y) : (pb.y > pc.y ? pb.y : pc.y);
-
-        int32_t c0 = static_cast<int32_t>((tMinX - grp.containMinX) / grp.containCellSize);
-        int32_t c1 = static_cast<int32_t>((tMaxX - grp.containMinX) / grp.containCellSize);
-        int32_t r0 = static_cast<int32_t>((tMinY - grp.containMinY) / grp.containCellSize);
-        int32_t r1 = static_cast<int32_t>((tMaxY - grp.containMinY) / grp.containCellSize);
-
-        c0 = c0 < 0 ? 0 : c0;
-        r0 = r0 < 0 ? 0 : r0;
-        c1 = c1 >= grp.containCellsX ? grp.containCellsX - 1 : c1;
-        r1 = r1 >= grp.containCellsY ? grp.containCellsY - 1 : r1;
-
-        for (int32_t cy = r0; cy <= r1; cy++) {
-            for (int32_t cx = c0; cx <= c1; cx++) {
-                grp.containGrid[static_cast<size_t>(cy) * grp.containCellsX + cx].push_back(i);
-            }
-        }
-    }
-}
-
-// Is a local-space point actually inside this group's geometry?
-//
-// A group's bounding box is much larger than the room it describes. For one big structure like Ebon
-// Hold, an interior hall's box reaches out over the open deck, so a box test alone calls the deck
-// indoors. Measured 2026-09-16: standing outdoors at (2355.6, -5677.9, 429.8) the box test matched
-// interior group 3, whose box spans z 414 to 544.
-//
-// The test used instead is physical: a point inside a room has group geometry BOTH above and below
-// it, a ceiling and a floor. Out on a deck there is a floor but open sky above. The reference decides
-// this properly through the group BSP and portals; this is a cheap approximation of the same idea.
-bool WmoGroupContains(WmoGroup& grp, float lx, float ly, float lz) {
-    BuildWmoContainGrid(grp);
-
-    if (grp.containCellsX <= 0 || grp.containCellsY <= 0) {
-        return false;
-    }
-
-    int32_t cx = static_cast<int32_t>((lx - grp.containMinX) / grp.containCellSize);
-    int32_t cy = static_cast<int32_t>((ly - grp.containMinY) / grp.containCellSize);
-
-    if (cx < 0 || cy < 0 || cx >= grp.containCellsX || cy >= grp.containCellsY) {
-        return false;
-    }
-
-    bool above = false;
-    bool below = false;
-
-    for (uint32_t i : grp.containGrid[static_cast<size_t>(cy) * grp.containCellsX + cx]) {
-        const C3Vector& pa = grp.positions[grp.indices[i]];
-        const C3Vector& pb = grp.positions[grp.indices[i + 1]];
-        const C3Vector& pc = grp.positions[grp.indices[i + 2]];
-
-        // Point in triangle in XY: the three edge cross products must share a sign.
-        float d1 = (lx - pb.x) * (pa.y - pb.y) - (pa.x - pb.x) * (ly - pb.y);
-        float d2 = (lx - pc.x) * (pb.y - pc.y) - (pb.x - pc.x) * (ly - pc.y);
-        float d3 = (lx - pa.x) * (pc.y - pa.y) - (pc.x - pa.x) * (ly - pa.y);
-
-        bool anyNeg = d1 < 0.0f || d2 < 0.0f || d3 < 0.0f;
-        bool anyPos = d1 > 0.0f || d2 > 0.0f || d3 > 0.0f;
-
-        if (anyNeg && anyPos) {
-            continue;
-        }
-
-        float tMinZ = pa.z < pb.z ? (pa.z < pc.z ? pa.z : pc.z) : (pb.z < pc.z ? pb.z : pc.z);
-        float tMaxZ = pa.z > pb.z ? (pa.z > pc.z ? pa.z : pc.z) : (pb.z > pc.z ? pb.z : pc.z);
-
-        // A small lift keeps the floor the unit is standing on from reading as being above it.
-        float probe = lz + 0.5f;
-
-        if (tMinZ > probe) {
-            above = true;
-        } else if (tMaxZ < probe) {
-            below = true;
-        }
-
-        if (above && below) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 // Is a point inside an interior room?
 //
 // Same walk as TerrainInteriorAmbientAt below, minus the ambient and minus its logging, because
@@ -4002,39 +3840,23 @@ bool WmoGroupContains(WmoGroup& grp, float lx, float ly, float lz) {
 // standing outside can test as inside. The geometry test after the box narrows it but does not
 // close it.
 bool TerrainPointIsIndoors(const C3Vector& pos) {
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded || !tile.wmos) {
-            continue;
-        }
+    // The reference does not test containment in a room volume at all: it drops a segment and asks
+    // what surface is under you. QuerySegmentMapObjs already discards a slot whose group carries the
+    // exterior flag, so a non-zero answer IS "the floor below this point belongs to a room" -- which
+    // is the same question CWorldScene::UpdateCameraDef asks to decide the camera is indoors, with
+    // the same 1760-unit drop and maxT of 1.0.
+    //
+    // This replaces a stand-in containment test (a per-group spatial grid plus an above/below
+    // triangle count) whose imprecision the header used to warn about. Standing on an exterior
+    // bridge above a room now reads as outdoors, because the bridge is the nearer surface, which is
+    // the behaviour the reference has.
+    C3Vector start = pos;
+    C3Vector end = { pos.x, pos.y, pos.z - 1760.0f };
 
-        for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-            WmoInstance& w = tile.wmos[wi];
+    CMapObjDef* defs[2] = { nullptr, nullptr };
+    uint32_t groups[4] = { 0xffff, 0xffff, 0xffff, 0xffff };
 
-            if (w.hasBounds && (pos.x < w.bboxMin.x || pos.x > w.bboxMax.x ||
-                                pos.y < w.bboxMin.y || pos.y > w.bboxMax.y ||
-                                pos.z < w.bboxMin.z || pos.z > w.bboxMax.z)) {
-                continue;
-            }
-
-            for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                WmoGroup& grp = w.groups[gi];
-
-                if (!grp.interior || !grp.vertexCount) {
-                    continue;
-                }
-
-                if (pos.x >= grp.boundsMin.x && pos.x <= grp.boundsMax.x &&
-                    pos.y >= grp.boundsMin.y && pos.y <= grp.boundsMax.y &&
-                    pos.z >= grp.boundsMin.z && pos.z <= grp.boundsMax.z &&
-                    WmoGroupContains(grp, pos.x - w.origin.x, pos.y - w.origin.y,
-                                     pos.z - w.origin.z)) {
-                    return true;
-                }
-            }
-        }
-    }
-
-    return false;
+    return QuerySegmentMapObjs(start, end, 1.0f, defs, groups) != 0;
 }
 
 // The light for a unit standing on a WMO floor, by the reference's mechanism: a probe from one
