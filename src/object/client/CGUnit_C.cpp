@@ -5,6 +5,7 @@
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
 #include "object/client/NameCache.hpp"
+#include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
 #include "ui/game/CGPartyInfo.hpp"
@@ -12,6 +13,7 @@
 #include <storm/Error.hpp>
 #include <tempest/Math.hpp>
 #include <cstring>
+#include <cmath>
 
 WOWGUID CGUnit_C::s_activeMover;
 
@@ -2243,4 +2245,93 @@ bool CGUnit_C::ReplaceIdleWithHover(M2BoneSequenceState* state) const {
     }
 
     return false;
+}
+
+// The three ways a unit drives a sequence onto a model. Each one applies the change to the model it
+// is given and then repeats it on every passenger riding this unit, so a vehicle's riders animate
+// with it. The passenger half is NOT ported: it walks the passenger table the reference keeps on
+// CVehicle_C +0x170, and nothing in frozen fills that table yet (see CVehicle_C.hpp). Where the
+// reference would walk it there is a comment, not a silent omission -- the call-order score in
+// docs/recomp/REPORT.md is what says these are incomplete.
+
+// ref: FUN_00735820
+void CGUnit_C::SetBoneSequence(CM2Model* model, uint32_t boneId, uint32_t animID, uint32_t variation,
+                               uint32_t blendTime, float speed, int32_t a8, int32_t a9,
+                               int32_t fromPassenger) {
+    if (!model) {
+        return;
+    }
+
+    // A passenger being animated by its vehicle takes the vehicle's sequence; one asked directly
+    // while it is riding an alive vehicle keeps its own.
+    if (!fromPassenger && this->m_vehiclePassenger
+        && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+        return;
+    }
+
+    if (this->m_animFlags & 0x8000000) {
+        a8 = 0;
+    }
+
+    model->SetBoneSequence(boneId, animID, variation, blendTime, speed, a8, a9);
+
+    M2BoneSequenceState state = {};
+
+    if (model->IsLoaded(0, 0) && model->HasBone(boneId)
+        && (model->GetBoneSequenceState(boneId, &state), state.uint90 == animID)
+        && blendTime > 0 && std::fabs(speed) > 0.001f && state.finished) {
+        // The model is already holding this sequence at its end: let it go rather than restart it.
+        // Bone 0x1a is the one exception -- it is put back on its idle instead of released.
+        if (boneId == 0xFFFFFFFF || boneId == 0x1A) {
+            model->SetBoneSequence(boneId, 0, 0xFFFFFFFF, 0, 1.0f, 1, 1);
+        } else {
+            model->UnsetBoneSequence(boneId, a8, a9);
+        }
+
+        return;
+    }
+
+    // Passenger propagation goes here (reference 0x73591d): the variation each passenger gets is
+    // this model's current one, or -1 when the sequence has fewer variations than that.
+}
+
+// ref: FUN_00735a60
+bool CGUnit_C::UnsetBoneSequence(CM2Model* model, uint32_t boneId, int32_t a4, int32_t a5,
+                                int32_t fromPassenger) {
+    if (!model) {
+        return false;
+    }
+
+    if (!fromPassenger && this->m_vehiclePassenger
+        && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+        return false;
+    }
+
+    bool unset = false;
+
+    if (model->IsLoaded(0, 0) && model->BoneHasParent(boneId)) {
+        unset = true;
+        model->UnsetBoneSequence(boneId, a4, a5);
+    }
+
+    // Passenger propagation goes here (reference 0x735b0a).
+
+    return unset;
+}
+
+// ref: FUN_00735cc0
+void CGUnit_C::SetBoneSequenceSpeed(CM2Model* model, uint32_t boneId, float speed,
+                                    int32_t fromPassenger) {
+    if (!model) {
+        return;
+    }
+
+    if (!fromPassenger && this->m_vehiclePassenger
+        && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+        return;
+    }
+
+    model->SetBoneSequenceSpeed(boneId, speed);
+
+    // Passenger propagation goes here (reference 0x735d3e).
 }

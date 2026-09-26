@@ -20,6 +20,7 @@ class CreatureSoundDataRec;
 class UnitBloodLevelsRec;
 
 class FactionTemplateRec;
+class CVehiclePassenger_C;
 struct M2BoneSequenceState;
 
 class CGUnit_C : public CGObject_C, public CGUnit {
@@ -167,6 +168,27 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void GetBoneSequenceStates(M2BoneSequenceState* mount, M2BoneSequenceState* body,
                                    M2BoneSequenceState* upper, int32_t keepFinished) const;
 
+        // The three ways a sequence reaches a model. Each takes the model to change because the
+        // caller may be driving this unit's own model, its mount's, or a passenger's.
+
+        // ref: FUN_00735820
+        // Start `animID` on `boneId`. A sequence already held at its end is released instead of
+        // restarted; bone 0x1a is put back on its idle rather than released. `fromPassenger` marks
+        // the recursive call a vehicle makes on its riders.
+        void SetBoneSequence(CM2Model* model, uint32_t boneId, uint32_t animID, uint32_t variation,
+                             uint32_t blendTime, float speed, int32_t a8, int32_t a9,
+                             int32_t fromPassenger);
+
+        // ref: FUN_00735a60
+        // Release whatever `boneId` is playing, and say whether there was anything to release.
+        bool UnsetBoneSequence(CM2Model* model, uint32_t boneId, int32_t a4, int32_t a5,
+                               int32_t fromPassenger);
+
+        // ref: FUN_00735cc0
+        // Re-time the sequence on `boneId` without restarting it.
+        void SetBoneSequenceSpeed(CM2Model* model, uint32_t boneId, float speed,
+                                  int32_t fromPassenger);
+
         // ref: FUN_0071df30
         // Turns a bone sequence that resolved to a grounded idle -- 0 Stand, 8 StandWound or 25
         // ReadyUnarmed -- into 193 Hover, and says whether it did. The animation selector calls
@@ -215,6 +237,16 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The bone the unit's upper body animates on, or -1 when its whole model animates as one.
         // Set with the unit's model; -1 is the reference's "no split" sentinel.
         uint32_t m_upperBodyBoneId = 0xFFFFFFFF;
+        // What the unit is animating, as the reference's +0xa38 bit set. Written when a sequence is
+        // applied (CGUnit_C::ApplySequence) and read to decide what may interrupt it. The bits
+        // recovered so far, each named by the animation behaviour that raises it: 0x4 jump (39),
+        // 0x8 behaviour 127, 0x40000 lift-off and hover (192, 193), 0x400000 behaviour 201,
+        // 0x2000000 behaviours 458 to 460, 0x4000000 an airborne death at the fly tier, 0x80000
+        // behaviour 121. 0x8000000 suppresses the blend on every sequence the unit sets.
+        uint32_t m_animFlags = 0;
+        // The unit's ride, while it is aboard a vehicle (reference +0xf60). Null means not riding,
+        // which is always, until something creates one.
+        CVehiclePassenger_C* m_vehiclePassenger = nullptr;
         // TODO
         float m_smoothFacing;
         // TODO

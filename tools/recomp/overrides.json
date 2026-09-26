@@ -3105,5 +3105,17 @@
   "008c6c80": {
     "status": "excluded",
     "note": "CWaveManager's vtable slot 3, `leal 0x8(%ecx), %eax` -- the record block starts at +0x08. Ported as an inline accessor, so nothing in the PDB to bind."
+  },
+  "00735820": {
+    "frozen": "CGUnit_C::SetBoneSequence",
+    "note": "Ported except the passenger propagation: the reference repeats the change on every unit riding this one, walking the passenger table it keeps on CVehicle_C +0x170. Nothing in frozen fills that table (CVehicle_C.hpp says so), so the walk is left out and marked at the spot in the source. That is the whole of the missing call order."
+  },
+  "00735a60": {
+    "frozen": "CGUnit_C::UnsetBoneSequence",
+    "note": "Ported except the passenger propagation: the reference repeats the change on every unit riding this one, walking the passenger table it keeps on CVehicle_C +0x170. Nothing in frozen fills that table (CVehicle_C.hpp says so), so the walk is left out and marked at the spot in the source. That is the whole of the missing call order."
+  },
+  "00735cc0": {
+    "frozen": "CGUnit_C::SetBoneSequenceSpeed",
+    "note": "Ported except the passenger propagation: the reference repeats the change on every unit riding this one, walking the passenger table it keeps on CVehicle_C +0x170. Nothing in frozen fills that table (CVehicle_C.hpp says so), so the walk is left out and marked at the spot in the source. That is the whole of the missing call order."
   }
 }

@@ -93576,7 +93576,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 22
+"line": 24
 },
 "CGUnit_C::GetReaction": {
 "files": [
@@ -93598,7 +93598,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 63
+"line": 65
 },
 "CGUnit_C::GetDisplayClassNameFromRecord": {
 "files": [
@@ -93611,7 +93611,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 90
+"line": 92
 },
 "CGUnit_C::GetDisplayRaceNameFromRecord": {
 "files": [
@@ -93624,7 +93624,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 134
+"line": 136
 },
 "CGUnit_C::CGUnit_C": {
 "files": [
@@ -93639,7 +93639,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 178
+"line": 180
 },
 "CGUnit_C::~CGUnit_C": {
 "files": [
@@ -93654,7 +93654,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 190
+"line": 192
 },
 "CGUnit_C::CanHighlight": {
 "files": [
@@ -93674,7 +93674,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 200
+"line": 202
 },
 "CGUnit_C::CanBeTargetted": {
 "files": [
@@ -93689,7 +93689,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 210
+"line": 212
 },
 "CGUnit_C::IsActiveMover": {
 "files": [
@@ -93707,7 +93707,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 215
+"line": 217
 },
 "CGUnit_C::GetDisplayID": {
 "files": [
@@ -93726,7 +93726,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 224
+"line": 226
 },
 "CGUnit_C::GetFacing": {
 "files": [
@@ -93741,7 +93741,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 248
+"line": 250
 },
 "CGUnit_C::GetLocalDisplayID": {
 "files": [
@@ -93754,7 +93754,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 252
+"line": 254
 },
 "CGUnit_C::GetModelData": {
 "files": [
@@ -93771,7 +93771,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 263
+"line": 265
 },
 "CGUnit_C::GetModelFileName": {
 "files": [
@@ -93788,7 +93788,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 283
+"line": 285
 },
 "CGUnit_C::GetModelScale": {
 "files": [
@@ -93808,7 +93808,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 298
+"line": 300
 },
 "CGUnit_C::BuildNpcCharacterComponent": {
 "files": [
@@ -93849,7 +93849,7 @@
 "stub": false,
 "lines": 78,
 "refs": [],
-"line": 317
+"line": 319
 },
 "CGUnit_C::GetPosition": {
 "files": [
@@ -93864,7 +93864,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 396
+"line": 398
 },
 "CGUnit_C::GetRawFacing": {
 "files": [
@@ -93879,7 +93879,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 400
+"line": 402
 },
 "CGUnit_C::GetRawSmoothFacing": {
 "files": [
@@ -93892,7 +93892,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 404
+"line": 406
 },
 "CGUnit_C::GetTransportGUID": {
 "files": [
@@ -93907,7 +93907,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 408
+"line": 410
 },
 "CGUnit_C::PostInit": {
 "files": [
@@ -93928,7 +93928,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 412
+"line": 414
 },
 "CGUnit_C::PostMovementUpdate": {
 "files": [
@@ -93941,7 +93941,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 435
+"line": 437
 },
 "CGUnit_C::GetShadowBox": {
 "files": [
@@ -93971,7 +93971,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 484
+"line": 486
 },
 "CGUnit_C::GetAnimFootprint": {
 "files": [
@@ -93991,7 +93991,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 514
+"line": 516
 },
 "CGUnit_C::GetShapeshiftForm": {
 "files": [
@@ -94010,7 +94010,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 546
+"line": 548
 },
 "CGUnit_C::GetSubName": {
 "files": [
@@ -94031,7 +94031,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 553
+"line": 555
 },
 "CGUnit_C::GetCreatureType": {
 "files": [
@@ -94055,7 +94055,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 572
+"line": 574
 },
 "CGUnit_C::GetCreatureFamily": {
 "files": [
@@ -94073,7 +94073,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 603
+"line": 605
 },
 "CGUnit_C::GetClassification": {
 "files": [
@@ -94092,7 +94092,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 610
+"line": 612
 },
 "CGUnit_C::GetSequenceDuration": {
 "files": [
@@ -94111,7 +94111,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 624
+"line": 626
 },
 "CGUnit_C::UpdateIdleAnimation": {
 "files": [
@@ -94150,7 +94150,7 @@
 "stub": false,
 "lines": 84,
 "refs": [],
-"line": 640
+"line": 642
 },
 "CGUnit_C::PlayEmote": {
 "files": [
@@ -94168,7 +94168,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 729
+"line": 731
 },
 "CGUnit_C::RefreshDataPointers": {
 "files": [
@@ -94198,7 +94198,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 748
+"line": 750
 },
 "CGUnit_C::SetStorage": {
 "files": [
@@ -94215,7 +94215,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 805
+"line": 807
 },
 "ReceiveEmote": {
 "files": [
@@ -94238,7 +94238,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 817
+"line": 819
 },
 "IsMovementAckOpcode": {
 "files": [
@@ -94273,7 +94273,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 844
+"line": 846
 },
 "IsMovementAckOrNotActiveMoverOpcode": {
 "files": [
@@ -94309,7 +94309,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 875
+"line": 877
 },
 "IsMovementStateOpcode": {
 "files": [
@@ -94331,7 +94331,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 907
+"line": 909
 },
 "CGUnit_C::GetCreatureTypeFlag11": {
 "files": [
@@ -94351,7 +94351,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 925
+"line": 927
 },
 "CGUnit_C::GetCreatureTypeFlag12": {
 "files": [
@@ -94371,7 +94371,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 936
+"line": 938
 },
 "CGUnit_C::GetCreatureTypeFlag26": {
 "files": [
@@ -94391,7 +94391,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 947
+"line": 949
 },
 "CGUnit_C::GetCreatureSkinningType": {
 "files": [
@@ -94415,7 +94415,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 958
+"line": 960
 },
 "IsMovementAckWithValueOpcode": {
 "files": [
@@ -94444,7 +94444,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 979
+"line": 981
 },
 "ConvertAnimationFlags": {
 "files": [
@@ -94464,7 +94464,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 993
+"line": 995
 },
 "IsTwoHandedWeapon": {
 "files": [
@@ -94488,7 +94488,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1016
+"line": 1018
 },
 "IsMovementAnimation": {
 "files": [
@@ -94519,7 +94519,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1035
+"line": 1037
 },
 "ReadPackedMovementOffset": {
 "files": [
@@ -94539,7 +94539,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1062
+"line": 1064
 },
 "AdjustSheathState": {
 "files": [
@@ -94559,7 +94559,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1075
+"line": 1077
 },
 "CGUnit_C::SetFlag21": {
 "files": [
@@ -94574,7 +94574,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1090
+"line": 1092
 },
 "CGUnit_C::HasMoveFlags2Bit0": {
 "files": [
@@ -94591,7 +94591,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1097
+"line": 1099
 },
 "CGUnit_C::IsPlayerControlled": {
 "files": [
@@ -94616,7 +94616,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 1105
+"line": 1107
 },
 "CGUnit_C::IsMovingAtWalkPace": {
 "files": [
@@ -94635,7 +94635,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1145
+"line": 1147
 },
 "CGUnit_C::GetCreatureTypeFlag10": {
 "files": [
@@ -94656,7 +94656,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1151
+"line": 1153
 },
 "CGUnit_C::GetControllingPlayer": {
 "files": [
@@ -94678,7 +94678,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1168
+"line": 1170
 },
 "CGUnit_C::GetBasePower": {
 "files": [
@@ -94700,7 +94700,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1197
+"line": 1199
 },
 "CGUnit_C::CanFly": {
 "files": [
@@ -94717,7 +94717,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1223
+"line": 1225
 },
 "CGUnit_C::IsOtherPlayerWithFlaggedModel": {
 "files": [
@@ -94737,7 +94737,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1230
+"line": 1232
 },
 "CGUnit_C::IsSpellClickable": {
 "files": [
@@ -94759,7 +94759,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1253
+"line": 1255
 },
 "CGUnit_C::IsMovingFasterThanWalkPace": {
 "files": [
@@ -94778,7 +94778,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1268
+"line": 1270
 },
 "CGUnit_C::IsInNonStanceForm": {
 "files": [
@@ -94798,7 +94798,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1282
+"line": 1284
 },
 "ResolveAnimationBehavior": {
 "files": [
@@ -94819,7 +94819,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1295
+"line": 1297
 },
 "GetAnimationBehavior": {
 "files": [
@@ -94836,7 +94836,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1327
+"line": 1329
 },
 "FactionHasReputation": {
 "files": [
@@ -94853,7 +94853,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1338
+"line": 1340
 },
 "GetNativeRaceModelScale": {
 "files": [
@@ -94874,7 +94874,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1349
+"line": 1351
 },
 "IsJumpLandAnimation": {
 "files": [
@@ -94892,7 +94892,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1377
+"line": 1379
 },
 "IsRangedAttackAnimation": {
 "files": [
@@ -94919,7 +94919,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1393
+"line": 1395
 },
 "IsSpellCastAnimation": {
 "files": [
@@ -94941,7 +94941,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1417
+"line": 1419
 },
 "IsReadySpellAnimation": {
 "files": [
@@ -94959,7 +94959,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1436
+"line": 1438
 },
 "IsUnarmedAnimation": {
 "files": [
@@ -94981,7 +94981,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1452
+"line": 1454
 },
 "IsSpecialAttackAnimation": {
 "files": [
@@ -95000,7 +95000,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1471
+"line": 1473
 },
 "IsCombatAnimation": {
 "files": [
@@ -95050,7 +95050,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 1486
+"line": 1488
 },
 "IsBaseStateAnimation": {
 "files": [
@@ -95100,7 +95100,7 @@
 "stub": false,
 "lines": 45,
 "refs": [],
-"line": 1532
+"line": 1534
 },
 "IsJumpAnimation": {
 "files": [
@@ -95119,7 +95119,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1580
+"line": 1582
 },
 "IsActionAnimation": {
 "files": [
@@ -95246,7 +95246,7 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 1595
+"line": 1597
 },
 "IsEmoteAnimation": {
 "files": [
@@ -95294,7 +95294,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 1718
+"line": 1720
 },
 "IsThrownAnimation": {
 "files": [
@@ -95313,7 +95313,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1763
+"line": 1765
 },
 "IsBowAnimation": {
 "files": [
@@ -95332,7 +95332,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1779
+"line": 1781
 },
 "IsRifleAnimation": {
 "files": [
@@ -95351,7 +95351,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1795
+"line": 1797
 },
 "IsReadyAnimation": {
 "files": [
@@ -95369,7 +95369,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1811
+"line": 1813
 },
 "IsAnimationBehavior127Or201To202": {
 "files": [
@@ -95388,7 +95388,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1826
+"line": 1828
 },
 "IsAnimationBehavior466To468Or472": {
 "files": [
@@ -95407,7 +95407,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1841
+"line": 1843
 },
 "IsAnimationBehavior6Or132Or467To468Or472": {
 "files": [
@@ -95428,7 +95428,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1856
+"line": 1858
 },
 "IsAnimationBehavior37To40Or467": {
 "files": [
@@ -95447,7 +95447,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1886
+"line": 1888
 },
 "IsAnimationBehavior1Or131Or466To467": {
 "files": [
@@ -95468,7 +95468,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1901
+"line": 1903
 },
 "IsDeathAnimation": {
 "files": [
@@ -95491,7 +95491,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1921
+"line": 1923
 },
 "IsAnimationBehavior133To134": {
 "files": [
@@ -95509,7 +95509,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1946
+"line": 1948
 },
 "IsWoundAnimation": {
 "files": [
@@ -95527,7 +95527,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1961
+"line": 1963
 },
 "IsSpellCastOrReadySpellAnimation": {
 "files": [
@@ -95546,7 +95546,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1976
+"line": 1978
 },
 "IsSpellCastOrRangedAttackAnimation": {
 "files": [
@@ -95568,7 +95568,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1995
+"line": 1997
 },
 "IsCombatOrReadyAnimation": {
 "files": [
@@ -95587,7 +95587,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2018
+"line": 2020
 },
 "CGUnit_C::GetCurrentAnimationId": {
 "files": [
@@ -95607,7 +95607,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 2041
+"line": 2043
 },
 "CGUnit_C::GetDefaultAnimationForTier": {
 "files": [
@@ -95629,7 +95629,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 2058
+"line": 2060
 },
 "CGUnit_C::ResolveAnimation": {
 "files": [
@@ -95660,7 +95660,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 2106
+"line": 2108
 },
 "CGUnit_C::GetBoneSequenceStates": {
 "files": [
@@ -95686,7 +95686,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 2170
+"line": 2172
 },
 "CGUnit_C::ReplaceIdleWithHover": {
 "files": [
@@ -95707,7 +95707,73 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 2228
+"line": 2230
+},
+"CGUnit_C::SetBoneSequence": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CVehiclePassenger_C::IsRidingLiveVehicle",
+"CM2Model::SetBoneSequence",
+"CM2Model::IsLoaded",
+"CM2Model::HasBone",
+"CM2Model::GetBoneSequenceState",
+"fabs",
+"CM2Model::SetBoneSequence",
+"CM2Model::UnsetBoneSequence"
+],
+"strings": [],
+"consts": [
+"0",
+"0.001f",
+"0x1A",
+"0x8000000",
+"0xFFFFFFFF",
+"1",
+"1.0f"
+],
+"branches": 5,
+"stub": false,
+"lines": 37,
+"refs": [],
+"line": 2258
+},
+"CGUnit_C::UnsetBoneSequence": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CVehiclePassenger_C::IsRidingLiveVehicle",
+"CM2Model::IsLoaded",
+"CM2Model::BoneHasParent",
+"CM2Model::UnsetBoneSequence"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 3,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 2299
+},
+"CGUnit_C::SetBoneSequenceSpeed": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CVehiclePassenger_C::IsRidingLiveVehicle",
+"CM2Model::SetBoneSequenceSpeed"
+],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 2323
 },
 "MovementWrapAngle": {
 "files": [

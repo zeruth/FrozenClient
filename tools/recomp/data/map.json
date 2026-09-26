@@ -40806,6 +40806,54 @@
   "refSize": 94,
   "status": "ported"
  },
+ "00735820": {
+  "branchRatio": 0.172,
+  "constOverlap": 0.095,
+  "faithful": false,
+  "fidelity": 0.375,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::SetBoneSequence",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Unit_C.cpp",
+  "refSize": 567,
+  "status": "ported"
+ },
+ "00735a60": {
+  "branchRatio": 0.176,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::UnsetBoneSequence",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Unit_C.cpp",
+  "refSize": 324,
+  "status": "ported"
+ },
+ "00735cc0": {
+  "branchRatio": 0.133,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::SetBoneSequenceSpeed",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Unit_C.cpp",
+  "refSize": 265,
+  "status": "ported"
+ },
  "0073ab90": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -40836,6 +40884,21 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 11,
+  "status": "ported"
+ },
+ "007487e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CVehiclePassenger_C.cpp"
+  ],
+  "frozen": "CVehiclePassenger_C::IsRidingLiveVehicle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "VehiclePassenger_C.cpp",
+  "refSize": 33,
   "status": "ported"
  },
  "0074b9a0": {
