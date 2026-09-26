@@ -6,6 +6,7 @@
 
 // Vehicle.dbc. Not loaded yet -- the reference keeps the row on every CVehicle_C and reads its flags
 // and its eight seat ids out of it, and nothing ported does either, so the type stays a name.
+class CGUnit_C;
 class VehicleRec;
 
 // The reference's Vehicle_C.cpp object. Only the state its ported functions touch is declared;
@@ -20,6 +21,7 @@ class CVehicle_C {
         };
 
         // Public member variables
+        CGUnit_C* m_owner = nullptr;    // ref +0x04, the unit this vehicle is
         // ref +0x0c, the Vehicle.dbc row. Several checks gate on it being present at all, which is
         // what the accessors on CGUnit_C return.
         const VehicleRec* m_rec = nullptr;
@@ -36,6 +38,11 @@ class CVehicle_C {
         // Frees every slot holding `guid`.
         void RemoveSlot(WOWGUID guid);
         bool HasStateBits() const;
+
+        // ref: FUN_00756f40
+        // The vehicle's row allows it (Vehicle.dbc flag 0x10000) and its owner is either holding an
+        // animation or has something pending: the owner, not the seat, drives the pose.
+        bool OwnerIsControllingAnimation() const;
         void SetStateBit(uint8_t bit);
         void ClearStateBit(uint8_t bit);
 };

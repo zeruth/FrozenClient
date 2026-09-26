@@ -2594,3 +2594,101 @@ uint32_t CGUnit_C::SeatAllowsExitAnimation(const VehicleSeatRec* seat) const {
 
     return static_cast<uint32_t>(seat->m_flags) & mask;
 }
+
+// ref: FUN_00715880
+bool CGUnit_C::IsStandStateUprightOrSeated() const {
+    // The reference reaches the stand state through the virtual at vtable +0x138; see
+    // IsDeadOrFeigning for why frozen reads the descriptor byte instead.
+    switch (this->m_unit->bytes1 & 0xFF) {
+        case 0:
+        case 1:
+        case 4:
+        case 5:
+        case 6:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_00723e30
+bool CGUnit_C::CanPlayActionAnimation(int32_t animID, int32_t currentAnimID) {
+    if (currentAnimID == -1) {
+        return false;
+    }
+
+    // A rider whose seat has an animation for the phase it is in plays that, whatever else is true.
+    auto passenger = this->m_vehiclePassenger;
+
+    if (passenger && passenger->m_state == 3
+        && passenger->GetSeatAnimation(passenger->m_seat) != 0x1FA) {
+        return true;
+    }
+
+    // A vehicle animating through the bone its rider sits on, or one whose owner is driving the
+    // animation, keeps what it has; so does anything dying.
+    bool boneDriven = this->m_upperBodyBoneId != 0xFFFFFFFF && this->m_vehicle
+        && this->m_vehicle->m_rec && this->m_vehicle->TestFlag(this->m_upperBodyBoneId);
+
+    if (boneDriven) {
+        return false;
+    }
+
+    if (this->m_vehicle && this->m_vehicle->m_rec
+        && this->m_vehicle->OwnerIsControllingAnimation()) {
+        return false;
+    }
+
+    if (IsDeathAnimation(animID)) {
+        return false;
+    }
+
+    uint32_t moveFlags = this->m_localMove.GetMoveFlags();
+
+    // Turning in place, or mid-jump.
+    bool turningOrJumping = (moveFlags & 0x30) != 0 || (this->m_animFlags & 0x1800) != 0;
+    // Holding an animation without channelling anything.
+    bool holding = this->m_unit->channelSpell == 0 && (this->m_animFlags & 0x400) != 0;
+    // For a player the reference then reads a CGPlayer_C field (+0x1944) that frozen has not
+    // recovered, so this term is always false here. It is the only part of this function left out.
+    bool playerOverride = false;
+
+    if (this->IsA(TYPE_PLAYER)) {
+        playerOverride = false;
+    }
+
+    bool allow;
+
+    if (IsActionAnimation(animID)
+        && ((this->m_animFlags & 0x1800) != 0
+            || (moveFlags & 0x2E000FF) != 0
+            || this->m_localMove.IsInForcedMotion()
+            || (this->m_unit->bytes1 & 0xFF) != 0
+            || (IsReadyAnimation(animID) && this->m_unit->mountDisplayID > 0)
+            || playerOverride)) {
+        allow = true;
+    } else if ((IsJumpAnimation(animID) && IsCombatOrReadyAnimation(animID))
+        || (IsCombatAnimation(animID) && (this->m_move->GetMoveFlags() & 0x1000) != 0)
+        || (holding && (moveFlags & 0x2E0000F) != 0)) {
+        allow = true;
+    } else {
+        allow = false;
+    }
+
+    if (IsJumpLandAnimation(animID)) {
+        allow = false;
+    }
+
+    if (IsAnimationBehavior133To134(animID) && !this->IsStandStateUprightOrSeated()) {
+        allow = false;
+    }
+
+    // Strafing is the one movement that does not cancel an action animation.
+    if ((holding || this->m_unit->channelSpell != 0 || this->m_attackTarget != 0)
+        && turningOrJumping && (this->m_move->GetMoveFlags() & 0xC) == 0) {
+        allow = false;
+    }
+
+    return allow;
+}

@@ -95985,6 +95985,71 @@
 "refs": [],
 "line": 2592
 },
+"CGUnit_C::IsStandStateUprightOrSeated": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0xFF",
+"1",
+"4",
+"5",
+"6"
+],
+"branches": 5,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 2599
+},
+"CGUnit_C::CanPlayActionAnimation": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CVehiclePassenger_C::GetSeatAnimation",
+"CVehicle_C::TestFlag",
+"CVehicle_C::OwnerIsControllingAnimation",
+"IsDeathAnimation",
+"CMovementShared::GetMoveFlags",
+"CGObject::IsA",
+"IsActionAnimation",
+"CMovementShared::IsInForcedMotion",
+"IsReadyAnimation",
+"IsJumpAnimation",
+"IsCombatOrReadyAnimation",
+"IsCombatAnimation",
+"CMovementShared::GetMoveFlags",
+"IsJumpLandAnimation",
+"IsAnimationBehavior133To134",
+"CGUnit_C::IsStandStateUprightOrSeated",
+"CMovementShared::GetMoveFlags"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1000",
+"0x1800",
+"0x1FA",
+"0x2E0000F",
+"0x2E000FF",
+"0x30",
+"0x400",
+"0xC",
+"0xFF",
+"0xFFFFFFFF",
+"1",
+"3"
+],
+"branches": 11,
+"stub": false,
+"lines": 79,
+"refs": [],
+"line": 2616
+},
 "MovementWrapAngle": {
 "files": [
 "src/object/client/cmovement_c.cpp"
@@ -96085,7 +96150,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 7
+"line": 9
 },
 "CVehicle_C::TestFlag": {
 "files": [
@@ -96105,7 +96170,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 12
+"line": 14
 },
 "CVehicle_C::AddSlot": {
 "files": [
@@ -96124,7 +96189,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 25
+"line": 27
 },
 "CVehicle_C::RemoveSlot": {
 "files": [
@@ -96140,7 +96205,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 46
+"line": 48
 },
 "CVehicle_C::HasStateBits": {
 "files": [
@@ -96155,7 +96220,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 55
+"line": 57
 },
 "CVehicle_C::SetStateBit": {
 "files": [
@@ -96171,7 +96236,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 60
+"line": 62
 },
 "CVehicle_C::ClearStateBit": {
 "files": [
@@ -96187,7 +96252,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 65
+"line": 67
 },
 "VehicleSendEjectPassenger": {
 "files": [
@@ -96206,7 +96271,25 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 70
+"line": 72
+},
+"CVehicle_C::OwnerIsControllingAnimation": {
+"files": [
+"src/object/client/cvehicle_c.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0x10000",
+"0x400",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 81
 },
 "CVehicleCamera_C::ConvertSmoothFacingFromRawToWorld": {
 "files": [
@@ -99758,6 +99841,27 @@
 "lines": 8,
 "refs": [],
 "line": 289
+},
+"CMovementShared::IsInForcedMotion": {
+"files": [
+"src/object/movement/cmovementshared.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0.0f",
+"0x1000",
+"0x200",
+"0x2000",
+"0x400",
+"0x80",
+"0x800"
+],
+"branches": 3,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 299
 },
 "CMovementStatus::CMovementStatus": {
 "files": [

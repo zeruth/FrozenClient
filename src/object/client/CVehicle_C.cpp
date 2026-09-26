@@ -1,4 +1,6 @@
 #include "object/client/CVehicle_C.hpp"
+#include "db/rec/VehicleRec.hpp"
+#include "object/client/CGUnit_C.hpp"
 #include "client/ClientServices.hpp"
 #include "net/Types.hpp"
 #include <common/DataStore.hpp>
@@ -73,4 +75,17 @@ void VehicleSendEjectPassenger(WOWGUID passenger) {
     msg.Put(passenger);
     msg.Finalize();
     ClientServices::Send(&msg);
+}
+
+// ref: FUN_00756f40
+bool CVehicle_C::OwnerIsControllingAnimation() const {
+    if (!this->m_rec || !(this->m_rec->m_flags & 0x10000)) {
+        return false;
+    }
+
+    if (!this->m_owner) {
+        return false;
+    }
+
+    return (this->m_owner->m_animFlags & 0x400) != 0 || this->m_owner->m_intFA4 != -1;
 }

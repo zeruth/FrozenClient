@@ -3117,5 +3117,9 @@
   "00735cc0": {
     "frozen": "CGUnit_C::SetBoneSequenceSpeed",
     "note": "Ported except the passenger propagation: the reference repeats the change on every unit riding this one, walking the passenger table it keeps on CVehicle_C +0x170. Nothing in frozen fills that table (CVehicle_C.hpp says so), so the walk is left out and marked at the spot in the source. That is the whole of the missing call order."
+  },
+  "00723e30": {
+    "frozen": "CGUnit_C::CanPlayActionAnimation",
+    "note": "Ported whole except one term: for a player the reference also consults a CGPlayer_C field at +0x1944 that frozen has not recovered, so that term reads false. It is a field read, not a call, so the call order is complete (100%)."
   }
 }

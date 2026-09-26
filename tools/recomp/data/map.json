@@ -39827,6 +39827,22 @@
   "refSize": 190,
   "status": "ported"
  },
+ "00715880": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::IsStandStateUprightOrSeated",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameObject_C.cpp",
+  "refSize": 38,
+  "status": "ported"
+ },
  "00715970": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -40915,6 +40931,38 @@
   "refSize": 78,
   "status": "diverged"
  },
+ "00723350": {
+  "branchRatio": 0.3,
+  "constOverlap": 0.455,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/movement/CMovementShared.cpp",
+   "src/object/movement/cmovementshared.cpp"
+  ],
+  "frozen": "CMovementShared::IsInForcedMotion",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "00723e30": {
+  "branchRatio": 0.282,
+  "constOverlap": 0.32,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::CanPlayActionAnimation",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Unit_C.cpp",
+  "refSize": 556,
+  "status": "ported"
+ },
  "0072d940": {
   "branchRatio": 0.24,
   "constOverlap": 0.0,
@@ -41422,6 +41470,22 @@
   "how": "annotated",
   "module": "UnitCombat_C.cpp",
   "refSize": 24,
+  "status": "ported"
+ },
+ "00756f40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CVehicle_C.cpp",
+   "src/object/client/cvehicle_c.cpp"
+  ],
+  "frozen": "CVehicle_C::OwnerIsControllingAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Vehicle_C.cpp",
+  "refSize": 50,
   "status": "ported"
  },
  "00757200": {

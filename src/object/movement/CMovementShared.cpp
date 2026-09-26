@@ -294,3 +294,24 @@ void CMovementShared::SetMoveFlags2Bit100(int32_t enable) {
 
     this->m_moveFlags2 &= 0xfeff;
 }
+
+// ref: FUN_00723350
+bool CMovementShared::IsInForcedMotion() const {
+    if ((this->m_moveFlags & 0x1000)
+        && ((this->m_moveFlags & 0x2000) || this->m_floatB8 != 0.0f)) {
+        return true;
+    }
+
+    auto spline = this->m_spline;
+
+    if (spline && !(spline->uint20 & 0x400) && (spline->uint20 & 0x200)) {
+        return true;
+    }
+
+    if ((this->m_moveFlags2 & 0x80) && spline && !(spline->uint20 & 0x400)
+        && (spline->uint20 & 0x800)) {
+        return true;
+    }
+
+    return false;
+}

@@ -27,6 +27,11 @@ class VehicleSeatRec;
 struct M2BoneSequenceState;
 
 class CGUnit_C : public CGObject_C, public CGUnit {
+    // Vehicle_C.cpp reads the owner unit's animation state inline (m_animFlags and the pending flag
+    // at +0xfa4), so CVehicle_C reaches them directly here rather than through accessors the
+    // reference does not have.
+    friend class CVehicle_C;
+
     public:
         // Public static variables
         static WOWGUID s_activeMover;
@@ -212,6 +217,19 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // applies, chosen by the vehicle's own move-flags-2 bit 0x40. Zero when neither is set.
         uint32_t SeatAllowsExitAnimation(const VehicleSeatRec* seat) const;
 
+        // ref: FUN_00715880
+        // Stand states 0 Stand, 1 Sit, and 4 through 6 (the three chair heights). Notably not 2
+        // Sit-chair or 3 Sleep.
+        bool IsStandStateUprightOrSeated() const;
+
+        // ref: FUN_00723e30
+        // Whether the unit may take an action animation now rather than keep what it is playing.
+        // The gate the selector puts in front of every action, emote and combat pose: a seat that
+        // animates its rider, a vehicle animating through the rider's bone, and anything dying
+        // refuse outright; otherwise it weighs the unit's movement, what it is holding, and whether
+        // it is mounted.
+        bool CanPlayActionAnimation(int32_t animID, int32_t currentAnimID);
+
         // ref: FUN_0071af90
         // The unit is swinging at something.
         bool IsAttacking() const;
@@ -308,6 +326,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // reference has a one-line accessor for "is attacking" over this pair of GUIDs alone
         // (FUN_0071af90, 17 call sites).
         WOWGUID m_attackTarget = 0;
+        // ref +0xfa4, not identified: the reference tests it against -1 as a "something is pending"
+        // flag, alongside m_animFlags 0x400, when deciding whether a vehicle's owner is driving the
+        // pose. Nothing ported writes it, so it stays -1 and the term reads false.
+        int32_t m_intFA4 = -1;
         // The unit's second state word (reference +0xa30). Only one of its bits is read by the code
         // ported so far: 0x80000, which has to be set for a sequence to keep the blend flag its
         // caller asked for. The rest are written from a dozen places in Unit_C.cpp and are not

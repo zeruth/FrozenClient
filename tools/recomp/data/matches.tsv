@@ -2497,6 +2497,7 @@ addr	how	frozen	evidence
 007152b0	annotated	ReadPackedMovementOffset	tag in src/object/client/CGUnit_C.cpp
 007153e0	annotated	CGUnit_C::GetCreatureFamily	tag in src/object/client/CGUnit_C.cpp
 00715440	annotated	CGUnit_C::GetFactionTemplateReaction	tag in src/object/client/CGUnit_C.cpp
+00715880	annotated	CGUnit_C::IsStandStateUprightOrSeated	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace, 004e1880=Script_GetAvailableRaces
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e0830=Script_GetAvailableClasses, 004e19a0=Script_GetClassesForRace
 00715d00	annotated	AdjustSheathState	tag in src/object/client/CGUnit_C.cpp
@@ -2565,6 +2566,8 @@ addr	how	frozen	evidence
 0071f560	annotated	CGUnit_C::IsDeadOrFeigning	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 00721ca0	override	CGUnit_C::IsInNonStanceForm	
+00723350	annotated	CMovementShared::IsInForcedMotion	tag in src/object/movement/CMovementShared.cpp
+00723e30	override	CGUnit_C::CanPlayActionAnimation	
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 00735820	override	CGUnit_C::SetBoneSequence	
@@ -2597,6 +2600,7 @@ addr	how	frozen	evidence
 00756de0	annotated	CVehicle_C::HasStateBits	tag in src/object/client/CVehicle_C.cpp
 00756df0	annotated	CVehicle_C::SetStateBit	tag in src/object/client/CVehicle_C.cpp
 00756e10	annotated	CVehicle_C::ClearStateBit	tag in src/object/client/CVehicle_C.cpp
+00756f40	annotated	CVehicle_C::OwnerIsControllingAnimation	tag in src/object/client/CVehicle_C.cpp
 00757200	annotated	VehicleSendEjectPassenger	tag in src/object/client/CVehicle_C.cpp
 00759c60	annotated	CVehicleCamera_C::ConvertSmoothFacingFromRawToWorld	tag in src/object/client/CVehicleCamera_C.cpp
 0075b5b0	annotated	CAaBox::IsPointInside	tag in lib/typhoon/tempest/box/CAaBox.cpp

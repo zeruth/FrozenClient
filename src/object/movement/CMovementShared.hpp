@@ -65,6 +65,13 @@ class CMovementShared : public CPassenger {
         // Mask 0x40000000: hovering.
         int32_t IsUnsupportedOrHovering() const;
 
+        // ref: FUN_00723350
+        // The unit is being carried rather than walking: a long fall that is either stopping or has
+        // vertical speed left, or a running spline that is not of the kind flagged 0x400 and is
+        // marked either 0x200, or 0x800 while move-flags-2 0x80 is set. What the action-animation
+        // gate consults to decide that the unit's own pose is not its to choose.
+        bool IsInForcedMotion() const;
+
         // ref: FUN_0071c720
         // Mask 0x42200000: hovering, swimming, falling slowly.
         int32_t IsUnsupportedHoveringSwimmingOrSlowFalling() const;
@@ -92,6 +99,9 @@ class CMovementShared : public CPassenger {
         float m_swimBackSpeed;      // ref +0xa0
         float m_flightSpeed;        // ref +0xa4
         float m_flightBackSpeed;    // ref +0xa8
+        // ref +0xb8, not identified. IsInForcedMotion tests it against zero while the unit is in a
+        // long fall, which fits a vertical speed, but nothing ported writes it.
+        float m_floatB8 = 0.0f;
         // TODO
         CMoveSpline* m_spline;
         // TODO
