@@ -1235,7 +1235,7 @@ void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
             if (s_shown < 8) {
                 s_shown++;
 
-                SysMsgPrintf(SYSMSG_INFO,
+                ProbeLog(
                              "CHUNKBAND %u: sortDistance=%.1f band=%d doodads=%s",
                              s_shown, chunk->m_sortDistance, band,
                              chunk->m_entityLinkList.Head() ? "yes" : "none");
@@ -1677,7 +1677,7 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
     if (++s_ticks >= 240) {
         s_ticks = 0;
 
-        SysMsgPrintf(SYSMSG_INFO,
+        ProbeLog(
                      "DOODADWALK: seen=%u byBand=%u noModel=%u stamped=%u outFrustum=%u "
                      "occluded=%u visited=%u  cam=(%.0f %.0f %.0f)",
                      s_seen, s_byBand, s_noModel, s_stamped, s_outFrustum, s_occluded, s_visited,
@@ -1693,7 +1693,7 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
         if (s_shown < 6) {
             s_shown++;
 
-            SysMsgPrintf(SYSMSG_INFO,
+            ProbeLog(
                          "DOODADWALK %u: sphere=(%.0f %.0f %.0f) r=%.1f detail=%u band=%u",
                          s_shown, entity->m_sphere.c.x, entity->m_sphere.c.y, entity->m_sphere.c.z,
                          entity->m_sphere.r, entity->m_detailLevel, detailBand);

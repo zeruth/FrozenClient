@@ -84,3 +84,29 @@ void SysMsgPrintf(SYSMSG_TYPE severity, const char* format, ...) {
 
     fprintf(stderr, "SysMsg %s: %s\n", name, text);
 }
+
+// DEBUG SCAFFOLDING; see the header. Writes beside the client so a run needs no redirect.
+void ProbeLog(const char* format, ...) {
+    static FILE* s_file = nullptr;
+    static bool s_tried = false;
+
+    if (!s_tried) {
+        s_tried = true;
+
+        s_file = fopen("Logs/probe.log", "w");
+    }
+
+    if (!s_file) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+    vfprintf(s_file, format, args);
+    va_end(args);
+
+    // 10 rather than a character escape: this function was written through a shell heredoc and the
+    // escape was eaten, which is the trap CLAUDE.md describes. A bare 10 cannot be mangled.
+    fputc(10, s_file);
+    fflush(s_file);
+}

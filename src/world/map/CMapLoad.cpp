@@ -387,7 +387,7 @@ CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const 
         static uint32_t s_made = 0;
 
         if (s_made < 6) {
-            SysMsgPrintf(SYSMSG_INFO,
+            ProbeLog(
                          "DOODADPROBE %u: raw=(%.1f %.1f %.1f) -> world=(%.1f %.1f %.1f) "
                          "scale=%u name=%s",
                          s_made, mddf->position.x, mddf->position.y, mddf->position.z,
@@ -398,7 +398,7 @@ CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const 
         s_made++;
 
         if (s_made == 400) {
-            SysMsgPrintf(SYSMSG_INFO, "DOODADPROBE: 400 defs placed");
+            ProbeLog( "DOODADPROBE: 400 defs placed");
         }
     }
 

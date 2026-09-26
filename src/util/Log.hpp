@@ -24,4 +24,9 @@ void SLogWrite(HSLOG log, const char* format, ...);
 
 void SysMsgPrintf(SYSMSG_TYPE, const char*, ...);
 
+// DEBUG SCAFFOLDING. Writes to a file beside the client rather than to stderr, because stderr is
+// lost unless the run was launched with a redirect -- and a diagnostic nobody can read is no
+// diagnostic. Comes out with whatever it was added to chase.
+void ProbeLog(const char* format, ...);
+
 #endif
