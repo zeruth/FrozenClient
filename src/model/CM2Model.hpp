@@ -393,7 +393,7 @@ class CM2Model {
         void SetBoneSequenceDeferred(uint16_t a2, M2Data* data, uint16_t boneIndex, uint32_t time, float a6, M2SequenceFallback fallback, int32_t a8, int32_t a9, int32_t a10);
         int32_t ApplySequencePlayBack(uint16_t sequenceIndex, CM2SequencePlayBack* playback);
         void SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible);
-        void SetIndices();
+        int32_t SetIndices();
         void SetLightingCallback(void (*lightingCallback)(CM2Model*, CM2Lighting*, void*), void* lightingArg);
         void SetLoadedCallback(void (*loadedCallback)(CM2Model*, void*), void* loadedArg);
         void SetPrimaryBoneSequence(uint16_t sequenceIndex, uint16_t boneIndex, M2SequenceFallback fallback, uint32_t time, float a6, int32_t a7);

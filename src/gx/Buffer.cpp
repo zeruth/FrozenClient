@@ -223,6 +223,14 @@ CGxPool* GxPoolCreate(EGxPoolTarget target, EGxPoolUsage usage, uint32_t size, E
     return g_theGxDevicePtr->PoolCreate(target, usage, size, hint, name);
 }
 
+void GxPoolDestroy(CGxPool* pool) {
+    g_theGxDevicePtr->PoolDestroy(pool);
+}
+
+void GxBufDestroy(CGxBuf* buf) {
+    g_theGxDevicePtr->BufDestroy(buf);
+}
+
 void GxPrimIndexPtr(CGxBuf* buf) {
     g_theGxDevicePtr->PrimIndexPtr(buf);
 }

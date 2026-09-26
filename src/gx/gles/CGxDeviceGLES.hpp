@@ -115,6 +115,7 @@ class CGxDeviceGLES : public CGxDevice {
         virtual void XformSetProjection(const C44Matrix&);
         virtual void Draw(CGxBatch* batch, int32_t indexed);
         virtual void PoolSizeSet(CGxPool*, uint32_t);
+        virtual void IPoolRelease(CGxPool*);
         virtual char* BufLock(CGxBuf*);
         virtual int32_t BufUnlock(CGxBuf*, uint32_t);
         virtual void BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t offset);

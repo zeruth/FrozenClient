@@ -39,6 +39,10 @@ void GxBufUnlock(CGxBuf*, uint32_t);
 
 CGxPool* GxPoolCreate(EGxPoolTarget, EGxPoolUsage, uint32_t, EGxPoolHintBits, char*);
 
+void GxPoolDestroy(CGxPool*);
+
+void GxBufDestroy(CGxBuf*);
+
 void GxPrimIndexPtr(CGxBuf*);
 
 void GxPrimIndexPtr(uint32_t indexCount, const uint16_t* indices);

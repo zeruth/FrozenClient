@@ -311,6 +311,7 @@ class CGxDeviceD3d : public CGxDevice {
     void IDestroyD3d();
     void IDestroyD3dDevice();
     void IReleaseD3dPools(int32_t a2);
+    virtual void IPoolRelease(CGxPool* pool);
     void IReleaseD3dResources(int32_t a2);
     void ISceneBegin();
     void ISceneEnd();

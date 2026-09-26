@@ -9,6 +9,7 @@
 #include "model/CM2Model.hpp"
 #include "model/CM2Scene.hpp"
 #include "object/Types.hpp"
+#include "util/Log.hpp"
 #include "util/CStatus.hpp"
 #include "util/Random.hpp"
 #include "util/Unimplemented.hpp"
@@ -2118,6 +2119,11 @@ void* CCharacterComponent::CreateTexture(const ItemDisplayInfoRec* displayRec, i
     return TextureCacheCreateTexture(s_path);
 }
 
+// ref: FUN_004ed900
+// PARTIAL, and the tag says which function this is rather than claiming it is finished: the
+// reference's is 1985 bytes against this handful of lines. What is here is the eye-glow test and
+// the geoset selection; the reference also walks several more geoset bands with their own
+// SectionsRecord lookups (hair, facial hair, sleeves, boots, the 0x514, 0x5dc and 0x708 bands).
 void CCharacterComponent::GeosRenderPrep() {
     // Check for eye glow
 
@@ -2151,7 +2157,11 @@ void CCharacterComponent::GeosRenderPrep() {
         }
     }
 
-    // TODO
+    // Merge what is now visible into as few batches as the render state allows. This is the LAST
+    // thing the reference's GeosRenderPrep does (0x004ed900 line 342 of 347), and it has to be
+    // last: the merge is computed from which sections are visible, so it has to see the final
+    // answer. Every SetGeometryVisible above already invalidated any previous merge.
+    this->m_data.model->OptimizeVisibleGeometry();
 
     this->m_flags &= ~0x4;
 }

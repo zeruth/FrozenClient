@@ -1213,6 +1213,42 @@ void CGxDevice::PrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
     this->m_primVertexSize = Buffer::s_vertexBufDesc[format].size;
 }
 
+void CGxDevice::BufDestroy(CGxBuf* buf) {
+    if (!buf) {
+        return;
+    }
+
+    // A CGxBuf owns nothing of its own -- it is a sub-range record inside its pool's single API
+    // buffer -- so this is just bookkeeping. The destructor unlinks it from the pool's list.
+    buf->~CGxBuf();
+    SMemFree(buf, __FILE__, __LINE__, 0x0);
+}
+
+void CGxDevice::PoolDestroy(CGxPool* pool) {
+    if (!pool) {
+        return;
+    }
+
+    // Its buffers first. They are linked into the pool rather than owned by their callers, so
+    // dropping the pool without them would leave the records behind.
+    while (auto buf = pool->m_bufList.Head()) {
+        this->BufDestroy(buf);
+    }
+
+    this->IPoolRelease(pool);
+
+    // The CPU shadow, when the backend keeps one (the GLES device does, through PoolSizeSet).
+    if (pool->m_mem) {
+        SMemFree(pool->m_mem, __FILE__, __LINE__, 0x0);
+        pool->m_mem = nullptr;
+    }
+
+    // ~TSLinkedNode unlinks it from m_poolList, so the walk in IReleaseD3dPools cannot reach it
+    // again. Unlink is idempotent, which is why nothing needs to check first.
+    pool->~CGxPool();
+    SMemFree(pool, __FILE__, __LINE__, 0x0);
+}
+
 CGxPool* CGxDevice::PoolCreate(EGxPoolTarget target, EGxPoolUsage usage, uint32_t size, EGxPoolHintBits hint, const char* name) {
     auto m = SMemAlloc(sizeof(CGxPool), __FILE__, __LINE__, 0x0);
     auto pool = new (m) CGxPool(target, usage, size, hint, name);

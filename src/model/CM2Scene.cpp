@@ -1,5 +1,6 @@
 #include <cstdio>
 #include "model/CM2Scene.hpp"
+#include "model/M2Model.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 #include "gx/shader/CShaderEffectManager.hpp"
 #include "gx/Shader.hpp"
@@ -559,12 +560,11 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             v229 = 0;
         }
 
+        // A model whose visible sections have been merged walks the MERGED batches, which are
+        // fewer. Reachable as of 2026-09-26: CM2Model::OptimizeVisibleGeometry now fills this.
         uint32_t batchCount;
         if (model->ptr2D0) {
-            // TODO
-            // batchCount = (model->ptr2D0 + 4);
-
-            assert(false);
+            batchCount = model->ptr2D0->batchCount;
         } else {
             batchCount = skinProfile->batches.Count();
         }
@@ -577,11 +577,12 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             int32_t v222;
 
             if (model->ptr2D0) {
-                // TODO
-                // batch = &model->m_optGeo->batches[batchIndex];
-                // skinSection = model->m_optGeo->skinSections[batch->skinSectionIndex];
-
-                assert(false);
+                // No visibility test on this side, and that is not an omission: a merged batch
+                // only exists because every source batch that went into it was visible, and its
+                // skinSectionIndex points into the merged sections rather than the model's
+                // per-section visibility array.
+                batch = &model->ptr2D0->batches[batchIndex];
+                skinSection = &model->ptr2D0->skinSections[batch->skinSectionIndex];
             } else {
                 batch = &skinProfile->batches[batchIndex];
                 skinSection = &model->m_shared->m_skinSections[batch->skinSectionIndex];
@@ -628,10 +629,10 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             }
 
             if (model->ptr2D0) {
-                // TODO
-                // effect = model->m_optGeo->effects[batchIndex];
-
-                assert(false);
+                // Resolved per merged batch when the block was built, because the shared data's
+                // m_batchShaders is indexed by the ORIGINAL batch number and this index is not
+                // one of those any more.
+                effect = model->ptr2D0->effects[batchIndex];
             } else {
                 effect = model->m_shared->m_batchShaders[batchIndex];
             }

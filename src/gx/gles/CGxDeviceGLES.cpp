@@ -458,6 +458,27 @@ void CGxDeviceGLES::PoolSizeSet(CGxPool* pool, uint32_t size) {
     }
 }
 
+// The GLES device hangs a GlesPool off m_apiSpecific on first use, and that GlesPool owns a GL
+// buffer name from glGenBuffers. Nothing deleted either before this: every pool the device ever
+// created kept its GL buffer until the context went away.
+void CGxDeviceGLES::IPoolRelease(CGxPool* pool) {
+    pool->Invalidate();
+
+    if (!pool->m_apiSpecific) {
+        return;
+    }
+
+    auto glesPool = static_cast<GlesPool*>(pool->m_apiSpecific);
+
+    if (glesPool->buffer) {
+        glDeleteBuffers(1, &glesPool->buffer);
+        glesPool->buffer = 0;
+    }
+
+    delete glesPool;
+    pool->m_apiSpecific = nullptr;
+}
+
 CGxDeviceGLES::GlesPool* CGxDeviceGLES::IPoolGet(CGxPool* pool) {
     if (!pool->m_apiSpecific) {
         pool->m_apiSpecific = new GlesPool();

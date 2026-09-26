@@ -9,6 +9,11 @@
 #include "model/CM2Scene.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Animate.hpp"
+#include "model/CM2Cache.hpp"
+#include "gx/Device.hpp"
+#include "gx/Buffer.hpp"
+#include "gx/buffer/CGxBuf.hpp"
+#include "gx/buffer/CGxPool.hpp"
 #include "model/M2Data.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include "model/M2Internal.hpp"
@@ -2935,7 +2940,7 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 3: {
-                // TODO
+                this->OptimizeVisibleGeometry();
                 break;
             }
 
@@ -3189,20 +3194,246 @@ bool M2BatchesCanMerge(const M2Batch& a, const M2Batch& b,
 }
 
 // ref: FUN_0082c970
-// STILL A STUB -- the tag is a claim about identity, not behaviour. Identified from its one
-// distinctive callee: the reference function calls CM2Model::UnoptimizeVisibleGeometry first
-// thing, and nothing else in the binary does. Its other callees say what it is for --
-// CGxDevice::PoolCreate, CGxDevice::BufCreate, CM2Shared::GetEffect -- so it collapses the
-// model's currently VISIBLE skin sections into one vertex pool and index buffer per effect,
-// hung off +0x2d0, so a character whose geosets have just been chosen draws in few batches
-// instead of one per section. 1353 bytes.
+// Collapse the model's VISIBLE skin sections into as few batches as the render state allows, so
+// a character whose geosets have just been chosen draws in a handful of calls instead of one per
+// section. Two passes over the skin profile's batches: the first counts, the second builds.
 //
-// This is the head of a blocked chain, not a leaf: CM2Model::SetIndices and the element flag
-// 0x4 path in CM2Scene / CM2SceneRender::DrawBatch are all unreachable until +0x2d0 is
-// allocated, and this is the only thing that allocates it. CM2Scene's batch comparator at
-// FUN_00824b70 reads +0x2d0 too.
+// It gives up if merging would not actually reduce the batch count, which is the common case for
+// a model whose sections all differ -- there is no block at all then, and every consumer falls
+// back to the skin profile through its own `if (ptr2D0)` test.
+//
+// DIVERGENCE, and unavoidable: the reference computes one allocation size with 32-bit arithmetic
+// (`(batchCount + sectionCount * 2) * 0x1c + 0x20`, where 0x1c is sizeof(M2Batch) plus a pointer
+// and 0x38 is sizeof(M2SkinSection) plus the range pair). frozen's pointers are 8 bytes, so the
+// header and the effect array are wider and the size is built from sizeof() instead. The carve-up
+// stays 8-aligned throughout because every piece is a multiple of 8.
+//
+// The reference also keeps its per-section index memo on the stack with alloca. This uses a
+// scratch allocation: the length is skinSections.Count(), which is model data rather than
+// anything bounded, and an alloca of unbounded size is how a stack overflow gets in.
 void CM2Model::OptimizeVisibleGeometry() {
-    // TODO
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 3;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    this->UnoptimizeVisibleGeometry();
+    this->m_flag10 = 0;
+
+    auto shared = this->m_shared;
+    auto skinProfile = shared->skinProfile;
+    uint32_t cacheFlags = shared->m_cache->m_flags;
+
+    // How two merged sections combine their VERTEX ranges: either the union of the two ranges, or
+    // a plain sum of the counts. A single-bone model only qualifies with the second flag, which is
+    // why the bone count is in the test.
+    bool unionRanges = (cacheFlags & 0x8)
+        || (shared->m_data->bones.Count() == 1 && (cacheFlags & 0x40));
+
+    // Pass one: how many visible batches are there, and how many groups do they collapse into?
+    // Note that a batch which merges does NOT become the new comparison point -- the whole run is
+    // compared against the batch that opened it.
+    uint32_t visibleBatches = 0;
+    uint32_t groupCount = 0;
+    const M2Batch* runBatch = nullptr;
+    const M2SkinSection* runSection = nullptr;
+
+    for (uint32_t i = 0; i < skinProfile->batches.Count(); i++) {
+        auto& batch = skinProfile->batches[i];
+
+        if (!this->m_skinSections[batch.skinSectionIndex]) {
+            continue;
+        }
+
+        visibleBatches++;
+
+        auto& section = skinProfile->skinSections[batch.skinSectionIndex];
+
+        if (runBatch && M2BatchesCanMerge(batch, *runBatch, section, *runSection)) {
+            continue;
+        }
+
+        groupCount++;
+        runBatch = &batch;
+        runSection = &section;
+    }
+
+    if (groupCount >= visibleBatches) {
+        return;
+    }
+
+    // One allocation, five arrays. groupCount is both the batch and the section count: pass one
+    // opens exactly one section per group.
+    size_t headerSize = sizeof(M2OptimizedGeometry);
+    size_t size = headerSize
+        + groupCount * sizeof(M2Batch)
+        + groupCount * sizeof(M2SkinSection)
+        + groupCount * sizeof(uint32_t) * 2
+        + groupCount * sizeof(CShaderEffect*);
+
+    auto block = static_cast<M2OptimizedGeometry*>(SMemAlloc(size, __FILE__, __LINE__, 0x0));
+
+    if (!block) {
+        return;
+    }
+
+    auto cursor = reinterpret_cast<char*>(block) + headerSize;
+
+    block->batches = reinterpret_cast<M2Batch*>(cursor);
+    cursor += groupCount * sizeof(M2Batch);
+
+    block->skinSections = reinterpret_cast<M2SkinSection*>(cursor);
+    cursor += groupCount * sizeof(M2SkinSection);
+
+    block->sourceBatchRange = reinterpret_cast<uint32_t(*)[2]>(cursor);
+    cursor += groupCount * sizeof(uint32_t) * 2;
+
+    block->effects = reinterpret_cast<CShaderEffect**>(cursor);
+
+    block->batchCount = 0;
+    block->skinSectionCount = 0;
+    block->m_indexPool = nullptr;
+    block->m_indexBuf = nullptr;
+
+    // The reference zeroes the sections' centre vectors and the range pairs in an unrolled loop
+    // here. Every slot is written by pass two before anything reads it, so this is the same thing
+    // said once.
+    memset(block->skinSections, 0, groupCount * sizeof(M2SkinSection));
+    memset(block->sourceBatchRange, 0, groupCount * sizeof(uint32_t) * 2);
+
+    // Set BEFORE pass two: the bail-out at the bottom goes through
+    // UnoptimizeVisibleGeometry, which reads this.
+    this->ptr2D0 = block;
+
+    // Where each SOURCE section's indices start in the new buffer. Sections shared by several
+    // groups reuse the first answer rather than getting a second copy.
+    uint32_t sourceSectionCount = skinProfile->skinSections.Count();
+    auto indexStart = static_cast<uint32_t*>(
+        SMemAlloc(sourceSectionCount * sizeof(uint32_t), __FILE__, __LINE__, 0x0));
+
+    for (uint32_t i = 0; i < sourceSectionCount; i++) {
+        indexStart[i] = 0xFFFFFFFF;
+    }
+
+    // Pass two: build.
+    uint32_t indexTotal = 0;
+    M2SkinSection* dstSection = nullptr;
+    uint32_t (*dstRange)[2] = nullptr;
+
+    runBatch = nullptr;
+    runSection = nullptr;
+
+    for (uint32_t i = 0; i < skinProfile->batches.Count(); i++) {
+        auto& srcBatch = skinProfile->batches[i];
+
+        if (!this->m_skinSections[srcBatch.skinSectionIndex]) {
+            continue;
+        }
+
+        auto& srcSection = skinProfile->skinSections[srcBatch.skinSectionIndex];
+
+        // The same test M2BatchesCanMerge makes, spelled out because the reference spells it out
+        // here rather than calling its own helper a second time.
+        bool newGroup = !runBatch
+            || srcBatch.colorIndex != runBatch->colorIndex
+            || srcBatch.materialIndex != runBatch->materialIndex
+            || srcBatch.textureComboIndex != runBatch->textureComboIndex
+            || srcBatch.textureWeightComboIndex != runBatch->textureWeightComboIndex
+            || srcBatch.textureTransformComboIndex != runBatch->textureTransformComboIndex
+            || srcSection.boneComboIndex != runSection->boneComboIndex;
+
+        if (newGroup) {
+            uint32_t out = block->skinSectionCount;
+
+            auto dstBatch = &block->batches[block->batchCount];
+            dstSection = &block->skinSections[out];
+            dstRange = &block->sourceBatchRange[out];
+
+            *dstBatch = srcBatch;
+            dstBatch->skinSectionIndex = static_cast<uint16_t>(out);
+
+            *dstSection = srcSection;
+            dstSection->skinSectionId = out;
+
+            if (indexStart[srcBatch.skinSectionIndex] == 0xFFFFFFFF) {
+                indexStart[srcBatch.skinSectionIndex] = indexTotal;
+            }
+
+            dstSection->indexStart = static_cast<uint16_t>(indexStart[srcBatch.skinSectionIndex]);
+
+            if (!unionRanges) {
+                dstSection->vertexStart = 0;
+            }
+
+            (*dstRange)[0] = i;
+            (*dstRange)[1] = i;
+
+            block->batchCount++;
+            block->skinSectionCount++;
+
+            runBatch = &srcBatch;
+            runSection = &srcSection;
+        } else {
+            if (unionRanges) {
+                if (srcSection.vertexStart < dstSection->vertexStart) {
+                    dstSection->vertexCount += dstSection->vertexStart - srcSection.vertexStart;
+                    dstSection->vertexStart = srcSection.vertexStart;
+                }
+
+                if (dstSection->vertexStart + dstSection->vertexCount
+                    < srcSection.vertexStart + srcSection.vertexCount) {
+                    dstSection->vertexCount = static_cast<uint16_t>(
+                        srcSection.vertexCount + srcSection.vertexStart - dstSection->vertexStart);
+                }
+            } else {
+                dstSection->vertexCount += srcSection.vertexCount;
+            }
+
+            dstSection->indexCount += srcSection.indexCount;
+
+            if (dstSection->boneCount < srcSection.boneCount) {
+                dstSection->boneCount = srcSection.boneCount;
+            }
+
+            if (dstSection->boneInfluences < srcSection.boneInfluences) {
+                dstSection->boneInfluences = srcSection.boneInfluences;
+            }
+
+            (*dstRange)[1] = i;
+        }
+
+        indexTotal += srcSection.indexCount;
+    }
+
+    SMemFree(indexStart, __FILE__, __LINE__, 0x0);
+
+    for (uint32_t i = 0; i < block->batchCount; i++) {
+        block->effects[i] = shared->GetEffect(&block->batches[i]);
+    }
+
+    block->m_indexPool = GxPoolCreate(
+        GxPoolTarget_Index,
+        GxPoolUsage_Static,
+        indexTotal * 2,
+        GxPoolHintBit_Unk0,
+        shared->ext
+    );
+
+    block->m_indexBuf = GxBufCreate(block->m_indexPool, 2, indexTotal, 0);
+
+    // A pool or buffer the device would not give is not a state to carry: drop the whole block and
+    // let every consumer fall back to the skin profile.
+    if (!block->m_indexPool || !block->m_indexBuf) {
+        this->UnoptimizeVisibleGeometry();
+    }
 }
 
 int32_t CM2Model::ProcessCallbacks() {
@@ -3798,14 +4029,80 @@ void CM2Model::SetGeometryVisible(uint32_t start, uint32_t end, int32_t visible)
 // 0x008360a0 and then SetBatchVertices, and frozen runs GxShaderConstantsLock, Unlock,
 // m_curModel->SetIndices, m_curShared->SetIndices and then SetBatchVertices. The other three of
 // those are pinned independently, and this is the remaining one -- a thiscall on the model,
-// reaching through +0x2d0. Still a stub here, so the tag is a claim about identity, not about
-// behaviour.
+// reaching through ptr2D0.
 // ref: FUN_00828f90
-void CM2Model::SetIndices() {
-    // Unreachable today, so this is dead rather than broken: CM2SceneRender::DrawBatch only calls
-    // it for an element with flag 0x4, which CM2Scene sets from model->ptr2D0, which nothing ever
-    // allocates because OptimizeVisibleGeometry is itself unported. Port that first.
-    // TODO
+// Fill the merged index buffer, once, and bind it.
+//
+// Only reachable for a model that HAS an optimized-geometry block, which is why it dereferences
+// ptr2D0 without checking it: CM2SceneRender::DrawBatch calls it for an element with flag 0x4,
+// and CM2Scene only sets that flag when the block exists.
+//
+// The fill is skipped once done. unk1C is the `filled` flag and CGxPool::Invalidate clears it, so
+// a pool the device had to drop refills itself on the next draw rather than drawing stale
+// indices. unk1D is born 1 and is the buffer's own validity.
+//
+// Whether the indices are copied verbatim or rebased is the SAME condition the builder used to
+// decide how to combine vertex ranges, and that is not a coincidence: when the merged section
+// took the union of its sources' vertex ranges the original numbering still lands inside it, so
+// the indices are already right. When the counts were merely summed, each source's indices have
+// to be moved off its own vertexStart and onto a running base.
+int32_t CM2Model::SetIndices() {
+    auto optGeo = this->ptr2D0;
+    auto buf = optGeo->m_indexBuf;
+
+    if (!buf->unk1C || !buf->unk1D) {
+        auto dst = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(buf));
+
+        if (!dst) {
+            return 0;
+        }
+
+        auto shared = this->m_shared;
+        auto skinProfile = shared->skinProfile;
+        uint32_t cacheFlags = shared->m_cache->m_flags;
+
+        bool singleBone = shared->m_data->bones.Count() == 1 && (cacheFlags & 0x40);
+        bool verbatim = (cacheFlags & 0x8) || singleBone;
+
+        for (uint32_t i = 0; i < optGeo->skinSectionCount; i++) {
+            auto& range = optGeo->sourceBatchRange[optGeo->skinSections[i].skinSectionId];
+
+            // Where the next source section's vertices begin, relative to the merged section.
+            uint16_t vertexBase = 0;
+
+            for (uint32_t b = range[0]; b <= range[1]; b++) {
+                auto sourceIndex = skinProfile->batches[b].skinSectionIndex;
+
+                // The run spans a contiguous stretch of the ORIGINAL batches, and an invisible
+                // one inside that stretch contributed nothing to the merge.
+                if (!this->m_skinSections[sourceIndex]) {
+                    continue;
+                }
+
+                auto& sourceSection = skinProfile->skinSections[sourceIndex];
+                auto sourceIndices = &skinProfile->indices[sourceSection.indexStart];
+
+                if (verbatim) {
+                    memcpy(dst, sourceIndices, sourceSection.indexCount * sizeof(uint16_t));
+                } else {
+                    for (uint32_t k = 0; k < sourceSection.indexCount; k++) {
+                        dst[k] = sourceIndices[k] - sourceSection.vertexStart + vertexBase;
+                    }
+                }
+
+                vertexBase += sourceSection.vertexCount;
+                dst += sourceSection.indexCount;
+            }
+        }
+
+        g_theGxDevicePtr->BufUnlock(buf, 0);
+
+        buf->unk1C = 1;
+    }
+
+    g_theGxDevicePtr->PrimIndexPtr(optGeo->m_indexBuf);
+
+    return 1;
 }
 
 void CM2Model::SetLightingCallback(void (*lightingCallback)(CM2Model*, CM2Lighting*, void*), void* lightingArg) {
@@ -4256,8 +4553,40 @@ void CM2Model::UnlinkFromDrawList() {
     }
 }
 
+// ref: FUN_00825d70
+// Throw away the optimized-geometry block, which is what every rebuild starts with: the merge
+// depends on which skin sections are visible, so changing a geoset invalidates the whole thing.
+//
+// The buffer is released before the pool because the reference releases it first, and the guard
+// in front of it is the reference's too: a buffer that is currently the device's STREAM buffer
+// for its target must not be destroyed under the device. For this block that test always passes
+// -- the builder makes a pool of its own and the stream buffers live in the device's -- but it
+// costs nothing and it is what the reference checks.
+//
+// The explicit buffer release is then redundant here in a way it is not in the reference, since
+// frozen's PoolDestroy walks the pool's buffer list itself. Kept because it is what the
+// reference does, and harmless: the second pass finds the list already empty.
 void CM2Model::UnoptimizeVisibleGeometry() {
-    // TODO
+    auto optGeo = this->ptr2D0;
+
+    if (!optGeo) {
+        return;
+    }
+
+    if (optGeo->m_indexBuf) {
+        auto buf = optGeo->m_indexBuf;
+
+        if (buf != g_theGxDevicePtr->BufStream(buf->m_pool->m_target, 0, 0)) {
+            GxBufDestroy(buf);
+        }
+    }
+
+    if (optGeo->m_indexPool) {
+        GxPoolDestroy(optGeo->m_indexPool);
+    }
+
+    SMemFree(optGeo, __FILE__, __LINE__, 0x0);
+    this->ptr2D0 = nullptr;
 }
 
 // ref: FUN_00832840

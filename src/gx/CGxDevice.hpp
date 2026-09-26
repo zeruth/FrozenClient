@@ -243,6 +243,11 @@ class CGxDevice {
         virtual void ValidateDraw(CGxBatch*, int32_t);
         virtual void MasterEnableSet(EGxMasterEnables, int32_t);
         virtual void PoolSizeSet(CGxPool*, uint32_t) = 0;
+        // Give back whatever the backend hung off a pool's m_apiSpecific. The reference has
+        // this as a device virtual too -- its CM2Model::UnoptimizeVisibleGeometry reaches it
+        // through the device vtable at +0xd4. Base is a no-op so a backend that keeps nothing
+        // per pool needs no override.
+        virtual void IPoolRelease(CGxPool*) {}
         virtual char* BufLock(CGxBuf*);
         virtual int32_t BufUnlock(CGxBuf*, uint32_t);
         virtual void BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t offset);
@@ -257,6 +262,11 @@ class CGxDevice {
         CGxDevice();
         const CGxCaps& Caps() const;
         CGxBuf* BufCreate(CGxPool*, uint32_t, uint32_t, uint32_t);
+        // The other half of BufCreate and PoolCreate, which frozen has been missing entirely:
+        // nothing could release a pool or a buffer, so anything that built geometry on demand
+        // leaked it. Safe on null.
+        void BufDestroy(CGxBuf*);
+        void PoolDestroy(CGxPool*);
         CGxBuf* BufStream(EGxPoolTarget, uint32_t, uint32_t);
         void DeviceCreatePools(void);
         void DeviceCreateStreamBufs(void);

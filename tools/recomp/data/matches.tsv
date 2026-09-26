@@ -732,6 +732,7 @@ addr	how	frozen	evidence
 004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound, 00985fb0=SI2::StartGlueAmbience, 009861c0=SI2::StartGlueMusic
 004cfbb0	annotated	DbUnpackRecord	tag in src/db/Db.cpp
 004cfd20	sticky	WowClientDB<SpellRec>::GetRecord	held from the previous run, where it was sticky
+004cfd90	callgraph	CCharacterComponent::GetSectionsRecord	only unmatched callee of 004ed900=CCharacterComponent::GeosRenderPrep
 004d0bc0	cvar	EnableReverbHandler	callback of CVar::Register("Sound_EnableReverb") on both sides
 004d0cb0	cvar	VoiceChatInputDriverHandler	callback of CVar::Register("Sound_VoiceChatInputDriverIndex") on both sides
 004d0dd0	cvar	OutputDriverHandler	callback of CVar::Register("Sound_OutputDriverIndex") on both sides
@@ -932,6 +933,7 @@ addr	how	frozen	evidence
 004eaa70	callgraph	CCharacterComponent::AddLink	only unmatched callee of 004eacd0=CCharacterComponent::AddHandItem
 004eacd0	string	CCharacterComponent::AddHandItem	score 0.83 shared Item\ObjectComponents\Shield\; Item\ObjectComponents\Weapon\
 004eaf70	annotated	ComponentRemoveAttachments	tag in src/component/CCharacterComponent.cpp
+004ed900	annotated	CCharacterComponent::GeosRenderPrep	tag in src/component/CCharacterComponent.cpp
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
 004f2be0	override	CACHEENTRY::LoadTexture	
@@ -3476,7 +3478,7 @@ addr	how	frozen	evidence
 008251b0	annotated	CM2Model::SetLoadedCallback	tag in src/model/CM2Model.cpp
 008251d0	callgraph	CM2Model::SetWorldTransform	only unmatched callee of 004e0160=CCharacterCreation::SetFacing, 004e2e70=CCharacterSelection::SetFacing
 00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
-00825d70	callgraph	CM2Model::UnoptimizeVisibleGeometry	only unmatched callee of 0082c7c0=CM2Model::SetGeometryVisible
+00825d70	annotated	CM2Model::UnoptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 00825ee0	annotated	CM2Model::HasSequence	tag in src/model/CM2Model.cpp
 00825f40	annotated	CM2Model::ResolveSequenceFallback	tag in src/model/CM2Model.cpp

@@ -1109,6 +1109,24 @@ void CGxDeviceD3d::IDestroyD3dDevice() {
     // TODO
 }
 
+// The per-pool half of IReleaseD3dPools, lifted out unchanged so that PoolDestroy and the
+// device-lost walk release a pool the same way rather than by two copies of the same code.
+void CGxDeviceD3d::IPoolRelease(CGxPool* pool) {
+    pool->Invalidate();
+
+    if (pool->m_apiSpecific) {
+        if (pool->m_target == GxPoolTarget_Vertex) {
+            auto d3dBuf = static_cast<LPDIRECT3DVERTEXBUFFER9>(pool->m_apiSpecific);
+            d3dBuf->Release();
+        } else if (pool->m_target == GxPoolTarget_Index) {
+            auto d3dBuf = static_cast<LPDIRECT3DINDEXBUFFER9>(pool->m_apiSpecific);
+            d3dBuf->Release();
+        }
+
+        pool->m_apiSpecific = nullptr;
+    }
+}
+
 void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
     for (auto pool = this->m_poolList.Head(); pool; pool = this->m_poolList.Next(pool)) {
         if (!a2) {
@@ -1121,19 +1139,7 @@ void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
             pool->unk1C = 0;
         }
 
-        pool->Invalidate();
-
-        if (pool->m_apiSpecific) {
-            if (pool->m_target == GxPoolTarget_Vertex) {
-                auto d3dBuf = static_cast<LPDIRECT3DVERTEXBUFFER9>(pool->m_apiSpecific);
-                d3dBuf->Release();
-            } else if (pool->m_target == GxPoolTarget_Index) {
-                auto d3dBuf = static_cast<LPDIRECT3DINDEXBUFFER9>(pool->m_apiSpecific);
-                d3dBuf->Release();
-            }
-
-            pool->m_apiSpecific = nullptr;
-        }
+        this->IPoolRelease(pool);
     }
 }
 

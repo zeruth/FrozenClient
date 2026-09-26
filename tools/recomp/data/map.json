@@ -11743,6 +11743,22 @@
   "refSize": 101,
   "status": "ported"
  },
+ "004cfd90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/component/CCharacterComponent.cpp",
+   "src/component/ccharactercomponent.cpp"
+  ],
+  "frozen": "CCharacterComponent::GetSectionsRecord",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "SoundInterface2Internal.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
  "004d0bc0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -14950,6 +14966,22 @@
   "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 241,
+  "status": "ported"
+ },
+ "004ed900": {
+  "branchRatio": 0.046,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 0.14,
+  "files": [
+   "src/component/CCharacterComponent.cpp",
+   "src/component/ccharactercomponent.cpp"
+  ],
+  "frozen": "CCharacterComponent::GeosRenderPrep",
+  "frozenSize": 243,
+  "how": "annotated",
+  "module": "ScanDLLGlue.cpp",
+  "refSize": 1985,
   "status": "ported"
  },
  "004eff10": {
@@ -55115,7 +55147,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 4742,
+  "frozenSize": 4866,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -55474,20 +55506,20 @@
   "status": "ported"
  },
  "00825d70": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnoptimizeVisibleGeometry",
-  "frozenSize": 0,
-  "how": "callgraph",
+  "frozenSize": 142,
+  "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 144,
-  "status": "stub"
+  "status": "ported"
  },
  "00825e00": {
   "branchRatio": 1.0,
@@ -56015,20 +56047,20 @@
   "status": "ported"
  },
  "00828f90": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.04,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetIndices",
-  "frozenSize": 3,
+  "frozenSize": 502,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 464,
-  "status": "stub"
+  "status": "ported"
  },
  "0082ad50": {
   "branchRatio": 0.0,
@@ -56165,27 +56197,27 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetGeometryVisible",
-  "frozenSize": 345,
+  "frozenSize": 361,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 219,
   "status": "ported"
  },
  "0082c970": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": 0.413,
+  "constOverlap": 0.024,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.889,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::OptimizeVisibleGeometry",
-  "frozenSize": 3,
+  "frozenSize": 1500,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1353,
-  "status": "stub"
+  "status": "ported"
  },
  "0082ced0": {
   "branchRatio": 0.571,
@@ -56511,13 +56543,13 @@
   "branchRatio": 0.535,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.403,
+  "fidelity": 0.418,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 4856,
+  "frozenSize": 4868,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -57173,7 +57205,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::GetEffect",
-  "frozenSize": 0,
+  "frozenSize": 334,
   "how": "string",
   "module": "M2Scene.cpp",
   "refSize": 321,
