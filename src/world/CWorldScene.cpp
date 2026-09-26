@@ -2075,15 +2075,31 @@ void CWorldScene::TraverseRowOccluders(Row* row) {
 // The box is let out by a twentieth of a yard first, so a surface lying exactly on it is
 // treated as inside rather than falling on the boundary.
 //
-// What the faces are for is not established. They go to FUN_00792360, which builds a fan of
-// vertices carrying a position, a distance-faded alpha and two coordinate pairs, into an
-// object frozen has not identified. That is a rasterised primitive, not the plane list
-// SphereOccludedByVolumes reads, so despite the name the reference gives this neighbourhood
-// these are NOT that test's input. Do not wire it to that test.
+// The faces ARE a rasterised primitive and NOT the plane list SphereOccludedByVolumes reads, so
+// despite the name the reference gives this neighbourhood, do not wire them to that test. That
+// much of the older note here was right; what it said about the consumer was not, and the whole
+// system was walked out on 2026-09-26:
 //
-// What is known about the sink: it is a growable array at 0x00adf4a0, and the only thing that
-// reads it is CMap::UpdateAreas, the tile streaming pass. So whatever it holds is consumed
-// while tiles load, not while a frame is drawn.
+// The sink is the object at 0x00adf4a0, whose field 0 is a MODE (the `cmpl $0x0, (%esi)` this
+// function opens with; the tile walk below also tests it against 2). This function is __thiscall
+// on it -- frozen makes it static and keeps the sink in globals instead.
+//
+//   feeders   this (five quads per box) and FUN_007944c0 (513 bytes, 4 callers), both appending
+//             through FUN_00792360 (1135 bytes), which builds a pyramid from the camera through
+//             the quad with MatrixLookAt / PlaneFromPoints / IntersectRayPlane and appends
+//             32-byte records to two growable arrays on the object.
+//   fed from   the per-chunk links FUN_00799980, the doodad row visit FUN_007987a0,
+//              CMap::UpdateMapObjDefs FUN_007b6110, and FUN_007b4bc0, which walks the tile
+//              window and submits a face for every tile whose area is NOT loaded -- a wall at
+//              the edge of the streamed world.
+//   consumer   FUN_00794b50 (2200 bytes), a DRAW: BufStream, PrimIndexPtr, GxPrimVertexPtr,
+//              TextureGetGxTex and an M2 through CM2Model::WaitForLoad. Reached by
+//              FUN_0077f980(cameraPos) and called TWICE from CGWorldFrame::OnWorldRender
+//              (FUN_004f8ea0) at 0x004f9184 and 0x004f919a.
+//
+// So this is the BARRIER pass -- geometry drawn to close off the edge of the loaded world -- not
+// a culling input, and it is item 11's missing call rather than item 7's. CMap::UpdateAreas does
+// not read it at all.
 void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
     if (box.b.x >= box.t.x || box.b.y >= box.t.y || box.b.z >= box.t.z) {
         return;
