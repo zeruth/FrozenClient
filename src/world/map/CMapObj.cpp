@@ -13,6 +13,8 @@
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include <cmath>
+#include <tempest/Intersect.hpp>
+#include <tempest/Ray.hpp>
 
 // The MOPY flags a group query should skip for a set of query flags; the box query takes the
 // result as its skip mask. Bit 0x80 of the query short-circuits to 0x2ca, and 0x1000000 together
@@ -216,6 +218,148 @@ bool CMapObj::SegmentVsGroupBounds(const C3Vector& start, const C3Vector& end,
     }
 
     return SegmentIntersectsBox(this->m_mogi[groupIndex].bounds, start, end) != 0;
+}
+
+// ref: FUN_007ae970
+bool CMapObj::PointInGroupBounds(const C3Vector& point, uint32_t groupIndex, float slack) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    if (!group || !(group->m_state & 0x1)) {
+        return false;
+    }
+
+    const CAaBox& bounds = this->m_mogi[groupIndex].bounds;
+
+    // Grown by the slack on both ends, one axis at a time, bailing at the first miss.
+    if (point.x + slack < bounds.b.x || bounds.t.x < point.x - slack) {
+        return false;
+    }
+
+    if (point.y + slack < bounds.b.y || bounds.t.y < point.y - slack) {
+        return false;
+    }
+
+    if (point.z + slack < bounds.b.z || bounds.t.z < point.z - slack) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_007af280
+// Where a segment crosses from one group into another. This is the query that tells the client
+// which room it is in: not by asking what the segment hits, but by finding the last PORTAL it
+// passes through, which is the only thing that actually connects two groups.
+void CMapObj::QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* outGroups,
+                                  int32_t fromPoint) {
+    // The ray form the plane intersection wants, plus the length so distances can go back out as
+    // the fraction the caller passed in.
+    C3Ray ray;
+
+    ray.origin = segment.start;
+    ray.dir.x = segment.end.x - segment.start.x;
+    ray.dir.y = segment.end.y - segment.start.y;
+    ray.dir.z = segment.end.z - segment.start.z;
+
+    float length = sqrtf(ray.dir.x * ray.dir.x
+                       + ray.dir.y * ray.dir.y
+                       + ray.dir.z * ray.dir.z);
+
+    float invLength = 1.0f / length;
+
+    ray.dir.x *= invLength;
+    ray.dir.y *= invLength;
+    ray.dir.z *= invLength;
+
+    // The search window, in world units rather than as a fraction.
+    float nearest = length * *t;
+
+    bool found = false;
+
+    // The slack the point filter grows the bounds by, and the epsilon the plane test treats as
+    // parallel. DAT_009f1968 and DAT_009e3004.
+    static const float POINT_SLACK = 0.009999999776482582f;
+    static const float PLANE_EPSILON = 0.10000000149011612f;
+
+    for (uint32_t groupIndex = 0; groupIndex < this->m_groupCount; groupIndex++) {
+        // Either "the segment touches this group" or "the segment starts in it".
+        bool consider = fromPoint
+            ? this->PointInGroupBounds(segment.start, groupIndex, POINT_SLACK)
+            : this->SegmentVsGroupBounds(segment.start, segment.end, groupIndex);
+
+        if (!consider) {
+            continue;
+        }
+
+        // Both filters already checked these; the reference checks them again here and so does
+        // this, because the point filter's version does not imply the group is still loaded by the
+        // time the portals are walked.
+        if (!this->m_rootLoaded) {
+            continue;
+        }
+
+        CMapObjGroup* group = this->m_groups[groupIndex];
+
+        if (!group || !(group->m_state & 0x1)) {
+            continue;
+        }
+
+        const SMOPortalRef* ref = &this->m_mopr[group->m_portalStart];
+
+        for (uint32_t i = 0; i < group->m_portalCount; i++, ref++) {
+            const SMOPortal* portal = &this->m_mopt[ref->portalIndex];
+
+            C3Vector hit;
+            float distance;
+
+            if (!IntersectRayPlane(ray, portal->plane, &distance, &hit, PLANE_EPSILON)) {
+                continue;
+            }
+
+            // Behind the start, or further than the window allows.
+            if (distance < 0.0f || nearest < distance) {
+                continue;
+            }
+
+            uint32_t axis = DominantAxis(portal->plane.n);
+
+            if (!PointInPolygon(hit, &this->m_mopv[portal->startVertex],
+                                static_cast<int32_t>(portal->count), axis)) {
+                continue;
+            }
+
+            // A real crossing, and the nearest so far.
+            nearest = distance;
+            found = true;
+
+            // Which of the two groups the segment is arriving IN. MOPR's `side` says which side of
+            // the portal's plane the owning group sits on; when the segment's start is on the other
+            // side, the group it is heading into is the portal's other one, so that goes first.
+            float side = portal->plane.n.x * segment.start.x
+                       + portal->plane.n.y * segment.start.y
+                       + portal->plane.n.z * segment.start.z
+                       + portal->plane.d;
+
+            bool swap = (side < 0.0f) ? (ref->side > 0) : (ref->side < 1);
+
+            if (swap) {
+                outGroups[0] = ref->groupIndex;
+                outGroups[1] = groupIndex;
+            } else {
+                outGroups[0] = groupIndex;
+                outGroups[1] = ref->groupIndex;
+            }
+        }
+    }
+
+    // Left alone when nothing was crossed, so the caller keeps whatever it asked with.
+    if (found) {
+        *t = nearest * invLength;
+    }
 }
 
 // ----------------------------------------------------------------------------------------------

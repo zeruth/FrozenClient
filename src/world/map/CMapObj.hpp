@@ -372,6 +372,25 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // arrived -- a group whose state bit 0 is clear has no geometry to hit. ref: FUN_007ae880
         bool SegmentVsGroupBounds(const C3Vector& start, const C3Vector& end, uint32_t groupIndex);
 
+        // Is the point, grown by `slack` on every side, inside one group's bounds? Same loaded and
+        // group-state gates as SegmentVsGroupBounds. ref: FUN_007ae970
+        bool PointInGroupBounds(const C3Vector& point, uint32_t groupIndex, float slack);
+
+        // Which groups the segment passes between, by walking the PORTALS rather than the geometry.
+        //
+        // Every group whose bounds the segment touches has its portal references tried; a portal
+        // the segment actually crosses -- the ray meets its plane within the segment, and the
+        // meeting point is inside the portal's polygon -- puts the two groups it joins into
+        // `outGroups`, nearer side first. `t` is in and out: in, how far along the segment to look
+        // as a fraction; out, where the nearest crossing was. It is only written when something was
+        // found, so a caller keeps its own value otherwise.
+        //
+        // `fromPoint` switches the per-group filter from "does the segment touch this group's
+        // bounds" to "is the segment's start inside them", which is what a caller asking where a
+        // point IS wants rather than what it passes through. ref: FUN_007af280
+        void QuerySegmentPortals(const C3Segment& segment, float* t, uint32_t* outGroups,
+                                 int32_t fromPoint);
+
         // What the streaming and visibility passes ask a root about itself and its groups. Each
         // answers nothing at all until the root's own file has parsed.
         void BoundingSphere(C3Vector* center, float* radius);
