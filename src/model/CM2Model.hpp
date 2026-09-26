@@ -18,6 +18,9 @@ class CM2Shared;
 struct M2Batch;
 struct M2Data;
 struct M2ModelAttachment;
+struct M2Batch;
+struct M2SkinSection;
+struct M2OptimizedGeometry;
 struct M2ModelBone;
 struct M2ModelBoneSeq;
 struct M2ModelCamera;
@@ -75,6 +78,10 @@ struct M2BoneSequenceState {
     uint32_t finished;
     uint32_t pastDuration;  // currentTime has reached the sequence's duration
 };
+
+// ref: FUN_00823f90 -- see the definition in CM2Model.cpp.
+bool M2BatchesCanMerge(const M2Batch& a, const M2Batch& b,
+                       const M2SkinSection& sectionA, const M2SkinSection& sectionB);
 
 class CM2Model {
     public:
@@ -275,7 +282,26 @@ class CM2Model {
         // this WITHOUT a null check, so it is only ever reached through the callers' own
         // `if (ptr2D0)` guards (FUN_00824b70, FUN_00829e40, FUN_00832dd0), and porting the
         // consumer alone would give frozen a function it must never call.
-        void* ptr2D0 = nullptr;
+        //
+        // WHAT ACTUALLY BLOCKS THE BUILDERS, found 2026-09-26 by reading FUN_0082c970 and its
+        // free FUN_00825d70 end to end: frozen has no way to release a Gx pool or a Gx buffer.
+        // CGxDevice::PoolCreate and BufCreate exist, nothing destroys either, and there is no
+        // PoolDestroy virtual on the device -- the reference's free calls one, through vtable
+        // +0xd4. This block is rebuilt every time a model's section visibility changes, so a
+        // builder landed without the free is a GPU-memory leak on every geoset change, and the
+        // free cannot be written until the device grows the primitive in all three backends.
+        // That is the next step, and it is a gx change rather than a model one.
+        //
+        // Everything else the builders need is settled: the block's layout is M2OptimizedGeometry
+        // in M2Model.hpp (proven three ways, see the comment there); the merge rule is
+        // M2BatchesCanMerge; the pool is
+        // GxPoolCreate(GxPoolTarget_Index, GxPoolUsage_Static, indexCount * 2,
+        // GxPoolHintBit_Unk0, m_shared->ext) with GxBufCreate(pool, 2, indexCount, 0); the flag
+        // that picks between summing vertex counts and taking the union of the two vertex ranges
+        // is `(m_shared->m_cache->m_flags & 8) || (m_data->bones.Count() == 1 &&
+        // (m_shared->m_cache->m_flags & 0x40))`; and the build only happens at all when merging
+        // would actually reduce the batch count.
+        M2OptimizedGeometry* ptr2D0 = nullptr;
         // Membership in the scene's ray query list (CM2Scene::m_rayModelList), reference +0x2d4
         // through +0x2e4. Written by the map's segment query (FUN_007a2760, not ported): the
         // query kind (3 tests the collision box, anything else the current sequence's bounds),

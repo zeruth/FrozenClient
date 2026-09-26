@@ -11,6 +11,11 @@ template<class T>
 class M2Track;
 
 class CM2Model;
+class CGxPool;
+class CGxBuf;
+class CShaderEffect;
+struct M2Batch;
+struct M2SkinSection;
 
 template<class T>
 struct M2ModelTrack {
@@ -72,6 +77,47 @@ struct M2ModelBone {
     float floatA0 = 0.0f;
     float floatA4 = 1.0f;
     float floatA8 = 0.0f;
+};
+
+// The optimized-geometry block, the reference's model +0x2d0. One allocation holding five
+// arrays: a model whose visible skin sections have just been chosen gets its adjacent
+// mergeable batches collapsed into fewer, larger ones so a character draws in a handful of
+// calls instead of one per geoset.
+//
+// THE LAYOUT IS PROVEN, three independent ways rather than inferred:
+//
+//  1. the builder's own allocation size. FUN_0082c970 asks SMemAlloc for
+//     `(batchCount + sectionCount * 2) * 0x1c + 0x20`, and the five arrays it then carves out
+//     need `0x20 + batchCount * (0x18 + 4) + sectionCount * (0x30 + 8)`. Those are the same
+//     expression -- 0x1c is sizeof(M2Batch) + sizeof(void*) and 0x38 is sizeof(M2SkinSection)
+//     plus the 8-byte range pair. An array placed wrongly would not balance.
+//  2. the free, FUN_00825d70, which releases +0x18 as a buffer and +0x14 as a pool and then
+//     SMemFrees the block whole, naming ".\M2Model.cpp" line 0xad6.
+//  3. the consumers. CM2Scene reads batchCount at +0x04; the batch comparator FUN_00824b70
+//     indexes +0x00 by 0x18 and takes the uint16 at batch+4 (skinSectionIndex) to index +0x08
+//     by 0x30 -- exactly the strides of M2Batch and M2SkinSection.
+struct M2OptimizedGeometry {
+    // The merged batches. Each is a copy of the first source batch of its run, with
+    // skinSectionIndex repointed at the merged section below.
+    M2Batch* batches;
+    uint32_t batchCount;
+    // The merged sections, one per merged batch. Built by copying the first source section
+    // and then folding the rest of the run into it: index counts add, bone counts and
+    // influences take the maximum, and the vertex range either adds or takes the UNION of the
+    // two ranges depending on the cache flag the builder latches.
+    M2SkinSection* skinSections;
+    uint32_t skinSectionCount;
+    // Per merged section, the first and last index into the ORIGINAL skin profile's batch
+    // array that the merge covered. This is the span SetIndices walks to gather the indices
+    // that go in the buffer below.
+    uint32_t (*sourceBatchRange)[2];
+    // +0x14 and +0x18: the index pool and the buffer in it, sized to the total index count of
+    // every visible batch. GxPoolCreate(GxPoolTarget_Index, GxPoolUsage_Static, count * 2,
+    // GxPoolHintBit_Unk0, shared->ext) then GxBufCreate(pool, 2, count, 0).
+    CGxPool* m_indexPool;
+    CGxBuf* m_indexBuf;
+    // One shader effect per merged batch, from CM2Shared::GetEffect.
+    CShaderEffect** effects;
 };
 
 struct M2ModelCamera {

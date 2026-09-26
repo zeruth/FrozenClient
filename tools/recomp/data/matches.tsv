@@ -3460,6 +3460,7 @@ addr	how	frozen	evidence
 00823d90	override	CM2Model::DetachFromScene	
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 004f5e20=CM2Model::GetBoundingBox, 004f5e80=CM2Model::GetBoundingSphere, 006f75f0=CEffect::SetEmittersFlag400000
 00823f10	annotated	CM2Model::SetAnimating	tag in src/model/CM2Model.cpp
+00823f90	annotated	M2BatchesCanMerge	tag in src/model/CM2Model.cpp
 00823fe0	annotated	CM2Model::SetSequenceDoneCallback	tag in src/model/CM2Model.cpp
 00824060	annotated	CM2Model::SetAnimEventCallback	tag in src/model/CM2Model.cpp
 00824320	annotated	CM2Model::GetSharedUint194	tag in src/model/CM2Model.cpp

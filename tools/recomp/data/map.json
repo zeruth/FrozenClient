@@ -55217,6 +55217,22 @@
   "refSize": 121,
   "status": "ported"
  },
+ "00823f90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2BatchesCanMerge",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 80,
+  "status": "ported"
+ },
  "00823fe0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,

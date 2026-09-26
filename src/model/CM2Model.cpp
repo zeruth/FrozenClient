@@ -3167,6 +3167,27 @@ void CM2Model::LinkToCallbackListTail() {
     this->m_shared->m_callbackListTail = &this->m_callbackNext;
 }
 
+// ref: FUN_00823f90
+// Can these two adjacent batches be drawn as one? Only if every piece of per-draw state they
+// would set is already identical: the colour, the material, and the texture, texture-weight and
+// texture-transform combos -- plus, on the sections, the same bone combo, so one set of bone
+// matrices serves both.
+//
+// Deliberately NOT a general "are these equal": geosetIndex, materialLayer, textureCount and
+// priorityPlane are all left out, and so is skinSectionIndex, which is the whole point -- two
+// different sections merging into one is what this enables. The builder's second pass spells
+// the same comparison out inline rather than calling here, which is how the field list was
+// cross-checked.
+bool M2BatchesCanMerge(const M2Batch& a, const M2Batch& b,
+                       const M2SkinSection& sectionA, const M2SkinSection& sectionB) {
+    return a.colorIndex == b.colorIndex
+        && a.materialIndex == b.materialIndex
+        && a.textureComboIndex == b.textureComboIndex
+        && a.textureWeightComboIndex == b.textureWeightComboIndex
+        && a.textureTransformComboIndex == b.textureTransformComboIndex
+        && sectionA.boneComboIndex == sectionB.boneComboIndex;
+}
+
 // ref: FUN_0082c970
 // STILL A STUB -- the tag is a claim about identity, not behaviour. Identified from its one
 // distinctive callee: the reference function calls CM2Model::UnoptimizeVisibleGeometry first
