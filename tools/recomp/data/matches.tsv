@@ -2853,8 +2853,11 @@ addr	how	frozen	evidence
 007ae670	annotated	CMapObj::GroupBoundingSphere	tag in src/world/map/CMapObj.cpp
 007ae720	annotated	CMapObj::GroupBounds	tag in src/world/map/CMapObj.cpp
 007ae7b0	annotated	CMapObj::GroupFlags	tag in src/world/map/CMapObj.cpp
+007ae840	annotated	CMapObj::SegmentVsBounds	tag in src/world/map/CMapObj.cpp
+007ae880	annotated	CMapObj::SegmentVsGroupBounds	tag in src/world/map/CMapObj.cpp
 007aea80	annotated	CMapObj::GetGroup	tag in src/world/map/CMapObj.cpp
 007aeab0	annotated	CMapObj::WaitForGroup	tag in src/world/map/CMapObj.cpp
+007aeb10	annotated	CMapObj::GroupInfo	tag in src/world/map/CMapObj.cpp
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
@@ -3172,6 +3175,7 @@ addr	how	frozen	evidence
 007f3b90	annotated	CGMinimapFrame::GetRadius	tag in src/ui/game/CGMinimapFrame.cpp
 007f6540	annotated	MinimapLoadTranslate	tag in src/world/Minimap.cpp
 007f9430	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
+007f9480	annotated	SegmentIntersectsBox	tag in src/world/map/CMapObj.cpp
 007fa140	annotated	SphereToBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007fde20	annotated	SpellHasEffect	tag in src/object/client/Spell_C.cpp
 007fde50	annotated	SpellHasAura	tag in src/object/client/Spell_C.cpp

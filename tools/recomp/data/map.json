@@ -45557,6 +45557,38 @@
   "refSize": 37,
   "status": "ported"
  },
+ "007ae840": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::SegmentVsBounds",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
+ "007ae880": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::SegmentVsGroupBounds",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
  "007aea80": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -45587,6 +45619,22 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 48,
+  "status": "ported"
+ },
+ "007aeb10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GroupInfo",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 34,
   "status": "ported"
  },
  "007af780": {
@@ -50630,6 +50678,22 @@
   "how": "annotated",
   "module": "PetNameCache.cpp",
   "refSize": 66,
+  "status": "ported"
+ },
+ "007f9480": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "SegmentIntersectsBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "PetNameCache.cpp",
+  "refSize": 464,
   "status": "ported"
  },
  "007fa140": {

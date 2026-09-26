@@ -84,6 +84,140 @@ bool CMapObj::GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CIm
     return false;
 }
 
+// ref: FUN_007f9480
+// Woo's candidate-plane segment/box test, and the one place in this file where the decompilation
+// could not be trusted: Ghidra loses the whole "which plane is furthest" step -- the variable that
+// holds the largest entry distance is never assigned in its output, which would make this always
+// return 0. The selection below is read off the disassembly at 0x007f958f.
+int32_t SegmentIntersectsBox(const CAaBox& box, const C3Vector& start, const C3Vector& end) {
+    // A box is two C3Vectors, min then max, so it indexes as six floats -- which is how the
+    // reference walks it.
+    auto min = reinterpret_cast<const float*>(&box.b);
+    auto max = reinterpret_cast<const float*>(&box.t);
+    auto from = reinterpret_cast<const float*>(&start);
+    auto to = reinterpret_cast<const float*>(&end);
+
+    float dir[3] = { to[0] - from[0], to[1] - from[1], to[2] - from[2] };
+
+    // How far along the segment each axis' entry plane is crossed. Woo's original also keeps the
+    // plane's coordinate in a parallel array and the reference dutifully writes one, but neither
+    // this function nor anything else ever reads it -- the distance is computed straight from the
+    // face -- so that dead store is not reproduced.
+    float t[3] = { -1.0f, -1.0f, -1.0f };
+
+    int32_t inside = 1;
+
+    for (uint32_t i = 0; i < 3; i++) {
+        if (min[i] <= from[i]) {
+            if (max[i] < from[i]) {
+                // Start is past the far face. If the end is too, the segment never reaches the box.
+                if (max[i] < to[i]) {
+                    return 0;
+                }
+
+                inside = 0;
+
+                if (dir[i] != 0.0f) {
+                    t[i] = (max[i] - from[i]) / dir[i];
+                }
+            }
+
+            // Otherwise the start is between the faces on this axis and there is no candidate.
+        } else {
+            // Start is before the near face.
+            if (to[i] < min[i]) {
+                return 0;
+            }
+
+            inside = 0;
+
+            if (dir[i] != 0.0f) {
+                t[i] = (min[i] - from[i]) / dir[i];
+            }
+        }
+    }
+
+    // Start is inside the box on all three axes, so there is nothing to compute.
+    if (inside) {
+        return 1;
+    }
+
+    // The entry point is the LAST of the three planes to be crossed.
+    uint32_t whichPlane = 0;
+
+    if (t[0] < t[1]) {
+        whichPlane = 1;
+    }
+
+    if (t[whichPlane] < t[2]) {
+        whichPlane = 2;
+    }
+
+    // A negative distance means the box is behind the start, not along the segment. The reference
+    // tests the sign bit rather than comparing, which also rejects a negative zero.
+    if (t[whichPlane] < 0.0f || (t[whichPlane] == 0.0f && std::signbit(t[whichPlane]))) {
+        return 0;
+    }
+
+    // The entry point has to be within the box on the two axes that did not pick the plane. The
+    // 1e-5 slack is the reference's, at 0x009ea558, and it is applied to both ends.
+    static const float SLACK = 9.999999747378752e-06f;
+
+    for (uint32_t i = 0; i < 3; i++) {
+        if (i == whichPlane) {
+            continue;
+        }
+
+        float hit = from[i] + t[whichPlane] * dir[i];
+
+        if (min[i] - SLACK > hit) {
+            return 0;
+        }
+
+        if (max[i] + SLACK < hit) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_007aeb10
+SMOGroupInfo* CMapObj::GroupInfo(uint32_t groupIndex) {
+    if (!this->m_rootLoaded) {
+        return nullptr;
+    }
+
+    return &this->m_mogi[groupIndex];
+}
+
+// ref: FUN_007ae840
+bool CMapObj::SegmentVsBounds(const C3Vector& start, const C3Vector& end) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    return SegmentIntersectsBox(this->m_bounds, start, end) != 0;
+}
+
+// ref: FUN_007ae880
+bool CMapObj::SegmentVsGroupBounds(const C3Vector& start, const C3Vector& end,
+                                   uint32_t groupIndex) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    // State bit 0 is the group's own file having arrived. An unloaded group has no geometry, so a
+    // hit on its bounds would be a hit on nothing.
+    if (!group || !(group->m_state & 0x1)) {
+        return false;
+    }
+
+    return SegmentIntersectsBox(this->m_mogi[groupIndex].bounds, start, end) != 0;
+}
+
 // ----------------------------------------------------------------------------------------------
 // Loading the root file (reference MapObjRead.cpp and the MapArea.cpp tail)
 

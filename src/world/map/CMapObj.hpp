@@ -47,6 +47,14 @@ struct SMOGroupInfo {
 
 static_assert(sizeof(SMOGroupInfo) == 0x20, "SMOGroupInfo is 32 bytes");
 
+// Does the segment touch the box? Woo's candidate-plane test: pick, per axis, whichever face the
+// start point is outside of, take the furthest of the three entry distances, and check that the
+// point at that distance is inside the box on the other two axes.
+//
+// The reference keeps it in a module frozen has not identified, but all seven of its callers are
+// map object code, so it lives here. ref: FUN_007f9480
+int32_t SegmentIntersectsBox(const CAaBox& box, const C3Vector& start, const C3Vector& end);
+
 // MOPT: one portal, 20 bytes. The vertices are MOPV entries.
 struct SMOPortal {
     uint16_t startVertex;       // +0x00
@@ -351,6 +359,18 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void ClearMaterialTextures();
 
         bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
+
+        // One group's MOGI record, or null when the root's chunks have not been parsed yet.
+        // ref: FUN_007aeb10
+        SMOGroupInfo* GroupInfo(uint32_t groupIndex);
+
+        // Does the segment touch the whole object's MOHD bounds? False until the root is parsed,
+        // because the bounds are not known before that. ref: FUN_007ae840
+        bool SegmentVsBounds(const C3Vector& start, const C3Vector& end);
+
+        // Does the segment touch one group's bounds? Also false when that group's own file has not
+        // arrived -- a group whose state bit 0 is clear has no geometry to hit. ref: FUN_007ae880
+        bool SegmentVsGroupBounds(const C3Vector& start, const C3Vector& end, uint32_t groupIndex);
 
         // What the streaming and visibility passes ask a root about itself and its groups. Each
         // answers nothing at all until the root's own file has parsed.

@@ -196231,7 +196231,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 156,
+"lines": 174,
 "refs": [],
 "line": 1238
 },
@@ -196254,7 +196254,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1398
+"line": 1416
 },
 "CMap::InitializeRenderChunks": {
 "files": [
@@ -196276,7 +196276,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1425
+"line": 1443
 },
 "CMap::AllocBufEntry": {
 "files": [
@@ -196309,7 +196309,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 1447
+"line": 1465
 },
 "CMap::RecycleBufBlocks": {
 "files": [
@@ -196334,7 +196334,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1525
+"line": 1543
 },
 "CMap::CreateRenderChunkPools": {
 "files": [
@@ -196369,7 +196369,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1557
+"line": 1575
 },
 "CMap::DestroyRenderChunkPools": {
 "files": [
@@ -196387,7 +196387,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1593
+"line": 1611
 },
 "CMap::FreeBufBlocks": {
 "files": [
@@ -196414,7 +196414,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1613
+"line": 1631
 },
 "CMap::ReleaseAllBufEntries": {
 "files": [
@@ -196431,7 +196431,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1648
+"line": 1666
 },
 "CMap::SetupChunkLighting": {
 "files": [
@@ -196454,7 +196454,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1661
+"line": 1679
 },
 "CMap::UpdateDetailDoodads": {
 "files": [
@@ -196467,7 +196467,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1670
+"line": 1688
 },
 "CompareAreaDistance": {
 "files": [
@@ -196484,7 +196484,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1675
+"line": 1693
 },
 "CMap::UpdateAreas": {
 "files": [
@@ -196526,7 +196526,7 @@
 "stub": false,
 "lines": 93,
 "refs": [],
-"line": 1702
+"line": 1720
 },
 "CMap::UpdateAreaChunks": {
 "files": [
@@ -196552,7 +196552,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1799
+"line": 1817
 },
 "CMap::LinkToMapObjDefGroup": {
 "files": [
@@ -196572,7 +196572,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1837
+"line": 1855
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -196587,7 +196587,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1855
+"line": 1873
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -196616,7 +196616,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1871
+"line": 1889
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -196635,7 +196635,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1929
+"line": 1947
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -196654,7 +196654,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1952
+"line": 1970
 },
 "CMapArea::CMapArea": {
 "files": [
@@ -198873,6 +198873,77 @@
 "refs": [],
 "line": 60
 },
+"SegmentIntersectsBox": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"signbit"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"2",
+"3",
+"9.999999747378752e-06f"
+],
+"branches": 15,
+"stub": false,
+"lines": 92,
+"refs": [],
+"line": 92
+},
+"CMapObj::GroupInfo": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 186
+},
+"CMapObj::SegmentVsBounds": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"SegmentIntersectsBox"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 195
+},
+"CMapObj::SegmentVsGroupBounds": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"SegmentIntersectsBox"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1"
+],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 204
+},
 "CMapObj::Create": {
 "files": [
 "src/world/map/cmapobj.cpp"
@@ -198898,7 +198969,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 96
+"line": 230
 },
 "CMapObj::Read": {
 "files": [
@@ -198929,7 +199000,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 123
+"line": 257
 },
 "CMapObj::ReadCallback": {
 "files": [
@@ -198946,7 +199017,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 154
+"line": 288
 },
 "CMapObj::ReadComplete": {
 "files": [
@@ -198968,7 +199039,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 168
+"line": 302
 },
 "NextChunk": {
 "files": [
@@ -198988,7 +199059,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 190
+"line": 324
 },
 "CMapObj::ParseChunks": {
 "files": [
@@ -199040,7 +199111,7 @@
 "stub": false,
 "lines": 99,
 "refs": [],
-"line": 203
+"line": 337
 },
 "CMapObj::ClearMaterialTextures": {
 "files": [
@@ -199059,7 +199130,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 306
+"line": 440
 },
 "CMapObj::BoundingSphere": {
 "files": [
@@ -199077,7 +199148,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 320
+"line": 454
 },
 "CMapObj::Bounds": {
 "files": [
@@ -199093,7 +199164,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 340
+"line": 474
 },
 "CMapObj::GroupBoundingSphere": {
 "files": [
@@ -199111,7 +199182,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 350
+"line": 484
 },
 "CMapObj::GroupBounds": {
 "files": [
@@ -199127,7 +199198,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 372
+"line": 506
 },
 "CMapObj::GroupFlags": {
 "files": [
@@ -199142,7 +199213,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 382
+"line": 516
 },
 "CMapObj::GetGroup": {
 "files": [
@@ -199157,7 +199228,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 393
+"line": 527
 },
 "CMapObj::WaitForRoot": {
 "files": [
@@ -199172,7 +199243,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 410
+"line": 544
 },
 "CMapObj::WaitForGroup": {
 "files": [
@@ -199187,7 +199258,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 417
+"line": 551
 },
 "CMapObj::ReadGroup": {
 "files": [
@@ -199204,7 +199275,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 426
+"line": 560
 },
 "CMapObjGroup::FreeBuffers": {
 "files": [
@@ -199221,7 +199292,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 436
+"line": 570
 },
 "CMapObj::UpdateMaterialColors": {
 "files": [
@@ -199245,7 +199316,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 445
+"line": 579
 },
 "CMapObj::UpdateAll": {
 "files": [
@@ -199271,7 +199342,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 468
+"line": 602
 },
 "CMapObj::Initialize": {
 "files": [
@@ -199325,7 +199396,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 519
+"line": 653
 },
 "CMapObj::SetInstanceTransform": {
 "files": [
