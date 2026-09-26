@@ -48507,6 +48507,22 @@
   "refSize": 728,
   "status": "ported"
  },
+ "007bf740": {
+  "branchRatio": 0.923,
+  "constOverlap": 0.357,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapLoad.cpp",
+   "src/world/map/cmapload.cpp"
+  ],
+  "frozen": "CMap::CreateMapObjDoodads",
+  "frozenSize": 1382,
+  "how": "override",
+  "module": "MapLoad.cpp",
+  "refSize": 360,
+  "status": "diverged"
+ },
  "007bf8b0": {
   "branchRatio": 0.75,
   "constOverlap": 0.042,

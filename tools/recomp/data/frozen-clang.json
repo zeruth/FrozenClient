@@ -201189,9 +201189,9 @@
 "callseq": [
 "CWorld::GetM2Scene",
 "CMap::CreateMapObjDoodads::Range::Range",
-"CMap::CreateMapObjDoodads::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapload.cpp:253:22)::operator()",
+"CMap::CreateMapObjDoodads::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapload.cpp:262:22)::operator()",
 "CMap::CreateMapObjDoodads::Range::operator=",
-"CMap::CreateMapObjDoodads::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapload.cpp:253:22)::operator()",
+"CMap::CreateMapObjDoodads::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapload.cpp:262:22)::operator()",
 "CMap::CreateMapObjDoodads::Range::operator=",
 "CMap::CreateMapObjDoodads::Range::operator=",
 "SMemAlloc",
@@ -201243,7 +201243,7 @@
 "stub": false,
 "lines": 132,
 "refs": [],
-"line": 240
+"line": 249
 },
 "CMap::ForEachMapObjDoodad": {
 "files": [
@@ -201262,7 +201262,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 374
+"line": 383
 },
 "DoodadCullRadius": {
 "files": [
@@ -201279,7 +201279,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 386
+"line": 395
 },
 "DoodadCullCenter": {
 "files": [
@@ -201299,14 +201299,14 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 408
+"line": 417
 },
 "CMap::CullMapObjDoodads": {
 "files": [
 "src/world/map/cmapload.cpp"
 ],
 "callseq": [
-"CMap::CullMapObjDoodads::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapload.cpp:436:31)::operator void (*)(CM2Model *, void *)",
+"CMap::CullMapObjDoodads::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapload.cpp:445:31)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachMapObjDoodad"
 ],
 "strings": [],
@@ -201315,7 +201315,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 435
+"line": 444
 },
 "CMap::SetupMapObjDef": {
 "files": [
@@ -201344,7 +201344,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 456
+"line": 465
 },
 "CMap::UpdateMapObjDefs": {
 "files": [
@@ -201384,7 +201384,7 @@
 "stub": false,
 "lines": 106,
 "refs": [],
-"line": 489
+"line": 498
 },
 "CMap::CreateDoodadDef": {
 "files": [
@@ -201429,7 +201429,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 602
+"line": 611
 },
 "CMapObj::QuerySkipFlags": {
 "files": [

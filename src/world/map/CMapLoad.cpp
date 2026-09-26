@@ -237,6 +237,15 @@ static void MapObjDoodadLighting(CM2Model* model, CM2Lighting* lighting, void* a
 // This uses the MOHD ambient alone, so a prop whose MODD colour is unset (all zero) in a building
 // with dark MOHD ambient will read darker here than in the reference. Props WITH a MODD colour --
 // which is most of them -- are unaffected.
+// ref: FUN_007bf740
+// The doodads of one placed map object: walk the chosen doodad set and build each one.
+//
+// The DATA LAYOUT here diverges from the reference and that is worth knowing before comparing
+// them. The reference builds a DoodadDef per doodad (CMap::AllocDoodadDef inside FUN_007bef40)
+// carrying a full placement matrix and a split floor light, and threads each onto the instance
+// through a base-object link; frozen keeps three parallel arrays on the def instead -- the model,
+// its scale and its ambient colour. Same doodads on screen, different bookkeeping, so the
+// reference's per-doodad half (FUN_007bef40) has no counterpart here at all.
 void CMap::CreateMapObjDoodads(CMapObjDef* def, CMapObj* mapObj) {
     auto scene = CWorld::GetM2Scene();
 

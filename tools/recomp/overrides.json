@@ -3152,5 +3152,22 @@
   "007ae3b0": {
     "status": "unlinked",
     "note": "--propose offered CM2Shared::~CM2Shared for this, on the strength of AsyncFileReadCancel, HandleClose and SMemFree alone. It is anchored to Map.cpp, not M2Shared.cpp, and the real destructor is FUN_0083d5b0. Recorded so it is not proposed again."
+  },
+  "007bf740": {
+    "frozen": "CMap::CreateMapObjDoodads",
+    "note": "Found by following FUN_007bef40's single caller after --propose had offered the INNER function for this. Same role and same place in the call graph: given a def and a map object, build the doodads of the chosen set. The data layout diverges -- see the comment at the definition -- so expect a low call-order score rather than a missing port. Measured at 0% call order, which is the right answer and not a bug in the measurement: the two share no calls at all. The reference goes AllocDoodadDef -> FUN_007bef40 -> AllocBaseObjLink and threads each doodad onto the instance; frozen goes SMemAlloc x3 -> CM2Scene::CreateModel into parallel arrays. Marked diverged rather than left looking like a faithful port that scores badly. Making it faithful means adopting the reference's DoodadDef representation, which is a map-layer change, not a function to write.",
+    "status": "diverged"
+  },
+  "007bef40": {
+    "status": "unlinked",
+    "note": "--propose offered CMap::CreateMapObjDoodads for this; that is the LOOP and this is the body it calls once per doodad. It has no counterpart in frozen at all: the reference allocates a DoodadDef per doodad with a full placement matrix and a split floor light, while frozen stores a model pointer, a scale and an ambient colour in three parallel arrays on the def. Porting it means changing how frozen represents WMO doodads, not adding a function."
+  },
+  "0073d5d0": {
+    "status": "unlinked",
+    "note": "--propose offered CCharacterCreation::CreateComponent for this, on the strength of the CM2Model calls alone. It is not that: frozen's CreateComponent is the character-creation SCREEN in src/glue, while this is anchored to Unit_C.cpp and calls CGUnit_C::UpdateAnimation, CGUnit_C::SetBoneSequence and both model callback setters -- it is a unit model builder, a sibling of FUN_0073e410 (871 bytes). Worth porting for its own sake: it is one of the sites that calls UpdateAnimation when a unit's model changes, which is what the animation chain still needs wiring to."
+  },
+  "0073d940": {
+    "status": "unlinked",
+    "note": "--propose offered CCharacterCreation::CreateComponent for this, on the strength of the CM2Model calls alone. It is not that: frozen's CreateComponent is the character-creation SCREEN in src/glue, while this is anchored to Unit_C.cpp and calls CGUnit_C::UpdateAnimation, CGUnit_C::SetBoneSequence and both model callback setters -- it is a unit model builder, a sibling of FUN_0073e410 (359 bytes). Worth porting for its own sake: it is one of the sites that calls UpdateAnimation when a unit's model changes, which is what the animation chain still needs wiring to."
   }
 }
