@@ -3,6 +3,7 @@
 #include "world/map/LiquidSurface.hpp"
 #include "world/map/MapOcclusion.hpp"
 #include "world/CWorld.hpp"
+#include "util/Log.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
 #include "db/Db.hpp"
@@ -1294,6 +1295,26 @@ void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
 void CWorldScene::MarkMapObjGroupVisible(uint32_t groupIndex, CMapObjDef* def) {
     auto defGroup = def->m_defGroups[groupIndex];
     auto group = def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+    // WMOPROBE: every room the portal walk reaches, with the MOGP flags that decide whether it is
+    // interior, whether it has geometry loaded, and its batch counts. A floor that never appears
+    // here was never reached by the walk; one that appears but has no batches is loaded-but-empty.
+    {
+        static uint32_t s_shown = 0;
+
+        if (s_shown < 40) {
+            s_shown++;
+
+            ProbeLog("WMOGROUP %u: idx=%u group=%p mogp=0x%x state=0x%x batches=%u/%u/%u verts=%u",
+                     s_shown, groupIndex, static_cast<void*>(group),
+                     group ? group->m_flags : 0u,
+                     group ? group->m_state : 0u,
+                     group ? group->m_batchCountA : 0u,
+                     group ? group->m_batchCountB : 0u,
+                     group ? group->m_batchCountC : 0u,
+                     group ? group->m_vertexCount : 0u);
+        }
+    }
 
     if (!defGroup->m_renderLink.IsLinked()) {
         CWorldScene::s_visibleMapObjGroups.LinkToTail(defGroup);

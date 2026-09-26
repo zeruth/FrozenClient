@@ -38,6 +38,7 @@
 #include "world/CWorldScene.hpp"
 #include "util/SFile.hpp"
 #include "world/CWorld.hpp"
+#include "util/Log.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <common/ObjectAlloc.hpp>
@@ -1350,6 +1351,25 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
             CMapObj::EnterPortalWalk(CWorldScene::s_cameraDef,
                                      &CWorldScene::s_cameraGroupIndices[0],
                                      CWorldScene::s_cameraGroupIndices.Count());
+        }
+
+        // WMOPROBE: does the indoor branch run, does the portal walk open anything, and how many
+        // rooms does it start from.
+        {
+            static uint32_t s_ticks = 0;
+
+            if (++s_ticks >= 120) {
+                s_ticks = 0;
+
+                ProbeLog("WMOINDOOR: def=%p flagged=%p rooms=%u flaggedRooms=%u "
+                         "portalDepth=%.3f visibleGroups=%s",
+                         static_cast<void*>(CWorldScene::s_cameraDef),
+                         static_cast<void*>(CWorldScene::s_cameraDefFlagged),
+                         CWorldScene::s_cameraGroupIndices.Count(),
+                         CWorldScene::s_cameraFlaggedGroupIndices.Count(),
+                         CWorldScene::s_portalWindow.depth,
+                         CWorldScene::s_visibleMapObjGroups.Head() ? "some" : "none");
+            }
         }
 
         if (CWorldScene::s_portalWindow.depth < 0.0f) {
