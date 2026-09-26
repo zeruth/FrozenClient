@@ -1738,3 +1738,29 @@ void CGxDevice::XformViewport(float& minX, float& maxX, float& minY, float& maxY
     minZ = this->m_viewport.z.l;
     maxZ = this->m_viewport.z.h;
 }
+
+// ref: FUN_006908b0
+bool GxExtensionListContains(const char* list, const char* extension) {
+    if (!list || !extension) {
+        return false;
+    }
+
+    int32_t length = static_cast<int32_t>(SStrLen(extension));
+
+    while (*list) {
+        if (SStrCmpI(list, extension, length) == 0) {
+            return true;
+        }
+
+        // Step to the start of the next word: past this one, then past the spaces after it.
+        while (*list && *list != ' ') {
+            list++;
+        }
+
+        while (*list == ' ') {
+            list++;
+        }
+    }
+
+    return false;
+}

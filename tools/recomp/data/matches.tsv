@@ -2323,12 +2323,14 @@ addr	how	frozen	evidence
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
 006904d0	string	CGxDeviceD3d::DeviceSetFormat	unique "CGxDeviceD3d::DeviceSetFormat():"
+006908b0	annotated	GxExtensionListContains	tag in src/gx/CGxDevice.cpp
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
 006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
 006a39e0	override	CGxDeviceD3d::ISetVertexBuffer	
+006a3c40	annotated	CGxDeviceD3d::DsSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a43d0	override	CGxDeviceD3d::IStateSyncLights	
 006a4700	override	CGxDeviceD3d::IStateSyncMaterial	
 006a4850	override	CGxDeviceD3d::IStateSyncXforms	

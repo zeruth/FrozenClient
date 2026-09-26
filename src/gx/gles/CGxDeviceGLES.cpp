@@ -1523,8 +1523,8 @@ void CGxDeviceGLES::ISetCaps(const CGxFormat& format) {
 
     auto extensions = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
 
-    this->m_hasS3tc = extensions && strstr(extensions, "GL_EXT_texture_compression_s3tc") != nullptr;
-    this->m_hasAnisotropic = extensions && strstr(extensions, "GL_EXT_texture_filter_anisotropic") != nullptr;
+    this->m_hasS3tc = GxExtensionListContains(extensions, "GL_EXT_texture_compression_s3tc");
+    this->m_hasAnisotropic = GxExtensionListContains(extensions, "GL_EXT_texture_filter_anisotropic");
 
     if (this->m_hasAnisotropic) {
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &this->m_maxAnisotropy);

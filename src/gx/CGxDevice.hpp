@@ -88,6 +88,12 @@ struct CGxLightState {
     void Set(const CGxLight& light);
 };
 
+// ref: FUN_006908b0
+// Whether a space-separated extension list names `extension`. Compares at each word start only,
+// case-insensitively, which is what keeps GL_EXT_foo from matching the middle of an unrelated
+// name -- a plain strstr does not. The reference passes the list in EAX and the name in EBX.
+bool GxExtensionListContains(const char* list, const char* extension);
+
 class CGxDevice {
     public:
         // Structs

@@ -667,6 +667,10 @@ void CGxDeviceD3d::Draw(CGxBatch* batch, int32_t indexed) {
     }
 }
 
+// ref: FUN_006a3c40
+// One flat switch from frozen's device-state enum onto the D3D render and sampler states, with
+// the same early-out when the cached value already matches -- the reference's shape exactly,
+// including the per-stage blocks of sixteen.
 void CGxDeviceD3d::DsSet(EDeviceState state, uint32_t val) {
     if (this->m_deviceStates[state] == val) {
         return;
