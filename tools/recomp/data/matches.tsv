@@ -2777,7 +2777,7 @@ addr	how	frozen	evidence
 00791120	annotated	CWorldScene::SphereOutsideFrustum	tag in src/world/CWorldScene.cpp
 007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
 00791980	callgraph	MapOcclusion::BuildVolumes	only unmatched callee of 0079a790=CWorldScene::Traverse
-00791cb0	callgraph	CWorldScene::VisitStaticEntity	only unmatched callee of 007987a0=CWorldScene::TraverseRowStaticEntities, 00799980=CWorldScene::TraverseChunkDoodads
+00791cb0	annotated	CWorldScene::VisitStaticEntity	tag in src/world/CWorldScene.cpp
 00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp

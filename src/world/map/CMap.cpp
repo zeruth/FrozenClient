@@ -1302,64 +1302,89 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     } else {
         CWorldScene::s_frameStamp++;
 
-        // TODO the indoor traversal. Nothing here means nothing is traversed while the camera is
-        // inside a building: the distance rows keep whatever the last outdoor frame left in
-        // them, so what draws indoors is stale. Decoded from FUN_0079a870 so it is transcription:
+        // THE INDOOR TRAVERSAL. Read off FUN_0079a870's own instructions rather than the
+        // decompilation, because two details there were wrong: the window reset sits INSIDE the
+        // flagged-object block, and the depth that decides the branch is s_portalWindow's, not
+        // s_window's.
         //
-        //   if (some second indoor flag at 0x00cd87a0) {
-        //       CMapObj::EnterPortalWalk(<list at 0x00cdb0e4>);   // already ported, faithful
-        //       reset the window INVERTED -- min FLT_MAX, max FLT_MIN, both depths -1
-        //       reset the row arrays twice (FUN_00794190, a TSGrowableArray SetCount)
-        //   }
-        //   CMapObj::EnterPortalWalk(<list at 0x00cdb0d4>);
-        //   if (window.depth < 0) {
-        //       FUN_00794250();                      // 608 bytes: nothing visible, tear down
-        //   } else {
-        //       s_nearChunkDistance = window.depth + CHUNK_SIZE;
-        //       CWorldScene::Traverse(&s_portalWindow, 1);
-        //   }
-        //   FUN_00799f80(&a zeroed 4-vector);        // 467 bytes
-        //
-        // The inverted window is the point of the first walk: it starts with nothing visible and
-        // the portal walk widens it to whatever the portals actually expose. The second walk then
-        // runs against that. Note this branch and the outdoor one are EXCLUSIVE -- Traverse runs
-        // once a frame, not twice, however the fidelity diff renders it.
-        //
-        // The two lists are identified now. Both are TSGrowableArray<int32_t> of GROUP INDICES,
-        // not of pointers -- 0xffff is the no-group sentinel -- and both are filled by the camera
-        // group update FUN_00795d40, which frozen has not ported (CWorld.cpp carries its TODO):
-        //
-        //   FUN_007d59b0 casts a segment straight down from the camera and returns TWO hits, one
-        //   map object and one group index each. Which of the two slots a hit fills is decided by
-        //   the def's own flag 0x400, not by order or distance. Slot 0's object becomes
-        //   s_cameraDef (0x00cd87a4) and its groups go to the list at 0x00cdb0d4; slot 1's
-        //   becomes s_cameraDefFlagged (0x00cd87a0) and its groups go to 0x00cdb0e4.
-        //
-        // So the list walked first, under the inverted window, is the flag-0x400 object's, and the
-        // one walked second is the object the camera is actually inside. Each insert is a set
-        // insert (FUN_00792fc0: scan, skip if present, else append), so a group is listed once
-        // however many times it is found.
-        //
-        // The chain that assigns s_cameraDef is now ported bottom to top --
-        // SegmentIntersectsBox, the three CMapObj bounds queries, QuerySegmentPortals,
-        // QuerySegmentMapObjs and CWorldScene::UpdateCameraDef -- but UpdateCameraDef is
-        // deliberately NOT CALLED, and this branch is why. The moment it starts returning a
-        // building, s_cameraDef goes non-null and every interior traverses nothing and goes black,
-        // which is worse than the outdoor traversal that runs there today.
-        //
-        // So the two land together: FUN_00794250 (608 bytes) and FUN_00799f80 (467), plus the row
-        // reset, and the call to UpdateCameraDef in the same change. CMapObj::EnterPortalWalk, the
-        // other half, is already ported and faithful.
-        //
-        // What FUN_00794250 does, from a read on 2026-09-26: it is the teardown for "nothing is
-        // visible". It walks all 64 distance rows and, per row, drains a list through FUN_007cecd0,
-        // moves every liquid out of the row's list at +0x30 onto a global list at 0x00adfc34, and
-        // splices the row's entity list at +0x18 into a shared one at rows+0x205c. Frozen's Row
-        // already carries every one of those offsets, so the mapping is not the hard part.
-        //
-        // The hard part is that it is Storm list surgery -- unlink-then-relink with the link offset
-        // read out of the list object -- and a wrong offset corrupts a list rather than drawing
-        // something wrong. It wants a run in the same change, not a build.
+        // The camera's own building is s_cameraDef and its rooms are s_cameraGroupIndices; a second
+        // building carrying def flag 0x400 is s_cameraDefFlagged with its own room list. Both are
+        // filled by CWorldScene::UpdateCameraDef from one segment dropped straight down.
+        if (CWorldScene::s_cameraDefFlagged && CWorldScene::s_cameraDefFlagged->m_mapObj
+            && CWorldScene::s_cameraFlaggedGroupIndices.Count()) {
+            CMapObj::EnterPortalWalk(CWorldScene::s_cameraDefFlagged,
+                                     &CWorldScene::s_cameraFlaggedGroupIndices[0],
+                                     CWorldScene::s_cameraFlaggedGroupIndices.Count());
+
+            // Both windows reset INVERTED -- every minimum at +FLT_MAX and every maximum at
+            // -FLT_MAX, with the depths at -1. That is the point of the first walk: it starts with
+            // nothing visible and the portals widen it to only what they actually expose. The
+            // maximum is -FLT_MAX, not FLT_MIN; FLT_MIN is a small positive number and would not
+            // invert anything.
+            const float INVERTED_MIN = 3.4028234663852886e+38f;
+            const float INVERTED_MAX = -3.4028234663852886e+38f;
+
+            CWorldScene::s_window.minX = INVERTED_MIN;
+            CWorldScene::s_window.minY = INVERTED_MIN;
+            CWorldScene::s_window.maxX = INVERTED_MAX;
+            CWorldScene::s_window.maxY = INVERTED_MAX;
+            CWorldScene::s_window.depth = -1.0f;
+            CWorldScene::s_window.unknown14 = 0.0f;
+            CWorldScene::s_window.unknown18 = 0.0f;
+
+            CWorldScene::s_portalWindow.minX = INVERTED_MIN;
+            CWorldScene::s_portalWindow.minY = INVERTED_MIN;
+            CWorldScene::s_portalWindow.maxX = INVERTED_MAX;
+            CWorldScene::s_portalWindow.maxY = INVERTED_MAX;
+            CWorldScene::s_portalWindow.depth = -1.0f;
+            CWorldScene::s_portalWindow.unknown14 = 0.0f;
+            CWorldScene::s_portalWindow.unknown18 = 0.0f;
+
+            // TODO two SetCount(0) calls on the window arrays at 0x00cdd0e8 and 0x00cdd0f8, which
+            // FUN_00795d00 and FUN_00795d20 append to and which frozen does not carry. They
+            // accumulate the windows the walk opens; without them the walk still runs, it just has
+            // nowhere to record what it found for the second pass below.
+        }
+
+        if (CWorldScene::s_cameraDef->m_mapObj && CWorldScene::s_cameraGroupIndices.Count()) {
+            CMapObj::EnterPortalWalk(CWorldScene::s_cameraDef,
+                                     &CWorldScene::s_cameraGroupIndices[0],
+                                     CWorldScene::s_cameraGroupIndices.Count());
+        }
+
+        if (CWorldScene::s_portalWindow.depth < 0.0f) {
+            // Nothing the portals expose. DIVERGED, deliberately: the reference tears all 64
+            // distance rows down here (FUN_00794250) so the frame draws nothing at all. That is
+            // Storm list surgery and is not ported, and leaving it out on its own would draw
+            // whatever the previous frame left in the rows. Falling back to the OUTDOOR traversal
+            // instead keeps the world on screen -- it over-draws where the reference would draw
+            // nothing, which is the safe direction to be wrong in while the teardown is missing.
+            CWorldScene::s_window.minX = 0.0f;
+            CWorldScene::s_window.minY = 0.0f;
+            CWorldScene::s_window.maxX = 1.0f;
+            CWorldScene::s_window.maxY = 1.0f;
+            CWorldScene::s_window.depth = 0.0f;
+            CWorldScene::s_portalWindow.minX = 0.0f;
+            CWorldScene::s_portalWindow.minY = 0.0f;
+            CWorldScene::s_portalWindow.maxX = 1.0f;
+            CWorldScene::s_portalWindow.maxY = 1.0f;
+            CWorldScene::s_portalWindow.depth = 0.0f;
+            CWorldScene::s_portalWindow.unknown14 = 0.0f;
+            CWorldScene::s_portalWindow.unknown18 = 0.0f;
+            CWorldScene::s_nearChunkDistance = -10000.0f;
+
+            CWorldScene::Traverse(&CWorldScene::s_portalWindow, 0);
+        } else {
+            // The portals opened something: traverse in portal mode, starting one chunk beyond the
+            // depth they reached.
+            CWorldScene::s_nearChunkDistance = CWorldScene::s_portalWindow.depth + CHUNK_SIZE;
+
+            CWorldScene::Traverse(&CWorldScene::s_portalWindow, 1);
+        }
+
+        // TODO FUN_00799f80(&{0, 0, 1, 1}): a second map-object-def pass the reference runs after
+        // both arms, over a frustum stack indexed by its own depth counter, through
+        // CWorldScene::VisitMapObjDefGroup. 467 bytes, and it needs FUN_00793270 and FUN_00799b70.
     }
 
     // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks

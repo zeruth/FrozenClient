@@ -40914,7 +40914,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 248
+"line": 263
 },
 "M2ArrayDelta": {
 "files": [
@@ -190100,6 +190100,31 @@
 "refs": [],
 "line": 68
 },
+"ProbeLog": {
+"files": [
+"src/util/log.cpp"
+],
+"callseq": [
+"fopen",
+"__vcrt_assert_va_start_is_not_reference<char const *>::__vcrt_assert_va_start_is_not_reference",
+"__va_start",
+"vfprintf",
+"fputc",
+"fflush"
+],
+"strings": [
+"Logs/probe.log",
+"w"
+],
+"consts": [
+"10"
+],
+"branches": 2,
+"stub": false,
+"lines": 24,
+"refs": [],
+"line": 89
+},
 "SFileNormalizeArchivePath": {
 "files": [
 "src/util/sfile.cpp"
@@ -192474,7 +192499,8 @@
 "CWorldScene::UpdateCamera",
 "LoadingScreenStart",
 "CMap::Update",
-"LoadingScreenFinish"
+"LoadingScreenFinish",
+"CWorldScene::UpdateCameraDef"
 ],
 "strings": [],
 "consts": [
@@ -192488,7 +192514,7 @@
 ],
 "branches": 11,
 "stub": false,
-"lines": 80,
+"lines": 84,
 "refs": [],
 "line": 1143
 },
@@ -192503,7 +192529,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1224
+"line": 1228
 },
 "CWorld::GetBodyTint": {
 "files": [
@@ -192516,7 +192542,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1228
+"line": 1232
 },
 "CWorld::GetCameraPos": {
 "files": [
@@ -192529,7 +192555,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1232
+"line": 1236
 },
 "CWorld::GetCameraDir": {
 "files": [
@@ -192542,7 +192568,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1236
+"line": 1240
 },
 "CWorld::SetNearClip": {
 "files": [
@@ -192555,7 +192581,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1241
+"line": 1245
 },
 "CWorld::SetHorizonFarClipScale": {
 "files": [
@@ -192568,7 +192594,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1246
+"line": 1250
 },
 "CWorld::SetHorizonNearClipScale": {
 "files": [
@@ -192581,7 +192607,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1251
+"line": 1255
 },
 "CWorld::GetDetailBands": {
 "files": [
@@ -192594,7 +192620,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1267
+"line": 1271
 },
 "CWorld::SetupFogRenderStates": {
 "files": [
@@ -192622,7 +192648,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1274
+"line": 1278
 },
 "CWorld::SetEnvironmentDetail": {
 "files": [
@@ -192639,7 +192665,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1290
+"line": 1294
 },
 "TextureLodBiasSet": {
 "files": [
@@ -194555,17 +194581,15 @@
 "consts": [
 "0.01f",
 "0x1",
-"0x10000",
 "0x20",
 "0x4000",
-"0x8",
 "0x800",
 "1",
 "1.0f"
 ],
-"branches": 7,
+"branches": 8,
 "stub": false,
-"lines": 57,
+"lines": 67,
 "refs": [],
 "line": 1584
 },
@@ -194595,7 +194619,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1646
+"line": 1656
 },
 "CWorldScene::TraverseRowStaticEntities": {
 "files": [
@@ -194624,7 +194648,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 1704
+"line": 1714
 },
 "CWorldScene::TraverseRowEntities": {
 "files": [
@@ -194645,18 +194669,14 @@
 "consts": [
 "0",
 "0x1",
-"0x10000u",
-"0x8",
-"0x8u",
 "1",
-"16",
 "2"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 52,
+"lines": 57,
 "refs": [],
-"line": 1760
+"line": 1770
 },
 "CWorldScene::UpdateCameraLiquid": {
 "files": [
@@ -194677,7 +194697,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 1819
+"line": 1834
 },
 "CWorldScene::DrawEntityShadows": {
 "files": [
@@ -194708,7 +194728,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 1869
+"line": 1884
 },
 "CWorldScene::ShadeHorizon": {
 "files": [
@@ -194741,7 +194761,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 1929
+"line": 1944
 },
 "CWorldScene::TraverseRowOccluders": {
 "files": [
@@ -194766,7 +194786,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 2018
+"line": 2033
 },
 "CWorldScene::SubmitOccluderBox": {
 "files": [
@@ -194788,7 +194808,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 2072
+"line": 2087
 },
 "CWorldScene::AddDetailDoodads": {
 "files": [
@@ -194805,7 +194825,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2117
+"line": 2132
 },
 "CWorldScene::RenderDetailDoodads": {
 "files": [
@@ -194847,16 +194867,16 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 2133
+"line": 2148
 },
 "CWorldScene::AddGroupIndexUnique": {
 "files": [
 "src/world/cworldscene.cpp"
 ],
 "callseq": [
-"TSBaseArray<int>::Count",
-"TSBaseArray<int>::operator[]",
-"TSGrowableArray<int>::Add"
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::operator[]",
+"TSGrowableArray<unsigned int>::Add"
 ],
 "strings": [],
 "consts": [
@@ -194867,15 +194887,15 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2212
+"line": 2227
 },
 "CWorldScene::UpdateCameraDef": {
 "files": [
 "src/world/cworldscene.cpp"
 ],
 "callseq": [
-"TSGrowableArray<int>::SetCount",
-"TSGrowableArray<int>::SetCount",
+"TSGrowableArray<unsigned int>::SetCount",
+"TSGrowableArray<unsigned int>::SetCount",
 "C3Vector::C3Vector",
 "C3Vector::C3Vector",
 "QuerySegmentMapObjs",
@@ -194902,7 +194922,7 @@
 "stub": false,
 "lines": 87,
 "refs": [],
-"line": 2231
+"line": 2246
 },
 "Liquid::CVertexData::~CVertexData": {
 "files": [
@@ -196317,6 +196337,16 @@
 "DetailDoodad::CreateBuffers",
 "memset",
 "CWorldScene::Traverse",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::operator[]",
+"CMapObj::EnterPortalWalk",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::operator[]",
+"CMapObj::EnterPortalWalk",
+"CWorldScene::Traverse",
+"CWorldScene::Traverse",
 "CGxDevice::MasterEnable",
 "CWorld::IsCameraUnderLiquid",
 "CWorld::GetFogColor",
@@ -196346,11 +196376,12 @@
 "1.0f",
 "10000.0f",
 "1000000.0f",
+"3.4028234663852886e+38f",
 "33.33333206176758f"
 ],
-"branches": 8,
+"branches": 11,
 "stub": false,
-"lines": 189,
+"lines": 214,
 "refs": [],
 "line": 1238
 },
@@ -196373,7 +196404,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1431
+"line": 1456
 },
 "CMap::InitializeRenderChunks": {
 "files": [
@@ -196395,7 +196426,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1458
+"line": 1483
 },
 "CMap::AllocBufEntry": {
 "files": [
@@ -196428,7 +196459,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 1480
+"line": 1505
 },
 "CMap::RecycleBufBlocks": {
 "files": [
@@ -196453,7 +196484,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1558
+"line": 1583
 },
 "CMap::CreateRenderChunkPools": {
 "files": [
@@ -196488,7 +196519,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1590
+"line": 1615
 },
 "CMap::DestroyRenderChunkPools": {
 "files": [
@@ -196506,7 +196537,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1626
+"line": 1651
 },
 "CMap::FreeBufBlocks": {
 "files": [
@@ -196533,7 +196564,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1646
+"line": 1671
 },
 "CMap::ReleaseAllBufEntries": {
 "files": [
@@ -196550,7 +196581,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1681
+"line": 1706
 },
 "CMap::SetupChunkLighting": {
 "files": [
@@ -196573,7 +196604,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1694
+"line": 1719
 },
 "CMap::UpdateDetailDoodads": {
 "files": [
@@ -196586,7 +196617,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1703
+"line": 1728
 },
 "CompareAreaDistance": {
 "files": [
@@ -196603,7 +196634,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1708
+"line": 1733
 },
 "CMap::UpdateAreas": {
 "files": [
@@ -196649,7 +196680,7 @@
 "stub": false,
 "lines": 122,
 "refs": [],
-"line": 1741
+"line": 1766
 },
 "CMap::UpdateAreaChunks": {
 "files": [
@@ -196675,7 +196706,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1867
+"line": 1892
 },
 "CMap::LinkToMapObjDefGroup": {
 "files": [
@@ -196695,7 +196726,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1905
+"line": 1930
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -196710,7 +196741,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1923
+"line": 1948
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -196739,7 +196770,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1939
+"line": 1964
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -196758,7 +196789,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1997
+"line": 2022
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -196777,7 +196808,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 2020
+"line": 2045
 },
 "CMapArea::CMapArea": {
 "files": [
@@ -202349,13 +202380,12 @@
 "0",
 "0.0f",
 "0.5f",
-"0x40u",
 "3",
 "4"
 ],
 "branches": 8,
 "stub": false,
-"lines": 74,
+"lines": 76,
 "refs": [],
 "line": 14
 },

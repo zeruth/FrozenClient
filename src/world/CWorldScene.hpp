@@ -184,8 +184,8 @@ class CWorldScene {
         // The group indices of each of those two, which is what the portal walks are handed
         // (0x00cdb0d4 and 0x00cdb0e4). Set membership, not sequences -- a group appears once
         // however many times the query reports it.
-        static TSGrowableArray<int32_t> s_cameraGroupIndices;
-        static TSGrowableArray<int32_t> s_cameraFlaggedGroupIndices;
+        static TSGrowableArray<uint32_t> s_cameraGroupIndices;
+        static TSGrowableArray<uint32_t> s_cameraFlaggedGroupIndices;
         static float s_cameraGroundHeight;                  // DAT_00cd8790
         static int32_t s_hasMapObjs;                        // DAT_00cd8778
         // The groups the traversal found, in the order it found them (DAT_00cdb080)
@@ -198,7 +198,7 @@ class CWorldScene {
         static const int32_t s_quadrantVertex[4];           // DAT_00aeee3c: the chunk vertex nearest the camera per quadrant
 
         // Put a group index in one of the two lists if it is not already there. ref: FUN_00792fc0
-        static void AddGroupIndexUnique(TSGrowableArray<int32_t>& list, int32_t groupIndex);
+        static void AddGroupIndexUnique(TSGrowableArray<uint32_t>& list, uint32_t groupIndex);
 
         // Work out which building, and which room of it, the camera is in, by dropping a segment
         // straight down from it. Fills s_cameraDef, s_cameraDefFlagged and the two index lists.

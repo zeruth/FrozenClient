@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 05:19 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 05:38 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -12,18 +12,18 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | &nbsp;&nbsp;ported | 3685 (=) | 741.3k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2230 (=) (8.3%)** | **289.8k (5.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **2231 (+1) (8.3%)** | **290.3k (5.3%)** |
 | unmapped | 22589 | 4.46M |
 | world spine (reachable from OnFrameRender) | 5381, mapped 1420 (=) (26.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1438 (=) (25.5%) | |
 | **render surface** (the modules that draw the world) | **4520, mapped 853 (=) (18.9%)** | |
 | frozen functions (src/, from PDB + source) | 13847, stubs 1700 | |
 
-Match evidence: annotated 2164, callgraph 240, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2165, callgraph 239, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 04:25 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
+Previous run: 2026-09-26 05:19 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
 
 ## Lua API coverage (binding tables)
 
@@ -638,7 +638,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00798da0 | `CWorldScene::RenderTerrain` | 83% | 31 | 50 | 38 | 10 | 0% | 1379 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
-| 0079a870 | `CMap::Render` | 28% | 54 | 26 | 24 | 8 | 0% | 1355 |
+| 0079a870 | `CMap::Render` | 34% | 54 | 32 | 24 | 11 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 02:15 | 4349 (16.1%) | 2219 (8.2%) | 578 | 1409/5384 | 2924/2964 | 1380 |
 | 2026-09-26 02:20 | 4351 (16.1%) | 2221 (8.2%) | 578 | 1411/5384 | 2924/2964 | 1380 |
 | 2026-09-26 02:32 | 4352 (16.1%) | 2222 (8.2%) | 578 | 1412/5384 | 2924/2964 | 1380 |
 | 2026-09-26 02:37 | 4355 (16.2%) | 2223 (8.2%) | 578 | 1415/5384 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 04:24 | 4365 (16.2%) | 2230 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:25 | 4366 (16.2%) | 2230 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 05:19 | 4366 (16.2%) | 2230 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
+| 2026-09-26 05:38 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

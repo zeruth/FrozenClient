@@ -79,8 +79,8 @@ int32_t CWorldScene::s_visibleCount8624;
 int32_t CWorldScene::s_frameStamp;
 CMapObjDef* CWorldScene::s_cameraDef;
 CMapObjDef* CWorldScene::s_cameraDefFlagged;
-TSGrowableArray<int32_t> CWorldScene::s_cameraGroupIndices;
-TSGrowableArray<int32_t> CWorldScene::s_cameraFlaggedGroupIndices;
+TSGrowableArray<uint32_t> CWorldScene::s_cameraGroupIndices;
+TSGrowableArray<uint32_t> CWorldScene::s_cameraFlaggedGroupIndices;
 float CWorldScene::s_cameraGroundHeight;
 int32_t CWorldScene::s_hasMapObjs;
 CWorldScene::ViewWindow CWorldScene::s_window;
@@ -2224,7 +2224,7 @@ void CWorldScene::RenderDetailDoodads() {
 // A set insert. The reference scans the whole array first and does nothing if the value is already
 // there, which is what keeps a group from being walked twice when the query reports it from both
 // its geometry and a portal.
-void CWorldScene::AddGroupIndexUnique(TSGrowableArray<int32_t>& list, int32_t groupIndex) {
+void CWorldScene::AddGroupIndexUnique(TSGrowableArray<uint32_t>& list, uint32_t groupIndex) {
     for (uint32_t i = 0; i < list.Count(); i++) {
         if (list[i] == groupIndex) {
             return;
@@ -2280,11 +2280,11 @@ void CWorldScene::UpdateCameraDef() {
         // is ported) into the two display strings here.
 
         CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraGroupIndices,
-                                        static_cast<int32_t>(groups[0]));
+                                        groups[0]);
 
         if (groups[1] != 0xffff) {
             CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraGroupIndices,
-                                             static_cast<int32_t>(groups[1]));
+                                             groups[1]);
         }
 
         // The two groups' flags together decide whether the indoor pass needs a fresh full-screen
@@ -2322,11 +2322,11 @@ void CWorldScene::UpdateCameraDef() {
 
     if (defs[1]) {
         CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraFlaggedGroupIndices,
-                                         static_cast<int32_t>(groups[2]));
+                                         groups[2]);
 
         if (groups[3] != 0xffff) {
             CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraFlaggedGroupIndices,
-                                             static_cast<int32_t>(groups[3]));
+                                             groups[3]);
         }
     }
 }

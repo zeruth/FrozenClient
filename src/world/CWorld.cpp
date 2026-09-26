@@ -1216,9 +1216,13 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
         LoadingScreenFinish();
     }
 
-    // TODO FUN_00795d40, the day/night update FUN_007816f0, the fog-end read into
-    // DAT_00cd7668, the underwater update FUN_0079bf40, the weather update FUN_0078d170, and the
-    // zone light blend at the end
+    // Which building the camera is standing in, which is what CMap::Render's indoor branch runs
+    // off. Safe to call now that that branch has somewhere to go: if the portal walk exposes
+    // nothing it falls back to the outdoor traversal rather than to the unported teardown.
+    CWorldScene::UpdateCameraDef();
+
+    // TODO the day/night update FUN_007816f0, the fog-end read into DAT_00cd7668, the underwater
+    // update FUN_0079bf40, the weather update FUN_0078d170, and the zone light blend at the end
 }
 
 float CWorld::GetCloudDensity() {

@@ -43483,13 +43483,13 @@
   "branchRatio": 0.379,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.312,
+  "fidelity": 0.375,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Update",
-  "frozenSize": 1088,
+  "frozenSize": 1092,
   "how": "override",
   "module": "SEvt.cpp",
   "refSize": 862,
@@ -44344,17 +44344,17 @@
   "status": "ported"
  },
  "00791cb0": {
-  "branchRatio": 0.467,
-  "constOverlap": 0.182,
-  "faithful": false,
+  "branchRatio": 0.533,
+  "constOverlap": 0.136,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::VisitStaticEntity",
-  "frozenSize": 450,
-  "how": "callgraph",
+  "frozenSize": 489,
+  "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 501,
   "status": "ported"
@@ -44465,15 +44465,15 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::AddGroupIndexUnique",
-  "frozenSize": 0,
+  "frozenSize": 199,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 150,
   "status": "ported"
  },
  "00793060": {
-  "branchRatio": 0.167,
-  "constOverlap": 0.033,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
   "files": [
@@ -44481,7 +44481,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::TraverseRowEntities",
-  "frozenSize": 738,
+  "frozenSize": 776,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 521,
@@ -44609,7 +44609,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCameraDef",
-  "frozenSize": 0,
+  "frozenSize": 411,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 575,
@@ -44808,16 +44808,16 @@
   "status": "ported"
  },
  "0079a870": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.458,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.283,
+  "fidelity": 0.34,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 662,
+  "frozenSize": 931,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -45745,7 +45745,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::GroupInfo",
-  "frozenSize": 0,
+  "frozenSize": 26,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 34,
@@ -45761,7 +45761,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::QuerySegmentPortals",
-  "frozenSize": 0,
+  "frozenSize": 1119,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 657,
@@ -46097,7 +46097,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::EnterPortalWalk",
-  "frozenSize": 0,
+  "frozenSize": 685,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 67,
@@ -47211,7 +47211,7 @@
  },
  "007bdb10": {
   "branchRatio": 0.727,
-  "constOverlap": 0.021,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
@@ -49526,7 +49526,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "QuerySegmentMapObjs",
-  "frozenSize": 0,
+  "frozenSize": 1048,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 793,
@@ -50881,7 +50881,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "SegmentIntersectsBox",
-  "frozenSize": 0,
+  "frozenSize": 634,
   "how": "annotated",
   "module": "PetNameCache.cpp",
   "refSize": 464,
