@@ -172,7 +172,10 @@ class CWorldScene {
         static int32_t s_visibleEntityCount;                // DAT_00cd872c
         static int32_t s_visibleCount8624;                  // DAT_00cd8624
         static int32_t s_frameStamp;                        // DAT_00cd87b0
-        static void* s_cameraGroup;                         // DAT_00cd87a4: the map object group the camera is in (portal mode)
+        // DAT_00cd87a4: the map OBJECT the camera is inside, not one of its groups -- the groups
+        // go into the index list at 0x00cdb0d4 instead. Set by FUN_00795d40, which is not ported,
+        // so this stays null and every indoor branch that tests it is dead. See CMap::Render.
+        static void* s_cameraGroup;
         static float s_cameraGroundHeight;                  // DAT_00cd8790
         static int32_t s_hasMapObjs;                        // DAT_00cd8778
         // The groups the traversal found, in the order it found them (DAT_00cdb080)

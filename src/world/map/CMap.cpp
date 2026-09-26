@@ -1325,8 +1325,26 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         // runs against that. Note this branch and the outdoor one are EXCLUSIVE -- Traverse runs
         // once a frame, not twice, however the fidelity diff renders it.
         //
-        // What is missing beyond the two functions above is which lists 0x00cdb0d4 and
-        // 0x00cdb0e4 are; frozen names neither.
+        // The two lists are identified now. Both are TSGrowableArray<int32_t> of GROUP INDICES,
+        // not of pointers -- 0xffff is the no-group sentinel -- and both are filled by the camera
+        // group update FUN_00795d40, which frozen has not ported (CWorld.cpp carries its TODO):
+        //
+        //   FUN_007d59b0 casts a segment straight down from the camera and returns TWO hits, one
+        //   map object and one group index each. Which of the two slots a hit fills is decided by
+        //   the def's own flag 0x400, not by order or distance. Slot 0's object becomes
+        //   s_cameraGroup (0x00cd87a4) and its groups go to the list at 0x00cdb0d4; slot 1's
+        //   becomes 0x00cd87a0 and its groups go to 0x00cdb0e4.
+        //
+        // So the list walked first, under the inverted window, is the flag-0x400 object's, and the
+        // one walked second is the object the camera is actually inside. Each insert is a set
+        // insert (FUN_00792fc0: scan, skip if present, else append), so a group is listed once
+        // however many times it is found.
+        //
+        // PORT THIS FROM THE TOP. s_cameraGroup is never assigned anywhere in frozen, so this
+        // whole branch is unreachable and porting the traversal below it would land under an unset
+        // flag. FUN_00795d40 is what makes it live, and it needs FUN_007d59b0 (793 bytes) plus
+        // FUN_007ae840 / FUN_007ae880 / FUN_007af280 / FUN_007aeb10 / FUN_007b3990. The pieces
+        // frozen already has for it are CMapObjGroup::QuerySegment and the hit statics it fills.
     }
 
     // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks
