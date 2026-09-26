@@ -1158,6 +1158,13 @@ HTEXTURE TextureCreate(uint32_t width, uint32_t height, EGxTexFormat format, EGx
     );
 }
 
+// ref: FUN_004b8c80
+// The widest of the TextureCreate overloads, and the one the other two end at.
+//
+// Two things in the reference's flag arithmetic that confirm this layout rather than assume it:
+// it ORs the filter mode into bits 0..2 of the flag word, and it decides the anisotropy from
+// `(flags & 7) == 5` before packing it into bits 9..13 -- so GxTex_Anisotropic is 5 and
+// m_maxAnisotropy is five bits at 9.
 HTEXTURE TextureCreate(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t depth, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags texFlags, void* userArg, TEXTURE_CALLBACK* userFunc, const char* a10, int32_t a11) {
     auto m = SMemAlloc(sizeof(CTexture), __FILE__, __LINE__, 0x0);
     auto texture = new (m) CTexture();

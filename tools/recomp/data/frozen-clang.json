@@ -77259,7 +77259,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1186
+"line": 1193
 },
 "TextureGetDimensions": {
 "files": [
@@ -77278,7 +77278,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1207
+"line": 1214
 },
 "TextureGetGxTex": {
 "files": [
@@ -77307,7 +77307,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 1232
+"line": 1239
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -77320,7 +77320,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1289
+"line": 1296
 },
 "TextureHasAlpha": {
 "files": [
@@ -77338,7 +77338,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1294
+"line": 1301
 },
 "TextureFreeMem": {
 "files": [
@@ -77357,7 +77357,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1305
+"line": 1312
 },
 "TextureGetTexFlags": {
 "files": [
@@ -77377,7 +77377,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1312
+"line": 1319
 },
 "TextureHasPendingData": {
 "files": [
@@ -77395,7 +77395,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1321
+"line": 1328
 },
 "TextureGetRefCount": {
 "files": [
@@ -77414,7 +77414,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1329
+"line": 1336
 },
 "TextureIncreasePriority": {
 "files": [
@@ -77427,7 +77427,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1354
+"line": 1361
 },
 "TextureInitialize": {
 "files": [
@@ -77449,7 +77449,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1358
+"line": 1365
 },
 "TextureIsSame": {
 "files": [
@@ -77471,7 +77471,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1366
+"line": 1373
 },
 "CGxTexFlags::operator==": {
 "files": [
