@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 00:12 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 00:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,13 +17,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5385, mapped 1398 (=) (26.0%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5652, mapped 1416 (=) (25.1%) | |
 | **render surface** (the modules that draw the world) | **4523, mapped 835 (=) (18.5%)** | |
-| frozen functions (src/, from PDB + source) | 13734, stubs 1700 | |
+| frozen functions (src/, from PDB + source) | 13733, stubs 1700 | |
 
 Match evidence: annotated 2131, callgraph 239, callorder 111, cvar 32, handler 29, order 141, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 00:00 -- mapped 4333, ported 3653, stub 578, spine mapped 1398.
+Previous run: 2026-09-26 00:12 -- mapped 4333, ported 3653, stub 578, spine mapped 1398.
 
 ## Lua API coverage (binding tables)
 
@@ -583,7 +583,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
 | `MapRec::Read` | db | 2780 | src/db/rec/MapRec.cpp |
 | `GetPredAdvancedBy1x1` | m4vh263dec | 2737 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
-| `VerifySelfTest` | world | 2727 |  |
 | `CGxString::CreateGeometry` | gx | 2696 | src/gx/font/CGxString.cpp |
 | `DetailDoodad::FillVertexBuffer` | world | 2690 | src/world/map/detaildoodad.cpp |
 | `ParseLiquid` | world | 2616 | src/world/Terrain.cpp |
@@ -599,6 +598,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
 | `DetailDoodad::Scatter` | world | 2320 | src/world/map/detaildoodad.cpp |
 | `BuildSkyDome` | world | 2303 | src/world/Terrain.cpp |
+| `TT_CharMap_Load` | lib/freetype-2.0 | 2236 | vendor/freetype-2.0.9/src/sfnt/ttcmap.c |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 20:47 | 4322 (16.0%) | 2207 (8.2%) | 578 | 1389/5385 | 2924/2964 | 1380 |
 | 2026-09-25 21:08 | 4323 (16.0%) | 2207 (8.2%) | 578 | 1390/5385 | 2924/2964 | 1380 |
 | 2026-09-25 22:39 | 4330 (16.1%) | 2209 (8.2%) | 578 | 1396/5385 | 2924/2964 | 1380 |
 | 2026-09-25 22:42 | 4330 (16.1%) | 2209 (8.2%) | 578 | 1396/5385 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 23:59 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-26 00:00 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-26 00:12 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
+| 2026-09-26 00:36 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 
 ## How to move a row
 

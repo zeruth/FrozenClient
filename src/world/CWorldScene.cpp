@@ -28,7 +28,6 @@
 #include <tempest/Intersect.hpp>
 #include <tempest/Sphere.hpp>
 #include <tempest/Vector.hpp>
-#include <cstdio>
 #include <cstdlib>
 #include <cmath>
 #include <cstring>
@@ -1089,9 +1088,7 @@ void CWorldScene::TraverseRowLiquids(Row* row) {
             // TODO FUN_007ce520 builds the layer's bounding sphere and
             // CWorldScene::SphereOccludedByVolumes is asked about it first; and when the liquid
             // sound switch is on, FUN_008a20c0 wakes the surface's sound. Neither is ported.
-            // TODO call liquid->UpdateForFrame() here. It is ported and its surface creation
-            // is checked, but it has never been run in place -- see the note on UpdateForFrame
-            // for why the runs that would have shown it were not trustworthy.
+            liquid->UpdateForFrame();
         }
 
         liquid = next;

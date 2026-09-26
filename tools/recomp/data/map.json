@@ -44409,7 +44409,7 @@
   "branchRatio": 0.1,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.571,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -44703,7 +44703,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 1504,
+  "frozenSize": 1520,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -44719,7 +44719,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 614,
+  "frozenSize": 598,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -48783,7 +48783,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateForFrame",
-  "frozenSize": 0,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 24,
@@ -48923,7 +48923,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateForFrame",
-  "frozenSize": 0,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 50,
