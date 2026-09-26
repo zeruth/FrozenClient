@@ -124,6 +124,9 @@ struct CMapObjHitRecord {
     const C44Matrix* placement;   // the instance's placement matrix
     const C3Vector* vertices;     // MOVT
     uint32_t vertexCount;
+    // NOT unused: the decal module's stream builders branch on it (FUN_007e2fd0, FUN_007e32f0),
+    // zero taking the expanded-triangle path. Nothing in frozen sets it, so the other path is
+    // unreachable here; rename it when whatever writes it is identified.
     uint32_t unused3;
     uint16_t* indices;            // three per hit face, from the shared index pool
     uint16_t* faces;              // hit face numbers, from the shared face pool
@@ -159,7 +162,11 @@ class CMapObjGroup {
         static uint32_t s_hitRecordCount;        // DAT_00cb752c
         static uint32_t s_hitFacePoolCount;      // DAT_00cb7530
         static uint32_t s_hitIndexPoolCount;     // DAT_00cb7534
-        static uint32_t s_unk7538;               // DAT_00cb7538: reset alongside the others by every caller
+        // DAT_00cb7538: the cursor into a pool of 32 placement matrices at DAT_00cd7880, which the
+        // decal module's terrain collector (FUN_007a6260) uses because a terrain receiver has no
+        // instance matrix of its own to point its hit record at. Every query resets it. The pool
+        // itself is not here yet and comes with that collector.
+        static uint32_t s_unk7538;
         static CMapObjHitRecord s_hitRecords[0x20];
         static uint16_t s_hitFacePool[0x4000];   // DAT_00cb7540
         static uint16_t s_hitIndexPool[0xc000];  // DAT_00cbf540

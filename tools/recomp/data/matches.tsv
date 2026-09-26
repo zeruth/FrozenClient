@@ -3179,6 +3179,7 @@ addr	how	frozen	evidence
 007e2fd0	annotated	DecalStreamReceiver	tag in src/world/Shadow.cpp
 007e32f0	annotated	DecalStreamReceiverColored	tag in src/world/Shadow.cpp
 007e3580	annotated	DecalStreamIndices	tag in src/world/Shadow.cpp
+007e35f0	annotated	DecalCollectReceivers	tag in src/world/Shadow.cpp
 007e36e0	annotated	ShadowAddCallback	tag in src/world/Shadow.cpp
 007e3820	annotated	ShadowModCallback	tag in src/world/Shadow.cpp
 007e3980	annotated	ShadowSetLOD	tag in src/world/Shadow.cpp

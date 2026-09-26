@@ -436,6 +436,72 @@ static void DecalStreamReceiver(const CMapObjHitRecord& record, CGxBatch& batch,
     GxPrimVertexPtr(stream, GxVBF_PN);
 }
 
+// The state the collection leaves for the two walks to read back, because the reference passes it
+// between them in callee-saved registers across a static call chain rather than as arguments:
+// DAT_00d38058..6c is the caster's box and DAT_00d38050 the query mask. Reproducing the register
+// convention is neither possible nor desirable in C++, so the walks take them as arguments and this
+// keeps them where the reference keeps them for anything else that reads them.
+CAaBox s_decalCasterBox = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+uint32_t s_decalQueryMask = 0;
+
+// DAT_00d38010, DAT_00d38014 and DAT_00d38054: the second receiver list, up to ten M2 models, and
+// the flag that says to collect it. Only a caller whose flags have bit 0 set gets one, which the
+// blob never does.
+int32_t s_decalCollectM2 = 0;
+void* s_decalM2Receivers[10] = { nullptr };
+uint32_t s_decalM2ReceiverCount = 0;
+
+// ref: FUN_007e35f0
+// Collect the receivers under a caster: reset the pools, stash the box and the mask, run whichever
+// halves the arguments ask for, and say whether anything was found. `wantM2` and `wantHits` are the
+// reference's own out-parameters, and the walk reads them to decide which of its two loops to run.
+//
+// The five counters reset here are the hit-record pools CMapObjGroup owns. Worth recording while
+// passing: `s_unk7538` is not a mystery any more -- the terrain collector (FUN_007a6260) uses it as
+// the cursor into a 32-entry pool of placement matrices at DAT_00cd7880, which it needs because a
+// terrain receiver has no instance matrix of its own to point at. frozen has the counter but not
+// the pool, and the pool comes with that collector.
+int32_t DecalCollectReceivers(const CAaBox& casterBox, uint32_t queryMask, uint32_t flags, uint32_t* wantM2, uint32_t* wantHits) {
+    *wantM2 = flags & 1;
+
+    s_decalM2ReceiverCount = 0;
+    s_decalQueryMask = 0;
+    s_decalCollectM2 = 0;
+
+    *wantHits = queryMask != 0 ? 1 : 0;
+
+    s_decalCasterBox = casterBox;
+
+    if (*wantM2) {
+        s_decalCollectM2 = 1;
+
+        // TODO FUN_007a2aa0, 447 bytes, reached through the one-line wrapper FUN_0077f350: fill
+        // s_decalM2Receivers with up to ten models whose bounds meet the caster's box. Nothing
+        // calls this path yet -- the blob's flags leave bit 0 clear.
+        s_decalM2ReceiverCount = 0;
+    }
+
+    if (*wantHits) {
+        CMapObjGroup::s_hitFlags = 0;
+        CMapObjGroup::s_hitRecordCount = 0;
+        CMapObjGroup::s_hitFacePoolCount = 0;
+        CMapObjGroup::s_hitIndexPoolCount = 0;
+        CMapObjGroup::s_unk7538 = 0;
+
+        s_decalQueryMask = queryMask;
+
+        // TODO FUN_007a6af0, reached through the one-line wrapper FUN_0077f340: the dispatcher, and
+        // with it the whole query. On mask & 0x300f0 it walks the loaded map-object instances
+        // (FUN_007a6940 -> FUN_007aef00 -> FUN_007cb7b0, whose bottom is frozen's
+        // CMapObjGroup::QueryBox and RecordHits); on mask & 0x30100 it walks the terrain tiles
+        // (FUN_007a6830 -> FUN_007a6630 -> FUN_007a6260, the 956-byte collector that appends a hit
+        // record per terrain triangle the volume cuts). That terrain half is what puts a blob on
+        // the ground, and it is the last thing missing. docs/ref/parity-shadows.md maps the chain.
+    }
+
+    return (s_decalM2ReceiverCount != 0 || CMapObjGroup::s_hitRecordCount != 0) ? 1 : 0;
+}
+
 // ref: FUN_006c42f0
 // Swap red and blue when the device wants RGBA rather than ARGB. The reference calls this on any
 // colour it is about to put in a vertex stream by hand; five call sites share it.
@@ -548,7 +614,14 @@ static void DecalStreamIndices(const CMapObjHitRecord& record) {
 //
 // Polygon offset comes from the strength -- twice it, scaled by about 1/32768 -- which is the
 // reference's whole answer to coplanar depth on this path. The blob's 0.4 gives about 2.4e-05.
-void DecalDrawReceivers(const CImVector& color, uint32_t queryMask, uint32_t flags, float strength) {
+void DecalDrawReceivers(const CAaBox& casterBox, const CImVector& color, uint32_t queryMask, uint32_t flags, float strength) {
+    uint32_t wantM2 = 0;
+    uint32_t wantHits = 0;
+
+    if (!DecalCollectReceivers(casterBox, queryMask, flags, &wantM2, &wantHits)) {
+        return;
+    }
+
     GxRsPush();
 
     // GxRs_Unk61 and GxRs_Unk62 have no name in frozen's enum yet; the reference sets both to 1
@@ -594,7 +667,7 @@ void DecalDrawReceivers(const CImVector& color, uint32_t queryMask, uint32_t fla
 
     g_theGxDevicePtr->XformPush(GxXform_World);
 
-    for (uint32_t i = 0; i < CMapObjGroup::s_hitRecordCount; i++) {
+    for (uint32_t i = 0; wantHits && i < CMapObjGroup::s_hitRecordCount; i++) {
         const CMapObjHitRecord& record = CMapObjGroup::s_hitRecords[i];
 
         // The stream the expansion needs must fit; the reference caps it at 0x10000 vertices.
@@ -635,7 +708,7 @@ void DecalDrawReceivers(const CImVector& color, uint32_t queryMask, uint32_t fla
     // It is gated on bit 0 of the flags, which the blob leaves clear, so a blob never collects M2
     // receivers at all -- that list belongs to whichever decal kind passes an odd flag word. The
     // render inventory's open "M2 receivers" item is about the M2 SHADOW pass, not this.
-    (void)queryMask;
+    (void)wantM2;
 
     g_theGxDevicePtr->XformPop(GxXform_World);
     GxRsPop();
@@ -670,7 +743,7 @@ void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44M
     // the M2 list is collected only when bit 0 of `flags` is set, and the hit query runs only when
     // `queryMask` is non-zero. Until it lands s_hitRecordCount is whatever an unrelated query left,
     // so the walk below normally finds nothing and draws nothing.
-    DecalDrawReceivers(color, queryMask, flags, strength);
+    DecalDrawReceivers(bounds, color, queryMask, flags, strength);
 
     g_theGxDevicePtr->XformPop(GxXform_Tex1);
     g_theGxDevicePtr->XformPop(GxXform_Tex0);
