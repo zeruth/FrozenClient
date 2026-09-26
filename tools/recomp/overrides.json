@@ -3128,5 +3128,17 @@
   "00831fc0": {
     "frozen": "CM2Model::SequenceFinished",
     "note": "Confirmed by --propose (score 14.9, clearly ahead) and then by reading both. The 71% call-order score is structural: the reference takes one record off a deferred queue that FUN_008321e0 flushes, so its list carries the queue plumbing and an inline indirect call where frozen calls its own m_sequenceDoneCallback; frozen takes the four values as arguments. Same computation. What matters is that the natural-end notification is now here at all: it is the only path that reports interrupted=0, which is what hands a unit back its animation permissions. Verified at runtime 2026-09-26 -- 25 units reported m_animFlags reaching 0x70 from real sequence completions."
+  },
+  "00834810": {
+    "frozen": "CM2Model::Initialize",
+    "note": "Confirmed by --propose (8.3) and then field by field: the reference sets the same slots in the same order, which is also what proved frozen's two TODOs here. The 43% call order is one missing block, named at its spot in the source: the reference then walks a4's attachment list and re-attaches each child to the new model (0x0083487e, over a4 +0x58 with the next link at +0x60 and the attachment id at +0x50), releasing each as it goes. Nothing passes a4 in frozen -- CM2Scene::CreateModel is the only caller and passes null -- so that block is unreachable, but it needs the attachment-list layout named before it can be written. What DID get fixed from reading this: a4's reference was being taken and dropped, which frozen's own comment asked to fix; it is kept in m_parentModel (+0x30, confirmed here) and released in ~CM2Model."
+  },
+  "004f3930": {
+    "frozen": "TextureCacheCreateTexture",
+    "note": "Confirmed by --propose (9.0) and by reading: same hash, same table lookup, same alloc-insert-copy, same refcount bump. 75% call order because the reference increments the count inline on both paths where frozen calls the entry's AddRef once at the end, and its insert helper is separate. Same computation."
+  },
+  "007260e0": {
+    "status": "unlinked",
+    "note": "--propose offered CGUnit_C::CanHighlight for this and it is NOT that. The reference takes a spell id and answers whether the unit knows it: for the active player it tests a bit in the known-spell bitset at 0x00be8dc4 bounded by 0x00ad49dc, and for the player's own pet it defers to FUN_0053b900. CanHighlight takes no argument. Recorded so the matchers do not propose it again; the real counterpart is a \"unit knows spell\" accessor frozen does not have yet."
   }
 }

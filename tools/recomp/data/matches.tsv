@@ -694,7 +694,7 @@ addr	how	frozen	evidence
 004c2440	callgraph	C44Matrix::Adjoint	only unmatched callee of 004c2f90=C44Matrix::Inverse
 004c2f90	annotated	C44Matrix::Inverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2fc0	annotated	C44Matrix::AffineInverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
-004c30a0	callgraph	CM2Model::AddRef	only unmatched callee of 00831630=CM2Model::AttachToParent
+004c30a0	sticky	CM2Model::AddRef	held from the previous run, where it was sticky
 004c31b0	annotated	C44Matrix::RotationAroundX	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3220	annotated	C44Matrix::RotationAroundY	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3290	annotated	C44Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -930,6 +930,8 @@ addr	how	frozen	evidence
 004f2d80	annotated	TextureCacheHasMips	tag in src/component/Texture.cpp
 004f2f60	callgraph	CACHEENTRY::CACHEENTRY	only unmatched callee of 004f3110=TextureCacheAllocEntry
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
+004f38d0	callgraph	CACHEENTRY::AddRef	only unmatched callee of 004f3930=TextureCacheCreateTexture
+004f3930	override	TextureCacheCreateTexture	
 004f39a0	annotated	ComponentCheckSectionFlags	tag in src/component/Util.cpp
 004f3a40	annotated	GetSelectionFromContext	tag in src/component/Util.cpp
 004f3a90	annotated	GetContextFromSelection	tag in src/component/Util.cpp
@@ -3521,6 +3523,7 @@ addr	how	frozen	evidence
 00832ab0	override	CM2Model::SetBoneSequence	
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 00834540	annotated	CM2Model::AttachToScene	tag in src/model/CM2Model.cpp
+00834810	override	CM2Model::Initialize	
 008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
 00834900	annotated	CM2Lighting::Initialize	tag in src/model/CM2Lighting.cpp
 00834940	annotated	CM2Lighting::SetFog	tag in src/model/CM2Lighting.cpp
@@ -3540,6 +3543,7 @@ addr	how	frozen	evidence
 008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
 00835750	annotated	CM2Lighting::SetupGxFog	tag in src/model/CM2Lighting.cpp
 00835970	annotated	CM2Shared::AddRef	tag in src/model/CM2Shared.cpp
+008359c0	annotated	CM2Shared::CallbackWhenLoaded	tag in src/model/CM2Shared.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 008360a0	annotated	CM2Shared::SetIndices	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"

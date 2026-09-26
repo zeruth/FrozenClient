@@ -473,6 +473,9 @@ uint32_t CM2Shared::AddRef() {
     return this->m_refCount;
 }
 
+// ref: FUN_008359c0
+// A model asking to be told when this shared data is ready: initialise it now if both halves
+// are already in, otherwise park it on the callback list.
 int32_t CM2Shared::CallbackWhenLoaded(CM2Model* model) {
     if (model->m_flags & 0x20) {
         return 1;

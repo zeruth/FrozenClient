@@ -120,6 +120,10 @@ CACHEENTRY* TextureCacheAllocEntry() {
     return entry;
 }
 
+// ref: FUN_004f3930
+// The cache entry for a texture filename, created on first ask. Hashed by name, and every
+// caller holds a reference -- the reference bumps the count on both paths, which is what the
+// single AddRef at the end here does.
 void* TextureCacheCreateTexture(const char* fileName) {
     auto hashval = SStrHash(fileName);
     auto texture = s_cacheTable.Ptr(hashval, s_cacheKey);

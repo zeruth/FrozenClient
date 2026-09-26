@@ -148,6 +148,13 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
 }
 
 CM2Model::~CM2Model() {
+    // Give back the reference Initialize took on the model this one was created against. The
+    // reference does this first thing (FUN_00832640 at 0x0083264e).
+    if (this->m_parentModel) {
+        this->m_parentModel->Release();
+        this->m_parentModel = nullptr;
+    }
+
     // TODO
 
     // Any bone-sequence request still parked in CM2Shared's load list holds a raw pointer to this
@@ -2230,6 +2237,10 @@ bool CM2Model::HasAttachment(uint32_t id) {
     return this->m_shared->m_data->attachments.Count() > 0xFFFF;
 }
 
+// ref: FUN_00834810
+// Bring a freshly allocated model up: attach it to the scene, take references on the shared
+// data and on the model it was created against, then ask the shared data to initialise it now
+// or call back when it is ready.
 int32_t CM2Model::Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, uint32_t flags) {
     this->AttachToScene(scene);
 
@@ -2239,17 +2250,18 @@ int32_t CM2Model::Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, u
     this->m_shared = shared;
     this->m_shared->AddRef();
 
-    // **A reference taken and thrown away.** This raises a4's refcount and stores the pointer
-    // nowhere, so nothing can ever release it and that model would never be freed. The reference
-    // keeps it at CM2Model+0x30 and its destructor opens by releasing it, destroying it in place
-    // and returning it to the model pool when the count reaches zero (FUN_00832640 at 0x0083264e).
-    //
-    // Dormant rather than live: the one caller in frozen, CM2Scene::CreateModel, passes nullptr.
-    // It stops being dormant the moment anything passes a real model, so give this a member and
-    // release it in ~CM2Model in the same change.
+    // The reference is now KEPT, in m_parentModel, and given back in ~CM2Model -- the comment
+    // that used to sit here asked for exactly that and FUN_00834810 confirms the slot (+0x30).
+    this->m_parentModel = a4;
+
     if (a4) {
         a4->AddRef();
     }
+
+    // Still missing from this function: the reference then walks a4's attachment list and
+    // re-attaches each child to THIS model (FUN_00834810 at 0x0083487e, over a4 +0x58 with the
+    // next link at +0x60 and the attachment id at +0x50). Nothing passes a4 yet, so nothing
+    // reaches it; it needs the attachment-list layout named before it can be written.
 
     this->m_flags = flags;
 

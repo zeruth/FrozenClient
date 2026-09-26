@@ -138,6 +138,11 @@ class CM2Model {
         void* m_loadedArg = nullptr;
         CM2Scene* m_scene = nullptr;
         CM2Shared* m_shared = nullptr;
+        // ref +0x30: the model this one was created against, held by reference. Initialize takes
+        // that reference and ~CM2Model gives it back. Always null so far -- CM2Scene::CreateModel
+        // is the only caller and passes nothing -- but the reference keeps it here and releases it
+        // first thing in its destructor, so the reference is no longer taken and dropped.
+        CM2Model* m_parentModel = nullptr;
         CM2Model* model30 = nullptr;
         CM2ModelCall* m_modelCallList = nullptr;
         CM2ModelCall** m_modelCallTail = nullptr;

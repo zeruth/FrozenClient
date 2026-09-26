@@ -11143,7 +11143,7 @@
   ],
   "frozen": "CM2Model::AddRef",
   "frozenSize": 3,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "TextureBlob.cpp",
   "refSize": 265,
   "status": "ported"
@@ -14918,6 +14918,38 @@
   "how": "string",
   "module": "TextureCache.cpp",
   "refSize": 144,
+  "status": "ported"
+ },
+ "004f38d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "CACHEENTRY::AddRef",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "TextureCache.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "004f3930": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheCreateTexture",
+  "frozenSize": 382,
+  "how": "override",
+  "module": "TextureCache.cpp",
+  "refSize": 105,
   "status": "ported"
  },
  "004f39a0": {
@@ -54448,7 +54480,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::AdvanceTime",
-  "frozenSize": 96,
+  "frozenSize": 99,
   "how": "override",
   "module": "XMLTree.cpp",
   "refSize": 73,
@@ -54758,7 +54790,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.333,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -54908,7 +54940,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 4726,
+  "frozenSize": 4742,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -55004,7 +55036,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetAnimating",
-  "frozenSize": 181,
+  "frozenSize": 193,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 121,
@@ -56105,16 +56137,16 @@
   "status": "ported"
  },
  "00832640": {
-  "branchRatio": 0.083,
+  "branchRatio": 0.125,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.643,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 989,
+  "frozenSize": 1045,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,
@@ -56182,6 +56214,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 232,
+  "status": "ported"
+ },
+ "00834810": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::Initialize",
+  "frozenSize": 418,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 186,
   "status": "ported"
  },
  "008348d0": {
@@ -56486,6 +56534,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 75,
+  "status": "ported"
+ },
+ "008359c0": {
+  "branchRatio": 0.667,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::CallbackWhenLoaded",
+  "frozenSize": 53,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 53,
   "status": "ported"
  },
  "00835a20": {
