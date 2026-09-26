@@ -345,7 +345,7 @@ void CGWorldFrame::OnWorldRender() {
                     center.z += local.z * scale;
                 }
 
-                bool vis = TerrainSphereVisible(center, radius);
+                bool vis = !CWorldScene::SphereOutsideFrustum(center, radius);
 
                 object->m_model->SetVisible(vis ? 1 : 0);
                 object->m_model->SetAnimating(vis ? 1 : 0);

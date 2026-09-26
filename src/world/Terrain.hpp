@@ -19,9 +19,6 @@ void TerrainUpdateView();
 
 void TerrainRender();
 void SkyRender();
-bool TerrainSphereVisible(const C3Vector& center, float radius);
-// LiquidType kind (0 water, 1 ocean, 2 magma, 3 slime) the camera is submerged in, or -1 in air.
-int32_t TerrainCameraLiquidKind();
 // Blob shadows: call Begin once per frame after the opaque world, Draw per entity, then End.
 void BlobShadowsBegin();
 void BlobShadowDraw(const C3Vector& pos, float radius);
@@ -53,8 +50,6 @@ bool TerrainFogActive();
 void TerrainUiShaders(CGxShader*& vs, CGxShader*& ps);
 // Visit every loaded terrain and WMO doodad model
 void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
-// True if pos is inside a loaded WMO interior group; fills outAmbient with that WMO's interior light.
-uint32_t TerrainAreaIDAt(const C3Vector& pos);
 
 // The light for a unit on a WMO floor: the reference's probe through the interior groups' BSP
 // and MOCV sample (CMapEntity::FloorLight). Fills the entity's diffuse and ambient as bytes.

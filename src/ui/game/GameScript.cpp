@@ -12,6 +12,8 @@
 #include "object/client/CGObject_C.hpp"
 #include "object/Types.hpp"
 #include "world/Terrain.hpp"
+#include "world/map/CMap.hpp"
+#include "world/map/CMapChunk.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "ui/game/ScriptUtil.hpp"
@@ -837,7 +839,8 @@ void ResolveArea(const AreaTableRec** area, const AreaTableRec** zone) {
         return;
     }
 
-    uint32_t areaID = TerrainAreaIDAt(player->GetPosition());
+    auto chunk = CMap::ChunkAt(player->GetPosition());
+    uint32_t areaID = chunk ? chunk->m_areaId : 0;
 
     if (!areaID) {
         return;

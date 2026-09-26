@@ -4400,9 +4400,6 @@ void BlobShadowsEnd() {
 }
 
 // The scene's frustum, not the stand-in's copy of one.
-bool TerrainSphereVisible(const C3Vector& center, float radius) {
-    return !CWorldScene::SphereOutsideFrustum(center, radius);
-}
 
 
 const C44Matrix& TerrainViewProjT() {
@@ -4592,20 +4589,6 @@ bool WmoGroupContains(WmoGroup& grp, float lx, float ly, float lz) {
     }
 
     return false;
-}
-
-// The AreaTable.dbc row for the terrain chunk under a world position, or 0 when that chunk is not
-// loaded.
-//
-// Each MCNK carries its own area id, so this is a chunk lookup rather than a zone polygon test --
-// which is why a subzone boundary in the reference follows chunk edges.
-// The map owns this now: a point resolves straight to its chunk through the area grid, where
-// the stand-in walked every loaded tile and every one of its 256 chunks looking for a box that
-// contained the point.
-uint32_t TerrainAreaIDAt(const C3Vector& pos) {
-    auto chunk = CMap::ChunkAt(pos);
-
-    return chunk ? chunk->m_areaId : 0;
 }
 
 // Is a point inside an interior room?
