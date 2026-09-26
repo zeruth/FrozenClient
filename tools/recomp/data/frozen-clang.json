@@ -40077,7 +40077,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 47
+"line": 51
 },
 "AsyncFileReadPollHandler": {
 "files": [
@@ -40101,7 +40101,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 72
+"line": 76
 },
 "AsyncFileReadThread": {
 "files": [
@@ -40135,7 +40135,7 @@
 "stub": false,
 "lines": 88,
 "refs": [],
-"line": 113
+"line": 117
 },
 "AsyncFileReadWait": {
 "files": [
@@ -40159,7 +40159,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 203
+"line": 207
 },
 "AsyncFileReadSetProgressCallback": {
 "files": [
@@ -40172,7 +40172,24 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 252
+"line": 256
+},
+"AsyncFileReadLockQueue": {
+"files": [
+"src/async/asyncfileread.cpp"
+],
+"callseq": [
+"SCritSect::Enter"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 262
 },
 "AsyncFileReadUnlockQueue": {
 "files": [
@@ -40189,7 +40206,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 258
+"line": 268
 },
 "AsyncFileReadIsBusy": {
 "files": [
@@ -40211,7 +40228,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 266
+"line": 276
 },
 "AccountDataSetClearConfigData": {
 "files": [
@@ -196580,7 +196597,11 @@
 "qsort",
 "CMapArea::Load",
 "AsyncFileReadWait",
-"CMap::UpdateAreaChunks"
+"CMap::UpdateAreaChunks",
+"AsyncFileReadLockQueue",
+"CWorldScene::BoxOutsideFrustum",
+"AsyncFileReadLinkObject",
+"AsyncFileReadUnlockQueue"
 ],
 "strings": [],
 "consts": [
@@ -196595,11 +196616,11 @@
 "4",
 "64"
 ],
-"branches": 16,
+"branches": 19,
 "stub": false,
-"lines": 93,
+"lines": 122,
 "refs": [],
-"line": 1735
+"line": 1741
 },
 "CMap::UpdateAreaChunks": {
 "files": [
@@ -196625,7 +196646,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1832
+"line": 1867
 },
 "CMap::LinkToMapObjDefGroup": {
 "files": [
@@ -196645,7 +196666,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1870
+"line": 1905
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -196660,7 +196681,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1888
+"line": 1923
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -196689,7 +196710,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1904
+"line": 1939
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -196708,7 +196729,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1962
+"line": 1997
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -196727,7 +196748,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1985
+"line": 2020
 },
 "CMapArea::CMapArea": {
 "files": [

@@ -10405,6 +10405,22 @@
   "refSize": 22,
   "status": "ported"
  },
+ "004b9950": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadLockQueue",
+  "frozenSize": 31,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 20,
+  "status": "ported"
+ },
  "004b9970": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -10415,7 +10431,7 @@
    "src/async/asyncfileread.cpp"
   ],
   "frozen": "AsyncFileReadUnlockQueue",
-  "frozenSize": 0,
+  "frozenSize": 31,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 21,
@@ -10485,11 +10501,27 @@
   "refSize": 185,
   "status": "ported"
  },
+ "004ba3d0": {
+  "branchRatio": 0.176,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadLinkObject",
+  "frozenSize": 348,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 340,
+  "status": "ported"
+ },
  "004bab50": {
   "branchRatio": 0.714,
   "constOverlap": 0.222,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.625,
   "files": [
    "src/async/AsyncFile.cpp",
    "src/async/asyncfile.cpp"
@@ -46232,16 +46264,16 @@
   "status": "verified"
  },
  "007b5950": {
-  "branchRatio": 0.372,
+  "branchRatio": 0.442,
   "constOverlap": 0.065,
   "faithful": false,
-  "fidelity": 0.684,
+  "fidelity": 0.895,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::UpdateAreas",
-  "frozenSize": 1448,
+  "frozenSize": 1589,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 943,

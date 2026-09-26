@@ -650,11 +650,13 @@ addr	how	frozen	evidence
 004b95b0	override	CreateTgaTexture	
 004b9760	override	TextureCreate	
 004b9910	annotated	AsyncFileReadSetProgressCallback	tag in src/async/AsyncFileRead.cpp
+004b9950	annotated	AsyncFileReadLockQueue	tag in src/async/AsyncFileRead.cpp
 004b9970	annotated	AsyncFileReadUnlockQueue	tag in src/async/AsyncFileRead.cpp
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
 004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 007d85e0=CMapObjGroup::Read
+004ba3d0	annotated	AsyncFileReadLinkObject	tag in src/async/AsyncFileRead.cpp
 004bab50	override	AsyncFileReadObject	
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
 004bc410	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0081b510=FrameScript_GetEventListeners

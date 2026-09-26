@@ -44,6 +44,10 @@ void AsyncFileReadCreateThread(CAsyncQueue* queue, const char* queueName) {
     SThread::Create(AsyncFileReadThread, thread, thread->thread, const_cast<char*>(queueName), 0);
 }
 
+// ref: FUN_004ba3d0
+// Put the object back in its queue's read list at the place its priority earns. `a2` decides what
+// happens against an EQUAL priority: with it set the object goes in front of its equals, which is
+// how a caller raises an already-queued read.
 void AsyncFileReadLinkObject(CAsyncObject* object, int32_t a2) {
     if (!object->queue) {
         return;
@@ -252,6 +256,12 @@ void AsyncFileReadWait(CAsyncObject* object) {
 void AsyncFileReadSetProgressCallback(void* callback, void* param) {
     AsyncFileRead::s_progressCallback = callback;
     AsyncFileRead::s_progressParam = param;
+}
+
+// ref: FUN_004b9950
+void AsyncFileReadLockQueue() {
+    AsyncFileRead::s_queueLock.Enter();
+    AsyncFileRead::s_queueLockHeld = 1;
 }
 
 // ref: FUN_004b9970

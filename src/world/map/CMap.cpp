@@ -1725,6 +1725,12 @@ struct AREADISTANCE {
     float distanceSq;
 };
 
+// How near a still-loading tile has to be for CMap::UpdateAreas to move its read up the queue.
+// Both are squared: 33.333 yards, one chunk, in any direction at all (DAT_00a3ffc8), and 266.667
+// yards, eight chunks, but only ahead of the camera (DAT_00a3ffcc).
+static const float AREA_PRIORITY_NEAR_SQ = 1111.111083984375f;
+static const float AREA_PRIORITY_FAR_SQ = 71111.109375f;
+
 // ref: FUN_007b5950
 // Streaming. Tiles outside the tile window go (unless their read is in progress); every tile
 // the WDT lists inside it exists; all of them are sorted by distance to the target; each
@@ -1788,6 +1794,10 @@ void CMap::UpdateAreas(int32_t update) {
 
     int32_t rect[4];
 
+    // The furthest still-loading tile inside the outer threshold, which is where the prioritisation
+    // pass below starts and walks back towards the camera. -1 when there is none.
+    int32_t lastLoading = -1;
+
     for (uint32_t i = 0; i < count; i++) {
         auto area = sorted[i].area;
 
@@ -1811,14 +1821,39 @@ void CMap::UpdateAreas(int32_t update) {
                 rect[2] = area->m_chunkBaseY + 15;
                 rect[3] = area->m_chunkBaseX + 15;
                 CMap::UpdateAreaChunks(update, area, rect, 0);
-            } else if (CMap::s_streamingMode) {
-                // TODO remember the nearest still-loading tile for the prioritisation below
+            } else if (CMap::s_streamingMode && sorted[i].distanceSq < AREA_PRIORITY_FAR_SQ) {
+                lastLoading = static_cast<int32_t>(i);
             }
         }
     }
 
+    // Reorder the read queue so the tiles that matter arrive first. Walked BACKWARDS, furthest to
+    // nearest, because each one is moved to the front of its priority band -- so the last moved
+    // ends up first, and that is the nearest tile.
+    //
+    // A tile qualifies if it is within 33.33 yards (one chunk) whatever direction it is in, or
+    // within 266.67 yards AND in the frustum. Both thresholds are squared, read out of the image at
+    // 0x00a3ffc8 and 0x00a3ffcc.
     if (CMap::s_streamingMode) {
-        // TODO FUN_004b9950 / FUN_004ba3d0 / FUN_004b9970: bump the reads of near tiles
+        AsyncFileReadLockQueue();
+
+        for (int32_t i = lastLoading; i >= 0; i--) {
+            auto area = sorted[i].area;
+
+            if (!area->m_asyncObject) {
+                continue;
+            }
+
+            bool wanted = sorted[i].distanceSq < AREA_PRIORITY_NEAR_SQ
+                || (sorted[i].distanceSq < AREA_PRIORITY_FAR_SQ
+                    && !CWorldScene::BoxOutsideFrustum(area->m_bounds));
+
+            if (wanted) {
+                AsyncFileReadLinkObject(area->m_asyncObject, 1);
+            }
+        }
+
+        AsyncFileReadUnlockQueue();
     }
 
     if (update) {

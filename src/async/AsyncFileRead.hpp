@@ -49,6 +49,10 @@ void AsyncFileReadWait(CAsyncObject* object);
 
 void AsyncFileReadSetProgressCallback(void* callback, void* param);
 
+// Hold the read queue still. The prioritisation pass in CMap::UpdateAreas reorders the queue in
+// place, so it brackets itself in this pair.
+void AsyncFileReadLockQueue();
+
 void AsyncFileReadUnlockQueue();
 
 bool AsyncFileReadIsBusy();
