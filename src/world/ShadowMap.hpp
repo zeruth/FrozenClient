@@ -2,6 +2,7 @@
 #define WORLD_SHADOW_MAP_HPP
 
 #include <cstdint>
+#include <tempest/Vector.hpp>
 
 // The cascaded shadow map (reference module around FUN_00872ce0..FUN_00876d90, "ShadowMap.wfx").
 // Only the state the terrain pass reads is here; the maps themselves are not ported, so the
@@ -30,5 +31,18 @@ void ShadowMapBindMapObj(int32_t lit);
 // cascade constants into pixel c4 and c5, and at the highest quality three filter textures
 // into stages 5 through 7. ref: FUN_008744e0
 void ShadowMapBindScene();
+
+// The light direction the shadow passes sample with: as given, and turned by the world matrix and
+// re-normalised. The second one is the pixel c4 constant ShadowMapBindScene uploads.
+extern C3Vector g_shadowMapLightDir;
+extern C3Vector g_shadowMapLightDirWorld;
+
+// Store both forms of the light direction. ref: FUN_00875c10
+void ShadowMapSetLightDirection(const C3Vector& dir);
+
+// The intensity and flag the reference stores and never reads. ref: FUN_00874010
+extern float g_shadowMapIntensity;
+extern int32_t g_shadowMapFlag;
+void ShadowMapSetIntensity(float intensity, int32_t flag);
 
 #endif

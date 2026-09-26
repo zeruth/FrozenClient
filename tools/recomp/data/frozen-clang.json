@@ -120886,6 +120886,19 @@
 "refs": [],
 "line": 208
 },
+"CGWorldFrame::GetActiveCamera": {
+"files": [
+"src/ui/game/cgworldframe.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 214
+},
 "CGWorldFrame::OnWorldRender": {
 "files": [
 "src/ui/game/cgworldframe.cpp"
@@ -120930,23 +120943,15 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Head",
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "vector<CM2Model *,std::allocator<CM2Model *> >::push_back",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:424:35)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:431:35)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachMapObjDoodad",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:430:34)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:437:34)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachDoodadModel",
 "CWorld::GetTickTimeMs",
 "CM2Scene::AdvanceTime",
 "CSimpleCamera::Position",
 "CM2Scene::Animate",
-"ShadowMapGetQuality",
-"ClntObjMgrGetActivePlayer",
-"ClntObjMgrObjectPtr",
-"CGObject_C::GetPosition",
-"MapShadowSetup",
-"MapShadowBegin",
-"MapShadowLightView",
-"CM2Scene::DrawShadowCasters",
-"MapShadowEnd",
+"MapShadowRender",
 "CWorld::GetTickTimeMs",
 "_Vector_iterator<std::_Vector_val<std::_Simple_types<CM2Model *> > >::operator*",
 "ParticleFxUpdateModel",
@@ -120971,9 +120976,7 @@
 "GxRsPop",
 "GxXformSetViewport"
 ],
-"strings": [
-"c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp"
-],
+"strings": [],
 "consts": [
 "0",
 "0.001f",
@@ -120985,11 +120988,11 @@
 "2.0f",
 "30.0f"
 ],
-"branches": 27,
+"branches": 24,
 "stub": false,
-"lines": 326,
+"lines": 307,
 "refs": [],
-"line": 213
+"line": 220
 },
 "CGWorldFrame::OnWorldUpdate": {
 "files": [
@@ -121047,7 +121050,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 540
+"line": 528
 },
 "Script_GetInventorySlotInfo": {
 "files": [
@@ -205455,7 +205458,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 82
+"line": 88
 },
 "EnsureTargets": {
 "files": [
@@ -205486,7 +205489,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 89
+"line": 95
 },
 "Normalize": {
 "files": [
@@ -205507,7 +205510,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 124
+"line": 130
 },
 "Cross": {
 "files": [
@@ -205522,7 +205525,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 134
+"line": 140
 },
 "Dot": {
 "files": [
@@ -205535,7 +205538,30 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 138
+"line": 144
+},
+"MapShadowLightDirection": {
+"files": [
+"src/world/mapshadow.cpp"
+],
+"callseq": [
+"CWorld::GetOutdoorDirection",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"Normalize",
+"C3Vector::operator=",
+"C3Vector::C3Vector"
+],
+"strings": [],
+"consts": [
+"1.2f",
+"5.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 168
 },
 "MapShadowSetup": {
 "files": [
@@ -205543,11 +205569,7 @@
 ],
 "callseq": [
 "C3Vector::operator=",
-"CWorld::GetOutdoorDirection",
-"C3Vector::C3Vector",
-"C3Vector::C3Vector",
-"Normalize",
-"C3Vector::operator=",
+"MapShadowLightDirection",
 "C3Vector::C3Vector",
 "C3Vector::C3Vector",
 "Normalize",
@@ -205585,15 +205607,13 @@
 "0.0f",
 "0.5f",
 "1.0f",
-"1.2f",
-"2.0f",
-"5.0f"
+"2.0f"
 ],
-"branches": 3,
+"branches": 2,
 "stub": false,
-"lines": 109,
+"lines": 87,
 "refs": [],
-"line": 144
+"line": 181
 },
 "MapShadowProjection": {
 "files": [
@@ -205606,7 +205626,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 254
+"line": 269
 },
 "MapShadowLightView": {
 "files": [
@@ -205619,7 +205639,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 258
+"line": 273
 },
 "MapShadowTexMatrix": {
 "files": [
@@ -205632,7 +205652,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 262
+"line": 277
 },
 "MapShadowSize": {
 "files": [
@@ -205645,7 +205665,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 266
+"line": 281
 },
 "MapShadowBegin": {
 "files": [
@@ -205693,7 +205713,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 271
+"line": 286
 },
 "MapShadowEnd": {
 "files": [
@@ -205729,7 +205749,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 332
+"line": 347
 },
 "MapShadowTexture": {
 "files": [
@@ -205742,7 +205762,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 360
+"line": 375
 },
 "MapShadowRequestDump": {
 "files": [
@@ -205760,7 +205780,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 364
+"line": 379
 },
 "MapShadowSetupPlane": {
 "files": [
@@ -205789,7 +205809,59 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 391
+"line": 406
+},
+"MapShadowFocus": {
+"files": [
+"src/world/mapshadow.cpp"
+],
+"callseq": [
+"CWorld::GetCameraPos",
+"C3Vector::C3Vector",
+"CGWorldFrame::GetActiveCamera",
+"CGCamera::GetTarget",
+"ClntObjMgrObjectPtr",
+"CGObject_C::GetPosition",
+"C3Vector::operator=",
+"C3Vector::C3Vector"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\mapshadow.cpp"
+],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 446
+},
+"MapShadowRender": {
+"files": [
+"src/world/mapshadow.cpp"
+],
+"callseq": [
+"ShadowMapGetQuality",
+"MapShadowLightDirection",
+"ShadowMapSetLightDirection",
+"MapShadowFocus",
+"ShadowMapSetIntensity",
+"CWorld::GetM2Scene",
+"MapShadowSetup",
+"MapShadowBegin",
+"MapShadowLightView",
+"CM2Scene::DrawShadowCasters",
+"MapShadowEnd"
+],
+"strings": [],
+"consts": [
+"0",
+"1.0f"
+],
+"branches": 3,
+"stub": false,
+"lines": 28,
+"refs": [],
+"line": 471
 },
 "Fold": {
 "files": [
@@ -206480,7 +206552,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 17
+"line": 19
 },
 "ShadowMapGetShaderLevel": {
 "files": [
@@ -206495,7 +206567,67 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 22
+"line": 24
+},
+"ShadowMapSetLightDirection": {
+"files": [
+"src/world/shadowmap.cpp"
+],
+"callseq": [
+"C3Vector::operator=",
+"C44Matrix::C44Matrix",
+"GxXformWorld",
+"C3Vector::C3Vector",
+"sqrtf",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 42
+},
+"ShadowMapSetIntensity": {
+"files": [
+"src/world/shadowmap.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 75
+},
+"ShadowMapLightMatrices": {
+"files": [
+"src/world/shadowmap.cpp"
+],
+"callseq": [
+"MapShadowTexMatrix",
+"C44Matrix::Transpose"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"12",
+"2",
+"3",
+"4"
+],
+"branches": 2,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 87
 },
 "ShadowMapBindTerrain": {
 "files": [
@@ -206503,8 +206635,7 @@
 ],
 "callseq": [
 "MapShadowTexture",
-"MapShadowTexMatrix",
-"C44Matrix::Transpose",
+"ShadowMapLightMatrices",
 "CGxDevice::ShaderConstantsSet",
 "CGxDevice::ShaderConstantsSet",
 "CGxDevice::RsSet"
@@ -206515,46 +206646,64 @@
 "0x25",
 "1",
 "12",
-"2",
 "3",
 "4",
 "8"
 ],
-"branches": 4,
+"branches": 3,
 "stub": false,
-"lines": 34,
+"lines": 25,
 "refs": [],
-"line": 55
+"line": 125
 },
 "ShadowMapBindMapObj": {
 "files": [
 "src/world/shadowmap.cpp"
 ],
-"callseq": [],
+"callseq": [
+"MapShadowTexture",
+"CGxDevice::ShaderConstantsSet",
+"CGxDevice::RsSet"
+],
 "strings": [],
 "consts": [
-"0"
+"0",
+"1",
+"3"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 11,
+"lines": 14,
 "refs": [],
-"line": 93
+"line": 162
 },
 "ShadowMapBindScene": {
 "files": [
 "src/world/shadowmap.cpp"
 ],
-"callseq": [],
+"callseq": [
+"ShadowMapLightMatrices",
+"CGxDevice::ShaderConstantsSet",
+"CGxDevice::ShaderConstantsSet",
+"CGxDevice::ShaderConstantsSet"
+],
 "strings": [],
 "consts": [
-"0"
+"0",
+"0.0f",
+"0xe0",
+"1",
+"12",
+"2",
+"4",
+"5",
+"8"
 ],
-"branches": 1,
+"branches": 3,
 "stub": false,
-"lines": 7,
+"lines": 33,
 "refs": [],
-"line": 106
+"line": 182
 },
 "WeatherDensityCallback": {
 "files": [

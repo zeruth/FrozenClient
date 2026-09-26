@@ -15119,17 +15119,17 @@
   "status": "stub"
  },
  "004f5960": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CGObject_C.cpp",
-   "src/object/client/cgobject_c.cpp"
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
   ],
-  "frozen": "CGObject_C::GetFacing",
-  "frozenSize": 4,
-  "how": "callgraph",
+  "frozen": "CGWorldFrame::GetActiveCamera",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 19,
   "status": "ported"
@@ -15263,7 +15263,7 @@
   "status": "ported"
  },
  "004f8ea0": {
-  "branchRatio": 0.519,
+  "branchRatio": 0.583,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.224,
@@ -44846,7 +44846,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 950,
+  "frozenSize": 1021,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -47187,6 +47187,38 @@
   "refSize": 438,
   "status": "ported"
  },
+ "007bb3e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowFocus",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 113,
+  "status": "ported"
+ },
+ "007bb570": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowRender",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 248,
+  "status": "ported"
+ },
  "007bb670": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -47197,7 +47229,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowSetupPlane",
-  "frozenSize": 0,
+  "frozenSize": 396,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 448,
@@ -59876,6 +59908,22 @@
   "refSize": 25,
   "status": "ported"
  },
+ "00874010": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetIntensity",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
  "008740d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -59893,8 +59941,8 @@
   "status": "ported"
  },
  "008744e0": {
-  "branchRatio": 0.333,
-  "constOverlap": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
@@ -59909,10 +59957,10 @@
   "status": "ported"
  },
  "008745d0": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/world/ShadowMap.cpp",
    "src/world/shadowmap.cpp"
@@ -59925,7 +59973,7 @@
   "status": "ported"
  },
  "00874660": {
-  "branchRatio": 0.75,
+  "branchRatio": 1.0,
   "constOverlap": 0.286,
   "faithful": false,
   "fidelity": 0.125,
@@ -59938,6 +59986,22 @@
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 247,
+  "status": "ported"
+ },
+ "00875c10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetLightDirection",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 287,
   "status": "ported"
  },
  "00875d30": {

@@ -28,8 +28,8 @@
     "note": "NOT a horizon rasteriser, which is the easy misreading. It gates on the camera height lying inside a band, projects both ends of a segment through the plane at 0x00cd8f90 into a distance, and converts that to a band index by a scale and bias. When the two ends fall in different bands it SPLITS the segment at every band boundary between them, clipping against a table of planes at 0x00cdab5c of four floats each, and links each piece into a list with FUN_006ded60 (LinkToTail). Unported: frozen's ShadeHorizon does the project-and- raise for chunk ridges but nothing does this banding and clipping."
   },
   "007bb570": {
-    "status": "unlinked",
-    "note": "MapShadow's per-frame update. Frozen has NO counterpart function: the one part of it frozen does implement -- the light direction, with the z exaggerated and then clamped before normalizing -- lives inside MapShadowSetup instead. That is why this is unlinked rather than tagged. Its two constants were read out of the image on 2026-09-25 and confirm the ones MapShadowSetup already used: DAT_009ebf34 is 5.0 (the exaggeration) and DAT_00a400fc is -1.2 (the clamp), which had previously only been matched against an observed vector. The rest of the function is the cascaded shadow map's own: FUN_00875c10 takes the direction, FUN_00875f80 renders the cascades and FUN_008750b0 builds their matrices, and FUN_00875f80 alone reaches thirteen further functions -- which is why item 10 is the top of a subsystem rather than a bounded port."
+    "status": "ported",
+    "note": "The per-frame map shadow driver, ported as MapShadowRender in src/world/MapShadow.cpp. It DIVERGES in decomposition, not behaviour: the reference renders through one call (FUN_00875f80) that builds the light volume from the focus and draws the casters through three registered function pointers, where frozen splits that into MapShadowSetup plus MapShadowBegin / DrawShadowCasters / MapShadowEnd -- four calls for one. The filter chain after it (FUN_008750b0, 822 bytes) has no counterpart and is a TODO in the body. The call site also diverges and says so: the reference calls this from CMap::Render at 0x0079ac21, frozen from CGWorldFrame after CM2Scene::Animate, because its caster draw needs bone matrices that Animate builds from the visibility the terrain pass establishes. Its two constants were read out of the image on 2026-09-25: DAT_009ebf34 is 5.0 (the z exaggeration) and DAT_00a400fc is -1.2 (the clamp)."
   },
   "007b1b10": {
     "status": "verified",
@@ -1459,7 +1459,7 @@
   "00873480": {
     "frozen": "CShaderEffect::SetTexMtx_Identity",
     "status": "ported",
-    "note": "the second call in SetupTextures\u2019 early-exit loop, per texture unit"
+    "note": "the second call in SetupTextures’ early-exit loop, per texture unit"
   },
   "004b8910": {
     "frozen": "CreateBlpSync",

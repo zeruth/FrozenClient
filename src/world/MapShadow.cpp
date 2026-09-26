@@ -1,4 +1,10 @@
 #include "world/MapShadow.hpp"
+#include "model/CM2Scene.hpp"
+#include "world/ShadowMap.hpp"
+#include "object/client/CGObject_C.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "ui/game/CGWorldFrame.hpp"
 #include "world/CWorld.hpp"
 #include "gx/Device.hpp"
 #include "gx/Draw.hpp"
@@ -141,24 +147,25 @@ float Dot(const C3Vector& a, const C3Vector& b) {
 
 } // namespace
 
-void MapShadowSetup(const C3Vector& focus) {
-    g_mapShadowFocus = focus;
-
-    // The reference's exaggeration and clamp operate on the direction the light TRAVELS, which
-    // points downward, so the vector has to be flipped into that convention BEFORE the rule is
-    // applied. frozen stores the direction TOWARD the light (see CWorld::s_outdoorDirection), whose z
-    // is positive, and the clamp is one-sided: applied to a positive z it never engages at all.
-    //
-    // That was the bug. The clamp is what holds the light near 52 degrees of elevation; without it
-    // frozen produced 0.963 where the reference holds 0.829, a far steeper light and correspondingly
-    // wrong shadow length. Confirmed against the value the reference stores at 0x00D43180:
-    // reference -0.3956 -0.3956 -0.8288, this code -0.3970 -0.3970 -0.8275.
-    //
-    // BOTH NUMBERS ARE NOW READ RATHER THAN MATCHED. The reference applies them in FUN_007bb570,
-    // which multiplies the light direction's z by DAT_009ebf34 and clamps it against
-    // DAT_00a400fc before normalizing. Read out of the image on 2026-09-25 those are exactly
-    // 5.0 and -1.2, so the 5.0f and -1.2f below are the reference's own constants and not a fit
-    // to an observed vector.
+// The reference's exaggeration and clamp operate on the direction the light TRAVELS, which
+// points downward, so the vector has to be flipped into that convention BEFORE the rule is
+// applied. frozen stores the direction TOWARD the light (see CWorld::s_outdoorDirection), whose z
+// is positive, and the clamp is one-sided: applied to a positive z it never engages at all.
+//
+// That was the bug. The clamp is what holds the light near 52 degrees of elevation; without it
+// frozen produced 0.963 where the reference holds 0.829, a far steeper light and correspondingly
+// wrong shadow length. Confirmed against the value the reference stores at 0x00D43180:
+// reference -0.3956 -0.3956 -0.8288, this code -0.3970 -0.3970 -0.8275.
+//
+// BOTH NUMBERS ARE NOW READ RATHER THAN MATCHED. The reference applies them in FUN_007bb570,
+// which multiplies the light direction's z by DAT_009ebf34 and clamps it against
+// DAT_00a400fc before normalizing. Read out of the image on 2026-09-25 those are exactly
+// 5.0 and -1.2, so the 5.0f and -1.2f below are the reference's own constants and not a fit
+// to an observed vector.
+//
+// It lives here rather than inside MapShadowSetup because the reference stores the direction into
+// the shadow map module BEFORE it picks a focus, and the order is worth keeping.
+C3Vector MapShadowLightDirection() {
     C3Vector lit = CWorld::GetOutdoorDirection();
     C3Vector dir = { -lit.x, -lit.y, -lit.z * 5.0f };
 
@@ -167,6 +174,14 @@ void MapShadowSetup(const C3Vector& focus) {
     }
 
     dir = Normalize(dir);
+
+    return dir;
+}
+
+void MapShadowSetup(const C3Vector& focus) {
+    g_mapShadowFocus = focus;
+
+    C3Vector dir = MapShadowLightDirection();
 
     // `dir` now points the way the light travels, i.e. downward, so the eye is the focus displaced
     // BACK along it and ends up in the sky, exactly as the reference does it
@@ -421,4 +436,63 @@ void MapShadowSetupPlane(const C3Vector& playerPos) {
 
     // DAT_00a4040c.
     g_mapShadowHeight = playerPos.z + 2.0f;
+}
+
+// ref: FUN_007bb3e0
+// Where the shadow map is centred: the camera position, unless the active camera is tracking an
+// object, in which case that object's position wins. The reference resolves the camera's target
+// GUID through the object manager with a TYPE_OBJECT mask -- any object, not just units -- and
+// falls back to the camera when the lookup misses, which is what happens while a target is loading.
+C3Vector MapShadowFocus() {
+    C3Vector focus = CWorld::GetCameraPos();
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (camera) {
+        auto target = ClntObjMgrObjectPtr(camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
+
+        if (target) {
+            focus = target->GetPosition();
+        }
+    }
+
+    return focus;
+}
+
+// ref: FUN_007bb570
+// The per-frame map shadow driver, in the reference's order: store the light direction, pick the
+// focus, set the intensity, render the map, filter it.
+//
+// DIVERGENCE, and it is one of decomposition rather than behaviour. The reference's render step is
+// FUN_00875f80, which builds the light volume from the focus AND draws the casters through three
+// function pointers the map registers; frozen splits that into MapShadowSetup (the volume) and
+// MapShadowBegin / DrawShadowCasters / MapShadowEnd (the draw), so this calls four things where the
+// reference calls one. The filter chain after it (FUN_008750b0) has no counterpart at all.
+void MapShadowRender() {
+    if (ShadowMapGetQuality() <= 0) {
+        return;
+    }
+
+    ShadowMapSetLightDirection(MapShadowLightDirection());
+
+    C3Vector focus = MapShadowFocus();
+
+    // 1.0 and 0 are the constants at the reference's call site, not a choice.
+    ShadowMapSetIntensity(1.0f, 0);
+
+    auto scene = CWorld::GetM2Scene();
+
+    if (!scene) {
+        return;
+    }
+
+    MapShadowSetup(focus);
+
+    if (MapShadowBegin()) {
+        scene->DrawShadowCasters(MapShadowLightView());
+        MapShadowEnd();
+    }
+
+    // TODO FUN_008750b0, 822 bytes: the blur chain that fills the three filter textures
+    // ShadowMapBindScene binds at quality > 2. Nothing in frozen stands in for it.
 }

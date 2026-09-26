@@ -2,6 +2,7 @@
 #define WORLD_MAP_SHADOW_HPP
 
 #include <cstdint>
+#include <tempest/Plane.hpp>
 #include <tempest/Vector.hpp>
 
 class C44Matrix;
@@ -36,6 +37,16 @@ extern const MapShadowConstants g_mapShadowConstants;
 // The focus the light volume was last built around (the player position).
 extern C3Vector g_mapShadowFocus;
 
+// The direction the shadow light travels, exaggerated and clamped the reference's way.
+C3Vector MapShadowLightDirection();
+
+// Where the map is centred: the camera, or whatever object the camera is tracking.
+// ref: FUN_007bb3e0
+C3Vector MapShadowFocus();
+
+// The per-frame driver: direction, focus, intensity, render. ref: FUN_007bb570
+void MapShadowRender();
+
 // Rebuild the light volume around a focus point (the player). Call once per frame before drawing.
 void MapShadowSetup(const C3Vector& focus);
 
@@ -69,8 +80,6 @@ void MapShadowRequestDump(const char* path);
 
 // The plane and height the map object and interior shadow binders sample against. Built by
 // MapShadowSetupPlane; the terrain path never reads them. ref: FUN_007bb670
-#include <tempest/Plane.hpp>
-
 extern C4Plane g_mapShadowPlane;
 extern float g_mapShadowHeight;
 

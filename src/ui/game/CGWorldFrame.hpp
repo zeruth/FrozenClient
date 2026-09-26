@@ -18,6 +18,11 @@ class CGWorldFrame : public CSimpleFrame {
         static CSimpleFrame* Create(CSimpleFrame* parent);
         static void RenderWorld(void* param);
 
+        // The one current frame's camera, or null before the world frame exists. The reference
+        // reads it straight off the current frame -- `s_currentWorldFrame ? its camera : null` --
+        // and 103 call sites go through it. ref: FUN_004f5960
+        static CGCamera* GetActiveCamera();
+
         // Virtual member functions
         virtual void OnFrameRender(CRenderBatch* batch, uint32_t layer);
         // TODO

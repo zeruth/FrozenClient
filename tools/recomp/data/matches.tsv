@@ -942,7 +942,7 @@ addr	how	frozen	evidence
 004f4c50	annotated	CMovementStatus::CMovementStatus	tag in src/object/movement/CMovementStatus.cpp
 004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
 004f5720	callgraph	MirrorInitialize	only unmatched callee of 004d4ac0=ClntObjMgrInitializeShared
-004f5960	callgraph	CGObject_C::GetFacing	only unmatched callee of 0060a490=Script_GetPlayerFacing
+004f5960	annotated	CGWorldFrame::GetActiveCamera	tag in src/ui/game/CGWorldFrame.cpp
 004f5de0	annotated	CAaBox::GetCenter	tag in lib/typhoon/tempest/box/CAaBox.cpp
 004f5e20	annotated	CM2Model::GetBoundingBox	tag in src/model/CM2Model.cpp
 004f5e80	annotated	CM2Model::GetBoundingSphere	tag in src/model/CM2Model.cpp
@@ -2956,6 +2956,8 @@ addr	how	frozen	evidence
 007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
 007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
 007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp
+007bb3e0	annotated	MapShadowFocus	tag in src/world/MapShadow.cpp
+007bb570	annotated	MapShadowRender	tag in src/world/MapShadow.cpp
 007bb670	annotated	MapShadowSetupPlane	tag in src/world/MapShadow.cpp
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
@@ -3767,10 +3769,12 @@ addr	how	frozen	evidence
 00873f50	annotated	ExtShadowQualityAbsoluteMax	tag in src/glue/GlueScript.cpp
 00873f80	annotated	ShadowMapGetQuality	tag in src/world/ShadowMap.cpp
 00873ff0	override	ShadowMapGetShaderLevel	
+00874010	annotated	ShadowMapSetIntensity	tag in src/world/ShadowMap.cpp
 008740d0	callgraph	HASHKEY_STR::GetString	only unmatched callee of 00514e30=Script_GetCVarMax
 008744e0	annotated	ShadowMapBindScene	tag in src/world/ShadowMap.cpp
 008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
+00875c10	annotated	ShadowMapSetLightDirection	tag in src/world/ShadowMap.cpp
 00875d30	string	EnsureTargets	unique "ShadowCache"
 00876530	override	CShaderEffectManager::GetEffect	
 00876be0	callgraph	CShaderEffectManager::CreateEffect	only unmatched callee of 00836600=CM2Shared::CreateSimpleEffect, 00836c90=CM2Shared::GetEffect

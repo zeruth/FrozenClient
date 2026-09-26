@@ -210,6 +210,13 @@ const CRect* CGWorldFrame::GetWorldViewport() {
     return frame ? &frame->m_viewport : nullptr;
 }
 
+// ref: FUN_004f5960
+CGCamera* CGWorldFrame::GetActiveCamera() {
+    return CGWorldFrame::s_currentWorldFrame
+        ? CGWorldFrame::s_currentWorldFrame->m_camera
+        : nullptr;
+}
+
 void CGWorldFrame::OnWorldRender() {
     // The reference (FUN_004f8ea0) pushes the device viewport and sets the frame's own rect for the
     // world; the world therefore only ever draws inside the WorldFrame, and the UI's viewport is
@@ -437,35 +444,16 @@ void CGWorldFrame::OnWorldRender() {
             scene->AdvanceTime(CWorld::GetTickTimeMs());
             scene->Animate(this->m_camera->Position());
 
-            // Cast the animated models into the shadow map. The reference renders this before the
-            // terrain pass so terrain can sample the same frame's map; frozen cannot yet, because
-            // Animate depends on the visibility the terrain pass establishes. The map is therefore
-            // one frame behind what terrain will read in S4. Closing that gap means hoisting
-            // CWorldScene::UpdateWorldView above this block.
-            // Gated on the shadow map quality, which is what the reference gates it on, and which
-            // frozen also needs for a plainer reason: NOTHING SAMPLES THE MAP YET. MapShadowTexture
-            // and MapShadowTexMatrix have no callers, and every bind point that would use them
-            // (ShadowMapBindTerrain, ShadowMapBindMapObj, ShadowMapBindScene in ShadowMap.cpp) is
-            // still a TODO. So without this gate the frame re-draws every animated caster into a
-            // 1024x1024 render target and then throws the result away -- a whole extra caster pass
-            // for nothing, which matters most on Android where the frame rate is already the open
-            // problem.
+            // The map shadow map, which is MapShadow.cpp's own driver in the reference
+            // (FUN_007bb570). It is called from CMap::Render there, at 0x0079ac21, right after the
+            // plane setup; frozen calls it HERE instead, because its caster draw needs the bone
+            // matrices CM2Scene::Animate has just built, and Animate in turn needs the visibility
+            // the terrain pass establishes. So terrain samples a map that is one frame old.
+            // Closing that gap means hoisting the visibility work above CMap::Render, not moving
+            // this call on its own.
             //
-            // g_shadowMapQuality is 0 and nothing assigns it, so today this never runs. It turns
-            // itself on as soon as the quality is wired and the sampler lands; do not remove the
-            // gate to "enable shadows" without also giving the map a reader.
-            auto player = ShadowMapGetQuality() > 0
-                ? ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__)
-                : nullptr;
-
-            if (player) {
-                MapShadowSetup(player->GetPosition());
-
-                if (MapShadowBegin()) {
-                    scene->DrawShadowCasters(MapShadowLightView());
-                    MapShadowEnd();
-                }
-            }
+            // The whole thing is inert while the quality is 0, which nothing yet raises.
+            MapShadowRender();
         }
 
         // Particle emitters of the visible models (units and doodads) step after Animate so their
