@@ -106,10 +106,10 @@ struct ChunkLiquid {
     // water depth so shallows fade out at the shoreline the way the reference does; without it the
     // whole surface is one flat alpha and the water meets the bank on a hard line.
     CImVector* colors = nullptr;
+    uint16_t* indices = nullptr;
     // 0..255 per vertex: how deep this vertex is, kept so the colours above can be rebuilt when the
     // light changes without re-reading the ADT.
     uint8_t* depthRamp = nullptr;
-    uint16_t* indices = nullptr;
     uint32_t vertCount = 0;
     uint32_t indexCount = 0;
     int32_t liquidType = 0; // LiquidType.dbc id
@@ -159,48 +159,17 @@ struct WmoBatch {
 // One WMO group's geometry (world space). Each group is its own mesh so the format's 16-bit
 // indices never overflow, no matter how large the whole WMO is.
 struct WmoGroup {
-    C3Vector* positions = nullptr;
-    CImVector* colors = nullptr;
-    C2Vector* texcoords = nullptr;
-    uint32_t vertexCount = 0;
-
-    uint16_t* indices = nullptr;
-    uint32_t indexCount = 0;
-
-    uint32_t batchCount = 0;
-
-    uint8_t* ndotl = nullptr; // static per-vertex sun term for exterior groups (re-lighting)
-    CImVector* mocvAdd = nullptr; // exterior MOCV: additive local light (dark except near glows)
-    bool interior = false;    // interior groups keep their baked MOCV (torch-lit, do not cycle)
-
-    C3Vector boundsMin = { 0.0f, 0.0f, 0.0f };
-    C3Vector boundsMax = { 0.0f, 0.0f, 0.0f };
-
-    // Uniform XY grid over this group's up-facing triangles, built once on first blob-shadow use.
+    // All that is left of a stand-in WMO group. Its geometry, colours, texcoords, indices, bounds,
+    // portal range, visibility stamps and its private CMapObjGroup have all gone: the reference's
+    // CMapObj owns every one of those now and is what draws, culls, walks portals and answers the
+    // BSP queries. MLIQ is the only chunk still read out of a group file, and the liquid it builds
+    // lives on the instance, not here.
     //
-    // Without it, casting a blob onto a WMO scanned EVERY triangle of every overlapping group, for
-    // every caster, every frame. Ebon Hold is a single enormous WMO, so with a few NPCs present
-    // that ran to millions of triangle tests per frame and the client appeared to hang -- sampled
-    // with tools/samplehang.py, which put the main thread in BlobShadowDrawWmo on 6 of 9 in-module
-    // samples.
-    // A second XY grid over ALL triangles, for the indoor test. The shadow grid cannot be reused:
-    // it deliberately keeps only up-facing triangles, and deciding whether a point is inside a room
-    // needs the ceiling above it, which faces down.
-
-
-    // MOGP portal reference range (into WmoInstance::portalRefs) and the frame stamp of the last
-    // visibility pass that reached this group (see WmoUpdateVisibility)
-    uint16_t portalStart = 0;
-    uint16_t portalCount = 0;
-    uint32_t visFrame = 0;
-    int32_t visDepth = 0x7FFFFFFF; // shallowest portal depth this group was reached at this frame
-
-    // The group as the reference's CMapObjGroup queries see it: MOPY, the MOBN/MOBR tree, the raw
-    // MOCV, and pointers at `positions` / `indices` above. Queries run in the same instance-local
-    // space as `positions` (world minus WmoInstance::origin, rotation applied), where the
-    // reference keeps WMO-local vertices and transforms the query through the placement instead.
-    // The group's vertices in the model's own space, before the placement yaw. Only the BSP
-    // queries use these; everything that draws uses `positions`. See the note where it is filled.
+    // vertexCount and batchCount survive as plain MOVT/MOBA counts, and indexCount as MOVI's;
+    // the liquid parse and the group-load bookkeeping still report them.
+    uint32_t vertexCount = 0;
+    uint32_t indexCount = 0;
+    uint32_t batchCount = 0;
 };
 
 // A WMO portal polygon (MOPT) in world space: a vertex range into WmoInstance::portalVerts plus
@@ -228,11 +197,6 @@ struct WmoInstance {
 
     // Portal graph (MOPV/MOPT/MOPR), world space. Empty for WMOs without portals, which then fall
     // back to a plain per-group frustum test.
-    C3Vector* portalVerts = nullptr;
-    WmoPortal* portals = nullptr;
-    uint32_t portalCount = 0;
-    WmoPortalRef* portalRefs = nullptr;
-    uint32_t portalRefCount = 0;
     uint32_t groupsExpected = 0; // MOHD's group count, to spot groups that failed to load
 
 
@@ -248,14 +212,9 @@ struct WmoInstance {
 
     // The placement yaw, kept so a world-space point can be brought back into the model's own
     // space for the BSP queries (WmoGroup::queryVerts live there).
-    float yawCos = 1.0f;
-    float yawSin = 0.0f;
 
     // World-space bounding box over all groups, for whole-instance frustum culling (the reference
     // culls a WMO hierarchically before descending into its groups).
-    C3Vector bboxMin = { 0.0f, 0.0f, 0.0f };
-    C3Vector bboxMax = { 0.0f, 0.0f, 0.0f };
-    bool hasBounds = false;
 
     // M2 doodads placed inside the WMO (MODD); the world scene draws them, we own the references
     CM2Model** doodads = nullptr;
@@ -931,62 +890,16 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
     float cs = cosf(ry);
     float sn = sinf(ry);
 
-    out.yawCos = cs;
-    out.yawSin = sn;
 
     out.origin = worldPos;
     out.groupsExpected = nGroups;
 
 
-    // Portal graph, transformed with the same proper rotation the geometry gets below. The MOPT
-    // plane normal is rotated as a direction and its distance recomputed from a transformed portal
-    // vertex, so the plane still contains the polygon and MOPR's side signs stay valid.
-    if (mopv && mopt && mopr && mopvCount && moptCount && moprCount) {
-        out.portalVerts = static_cast<C3Vector*>(SMemAlloc(mopvCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
-
-        for (uint32_t i = 0; i < mopvCount; i++) {
-            float lx = mopv[i * 3 + 0];
-            float ly = mopv[i * 3 + 1];
-            float lz = mopv[i * 3 + 2];
-            out.portalVerts[i].x = worldPos.x + (lx * cs - ly * sn);
-            out.portalVerts[i].y = worldPos.y + (lx * sn + ly * cs);
-            out.portalVerts[i].z = worldPos.z + lz;
-        }
-
-        out.portalCount = moptCount;
-        out.portals = static_cast<WmoPortal*>(SMemAlloc(moptCount * sizeof(WmoPortal), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-
-        for (uint32_t i = 0; i < moptCount; i++) {
-            const uint8_t* e = mopt + i * 20;
-            WmoPortal& pt = out.portals[i];
-            pt.startVertex = *reinterpret_cast<const uint16_t*>(e + 0);
-            pt.vertexCount = *reinterpret_cast<const uint16_t*>(e + 2);
-
-            float nx = *reinterpret_cast<const float*>(e + 4);
-            float ny = *reinterpret_cast<const float*>(e + 8);
-            float nz = *reinterpret_cast<const float*>(e + 12);
-            pt.normal.x = nx * cs - ny * sn;
-            pt.normal.y = nx * sn + ny * cs;
-            pt.normal.z = nz;
-
-            if (pt.startVertex < mopvCount && pt.vertexCount && static_cast<uint32_t>(pt.startVertex) + pt.vertexCount <= mopvCount) {
-                const C3Vector& v0 = out.portalVerts[pt.startVertex];
-                pt.dist = -(pt.normal.x * v0.x + pt.normal.y * v0.y + pt.normal.z * v0.z);
-            } else {
-                pt.vertexCount = 0; // malformed; never traversed
-            }
-        }
-
-        out.portalRefCount = moprCount;
-        out.portalRefs = static_cast<WmoPortalRef*>(SMemAlloc(moprCount * sizeof(WmoPortalRef), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-
-        for (uint32_t i = 0; i < moprCount; i++) {
-            const uint8_t* e = mopr + i * 8;
-            out.portalRefs[i].portal = *reinterpret_cast<const uint16_t*>(e + 0);
-            out.portalRefs[i].group = *reinterpret_cast<const uint16_t*>(e + 2);
-            out.portalRefs[i].side = *reinterpret_cast<const int16_t*>(e + 4);
-        }
-    }
+    // The portal graph was transformed into world space here -- MOPV vertices, MOPT planes with
+    // their distances recomputed after rotation, and the MOPR side references. It fed exactly one
+    // thing, the stand-in's own portal walk inside WmoUpdateVisibility, and that is deleted. The
+    // reference walks MOPR/MOPT itself out of CMapObj, in the building's own space, which is where
+    // the side signs are meaningful without any of this transforming.
 
     // Accumulate interior MOCV to derive a constant interior ambient for the doodads
     double mocvSumR = 0.0, mocvSumG = 0.0, mocvSumB = 0.0;
@@ -1076,163 +989,26 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 WmoGroup& grp = out.groups[out.groupCount];
                 grp.vertexCount = movtCount;
                 grp.indexCount = moviCount;
-                grp.positions = static_cast<C3Vector*>(SMemAlloc(movtCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
-                grp.colors = static_cast<CImVector*>(SMemAlloc(movtCount * sizeof(CImVector), __FILE__, __LINE__, 0));
-                grp.texcoords = static_cast<C2Vector*>(SMemAlloc(movtCount * sizeof(C2Vector), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-                grp.indices = static_cast<uint16_t*>(SMemAlloc(moviCount * sizeof(uint16_t), __FILE__, __LINE__, 0));
-                grp.ndotl = static_cast<uint8_t*>(SMemAlloc(movtCount, __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-                grp.mocvAdd = static_cast<CImVector*>(SMemAlloc(movtCount * sizeof(CImVector), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-                grp.interior = !exterior;
-                grp.portalStart = mogpPortalStart;
-                grp.portalCount = mogpPortalCount;
-
-                double grpMocvR = 0.0, grpMocvG = 0.0, grpMocvB = 0.0;
-                uint32_t grpMocvN = 0;
-
-                for (uint32_t i = 0; i < movtCount; i++) {
-                    float lx = movt[i * 3 + 0]; // up
-                    float ly = movt[i * 3 + 1];
-                    float lz = movt[i * 3 + 2];
-
-                    // Proper rotation (determinant +1); the reference never reflects placements
-            // Model space -> world, matching the convention the PLACEMENT already uses. A MODF
-            // position converts as world = (CORNER - p.z, CORNER - p.x, p.y), so in model space
-            // component 2 feeds world X, component 0 feeds world Y, and component 1 is UP. The
-            // yaw therefore rotates the (x, z) pair, and component 1 goes straight to world Z.
-            //
-            // This used to treat component 0 as up and rotate (y, z), i.e. the axes were rolled by
-            // one. Buildings came out 2-6x too tall and correspondingly too narrow while their
-            // centres stayed about right -- exactly what an axis permutation about the centre
-            // looks like, and what the placement self-check reported.
-                    // WMO model space is Z-UP and already aligned with the world axes: the only
-                    // thing the placement adds is a yaw about the vertical and the instance's
-                    // position. The ADT->world axis shuffle (CORNER - z, CORNER - x, y) applies to
-                    // the placement POSITION, which is stored in ADT space; it does not apply again
-                    // to the model's own vertices.
-                    //
-                    // Two earlier attempts here rolled the axes (treating component 0, then
-                    // component 1, as up) and both produced buildings 2-6x too tall and too narrow
-                    // with roughly correct centres -- the placement self-check reported exactly
-                    // that, and it is what an axis permutation about the centre looks like.
-                    grp.positions[i].x = worldPos.x + (lx * cs - ly * sn);
-                    grp.positions[i].y = worldPos.y + (lx * sn + ly * cs);
-                    grp.positions[i].z = worldPos.z + lz;
-
-                    if (motv) {
-                        grp.texcoords[i].x = motv[i * 2 + 0];
-                        grp.texcoords[i].y = motv[i * 2 + 1];
-                    }
-
-                    if (!exterior && mocv) {
-                        // Interior groups carry baked local lighting (MOCV), but ~37% of Acherus's
-                        // interior verts are pitch black -- the reference lifts them with the WMO's
-                        // MOHD ambient, blended by the MOCV alpha: color = MOCV + ambient*(1 - a/255).
-                        // out.interiorAmbient still holds the MOHD colour here (the average-MOCV
-                        // override runs after this loop), so use it as the ambient floor.
-                        float aw = 1.0f - mocv[i].a / 255.0f;
-                        float fr = mocv[i].r + out.interiorAmbient.x * 255.0f * aw;
-                        float fg = mocv[i].g + out.interiorAmbient.y * 255.0f * aw;
-                        float fb = mocv[i].b + out.interiorAmbient.z * 255.0f * aw;
-                        grp.colors[i].r = static_cast<uint8_t>(fr > 255.0f ? 255.0f : fr);
-                        grp.colors[i].g = static_cast<uint8_t>(fg > 255.0f ? 255.0f : fg);
-                        grp.colors[i].b = static_cast<uint8_t>(fb > 255.0f ? 255.0f : fb);
-                        grp.colors[i].a = 0xFF;
-
+                // The per-group geometry is gone. This block used to allocate six arrays per
+                // group -- world positions, colours, texcoords, indices, a per-vertex sun term and
+                // the additive MOCV -- transform every MOVT vertex into world space, light it,
+                // take a world bounding box, then rebase the whole array onto the instance origin.
+                // Every one of those outputs is now write-only: RenderWmos drew the geometry,
+                // BlobShadowDrawWmo re-drew it under decals, WmoUpdateVisibility used the bounds
+                // and the day/night pass re-lit the colours, and all four are deleted. The
+                // reference groups carry the same data and are what actually draws.
+                //
+                // The ONE thing still wanted from MOCV is the instance-wide average, which becomes
+                // WmoInstance::interiorAmbient and from there the per-doodad lighting colour that
+                // WmoDoodadLightingCallback reads -- so that is all this loop does now, and only
+                // for interior groups, which is the only case the average is taken over.
+                if (!exterior && mocv) {
+                    for (uint32_t i = 0; i < movtCount; i++) {
                         mocvSumR += mocv[i].r;
                         mocvSumG += mocv[i].g;
                         mocvSumB += mocv[i].b;
                         mocvSamples++;
-
-                        grpMocvR += mocv[i].r;
-                        grpMocvG += mocv[i].g;
-                        grpMocvB += mocv[i].b;
-                        grpMocvN++;
-                    } else if (!exterior) {
-                        // Interior group with no baked MOCV: light it by the WMO's flat interior
-                        // ambient (MOHD), never the outdoor sun. grp.interior keeps it out of the
-                        // day/night rebake, so it stays constant like the torch-lit walls.
-                        float ir = out.interiorAmbient.x * 255.0f;
-                        float ig = out.interiorAmbient.y * 255.0f;
-                        float ib = out.interiorAmbient.z * 255.0f;
-                        grp.colors[i].r = static_cast<uint8_t>(ir > 255.0f ? 255.0f : ir);
-                        grp.colors[i].g = static_cast<uint8_t>(ig > 255.0f ? 255.0f : ig);
-                        grp.colors[i].b = static_cast<uint8_t>(ib > 255.0f ? 255.0f : ib);
-                        grp.colors[i].a = 0xFF;
-                    } else {
-                        float ndotl = 0.7f;
-
-                        if (monr) {
-                            float nx = monr[i * 3 + 0];
-                            float ny = monr[i * 3 + 1];
-                            float nz = monr[i * 3 + 2];
-                            // Rotate the local normal into world space (same rotation as the vertex)
-                            float wnx = nx * cs - ny * sn;
-                            float wny = nx * sn + ny * cs;
-                            float wnz = nz;
-                            const C3Vector& sun = CWorld::GetOutdoorDirection();
-                            float d = wnx * sun.x + wny * sun.y + wnz * sun.z;
-                            ndotl = d < 0.0f ? 0.0f : (d > 1.0f ? 1.0f : d);
-                        }
-
-                        grp.ndotl[i] = static_cast<uint8_t>(ndotl * 255.0f);
-
-                        // Exterior groups: MOCV is an ADDITIVE local-light term (near-black over the
-                        // whole surface, bright only near torches/glows), NOT an occlusion multiplier.
-                        // Verified against the data: the Acherus deck's MOCV averages ~9/255, so
-                        // multiplying by it would render the sun-lit deck almost black. Store it and
-                        // add it to the cycling sun light.
-                        if (mocv) {
-                            grp.mocvAdd[i] = mocv[i];
-                        }
-
-                        const C3Vector& amb = CWorld::GetOutdoorAmbient();
-                        const C3Vector& dif = CWorld::GetOutdoorDiffuse();
-                        float fr = (amb.x + dif.x * ndotl) * 255.0f + grp.mocvAdd[i].r;
-                        float fg = (amb.y + dif.y * ndotl) * 255.0f + grp.mocvAdd[i].g;
-                        float fb = (amb.z + dif.z * ndotl) * 255.0f + grp.mocvAdd[i].b;
-                        grp.colors[i].r = static_cast<uint8_t>(fr > 255.0f ? 255.0f : fr);
-                        grp.colors[i].g = static_cast<uint8_t>(fg > 255.0f ? 255.0f : fg);
-                        grp.colors[i].b = static_cast<uint8_t>(fb > 255.0f ? 255.0f : fb);
-                        grp.colors[i].a = 0xFF;
                     }
-                }
-
-                // This room's average interior colour (plus the MOHD ambient floor, matching the
-                // geometry above), so a unit standing in it is lit like the walls around it. The
-                // interiorAmbient field still holds the MOHD colour at this point in the load.
-                if (grpMocvN > 0) {
-                    float gr = static_cast<float>(grpMocvR / grpMocvN) / 255.0f + out.interiorAmbient.x;
-                    float gg = static_cast<float>(grpMocvG / grpMocvN) / 255.0f + out.interiorAmbient.y;
-                    float gb = static_cast<float>(grpMocvB / grpMocvN) / 255.0f + out.interiorAmbient.z;
-                }
-
-                // World-space bounding box of the group, for view-frustum culling. Computed from
-                // the world positions BEFORE they are rebased below, so bounds, culling, sorting
-                // and the liquid queries all keep working in world space.
-                if (movtCount) {
-                    grp.boundsMin = grp.positions[0];
-                    grp.boundsMax = grp.positions[0];
-
-                    for (uint32_t v = 1; v < movtCount; v++) {
-                        const C3Vector& p = grp.positions[v];
-                        grp.boundsMin.x = p.x < grp.boundsMin.x ? p.x : grp.boundsMin.x;
-                        grp.boundsMin.y = p.y < grp.boundsMin.y ? p.y : grp.boundsMin.y;
-                        grp.boundsMin.z = p.z < grp.boundsMin.z ? p.z : grp.boundsMin.z;
-                        grp.boundsMax.x = p.x > grp.boundsMax.x ? p.x : grp.boundsMax.x;
-                        grp.boundsMax.y = p.y > grp.boundsMax.y ? p.y : grp.boundsMax.y;
-                        grp.boundsMax.z = p.z > grp.boundsMax.z ? p.z : grp.boundsMax.z;
-                    }
-                }
-
-                // Rebase the geometry onto the instance origin now that the bounds are taken.
-                for (uint32_t v = 0; v < movtCount; v++) {
-                    grp.positions[v].x -= out.origin.x;
-                    grp.positions[v].y -= out.origin.y;
-                    grp.positions[v].z -= out.origin.z;
-                }
-
-                for (uint32_t j = 0; j < moviCount; j++) {
-                    grp.indices[j] = movi[j];
                 }
 
                 // The stand-in used to build its OWN CMapObjGroup here -- a second copy of the
@@ -1260,27 +1036,9 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
         SMemFree(gdata, __FILE__, __LINE__, 0);
     }
 
-    // Whole-instance bounding box = union of the group boxes, for hierarchical frustum culling.
-    for (uint32_t g = 0; g < out.groupCount; g++) {
-        const WmoGroup& grp = out.groups[g];
-
-        if (!grp.vertexCount) {
-            continue;
-        }
-
-        if (!out.hasBounds) {
-            out.bboxMin = grp.boundsMin;
-            out.bboxMax = grp.boundsMax;
-            out.hasBounds = true;
-        } else {
-            out.bboxMin.x = grp.boundsMin.x < out.bboxMin.x ? grp.boundsMin.x : out.bboxMin.x;
-            out.bboxMin.y = grp.boundsMin.y < out.bboxMin.y ? grp.boundsMin.y : out.bboxMin.y;
-            out.bboxMin.z = grp.boundsMin.z < out.bboxMin.z ? grp.boundsMin.z : out.bboxMin.z;
-            out.bboxMax.x = grp.boundsMax.x > out.bboxMax.x ? grp.boundsMax.x : out.bboxMax.x;
-            out.bboxMax.y = grp.boundsMax.y > out.bboxMax.y ? grp.boundsMax.y : out.bboxMax.y;
-            out.bboxMax.z = grp.boundsMax.z > out.bboxMax.z ? grp.boundsMax.z : out.bboxMax.z;
-        }
-    }
+    // The whole-instance bounding box was computed here, unioning the group boxes for
+    // hierarchical frustum culling. Its only readers were WmoUpdateVisibility and
+    // BlobShadowDrawWmo, both deleted, and the group boxes it unioned are gone too.
 
     // Constant interior ambient from the average interior MOCV (0.35 default if the WMO has none)
     if (mocvSamples > 0) {
@@ -1584,58 +1342,11 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
             // which is why only 43 of 106 looked wrong.
             LoadWmoInstance(rootPath, worldPos, (ry + 180.0f) * DEG2RAD, doodadSet, inst);
 
-            if (inst.hasBounds) {
-                // Compare CENTRES and SIZES, not min corners. A corner delta conflates two very
-                // different faults: geometry in the wrong place, and geometry that is merely
-                // incomplete (a missing group shrinks the box and moves its corner). The centre
-                // offset says "misplaced"; the size ratio says "incomplete".
-                C3Vector bc = { (inst.bboxMin.x + inst.bboxMax.x) * 0.5f, (inst.bboxMin.y + inst.bboxMax.y) * 0.5f, (inst.bboxMin.z + inst.bboxMax.z) * 0.5f };
-                C3Vector ec = { (eMin.x + eMax.x) * 0.5f, (eMin.y + eMax.y) * 0.5f, (eMin.z + eMax.z) * 0.5f };
-
-                float cdx = bc.x < ec.x ? ec.x - bc.x : bc.x - ec.x;
-                float cdy = bc.y < ec.y ? ec.y - bc.y : bc.y - ec.y;
-                float cdz = bc.z < ec.z ? ec.z - bc.z : bc.z - ec.z;
-
-                float esx = eMax.x - eMin.x;
-                float esy = eMax.y - eMin.y;
-                float esz = eMax.z - eMin.z;
-                float rx2 = esx > 0.01f ? (inst.bboxMax.x - inst.bboxMin.x) / esx : 1.0f;
-                float ry2 = esy > 0.01f ? (inst.bboxMax.y - inst.bboxMin.y) / esy : 1.0f;
-                float rz2 = esz > 0.01f ? (inst.bboxMax.z - inst.bboxMin.z) / esz : 1.0f;
-
-                // MODF's extents are a PADDED bound, not the geometry's own box: for a large
-                // building they can be 50 yards wider on a side and are not always centred on the
-                // geometry. Judging placement by how far the two centres differ therefore flags
-                // correct buildings, which is what produced 43 false failures before the yaw fix
-                // and the last 6 after it.
-                //
-                // The honest test is containment: if every transformed vertex lies inside the box
-                // the placement record declares, the instance is where the record says it is. A
-                // small slack absorbs the enlargement a yaw rotation adds to an axis-aligned box.
-                const float SLACK = 1.0f;
-                bool inside =
-                    inst.bboxMin.x >= eMin.x - SLACK && inst.bboxMax.x <= eMax.x + SLACK &&
-                    inst.bboxMin.y >= eMin.y - SLACK && inst.bboxMax.y <= eMax.y + SLACK &&
-                    inst.bboxMin.z >= eMin.z - SLACK && inst.bboxMax.z <= eMax.z + SLACK;
-
-                float dx = inside ? 0.0f : cdx;
-                float dy = inside ? 0.0f : cdy;
-                float dz = inside ? 0.0f : cdz;
-
-                fprintf(stderr, "WMO %s yaw %7.1f centre(%6.1f %6.1f %6.1f) sizeRatio(%.2f %.2f %.2f) %s\n",
-                    dx > 5.0f || dy > 5.0f || dz > 5.0f ? "BAD " : "ok  ", ry,
-                    cdx, cdy, cdz, rx2, ry2, rz2, rootPath);
-
-                if (dx > 5.0f || dy > 5.0f || dz > 5.0f) {
-                    fprintf(stderr,
-                        "WMO placement mismatch %s groups %u/%u built min(%.1f %.1f %.1f) max(%.1f %.1f %.1f) "
-                        "MODF min(%.1f %.1f %.1f) max(%.1f %.1f %.1f)\n",
-                        rootPath, inst.groupCount, inst.groupsExpected,
-                        inst.bboxMin.x, inst.bboxMin.y, inst.bboxMin.z,
-                        inst.bboxMax.x, inst.bboxMax.y, inst.bboxMax.z,
-                        eMin.x, eMin.y, eMin.z, eMax.x, eMax.y, eMax.z);
-                }
-            }
+            // A placement self-check used to sit here, comparing the bounding box built from
+            // the transformed geometry against the MODF extents to catch a wrong axis mapping.
+            // It was worth having while the stand-in transformed WMO vertices itself -- it is
+            // what caught the two axis-roll bugs the comments above describe -- but the
+            // stand-in no longer builds geometry or bounds, so there is nothing to check.
 
             if (inst.groupCount) {
                 tile.wmoCount++;
@@ -1683,12 +1394,6 @@ void FreeTile(TerrainTile& tile) {
             for (uint32_t gi = 0; gi < w.groupCount; gi++) {
                 WmoGroup& grp = w.groups[gi];
 
-                if (grp.positions) SMemFree(grp.positions, __FILE__, __LINE__, 0);
-                if (grp.colors) SMemFree(grp.colors, __FILE__, __LINE__, 0);
-                if (grp.texcoords) SMemFree(grp.texcoords, __FILE__, __LINE__, 0);
-                if (grp.indices) SMemFree(grp.indices, __FILE__, __LINE__, 0);
-                if (grp.ndotl) SMemFree(grp.ndotl, __FILE__, __LINE__, 0);
-                if (grp.mocvAdd) SMemFree(grp.mocvAdd, __FILE__, __LINE__, 0);
             }
 
             for (uint32_t di = 0; di < w.doodadCount; di++) {
@@ -1702,9 +1407,6 @@ void FreeTile(TerrainTile& tile) {
             if (w.doodads) SMemFree(w.doodads, __FILE__, __LINE__, 0);
             if (w.doodadScale) SMemFree(w.doodadScale, __FILE__, __LINE__, 0);
             if (w.doodadAmbient) SMemFree(w.doodadAmbient, __FILE__, __LINE__, 0);
-            if (w.portalVerts) SMemFree(w.portalVerts, __FILE__, __LINE__, 0);
-            if (w.portals) SMemFree(w.portals, __FILE__, __LINE__, 0);
-            if (w.portalRefs) SMemFree(w.portalRefs, __FILE__, __LINE__, 0);
 
             for (uint32_t li = 0; li < w.liquidCount; li++) {
                 ChunkLiquid& liq = w.liquids[li];
