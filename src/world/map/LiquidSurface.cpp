@@ -134,6 +134,23 @@ void CreateSurface(CChunkLiquid* liquid) {
 
     // A box around every layer taken. Each layer covers a rectangle of its chunk's tile grid, so
     // its extent is the chunk corner plus the rectangle's corners a tile at a time.
+    //
+    // UNRESOLVED, AND IT MATTERS. This follows the reference exactly -- it adds the origin and a
+    // POSITIVE tile step, and takes x from the field at +0x38 and y from the one at +0x34, which
+    // are frozen's m_tileY and m_tileX. But CChunkLiquid::BuildVertices, which is verified, does
+    // the opposite on both counts: x from m_tileX, and a NEGATIVE step, with no origin because
+    // its vertices are chunk-relative. The two conventions cannot both describe the same
+    // rectangle, so one of them is wrong.
+    //
+    // BuildVertices was verified only by its heights resolving to world z 0 at sea level, which
+    // is blind to an x/y swap, so being "verified" does not settle it. Nor did the check on this
+    // function: it compared the sphere against a layer centre computed with THIS SAME formula,
+    // which proves the two agree with each other and nothing else. That check has to be rebuilt
+    // against m_vertices -- which are independent and already verified -- before either the
+    // bounds or BuildVertices can be trusted.
+    //
+    // Left matching the reference because that is the authority; do not "fix" it to agree with
+    // BuildVertices without running the corrected check first.
     float minX = 0.0f;
     float minY = 0.0f;
     float minZ = 0.0f;

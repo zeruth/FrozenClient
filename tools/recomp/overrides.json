@@ -37,7 +37,7 @@
   },
   "007cdf80": {
     "status": "verified",
-    "note": "CChunkLiquid::BuildVertices. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
+    "note": "CChunkLiquid::BuildVertices. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give CAVEAT added 2026-09-25: this verification is blind to an x/y swap. It checked that the heights resolve to world z 0, which says nothing about which tile index drives x. BuildVertices takes x from m_tileX with a negative step and no origin; the reference's own liquid bounds (FUN_007cf200) take x from the +0x38 field with a POSITIVE step plus the origin, and +0x38 is m_tileY. The two disagree and one is wrong. Re-check against the reference before treating the axis mapping as settled."
   },
   "007d4f10": {
     "status": "verified",
