@@ -58142,7 +58142,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 77
+"line": 87
 },
 "CCharacterCreation::CalcClasses": {
 "files": [
@@ -84398,6 +84398,28 @@
 "refs": [],
 "line": 287
 },
+"CM2Shared::CancelSequenceLoads": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"TSList<CM2SequenceLoad,TSGetLink<CM2SequenceLoad> >::Head",
+"TSList<CM2SequenceLoad,TSGetLink<CM2SequenceLoad> >::Link",
+"TSLink<CM2SequenceLoad>::Next",
+"AsyncFileReadCancel",
+"TSList<CM2SequenceLoad,TSGetLink<CM2SequenceLoad> >::Head",
+"CM2Shared::DestroySequenceLoad"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 5,
+"stub": false,
+"lines": 29,
+"refs": [],
+"line": 325
+},
 "CM2Shared::DestroySequenceLoad": {
 "files": [
 "src/model/cm2shared.cpp"
@@ -84418,7 +84440,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 324
+"line": 355
 },
 "CM2Shared::SequenceLoadedCallback": {
 "files": [
@@ -84448,7 +84470,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 340
+"line": 371
 },
 "CM2Shared::SequenceLoadFailedCallback": {
 "files": [
@@ -84463,7 +84485,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 379
+"line": 410
 },
 "CM2Shared::SkinProfileLoadedCallback": {
 "files": [
@@ -84479,15 +84501,14 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 385
+"line": 416
 },
 "CM2Shared::~CM2Shared": {
 "files": [
 "src/model/cm2shared.cpp"
 ],
 "callseq": [
-"TSList<CM2SequenceLoad,TSGetLink<CM2SequenceLoad> >::Head",
-"CM2Shared::DestroySequenceLoad",
+"CM2Shared::CancelSequenceLoads",
 "SequenceBufferFree",
 "SMemFree",
 "AsyncFileReadCancel",
@@ -84502,11 +84523,11 @@
 "consts": [
 "0"
 ],
-"branches": 9,
+"branches": 8,
 "stub": false,
-"lines": 48,
+"lines": 46,
 "refs": [],
-"line": 398
+"line": 430
 },
 "CM2Shared::AddRef": {
 "files": [
@@ -84521,7 +84542,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 449
+"line": 479
 },
 "CM2Shared::CallbackWhenLoaded": {
 "files": [
@@ -84540,7 +84561,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 479
+"line": 509
 },
 "CM2Shared::CreateSimpleEffect": {
 "files": [
@@ -84593,7 +84614,7 @@
 "stub": false,
 "lines": 179,
 "refs": [],
-"line": 495
+"line": 525
 },
 "CM2Shared::FinishLoadingSkinProfile": {
 "files": [
@@ -84614,7 +84635,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 675
+"line": 705
 },
 "CM2Shared::GetEffect": {
 "files": [
@@ -84649,7 +84670,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 705
+"line": 735
 },
 "CM2Shared::Initialize": {
 "files": [
@@ -84689,7 +84710,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 781
+"line": 811
 },
 "CM2Shared::InitializeSkinProfile": {
 "files": [
@@ -84740,7 +84761,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 847
+"line": 877
 },
 "CM2Shared::Load": {
 "files": [
@@ -84764,7 +84785,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 924
+"line": 954
 },
 "CM2Shared::LoadSkinProfile": {
 "files": [
@@ -84796,7 +84817,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 961
+"line": 991
 },
 "CM2Shared::Release": {
 "files": [
@@ -84811,7 +84832,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1018
+"line": 1048
 },
 "CM2Shared::SetIndices": {
 "files": [
@@ -84843,7 +84864,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1041
+"line": 1071
 },
 "CM2Shared::SetVertices": {
 "files": [
@@ -84875,7 +84896,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 1102
+"line": 1132
 },
 "CM2Shared::SubstituteSimpleShaders": {
 "files": [
@@ -84902,7 +84923,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 1168
+"line": 1198
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
@@ -84915,7 +84936,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1244
+"line": 1274
 },
 "M2Init": {
 "files": [

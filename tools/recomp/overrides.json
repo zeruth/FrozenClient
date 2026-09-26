@@ -3140,5 +3140,17 @@
   "007260e0": {
     "status": "unlinked",
     "note": "--propose offered CGUnit_C::CanHighlight for this and it is NOT that. The reference takes a spell id and answers whether the unit knows it: for the active player it tests a bit in the known-spell bitset at 0x00be8dc4 bounded by 0x00ad49dc, and for the player's own pet it defers to FUN_0053b900. CanHighlight takes no argument. Recorded so the matchers do not propose it again; the real counterpart is a \"unit knows spell\" accessor frozen does not have yet."
+  },
+  "0083d510": {
+    "frozen": "CM2Shared::CancelSequenceLoads",
+    "note": "New function; frozen had the drain half inlined in ~CM2Shared and neither of the other two halves. 67% call order because frozen gets the list head through TSList::Head rather than the reference's helper (FUN_006d7ba0)."
+  },
+  "0083d5b0": {
+    "frozen": "CM2Shared::~CM2Shared",
+    "note": "Confirmed by --propose (8.7) and by reading; the two rival proposals for the same frozen function were FUN_0083d510, which is the helper this one OPENS with, and FUN_007ae3b0, which matched only on AsyncFileReadCancel/HandleClose/SMemFree -- generic enough to mean nothing. 36% call order because frozen's destructor still carries several TODOs; the reference's remaining calls are what those TODOs stand for."
+  },
+  "007ae3b0": {
+    "status": "unlinked",
+    "note": "--propose offered CM2Shared::~CM2Shared for this, on the strength of AsyncFileReadCancel, HandleClose and SMemFree alone. It is anchored to Map.cpp, not M2Shared.cpp, and the real destructor is FUN_0083d5b0. Recorded so it is not proposed again."
   }
 }

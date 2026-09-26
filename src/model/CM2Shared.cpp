@@ -321,6 +321,37 @@ int32_t CM2Shared::InitSequence(uint16_t sequenceIndex, CAsyncObject* object) {
 }
 
 // ref: FUN_0083d370 (+ FUN_0083d2d0)
+// ref: FUN_0083d510
+void CM2Shared::CancelSequenceLoads() {
+    for (auto load = this->m_sequenceLoads.Head(); load;
+         load = this->m_sequenceLoads.Link(load)->Next()) {
+        if (!load->asyncObject) {
+            continue;
+        }
+
+        // A cancel that could not be honoured means the read is already past the point of
+        // recall and will land in its buffer slot; clear the slot so nothing follows it.
+        if (!AsyncFileReadCancel(load->asyncObject, &CM2Shared::LoadCanceledCallback)
+            && this->m_sequenceBuffers) {
+            this->m_sequenceBuffers[load->bufferSlot] = nullptr;
+        }
+
+        load->asyncObject = nullptr;
+    }
+
+    // Reached from inside SequenceLoadedCallback: that callback is standing on one of these
+    // records, so it drains them itself on the way out.
+    if (this->m_flag10) {
+        this->m_flag20 = 1;
+
+        return;
+    }
+
+    while (auto load = this->m_sequenceLoads.Head()) {
+        this->DestroySequenceLoad(load);
+    }
+}
+
 void CM2Shared::DestroySequenceLoad(CM2SequenceLoad* load) {
     while (auto playback = load->playbacks.Head()) {
         load->playbacks.UnlinkNode(playback);
@@ -395,13 +426,12 @@ namespace {
 void SequenceBufferFree(void* buffer);
 }
 
+// ref: FUN_0083d5b0
 CM2Shared::~CM2Shared() {
-    // TODO this->CancelAllDeferredSequences();
-
-    // In-flight .anim reads and the buffers of the ones that landed
-    while (auto load = this->m_sequenceLoads.Head()) {
-        this->DestroySequenceLoad(load);
-    }
+    // In-flight .anim reads and the records that own them. This used to drain the records
+    // without cancelling their reads first, which left an outstanding read pointing at freed
+    // memory; CancelSequenceLoads (FUN_0083d510) is what the reference opens with.
+    this->CancelSequenceLoads();
 
     if (this->m_sequenceBuffers) {
         for (uint32_t i = 0; i < this->m_sequenceBufferCount; i++) {

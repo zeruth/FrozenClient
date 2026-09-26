@@ -56680,8 +56680,24 @@
   "refSize": 128,
   "status": "ported"
  },
+ "0083d2d0": {
+  "branchRatio": 0.4,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::DestroySequenceLoad",
+  "frozenSize": 210,
+  "how": "callgraph",
+  "module": "M2Shared.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
  "0083d370": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.714,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
@@ -56689,11 +56705,43 @@
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
   ],
-  "frozen": "CM2Shared::DestroySequenceLoad",
-  "frozenSize": 210,
+  "frozen": "CM2Shared::CancelSequenceLoads",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 148,
+  "status": "ported"
+ },
+ "0083d510": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::CancelSequenceLoads",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 150,
+  "status": "ported"
+ },
+ "0083d5b0": {
+  "branchRatio": 0.258,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.357,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::~CM2Shared",
+  "frozenSize": 564,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 643,
   "status": "ported"
  },
  "0083d840": {

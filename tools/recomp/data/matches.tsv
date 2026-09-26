@@ -3552,7 +3552,10 @@ addr	how	frozen	evidence
 00837680	override	CM2Shared::SubstituteSpecializedShaders	
 00837a40	override	CM2Shared::InitializeSkinProfile	
 0083ca90	annotated	CM2Shared::InitSequence	tag in src/model/CM2Shared.cpp
-0083d370	annotated	CM2Shared::DestroySequenceLoad	tag in src/model/CM2Shared.cpp
+0083d2d0	callgraph	CM2Shared::DestroySequenceLoad	only unmatched callee of 0083d370=CM2Shared::CancelSequenceLoads
+0083d370	annotated	CM2Shared::CancelSequenceLoads	tag in src/model/CM2Shared.cpp
+0083d510	override	CM2Shared::CancelSequenceLoads	
+0083d5b0	override	CM2Shared::~CM2Shared	
 0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp
 0083d9f0	annotated	CM2Shared::SequenceLoadFailedCallback	tag in src/model/CM2Shared.cpp
 0083da10	override	CM2Shared::LoadSequence	

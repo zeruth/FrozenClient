@@ -35,6 +35,16 @@ class CM2Shared {
         CM2SequenceLoad* LoadSequence(uint16_t sequenceIndex);
         int32_t InitSequence(uint16_t sequenceIndex, CAsyncObject* object);
         void DestroySequenceLoad(CM2SequenceLoad* load);
+
+        // ref: FUN_0083d510
+        // Retire every .anim read this shared data still has outstanding, then drop the records.
+        // Called first thing by ~CM2Shared. Two things here that a plain drain does not do: an
+        // in-flight read is CANCELLED before its record is freed, and when a cancel cannot be
+        // honoured the buffer slot it would have filled is cleared rather than left holding a
+        // pointer to a record that is about to go; and if this is reached from inside the
+        // sequence-loaded callback (m_flag10) the drain is deferred to that callback via m_flag20
+        // instead of freeing the record it is standing on.
+        void CancelSequenceLoads();
         TSList<CM2SequenceLoad, TSGetLink<CM2SequenceLoad>> m_sequenceLoads;
         void** m_sequenceBuffers = nullptr;   // one .anim buffer per loaded sequence, freed with the shared
         uint32_t m_sequenceBufferCount = 0;
