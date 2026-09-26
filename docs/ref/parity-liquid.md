@@ -188,21 +188,79 @@ straight-down white one. Frozen's fields are still `m_unk04` / `m_unk08`.
 
 ## What frozen is missing before the draw can land
 
-Three gaps, each its own change. None is large; they are listed because discovering them again is
-the expensive part.
+This list started at three and is down to one. Two of the three were not gaps at all, which is
+worth recording because both looked real from the decompilation alone.
 
-1. **The map light block's `CM2Light`.** Slot 3's `m_arg == 0` path wants the `CM2Light` at
-   `0x00ce04a8 + 0x58`. Frozen has `CWorld::GetOutdoorAmbient` / `GetOutdoorDiffuse` and
-   `ComputeOutdoorLight`, but no `CM2Light` object for the outdoor light. `CM2Lighting.cpp` already
-   names `FUN_007b7bd0` as "the natural next piece" and it is very nearly this same body — do them
-   together.
-2. **An indoor fog pair.** Frozen keeps `CWorld::s_fogStart` / `s_fogEnd` computed rather than a
-   DayNight struct, and has no indoor counterpart, so slot 3's indoor branch has no source. The
-   offsets are above.
-3. **The shader constant upload.** `FUN_008a32f0` and `FUN_008a38b0` write globals
-   (`0x00b24120`, `0x00b24170`, `0x00d44cc8`, `0x00d44cf8`, `0x00d44eb8`…) that something later
-   hands to the shaders. Which function does that, and whether frozen's `CShaderEffect` already
-   covers it, is not established.
+1. ~~**The map light block's `CM2Light`.**~~ Not a gap. `CMap::SetupChunkLighting` already stands
+   that light in as `CWorld`'s outdoor ambient plus a directional term, so taking the same pair is
+   the divergence terrain already took. `CClientEnvironment::SetupLighting` is ported on that basis.
+2. **An indoor fog pair.** A real gap, and the only one left. Frozen keeps `CWorld::s_fogStart` /
+   `s_fogEnd` computed rather than as a DayNight struct and has no indoor counterpart, so slot 3's
+   indoor branch has no source and the third `SetFog` float — the fog density — has none either.
+   The offsets are above. Recorded as a divergence at the call site.
+3. ~~**The shader constant upload.**~~ Not a gap. `CGxDevice::ShaderConstantsSet(EGxShTarget,
+   index, const float*, count)` already exists with the reference's exact signature, and frozen's
+   `GxSh_Pixel = 4` matches the value the reference passes.
+
+## The constant blocks
+
+The upload is one function at `0x008a3da0`, two calls through the device vtable at `+0x118`:
+
+```
+ShaderConstantsSet(GxSh_Vertex, 0, 0x00d44ca8, 46)      the vertex block, 46 float4s
+ShaderConstantsSet(GxSh_Pixel,  0, 0x00b24120,  6)      the pixel block, 6 float4s
+```
+
+So a vertex register is `(addr - 0x00d44ca8) / 16` and a pixel register `(addr - 0x00b24120) / 16`.
+Everything the setup helpers write lands in one of these:
+
+| address | reg | written by | what |
+|---|---|---|---|
+| `0x00b24120` | ps 0–3 | `FUN_008a32f0` | the MVP |
+| `0x00b24170` | ps 5 | `FUN_008a32f0` | camera position, w = 1 |
+| `0x00d44cf8` | vs 5 | `FUN_008a32f0` | world-view |
+| `0x00d44d38` | vs 9 | draw body | texture matrix 0 |
+| `0x00d44d78` | vs 13 | draw body | texture matrix 1 |
+| `0x00d44db8` | vs 17 | draw body | texture matrix 2 |
+| `0x00d44df8` | vs 21 | draw body | texture matrix 3 |
+| `0x00d44e38` | vs 25 | draw body | scale, x 1 and y from stage float 8 |
+| `0x00d44e78` | vs 29 | draw body | `RotationAroundZ(f10) * Scale(f9)` |
+| `0x00d44eb8` | vs 33 | `FUN_008a38b0` | sun direction, in VIEW space |
+| `0x00d44ec8` | vs 34 | `FUN_008a38b0` | sun ambient |
+| `0x00d44ed8` | vs 35 | `FUN_008a38b0` | next colour |
+
+`FUN_008a3c90` writes a separate block at `0x00d44c48`, which is *below* the uploaded vertex range
+and so goes somewhere else: four float4s holding the NEGATED sun direction in world space, then the
+ambient, diffuse and specular straight off the `CM2Lighting` (`+0x54`, `+0x60`, `+0x6c`), with the
+constant at `0x009f22ec` in the last slot. `FUN_008a38b0` writes the same terms transformed into
+view space; `FUN_008a3c90` writes them untransformed.
+
+The four texture matrices come from the stage floats: each is
+`RotationAroundZ(stage[i + 5]) * Scale(stage[i])`, where the first eight stage floats were scaled by
+`FUN_008a1750`'s global and the rest by the constant at `0x009ed910`.
+
+## The texture stages are not in slot order
+
+`RsSet(0x15 + n, tex)` binds six textures, and `n` does not follow the slot:
+
+| state | slot | period |
+|---|---|---|
+| `0x15` | 0 | 1250 ms |
+| `0x16` | 1 | 1250 ms |
+| `0x17` | 4 | 1250 ms |
+| `0x18` | 5 | `GetInt(3)` |
+| `0x19` | 2 | `GetInt(1)` |
+| `0x1a` | 3 | `GetInt(2)` |
+
+Any slot whose `GetFrame` returns null aborts the whole draw before `GxRsPush`.
+
+## `m_unk0c` is a record provider
+
+The draw's third argument, `CInstance`'s `+0x0c`, is asked for a pointer through its vtable slot 3
+and a count through slot 4, and the draw walks that range **six dwords at a time**, substituting
+zeroes when it runs off the end. So it supplies per-something animation records — most likely the
+wave parameters — and the field frozen records as "refcounted, released through vtable slot 2" is
+that provider. Nothing sets it yet.
 
 `FUN_008a1750` returns the module float at `0x00b23f64`, which eight of the stage floats are
 multiplied by. Its only writer is `0x008a1770` — which also holds the procedural shader name suffix
