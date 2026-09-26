@@ -10015,7 +10015,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureHasPendingData",
-  "frozenSize": 0,
+  "frozenSize": 26,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 29,
@@ -11222,7 +11222,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "C3Vector::NormalizeUnchecked",
-  "frozenSize": 0,
+  "frozenSize": 137,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 53,
@@ -37943,7 +37943,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "MatrixLookAt",
-  "frozenSize": 0,
+  "frozenSize": 747,
   "how": "annotated",
   "module": "CheckExecutableSignature.cpp",
   "refSize": 493,
@@ -44263,13 +44263,15 @@
   "status": "ported"
  },
  "00791980": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
+  "files": [
+   "src/world/map/mapocclusion.cpp"
+  ],
   "frozen": "MapOcclusion::BuildVolumes",
-  "frozenSize": 173,
+  "frozenSize": 376,
   "how": "callgraph",
   "module": "WorldParam.cpp",
   "refSize": 806,
@@ -44509,7 +44511,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCamera",
-  "frozenSize": 1974,
+  "frozenSize": 2231,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 2291,
@@ -44701,7 +44703,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 1488,
+  "frozenSize": 1504,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -44717,7 +44719,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 645,
+  "frozenSize": 614,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -48900,7 +48902,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.133,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/LiquidSurface.cpp"
   ],
@@ -49128,7 +49130,7 @@
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::CreateInstance",
-  "frozenSize": 320,
+  "frozenSize": 194,
   "how": "callorder",
   "module": "MapChunkLiquid.cpp",
   "refSize": 2662,
