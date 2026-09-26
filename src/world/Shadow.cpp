@@ -1,4 +1,9 @@
 #include "world/Shadow.hpp"
+#include "gx/buffer/CGxBuf.hpp"
+#include "gx/CGxBatch.hpp"
+#include "gx/Draw.hpp"
+#include "gx/Buffer.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include <tempest/Intersect.hpp>
 #include "gx/Device.hpp"
 #include "gx/CGxDevice.hpp"
@@ -40,6 +45,9 @@ const uint32_t RAMP_HEIGHT = 8;
 // serves both ramps because only one of them is ever being latched at a time.
 uint32_t s_rampPixels[RAMP_WIDTH * RAMP_HEIGHT];
 uint32_t s_rampCount = 0;
+
+// DAT_00a41170: what the strength is scaled by to make the decal's polygon offset. About 1/32768.
+const float DECAL_OFFSET_SCALE = 3.051804378628731e-05f;
 
 // DAT_009f98d8: the strength the blob gate hands the projector. It is a constant at the call site,
 // and because it is NOT zero the blob path never takes the projector's depth-EQUAL branch.
@@ -350,6 +358,189 @@ void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& bo
     stage1 = translate * ramp;
 }
 
+// The constant every streamed decal vertex carries in its second field, DAT_00af4644: straight up.
+// It is what the texgen turns into the two stages' texture coordinates.
+const C3Vector DECAL_VERTEX_NORMAL = { 0.0f, 0.0f, 1.0f };
+
+// ref: FUN_007e2fd0
+// One hit record's triangles into a vertex stream: 0x18 bytes each, the position followed by that
+// constant up vector, no indices of their own -- three vertices per triangle, in order.
+//
+// The winding test is the receiver selection, and it is the whole reason a wall never gets a blob:
+// a triangle is kept only when its XY cross product is non-negative, i.e. it faces up. Bit 2 of the
+// flags skips the test; the blob's mask (0x220122) has that bit clear, so blobs are upward-only.
+//
+// DIVERGED, and the field name in CMapObjHitRecord is about to be wrong: the reference branches on
+// the record's +0x0c, which frozen calls `unused3`. A non-zero value takes a different path that
+// emits one vertex per index and reads a float per vertex out of that field, and the local
+// accounting in the decompilation does not add up to a 0x18 vertex, so it is not reproduced here.
+// Nothing in frozen ever sets that field -- AllocHitRecord zeroes it -- so the path is unreachable.
+static void DecalStreamReceiver(const CMapObjHitRecord& record, CGxBatch& batch, uint32_t flags) {
+    auto stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x18, record.indexCount);
+
+    if (!stream) {
+        return;
+    }
+
+    auto vertices = reinterpret_cast<float*>(g_theGxDevicePtr->BufLock(stream));
+
+    if (!vertices) {
+        return;
+    }
+
+    batch.m_count = 0;
+
+    bool testWinding = (flags & 4) == 0;
+    float* out = vertices;
+
+    for (uint32_t i = 0; i + 2 < record.indexCount; i += 3) {
+        const C3Vector& a = record.vertices[record.indices[i]];
+        const C3Vector& b = record.vertices[record.indices[i + 1]];
+        const C3Vector& c = record.vertices[record.indices[i + 2]];
+
+        if (testWinding) {
+            float cross = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+
+            if (cross < 0.0f) {
+                continue;
+            }
+        }
+
+        const C3Vector* corner[3] = { &a, &b, &c };
+
+        for (int32_t k = 0; k < 3; k++) {
+            *out++ = corner[k]->x;
+            *out++ = corner[k]->y;
+            *out++ = corner[k]->z;
+            *out++ = DECAL_VERTEX_NORMAL.x;
+            *out++ = DECAL_VERTEX_NORMAL.y;
+            *out++ = DECAL_VERTEX_NORMAL.z;
+        }
+
+        batch.m_count += 3;
+    }
+
+    g_theGxDevicePtr->BufUnlock(stream, 0);
+    stream->unk1C = 1;
+    GxPrimVertexPtr(stream, GxVBF_PN);
+}
+
+// ref: FUN_007e3580
+// The index stream that goes with it: 0, 1, 2, ... one per streamed vertex, because the stream
+// builder above already expanded the triangles.
+static void DecalStreamIndices(const CMapObjHitRecord& record) {
+    auto stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, record.indexCount);
+
+    if (!stream) {
+        return;
+    }
+
+    auto indices = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(stream));
+
+    if (!indices) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < record.indexCount; i++) {
+        indices[i] = static_cast<uint16_t>(i);
+    }
+
+    g_theGxDevicePtr->BufUnlock(stream, 0);
+    stream->unk1C = 1;
+    g_theGxDevicePtr->PrimIndexPtr(stream);
+}
+
+// ref: FUN_007e3e80
+// The receiver walk: every hit record a query left behind, drawn in the receiver's own space with
+// the decal's two texture matrices already pushed.
+//
+// The ramp on stage 1 is chosen by the blending mode ALREADY SET, which is how one function serves
+// several decal kinds: mode 4 takes ShadowMod with ColorOp1 and AlphaOp1 at 2, anything else takes
+// ShadowAdd with both at 0. ShadowProjectBlob sets mode 4, so a blob uses ShadowMod.
+//
+// The texgen is what makes the projection work: both stages generate their coordinates from the
+// vertex position, and the matrices DecalBuildTransforms built do the rest. The receiver's own
+// triangles draw untransformed, so nothing here depends on how the receiver's base pass drew them.
+//
+// Polygon offset comes from the strength -- twice it, scaled by about 1/32768 -- which is the
+// reference's whole answer to coplanar depth on this path. The blob's 0.4 gives about 2.4e-05.
+void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength) {
+    GxRsPush();
+
+    // GxRs_Unk61 and GxRs_Unk62 have no name in frozen's enum yet; the reference sets both to 1
+    // here, alongside the two texgens.
+    if (g_theGxDevicePtr->m_appRenderStates[GxRs_BlendingMode].m_value == 4) {
+        g_theGxDevicePtr->RsSet(GxRs_Texture1, ShadowModGxTex());
+        GxRsSet(GxRs_ColorOp1, 2);
+        GxRsSet(GxRs_AlphaOp1, 2);
+    } else {
+        g_theGxDevicePtr->RsSet(GxRs_Texture1, ShadowAddGxTex());
+        GxRsSet(GxRs_ColorOp1, 0);
+        GxRsSet(GxRs_AlphaOp1, 0);
+    }
+
+    if (strength != 0.0f) {
+        GxRsSet(GxRs_PolygonOffset, (strength + strength) * DECAL_OFFSET_SCALE);
+    }
+
+    GxRsSet(GxRs_TexGen0, 2);
+    GxRsSet(GxRs_TexGen1, 2);
+    GxRsSet(GxRs_Unk61, 1);
+    GxRsSet(GxRs_Unk62, 1);
+    GxRsSet(GxRs_MatDiffuse, color.value);
+
+    // Every receiver draws in its own placement with the camera translation folded out, which is
+    // the same convention the WMO passes use.
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+
+    C44Matrix toCamera;
+    toCamera.Identity();
+    C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
+    toCamera.Translate(back);
+
+    g_theGxDevicePtr->XformPush(GxXform_World);
+
+    for (uint32_t i = 0; i < CMapObjGroup::s_hitRecordCount; i++) {
+        const CMapObjHitRecord& record = CMapObjGroup::s_hitRecords[i];
+
+        // The stream the expansion needs must fit; the reference caps it at 0x10000 vertices.
+        if (static_cast<uint32_t>(record.indexCount) * 3 >= 0x10001) {
+            continue;
+        }
+
+        if (!record.placement || !record.vertices || !record.indices) {
+            continue;
+        }
+
+        GxXformSet(GxXform_World, *record.placement * toCamera);
+
+        CGxBatch batch;
+        batch.m_primType = GxPrim_Triangles;
+        batch.m_start = 0;
+        batch.m_count = record.indexCount;
+        batch.m_minIndex = 0;
+        batch.m_maxIndex = static_cast<uint16_t>(record.indexCount - 1);
+
+        // TODO FUN_007e32f0, 634 bytes: the same stream with a per-vertex colour, taken when bit 1
+        // of the flags is CLEAR. The blob's mask has that bit set, so blobs take the plain one.
+        DecalStreamReceiver(record, batch, flags);
+
+        DecalStreamIndices(record);
+
+        if (batch.m_count != 0) {
+            GxDraw(&batch, 1);
+        }
+    }
+
+    // TODO the reference's SECOND receiver list, DAT_00d38014 with its count at DAT_00d38054: up to
+    // ten M2 receivers, each drawn through its own matrix at +0xb4 with the draw at FUN_00829aa0.
+    // That is the "M2 receivers" item the render inventory has open, and FUN_007e35f0 is what fills
+    // the list.
+
+    g_theGxDevicePtr->XformPop(GxXform_World);
+    GxRsPop();
+}
+
 // ref: FUN_007e4370
 // The wrapper eight reference decal kinds share: build the two texture transforms, push them as the
 // stage 0 and stage 1 texture matrices, walk the receivers, pop.
@@ -372,15 +563,14 @@ void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44M
     g_theGxDevicePtr->XformPush(GxXform_Tex0, stage0);
     g_theGxDevicePtr->XformPush(GxXform_Tex1, stage1);
 
-    // TODO FUN_007e3e80(bounds, color, receiverMask, flag, strength), 1264 bytes: the receiver walk.
-    // It gathers the receivers' triangles through FUN_007e2fd0, FUN_007e32f0, FUN_007e3580 and
-    // FUN_007e35f0 and draws them with the blob on stage 0 and one of the two ramps on stage 1.
-    // FUN_007e3aa0 is the same walk through CShaderEffect. Nothing here stands in for it, so this
-    // pushes the transforms and draws nothing.
-    (void)color;
-    (void)receiverMask;
+    // TODO FUN_007e35f0, 228 bytes: the QUERY that fills the receiver lists, and the one thing
+    // still missing. It stashes the caster's box, resets the five hit-record counters and runs
+    // FUN_007a6af0 (the WMO half, itself dispatching FUN_007a6940 and FUN_007a6830 on the flag
+    // mask) and FUN_007a2aa0 (the M2 half, up to ten). Until it lands s_hitRecordCount is whatever
+    // an unrelated query left, so the walk below normally finds nothing and draws nothing.
     (void)flag;
-    (void)strength;
+
+    DecalDrawReceivers(color, receiverMask, strength);
 
     g_theGxDevicePtr->XformPop(GxXform_Tex1);
     g_theGxDevicePtr->XformPop(GxXform_Tex0);

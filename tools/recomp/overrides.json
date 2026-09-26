@@ -3104,9 +3104,5 @@
   "008c6c80": {
     "status": "excluded",
     "note": "CWaveManager's vtable slot 3, `leal 0x8(%ecx), %eax` -- the record block starts at +0x08. Ported as an inline accessor, so nothing in the PDB to bind."
-  },
-  "007e3e80": {
-    "status": "unlinked",
-    "note": "The projected decal's RECEIVER WALK, 1264 bytes, and the last unported link in the blob shadow chain. Pinned because with DecalDrawProjected ported the matcher guessed CGxDevice::XformPop for it off the call graph, which is nonsense. Signature, from the one call site: (const CAaBox& bounds, const CImVector& colour, uint32_t receiverMask, int32_t flag, float strength) -- the mask is the literal 0x220122 and what its bits select has not been read. It gathers the receivers' triangles through FUN_007e2fd0 (785 bytes), FUN_007e32f0 (634), FUN_007e3580 (103) and FUN_007e35f0 (228) and draws them with the blob texture on stage 0 and one of the two generated ramps on stage 1, through the two texture matrices DecalBuildTransforms built. FUN_007e3aa0 (980 bytes) is the same walk driven through CShaderEffect instead of the fixed-function pipeline. Everything above it in the chain is ported: FUN_007e2d60, FUN_007e4480, FUN_007e4370, FUN_007e49e0, and both caster call sites in CWorldScene::DrawEntityShadows reach it. So nothing draws yet, and this is the single function that changes that."
   }
 }

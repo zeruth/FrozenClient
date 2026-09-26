@@ -10914,7 +10914,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 622,
+  "frozenSize": 704,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 89,
@@ -10930,7 +10930,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 622,
+  "frozenSize": 704,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 51,
@@ -11398,7 +11398,7 @@
    "lib/typhoon/tempest/matrix/c33matrix.cpp"
   ],
   "frozen": "C33Matrix::C33Matrix",
-  "frozenSize": 92,
+  "frozenSize": 176,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 64,
@@ -14258,7 +14258,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 622,
+  "frozenSize": 704,
   "how": "annotated",
   "module": "CharacterCreation.cpp",
   "refSize": 63,
@@ -25024,7 +25024,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::XformPush",
-  "frozenSize": 25,
+  "frozenSize": 116,
   "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 84,
@@ -31500,7 +31500,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "CAaBox::Scale",
-  "frozenSize": 0,
+  "frozenSize": 34,
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 58,
@@ -34466,7 +34466,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::XformPush",
-  "frozenSize": 25,
+  "frozenSize": 116,
   "how": "annotated",
   "module": "Cursor.cpp",
   "refSize": 118,
@@ -39600,7 +39600,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "AaBoxIsDegenerate",
-  "frozenSize": 0,
+  "frozenSize": 42,
   "how": "annotated",
   "module": "Item_C.cpp",
   "refSize": 65,
@@ -44590,7 +44590,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::DrawEntityShadows",
-  "frozenSize": 346,
+  "frozenSize": 369,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 398,
@@ -50663,10 +50663,40 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "DecalBuildTransforms",
-  "frozenSize": 0,
+  "frozenSize": 701,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 623,
+  "status": "ported"
+ },
+ "007e2fd0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalStreamReceiver",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 785,
+  "status": "ported"
+ },
+ "007e3580": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalStreamIndices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 103,
   "status": "ported"
  },
  "007e36e0": {
@@ -50729,11 +50759,26 @@
   "refSize": 117,
   "status": "ported"
  },
- "007e4370": {
+ "007e3e80": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.414,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalDrawReceivers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 1264,
+  "status": "ported"
+ },
+ "007e4370": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/Shadow.cpp"
   ],
@@ -50753,7 +50798,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowProjectBlob",
-  "frozenSize": 0,
+  "frozenSize": 2056,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 1370,
@@ -50768,7 +50813,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowDrawBlob",
-  "frozenSize": 0,
+  "frozenSize": 120,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 96,

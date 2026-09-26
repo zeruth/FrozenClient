@@ -45,6 +45,9 @@ void ShadowSetLOD(int32_t lod);
 // ref: FUN_007e2d60
 void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& box, const C44Matrix* extra, float bias, int32_t absolute);
 
+// Draw every hit record a query left behind, as a decal receiver. ref: FUN_007e3e80
+void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength);
+
 // The wrapper every projected decal shares: transforms, the two texture matrices, the receiver
 // walk. ref: FUN_007e4370
 void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44Matrix& texMatrix, float bias, uint32_t receiverMask, int32_t flag, float strength);
