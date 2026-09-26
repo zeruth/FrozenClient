@@ -325,6 +325,17 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // it is mounted.
         bool CanPlayActionAnimation(int32_t animID, int32_t currentAnimID);
 
+        // ref: FUN_007225e0
+        // One of the localised strings that come in a male and a female form, picked by this
+        // unit's gender. UNIT_FIELD_BYTES_0 byte 2 is the gender and 1 is female, which lands on
+        // GENDER_FEMALE (3) and GENDER_MALE (2) -- the same two values the reference passes.
+        //
+        // The reference reads the gender off the player info block (+0x1008) when the unit IS the
+        // active player and off the descriptor otherwise. frozen reads the descriptor either way:
+        // it is the same unit's own gender byte, so the two agree, and frozen has no cached copy
+        // to prefer.
+        const char* GetGenderedText(const char* key, int32_t count) const;
+
         // ref: FUN_0071af90
         // The unit is swinging at something.
         bool IsAttacking() const;

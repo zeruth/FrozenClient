@@ -2448,6 +2448,13 @@ void CGUnit_C::ApplySequence(M2BoneSequenceState* state, uint32_t currentAnimID,
     }
 }
 
+// ref: FUN_007225e0
+const char* CGUnit_C::GetGenderedText(const char* key, int32_t count) const {
+    uint32_t gender = (this->m_unit->bytes0 >> 16) & 0xFF;
+
+    return FrameScript_GetText(key, count, gender == 1 ? GENDER_FEMALE : GENDER_MALE);
+}
+
 // ref: FUN_0071af90
 bool CGUnit_C::IsAttacking() const {
     return this->m_attackTarget != 0;

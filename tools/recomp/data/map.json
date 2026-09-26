@@ -41331,6 +41331,22 @@
   "refSize": 268,
   "status": "ported"
  },
+ "007225e0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetGenderedText",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Unit_C.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
  "00723350": {
   "branchRatio": 0.3,
   "constOverlap": 0.455,

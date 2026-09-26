@@ -328,7 +328,7 @@
   },
   "006ded60": {
     "status": "excluded",
-    "note": "TSList<>::LinkToTail, folded template"
+    "note": "TSList link-to-head, out of line in the reference and INLINED in frozen: storm/List.hpp keeps it as a template member, so frozen's binary carries no symbol for it and there is nothing to bind. 251 reference callers and no counterpart function -- the same category as GXUEMBEDDEDTEXTUREINFO::GXUEMBEDDEDTEXTUREINFO in the report. Recorded on this one as the clearest example; a scan for the shape (small, no SMem, the unlink-then-link double masking) finds 61 like it on the render surface, and frozen's PDB has list symbols only for NewNode, UnlinkAll, DeleteNode and the constructors. Excluding all 61 would move the denominator, so it wants a deliberate decision rather than a bulk edit -- but they are not work, and should not keep surfacing as if they were."
   },
   "007b5020": {
     "status": "excluded",
@@ -3297,5 +3297,9 @@
   "0083c6e0": {
     "frozen": "M2Init",
     "note": "One instantiation of the M2Init family. The reference emits a separate function per element type -- this set of 27, found by taking every unmapped function in M2Scene.cpp and M2Shared.cpp that is gated on the load-sequence global at 0x00af59d8 and has the template's two return paths -- while frozen keeps them as the one template in src/model/M2Init.hpp plus its M2Track and M2PartTrack overloads. Several were read to confirm the shape rather than pattern-matched: each takes (base, size, data, array), rejects an array whose data would fall outside the file, sets the offset to 0 when the count is 0 and otherwise rebases it, then recurses into nested arrays. They share the collapsed M2Init key for the same reason the two TextureCreate overloads share theirs -- see the note on 004b9760. Expect a low call-order score: one template body cannot match 27 different inlined instantiations."
+  },
+  "007225e0": {
+    "frozen": "CGUnit_C::GetGenderedText",
+    "note": "50% call order for one documented reason: the reference reads the gender off the player info block (+0x1008) when the unit IS the active player and off the descriptor otherwise, so it calls ClntObjMgrGetActivePlayer to decide. frozen reads the descriptor either way -- it is the same unit's own gender byte, so the two agree, and frozen has no cached copy to prefer. GENDER_MALE and GENDER_FEMALE are already 2 and 3, the values the reference passes."
   }
 }

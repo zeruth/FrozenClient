@@ -2591,6 +2591,7 @@ addr	how	frozen	evidence
 00721ca0	override	CGUnit_C::IsInNonStanceForm	
 007222a0	annotated	CGUnit_C::CanShowLootAnimation	tag in src/object/client/CGUnit_C.cpp
 007224d0	annotated	CGUnit_C::GetSpellVisualAnimation	tag in src/object/client/CGUnit_C.cpp
+007225e0	override	CGUnit_C::GetGenderedText	
 00723350	annotated	CMovementShared::IsInForcedMotion	tag in src/object/movement/CMovementShared.cpp
 00723e30	override	CGUnit_C::CanPlayActionAnimation	
 00724060	annotated	CGUnit_C::GetDeathAnimation	tag in src/object/client/CGUnit_C.cpp
