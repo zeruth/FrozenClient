@@ -3183,7 +3183,11 @@
     "note": "--propose offered GxRsPop for this and it is not that: frozen's GxRsPop is a one-line forward to CGxDevice::RsPop, while this CALLS GxRsPop and then pops a transform through a device vfunc and clears a bit. It is a draw epilogue, and GxRsPop was simply its only linked callee. Recorded so it is not proposed again."
   },
   "007ed4c0": {
+    "status": "diverged",
+    "note": "Identified and understood, and it found a bug rather than needing to be written. It blends one sky-state block into another field by field -- dst[i] = lerp(dst[i], src[i], t) over 18 colours in groups of 3, 6, 5 and 4, then 11 floats -- which is exactly frozen's LightColors (18 colours, 11 floats). frozen does the same blend INLINE in CWorld::UpdateOutdoorLight rather than as a function, so there is nothing to tag; recorded diverged. Comparing the two showed frozen looping five of its six sky rings. Both the destination block and SkyLerp's colour arguments arrive in registers, so the decompilation shows only `unaff_EDI`; the field map came out of the disassembly at 0x007ed4c0."
+  },
+  "007ee5d0": {
     "status": "unlinked",
-    "note": "Identified but not ported: it blends a whole sky-state block toward a target by a factor, nineteen colours through SkyLerp plus about ten floats lerped inline. Fully self-contained -- SkyLerp is its only callee and that is already linked -- and on the render spine, so it is the best-value thing left in FFXEffects.cpp. It needs the disassembly first: the destination block arrives in EDI and SkyLerp's colour arguments are in registers too, so the decompilation has lost both and shows only `unaff_EDI`. frozen has SkyLerp and uses it for the dome rings in DayNight.cpp but has no whole-block blend."
+    "note": "One light zone's contribution: fill a block for its LightParams, work out its distance falloff weight (the same formula frozen uses), clamp it, and blend it in with FUN_007ed4c0. The reference calls this once PER LIGHT and accumulates; frozen picks the single heaviest light and blends once. Noted at the light loop in CWorld.cpp. FUN_007ee6b0 is the same with a time-based weight instead of a distance one."
   }
 }

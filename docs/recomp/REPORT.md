@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 17:28 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 17:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -568,8 +568,8 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `M2Init` | model | 4489 | src/model/M2Init.cpp |
 | `GetPredOutside` | m4vh263dec | 4486 | vendor/m4vh263dec/src/get_pred_outside.cpp |
 | `T1_Decoder_Parse_Charstrings` | lib/freetype-2.0 | 4304 | vendor/freetype-2.0.9/src/psaux/t1decode.c |
+| `CWorld::UpdateOutdoorLight` | world | 3948 | src/world/CWorld.cpp |
 | `doContent` | lib/expat-2.0 | 3900 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
-| `CWorld::UpdateOutdoorLight` | world | 3841 | src/world/CWorld.cpp |
 | `LzmaDec_DecodeReal` | lib/stormlib-9.31 | 3776 | lib/squall/vendor/stormlib-9.31/src/lzma/c/lzmadec.c |
 | `DecodeVOLHeader` | m4vh263dec | 3581 | vendor/m4vh263dec/src/vop.cpp |
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
@@ -727,7 +727,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
 | 2026-09-26 16:36 | 4473 (16.6%) | 2304 (8.5%) | 577 | 1507/5381 | 2924/2964 | 1380 |
-| 2026-09-26 16:36 | 4473 (16.6%) | 2304 (8.5%) | 577 | 1507/5381 | 2924/2964 | 1380 |
 | 2026-09-26 16:39 | 4473 (16.6%) | 2304 (8.5%) | 577 | 1507/5381 | 2924/2964 | 1380 |
 | 2026-09-26 16:49 | 4477 (16.6%) | 2305 (8.6%) | 577 | 1511/5381 | 2924/2964 | 1380 |
 | 2026-09-26 16:49 | 4477 (16.6%) | 2305 (8.6%) | 577 | 1511/5381 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 17:22 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:28 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:28 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
+| 2026-09-26 17:36 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

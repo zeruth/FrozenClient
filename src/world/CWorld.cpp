@@ -457,6 +457,12 @@ void CWorld::UpdateOutdoorLight() {
         }
     }
 
+    // A DIFFERENCE FROM THE REFERENCE, recorded rather than changed: this picks the single
+    // heaviest light and blends it once, while the reference blends EVERY light that has any
+    // weight, one after another, accumulating into the running result (FUN_007ee5d0 per light,
+    // each ending in the block blend FUN_007ed4c0). The two agree wherever one light dominates
+    // and differ where zones overlap. Changing it is a visible change to the sky that wants a
+    // scene-compare run behind it, not a blind edit.
     if (bestParams > 0 && bestWeight > 0.0f) {
         LightColors local;
         ComputeLightColors(bestParams, t, local);
@@ -471,7 +477,12 @@ void CWorld::UpdateOutdoorLight() {
         result.diffuse.y = result.diffuse.y * iw + local.diffuse.y * w;
         result.diffuse.z = result.diffuse.z * iw + local.diffuse.z * w;
 
-        for (int32_t k = 0; k < 5; k++) {
+        // SIX, not five. sky[] has six rings, the publish loop below copies six, and the
+        // reference blends six -- FUN_007ed4c0 walks its sky-state block in groups of 3, 6, 5
+        // and 4 colours, and the group of six is this one. Blending only five left the last
+        // ring snapping to the default zone's colour at a light-zone boundary while the other
+        // five cross-faded.
+        for (int32_t k = 0; k < 6; k++) {
             result.sky[k].x = result.sky[k].x * iw + local.sky[k].x * w;
             result.sky[k].y = result.sky[k].y * iw + local.sky[k].y * w;
             result.sky[k].z = result.sky[k].z * iw + local.sky[k].z * w;
