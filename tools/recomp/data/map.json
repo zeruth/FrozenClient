@@ -44271,7 +44271,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCameraLiquid",
-  "frozenSize": 494,
+  "frozenSize": 451,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 339,
@@ -46294,14 +46294,14 @@
  },
  "007b5d00": {
   "branchRatio": 0.167,
-  "constOverlap": 0.053,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 1.0,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
   ],
-  "frozen": "CMap::SetupMapObjDef",
+  "frozen": "MapObjDoodadLighting",
   "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
@@ -46312,7 +46312,7 @@
   "branchRatio": 0.37,
   "constOverlap": 0.071,
   "faithful": false,
-  "fidelity": 0.588,
+  "fidelity": 0.529,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
@@ -47573,7 +47573,7 @@
   "status": "ported"
  },
  "007c0430": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,

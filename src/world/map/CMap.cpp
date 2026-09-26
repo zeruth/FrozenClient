@@ -1,4 +1,5 @@
 #include "world/map/CMap.hpp"
+#include "world/ParticleFx.hpp"
 #include "world/map/VBBList.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
@@ -599,6 +600,33 @@ CMapObjDef* CMap::AllocMapObjDef() {
 void CMap::FreeMapObjDef(CMapObjDef* def) {
     def->m_lameAssLink.Unlink();
     CMap::UnlinkMapObjDef(def);
+
+    // The building's props go with it. The stand-in released these on tile unload; without this the
+    // models, and the arrays their lighting callbacks point into, would leak on every map change.
+    for (uint32_t i = 0; i < def->m_doodadCount; i++) {
+        if (def->m_doodads[i]) {
+            ParticleFxForgetModel(def->m_doodads[i]);
+            def->m_doodads[i]->DetachFromScene();
+            def->m_doodads[i]->Release();
+        }
+    }
+
+    if (def->m_doodads) {
+        SMemFree(def->m_doodads, __FILE__, __LINE__, 0);
+    }
+
+    if (def->m_doodadScale) {
+        SMemFree(def->m_doodadScale, __FILE__, __LINE__, 0);
+    }
+
+    if (def->m_doodadAmbient) {
+        SMemFree(def->m_doodadAmbient, __FILE__, __LINE__, 0);
+    }
+
+    def->m_doodads = nullptr;
+    def->m_doodadScale = nullptr;
+    def->m_doodadAmbient = nullptr;
+    def->m_doodadCount = 0;
 
     uint32_t memHandle = def->m_memHandle;
     def->~CMapObjDef();

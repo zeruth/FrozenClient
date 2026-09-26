@@ -413,9 +413,8 @@ void CGWorldFrame::OnWorldRender() {
             }
         }
 
-        // The stand-in's walk now reaches only the doodads inside buildings; the terrain's own
-        // belong to the map.
-        TerrainForEachDoodad([](CM2Model* model, void* arg) {
+        // The buildings' own props, now built on the reference defs by CMap::CreateMapObjDoodads.
+        CMap::ForEachMapObjDoodad([](CM2Model* model, void* arg) {
             if (model->m_flag8) {
                 static_cast<std::vector<CM2Model*>*>(arg)->push_back(model);
             }

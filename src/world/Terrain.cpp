@@ -104,96 +104,10 @@ struct TerrainTile {
 
     // Placement uniqueIds this tile loaded (a large object listed in several tiles is owned by the
     // first tile to load it; the rest skip it). Removed from the global registry on unload.
-    uint32_t* ownedUnique = nullptr;
-    uint32_t ownedUniqueCount = 0;
 
     // WMO building instances placed on this tile (MODF)
-    struct WmoInstance* wmos = nullptr;
-    uint32_t wmoCount = 0;
 
     bool needsRebake = false; // outdoor light changed; relight this tile's vertices (spread over frames)
-};
-
-// One drawable range of a WMO group sharing a single material/texture
-struct WmoBatch {
-    HTEXTURE texture = nullptr;
-    uint32_t indexStart = 0;
-    uint32_t indexCount = 0;
-    uint32_t blend = 0;       // WMO material blend mode (0 opaque, 1 alpha-key, >=2 alpha)
-    bool twoSided = false;    // MOMT F_UNCULLED (0x4): render both faces, no backface culling
-    bool unlit = false;       // MOMT F_UNLIT (0x1): ignore lighting, render full-bright
-    bool unfogged = false;    // MOMT F_UNFOGGED (0x2): exclude this batch from distance fog
-};
-
-// One WMO group's geometry (world space). Each group is its own mesh so the format's 16-bit
-// indices never overflow, no matter how large the whole WMO is.
-struct WmoGroup {
-    // All that is left of a stand-in WMO group. Its geometry, colours, texcoords, indices, bounds,
-    // portal range, visibility stamps and its private CMapObjGroup have all gone: the reference's
-    // CMapObj owns every one of those now and is what draws, culls, walks portals and answers the
-    // BSP queries. MLIQ is the only chunk still read out of a group file, and the liquid it builds
-    // lives on the instance, not here.
-    //
-    // vertexCount and batchCount survive as plain MOVT/MOBA counts, and indexCount as MOVI's;
-    // the liquid parse and the group-load bookkeeping still report them.
-    uint32_t vertexCount = 0;
-    uint32_t indexCount = 0;
-    uint32_t batchCount = 0;
-};
-
-// A WMO portal polygon (MOPT) in world space: a vertex range into WmoInstance::portalVerts plus
-// the polygon's plane, oriented as the file stores it so MOPR's side values keep their meaning.
-struct WmoPortal {
-    uint16_t startVertex = 0;
-    uint16_t vertexCount = 0;
-    C3Vector normal = { 0.0f, 0.0f, 0.0f };
-    float dist = 0.0f;
-};
-
-// MOPR: a group's link through a portal to a neighbouring group. side is +1/-1: which side of the
-// portal plane the referencing group lies on. The camera passes through the portal only when it
-// stands on that same side.
-struct WmoPortalRef {
-    uint16_t portal = 0;
-    uint16_t group = 0;
-    int16_t side = 0;
-};
-
-// A placed WMO: its groups plus the shared material textures
-struct WmoInstance {
-    WmoGroup* groups = nullptr;
-    uint32_t groupCount = 0;
-
-    // Portal graph (MOPV/MOPT/MOPR), world space. Empty for WMOs without portals, which then fall
-    // back to a plain per-group frustum test.
-    uint32_t groupsExpected = 0; // MOHD's group count, to spot groups that failed to load
-
-
-    // MLIQ surfaces (one per group that carries liquid), same mesh type as the terrain layers
-
-    // Vertices are stored relative to this, the instance's placement position, and the origin is
-    // folded back in by a per-instance matrix at draw time. Same reason as TerrainChunk::localPos:
-    // absolute world coordinates transformed by a matrix carrying -cameraPos lose most of the
-    // depth precision to cancellation. Bounds below stay in world space.
-    C3Vector origin = { 0.0f, 0.0f, 0.0f };
-
-    // The placement yaw, kept so a world-space point can be brought back into the model's own
-    // space for the BSP queries (WmoGroup::queryVerts live there).
-
-    // World-space bounding box over all groups, for whole-instance frustum culling (the reference
-    // culls a WMO hierarchically before descending into its groups).
-
-    // M2 doodads placed inside the WMO (MODD); the world scene draws them, we own the references
-    CM2Model** doodads = nullptr;
-    float* doodadScale = nullptr;  // placement scale, so the cull sphere matches the world size
-    C3Vector* doodadAmbient = nullptr; // per-doodad baked lighting colour (MODD colour field)
-    uint32_t doodadCount = 0;
-
-    // Average interior (MOCV) brightness; interior doodads are lit by this constant value so they
-    // match the torch-lit walls and do not cycle with the outdoor day/night like exterior props.
-    C3Vector interiorAmbient = { 0.35f, 0.35f, 0.35f };
-
-    // The root as the group queries reach it: the MOMT copy, the MOHD flags and ambient colour.
 };
 
 // Distance from the map's NW corner to its centre (32 tiles), used to convert the corner-relative
@@ -214,7 +128,6 @@ char s_mapName[128] = { 0 };
 // Registry of every placement uniqueId currently loaded, so an object that appears in more than one
 // overlapping ADT tile (large WMOs, cross-boundary doodads) is placed exactly once, like the
 // reference. The sentinel 0xFFFFFFFF is never registered and always placed.
-std::set<uint32_t> s_loadedUnique;
 int32_t s_mapID = -1;
 C3Vector s_cameraPos = { 0.0f, 0.0f, 0.0f };
 
@@ -572,432 +485,15 @@ void ParseChunk(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize) {
     chunk.valid = true;
 }
 
-// WMO doodads sit inside buildings, so the reference lights them by the interior/ambient term
-// rather than the direct outdoor sun; using the zone ambient keeps them from being blown out.
-void WmoDoodadLightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
-    const C3Vector* interiorAmbient = static_cast<const C3Vector*>(arg);
-    lighting->AddAmbient(interiorAmbient ? *interiorAmbient : CWorld::GetOutdoorAmbient());
-
-    // Match the distance fog the surrounding WMO and terrain use (M2 fog is shader-side, per model).
-    float fogEnd = CWorld::GetFogEnd();
-    float fogStart = CWorld::GetFogStart();
-
-    if (fogEnd > 1.0f && fogEnd > fogStart && fogStart < CWorld::GetFarClip()) {
-        lighting->SetFog(CWorld::GetFogColor(), fogStart, fogEnd);
-    }
-}
-
 // Load a WMO (root + group files), transform all group geometry into world space using the
 // placement derived from the MODF entry, and build per-material textured batches. The placement
 // convention (local X is up; local Y/Z are the horizontal plane rotated by the yaw) was verified
 // against the MODF world-space bounding box.
 
-void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, uint32_t doodadSet, WmoInstance& out) {
-    void* rootData = nullptr;
-    size_t rootSize = 0;
-
-    if (!SFile::Load(nullptr, rootPath, &rootData, &rootSize, 0, 0, nullptr) || !rootData) {
-        return;
-    }
-
-    auto root = static_cast<const uint8_t*>(rootData);
-
-    uint32_t nGroups = 0;
-    uint32_t nMaterials = 0;
-    const char* motx = nullptr;
-    const uint8_t* momt = nullptr;
-    const char* modn = nullptr;      // doodad filename block
-    const uint8_t* modd = nullptr;   // doodad placements
-    uint32_t moddCount = 0;
-    uint32_t set0First = 0;   // doodad set 0 (the global set, always displayed)
-    uint32_t set0Count = 0;
-    uint32_t setNFirst = 0;   // the selected set (displayed in addition to set 0)
-    uint32_t setNCount = 0;
-    bool modsPresent = false;
-    uint16_t mohdFlags = 0;          // 0x4: MOGP.groupLiquid is a LiquidType id directly
-    const float* mopv = nullptr;     // portal vertices (3 floats each, WMO-local)
-    uint32_t mopvCount = 0;
-    const uint8_t* mopt = nullptr;   // portal infos (20 bytes: startVertex, count, plane)
-    uint32_t moptCount = 0;
-    const uint8_t* mopr = nullptr;   // portal references (8 bytes: portal, group, side, pad)
-    uint32_t moprCount = 0;
-
-    uint32_t off = 0;
-
-    while (off + 8 <= rootSize) {
-        uint32_t sz;
-        uint32_t tag = ReadChunkTag(root, off, sz);
-        const uint8_t* body = root + off + 8;
-
-        if (tag == FourCC("MOHD")) {
-            nMaterials = *reinterpret_cast<const uint32_t*>(body + 0);
-            nGroups = *reinterpret_cast<const uint32_t*>(body + 4);
-            mohdFlags = (sz >= 62) ? *reinterpret_cast<const uint16_t*>(body + 60) : 0;
-
-            // MOHD ambient colour (CImVector BGRA at +0x1C): the WMO's declared interior ambient
-            // light. The reference lights interior contents from this floor, so use it as the
-            // doodad interior ambient. Keep the neutral fallback only when the WMO declares none.
-            uint8_t ab = body[28], ag = body[29], ar = body[30];
-
-            if (ar || ag || ab) {
-                out.interiorAmbient.x = ar / 255.0f;
-                out.interiorAmbient.y = ag / 255.0f;
-                out.interiorAmbient.z = ab / 255.0f;
-            }
-
-        } else if (tag == FourCC("MOTX")) {
-            motx = reinterpret_cast<const char*>(body);
-        } else if (tag == FourCC("MOMT")) {
-            momt = body;
-
-            // The group queries read the materials through CMapObj, so keep a copy that outlives
-            // the root file buffer
-            if (sz >= sizeof(SMOMaterial)) {
-            }
-        } else if (tag == FourCC("MODN")) {
-            modn = reinterpret_cast<const char*>(body);
-        } else if (tag == FourCC("MODD")) {
-            modd = body;
-            moddCount = sz / 40;
-        } else if (tag == FourCC("MOPV")) {
-            mopv = reinterpret_cast<const float*>(body);
-            mopvCount = sz / 12;
-        } else if (tag == FourCC("MOPT")) {
-            mopt = body;
-            moptCount = sz / 20;
-        } else if (tag == FourCC("MOPR")) {
-            mopr = body;
-            moprCount = sz / 8;
-        } else if (tag == FourCC("MODS") && sz >= 32) {
-            // Doodad set 0 is the global set the reference always displays; the placement's
-            // selected set (when > 0 and valid) is shown in addition to it, not instead of it.
-            uint32_t setCount = sz / 32;
-            set0First = *reinterpret_cast<const uint32_t*>(body + 0 * 32 + 20);
-            set0Count = *reinterpret_cast<const uint32_t*>(body + 0 * 32 + 24);
-
-            if (doodadSet > 0 && doodadSet < setCount) {
-                setNFirst = *reinterpret_cast<const uint32_t*>(body + doodadSet * 32 + 20);
-                setNCount = *reinterpret_cast<const uint32_t*>(body + doodadSet * 32 + 24);
-            }
-
-            modsPresent = true;
-        }
-
-        off += 8 + sz;
-    }
-
-    // The doodad ranges to spawn: set 0 always, plus the selected set when distinct. Without a MODS
-    // chunk the WMO has no sets and every MODD entry is placed.
-    struct { uint32_t start; uint32_t end; } ranges[2];
-    uint32_t rangeCount = 0;
-
-    if (modsPresent) {
-        ranges[rangeCount].start = set0First;
-        ranges[rangeCount].end = set0First + set0Count;
-        rangeCount++;
-
-        if (setNCount && setNFirst != set0First) {
-            ranges[rangeCount].start = setNFirst;
-            ranges[rangeCount].end = setNFirst + setNCount;
-            rangeCount++;
-        }
-    } else {
-        ranges[rangeCount].start = 0;
-        ranges[rangeCount].end = moddCount;
-        rangeCount++;
-    }
-
-    // The MOMT -> texture load used to sit here, filling WmoInstance::textures for the batch
-    // array above. Both are gone: CMapObj::LoadMaterialTextures loads the real copy, so the
-    // stand-in was loading every WMO material texture a second time and sampling neither.
-
-    // Group file path: replace the root's ".wmo" extension with "_NNN.wmo"
-    char base[260];
-    SStrCopy(base, rootPath, sizeof(base));
-    char* dot = SStrChrR(base, '.');
-
-    if (dot) {
-        *dot = '\0';
-    }
-
-    // Build each group as its own world-space mesh (per-group 16-bit indices never overflow)
-    out.groups = static_cast<WmoGroup*>(SMemAlloc((nGroups ? nGroups : 1) * sizeof(WmoGroup), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-    out.groupCount = 0;
-
-    float cs = cosf(ry);
-    float sn = sinf(ry);
-
-
-    out.origin = worldPos;
-    out.groupsExpected = nGroups;
-
-
-    // The portal graph was transformed into world space here -- MOPV vertices, MOPT planes with
-    // their distances recomputed after rotation, and the MOPR side references. It fed exactly one
-    // thing, the stand-in's own portal walk inside WmoUpdateVisibility, and that is deleted. The
-    // reference walks MOPR/MOPT itself out of CMapObj, in the building's own space, which is where
-    // the side signs are meaningful without any of this transforming.
-
-    // Accumulate interior MOCV to derive a constant interior ambient for the doodads
-    double mocvSumR = 0.0, mocvSumG = 0.0, mocvSumB = 0.0;
-    uint32_t mocvSamples = 0;
-
-    for (uint32_t g = 0; g < nGroups; g++) {
-        char groupPath[260];
-        SStrPrintf(groupPath, sizeof(groupPath), "%s_%03u.wmo", base, g);
-
-        void* gdata = nullptr;
-        size_t gsize = 0;
-
-        if (!SFile::Load(nullptr, groupPath, &gdata, &gsize, 0, 0, nullptr) || !gdata) {
-            continue;
-        }
-
-        auto gb = static_cast<const uint8_t*>(gdata);
-        const uint8_t* mogp = nullptr;
-        uint32_t mogpSize = 0;
-        uint32_t go = 0;
-
-        while (go + 8 <= gsize) {
-            uint32_t sz;
-            uint32_t tag = ReadChunkTag(gb, go, sz);
-
-            if (tag == FourCC("MOGP")) {
-                mogp = gb + go + 8;
-                mogpSize = sz;
-                break;
-            }
-
-            go += 8 + sz;
-        }
-
-        if (mogp) {
-            // MOGP flags: bit 0x8 marks an exterior (outdoor) group, which is lit by the sun and
-            // cycles with the day; interior groups keep their baked MOCV torch lighting.
-            uint32_t mogpFlags = *reinterpret_cast<const uint32_t*>(mogp + 8);
-            bool exterior = (mogpFlags & 0x8) != 0;
-            uint16_t mogpPortalStart = *reinterpret_cast<const uint16_t*>(mogp + 36);
-            uint16_t mogpPortalCount = *reinterpret_cast<const uint16_t*>(mogp + 38);
-            uint32_t mogpGroupLiquid = *reinterpret_cast<const uint32_t*>(mogp + 52);
-
-            const uint8_t* sub = mogp + 68;
-            uint32_t subSize = mogpSize - 68;
-            uint32_t so = 0;
-
-            const float* movt = nullptr;
-            uint32_t movtCount = 0;
-            const float* monr = nullptr; // WMO MONR normals are 3 floats per vertex (already unit)
-            const float* motv = nullptr;
-            const uint16_t* movi = nullptr;
-            uint32_t moviCount = 0;
-            const uint8_t* moba = nullptr;
-            uint32_t mobaCount = 0;
-            const CImVector* mocv = nullptr; // baked per-vertex colours for interior groups
-            uint32_t mocvCount = 0;
-            const uint8_t* mliq = nullptr;   // group liquid (header + vertex grid + tile flags)
-            uint32_t mliqSize = 0;
-            const SMOPoly* mopy = nullptr;   // per-face flags + material
-            uint32_t mopyCount = 0;
-            const CAaBspNode* mobn = nullptr; // the face BSP
-            uint32_t mobnCount = 0;
-            const uint16_t* mobr = nullptr;  // the BSP leaves' face lists
-            uint32_t mobrCount = 0;
-
-            while (so + 8 <= subSize) {
-                uint32_t sz;
-                uint32_t tag = ReadChunkTag(sub, so, sz);
-                const uint8_t* body = sub + so + 8;
-
-                if (tag == FourCC("MOVT")) { movt = reinterpret_cast<const float*>(body); movtCount = sz / 12; }
-                else if (tag == FourCC("MONR")) { monr = reinterpret_cast<const float*>(body); }
-                else if (tag == FourCC("MOTV")) { motv = reinterpret_cast<const float*>(body); }
-                else if (tag == FourCC("MOVI")) { movi = reinterpret_cast<const uint16_t*>(body); moviCount = sz / 2; }
-                else if (tag == FourCC("MOBA")) { moba = body; mobaCount = sz / 24; }
-                else if (tag == FourCC("MOCV")) { mocv = reinterpret_cast<const CImVector*>(body); mocvCount = sz / 4; }
-                else if (tag == FourCC("MLIQ")) { mliq = body; mliqSize = sz; }
-                else if (tag == FourCC("MOPY")) { mopy = reinterpret_cast<const SMOPoly*>(body); mopyCount = sz / 2; }
-                else if (tag == FourCC("MOBN")) { mobn = reinterpret_cast<const CAaBspNode*>(body); mobnCount = sz / 16; }
-                else if (tag == FourCC("MOBR")) { mobr = reinterpret_cast<const uint16_t*>(body); mobrCount = sz / 2; }
-
-                so += 8 + sz;
-            }
-
-            if (movt && movi && movtCount && movtCount <= 65535) {
-                WmoGroup& grp = out.groups[out.groupCount];
-                grp.vertexCount = movtCount;
-                grp.indexCount = moviCount;
-                // The per-group geometry is gone. This block used to allocate six arrays per
-                // group -- world positions, colours, texcoords, indices, a per-vertex sun term and
-                // the additive MOCV -- transform every MOVT vertex into world space, light it,
-                // take a world bounding box, then rebase the whole array onto the instance origin.
-                // Every one of those outputs is now write-only: RenderWmos drew the geometry,
-                // BlobShadowDrawWmo re-drew it under decals, WmoUpdateVisibility used the bounds
-                // and the day/night pass re-lit the colours, and all four are deleted. The
-                // reference groups carry the same data and are what actually draws.
-                //
-                // The ONE thing still wanted from MOCV is the instance-wide average, which becomes
-                // WmoInstance::interiorAmbient and from there the per-doodad lighting colour that
-                // WmoDoodadLightingCallback reads -- so that is all this loop does now, and only
-                // for interior groups, which is the only case the average is taken over.
-                if (!exterior && mocv) {
-                    for (uint32_t i = 0; i < movtCount; i++) {
-                        mocvSumR += mocv[i].r;
-                        mocvSumG += mocv[i].g;
-                        mocvSumB += mocv[i].b;
-                        mocvSamples++;
-                    }
-                }
-
-                // The stand-in used to build its OWN CMapObjGroup here -- a second copy of the
-                // MOPY polys, the MOBN BSP nodes, the MOBR face refs, the MOCV colours and a
-                // file-space vertex array -- purely so the ported BSP queries had something to walk.
-                // TerrainWmoFloorLightAt now runs those queries on the REFERENCE groups, which carry
-                // the same data from the same chunks, so all of it is gone: per group that is one
-                // BSP node array, one poly array, one face-ref array and two vertex-sized arrays.
-
-                // The WmoBatch array is gone. It carried each batch's texture, blend mode and
-                // material flags for RenderWmos, which was deleted once the reference pass took
-                // over the WMO draw -- so nothing has read a batch since. Only the COUNT is still
-                // live: BlobShadowDrawWmo and WmoUpdateVisibility gate on batchCount to skip a
-                // group with no drawable geometry, so MOBA is still counted.
-                grp.batchCount = mobaCount;
-
-                if (mliq && mliqSize >= 30) {
-                    // MLIQ fed LiquidAt's indoor pools; CMapObjGroup::GetLiquidAt answers that
-                    // from the reference group's own MLIQ now.
-                }
-
-                out.groupCount++;
-            }
-        }
-
-        SMemFree(gdata, __FILE__, __LINE__, 0);
-    }
-
-    // The whole-instance bounding box was computed here, unioning the group boxes for
-    // hierarchical frustum culling. Its only readers were WmoUpdateVisibility and
-    // BlobShadowDrawWmo, both deleted, and the group boxes it unioned are gone too.
-
-    // Constant interior ambient from the average interior MOCV (0.35 default if the WMO has none)
-    if (mocvSamples > 0) {
-        out.interiorAmbient.x = static_cast<float>(mocvSumR / mocvSamples) / 255.0f;
-        out.interiorAmbient.y = static_cast<float>(mocvSumG / mocvSamples) / 255.0f;
-        out.interiorAmbient.z = static_cast<float>(mocvSumB / mocvSamples) / 255.0f;
-    }
-
-    // Interior doodads (MODD): M2 props placed in WMO-local space. Transform each position through
-    // the same proper rotation the geometry uses, and spawn the model into the world scene.
-    CM2Scene* scene = CWorld::GetM2Scene();
-
-    if (scene && modn && modd && moddCount) {
-        out.doodads = static_cast<CM2Model**>(SMemAlloc(moddCount * sizeof(CM2Model*), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-        out.doodadScale = static_cast<float*>(SMemAlloc(moddCount * sizeof(float), __FILE__, __LINE__, 0));
-        out.doodadAmbient = static_cast<C3Vector*>(SMemAlloc(moddCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
-        out.doodadCount = 0;
-
-        for (uint32_t rr = 0; rr < rangeCount; rr++) {
-        uint32_t rStart = ranges[rr].start;
-        uint32_t rEnd = ranges[rr].end > moddCount ? moddCount : ranges[rr].end;
-
-        for (uint32_t i = rStart; i < rEnd; i++) {
-            const uint8_t* e = modd + i * 40;
-            uint32_t nameOfs = *reinterpret_cast<const uint32_t*>(e + 0) & 0xFFFFFF;
-            float dx = *reinterpret_cast<const float*>(e + 4);
-            float dy = *reinterpret_cast<const float*>(e + 8);
-            float dz = *reinterpret_cast<const float*>(e + 12);
-            float qx = *reinterpret_cast<const float*>(e + 16);
-            float qy = *reinterpret_cast<const float*>(e + 20);
-            float qz = *reinterpret_cast<const float*>(e + 24);
-            float qw = *reinterpret_cast<const float*>(e + 28);
-            float dscale = *reinterpret_cast<const float*>(e + 32);
-
-            // MODD colour (BGRA at +36): the doodad's baked lighting colour. The reference lights each
-            // interior prop by its own colour, so a doodad in a blue-lit hall reads blue and one by a
-            // purple crystal reads purple, instead of every prop sharing one average tint.
-            C3Vector doodadColor = { e[38] / 255.0f, e[37] / 255.0f, e[36] / 255.0f };
-
-            const char* modelPath = modn + nameOfs;
-
-            C3Vector wp = {
-                worldPos.x + (dx * cs - dy * sn),
-                worldPos.y + (dx * sn + dy * cs),
-                worldPos.z + dz
-            };
-
-            CM2Model* model = scene->CreateModel(modelPath, 0);
-
-            if (!model) {
-                continue;
-            }
-
-            // Every WMO doodad is lit by the building's own baked lighting -- its MODD colour -- not
-            // the cycling outdoor sun, whether it sits in an interior hall or on the open deck. This
-            // is the reference's behaviour (WMO props take the WMO light, so they can read differently
-            // from the day/night world around them). An unset MODD colour (all-zero) falls back to the
-            // WMO's average interior ambient.
-            bool hasColor = (e[36] | e[37] | e[38]) != 0;
-            out.doodadAmbient[out.doodadCount] = hasColor ? doodadColor : out.interiorAmbient;
-            model->SetLightingCallback(&WmoDoodadLightingCallback, &out.doodadAmbient[out.doodadCount]);
-
-            // Apply the doodad's full orientation, not just its yaw: the MODD rotation is a proper
-            // Z-up world-space quaternion (its yaw extracts cleanly as 2*atan2(qz,qw), which is the
-            // textbook Z-up yaw, so the whole quaternion is a consistent rotation). Build the world
-            // matrix as WMO-yaw x doodad-quaternion x scale so leaning/tilted props (weapons on racks,
-            // debris) sit the way the reference places them instead of standing upright.
-            // These ops pre-multiply (M = Op x M), so applying the quaternion first then the WMO yaw
-            // builds Rz(ry) x Rq -- yaw outermost, the doodad's own rotation inside -- then scale, the
-            // same shape SetWorldTransform makes for the yaw-only case.
-            float ds = dscale > 0.0f ? dscale : 1.0f;
-            model->matrixB4.Identity();
-            model->matrixB4.Rotate(C4Quaternion(qx, qy, qz, qw));
-            model->matrixB4.RotateAroundZ(ry);
-            model->matrixB4.Scale(ds);
-            model->matrixB4.d0 = wp.x;
-            model->matrixB4.d1 = wp.y;
-            model->matrixB4.d2 = wp.z;
-            model->m_flag8000 = 1;
-            model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 0, 1);
-            model->SetAnimating(1);
-            model->SetVisible(1);
-            model->m_flag10000 = 1;
-
-            out.doodadScale[out.doodadCount] = dscale > 0.0f ? dscale : 1.0f;
-            out.doodads[out.doodadCount] = model;
-            out.doodadCount++;
-        }
-        }
-    }
-
-    SMemFree(rootData, __FILE__, __LINE__, 0);
-}
-
-// Claim a placement uniqueId for this tile: returns true (and registers it) if the object should be
-// placed here, false if another still-loaded tile already owns it. The 0xFFFFFFFF sentinel (no id)
-// is always placed and never registered.
-bool ClaimUnique(TerrainTile& tile, uint32_t uniqueId) {
-    if (uniqueId == 0xFFFFFFFF) {
-        return true;
-    }
-
-    if (s_loadedUnique.find(uniqueId) != s_loadedUnique.end()) {
-        return false;
-    }
-
-    s_loadedUnique.insert(uniqueId);
-
-    if (tile.ownedUnique) {
-        tile.ownedUnique[tile.ownedUniqueCount++] = uniqueId;
-    }
-
-    return true;
-}
-
 void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
     tile.x = tileX;
     tile.y = tileY;
     tile.loaded = true;
-    tile.wmos = nullptr;
-    tile.wmoCount = 0;
 
     for (auto& chunk : tile.chunks) {
         chunk.valid = false;
@@ -1102,138 +598,21 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
     // world coordinates, and apply the stored yaw and scale.
     CM2Scene* scene = CWorld::GetM2Scene();
 
-    // One slot per placement in this tile; a claimed id is recorded here and released on unload.
-    uint32_t ownedCap = mddfCount + modfCount;
-
-    if (ownedCap) {
-        tile.ownedUnique = static_cast<uint32_t*>(SMemAlloc(ownedCap * sizeof(uint32_t), __FILE__, __LINE__, 0));
-        tile.ownedUniqueCount = 0;
-    }
-
     // The tile's own doodads (MDDF) are the map's now, placed by CMap::CreateDoodadDef out of
     // CMapChunk::CreateRefs. Nothing is read here, so nothing is allocated for them either.
 
-    // Place the tile's WMO buildings (MODF), resolving the path through MWID -> MWMO and using the
-    // world placement transform derived from the MODF bounding box.
-    if (mwmo && mwid && modf && modfCount) {
-        tile.wmos = static_cast<WmoInstance*>(SMemAlloc(modfCount * sizeof(WmoInstance), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-        tile.wmoCount = 0;
-
-        for (uint32_t i = 0; i < modfCount; i++) {
-            const uint8_t* e = modf + i * 64;
-            uint32_t nameId = *reinterpret_cast<const uint32_t*>(e + 0);
-
-            if (nameId >= mwidCount) {
-                continue;
-            }
-
-            // Skip a WMO already placed by an overlapping neighbour tile (deduped by uniqueId)
-            if (!ClaimUnique(tile, *reinterpret_cast<const uint32_t*>(e + 4))) {
-                continue;
-            }
-
-            const char* rootPath = mwmo + mwid[nameId];
-
-            float px = *reinterpret_cast<const float*>(e + 8);
-            float py = *reinterpret_cast<const float*>(e + 12);
-            float pz = *reinterpret_cast<const float*>(e + 16);
-            float rx = *reinterpret_cast<const float*>(e + 20);
-            float ry = *reinterpret_cast<const float*>(e + 24);
-            float rz = *reinterpret_cast<const float*>(e + 28);
-            uint16_t doodadSet = *reinterpret_cast<const uint16_t*>(e + 58);
-
-            C3Vector worldPos = { MAP_CORNER - pz, MAP_CORNER - px, py };
-
-            // MODF also stores the placed instance's world-space AABB (offsets 32..55) in the same
-            // axis convention as the position. It is ground truth for where this WMO belongs, so
-            // compare it against the box we build from the transformed vertices: a mismatch means
-            // the vertex transform's axes are wrong, not the placement.
-            C3Vector eMin, eMax;
-            {
-                float ax = *reinterpret_cast<const float*>(e + 32);
-                float ay = *reinterpret_cast<const float*>(e + 36);
-                float az = *reinterpret_cast<const float*>(e + 40);
-                float bx = *reinterpret_cast<const float*>(e + 44);
-                float by = *reinterpret_cast<const float*>(e + 48);
-                float bz = *reinterpret_cast<const float*>(e + 52);
-
-                C3Vector c0 = { MAP_CORNER - az, MAP_CORNER - ax, ay };
-                C3Vector c1 = { MAP_CORNER - bz, MAP_CORNER - bx, by };
-
-                eMin = { c0.x < c1.x ? c0.x : c1.x, c0.y < c1.y ? c0.y : c1.y, c0.z < c1.z ? c0.z : c1.z };
-                eMax = { c0.x > c1.x ? c0.x : c1.x, c0.y > c1.y ? c0.y : c1.y, c0.z > c1.z ? c0.z : c1.z };
-            }
-
-            WmoInstance& inst = tile.wmos[tile.wmoCount];
-            new (&inst) WmoInstance();
-            // The placement POSITION is converted with two negated horizontal axes
-            // (MAP_CORNER - pz, MAP_CORNER - px), which is itself a 180 degree rotation about the
-            // vertical. The model's own yaw has to be turned by the same 180 degrees or the
-            // geometry ends up rotated half a turn about its placement point.
-            //
-            // Measured, not guessed: for two unrelated buildings the offset between frozen's built
-            // centre and the placement record's centre implies a rotation error of 173.5 and 180.0
-            // degrees respectively, derived from each model's own centroid in its MOHD header.
-            // Buildings whose geometry is centred on their placement point showed almost no offset,
-            // which is why only 43 of 106 looked wrong.
-            LoadWmoInstance(rootPath, worldPos, (ry + 180.0f) * DEG2RAD, doodadSet, inst);
-
-            // A placement self-check used to sit here, comparing the bounding box built from
-            // the transformed geometry against the MODF extents to catch a wrong axis mapping.
-            // It was worth having while the stand-in transformed WMO vertices itself -- it is
-            // what caught the two axis-roll bugs the comments above describe -- but the
-            // stand-in no longer builds geometry or bounds, so there is nothing to check.
-
-            if (inst.groupCount) {
-                tile.wmoCount++;
-            }
-        }
-    }
+    // The tile's WMO buildings (MODF) used to be loaded here into the stand-in's own
+    // WmoInstance array: the root file, every group file, and a doodad per MODD placement.
+    // CMap::CreateMapObjDef has placed the real defs out of CMapChunk::CreateRefs for a
+    // while, and CMap::CreateMapObjDoodads now builds the props on them, so nothing was
+    // left that read any of it.
 
     SMemFree(data, __FILE__, __LINE__, 0);
 }
 
 void FreeTile(TerrainTile& tile) {
     // Release this tile's claimed placement ids so a neighbour can own them when it next loads
-    if (tile.ownedUnique) {
-        for (uint32_t i = 0; i < tile.ownedUniqueCount; i++) {
-            s_loadedUnique.erase(tile.ownedUnique[i]);
-        }
 
-        SMemFree(tile.ownedUnique, __FILE__, __LINE__, 0);
-        tile.ownedUnique = nullptr;
-        tile.ownedUniqueCount = 0;
-    }
-
-    if (tile.wmos) {
-        for (uint32_t i = 0; i < tile.wmoCount; i++) {
-            WmoInstance& w = tile.wmos[i];
-
-            for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                WmoGroup& grp = w.groups[gi];
-
-            }
-
-            for (uint32_t di = 0; di < w.doodadCount; di++) {
-                if (w.doodads[di]) {
-                    ParticleFxForgetModel(w.doodads[di]);
-                    w.doodads[di]->DetachFromScene();
-                    w.doodads[di]->Release();
-                }
-            }
-
-            if (w.doodads) SMemFree(w.doodads, __FILE__, __LINE__, 0);
-            if (w.doodadScale) SMemFree(w.doodadScale, __FILE__, __LINE__, 0);
-            if (w.doodadAmbient) SMemFree(w.doodadAmbient, __FILE__, __LINE__, 0);
-
-            if (w.groups) SMemFree(w.groups, __FILE__, __LINE__, 0);
-        }
-
-        SMemFree(tile.wmos, __FILE__, __LINE__, 0);
-        tile.wmos = nullptr;
-    }
-
-    tile.wmoCount = 0;
 
     for (auto& chunk : tile.chunks) {
 
@@ -1683,7 +1062,6 @@ void TerrainUnload() {
     // Per-map state that outlives the tiles. FreeTile erases each tile's own unique ids, but clear
     // the set outright so a half-freed tile cannot leave a stale id behind and make the next map
     // silently skip a WMO it thinks is already placed.
-    s_loadedUnique.clear();
     s_cameraLiquidKind = -1;
     CWorld::SetCameraUnderLiquid(false);
 }
@@ -1861,28 +1239,29 @@ void TerrainUpdateView() {
         GxRsSet(GxRs_FogEnd, *reinterpret_cast<int32_t*>(&fogEnd));
     }
 
-    // Frustum-cull the doodads: only those in view animate and draw, matching the reference and
-    // sparing the scene from processing thousands of out-of-view props each frame.
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
+    // Frustum-cull the buildings' props: only those in view animate and draw, which spares the
+    // scene thousands of out-of-view models. They hang off the reference defs now, so this walks
+    // those rather than the stand-in's instances.
+    CMap::ForEachMapObjDoodad([](CM2Model* model, void*) {
+        C3Vector c = DoodadCullCenter(model);
+
+        // DoodadCullRadius scales a MODEL-SPACE radius, so it still needs the placement scale --
+        // and that now lives in the model's matrix rather than in a parallel array. Recover it as
+        // the length of the matrix's first row, which is exact because the matrix is built as
+        // rotation times a uniform scale. Passing 1.0f here would under-cull every scaled prop.
+        const C44Matrix& m = model->matrixB4;
+        float scale = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
+
+        if (scale <= 0.0f) {
+            scale = 1.0f;
         }
 
-        if (tile.wmos) {
-            for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-                WmoInstance& w = tile.wmos[wi];
+        float r = DoodadCullRadius(model, scale);
+        bool vis = SphereVisible(c, r);
 
-                for (uint32_t i = 0; i < w.doodadCount; i++) {
-                    C3Vector c = DoodadCullCenter(w.doodads[i]);
-                    float r = DoodadCullRadius(w.doodads[i], w.doodadScale[i]);
-                    bool vis = SphereVisible(c, r);
-
-                    w.doodads[i]->SetVisible(vis ? 1 : 0);
-                    w.doodads[i]->SetAnimating(vis ? 1 : 0);
-                }
-            }
-        }
-    }
+        model->SetVisible(vis ? 1 : 0);
+        model->SetAnimating(vis ? 1 : 0);
+    }, nullptr);
 
     s_viewUpdated = true;
 }
@@ -2339,26 +1718,6 @@ void TerrainUiShaders(CGxShader*& vs, CGxShader*& ps) {
     EnsureShaders();
     vs = s_uiVertexShader[0];
     ps = s_uiPixelShader;
-}
-
-void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg) {
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
-        }
-
-        if (tile.wmos) {
-            for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-                WmoInstance& w = tile.wmos[wi];
-
-                for (uint32_t i = 0; i < w.doodadCount; i++) {
-                    if (w.doodads[i]) {
-                        fn(w.doodads[i], arg);
-                    }
-                }
-            }
-        }
-    }
 }
 
 // Is a point inside an interior room?

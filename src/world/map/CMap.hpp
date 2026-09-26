@@ -264,6 +264,11 @@ class CMap {
         // straddles two chunks is handed over once. Frozen's own: the reference has no such
         // walk, because the systems that want one keep their own lists.
         static void ForEachDoodadModel(void (*fn)(CM2Model* model, void* arg), void* arg);
+
+        // The buildings' own props: built with the def when its root lands, and walked for the
+        // frame's particle emitters.
+        static void CreateMapObjDoodads(CMapObjDef* def, CMapObj* mapObj);
+        static void ForEachMapObjDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
         static void FreeLight(CMapLight* light);

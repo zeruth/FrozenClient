@@ -1,3 +1,4 @@
+#include "model/CM2Lighting.hpp"
 #include "world/map/CMap.hpp"
 #include "model/CM2Model.hpp"
 #include "world/map/CMapArea.hpp"
@@ -214,6 +215,169 @@ void CMap::CreateDefGroups(CMapObj* mapObj, CMapObjDef* def) {
 // ref: FUN_007b5d00
 // The def's own setup, once its root has parsed: its world bounds from the root's, room for one
 // light per MOLT entry, the root's ambient colour, and a group object per group.
+// Every WMO doodad lives on the building's light, not the world's: the MODD colour is baked, so a
+// prop in a blue-lit hall reads blue while the sun outside cycles past it.
+static void MapObjDoodadLighting(CM2Model* model, CM2Lighting* lighting, void* arg) {
+    auto ambient = static_cast<const C3Vector*>(arg);
+
+    lighting->AddAmbient(ambient ? *ambient : CWorld::GetOutdoorAmbient());
+}
+
+// The building's props: one CM2Model per MODD placement in this def's doodad set.
+//
+// The set choice follows the reference's data: MODS entry 0 is always placed, and the def's own
+// m_doodadSet adds a second range when it names a different one. A root with no MODS has no sets, so
+// every MODD entry belongs to it.
+//
+// DIVERGED, and worth knowing before trusting the lighting: the reference refines a building's
+// fallback ambient with the average of its interior MOCV, which needs every group file read up front.
+// This uses the MOHD ambient alone, so a prop whose MODD colour is unset (all zero) in a building
+// with dark MOHD ambient will read darker here than in the reference. Props WITH a MODD colour --
+// which is most of them -- are unaffected.
+void CMap::CreateMapObjDoodads(CMapObjDef* def, CMapObj* mapObj) {
+    auto scene = CWorld::GetM2Scene();
+
+    if (!scene || !mapObj->m_modn || !mapObj->m_modd || !mapObj->m_doodadDefCount) {
+        return;
+    }
+
+    struct Range { uint32_t start; uint32_t end; };
+    Range ranges[2];
+    uint32_t rangeCount = 0;
+
+    if (mapObj->m_mods && mapObj->m_doodadSetCount) {
+        // A MODS entry is 0x20 bytes: a 20-byte name, then firstDoodad and count.
+        auto setAt = [mapObj](uint32_t index) {
+            const uint8_t* e = mapObj->m_mods + index * 0x20;
+
+            return Range{
+                *reinterpret_cast<const uint32_t*>(e + 0x14),
+                *reinterpret_cast<const uint32_t*>(e + 0x14)
+                    + *reinterpret_cast<const uint32_t*>(e + 0x18)
+            };
+        };
+
+        ranges[rangeCount++] = setAt(0);
+
+        if (def->m_doodadSet && def->m_doodadSet < mapObj->m_doodadSetCount) {
+            Range chosen = setAt(def->m_doodadSet);
+
+            if (chosen.end > chosen.start && chosen.start != ranges[0].start) {
+                ranges[rangeCount++] = chosen;
+            }
+        }
+    } else {
+        ranges[rangeCount++] = Range{ 0, mapObj->m_doodadDefCount };
+    }
+
+    uint32_t capacity = mapObj->m_doodadDefCount;
+
+    def->m_doodads = static_cast<CM2Model**>(
+        SMemAlloc(capacity * sizeof(CM2Model*), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
+    def->m_doodadScale = static_cast<float*>(
+        SMemAlloc(capacity * sizeof(float), __FILE__, __LINE__, 0));
+    def->m_doodadAmbient = static_cast<C3Vector*>(
+        SMemAlloc(capacity * sizeof(C3Vector), __FILE__, __LINE__, 0));
+    def->m_doodadCount = 0;
+
+    if (!def->m_doodads || !def->m_doodadScale || !def->m_doodadAmbient) {
+        return;
+    }
+
+    C3Vector mohdAmbient = {
+        mapObj->m_ambientColor.r / 255.0f,
+        mapObj->m_ambientColor.g / 255.0f,
+        mapObj->m_ambientColor.b / 255.0f
+    };
+
+    for (uint32_t r = 0; r < rangeCount; r++) {
+        uint32_t end = ranges[r].end > mapObj->m_doodadDefCount
+            ? mapObj->m_doodadDefCount
+            : ranges[r].end;
+
+        for (uint32_t i = ranges[r].start; i < end; i++) {
+            // A MODD entry is 40 bytes: a 24-bit name offset, position, an orientation quaternion,
+            // a scale and a BGRA colour.
+            const uint8_t* e = mapObj->m_modd + i * 40;
+
+            uint32_t nameOffset = *reinterpret_cast<const uint32_t*>(e + 0) & 0xFFFFFF;
+
+            if (nameOffset >= mapObj->m_modnSize) {
+                continue;
+            }
+
+            C3Vector local = {
+                *reinterpret_cast<const float*>(e + 4),
+                *reinterpret_cast<const float*>(e + 8),
+                *reinterpret_cast<const float*>(e + 12)
+            };
+
+            C4Quaternion rotation(
+                *reinterpret_cast<const float*>(e + 16),
+                *reinterpret_cast<const float*>(e + 20),
+                *reinterpret_cast<const float*>(e + 24),
+                *reinterpret_cast<const float*>(e + 28)
+            );
+
+            float scale = *reinterpret_cast<const float*>(e + 32);
+
+            if (scale <= 0.0f) {
+                scale = 1.0f;
+            }
+
+            auto model = scene->CreateModel(mapObj->m_modn + nameOffset, 0);
+
+            if (!model) {
+                continue;
+            }
+
+            // An all-zero MODD colour means "unset": fall back to the building's ambient.
+            bool hasColor = (e[36] | e[37] | e[38]) != 0;
+
+            def->m_doodadAmbient[def->m_doodadCount] = hasColor
+                ? C3Vector{ e[38] / 255.0f, e[37] / 255.0f, e[36] / 255.0f }
+                : mohdAmbient;
+
+            model->SetLightingCallback(&MapObjDoodadLighting,
+                                       &def->m_doodadAmbient[def->m_doodadCount]);
+
+            // The doodad's own rotation and scale in the building's space, then the whole thing
+            // through the def's placement. That is strictly better than the stand-in this replaces,
+            // which applied only the placement's yaw and so mis-oriented any building with pitch
+            // or roll.
+            C44Matrix placement;
+            placement.Identity();
+            placement.Rotate(rotation);
+            placement.Scale(scale);
+            placement.d0 = local.x;
+            placement.d1 = local.y;
+            placement.d2 = local.z;
+
+            model->matrixB4 = placement * def->m_placement;
+            model->m_flag8000 = 1;
+            model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 0, 1);
+            model->SetAnimating(1);
+            model->SetVisible(1);
+            model->m_flag10000 = 1;
+
+            def->m_doodadScale[def->m_doodadCount] = scale;
+            def->m_doodads[def->m_doodadCount] = model;
+            def->m_doodadCount++;
+        }
+    }
+}
+
+// Hand every placed building's props to `fn`, for the frame's particle-emitter gather.
+void CMap::ForEachMapObjDoodad(void (*fn)(CM2Model* model, void* arg), void* arg) {
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        for (uint32_t i = 0; i < def->m_doodadCount; i++) {
+            if (def->m_doodads[i]) {
+                fn(def->m_doodads[i], arg);
+            }
+        }
+    }
+}
+
 void CMap::SetupMapObjDef(CMapObjDef* def, CMapObj* mapObj) {
     def->m_flags |= 0x80;
 
@@ -236,6 +400,7 @@ void CMap::SetupMapObjDef(CMapObjDef* def, CMapObj* mapObj) {
     }
 
     CMap::CreateDefGroups(mapObj, def);
+    CMap::CreateMapObjDoodads(def, mapObj);
 }
 
 // ref: FUN_007b6110

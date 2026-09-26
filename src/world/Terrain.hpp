@@ -42,8 +42,6 @@ class C44Matrix;
 const C44Matrix& TerrainViewProjT();
 bool TerrainFogActive();
 void TerrainUiShaders(CGxShader*& vs, CGxShader*& ps);
-// Visit every loaded terrain and WMO doodad model
-void TerrainForEachDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
 
 // The light for a unit on a WMO floor: the reference's probe through the interior groups' BSP
 // and MOCV sample (CMapEntity::FloorLight). Fills the entity's diffuse and ambient as bytes.

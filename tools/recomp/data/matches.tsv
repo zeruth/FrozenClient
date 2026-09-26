@@ -2900,7 +2900,7 @@ addr	how	frozen	evidence
 007b5590	annotated	CMap::BucketEntities	tag in src/world/map/CMap.cpp
 007b5630	annotated	CMap::UpdatePendingEntities	tag in src/world/map/CMap.cpp
 007b5950	annotated	CMap::UpdateAreas	tag in src/world/map/CMap.cpp
-007b5d00	annotated	CMap::SetupMapObjDef	tag in src/world/map/CMapLoad.cpp
+007b5d00	annotated	MapObjDoodadLighting	tag in src/world/map/CMapLoad.cpp
 007b6110	annotated	CMap::UpdateMapObjDefs	tag in src/world/map/CMapLoad.cpp
 007b6b00	annotated	CMap::Update	tag in src/world/map/CMap.cpp
 007b7330	annotated	CMap::SetTerrainShaderLevel	tag in src/world/map/CMap.cpp

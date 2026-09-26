@@ -12,6 +12,7 @@
 
 class CMapLight;
 class CMapObj;
+class CM2Model;
 class CMapObjDefGroup;
 
 // MODF: one WMO placement in an ADT, 64 bytes. The same record shapes the global WMO a WDT can
@@ -54,6 +55,19 @@ class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_N
         uint32_t m_nameSet = 0;          // +0x104
         // The links the def's own groups hold on it (+0x114); each group is the owner
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_defGroupLinkList;
+
+        // The building's own props, built from the root's MODD placements for this def's doodad set.
+        // DIVERGED from the reference's layout on purpose: the reference hangs its WMO doodads off
+        // the GROUP (CMapObjGroup::QuerySegment gates a doodad query on MOGP 0x800 and MODR gives
+        // each group its slice of MODD), and its creator has not been located. These live on the def
+        // instead, which is where the doodad SET is chosen, so one list covers the whole building.
+        // Moving them onto the group later changes only where the list is stored.
+        CM2Model** m_doodads = nullptr;
+        float* m_doodadScale = nullptr;
+        // Per-doodad baked lighting colour, from the MODD entry. The lighting callback takes the
+        // address of an element, so this array must not move once a model points into it.
+        C3Vector* m_doodadAmbient = nullptr;
+        uint32_t m_doodadCount = 0;
 
         // One entry per group of the root, and one per MOLT light. The reference keeps the first
         // four groups inline and spills to the heap past that (+0x120 through +0x130) and grows
