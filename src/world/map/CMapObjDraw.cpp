@@ -195,10 +195,21 @@ void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
         //     mode 1   ambient at DayNight +0x1a8, diffuse at +0x1ac
         //     mode 2   ambient at +0x1b0,          diffuse at +0x1b4
         //
-        // Those four are copied into place by the function at 0x007ee750 -- +0x1a8 comes
-        // straight from +0xd8 -- so they are a resolved copy of bands frozen already
-        // interpolates, not new DBC data. What is missing is the mapping from those block
-        // offsets back to band numbers, which is one objdump session on 0x007ee750.
+        // Those four are copied into place by the function at 0x007ee750, and reading it
+        // settles what the two modes actually are:
+        //
+        //     mode 1 ambient = DayNight +0xd8        mode 1 diffuse = +0xd4
+        //     mode 2 ambient = midpoint(+0xd8, +0xd4)
+        //     mode 2 diffuse = the same midpoint taken the other way round, then put through
+        //                      a per-channel bit trick that is not yet read out
+        //
+        // So MODE 2 IS NOT A SECOND LIGHT SOURCE. It is mode 1's own two colours blended half
+        // and half -- which means frozen treating modes 1 and 2 identically is wrong in a
+        // specific way, and the fix does not depend on knowing which band feeds mode 1.
+        //
+        // What is still missing is that band number. +0xd4 and +0xd8 are never written by a
+        // direct store; the DayNight update takes their address at 0x007f332c and fills them
+        // through it, so finding the band means following that, not grepping for the address.
         //
         // Until then, take the sun the same way the terrain pass does, including its fallback --
         // without that fallback the world's own ambient and diffuse are both zero and every
