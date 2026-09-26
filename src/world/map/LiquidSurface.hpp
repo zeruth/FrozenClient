@@ -14,6 +14,9 @@ class CM2Lighting;
 
 namespace Liquid {
 
+// The shared wave animator; see CInstance::m_waveManager.
+class CWaveManager;
+
 class IMaterial;
 class CMaterialSettings;
 
@@ -113,8 +116,20 @@ class CInstance {
         IMaterial* m_material = nullptr;              // +0x00
         CMaterialSettings* m_settings = nullptr;      // +0x04
         CChunkGeomFactory* m_geometry = nullptr;      // +0x08
-        // TODO +0x0c: refcounted, released through vtable slot 2 rather than 1 like the others
-        void* m_unk0c = nullptr;
+        // +0x0c: the wave manager, a Liquid::CWaveManager -- identified from the RTTI name the
+        // reference's allocator passes (".?AVCWaveManager@Liquid@@" at 0x00af16a0). It is a
+        // refcounted SINGLETON at 0x00d2dd2c, made by the first CChunkLiquid to need it and shared
+        // by every surface, which is why it is released through a different vtable slot than the
+        // per-surface objects beside it.
+        //
+        // It supplies the wave records the material draw turns into shader constants: its vtable
+        // slot 3 hands back a pointer and slot 4 a count, and the draw walks that range six dwords
+        // at a time for three records and then eight dwords at a time for three more.
+        //
+        // Nothing frozen creates it yet, so the draw sees a null provider and writes the reference's
+        // own zero-fill values into those registers. CWaveManager itself is FUN_007d6240 (the
+        // constructor) and FUN_007d62a0 (the per-frame update).
+        CWaveManager* m_waveManager = nullptr;
         CClientEnvironment* m_environment = nullptr;  // +0x10
         C44Matrix m_placement;                        // +0x14 .. +0x50
         CAaSphere m_sphere;                           // +0x54 .. +0x60

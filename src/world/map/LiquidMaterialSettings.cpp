@@ -305,7 +305,11 @@ CGxShader* s_psProcWater[1];
 //   vertex  c35       sun diffuse, w 1                    0x00d44ed8
 //   vertex  c36       sun specular, w 6                   0x00d44ee8
 //   vertex  c37..c45  three local lights, 3 each          0x00d44ef8   NOT FILLED YET
-//   vertex  c46..c57  the wave animation                  0x00d44f88   NOT FILLED YET
+//   vertex  c46       three wave phases (FUN_008a3620)    0x00d44f88   NOT FILLED YET
+//   vertex  c47       three wave phases (FUN_008a3710)    0x00d44f98   NOT FILLED YET
+//   vertex  c48..c50  per-wave, from FUN_008a3620         0x00d44fa8   NOT FILLED YET
+//   vertex  c51,c52   reciprocals, one per wave           0x00d44fd8   NOT FILLED YET
+//   vertex  c53..c55  per-wave, from FUN_008a3710         0x00d44ff8   NOT FILLED YET
 //   pixel   c0..c3    the model-view-projection           0x00b24120
 //   pixel   c4        the fog colour, w 1                 0x00b24160
 //   pixel   c5        the camera position, w 1            0x00b24170
@@ -313,10 +317,15 @@ CGxShader* s_psProcWater[1];
 //   pixel   c7        sun ambient, w 0                    0x00d44c58
 //   pixel   c8        sun diffuse, w 0                    0x00d44c68
 //   pixel   c9        sun specular, w 50                  0x00d44c78
-//   pixel   c10..c11  nothing writes them                 0x00d44c88
+//   pixel   c10..c11  stage floats 11..17 (FUN_008a3810)  0x00d44c88   NOT FILLED YET
 //
-// There are no gaps left in that map. What is still unfilled is the three local-light registers and
-// the wave animation; both are described where they would be written.
+// There are no gaps left in that map: every register is accounted for, and FUN_008a3810 turns out to
+// write pixel c10 and c11 from stage floats 11..17, which is the last seven of the eighteen.
+//
+// What is still unfilled is the three local-light registers and the wave animation. The wave half
+// needs Liquid::CWaveManager -- the shared singleton the surface holds at +0x0c, which nothing
+// frozen creates yet -- so those registers would take the reference's own zero-fill values today
+// and the animation would be inert either way. See CInstance::m_waveManager.
 
 namespace {
 

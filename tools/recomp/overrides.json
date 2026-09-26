@@ -3097,5 +3097,13 @@
   "008a48f0": {
     "status": "unlinked",
     "note": "The liquid material draw. PARTIALLY ported as DrawShaderMaterial in LiquidMaterialSettings.cpp -- transforms, the six texture stages, the texture matrices, the four constant uploads, the shader permutation and the draw -- and deliberately NOT tagged, because three constant ranges are still zeroed (the lighting from FUN_008a38b0, the untransformed sun terms from FUN_008a3c90, and the wave animation from FUN_008a3620/3710/3810) and because the reference has FOUR shader draw bodies and which material owns this one is not established. Tag it when the ranges are filled and the body is identified. docs/ref/parity-liquid.md has the register map."
+  },
+  "007d62a0": {
+    "status": "unlinked",
+    "note": "Liquid::CWaveManager::Update -- the per-frame wave animator, and the correction to a correction. This address was listed under item 4 as 'the liquid queue', which it is not; I then described it as 'animates three randomly placed sprites around the camera', which is what it looks like and is also not quite it. The three records ARE THE WAVES: each gets a position a random distance out from the camera along the camera-to-target direction, a direction of its own, a rotation from C44Matrix::RotateAroundZ, three random scalars, and a life of rand()%20000+20000 ms, after which it is respawned. It runs once per frame behind a frame-stamp guard. So the queue was right that this is liquid; it is the animation, not the queue. Its records feed vertex c46..c55 and pixel c10..c11 of the material draw through FUN_008a3620 / FUN_008a3710 / FUN_008a3810. Not ported: the manager it belongs to is not created yet."
+  },
+  "007d6240": {
+    "status": "unlinked",
+    "note": "Liquid::CWaveManager's constructor, reached through the allocator FUN_007d6640 which passes the RTTI name \".?AVCWaveManager@Liquid@@\" (0x00af16a0). The manager is a refcounted SINGLETON at 0x00d2dd2c with a use count at 0x00d2dd30, made by the first CChunkLiquid that needs one inside FUN_007cee10 and shared by every surface -- which is why CInstance releases it through a different vtable slot than the per-surface objects beside it. Not ported, so CInstance::m_waveManager stays null and the draw writes the reference's own zero-fill wave constants."
   }
 }

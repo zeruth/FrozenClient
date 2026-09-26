@@ -71,7 +71,8 @@ void CInstance::Release() {
         this->m_environment->Release();
     }
 
-    // TODO +0x0c, released through its own vtable's third slot. Nothing sets it yet.
+    // TODO release m_waveManager. It is a shared refcounted singleton, so this is a Release on
+    // the manager rather than a delete; nothing sets it yet, so there is nothing to release.
 
     this->~CInstance();
 
@@ -213,8 +214,10 @@ void CreateSurface(CChunkLiquid* liquid) {
     instance->m_geometry = geometry;
     instance->m_environment = CreateEnvironment(0);
 
-    // TODO the reference also stores a global at +0x0c here and takes a reference on it. Which
-    // global is not established, and nothing reads the field yet.
+    // TODO instance->m_waveManager = the Liquid::CWaveManager singleton at 0x00d2dd2c, plus an
+    // AddRef on it. The singleton is created by the first CChunkLiquid that needs one (inside
+    // FUN_007cee10, which calls FUN_007d6640 and counts uses at 0x00d2dd30); frozen creates none,
+    // so this stays null and the draw writes its zero-fill wave constants.
 
     // The surface draws at the first layer's chunk corner; everything in it is relative to that.
     C3Vector origin = s_gather[0]->m_origin;
@@ -635,7 +638,7 @@ void Draw(const C3Vector& cameraPos, uint32_t bucket) {
 
             if (instance->m_material) {
                 instance->m_material->Draw(instance->m_environment, instance->m_geometry,
-                                           instance->m_unk0c, cameraPos, &instance->m_placement,
+                                           instance->m_waveManager, cameraPos, &instance->m_placement,
                                            &instance->m_sphere, instance->m_settings);
             }
 
