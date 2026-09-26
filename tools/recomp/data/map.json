@@ -43514,8 +43514,8 @@
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
+   "src/world/Weather.cpp",
+   "src/world/weather.cpp"
   ],
   "frozen": "WeatherDefaultTexture",
   "frozenSize": 0,
@@ -45006,7 +45006,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::FloorLight",
-  "frozenSize": 396,
+  "frozenSize": 0,
   "how": "override",
   "module": "Map.cpp",
   "refSize": 360,
