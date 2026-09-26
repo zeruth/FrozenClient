@@ -295,19 +295,28 @@ CGxShader* s_psProcWater[1];
 // by REGISTER instead makes the map checkable: a register is (address - base) / 16.
 //
 //   vertex  c0..c3    the projection                      0x00d44ca8
+//   vertex  c4        fog: -f, f * fogEnd, density, 0     0x00d44ce8
 //   vertex  c5..c8    the world-view                      0x00d44cf8
 //   vertex  c9,13,17,21  four texture matrices            0x00d44d38 onwards, 0x40 apart
 //   vertex  c25..c28  a scale from stage float 8          0x00d44e38
 //   vertex  c29..c32  RotationAroundZ(f10) * Scale(f9)    0x00d44e78
-//   vertex  c33..c45  the lighting, from FUN_008a38b0     0x00d44eb8   NOT FILLED YET
-//   vertex  c46..c57  from FUN_008a3620/3710/3810         0x00d44f88   NOT FILLED YET
+//   vertex  c33       sun direction in VIEW space, w 1    0x00d44eb8
+//   vertex  c34       sun ambient, w 1                    0x00d44ec8
+//   vertex  c35       sun diffuse, w 1                    0x00d44ed8
+//   vertex  c36       sun specular, w 6                   0x00d44ee8
+//   vertex  c37..c45  three local lights, 3 each          0x00d44ef8   NOT FILLED YET
+//   vertex  c46..c57  the wave animation                  0x00d44f88   NOT FILLED YET
 //   pixel   c0..c3    the model-view-projection           0x00b24120
-//   pixel   c5        the camera position, w = 1           0x00b24170
-//   pixel   c6..c11   the sun terms, from FUN_008a3c90     0x00d44c48   NOT FILLED YET
+//   pixel   c4        the fog colour, w 1                 0x00b24160
+//   pixel   c5        the camera position, w 1            0x00b24170
+//   pixel   c6        MINUS the sun direction, world, w 0 0x00d44c48
+//   pixel   c7        sun ambient, w 0                    0x00d44c58
+//   pixel   c8        sun diffuse, w 0                    0x00d44c68
+//   pixel   c9        sun specular, w 50                  0x00d44c78
+//   pixel   c10..c11  nothing writes them                 0x00d44c88
 //
-// The three unfilled ranges are the lighting and the wave animation. They are left zeroed rather
-// than guessed, so this draws water with the right geometry, textures and transform and flat
-// shading; the shape of each is in docs/ref/parity-liquid.md.
+// There are no gaps left in that map. What is still unfilled is the three local-light registers and
+// the wave animation; both are described where they would be written.
 
 namespace {
 
@@ -315,13 +324,16 @@ const uint32_t VS_REGISTERS = 58;
 const uint32_t PS_REGISTERS = 6;
 
 const uint32_t VS_PROJECTION = 0;
+const uint32_t VS_FOG = 4;
 const uint32_t VS_WORLD_VIEW = 5;
+const uint32_t VS_SUN_DIR = 33;
 const uint32_t VS_TEX_MATRIX = 9;
 const uint32_t VS_SCALE = 25;
 const uint32_t VS_ROT_SCALE = 29;
 const uint32_t VS_SPLIT = 46;        // where the second vertex upload starts
 
 const uint32_t PS_MVP = 0;
+const uint32_t PS_FOG_COLOR = 4;
 const uint32_t PS_CAMERA = 5;
 
 struct Constants {
@@ -337,6 +349,13 @@ Constants s_constants;
 // into this block with a plain sixteen-dword copy. Matching the shader, not the house style.
 void StoreMatrix(C4Vector* dst, const C44Matrix& m) {
     memcpy(dst, &m, sizeof(C44Matrix));
+}
+
+void StoreVector(C4Vector* dst, const C3Vector& v, float w) {
+    dst->x = v.x;
+    dst->y = v.y;
+    dst->z = v.z;
+    dst->w = w;
 }
 
 // ref: FUN_008a32f0
@@ -374,6 +393,78 @@ void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
     s_constants.psMvp[PS_CAMERA].y = cameraPos.y;
     s_constants.psMvp[PS_CAMERA].z = cameraPos.z;
     s_constants.psMvp[PS_CAMERA].w = 1.0f;
+}
+
+// ref: FUN_008a38b0
+// The sun, the local lights and the fog, as the VERTEX program wants them -- the sun direction
+// brought into view space, and the fog reduced to the two coefficients a linear fade needs.
+void SetupLightConstants(const CM2Lighting& lighting) {
+    C44Matrix view;
+    g_theGxDevicePtr->XformView(view);
+
+    // Only the rotation: frozen's view matrix already has the camera at the origin.
+    C33Matrix rotation(view);
+
+    C3Vector sunDir = lighting.m_sunDir * rotation;
+
+    s_constants.vs[VS_SUN_DIR].x = sunDir.x;
+    s_constants.vs[VS_SUN_DIR].y = sunDir.y;
+    s_constants.vs[VS_SUN_DIR].z = sunDir.z;
+    s_constants.vs[VS_SUN_DIR].w = 1.0f;
+
+    StoreVector(&s_constants.vs[VS_SUN_DIR + 1], lighting.m_sunAmbient, 1.0f);
+    StoreVector(&s_constants.vs[VS_SUN_DIR + 2], lighting.m_sunDiffuse, 1.0f);
+
+    // 6 is the reference's own constant at 0x009e8cf8, presumably the specular power.
+    StoreVector(&s_constants.vs[VS_SUN_DIR + 3], lighting.m_sunSpecular, 6.0f);
+
+    // TODO the three local lights, at c37..c45, three registers each:
+    //
+    //   +0  the light's m_pos brought through the same rotation, w 1
+    //   +1  its m_dirColor times 1/255 (the 0.0039215689 at 0x00a45564), w 1
+    //   +2  its three attenuations -- constant, linear, quadratic
+    //
+    // The reference reads the light's FIRST vector (+0x0c, m_pos) and rotates it. Rotating a
+    // position rather than a direction only makes sense if it is already camera-relative, and
+    // CM2Lighting keeps both m_pos and the m_posCameraSpace that CameraSpace() fills -- so which
+    // one belongs here is not settled, and guessing would put torchlight in the wrong place. The
+    // loop also stops after THREE lights, not four: its guard breaks once the destination offset
+    // passes 0x8f.
+
+    // Fog. Linear, and the two coefficients are what the program multiplies the depth by; the
+    // reference's multiplier at 0x00d4300c is a global set to exactly 1.0 by the shader system's
+    // init (an `fld1` at 0x00872d09), so the first coefficient is just -1/(end - start).
+    if (!g_theGxDevicePtr->MasterEnable(GxMasterEnable_Fog)) {
+        s_constants.vs[VS_FOG].x = 0.0f;
+        s_constants.vs[VS_FOG].y = 1.0f;
+        s_constants.vs[VS_FOG].z = 1.0f;
+    } else {
+        float scale = 1.0f / (lighting.m_fogEnd - lighting.m_fogStart);
+
+        s_constants.vs[VS_FOG].x = -scale;
+        s_constants.vs[VS_FOG].y = scale * lighting.m_fogEnd;
+        s_constants.vs[VS_FOG].z = lighting.m_fogDensity;
+    }
+
+    s_constants.vs[VS_FOG].w = 0.0f;
+
+    StoreVector(&s_constants.psMvp[PS_FOG_COLOR], lighting.m_fogColor, 1.0f);
+}
+
+// ref: FUN_008a3c90
+// The same sun terms again for the PIXEL program, and deliberately not the same values: the
+// direction is negated and left in world space, and every w differs from the vertex copy.
+void SetupSunConstants(const CM2Lighting& lighting) {
+    s_constants.psSun[0].x = -lighting.m_sunDir.x;
+    s_constants.psSun[0].y = -lighting.m_sunDir.y;
+    s_constants.psSun[0].z = -lighting.m_sunDir.z;
+    s_constants.psSun[0].w = 0.0f;
+
+    StoreVector(&s_constants.psSun[1], lighting.m_sunAmbient, 0.0f);
+    StoreVector(&s_constants.psSun[2], lighting.m_sunDiffuse, 0.0f);
+
+    // 50 is the reference's constant at 0x009f22ec.
+    StoreVector(&s_constants.psSun[3], lighting.m_sunSpecular, 50.0f);
 }
 
 // Part of ref: FUN_008a48f0 -- the shared body behind all four shader materials, which differ only
@@ -482,6 +573,9 @@ void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
     lighting.Initialize(nullptr, *sphere);
 
     environment->SetupLighting(&lighting);
+
+    SetupLightConstants(lighting);
+    SetupSunConstants(lighting);
 
     // Four texture matrices, one per stage float pair.
     for (uint32_t i = 0; i < 4; i++) {

@@ -203207,7 +203207,20 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 338
+"line": 350
+},
+"Liquid::StoreVector": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 354
 },
 "Liquid::SetupTransforms": {
 "files": [
@@ -203233,7 +203246,61 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 353
+"line": 372
+},
+"Liquid::SetupLightConstants": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"CGxDevice::XformView",
+"C33Matrix::C33Matrix",
+"operator*",
+"Liquid::StoreVector",
+"Liquid::StoreVector",
+"Liquid::StoreVector",
+"CGxDevice::MasterEnable",
+"Liquid::StoreVector"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1",
+"1.0f",
+"2",
+"3",
+"6.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 52,
+"refs": [],
+"line": 401
+},
+"Liquid::SetupSunConstants": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::StoreVector",
+"Liquid::StoreVector",
+"Liquid::StoreVector"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"2",
+"3",
+"50.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 457
 },
 "Liquid::DrawShaderMaterial": {
 "files": [
@@ -203271,6 +203338,8 @@
 "CM2Lighting::CM2Lighting",
 "CM2Lighting::Initialize",
 "Liquid::CClientEnvironment::SetupLighting",
+"Liquid::SetupLightConstants",
+"Liquid::SetupSunConstants",
 "C44Matrix::RotationAroundZ",
 "C44Matrix::Scale",
 "Liquid::StoreMatrix",
@@ -203308,9 +203377,9 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 154,
+"lines": 157,
 "refs": [],
-"line": 381
+"line": 472
 },
 "Liquid::CMaterialWater::EnsureShaders": {
 "files": [
@@ -203331,7 +203400,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 542
+"line": 636
 },
 "Liquid::CMaterialWaterNoSpec::EnsureShaders": {
 "files": [
@@ -203352,7 +203421,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 555
+"line": 649
 },
 "Liquid::CMaterialMagma::EnsureShaders": {
 "files": [
@@ -203372,7 +203441,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 570
+"line": 664
 },
 "Liquid::CMaterialProcWater::EnsureShaders": {
 "files": [
@@ -203398,7 +203467,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 583
+"line": 677
 },
 "Liquid::CMaterialWater::Draw": {
 "files": [
@@ -203413,7 +203482,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 601
+"line": 695
 },
 "Liquid::CMaterialWaterNoSpec::Draw": {
 "files": [
@@ -203428,7 +203497,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 608
+"line": 702
 },
 "Liquid::CMaterialMagma::Draw": {
 "files": [
@@ -203446,7 +203515,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 615
+"line": 709
 },
 "Liquid::CMaterialProcWater::Draw": {
 "files": [
@@ -203461,7 +203530,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 627
+"line": 721
 },
 "Liquid::GetMaterial": {
 "files": [
@@ -203496,7 +203565,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 640
+"line": 734
 },
 "Liquid::ReleaseMaterials": {
 "files": [
@@ -203515,7 +203584,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 707
+"line": 801
 },
 "Liquid::ReleaseMaterialSettings": {
 "files": [
@@ -203547,7 +203616,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 718
+"line": 812
 },
 "Liquid::CChunkGeomFactory::AddRef": {
 "files": [
