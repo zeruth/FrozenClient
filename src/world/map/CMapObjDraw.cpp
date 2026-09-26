@@ -87,9 +87,11 @@ void CMapObj::SetupLocalLights(CM2Lighting* lighting, const C3Vector& cameraPos)
     CMapObj::s_vertexPermuteBase = lighting->m_lightCount;
 
     if (CMapObj::s_vertexPermuteBase) {
-        // TODO FUN_007a8a60: the reference refreshes its own light block first.
-
         CShaderEffect::LocalLights lights;
+
+        // The reference clears the block before filling it, and it matters -- see LocalLights.
+        lights.Clear();
+
         CShaderEffect::ComputeLocalLights(
             &lights,
             CMapObj::s_vertexPermuteBase,

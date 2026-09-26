@@ -75630,6 +75630,23 @@
 "refs": [],
 "line": 20
 },
+"CShaderEffect::LocalLights::Clear": {
+"files": [
+"src/gx/shader/cshadereffect.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"44"
+],
+"branches": 1,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 63
+},
 "CShaderEffect::ComputeLocalLights": {
 "files": [
 "src/gx/shader/cshadereffect.cpp"
@@ -75661,7 +75678,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 62
+"line": 69
 },
 "CShaderEffect::InitShaderSystem": {
 "files": [
@@ -75680,7 +75697,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 138
+"line": 145
 },
 "CShaderEffect::SetAlphaRef": {
 "files": [
@@ -75700,7 +75717,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 147
+"line": 154
 },
 "PackMaterialColor": {
 "files": [
@@ -75724,7 +75741,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 162
+"line": 169
 },
 "CShaderEffect::SetDiffuse": {
 "files": [
@@ -75744,7 +75761,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 180
+"line": 187
 },
 "CShaderEffect::SetEmissive": {
 "files": [
@@ -75764,7 +75781,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 190
+"line": 197
 },
 "CShaderEffect::SetFogEnabled": {
 "files": [
@@ -75791,7 +75808,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 200
+"line": 207
 },
 "CShaderEffect::SetFogParams": {
 "files": [
@@ -75816,7 +75833,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 218
+"line": 225
 },
 "CShaderEffect::SetLocalLighting": {
 "files": [
@@ -75835,6 +75852,7 @@
 "GxShaderConstantsSet",
 "GxShaderConstantsSet",
 "GxShaderConstantsSet",
+"CShaderEffect::LocalLights::Clear",
 "CShaderEffect::ComputeLocalLights",
 "GxShaderConstantsSet",
 "CM2Lighting::SetupGxLights"
@@ -75852,9 +75870,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 49,
+"lines": 51,
 "refs": [],
-"line": 243
+"line": 250
 },
 "CShaderEffect::PixelPermute": {
 "files": [
@@ -75871,7 +75889,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 303
+"line": 312
 },
 "CShaderEffect::SetShadersForGeometry": {
 "files": [
@@ -75894,7 +75912,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 321
+"line": 330
 },
 "CShaderEffect::SetWorldViewConstants": {
 "files": [
@@ -75918,7 +75936,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 339
+"line": 348
 },
 "CShaderEffect::SetShaders": {
 "files": [
@@ -75943,7 +75961,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 361
+"line": 370
 },
 "CShaderEffect::SetTexMtx": {
 "files": [
@@ -75961,7 +75979,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 384
+"line": 393
 },
 "CShaderEffect::SetTexMtx_Identity": {
 "files": [
@@ -75981,7 +75999,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 400
+"line": 409
 },
 "CShaderEffect::SetTexMtx_SphereMap": {
 "files": [
@@ -76001,7 +76019,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 416
+"line": 425
 },
 "CShaderEffect::UpdateProjMatrix": {
 "files": [
@@ -76021,7 +76039,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 431
+"line": 440
 },
 "CShaderEffect::InitEffect": {
 "files": [
@@ -76046,7 +76064,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 443
+"line": 452
 },
 "CShaderEffect::SetFixedFunc": {
 "files": [
@@ -76061,7 +76079,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 459
+"line": 468
 },
 "CShaderEffect::SetCurrent": {
 "files": [
@@ -76074,7 +76092,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 469
+"line": 478
 },
 "OpFromName": {
 "files": [
@@ -199299,6 +199317,7 @@
 "callseq": [
 "CM2Lighting::SetupGxLights",
 "CShaderEffect::LocalLights::LocalLights",
+"CShaderEffect::LocalLights::Clear",
 "CShaderEffect::ComputeLocalLights",
 "GxShaderConstantsSet"
 ],
@@ -199310,7 +199329,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 27,
+"lines": 29,
 "refs": [],
 "line": 78
 },
@@ -199335,7 +199354,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 110
+"line": 112
 },
 "CMapObj::SetupFog": {
 "files": [
@@ -199363,7 +199382,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 135
+"line": 137
 },
 "CMapObj::SetupLighting": {
 "files": [
@@ -199416,7 +199435,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 176
+"line": 178
 },
 "CMapObj::SetMaterialColor": {
 "files": [
@@ -199444,7 +199463,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 265
+"line": 267
 },
 "CMapObj::SelectShaders": {
 "files": [
@@ -199465,7 +199484,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 299
+"line": 301
 },
 "CMapObj::SetAlphaRefForBlendMode": {
 "files": [
@@ -199484,7 +199503,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 314
+"line": 316
 },
 "AverageColor": {
 "files": [
@@ -199502,7 +199521,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 325
+"line": 327
 },
 "CMapObjGroup::DrawBatches": {
 "files": [
@@ -199561,7 +199580,7 @@
 "stub": false,
 "lines": 146,
 "refs": [],
-"line": 341
+"line": 343
 },
 "CMapObjGroup::DrawBatchesSplit": {
 "files": [
@@ -199635,7 +199654,7 @@
 "stub": false,
 "lines": 189,
 "refs": [],
-"line": 494
+"line": 496
 },
 "CMapObj::Render": {
 "files": [
@@ -199661,7 +199680,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 687
+"line": 689
 },
 "CMapObjGroup::DrawBatchesOutdoor": {
 "files": [
@@ -199749,7 +199768,7 @@
 "stub": false,
 "lines": 214,
 "refs": [],
-"line": 731
+"line": 733
 },
 "CMapObjGroup::BakePortalLight": {
 "files": [
@@ -199787,7 +199806,7 @@
 "stub": false,
 "lines": 100,
 "refs": [],
-"line": 953
+"line": 955
 },
 "CMapObj::SetVisibleCallback": {
 "files": [
@@ -199800,7 +199819,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1058
+"line": 1060
 },
 "CMapObj::ReportVisible": {
 "files": [
@@ -199818,7 +199837,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1064
+"line": 1066
 },
 "CMapObj::SetupPortalContext": {
 "files": [
@@ -199848,7 +199867,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1084
+"line": 1086
 },
 "CMapObj::TestCameraInPortal": {
 "files": [
@@ -199867,7 +199886,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1129
+"line": 1131
 },
 "CMapObj::ProjectPortal": {
 "files": [
@@ -199901,7 +199920,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 1151
+"line": 1153
 },
 "CMapObj::ScreenBounds": {
 "files": [
@@ -199917,7 +199936,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1227
+"line": 1229
 },
 "CMapObj::MeasurePortal": {
 "files": [
@@ -199943,7 +199962,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1256
+"line": 1258
 },
 "CMapObj::WalkPortals": {
 "files": [
@@ -199986,7 +200005,7 @@
 "stub": false,
 "lines": 123,
 "refs": [],
-"line": 1304
+"line": 1306
 },
 "AdvancePortalStamp": {
 "files": [
@@ -199999,7 +200018,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1438
+"line": 1440
 },
 "CMapObj::WalkFromOutside": {
 "files": [
@@ -200019,7 +200038,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1448
+"line": 1450
 },
 "CMapObj::WalkFromInside": {
 "files": [
@@ -200049,7 +200068,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1463
+"line": 1465
 },
 "CMapObj::EnterPortalWalk": {
 "files": [
@@ -200066,7 +200085,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1526
+"line": 1528
 },
 "TriangleOutsideHull": {
 "files": [

@@ -2830,6 +2830,7 @@ addr	how	frozen	evidence
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
 007a85e0	annotated	CMapObj::ProjectPortal	tag in src/world/map/CMapObjDraw.cpp
 007a8940	annotated	CMapObj::SetMaterialColor	tag in src/world/map/CMapObjDraw.cpp
+007a8a60	annotated	CShaderEffect::LocalLights::Clear	tag in src/gx/shader/CShaderEffect.cpp
 007a8b10	annotated	CMapObj::SetupLighting	tag in src/world/map/CMapObjDraw.cpp
 007a9090	annotated	CMapObj::MeasurePortal	tag in src/world/map/CMapObjDraw.cpp
 007a9160	annotated	CMapObj::SetupLocalLights	tag in src/world/map/CMapObjDraw.cpp
@@ -3718,7 +3719,8 @@ addr	how	frozen	evidence
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 0086d6d0	annotated	OsTlsGetValue	tag in lib/common/common/thread/OsTls.cpp
 008728c0	annotated	CShaderEffect::SetFixedFunc	tag in src/gx/shader/CShaderEffect.cpp
-00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
+00872900	annotated	CShaderEffect::LocalLights::Clear	tag in src/gx/shader/CShaderEffect.cpp
+00872ad0	order	CShaderEffect::ComputeLocalLights	definition order between CShaderEffect::LocalLights::Clear and CShaderEffect::InitShaderSystem in src/gx/shader/CShaderEffect.cpp
 00872b00	annotated	CShaderEffect::SetWorldViewConstants	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
 00872ce0	callorder	CShaderEffect::InitShaderSystem	same slot between linked calls in 00780f50=CWorld::Initialize

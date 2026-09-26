@@ -45190,6 +45190,22 @@
   "refSize": 285,
   "status": "ported"
  },
+ "007a8a60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.024,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::LocalLights::Clear",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 172,
+  "status": "ported"
+ },
  "007a8b10": {
   "branchRatio": 0.875,
   "constOverlap": 0.095,
@@ -59105,8 +59121,24 @@
   "status": "ported"
  },
  "00872900": {
-  "branchRatio": 0.75,
-  "constOverlap": 0.043,
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::LocalLights::Clear",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 453,
+  "status": "ported"
+ },
+ "00872ad0": {
+  "branchRatio": 0.333,
+  "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
@@ -59115,9 +59147,9 @@
   ],
   "frozen": "CShaderEffect::ComputeLocalLights",
   "frozenSize": 411,
-  "how": "annotated",
+  "how": "order",
   "module": "OsClipboard.cpp",
-  "refSize": 453,
+  "refSize": 40,
   "status": "ported"
  },
  "00872b00": {

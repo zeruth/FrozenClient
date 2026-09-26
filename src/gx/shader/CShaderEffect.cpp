@@ -59,6 +59,13 @@ uint32_t CShaderEffect::s_shadowMode;
 //
 // **Built, not seen running**, and this one changes what a lit model looks like.
 // ref: FUN_00872900
+// ref: FUN_007a8a60
+void CShaderEffect::LocalLights::Clear() {
+    for (uint32_t i = 0; i < 44; i++) {
+        this->float0[i] = 0.0f;
+    }
+}
+
 void CShaderEffect::ComputeLocalLights(LocalLights* localLights, uint32_t localLightsCount, CM2Light** lights, const C3Vector* a4) {
     float* dst = localLights->float0;
     uint32_t i = 0;
@@ -273,6 +280,8 @@ void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled
         GxShaderConstantsSet(GxSh_Vertex, 12, reinterpret_cast<float*>(&CShaderEffect::s_sunDir), 1);
 
         if (CShaderEffect::s_localLightCount) {
+            CShaderEffect::s_localLights.Clear();
+
             CShaderEffect::ComputeLocalLights(
                 &CShaderEffect::s_localLights,
                 CShaderEffect::s_localLightCount,

@@ -17,6 +17,17 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         // Structs
         struct LocalLights {
             float float0[44];
+
+            // Zero every slot before ComputeLocalLights fills it. This is NOT housekeeping:
+            // ComputeLocalLights writes the colour block for all four slots, but the position
+            // and attenuation blocks only for lights of type 1, and its tail loop clears only
+            // the colours. Without this, up to 28 of the 44 floats handed to the vertex shader
+            // are whatever was in the buffer before -- stack garbage at one call site and the
+            // previous frame's lights at the other, which is a static.
+            //
+            // The reference does exactly this, in its own function, and calls it from both
+            // sites. ref: FUN_007a8a60
+            void Clear();
         };
 
         // Static variables
