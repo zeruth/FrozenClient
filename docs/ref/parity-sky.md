@@ -494,10 +494,19 @@ already reference-DERIVED (the sun direction from FUN_007eea90, the dome's zenit
 0x00a41a90, the highlight from FUN_007f0530) but it lives in `src/world/Terrain.cpp`, the stand-in
 file item 11 wants emptied. The extraction was scoped on 2026-09-26 and is mechanically clean.
 
-**It is gated on a verification run, deliberately.** Everything in this area is "built, unverified",
-and at noon a correct port and no port look identical. Relocating ~740 lines first would mean that
-any later wrongness could not be attributed -- broken by the move, or broken all along. **Verify the
-sky at dawn or dusk in a zone that sets `highlightSky`, then move it.**
+**DONE 2026-09-26**, after the user confirmed on screen that the sky renders correctly -- which was
+the gate: everything here was "built, unverified", and at noon a correct port and no port look
+identical, so moving first would have made any later wrongness unattributable. With a confirmed
+baseline the move became safe, and it landed as `src/world/DayNight.cpp` (849 lines), taking
+Terrain.cpp from 5,327 to 4,548 lines.
+
+**It was done as a PURE RELOCATION.** The four externals were NOT repointed at reference state;
+they are mirrored in the new module and pushed in by `SkySetCameraState`, called from exactly where
+`TerrainUpdate` already computed them. So every expression is byte-identical to what ran before.
+Repointing them at `CWorldScene::s_cameraPos` and `CWorld::IsCameraUnderLiquid()` is the obvious
+follow-up and is a SEPARATE change: `CWorldScene::s_cameraPos` is written from `CWorld::Update`
+rather than from `TerrainUpdate`, so it carries a different position in the frame, and bundling that
+with a 780-line move would have put a behaviour change inside a relocation.
 
 **The four regions**, by line number as of a5d3ad95:
 

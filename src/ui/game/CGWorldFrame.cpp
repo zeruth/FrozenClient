@@ -7,6 +7,7 @@
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
 #include "world/Terrain.hpp"
+#include "world/DayNight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
 #include "world/OverheadIcons.hpp"

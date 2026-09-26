@@ -18,7 +18,6 @@ void TerrainUpdate(const C3Vector& cameraPos);
 void TerrainUpdateView();
 
 void TerrainRender();
-void SkyRender();
 // Blob shadows: call Begin once per frame after the opaque world, Draw per entity, then End.
 void BlobShadowsBegin();
 void BlobShadowDraw(const C3Vector& pos, float radius);

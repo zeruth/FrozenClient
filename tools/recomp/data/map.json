@@ -50680,13 +50680,12 @@
   "status": "ported"
  },
  "007ed2d0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
+   "src/world/DayNight.cpp"
   ],
   "frozen": "SkyLerp",
   "frozenSize": 0,
@@ -50696,13 +50695,12 @@
   "status": "diverged"
  },
  "007ed3b0": {
-  "branchRatio": 0.529,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
+   "src/world/DayNight.cpp"
   ],
   "frozen": "InterpBodyBand",
   "frozenSize": 240,
@@ -50712,13 +50710,12 @@
   "status": "ported"
  },
  "007f0530": {
-  "branchRatio": 0.465,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
+   "src/world/DayNight.cpp"
   ],
   "frozen": "SkyRender",
   "frozenSize": 3662,
@@ -50728,13 +50725,12 @@
   "status": "diverged"
  },
  "007f09b0": {
-  "branchRatio": 0.581,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.238,
   "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
+   "src/world/DayNight.cpp"
   ],
   "frozen": "SkyRender",
   "frozenSize": 3662,
