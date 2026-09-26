@@ -77,16 +77,10 @@ struct TerrainChunk {
     uint8_t ndotl[145];   // static per-vertex sun term (with baked shadow) for re-lighting
     CImVector mccv[145];  // static per-vertex baked colour (127 = neutral) for re-lighting
 
-    int32_t layerTex[MAX_LAYERS]; // MTEX index per layer
-    int32_t layerEffect[MAX_LAYERS]; // MCLY effectId per layer (GroundEffectTexture id, 0 = none)
-    int32_t nLayers = 0;
 
 
-    CImVector alphaCombined[64 * 64]; // r/g/b = overlay-layer coverage, feeds alphaTexture
-    HTEXTURE alphaTexture = nullptr;
 
     uint32_t holes = 0; // MCNK holes bitmask: cells the reference does not render (cave/mine mouths)
-    uint32_t areaID = 0; // MCNK header +0x34: the AreaTable.dbc row this chunk belongs to
 
     C3Vector boundsMin = { 0.0f, 0.0f, 0.0f };
     C3Vector boundsMax = { 0.0f, 0.0f, 0.0f };
@@ -98,8 +92,6 @@ struct TerrainChunk {
     // Raw MCNK ground-effect inputs, still parsed out of the chunk: per 8x8 cell the dominant
     // layer (predTex, 2 bits per cell) and the cells that get no doodad at all. The map's own
     // scatter reads these from CMapChunk instead, so nothing here consumes them any more.
-    uint8_t predTex[16] = { 0 };
-    uint8_t noEffectDoodad[8] = { 0 };
 
     bool valid = false;
 };
@@ -554,71 +546,6 @@ constexpr uint32_t FourCC(const char* s) {
     return (static_cast<uint32_t>(s[0]) << 24) | (static_cast<uint32_t>(s[1]) << 16) | (static_cast<uint32_t>(s[2]) << 8) | static_cast<uint32_t>(s[3]);
 }
 
-void DecompressAlpha(const uint8_t* in, const uint8_t* inEnd, uint8_t* out) {
-    int32_t o = 0;
-    const uint8_t* p = in;
-
-    while (o < 4096 && p < inEnd) {
-        uint8_t cmd = *p++;
-        int32_t count = cmd & 0x7F;
-        bool fill = (cmd & 0x80) != 0;
-
-        if (fill) {
-            if (p >= inEnd) {
-                break;
-            }
-
-            uint8_t value = *p++;
-
-            while (count-- > 0 && o < 4096) {
-                out[o++] = value;
-            }
-        } else {
-            while (count-- > 0 && o < 4096 && p < inEnd) {
-                out[o++] = *p++;
-            }
-        }
-    }
-
-    while (o < 4096) {
-        out[o++] = 0;
-    }
-}
-
-// Decode one layer's alpha map (4-bit 2048B, 8-bit 4096B, or RLE compressed) into 64x64 8-bit.
-// Pre-Cataclysm ADTs only store 63x63 valid alpha; reconstruct the last row/column from their
-// neighbours unless the chunk's do_not_fix_alpha_map flag is set, or every chunk shows an edge seam.
-void DecodeAlphaMap(const uint8_t* src, uint32_t srcSize, bool compressed, bool fixLastRowCol, uint8_t* out /* 4096 */) {
-    if (compressed) {
-        DecompressAlpha(src, src + srcSize, out);
-    } else if (srcSize >= 4096) {
-        memcpy(out, src, 4096);
-    } else {
-        for (int32_t i = 0; i < 4096; i++) {
-            uint8_t byte = src[i >> 1];
-            uint8_t nibble = (i & 1) ? ((byte >> 4) & 0xF) : (byte & 0xF);
-            out[i] = static_cast<uint8_t>(nibble * 17);
-        }
-    }
-
-    if (fixLastRowCol) {
-        for (int32_t x = 0; x < 64; x++) {
-            out[63 * 64 + x] = out[62 * 64 + x];
-        }
-
-        for (int32_t y = 0; y < 64; y++) {
-            out[y * 64 + 63] = out[y * 64 + 62];
-        }
-    }
-}
-
-void AlphaTexCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uint32_t mip, void* userArg, uint32_t& stride, const void*& texels) {
-    if (cmd == GxTex_Latch) {
-        stride = 4 * w;
-        texels = userArg;
-    }
-}
-
 // Rebuild a chunk's vertex colours from its static lighting inputs and the current outdoor light.
 void RebakeChunkColors(TerrainChunk& chunk) {
     const C3Vector& amb = CWorld::GetOutdoorAmbient();
@@ -662,7 +589,6 @@ void ParseChunk(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize) {
     uint32_t ofsAlpha = *reinterpret_cast<const uint32_t*>(hdr + 0x24);
     uint32_t ofsShadow = *reinterpret_cast<const uint32_t*>(hdr + 0x2C);
     uint32_t ofsVertexColor = *reinterpret_cast<const uint32_t*>(hdr + 0x74);
-    chunk.areaID = *reinterpret_cast<const uint32_t*>(hdr + 0x34);
     chunk.holes = *reinterpret_cast<const uint32_t*>(hdr + 0x3C);
     float posX = *reinterpret_cast<const float*>(hdr + 0x68);
     float posY = *reinterpret_cast<const float*>(hdr + 0x6C);
@@ -757,100 +683,12 @@ void ParseChunk(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize) {
         chunk.boundsMax.z = p.z > chunk.boundsMax.z ? p.z : chunk.boundsMax.z;
     }
 
-    // The baked shadow map goes into the blend texture's alpha channel, which the layer blend does
-    // not use, so the terrain shader can sample it per pixel. Folding it into the per-vertex term
-    // instead quantised it to the 9x9 height grid and made mountain shadows blocky.
-    for (int32_t sr = 0; sr < 64; sr++) {
-        for (int32_t sc = 0; sc < 64; sc++) {
-            bool shadowed = shadowMap && (shadowMap[sr * 8 + (sc >> 3)] & (1 << (sc & 7)));
-            chunk.alphaCombined[sr * 64 + sc].a = shadowed ? 0x00 : 0xFF;
-        }
-    }
-
-    // Layers
-    chunk.nLayers = 0;
-    chunk.layerTex[0] = chunk.layerTex[1] = chunk.layerTex[2] = chunk.layerTex[3] = 0;
-    chunk.layerEffect[0] = chunk.layerEffect[1] = chunk.layerEffect[2] = chunk.layerEffect[3] = 0;
-    memcpy(chunk.predTex, hdr + 0x40, sizeof(chunk.predTex));
-    memcpy(chunk.noEffectDoodad, hdr + 0x50, sizeof(chunk.noEffectDoodad));
-    for (int32_t i = 0; i < 64 * 64; i++) {
-        chunk.alphaCombined[i].r = 0;
-        chunk.alphaCombined[i].g = 0;
-        chunk.alphaCombined[i].b = 0;
-    }
-
-    if (ofsLayer) {
-        uint32_t mclySize = *reinterpret_cast<const uint32_t*>(mcnk + ofsLayer - 4);
-        uint32_t layerCount = mclySize / 16;
-
-        if (layerCount > MAX_LAYERS) {
-            layerCount = MAX_LAYERS;
-        }
-
-        const uint8_t* mcly = mcnk + ofsLayer;
-        const uint8_t* alphaBase = ofsAlpha ? (mcnk + ofsAlpha) : nullptr;
-        uint32_t alphaSize = ofsAlpha ? *reinterpret_cast<const uint32_t*>(mcnk + ofsAlpha - 4) : 0;
-
-        for (uint32_t l = 0; l < layerCount; l++) {
-            const uint8_t* entry = mcly + l * 16;
-            uint32_t textureId = *reinterpret_cast<const uint32_t*>(entry + 0x00);
-            uint32_t flags = *reinterpret_cast<const uint32_t*>(entry + 0x04);
-            uint32_t ofsInAlpha = *reinterpret_cast<const uint32_t*>(entry + 0x08);
-            uint32_t effectId = *reinterpret_cast<const uint32_t*>(entry + 0x0C);
-
-            chunk.layerTex[l] = static_cast<int32_t>(textureId);
-            chunk.layerEffect[l] = static_cast<int32_t>(effectId);
-
-            if (l == 0 || !(flags & 0x100) || !alphaBase) {
-                continue;
-            }
-
-            uint32_t nextOfs = alphaSize;
-
-            for (uint32_t m = l + 1; m < layerCount; m++) {
-                uint32_t mFlags = *reinterpret_cast<const uint32_t*>(mcly + m * 16 + 0x04);
-
-                if (mFlags & 0x100) {
-                    nextOfs = *reinterpret_cast<const uint32_t*>(mcly + m * 16 + 0x08);
-                    break;
-                }
-            }
-
-            uint32_t thisSize = (nextOfs > ofsInAlpha) ? (nextOfs - ofsInAlpha) : 0;
-            bool compressed = (flags & 0x200) != 0;
-
-            uint8_t decoded[4096];
-            DecodeAlphaMap(alphaBase + ofsInAlpha, thisSize, compressed, !doNotFixAlpha, decoded);
-
-            // Pack into the combined texture's channel for this overlay layer
-            for (int32_t t = 0; t < 4096; t++) {
-                uint8_t a = decoded[t];
-
-                if (l == 1) {
-                    chunk.alphaCombined[t].r = a;
-                } else if (l == 2) {
-                    chunk.alphaCombined[t].g = a;
-                } else if (l == 3) {
-                    chunk.alphaCombined[t].b = a;
-                }
-            }
-        }
-
-        chunk.nLayers = static_cast<int32_t>(layerCount);
-
-        // NOTE: do not touch the alpha channel here. It carries the chunk's baked MCSH shadow map
-        // for the terrain shader; unused overlay channels are already 0.
-    }
-
-    // Upload the per-chunk combined alpha map (clamped, no wrap)
-    chunk.alphaTexture = TextureCreate(
-        64, 64,
-        GxTex_Argb8888, GxTex_Argb8888,
-        CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1),
-        chunk.alphaCombined,
-        AlphaTexCallback,
-        __FILE__, __LINE__
-    );
+    // The layer walk, the alpha-map decode and the per-chunk 64x64 blend texture used to live
+    // here. They fed only RenderShaded and RenderFallback, which are gone, so every one of those
+    // fields was write-only: layerTex, layerEffect, nLayers, predTex, noEffectDoodad, areaID,
+    // alphaCombined and alphaTexture. Dropping them takes 16 KB of alphaCombined per chunk -- about
+    // 100 MB across the 5x5 tile pool -- and one 64x64 GPU texture per chunk with it. The layers
+    // the terrain actually draws come from CMapRenderChunk, which parses MCLY and MCAL itself.
 
     chunk.valid = true;
 }
@@ -1717,8 +1555,6 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
 
     for (auto& chunk : tile.chunks) {
         chunk.valid = false;
-        chunk.nLayers = 0;
-        chunk.alphaTexture = nullptr;
     }
 
     for (auto& t : tile.textures) {
@@ -2065,13 +1901,8 @@ void FreeTile(TerrainTile& tile) {
     tile.wmoCount = 0;
 
     for (auto& chunk : tile.chunks) {
-        if (chunk.alphaTexture) {
-            HandleClose(chunk.alphaTexture);
-            chunk.alphaTexture = nullptr;
-        }
 
         chunk.valid = false;
-        chunk.nLayers = 0;
     }
 
     for (uint32_t i = 0; i < tile.textureCount; i++) {

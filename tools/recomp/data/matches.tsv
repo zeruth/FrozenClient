@@ -2942,7 +2942,7 @@ addr	how	frozen	evidence
 007b99b0	annotated	CMapRenderChunk::FillAlpha	tag in src/world/map/CMapRenderChunk.cpp
 007b9bc0	annotated	LayerAlphaTexCallback	tag in src/world/map/CMapRenderChunk.cpp
 007b9c20	annotated	ShadowTexCallback	tag in src/world/map/CMapRenderChunk.cpp
-007b9c60	annotated	AlphaTexCallback	tag in src/world/Terrain.cpp
+007b9c60	annotated	AlphaTexCallback	tag in src/world/map/CMapRenderChunk.cpp
 007b9cb0	annotated	CMapChunkBufBlock::CMapChunkBufBlock	tag in src/world/map/CMapRenderChunk.cpp
 007b9d60	annotated	CMapRenderChunk::~CMapRenderChunk	tag in src/world/map/CMapRenderChunk.cpp
 007b9de0	annotated	CMapRenderChunk::BuildLayerAlphaTexture	tag in src/world/map/CMapRenderChunk.cpp

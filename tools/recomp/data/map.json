@@ -15272,7 +15272,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1829,
+  "frozenSize": 1789,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -46968,15 +46968,13 @@
   "status": "ported"
  },
  "007b9c60": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Terrain.cpp",
    "src/world/map/CMapRenderChunk.cpp",
-   "src/world/map/cmaprenderchunk.cpp",
-   "src/world/terrain.cpp"
+   "src/world/map/cmaprenderchunk.cpp"
   ],
   "frozen": "AlphaTexCallback",
   "frozenSize": 103,
