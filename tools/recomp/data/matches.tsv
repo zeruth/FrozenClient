@@ -2391,6 +2391,7 @@ addr	how	frozen	evidence
 006c2270	annotated	CGxFont::GetPixelSize	tag in src/gx/font/CGxFont.cpp
 006c2280	annotated	Sub6C2280	tag in src/gx/Font.cpp
 006c4190	annotated	GLYPHBITMAPDATA::CopyFrom	tag in src/gx/font/CGxFont.cpp
+006c42f0	annotated	DecalFixupColor	tag in src/world/Shadow.cpp
 006c4340	annotated	GLYPHBITMAPDATA::GLYPHBITMAPDATA	tag in src/gx/font/CGxFont.cpp
 006c4360	annotated	GLYPHBITMAPDATA::~GLYPHBITMAPDATA	tag in src/gx/font/CGxFont.cpp
 006c6b90	callgraph	CGxString::ClearInstanceData	only unmatched callee of 006c75e0=CGxString::Recycle
@@ -3176,6 +3177,7 @@ addr	how	frozen	evidence
 007e2c80	annotated	ShadowDestroy	tag in src/world/Shadow.cpp
 007e2d60	annotated	DecalBuildTransforms	tag in src/world/Shadow.cpp
 007e2fd0	annotated	DecalStreamReceiver	tag in src/world/Shadow.cpp
+007e32f0	annotated	DecalStreamReceiverColored	tag in src/world/Shadow.cpp
 007e3580	annotated	DecalStreamIndices	tag in src/world/Shadow.cpp
 007e36e0	annotated	ShadowAddCallback	tag in src/world/Shadow.cpp
 007e3820	annotated	ShadowModCallback	tag in src/world/Shadow.cpp

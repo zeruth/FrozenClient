@@ -797,16 +797,31 @@ About 2.7 KB without the M2 half. The bottom of the WMO branch already exists in
 `CMapObjGroup::QueryBox` (`FUN_007cb180`) and `CMapObjGroup::RecordHits` (`FUN_007c7ae0`), and
 `FUN_007cb7b0` is the sibling that takes a plain box where `QueryBox` takes a plane hull.
 
-**Which bits of the mask matter.** The blob's mask is `0x220122`, and every branch it selects:
+**There are TWO words, not one, and mixing them up is easy.** `FUN_007e4370` is called with
+`0x220122` as its fifth argument and `0` as its sixth, and `FUN_007e3e80` receives them as separate
+parameters that do entirely separate jobs. The disassembly's prologue settles it: `ebx` takes the
+fifth (the QUERY MASK) and `edi`/`eax` the sixth (the FLAGS), and only the flags reach the draw.
 
-| test | result for `0x220122` | effect |
+The query mask, `0x220122`, selects which world geometry the collection walks:
+
+| test | result | effect |
 |---|---|---|
-| `mask & 0x300f0` | `0x20020`, non-zero | the WMO instance walk runs |
-| `mask & 0x30100` | `0x20100`, non-zero | the terrain tile walk runs |
-| `mask & 0x100` | set | the terrain hit collector runs -- blobs land on the ground |
-| `mask & 0x30000` | `0x20000`, non-zero | the per-group extra collector runs |
-| `mask & 2` | set | the plain stream builder, not the coloured `FUN_007e32f0` |
-| `mask & 4` | clear | the winding test is applied: upward-facing triangles only |
+| `& 0x300f0` | `0x20020`, non-zero | the WMO instance walk runs |
+| `& 0x30100` | `0x20100`, non-zero | the terrain tile walk runs |
+| `& 0x100` | set | the terrain hit collector runs -- blobs land on the ground |
+| `& 0x30000` | `0x20000`, non-zero | the per-group extra collector runs |
+
+The flags word, `0`, decides how the draw happens -- and every bit being clear is why the blob looks
+the way it does:
+
+| test | result | effect |
+|---|---|---|
+| `& 1` | clear | **no M2 receivers**: that list belongs to some other decal kind |
+| `& 2` | clear | the **coloured** 0x10-byte stream (`FUN_007e32f0`), and the colour is fixed up for the device byte order rather than set as a material constant |
+| `& 4` | clear | the winding test is applied: upward-facing triangles only |
+
+The plain 0x18-byte stream with the constant up normal (`FUN_007e2fd0`) is therefore **not** the
+blob's; it belongs to whichever caller passes bit 1.
 
 **One thing still to read off the asm.** `FUN_007e35f0` takes its caster box in `ESI` and two flags in
 `EAX` and `EBX`, all three of which Ghidra drops, so which of `FUN_007e3e80`'s arguments they come

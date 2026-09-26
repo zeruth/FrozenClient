@@ -38140,6 +38140,21 @@
   "refSize": 64,
   "status": "ported"
  },
+ "006c42f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalFixupColor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "006c4340": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -50678,10 +50693,25 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "DecalStreamReceiver",
-  "frozenSize": 0,
+  "frozenSize": 564,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 785,
+  "status": "ported"
+ },
+ "007e32f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalStreamReceiverColored",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 634,
   "status": "ported"
  },
  "007e3580": {
@@ -50763,12 +50793,12 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.414,
+  "fidelity": 0.448,
   "files": [
    "src/world/Shadow.cpp"
   ],
   "frozen": "DecalDrawReceivers",
-  "frozenSize": 0,
+  "frozenSize": 946,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 1264,
@@ -50798,7 +50828,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowProjectBlob",
-  "frozenSize": 2056,
+  "frozenSize": 2131,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 1370,

@@ -1,4 +1,5 @@
 #include "world/Shadow.hpp"
+#include "gx/Gx.hpp"
 #include "gx/buffer/CGxBuf.hpp"
 #include "gx/CGxBatch.hpp"
 #include "gx/Draw.hpp"
@@ -65,10 +66,20 @@ const float PROJECTOR_CLAMP = 5.0f;
 const float PROJECTOR_BELOW = 1.6666666269302368f;
 const float PROJECTOR_ABOVE = 1.0f;
 
-// The bias DecalBuildTransforms is handed, and the mask the receiver walk is handed. The mask is a
-// literal at the call site; what its bits select is inside FUN_007e3e80 and not yet read.
+// The bias DecalBuildTransforms is handed, and the QUERY MASK the receiver collection is handed.
+// Every bit of that mask selects a branch of the query, and none of them touch the draw:
+//
+//   & 0x300f0  the WMO instance walk runs        (0x20020 -- yes)
+//   & 0x30100  the terrain tile walk runs        (0x20100 -- yes)
+//   & 0x100    the terrain hit collector runs    (yes: this is what puts a blob on the ground)
+//   & 0x30000  the per-group extra collector     (0x20000 -- yes)
+//
+// The blob's own FLAGS word, which is what the draw reads, is a separate argument and is ZERO:
+// bit 0 clear means no M2 receivers, bit 1 clear means the coloured vertex stream, bit 2 clear
+// means the winding test stays on.
 const float PROJECTOR_BIAS = 0.5f;
-const uint32_t PROJECTOR_RECEIVER_MASK = 0x220122;
+const uint32_t PROJECTOR_QUERY_MASK = 0x220122;
+const uint32_t PROJECTOR_FLAGS = 0;
 
 // DAT_009e1134: a decal whose box is thinner than a millimetre in x or y gets no transforms at all.
 const float DECAL_MIN_EXTENT = 0.001f;
@@ -425,6 +436,79 @@ static void DecalStreamReceiver(const CMapObjHitRecord& record, CGxBatch& batch,
     GxPrimVertexPtr(stream, GxVBF_PN);
 }
 
+// ref: FUN_006c42f0
+// Swap red and blue when the device wants RGBA rather than ARGB. The reference calls this on any
+// colour it is about to put in a vertex stream by hand; five call sites share it.
+static void DecalFixupColor(uint32_t& color) {
+    if (GxCaps().m_colorFormat != GxCF_rgba) {
+        return;
+    }
+
+    uint32_t b = color & 0xff;
+    uint32_t g = (color >> 8) & 0xff;
+    uint32_t r = (color >> 16) & 0xff;
+    uint32_t a = (color >> 24) & 0xff;
+
+    color = (a << 24) | (b << 16) | (g << 8) | r;
+}
+
+// ref: FUN_007e32f0
+// The stream the BLOB takes: 0x10 bytes a vertex, position then one packed colour, which is
+// GxVBF_PC. The colour is the same for every vertex -- the decal's own, already fixed up for the
+// device's byte order -- so this is a flat tint, not per-vertex shading.
+//
+// Same two branches as the plain builder: the winding test on bit 2 of the flags, and the
+// unreachable path on the record's +0x0c.
+static void DecalStreamReceiverColored(const CMapObjHitRecord& record, CGxBatch& batch, uint32_t color, uint32_t flags) {
+    auto stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x10, record.indexCount);
+
+    if (!stream) {
+        return;
+    }
+
+    auto vertices = reinterpret_cast<uint32_t*>(g_theGxDevicePtr->BufLock(stream));
+
+    if (!vertices) {
+        return;
+    }
+
+    batch.m_count = 0;
+
+    bool testWinding = (flags & 4) == 0;
+    uint32_t* out = vertices;
+
+    for (uint32_t i = 0; i + 2 < record.indexCount; i += 3) {
+        const C3Vector& a = record.vertices[record.indices[i]];
+        const C3Vector& b = record.vertices[record.indices[i + 1]];
+        const C3Vector& c = record.vertices[record.indices[i + 2]];
+
+        if (testWinding) {
+            float cross = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+
+            if (cross < 0.0f) {
+                continue;
+            }
+        }
+
+        const C3Vector* corner[3] = { &a, &b, &c };
+
+        for (int32_t k = 0; k < 3; k++) {
+            auto position = reinterpret_cast<float*>(out);
+            position[0] = corner[k]->x;
+            position[1] = corner[k]->y;
+            position[2] = corner[k]->z;
+            out[3] = color;
+            out += 4;
+        }
+
+        batch.m_count += 3;
+    }
+
+    g_theGxDevicePtr->BufUnlock(stream, 0);
+    stream->unk1C = 1;
+    GxPrimVertexPtr(stream, GxVBF_PC);
+}
+
 // ref: FUN_007e3580
 // The index stream that goes with it: 0, 1, 2, ... one per streamed vertex, because the stream
 // builder above already expanded the triangles.
@@ -464,7 +548,7 @@ static void DecalStreamIndices(const CMapObjHitRecord& record) {
 //
 // Polygon offset comes from the strength -- twice it, scaled by about 1/32768 -- which is the
 // reference's whole answer to coplanar depth on this path. The blob's 0.4 gives about 2.4e-05.
-void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength) {
+void DecalDrawReceivers(const CImVector& color, uint32_t queryMask, uint32_t flags, float strength) {
     GxRsPush();
 
     // GxRs_Unk61 and GxRs_Unk62 have no name in frozen's enum yet; the reference sets both to 1
@@ -487,7 +571,17 @@ void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength) 
     GxRsSet(GxRs_TexGen1, 2);
     GxRsSet(GxRs_Unk61, 1);
     GxRsSet(GxRs_Unk62, 1);
-    GxRsSet(GxRs_MatDiffuse, color.value);
+
+    // Bit 1 of the flags decides where the colour goes, and the blob's flags are ZERO, so the blob
+    // takes the first arm: the colour is fixed up for the device's byte order and written into every
+    // streamed vertex. The other arm puts it in a single material constant instead.
+    uint32_t streamColor = color.value;
+
+    if ((flags & 2) == 0) {
+        DecalFixupColor(streamColor);
+    } else {
+        GxRsSet(GxRs_MatDiffuse, color.value);
+    }
 
     // Every receiver draws in its own placement with the camera translation folded out, which is
     // the same convention the WMO passes use.
@@ -521,9 +615,13 @@ void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength) 
         batch.m_minIndex = 0;
         batch.m_maxIndex = static_cast<uint16_t>(record.indexCount - 1);
 
-        // TODO FUN_007e32f0, 634 bytes: the same stream with a per-vertex colour, taken when bit 1
-        // of the flags is CLEAR. The blob's mask has that bit set, so blobs take the plain one.
-        DecalStreamReceiver(record, batch, flags);
+        // Bit 1 clear takes the coloured 0x10-byte stream, which is the blob's path; set takes the
+        // plain 0x18-byte one with the constant up normal.
+        if ((flags & 2) == 0) {
+            DecalStreamReceiverColored(record, batch, streamColor, flags);
+        } else {
+            DecalStreamReceiver(record, batch, flags);
+        }
 
         DecalStreamIndices(record);
 
@@ -534,8 +632,10 @@ void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength) 
 
     // TODO the reference's SECOND receiver list, DAT_00d38014 with its count at DAT_00d38054: up to
     // ten M2 receivers, each drawn through its own matrix at +0xb4 with the draw at FUN_00829aa0.
-    // That is the "M2 receivers" item the render inventory has open, and FUN_007e35f0 is what fills
-    // the list.
+    // It is gated on bit 0 of the flags, which the blob leaves clear, so a blob never collects M2
+    // receivers at all -- that list belongs to whichever decal kind passes an odd flag word. The
+    // render inventory's open "M2 receivers" item is about the M2 SHADOW pass, not this.
+    (void)queryMask;
 
     g_theGxDevicePtr->XformPop(GxXform_World);
     GxRsPop();
@@ -551,7 +651,7 @@ void DecalDrawReceivers(const CImVector& color, uint32_t flags, float strength) 
 //
 // The reference pops by decrementing the device's own two push counters by hand rather than calling
 // XformPop. frozen calls XformPop, which is the same thing said properly.
-void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44Matrix& texMatrix, float bias, uint32_t receiverMask, int32_t flag, float strength) {
+void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44Matrix& texMatrix, float bias, uint32_t queryMask, uint32_t flags, float strength) {
     C44Matrix stage0;
     stage0.Identity();
 
@@ -564,13 +664,13 @@ void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44M
     g_theGxDevicePtr->XformPush(GxXform_Tex1, stage1);
 
     // TODO FUN_007e35f0, 228 bytes: the QUERY that fills the receiver lists, and the one thing
-    // still missing. It stashes the caster's box, resets the five hit-record counters and runs
-    // FUN_007a6af0 (the WMO half, itself dispatching FUN_007a6940 and FUN_007a6830 on the flag
-    // mask) and FUN_007a2aa0 (the M2 half, up to ten). Until it lands s_hitRecordCount is whatever
-    // an unrelated query left, so the walk below normally finds nothing and draws nothing.
-    (void)flag;
-
-    DecalDrawReceivers(color, receiverMask, strength);
+    // still missing. It stashes the caster's box at DAT_00d38058 and the query mask at
+    // DAT_00d38050, resets the five hit-record counters, and runs FUN_007a6af0 (the WMO and terrain
+    // halves, which read both globals back) and FUN_007a2aa0 (the M2 half). Two things it decides:
+    // the M2 list is collected only when bit 0 of `flags` is set, and the hit query runs only when
+    // `queryMask` is non-zero. Until it lands s_hitRecordCount is whatever an unrelated query left,
+    // so the walk below normally finds nothing and draws nothing.
+    DecalDrawReceivers(color, queryMask, flags, strength);
 
     g_theGxDevicePtr->XformPop(GxXform_Tex1);
     g_theGxDevicePtr->XformPop(GxXform_Tex0);
@@ -728,7 +828,7 @@ void ShadowProjectBlob(const CAaBox& casterBox, CM2Model* model, float strength)
     color.r = 0xff;
     color.a = static_cast<uint8_t>(static_cast<int32_t>(modelStrength * 255.0f + 0.5f));
 
-    DecalDrawProjected(bounds, color, texMatrix, PROJECTOR_BIAS, PROJECTOR_RECEIVER_MASK, 0, strength);
+    DecalDrawProjected(bounds, color, texMatrix, PROJECTOR_BIAS, PROJECTOR_QUERY_MASK, PROJECTOR_FLAGS, strength);
 
     GxRsPop();
 }
