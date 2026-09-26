@@ -15,9 +15,20 @@
 // 0x138 (5), 0x108 (4), 0x130 (3) and others. The presence of 0x130, 0x134 and 0x138 in that list
 // is what identifies the object as this class.
 //
+// TWO OF THOSE OFFSETS ARE NOW IDENTIFIED, 2026-09-26, from the shadow map's own caps check
+// (FUN_008740d0): it compares caps+0xb4 against 1, 2, 3, 6 and 10 and caps+0xc4 against 3, 4, 0xb
+// and 0xc, which are exactly the EGxShVertexShader and EGxShPixelShader values for
+// vs_1_1/vs_2_0/vs_3_0 and arbvp1/nvvp3, and ps_2_0/ps_3_0 and nvfp2/arbfp1. So the reference's
+// m_shaderTargets begins at 0xb4 and 0xc4 is its GxSh_Pixel entry, four ints along -- which also
+// explains why 0xc4 has the most reads after 0x14: it is the pixel shader profile. The same
+// function reads caps+0xac and caps+0xa8 as "is either non-zero", three and two ints below
+// m_shaderTargets and so where m_texFmt's tail would land; they are read as m_texFmt[GxTex_D24X8]
+// and m_texFmt[GxTex_R32F], the two formats the shadow targets are created with.
+//
 // Two consequences worth stating. First, do not reason about a reference caps field by offset and
-// expect to find it here -- there is no field at 0xb4, and CM2Lighting::SetupGxFog needs one (it
-// gates the FogStart/FogEnd writes on it). Second, filling this class in is a real porting task
+// expect to find it here -- 0xb4 is m_shaderTargets rather than a scalar, and CM2Lighting::SetupGxFog
+// reads a scalar at 0xb4 that this class does not have (it gates the FogStart/FogEnd writes on it),
+// so those two readings cannot both be right and the fog one is the unresolved half. Second, filling this class in is a real porting task
 // with a measurable target: eight or so distinct offsets are read across the reference and only
 // three of them have names here.
 class CGxCaps {

@@ -2272,7 +2272,7 @@ addr	how	frozen	evidence
 00681f60	override	GxXformSetViewport	
 00682130	callgraph	GxXformSet	only unmatched callee of 007a6e00=CMapObj::SetupPortalContext
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
-00682d20	callgraph	GxXformProjNativeTranspose	only unmatched callee of 00872c10=CShaderEffect::UpdateProjMatrix
+00682d20	callgraph	GxCaps	only unmatched callee of 008740d0=ShadowMapQualitySupported
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
 00682d70	override	CGxDevice::DeviceCurWindow	
 00682dc0	annotated	CGxDevice::WindowVisibleFlag	tag in src/gx/CGxDevice.cpp
@@ -2748,7 +2748,7 @@ addr	how	frozen	evidence
 0078dbe0	annotated	CWorldParam::ObjectFadeZFillCallback	tag in src/world/CWorldParam.cpp
 0078dc30	annotated	CWorldParam::FarClipOverrideCallback	tag in src/world/CWorldParam.cpp
 0078dc60	annotated	CWorldParam::EnvironmentDetailCallback	tag in src/world/CWorldParam.cpp
-0078dcb0	cvar	CWorldParam::ExtShadowQualityCallback	callback of CVar::Register("extShadowQuality") on both sides
+0078dcb0	annotated	CWorldParam::ExtShadowQualityCallback	tag in src/world/CWorldParam.cpp
 0078dcf0	annotated	CWorldParam::ProjectedTexturesCallback	tag in src/world/CWorldParam.cpp
 0078de60	cvar	CWorldParam::SpecularCallback	callback of CVar::Register("specular") on both sides
 0078ded0	annotated	CWorldParam::MapObjLightLODCallback	tag in src/world/CWorldParam.cpp
@@ -3767,10 +3767,13 @@ addr	how	frozen	evidence
 00873ca0	annotated	CShaderEffect::SetLocalLighting	tag in src/gx/shader/CShaderEffect.cpp
 00873ee0	annotated	CMapObj::SetAlphaRefForBlendMode	tag in src/world/map/CMapObjDraw.cpp
 00873f50	annotated	ExtShadowQualityAbsoluteMax	tag in src/glue/GlueScript.cpp
+00873f60	annotated	ShadowMapQualityName	tag in src/world/ShadowMap.cpp
 00873f80	annotated	ShadowMapGetQuality	tag in src/world/ShadowMap.cpp
+00873fe0	annotated	ShadowMapDeviceRestore	tag in src/world/ShadowMap.cpp
 00873ff0	override	ShadowMapGetShaderLevel	
 00874010	annotated	ShadowMapSetIntensity	tag in src/world/ShadowMap.cpp
-008740d0	callgraph	HASHKEY_STR::GetString	only unmatched callee of 00514e30=Script_GetCVarMax
+008740d0	annotated	ShadowMapQualitySupported	tag in src/world/ShadowMap.cpp
+00874210	annotated	ShadowMapSetQuality	tag in src/world/ShadowMap.cpp
 008744e0	annotated	ShadowMapBindScene	tag in src/world/ShadowMap.cpp
 008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp

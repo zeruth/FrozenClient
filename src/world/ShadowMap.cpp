@@ -5,6 +5,8 @@
 #include "gx/Types.hpp"
 #include "gx/Device.hpp"
 #include "gx/CGxDevice.hpp"
+#include "gx/CGxCaps.hpp"
+#include "gx/Gx.hpp"
 #include "world/MapShadow.hpp"
 
 int32_t g_shadowMapQuality = 0;
@@ -24,6 +26,133 @@ int32_t ShadowMapGetQuality() {
 int32_t ShadowMapGetShaderLevel() {
     int32_t quality = g_shadowMapRealloc ? 0 : g_shadowMapQuality;
     return s_shaderLevels[quality];
+}
+
+// ref: FUN_00873f60
+// The description the console prints when the quality changes. Six levels plus a seventh entry for
+// anything out of range, read out of the reference's table at 0x00b1d538 on 2026-09-26.
+const char* ShadowMapQualityName(int32_t quality) {
+    static const char* const s_names[7] = {
+        "[LOWEST]Precomputed terrain and no dynamic shadows.",
+        "[LOW]Precomputed terrain and dynamic PC/NPC shadows (low-res).",
+        "[MEDIUM]Precomputed terrain and dynamic PC/NPC shadows (high-res).",
+        "[MED-HIGH]Full environmental and PC/NPC shadows, low-res, lg-dist.",
+        "[HIGH]Full environmental and PC/NPC shadows, hi-res, lg-dist.",
+        "[VERY HIGH]Cascaded shadow maps.",
+        "[INVALID]Unsupported quality level."
+    };
+
+    return static_cast<uint32_t>(quality) < 7 ? s_names[quality] : s_names[6];
+}
+
+// ref: FUN_008740d0
+// Can this device do that quality? Three things decide it: the graphics API, the vertex and pixel
+// shader profiles, and whether a format the map can be rendered into exists.
+//
+// THE CAPS OFFSETS ARE NOW IDENTIFIED. The reference reads caps+0xb4 and caps+0xc4 and compares
+// them against 1/2/3 and 6/10 for the first, 3/4 and 0xb/0xc for the second. Those are exactly
+// EGxShVertexShader vs_1_1/vs_2_0/vs_3_0 and arbvp1/nvvp3, and EGxShPixelShader ps_2_0/ps_3_0 and
+// nvfp2/arbfp1 -- so caps+0xb4 is m_shaderTargets and caps+0xc4 is m_shaderTargets[GxSh_Pixel],
+// four ints along, which is what GxSh_Pixel == 4 gives. CGxCaps.hpp's note about unnamed reference
+// offsets is updated with this.
+//
+// caps+0xac and caps+0xa8, checked as "either is non-zero", are READ as m_texFmt[GxTex_D24X8] and
+// m_texFmt[GxTex_R32F]: those are the last two entries of m_texFmt, they sit three and two ints
+// below m_shaderTargets where the array's tail would land, and they are precisely the two formats
+// the shadow targets are created with. Stated as a reading because the middle of the reference's
+// CGxCaps is still unmapped, not as a measurement.
+int32_t ShadowMapQualitySupported(int32_t quality) {
+    // Four separate reads, because the reference makes four separate calls to its caps accessor --
+    // one per field -- rather than holding a reference to the object.
+    int32_t vertexProfile = GxCaps().m_shaderTargets[GxSh_Vertex];
+    int32_t pixelProfile = GxCaps().m_shaderTargets[GxSh_Pixel];
+
+    int32_t targetOk = (GxCaps().m_texFmt[GxTex_D24X8] || GxCaps().m_texFmt[GxTex_R32F]) ? 1 : 0;
+
+    EGxApi api = g_theGxDevicePtr ? g_theGxDevicePtr->m_api : GxApi_OpenGl;
+
+    switch (quality) {
+    case 0:
+        return 1;
+
+    case 1:
+    case 2:
+        switch (api) {
+        case GxApi_D3d9:
+        case GxApi_D3d9Ex:
+            if (vertexProfile != GxShVS_vs_1_1 && vertexProfile != GxShVS_vs_2_0
+                && vertexProfile != GxShVS_vs_3_0) {
+                return 0;
+            }
+
+            // ps_2_0 goes straight to the target check; anything else must be ps_3_0 first.
+            if (pixelProfile != GxShPS_ps_2_0 && pixelProfile != GxShPS_ps_3_0) {
+                return 0;
+            }
+
+            return targetOk;
+
+        case GxApi_D3d10:
+        case GxApi_D3d11:
+            return targetOk;
+
+        case GxApi_GLL:
+            if ((vertexProfile == GxShVS_arbvp1 || vertexProfile == GxShVS_nvvp3)
+                && (pixelProfile == GxShPS_arbfp1 || pixelProfile == GxShPS_nvfp2)) {
+                return targetOk;
+            }
+
+            return 0;
+
+        default:
+            return 0;
+        }
+
+    case 3:
+    case 4:
+    case 5:
+        switch (api) {
+        case GxApi_D3d9:
+        case GxApi_D3d9Ex:
+            // The cascades want vs_3_0 and ps_3_0, nothing less.
+            if (vertexProfile != GxShVS_vs_3_0 || pixelProfile != GxShPS_ps_3_0) {
+                return 0;
+            }
+
+            return targetOk;
+
+        case GxApi_D3d10:
+        case GxApi_D3d11:
+            return targetOk;
+
+        default:
+            return 0;
+        }
+
+    default:
+        return 0;
+    }
+}
+
+// ref: FUN_00874210
+// Take a new quality, if the device can do it. The realloc flag going up is what makes
+// ShadowMapGetQuality report 0 until the targets have been rebuilt, so the frame that changes the
+// setting draws unshadowed rather than sampling a map that is the wrong size.
+int32_t ShadowMapSetQuality(int32_t quality) {
+    if (!ShadowMapQualitySupported(quality)) {
+        return 0;
+    }
+
+    g_shadowMapQuality = quality;
+    g_shadowMapRealloc = 1;
+
+    return 1;
+}
+
+// ref: FUN_00873fe0
+// The device-restore hook: after a reset every target is gone, so ask for the realloc.
+void ShadowMapDeviceRestore() {
+    g_shadowMapRealloc = 1;
 }
 
 // The light direction the shadow passes sample with, in two forms: as given (DAT_00d43180, which

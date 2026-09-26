@@ -15128,7 +15128,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::GetActiveCamera",
-  "frozenSize": 0,
+  "frozenSize": 21,
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 19,
@@ -15272,7 +15272,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1825,
+  "frozenSize": 1728,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -36251,11 +36251,11 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/gx/Transform.cpp",
-   "src/gx/transform.cpp"
+   "src/gx/Gx.cpp",
+   "src/gx/gx.cpp"
   ],
-  "frozen": "GxXformProjNativeTranspose",
-  "frozenSize": 93,
+  "frozen": "GxCaps",
+  "frozenSize": 12,
   "how": "callgraph",
   "module": "DBCache.cpp",
   "refSize": 7,
@@ -43877,20 +43877,20 @@
   "status": "ported"
  },
  "0078dcb0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/CWorldParam.cpp",
    "src/world/cworldparam.cpp"
   ],
   "frozen": "CWorldParam::ExtShadowQualityCallback",
   "frozenSize": 3,
-  "how": "cvar",
+  "how": "annotated",
   "module": "SEvt.cpp",
   "refSize": 64,
-  "status": "stub"
+  "status": "ported"
  },
  "0078dcf0": {
   "branchRatio": 1.0,
@@ -47213,7 +47213,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowRender",
-  "frozenSize": 0,
+  "frozenSize": 716,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 248,
@@ -59876,6 +59876,22 @@
   "refSize": 6,
   "status": "ported"
  },
+ "00873f60": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapQualityName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 27,
+  "status": "ported"
+ },
  "00873f80": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -59890,6 +59906,22 @@
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 18,
+  "status": "ported"
+ },
+ "00873fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapDeviceRestore",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 11,
   "status": "ported"
  },
  "00873ff0": {
@@ -59918,26 +59950,42 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapSetIntensity",
-  "frozenSize": 0,
+  "frozenSize": 15,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 22,
   "status": "ported"
  },
  "008740d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.762,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
-   "lib/squall/storm/hash/Hashkey.cpp",
-   "lib/squall/storm/hash/hashkey.cpp"
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
   ],
-  "frozen": "HASHKEY_STR::GetString",
-  "frozenSize": 4,
-  "how": "callgraph",
+  "frozen": "ShadowMapQualitySupported",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 242,
+  "status": "ported"
+ },
+ "00874210": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetQuality",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 44,
   "status": "ported"
  },
  "008744e0": {
@@ -59950,7 +59998,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindScene",
-  "frozenSize": 3,
+  "frozenSize": 461,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 238,
@@ -59966,7 +60014,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindMapObj",
-  "frozenSize": 3,
+  "frozenSize": 122,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 136,
@@ -59982,7 +60030,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindTerrain",
-  "frozenSize": 456,
+  "frozenSize": 440,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 247,
@@ -59998,7 +60046,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapSetLightDirection",
-  "frozenSize": 0,
+  "frozenSize": 328,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 287,

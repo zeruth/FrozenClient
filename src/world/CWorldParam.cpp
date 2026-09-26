@@ -1,4 +1,5 @@
 #include "world/CWorldParam.hpp"
+#include "world/ShadowMap.hpp"
 #include <storm/String.hpp>
 #include "console/Console.hpp"
 #include "world/CWorld.hpp"
@@ -75,8 +76,24 @@ bool CWorldParam::EnvironmentDetailCallback(CVar* var, const char* oldValue, con
     return true;
 }
 
+// ref: FUN_0078dcb0
+// The one thing that raises the shadow map quality above zero, and so the one thing that turns on
+// the shadowed terrain shader sets. The CVar defaults to "0", so nothing changes until it is set.
+//
+// The support check runs twice -- here and again inside ShadowMapSetQuality -- because the
+// reference does exactly that. It is what decides whether the CVar change is accepted at all, so
+// an unsupported value is rejected and the old one stays.
 bool CWorldParam::ExtShadowQualityCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    int32_t quality = SStrToInt(value);
+
+    ConsoleWrite(ShadowMapQualityName(quality), DEFAULT_COLOR);
+
+    if (!ShadowMapQualitySupported(quality)) {
+        return false;
+    }
+
+    ShadowMapSetQuality(quality);
+
     return true;
 }
 

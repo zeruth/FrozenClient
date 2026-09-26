@@ -45,4 +45,16 @@ extern float g_shadowMapIntensity;
 extern int32_t g_shadowMapFlag;
 void ShadowMapSetIntensity(float intensity, int32_t flag);
 
+// The console description of a quality level. ref: FUN_00873f60
+const char* ShadowMapQualityName(int32_t quality);
+
+// Whether the device can do a quality level at all. ref: FUN_008740d0
+int32_t ShadowMapQualitySupported(int32_t quality);
+
+// Take a new quality if the device supports it, and ask for a target realloc. ref: FUN_00874210
+int32_t ShadowMapSetQuality(int32_t quality);
+
+// After a device reset every target is gone: ask for the realloc. ref: FUN_00873fe0
+void ShadowMapDeviceRestore();
+
 #endif
