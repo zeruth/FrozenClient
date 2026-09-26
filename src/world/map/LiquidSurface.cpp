@@ -135,22 +135,23 @@ void CreateSurface(CChunkLiquid* liquid) {
     // A box around every layer taken. Each layer covers a rectangle of its chunk's tile grid, so
     // its extent is the chunk corner plus the rectangle's corners a tile at a time.
     //
-    // UNRESOLVED, AND IT MATTERS. This follows the reference exactly -- it adds the origin and a
-    // POSITIVE tile step, and takes x from the field at +0x38 and y from the one at +0x34, which
-    // are frozen's m_tileY and m_tileX. But CChunkLiquid::BuildVertices, which is verified, does
-    // the opposite on both counts: x from m_tileX, and a NEGATIVE step, with no origin because
-    // its vertices are chunk-relative. The two conventions cannot both describe the same
-    // rectangle, so one of them is wrong.
+    // DIVERGED FROM THE REFERENCE, because the reference disagrees with itself here.
     //
-    // BuildVertices was verified only by its heights resolving to world z 0 at sea level, which
-    // is blind to an x/y swap, so being "verified" does not settle it. Nor did the check on this
-    // function: it compared the sphere against a layer centre computed with THIS SAME formula,
-    // which proves the two agree with each other and nothing else. That check has to be rebuilt
-    // against m_vertices -- which are independent and already verified -- before either the
-    // bounds or BuildVertices can be trusted.
+    // Its own CChunkLiquid::BuildVertices (FUN_007cdf80) places a layer's vertices at
+    // (m_tileX + i) * -(CHUNK_SIZE/8) along x and (m_tileY + j) * -(CHUNK_SIZE/8) along y,
+    // relative to the chunk. That is where the geometry actually is, and frozen matches it.
     //
-    // Left matching the reference because that is the authority; do not "fix" it to agree with
-    // BuildVertices without running the corrected check first.
+    // Its liquid bounds (inside FUN_007cf200) instead take x from the field at +0x38 and y from
+    // +0x34 -- the other way round -- and add a POSITIVE CHUNK_SIZE/8 to the chunk origin, for
+    // both the minimum and maximum corner. Since the origin is the corner those negative steps
+    // run away from, that walks out of the chunk in the wrong direction on both axes.
+    //
+    // So the reference's liquid sphere does not enclose the reference's own liquid vertices. It
+    // only feeds an occlusion cull, which is why a misplaced sphere can ship unnoticed: it costs
+    // a little over- or under-draw at the edges and nothing else. Reproducing it would mean
+    // culling frozen's surfaces against a box that is not where they are.
+    //
+    // This follows the vertices instead. Recorded in overrides.json against FUN_007cf200.
     float minX = 0.0f;
     float minY = 0.0f;
     float minZ = 0.0f;
@@ -161,10 +162,13 @@ void CreateSurface(CChunkLiquid* liquid) {
     for (uint32_t i = 0; i < s_gather.Count(); i++) {
         const CChunkLiquid* layer = s_gather[i];
 
-        float x0 = layer->m_origin.x + static_cast<float>(layer->m_tileY) * TILE_STEP;
-        float y0 = layer->m_origin.y + static_cast<float>(layer->m_tileX) * TILE_STEP;
-        float x1 = layer->m_origin.x + static_cast<float>(layer->m_tileEndY) * TILE_STEP;
-        float y1 = layer->m_origin.y + static_cast<float>(layer->m_tileEndX) * TILE_STEP;
+        // The pairing and the sign are BuildVertices': x from m_tileX, y from m_tileY, stepping
+        // away from the chunk corner. The far corner is therefore the smaller number, so the
+        // ends give the minimum and the starts the maximum.
+        float x1 = layer->m_origin.x - static_cast<float>(layer->m_tileX) * TILE_STEP;
+        float y1 = layer->m_origin.y - static_cast<float>(layer->m_tileY) * TILE_STEP;
+        float x0 = layer->m_origin.x - static_cast<float>(layer->m_tileEndX) * TILE_STEP;
+        float y0 = layer->m_origin.y - static_cast<float>(layer->m_tileEndY) * TILE_STEP;
 
         float z0 = layer->m_minHeight;
         float z1 = layer->m_maxHeight;

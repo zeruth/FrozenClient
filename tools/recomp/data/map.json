@@ -45200,7 +45200,7 @@
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::LocalLights::Clear",
-  "frozenSize": 0,
+  "frozenSize": 56,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 172,
@@ -45248,7 +45248,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLocalLights",
-  "frozenSize": 134,
+  "frozenSize": 171,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 151,
@@ -48896,7 +48896,7 @@
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1421,
-  "status": "ported"
+  "status": "diverged"
  },
  "007cf9a0": {
   "branchRatio": 0.333,
@@ -59130,7 +59130,7 @@
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::LocalLights::Clear",
-  "frozenSize": 0,
+  "frozenSize": 56,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 453,
@@ -59418,7 +59418,7 @@
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::SetLocalLighting",
-  "frozenSize": 414,
+  "frozenSize": 498,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 562,

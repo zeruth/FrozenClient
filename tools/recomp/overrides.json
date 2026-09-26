@@ -1,4 +1,8 @@
 {
+  "007cf200": {
+    "status": "diverged",
+    "note": "Liquid::CreateSurface. Ported 2026-09-25. DIVERGED in one place, deliberately: its liquid bounds. The reference computes them as origin + tile * +CHUNK_SIZE/8, taking x from the field at +0x38 and y from +0x34. Its own BuildVertices (FUN_007cdf80) places the vertices at (m_tileX + i) * -(CHUNK_SIZE/8) along x and (m_tileY + j) * -(CHUNK_SIZE/8) along y -- the opposite pairing and the opposite sign -- so the reference's sphere does not enclose the reference's own vertices. It walks out of the chunk in the wrong direction on both axes. The sphere only feeds an occlusion cull, which is why this can ship unnoticed. Frozen follows the vertices. Everything else in the function matches, including that the merging path is unreachable because its switch is zeroed at map load. NOT yet seen running in place: the earlier check on it compared the sphere against a centre computed with the same formula, so it proved nothing, and the machine's servers were down afterwards."
+  },
   "0078ca50": {
     "status": "unlinked",
     "note": "MapWeather's render: a weather record holds three independent effects at +0x13c, +0x140 and +0x144 and an enable flag at +0x194, and this draws whichever exist. Unported. The constants the three are built from are in src/world/map/MapWeatherTable.hpp, read out of the image 2026-09-25."
