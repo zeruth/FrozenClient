@@ -6,10 +6,14 @@
 #include "model/M2Data.hpp"
 #include "object/client/NameCache.hpp"
 #include "object/client/CEffect.hpp"
+#include "object/client/CGGameObject_C.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "object/client/CVehicle_C.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "ui/game/CGRaidInfo.hpp"
 #include <storm/Error.hpp>
@@ -3214,4 +3218,783 @@ void CGUnit_C::SetAnimation(uint32_t animID, uint32_t flags) {
 
     // The reference finishes with the swing sound and trail trigger (FUN_00738180, called with
     // (flags >> 5) & 0xffffff01) and the object-effect refresh (FUN_0071e5b0). Neither is ported.
+}
+
+// The animation chooser. CGUnit_C::ChooseAnimation runs a fixed chain of candidates, each of which
+// answers "I have decided" and may write the animation it decided on; the first one to decide wins.
+// Every candidate takes the same `allow` mask, which says which classes of change the caller will
+// accept: a candidate whose class is masked out still DECIDES (stopping the chain) but writes
+// nothing, which is how the caller pins the unit to what it is already playing.
+//
+// The reference reaches the unit's virtual items through a virtual at vtable +0x12c that returns a
+// pointer to a cached class/subclass byte pair. frozen has no cache of that shape, so this fills a
+// local pair out of Item.dbc instead.
+static const uint8_t* VirtualItemPair(const CGUnit_C* unit, int32_t slot, uint8_t out[2]) {
+    auto rec = g_itemDB.GetRecord(unit->Unit()->virtualItemSlotID[slot]);
+
+    if (!rec) {
+        return nullptr;
+    }
+
+    out[0] = static_cast<uint8_t>(rec->m_classID);
+    out[1] = static_cast<uint8_t>(rec->m_subclassID);
+
+    return out;
+}
+
+// ref: FUN_007172b0
+uint32_t CGUnit_C::GetModelAnimationId() const {
+    if (this->m_model && this->m_model->IsLoaded(0, 0)) {
+        return this->m_model->GetBoneUint90(0xFFFFFFFF);
+    }
+
+    return 0xFFFFFFFF;
+}
+
+// ref: FUN_0071b6b0
+bool CGUnit_C::IsLooting() const {
+    if (ClntObjMgrGetActivePlayer() != this->GetGUID()) {
+        // UNIT_FIELD_FLAGS 0x400.
+        return ((this->m_unit->flags >> 10) & 1) != 0;
+    }
+
+    return static_cast<const CGPlayer_C*>(this)->m_lootTarget != 0;
+}
+
+// ref: FUN_007222a0
+bool CGUnit_C::CanShowLootAnimation() const {
+    if (ClntObjMgrGetActivePlayer() != this->GetGUID()) {
+        // UNIT_FIELD_FLAGS bit 28 clear.
+        return !((this->m_unit->flags >> 28) & 1);
+    }
+
+    auto target = ClntObjMgrObjectPtr(static_cast<const CGPlayer_C*>(this)->m_lootTarget,
+                                      TYPE_OBJECT, __FILE__, __LINE__);
+
+    if (!target) {
+        return false;
+    }
+
+    // A fishing bobber (GAMEOBJECT_BYTES_1 byte 1 == 17) and a living unit both refuse; so does an
+    // item. Byte 1 of that field is the gameobject's type.
+    if (target->IsA(TYPE_GAMEOBJECT)
+        && ((static_cast<CGGameObject_C*>(target)->GameObject()->bytes1 >> 8) & 0xFF) == 0x11) {
+        return false;
+    }
+
+    if (target->IsA(TYPE_UNIT) && static_cast<CGUnit_C*>(target)->Unit()->health > 0) {
+        return false;
+    }
+
+    return !target->IsA(TYPE_ITEM);
+}
+
+// ref: FUN_00714dd0
+int32_t CGUnit_C::GetReadyWeaponAnimation() const {
+    uint8_t pair[2] = {};
+    uint8_t offPair[2] = {};
+    auto weapon = VirtualItemPair(this, 0, pair);
+
+    if (!weapon || weapon[0] != 2) {
+        weapon = VirtualItemPair(this, 1, pair);
+    }
+
+    if (weapon && weapon[0] == 2) {
+        bool offHand = VirtualItemPair(this, 1, offPair) != nullptr;
+
+        switch (weapon[1]) {
+            case 0x00:
+            case 0x04:
+            case 0x07:
+            case 0x0B:
+            case 0x0D:
+            case 0x0E:
+            case 0x0F:
+            case 0x14:
+                return 0x1A;
+
+            case 0x01:
+            case 0x05:
+            case 0x08:
+            case 0x0C:
+                return offHand ? 0x1A : 0x1B;
+
+            case 0x06:
+            case 0x0A:
+            case 0x11:
+                return 0x1C;
+
+            default:
+                break;
+        }
+    }
+
+    return 0x19;
+}
+
+// ref: FUN_007fa290
+const SpellVisualRec* GetSpellVisual(const SpellRec* spell) {
+    if (!spell) {
+        return nullptr;
+    }
+
+    return g_spellVisualDB.GetRecord(spell->m_spellVisualID[0]);
+}
+
+// ref: FUN_007224d0
+bool CGUnit_C::GetSpellVisualAnimation(int32_t* animOut, uint32_t* kitFlagsOut) {
+    if (this->m_intFA4 != -1) {
+        return false;
+    }
+
+    bool casting = true;
+    auto spell = g_spellDB.GetRecord(this->m_castSpellID);
+
+    if (!spell) {
+        casting = false;
+        spell = g_spellDB.GetRecord(this->m_unit->channelSpell);
+
+        if (!spell) {
+            return false;
+        }
+    }
+
+    auto visual = GetSpellVisual(spell);
+
+    if (!visual) {
+        return false;
+    }
+
+    auto kit = g_spellVisualKitDB.GetRecord(casting ? visual->m_precastKit : visual->m_channelKit);
+
+    if (!kit) {
+        return false;
+    }
+
+    // The kit's start animation only applies while casting, and only with animation flag 0x10000.
+    int32_t anim = 0;
+
+    if (casting && (this->m_animFlags & 0x10000) && kit->m_startAnimID > 0) {
+        anim = kit->m_startAnimID;
+    } else if (kit->m_animID > 0) {
+        anim = kit->m_animID;
+    } else {
+        return false;
+    }
+
+    if (kitFlagsOut) {
+        *kitFlagsOut = static_cast<uint32_t>(kit->m_flags);
+    }
+
+    *animOut = anim;
+
+    return true;
+}
+
+// ref: FUN_00724060
+bool CGUnit_C::GetDeathAnimation(uint32_t allow, int32_t* out, uint32_t* decidedFlags) {
+    // A rider aboard a live vehicle that is not feigning is not treated as dead here.
+    if (!this->IsDeadOrFeigning()
+        || (this->m_vehiclePassenger && this->m_vehiclePassenger->m_state == 3
+            && !((this->m_unit->flags2 >> 0x11) & 1))) {
+        return (allow & 0xFFFFFFFE) == 0;
+    }
+
+    // An effect playing a death animation with kit flag 0x4 supplies the pose instead.
+    bool kitWins = false;
+
+    for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+        if (effect->m_kit && IsDeathAnimation(effect->m_kit->m_animID)) {
+            if (effect->m_kit->m_flags & 0x4) {
+                kitWins = true;
+            }
+
+            if (kitWins) {
+                *out = effect->m_kit->m_animID;
+
+                if (decidedFlags) {
+                    *decidedFlags |= 0x2;
+                }
+
+                return true;
+            }
+        }
+    }
+
+    uint32_t current = this->GetCurrentAnimationId();
+
+    // Already holding an airborne death: leave it.
+    if ((this->m_animFlags & 0x4000000) && IsDeathAnimation(static_cast<int32_t>(current))) {
+        return true;
+    }
+
+    if (this->HasAirborneDeathAnimation()) {
+        // Falling far, or carried by a spline: the plain airborne death; otherwise the 472 variant.
+        if (!(this->m_move->GetMoveFlags() & 0x1000) && !this->m_move->IsSplineFlag200()
+            && !this->m_move->IsSplineFlag800()) {
+            *out = 0x1D8;
+        } else {
+            *out = 0x1D2;
+        }
+
+        return true;
+    }
+
+    uint32_t moveFlags = this->m_localMove.GetMoveFlags();
+
+    if ((!(moveFlags & 0x1000) || !(moveFlags & 0x2000))
+        && !IsAnimationBehavior1Or131Or466To467(static_cast<int32_t>(current)) && (allow & 0x1)) {
+        // 6 Dead, or 132 when the unit is already down.
+        *out = 0x6;
+    }
+
+    return true;
+}
+
+// ref: FUN_00716fd0
+bool CGUnit_C::GetStandState10Animation(uint32_t allow, int32_t* out) {
+    if (!(this->m_animFlags & 0x40) || this->m_mountModel || this->m_lastStandState != 10) {
+        return (allow & 0xFFFFF800) == 0;
+    }
+
+    if (this->m_stateFlags & 0x40000000) {
+        return false;
+    }
+
+    if (!this->m_model->HasSequence(0x7F)) {
+        return (allow & 0xFFFFFFFC) == 0;
+    }
+
+    *out = 0x7F;
+
+    return true;
+}
+
+// ref: FUN_0071dff0
+bool CGUnit_C::GetStandState9Animation(uint32_t allow, int32_t* out) {
+    if (this->m_animFlags & 0x400008) {
+        return true;
+    }
+
+    if (!(this->m_animFlags & 0x40) || this->m_mountModel) {
+        return (allow & 0xFFFFFFFC) == 0;
+    }
+
+    int32_t standState = this->m_unit->bytes1 & 0xFF;
+    int32_t anim;
+
+    if (standState == 9) {
+        // 201 going into it, 202 while held.
+        anim = (this->m_lastStandState == 9) + 0xC9;
+    } else {
+        if (this->m_lastStandState != 9) {
+            return (allow & 0xFFFFFFFC) == 0;
+        }
+
+        anim = 0xE0;
+
+        if (!this->m_model->HasSequence(0xE0)) {
+            anim = 0x7F;
+        }
+    }
+
+    if (!this->m_model->HasSequence(static_cast<uint32_t>(anim))) {
+        return (allow & 0xFFFFFFFC) == 0;
+    }
+
+    if (static_cast<int32_t>(this->GetCurrentAnimationId()) != anim && (allow & 0x2)) {
+        *out = anim;
+    }
+
+    return true;
+}
+
+// ref: FUN_00724200
+bool CGUnit_C::GetForcedMotionAnimation(int32_t* out) {
+    if (!this->m_localMove.IsInForcedMotion()) {
+        return false;
+    }
+
+    uint32_t current = 0xFFFFFFFF;
+
+    if (this->m_model && this->m_model->IsLoaded(0, 0)) {
+        current = this->m_model->GetBoneUint90(0xFFFFFFFF);
+    }
+
+    // Already in a jump or a fall: decide, but leave the animation alone.
+    if (IsAnimationBehavior37To40Or467(static_cast<int32_t>(current))) {
+        *out = 0x1FA;
+    } else {
+        *out = 0x28;
+    }
+
+    return true;
+}
+
+// ref: FUN_00717050
+bool CGUnit_C::GetMovementAnimation(uint32_t allow, int32_t* out) {
+    uint32_t moveFlags = this->m_localMove.GetMoveFlags();
+
+    if (!(moveFlags & 0xF)) {
+        return (allow & 0xFFFFFFF8) == 0;
+    }
+
+    uint32_t animFlags = this->m_animFlags;
+
+    if ((animFlags & 0x70) && (allow & 0x4) && !(animFlags & 0x800000)
+        && !(animFlags & 0x2000000)) {
+        if (moveFlags & 0x2200000) {
+            // Swimming or flying: strafe if strafing, else swim forward or backward.
+            if (moveFlags & 0xC) {
+                *out = 0x2C - ((moveFlags & 0x4) != 0);
+            } else {
+                *out = ((moveFlags & 0x2) ? 3 : 0) + 0x2A;
+            }
+
+            return true;
+        }
+
+        if (this->m_move->IsSplineFlag2000()) {
+            *out = 0x87;
+
+            return true;
+        }
+
+        if (moveFlags & 0x2) {
+            *out = 0xD;
+
+            return true;
+        }
+
+        // The stealth creep flag.
+        if (this->m_unit->bytes1 & 0x20000) {
+            *out = 0x77;
+
+            return true;
+        }
+
+        float speed = this->m_localMove.GetCurrentSpeed(0);
+
+        if (speed > 11.0f) {
+            *out = 0x8F;
+
+            return true;
+        }
+
+        if (speed > this->m_localMove.GetWalkSpeed() + this->m_localMove.GetWalkSpeed()) {
+            *out = 0x5;
+
+            return true;
+        }
+
+        *out = 0x4;
+    }
+
+    return true;
+}
+
+// ref: FUN_00724280
+bool CGUnit_C::GetLootAnimation(uint32_t allow, int32_t* out) {
+    if (!this->m_mountModel && (this->m_animFlags & 0x40) && this->CanShowLootAnimation()) {
+        int32_t current = static_cast<int32_t>(this->GetCurrentAnimationId());
+
+        if (!this->IsLooting()) {
+            // Finished looting: stand back up out of the loot hold.
+            if (current != 0xBC) {
+                return (allow & 0xFFFFFFF0) == 0;
+            }
+
+            if (allow & 0x8) {
+                *out = 0xBD;
+            }
+        } else if ((allow & 0x8) && current != 0xBC && current != 0x32) {
+            *out = 0x32;
+        }
+
+        return true;
+    }
+
+    return (allow & 0xFFFFFFF0) == 0;
+}
+
+// ref: FUN_0071e0d0
+bool CGUnit_C::GetCombatAnimation(uint32_t allow, int32_t* out, const uint32_t* decidedFlags) {
+    if (!(this->m_animFlags & 0x60) || this->m_attackTarget == 0) {
+        return (allow & 0xFFFFFFC0) == 0;
+    }
+
+    if (!(allow & 0x20)) {
+        return true;
+    }
+
+    // Mid-swing already: keep the swing.
+    if (decidedFlags && (*decidedFlags & 0x40)) {
+        int32_t current = static_cast<int32_t>(this->GetCurrentAnimationId());
+
+        if (IsCombatAnimation(current)) {
+            *out = current;
+
+            return true;
+        }
+    }
+
+    int32_t anim = this->m_heldAnimID;
+
+    if (anim == -1) {
+        if (this->m_move->GetMoveFlags() & 0x2200000) {
+            *out = 0x29;
+
+            return true;
+        }
+
+        anim = this->GetReadyWeaponAnimation();
+    }
+
+    *out = anim;
+
+    return true;
+}
+
+// ref: FUN_0071e180
+bool CGUnit_C::GetTurnAnimation(uint32_t allow, int32_t* out) {
+    if (!this->CanPlayTurnAnimation()) {
+        return (allow & 0xFFFFFF80) == 0;
+    }
+
+    if ((this->m_animFlags & 0x70) && (allow & 0x40)) {
+        if (!(this->m_localMove.GetMoveFlags() & 0x10) && !(this->m_animFlags & 0x800)) {
+            *out = 0xC;
+        } else {
+            *out = 0xB;
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_00714f90
+bool CGUnit_C::GetRangedReadyAnimation(uint32_t allow, int32_t* out) {
+    if (this->m_attackPhase != 2 || !(this->m_animFlags & 0x200)) {
+        return (allow & 0xFFFFFF00) == 0;
+    }
+
+    if ((allow & 0x80) && !(this->m_animFlags & 0x4000)) {
+        *out = 0x19;
+
+        uint8_t pair[2] = {};
+        auto ranged = VirtualItemPair(this, 2, pair);
+
+        if (ranged && ranged[0] == 2) {
+            switch (ranged[1]) {
+                case 0x02:
+                    *out = 0x69;
+                    break;
+
+                case 0x03:
+                case 0x12:
+                    *out = 0x6A;
+                    break;
+
+                case 0x10:
+                    *out = 0x70;
+                    break;
+
+                case 0x13:
+                    *out = 0x6F;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_0071e1f0
+bool CGUnit_C::GetStandStateAnimation(uint32_t allow, int32_t* out) {
+    if (!(this->m_animFlags & 0x40) || this->m_mountModel) {
+        return (allow & 0xFFFFFE00) == 0;
+    }
+
+    int32_t standState = this->m_unit->bytes1 & 0xFF;
+    int32_t last = this->m_lastStandState;
+    int32_t anim;
+
+    switch (standState) {
+        case 0:
+            // Standing up again, from whichever pose the unit was in.
+            if (last == 1) {
+                anim = 0x62;
+            } else if (last == 3) {
+                anim = 0x65;
+            } else if (last == 8) {
+                anim = 0x74;
+            } else {
+                return (allow & 0xFFFFFE00) == 0;
+            }
+
+            break;
+
+        case 1:
+            anim = (last == 0 || this->GetCurrentAnimationId() == 0x60) ? 0x60 : 0x61;
+            break;
+
+        case 3:
+            anim = (last != 0) + 99;
+
+            if (anim == 0x1FA) {
+                return true;
+            }
+
+            break;
+
+        case 4:
+            anim = 0x66;
+            break;
+
+        case 5:
+            anim = 0x67;
+            break;
+
+        case 6:
+            anim = 0x68;
+            break;
+
+        case 7:
+            if (last == 7) {
+                return true;
+            }
+
+            if (!(this->m_move->GetMoveFlags() & 0x200000)) {
+                anim = (this->HasAirborneDeathAnimation() ? 0x1D2 : 0) + 6;
+            } else {
+                anim = 0x84;
+            }
+
+            break;
+
+        case 8:
+            anim = (last != 0) + 0x72;
+
+            if (anim == 0x1FA) {
+                return true;
+            }
+
+            break;
+
+        default:
+            return (allow & 0xFFFFFE00) == 0;
+    }
+
+    if (allow & 0x100) {
+        *out = anim;
+    }
+
+    return true;
+}
+
+// ref: FUN_007171c0
+bool CGUnit_C::GetEmoteStateAnimation(uint32_t allow, int32_t* out) {
+    bool eligible = (this->m_animFlags & 0x40) && !this->m_mountModel;
+
+    if (!eligible && !(this->m_animFlags & 0x20)) {
+        return (~(allow >> 9) & 1) != 0;
+    }
+
+    int32_t emote = static_cast<int32_t>(this->m_unit->emoteState);
+
+    if (emote == 0) {
+        return (~(allow >> 9) & 1) != 0;
+    }
+
+    auto rec = g_emotesDB.GetRecord(emote);
+
+    if (!rec) {
+        return (~(allow >> 9) & 1) != 0;
+    }
+
+    // Emote flag 0x2000 on the active player's own unit is suppressed.
+    if (ClntObjMgrGetActivePlayer() == this->GetGUID() && (rec->m_flags & 0x2000)) {
+        return (~(allow >> 9) & 1) != 0;
+    }
+
+    if (allow & 0x200) {
+        *out = rec->m_animID;
+    }
+
+    return true;
+}
+
+// ref: FUN_00724330
+bool CGUnit_C::GetSpellCastAnimation(uint32_t allow, int32_t* out, const uint8_t* decidedFlags) {
+    if ((this->m_unit->channelSpell == 0 && !(this->m_animFlags & 0x400))
+        || !(this->m_animFlags & 0x60) || this->m_mountModel) {
+        return (allow & 0xFFFFFFE0) == 0;
+    }
+
+    int32_t anim = 0;
+    uint32_t kitFlags = 0;
+
+    if (!this->GetSpellVisualAnimation(&anim, &kitFlags)) {
+        return (allow & 0xFFFFFFE0) == 0;
+    }
+
+    ConvertAnimationFlags(kitFlags, &kitFlags);
+
+    // Already playing it on the upper body but not on the whole model: take it anyway.
+    if (anim == static_cast<int32_t>(this->GetCurrentAnimationId())
+        && this->GetCurrentAnimationId() != this->GetModelAnimationId()) {
+        *out = anim;
+
+        return true;
+    }
+
+    if (anim == static_cast<int32_t>(this->GetCurrentAnimationId())) {
+        if (!decidedFlags || !(*decidedFlags & 0x10) || !(kitFlags & 0x40)) {
+            return true;
+        }
+
+        *out = anim;
+
+        return true;
+    }
+
+    if (!(allow & 0x10)) {
+        return true;
+    }
+
+    *out = anim;
+
+    return true;
+}
+
+// ref: FUN_00724500
+int32_t CGUnit_C::ChooseAnimation(uint32_t allow, uint32_t* decidedFlags, uint8_t* kitFlags) {
+    int32_t anim = 0x1FA;
+
+    if (this->GetDeathAnimation(allow, &anim, decidedFlags)) {
+        return anim;
+    }
+
+    if (this->GetStandState10Animation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->m_vehiclePassenger && this->m_vehiclePassenger->GetRideAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    // A vehicle whose owner drives the pose skips straight to the cast animation and stops.
+    if (this->m_vehicle && this->m_vehicle->m_rec
+        && this->m_vehicle->OwnerIsControllingAnimation()) {
+        this->GetSpellCastAnimation(allow, &anim, kitFlags);
+
+        return anim;
+    }
+
+    if (this->GetStandState9Animation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->GetForcedMotionAnimation(&anim)) {
+        return anim;
+    }
+
+    if (this->GetMovementAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->GetLootAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->GetSpellCastAnimation(allow, &anim, kitFlags)) {
+        return anim;
+    }
+
+    if (this->GetCombatAnimation(allow, &anim, decidedFlags)) {
+        return anim;
+    }
+
+    if (this->GetTurnAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->GetRangedReadyAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->GetStandStateAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->GetEmoteStateAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    if (this->m_vehiclePassenger
+        && this->m_vehiclePassenger->GetRideUpperAnimation(allow, &anim)) {
+        return anim;
+    }
+
+    // Nothing chose: an animation asked for while the model was loading takes precedence, and
+    // failing that the unit falls back to its posture.
+    if (this->m_pendingAnimID != -1) {
+        return this->m_pendingAnimID;
+    }
+
+    if (decidedFlags) {
+        *decidedFlags = 1;
+    }
+
+    if (this->m_deferredAnimID == -1) {
+        uint32_t posture = static_cast<uint32_t>(anim);
+        this->GetPostureAnimation(&posture, 0);
+        anim = static_cast<int32_t>(posture);
+    }
+
+    return anim;
+}
+
+// ref: FUN_0073ac30
+void CGUnit_C::UpdateAnimation(uint32_t setFlags, uint32_t allow) {
+    if (this->m_model && !this->m_model->IsLoaded(0, 0)) {
+        return;
+    }
+
+    uint8_t kitFlags = 0;
+    int32_t anim = this->ChooseAnimation(allow, &setFlags, &kitFlags);
+    bool play = true;
+
+    if (anim == 0x1FA) {
+        // Nothing chose, and the unit is not mid-ride: leave its pose alone.
+        if (!this->m_vehiclePassenger || this->m_vehiclePassenger->m_state == 0) {
+            play = false;
+        }
+
+        anim = 0;
+    } else if (anim == this->m_pendingAnimID) {
+        this->m_deferredAnimID = anim;
+    }
+
+    if (play) {
+        this->SetAnimation(static_cast<uint32_t>(anim), setFlags);
+    }
+
+    // Stand state 135 on the active player closes whatever window it was using.
+    if (this->m_animFlags & 0x40) {
+        if (this->GetCurrentAnimationId() == 0x87) {
+            auto camera = CGWorldFrame::GetActiveCamera();
+
+            if (camera && camera->GetTarget() == this->GetGUID()) {
+                // The reference then calls FUN_005186a0, a GameUI function that closes whatever
+                // window this target had open. It is not ported, so only the call is missing; the
+                // test that guards it is here.
+            }
+        }
+
+        this->m_lastStandState = this->m_unit->bytes1 & 0xFF;
+    }
 }

@@ -304,14 +304,28 @@ bool CMovementShared::IsInForcedMotion() const {
 
     auto spline = this->m_spline;
 
-    if (spline && !(spline->uint20 & 0x400) && (spline->uint20 & 0x200)) {
+    if (spline && !(spline->flags & 0x400) && (spline->flags & 0x200)) {
         return true;
     }
 
-    if ((this->m_moveFlags2 & 0x80) && spline && !(spline->uint20 & 0x400)
-        && (spline->uint20 & 0x800)) {
+    if ((this->m_moveFlags2 & 0x80) && spline && !(spline->flags & 0x400)
+        && (spline->flags & 0x800)) {
         return true;
     }
 
     return false;
+}
+
+// ref: FUN_004f5290
+// The reference's receiver is the three-pointer block at CGUnit_C +0xd0, whose +8 is the active
+// movement; frozen reaches the same spline through the movement itself, as the other three
+// spline-flag predicates here do.
+int32_t CMovementShared::IsSplineFlag2000() const {
+    auto spline = this->m_spline;
+
+    if (spline && !(spline->flags & 0x400) && (spline->flags & 0x2000)) {
+        return 1;
+    }
+
+    return 0;
 }

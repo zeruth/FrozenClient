@@ -20,6 +20,7 @@ class CreatureSoundDataRec;
 class UnitBloodLevelsRec;
 
 class FactionTemplateRec;
+class CGGameObject_C;
 class CVehicle_C;
 class CVehiclePassenger_C;
 class VehicleRec;
@@ -217,6 +218,63 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // applies, chosen by the vehicle's own move-flags-2 bit 0x40. Zero when neither is set.
         uint32_t SeatAllowsExitAnimation(const VehicleSeatRec* seat) const;
 
+        // The animation chooser. UpdateAnimation is the entry point the rest of the client calls when
+        // a unit's state changes; ChooseAnimation runs the candidate chain below and SetAnimation
+        // applies what it picked. `allow` is a mask of which classes of change the caller accepts --
+        // a candidate whose bit is clear still stops the chain, but writes nothing, which pins the
+        // unit to what it is already playing.
+
+        // ref: FUN_0073ac30
+        void UpdateAnimation(uint32_t setFlags, uint32_t allow);
+
+        // ref: FUN_00724500
+        int32_t ChooseAnimation(uint32_t allow, uint32_t* decidedFlags, uint8_t* kitFlags);
+
+        // The candidates, in the order the chain runs them.
+        // ref: FUN_00724060
+        bool GetDeathAnimation(uint32_t allow, int32_t* out, uint32_t* decidedFlags);
+        // ref: FUN_00716fd0
+        bool GetStandState10Animation(uint32_t allow, int32_t* out);
+        // ref: FUN_0071dff0
+        bool GetStandState9Animation(uint32_t allow, int32_t* out);
+        // ref: FUN_00724200
+        bool GetForcedMotionAnimation(int32_t* out);
+        // ref: FUN_00717050
+        bool GetMovementAnimation(uint32_t allow, int32_t* out);
+        // ref: FUN_00724280
+        bool GetLootAnimation(uint32_t allow, int32_t* out);
+        // ref: FUN_00724330
+        bool GetSpellCastAnimation(uint32_t allow, int32_t* out, const uint8_t* decidedFlags);
+        // ref: FUN_0071e0d0
+        bool GetCombatAnimation(uint32_t allow, int32_t* out, const uint32_t* decidedFlags);
+        // ref: FUN_0071e180
+        bool GetTurnAnimation(uint32_t allow, int32_t* out);
+        // ref: FUN_00714f90
+        bool GetRangedReadyAnimation(uint32_t allow, int32_t* out);
+        // ref: FUN_0071e1f0
+        bool GetStandStateAnimation(uint32_t allow, int32_t* out);
+        // ref: FUN_007171c0
+        bool GetEmoteStateAnimation(uint32_t allow, int32_t* out);
+
+        // What the candidates ask about the unit.
+        // ref: FUN_007172b0
+        // The animation on the model's root bone, ignoring any upper-body split. -1 when unloaded.
+        uint32_t GetModelAnimationId() const;
+        // ref: FUN_0071b6b0
+        bool IsLooting() const;
+        // ref: FUN_007222a0
+        // The loot the unit has open is something a loot animation suits: not a fishing bobber, not
+        // a living unit, not an item.
+        bool CanShowLootAnimation() const;
+        // ref: FUN_00714dd0
+        // The ready pose for whatever the unit is holding: 26 Ready1H, 27 Ready2H, 28 Ready2HL, or
+        // 25 ReadyUnarmed.
+        int32_t GetReadyWeaponAnimation() const;
+        // ref: FUN_007224d0
+        // The animation the unit's current cast or channel asks for, out of its SpellVisual's kit,
+        // and that kit's flags. False when it is casting nothing.
+        bool GetSpellVisualAnimation(int32_t* animOut, uint32_t* kitFlagsOut);
+
         // ref: FUN_007385c0
         // THE animation selector: turns "play this animation" into up to three bone sequences --
         // the mount's, the unit's body, its upper body -- and applies them. `flags`: 0x1 no blend,
@@ -350,6 +408,14 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // reference has a one-line accessor for "is attacking" over this pair of GUIDs alone
         // (FUN_0071af90, 17 call sites).
         WOWGUID m_attackTarget = 0;
+        // The stand state the unit had last time its animation was updated (reference +0x9f8), which
+        // is how the chooser tells sitting down from being seated.
+        int32_t m_lastStandState = 0;
+        // The spell the unit is casting (reference +0xa60), 0 for none. Nothing writes it yet.
+        int32_t m_castSpellID = 0;
+        // Set by UpdateAnimation to the animation it applied when that matched m_pendingAnimID
+        // (reference +0xb90); the chooser consults it before falling back to the unit's posture.
+        int32_t m_deferredAnimID = -1;
         // Asked for while the model was still loading (reference +0xb8c); replayed and cleared the
         // next time the selector runs with the model there. -1 is nothing pending.
         int32_t m_pendingAnimID = -1;

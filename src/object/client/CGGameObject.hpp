@@ -22,6 +22,11 @@ class CGGameObject {
         // Public member functions
         int32_t GetDisplayID() const;
 
+        // The gameobject fields. Public for the same reason CGUnit::Unit() is: code outside the
+        // class reads them, as the reference does inline (CGUnit_C::CanShowLootAnimation wants the
+        // gameobject's type byte).
+        CGGameObjectData* GameObject() const;
+
         // Public static functions
         static uint32_t GetBaseOffset();
         static uint32_t GetBaseOffsetSaved();
@@ -35,8 +40,6 @@ class CGGameObject {
         CGGameObjectData* m_gameObj;
         uint32_t* m_gameObjSaved;
 
-        // Protected member functions
-        CGGameObjectData* GameObject() const;
 };
 
 #endif

@@ -941,6 +941,7 @@ addr	how	frozen	evidence
 004f41b0	annotated	CountFacialFeatures	tag in src/component/Util.cpp
 004f4320	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004f4c50	annotated	CMovementStatus::CMovementStatus	tag in src/object/movement/CMovementStatus.cpp
+004f5290	annotated	CMovementShared::IsSplineFlag2000	tag in src/object/movement/CMovementShared.cpp
 004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
 004f5720	callgraph	MirrorInitialize	only unmatched callee of 004d4ac0=ClntObjMgrInitializeShared
 004f5960	annotated	CGWorldFrame::GetActiveCamera	tag in src/ui/game/CGWorldFrame.cpp
@@ -1162,6 +1163,7 @@ addr	how	frozen	evidence
 00517c60	table	Script_GetTotemTimeLeft	binding "GetTotemTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
 00517d30	table	Script_IsThreatWarningEnabled	binding "IsThreatWarningEnabled" in s_ScriptFunctions ~ table 00ac80b0
 00517d70	annotated	Script_CanMapChangeDifficulty	tag in src/ui/game/GameScript.cpp
+005186a0	callgraph	CGCamera::GetTarget	only unmatched callee of 0073ac30=CGUnit_C::UpdateAnimation
 00518dc0	annotated	SendSetSelection	tag in src/ui/game/GameScript.cpp
 00519640	annotated	InstanceMapHasFlag100	tag in src/ui/game/GameScript.cpp
 005197d0	annotated	DestroyTotem	tag in src/ui/game/GameScript.cpp
@@ -2492,7 +2494,9 @@ addr	how	frozen	evidence
 00714ce0	annotated	ConvertAnimationFlags	tag in src/object/client/CGUnit_C.cpp
 00714d10	annotated	C3Vector::Min	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 00714d70	annotated	C3Vector::Max	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+00714dd0	annotated	CGUnit_C::GetReadyWeaponAnimation	tag in src/object/client/CGUnit_C.cpp
 00714e80	annotated	IsMovementAnimation	tag in src/object/client/CGUnit_C.cpp
+00714f90	annotated	CGUnit_C::GetRangedReadyAnimation	tag in src/object/client/CGUnit_C.cpp
 007151f0	annotated	IsMovementAckWithValueOpcode	tag in src/object/client/CGUnit_C.cpp
 007152b0	annotated	ReadPackedMovementOffset	tag in src/object/client/CGUnit_C.cpp
 007153e0	annotated	CGUnit_C::GetCreatureFamily	tag in src/object/client/CGUnit_C.cpp
@@ -2507,7 +2511,11 @@ addr	how	frozen	evidence
 00715f90	annotated	CGUnit_C::GetCreatureTypeFlag12	tag in src/object/client/CGUnit_C.cpp
 00716710	annotated	CGUnit_C::IsPlayerControlled	tag in src/object/client/CGUnit_C.cpp
 00716fa0	annotated	CGUnit_C::IsMovingAtWalkPace	tag in src/object/client/CGUnit_C.cpp
+00716fd0	annotated	CGUnit_C::GetStandState10Animation	tag in src/object/client/CGUnit_C.cpp
+00717050	annotated	CGUnit_C::GetMovementAnimation	tag in src/object/client/CGUnit_C.cpp
+007171c0	annotated	CGUnit_C::GetEmoteStateAnimation	tag in src/object/client/CGUnit_C.cpp
 00717260	annotated	CGUnit_C::GetCurrentAnimationId	tag in src/object/client/CGUnit_C.cpp
+007172b0	annotated	CGUnit_C::GetModelAnimationId	tag in src/object/client/CGUnit_C.cpp
 007173f0	annotated	CGUnit_C::GetBoneSequenceStates	tag in src/object/client/CGUnit_C.cpp
 00717540	annotated	ResolveAnimationBehavior	tag in src/object/client/CGUnit_C.cpp
 00717600	annotated	CGUnit_C::GetDefaultAnimationForTier	tag in src/object/client/CGUnit_C.cpp
@@ -2523,6 +2531,7 @@ addr	how	frozen	evidence
 0071af90	annotated	CGUnit_C::IsAttacking	tag in src/object/client/CGUnit_C.cpp
 0071afb0	annotated	CGUnit_C::IsAttackingOrPetInCombat	tag in src/object/client/CGUnit_C.cpp
 0071afe0	annotated	CGUnit_C::ClearEffectFlag4000	tag in src/object/client/CGUnit_C.cpp
+0071b6b0	annotated	CGUnit_C::IsLooting	tag in src/object/client/CGUnit_C.cpp
 0071b770	annotated	CGUnit_C::GetBasePower	tag in src/object/client/CGUnit_C.cpp
 0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
 0071b810	annotated	CGUnit_C::CanFly	tag in src/object/client/CGUnit_C.cpp
@@ -2562,6 +2571,10 @@ addr	how	frozen	evidence
 0071de90	annotated	CGUnit_C::CanPlayTurnAnimation	tag in src/object/client/CGUnit_C.cpp
 0071df30	annotated	CGUnit_C::ReplaceIdleWithHover	tag in src/object/client/CGUnit_C.cpp
 0071dfc0	annotated	CGUnit_C::HasAirborneDeathAnimation	tag in src/object/client/CGUnit_C.cpp
+0071dff0	annotated	CGUnit_C::GetStandState9Animation	tag in src/object/client/CGUnit_C.cpp
+0071e0d0	annotated	CGUnit_C::GetCombatAnimation	tag in src/object/client/CGUnit_C.cpp
+0071e180	annotated	CGUnit_C::GetTurnAnimation	tag in src/object/client/CGUnit_C.cpp
+0071e1f0	annotated	CGUnit_C::GetStandStateAnimation	tag in src/object/client/CGUnit_C.cpp
 0071e340	annotated	CGUnit_C::GetPostureAnimation	tag in src/object/client/CGUnit_C.cpp
 0071e400	annotated	CGUnit_C::ApplyEffectAnimation	tag in src/object/client/CGUnit_C.cpp
 0071ed80	annotated	CGUnit_C::GetShadowBox	tag in src/object/client/CGUnit_C.cpp
@@ -2569,8 +2582,15 @@ addr	how	frozen	evidence
 0071f560	annotated	CGUnit_C::IsDeadOrFeigning	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 00721ca0	override	CGUnit_C::IsInNonStanceForm	
+007222a0	annotated	CGUnit_C::CanShowLootAnimation	tag in src/object/client/CGUnit_C.cpp
+007224d0	annotated	CGUnit_C::GetSpellVisualAnimation	tag in src/object/client/CGUnit_C.cpp
 00723350	annotated	CMovementShared::IsInForcedMotion	tag in src/object/movement/CMovementShared.cpp
 00723e30	override	CGUnit_C::CanPlayActionAnimation	
+00724060	annotated	CGUnit_C::GetDeathAnimation	tag in src/object/client/CGUnit_C.cpp
+00724200	annotated	CGUnit_C::GetForcedMotionAnimation	tag in src/object/client/CGUnit_C.cpp
+00724280	annotated	CGUnit_C::GetLootAnimation	tag in src/object/client/CGUnit_C.cpp
+00724330	annotated	CGUnit_C::GetSpellCastAnimation	tag in src/object/client/CGUnit_C.cpp
+00724500	annotated	CGUnit_C::ChooseAnimation	tag in src/object/client/CGUnit_C.cpp
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 00735820	override	CGUnit_C::SetBoneSequence	
@@ -2579,9 +2599,12 @@ addr	how	frozen	evidence
 00737ef0	annotated	CGUnit_C::ApplySequence	tag in src/object/client/CGUnit_C.cpp
 007385c0	override	CGUnit_C::SetAnimation	
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
+0073ac30	annotated	CGUnit_C::UpdateAnimation	tag in src/object/client/CGUnit_C.cpp
 00743320	annotated	CGUnit_C::SetFlag21	tag in src/object/client/CGUnit_C.cpp
 00747b20	annotated	CVehiclePassenger_C::GetSeatAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
 00747bd0	annotated	CVehiclePassenger_C::GetSeatUpperAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
+00748560	annotated	CVehiclePassenger_C::GetRideAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
+007485b0	annotated	CVehiclePassenger_C::GetRideUpperAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
 007487e0	annotated	CVehiclePassenger_C::IsRidingLiveVehicle	tag in src/object/client/CVehiclePassenger_C.cpp
 0074b9a0	annotated	CGUnit_C::HasMoveFlags2Bit0	tag in src/object/client/CGUnit_C.cpp
 0074bb60	annotated	CGUnit_C::SeatAllowsExitAnimation	tag in src/object/client/CGUnit_C.cpp
@@ -3249,6 +3272,7 @@ addr	how	frozen	evidence
 007f09b0	override	SkyRender	
 007f1cd0	cvar	CWorldParam::SkyCloudLODCallback	callback of CVar::Register("SkyCloudLOD") on both sides
 007f39b0	cvar	CWorldParam::ViolenceLevelCallback	callback of CVar::Register("violenceLevel") on both sides
+007f3a60	callgraph	WowClientDB<SpellVisualRec>::GetRecord	only unmatched callee of 007fa290=GetSpellVisual
 007f3ae0	override	CGMinimapFrame::SetZoom	
 007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp
@@ -3257,6 +3281,7 @@ addr	how	frozen	evidence
 007f9430	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007f9480	annotated	SegmentIntersectsBox	tag in src/world/map/CMapObj.cpp
 007fa140	annotated	SphereToBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
+007fa290	annotated	GetSpellVisual	tag in src/object/client/CGUnit_C.cpp
 007fde20	annotated	SpellHasEffect	tag in src/object/client/Spell_C.cpp
 007fde50	annotated	SpellHasAura	tag in src/object/client/Spell_C.cpp
 007fde80	annotated	SpellGetEffectClassMask	tag in src/object/client/Spell_C.cpp

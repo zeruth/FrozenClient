@@ -84,3 +84,53 @@ int32_t CVehiclePassenger_C::GetSeatUpperAnimation(const VehicleSeatRec* seat) c
 
     return 0x1FA;
 }
+
+// ref: FUN_00748560
+bool CVehiclePassenger_C::GetRideAnimation(uint32_t allow, int32_t* out) const {
+    if (((this->m_state != 0 && this->m_state != 3)
+         || (this->m_vehicle && this->m_vehicle->Unit()->health < 1))
+        && this->m_seat) {
+        int32_t anim = this->GetSeatAnimation(this->m_seat);
+
+        if (anim != 0x1FA) {
+            *out = anim;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_007485b0
+bool CVehiclePassenger_C::GetRideUpperAnimation(uint32_t allow, int32_t* out) const {
+    if (this->m_state != 3 && (!this->m_vehicle || this->m_vehicle->Unit()->health >= 1)) {
+        return false;
+    }
+
+    auto seat = this->m_seat;
+
+    if (!seat || this->m_state != 3 || !(seat->m_flags & 0x4)) {
+        return false;
+    }
+
+    int32_t anim;
+
+    if (!(this->m_flags & 0x4) && seat->m_rideUpperAnimStart != -1) {
+        anim = seat->m_rideUpperAnimStart;
+    } else {
+        anim = seat->m_rideUpperAnimLoop;
+
+        if (anim == -1) {
+            return false;
+        }
+    }
+
+    if (anim == 0x1FA) {
+        return false;
+    }
+
+    *out = anim;
+
+    return true;
+}

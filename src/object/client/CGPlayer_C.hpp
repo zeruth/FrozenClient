@@ -11,6 +11,11 @@ class CreatureModelDataRec;
 class CCharacterComponent;
 
 class CGPlayer_C : public CGUnit_C, public CGPlayer {
+    // The object the player has open for looting (reference +0x18e0), zero when nothing is open.
+    // CGUnit_C::IsLooting and CanShowLootAnimation read it through this class exactly as the
+    // reference does, after checking the unit IS the active player. Nothing sets it yet.
+    public:
+        WOWGUID m_lootTarget = 0;
     public:
         // The logged-in character, kept past the glue. The reference holds one CHARACTER_INFO at
         // 00c79d10 and reads the player's own name, race, class, sex and level straight out of it

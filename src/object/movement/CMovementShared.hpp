@@ -48,6 +48,11 @@ class CMovementShared : public CPassenger {
         // A spline is running (0x400 clear) and carries flag 0x800.
         int32_t IsSplineFlag800() const;
 
+        // ref: FUN_004f5290
+        // Spline flag 0x2000 (with 0x400 clear), which the movement-animation chooser reads as
+        // "carried backwards", and answers with 135 rather than a walk or a run.
+        int32_t IsSplineFlag2000() const;
+
         // ref: FUN_006eaba0
         // Off the ground by any of the movement flags the reference tests: flying, swimming or
         // falling, a running spline with flag 0x2000, or the 0x4 bit of the second flag word.
