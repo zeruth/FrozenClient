@@ -228,8 +228,48 @@ void CGWorldFrame::OnWorldRender() {
     GxRsPush();
     GxRsSet(GxRs_Multisample, 1);
 
-    // TODO terrain, map objects, sky, and lighting; for now the scene is cleared and the models
-    // in the world drawn
+    // THE REFERENCE'S ORDER, read off FUN_004f8ea0's call sites on 2026-09-26 rather than inferred.
+    // This is queue item 11's target; every line is what the reference does, in this sequence, with
+    // the thunks at 0x0077exxx/0x0077fxxx resolved to what they jump to:
+    //
+    //   FUN_004f8770                         (pre)
+    //   FUN_008c1770
+    //   FUN_004f5d90
+    //   GxRsPush; GxRsSet(GxRs_Multisample, 1)
+    //   GxSceneClear
+    //   GxXformViewport / RenderTargetGet / GxXformSetViewport
+    //   FUN_004e6f80, FUN_007e5120, FUN_00715380
+    //   CShaderEffect::UpdateProjMatrix
+    //   CWorld::RenderMap        (0x0077eff0) -> CMap::Render, then FUN_00403fc0
+    //   FUN_0079fcc0             (0x0077f070)  a 1181-byte map pass, unported and unreached
+    //   ClntObjMgrEnumVisibleObjects
+    //   FUN_00715380 / 007153a0 / 007153c0, FUN_00615890, FUN_00725890, FUN_0081ca10
+    //   CM2Scene::Draw(M2PASS_0)
+    //   FUN_004f8a40
+    //   camera pos / FUN_00681ba0 / camera pos / FUN_00682960
+    //   CWorldScene::RenderDetailDoodads   (0x0077f010)
+    //   CWorld::GetCameraLiquid  (0x00780620)  and then the branch below
+    //   ... the transparent block ...
+    //   FUN_004f8a40, FUN_007fca30, FUN_007f9ec0, FUN_006fdfb0, FUN_004f6f90
+    //   the particulates pass    (0x0077f9d0, behind CWorld enable 0x2000000)
+    //   FUN_005eeb70, camera pos / FUN_00681ba0 / camera pos / FUN_00682960
+    //   FUN_007f0870, FUN_007e5580, FUN_00401260
+    //   GxRsPop
+    //   FUN_00615890, FUN_0056c7a0, GxXformSetViewport (restore)
+    //   FUN_008c1010, FUN_00747ae0, FUN_006d7ba0, CM2Model::Release
+    //
+    // The transparent block is an if/else on GetCameraLiquid with a SHARED TAIL -- the above-water
+    // arm jumps to the other's last draw at 0x004f91b7, which is why the two read as mirror images:
+    //
+    //   above water:  Draw(2), liquid bucket 1, weather, FUN_00794b50, Draw(1)
+    //   under water:  FUN_00794b50, Draw(1), weather, liquid bucket 1, Draw(2)
+    //
+    // frozen's version of that block below is already in this order. The one thing absent from both
+    // arms is FUN_00794b50 -- 2200 bytes, streamed quads over a model, reached through the wrapper
+    // at 0x0077f980 with the float at frame+0xb14 -- which the comment there calls "barriers".
+    //
+    // So OnWorldRender's low fidelity is NOT an ordering defect: what is missing is the content of
+    // the passes, and they are tracked with their own items.
 
     // Clear the below-horizon backdrop to the distance-fog colour when fog is active, so far terrain
     // (which fades to that same fog colour) blends seamlessly into the horizon instead of ending on a
@@ -433,7 +473,13 @@ void CGWorldFrame::OnWorldRender() {
 
         // Transparent block (FUN_004f8ea0): above liquid it is pass 2, liquid, weather, barriers,
         // pass 1; under liquid the reference reverses it so the water surface is composited last:
-        // barriers, pass 1, weather, liquid, pass 2. Weather and barriers are not ported yet.
+        // barriers, pass 1, weather, liquid, pass 2. This order is confirmed against the
+        // disassembly -- see the table at the top of this function, including that the two arms
+        // share their final draw.
+        //
+        // The barrier pass is FUN_00794b50, reached through the wrapper FUN_0077f980 with the float
+        // at frame+0xb14; 2200 bytes of streamed quads over a model. Not ported, and it is the only
+        // thing missing from this block's order.
         if (CWorld::IsCameraUnderLiquid()) {
             if (scene) { scene->Draw(M2PASS_1); }
             WeatherRender();
