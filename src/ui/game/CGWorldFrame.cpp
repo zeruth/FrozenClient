@@ -18,6 +18,7 @@
 #include "object/client/QuestStatusCache.hpp"
 #include "object/client/UnitVisuals.hpp"
 #include "world/MapShadow.hpp"
+#include "world/ShadowMap.hpp"
 #include "world/ParticleFx.hpp"
 #include "model/CM2Scene.hpp"
 #include "gx/shader/CShaderEffect.hpp"
@@ -435,7 +436,21 @@ void CGWorldFrame::OnWorldRender() {
             // one frame behind what terrain will read in S4. Closing that gap means hoisting
             // TerrainUpdateView and the visibility sweep above this block, which is why
             // TerrainUpdateView was split out of TerrainRender.
-            auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__);
+            // Gated on the shadow map quality, which is what the reference gates it on, and which
+            // frozen also needs for a plainer reason: NOTHING SAMPLES THE MAP YET. MapShadowTexture
+            // and MapShadowTexMatrix have no callers, and every bind point that would use them
+            // (ShadowMapBindTerrain, ShadowMapBindMapObj, ShadowMapBindScene in ShadowMap.cpp) is
+            // still a TODO. So without this gate the frame re-draws every animated caster into a
+            // 1024x1024 render target and then throws the result away -- a whole extra caster pass
+            // for nothing, which matters most on Android where the frame rate is already the open
+            // problem.
+            //
+            // g_shadowMapQuality is 0 and nothing assigns it, so today this never runs. It turns
+            // itself on as soon as the quality is wired and the sampler lands; do not remove the
+            // gate to "enable shadows" without also giving the map a reader.
+            auto player = ShadowMapGetQuality() > 0
+                ? ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__)
+                : nullptr;
 
             if (player) {
                 MapShadowSetup(player->GetPosition());

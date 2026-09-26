@@ -120674,7 +120674,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 39
+"line": 40
 },
 "AutoScreenShot": {
 "files": [
@@ -120702,7 +120702,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 52
+"line": 53
 },
 "CGWorldFrame::RenderWorld": {
 "files": [
@@ -120728,7 +120728,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 83
+"line": 84
 },
 "CGWorldFrame::CGWorldFrame": {
 "files": [
@@ -120752,7 +120752,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 106
+"line": 107
 },
 "CGWorldFrame::OnFrameRender": {
 "files": [
@@ -120768,7 +120768,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 126
+"line": 127
 },
 "CGWorldFrame::OnFrameSizeChanged": {
 "files": [
@@ -120799,7 +120799,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 134
+"line": 135
 },
 "CGWorldFrame::OnLayerMouseDown": {
 "files": [
@@ -120817,7 +120817,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 158
+"line": 159
 },
 "CGWorldFrame::OnLayerMouseUp": {
 "files": [
@@ -120834,7 +120834,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 170
+"line": 171
 },
 "CGWorldFrame::OnLayerTrackUpdate": {
 "files": [
@@ -120853,7 +120853,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 177
+"line": 178
 },
 "CGWorldFrame::OnLayerMouseWheel": {
 "files": [
@@ -120871,7 +120871,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 194
+"line": 195
 },
 "CGWorldFrame::GetWorldViewport": {
 "files": [
@@ -120884,7 +120884,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 206
+"line": 207
 },
 "CGWorldFrame::OnWorldRender": {
 "files": [
@@ -120932,14 +120932,15 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Head",
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "vector<CM2Model *,std::allocator<CM2Model *> >::push_back",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:416:30)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:417:30)::operator void (*)(CM2Model *, void *)",
 "TerrainForEachDoodad",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:422:34)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:423:34)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachDoodadModel",
 "CWorld::GetTickTimeMs",
 "CM2Scene::AdvanceTime",
 "CSimpleCamera::Position",
 "CM2Scene::Animate",
+"ShadowMapGetQuality",
 "ClntObjMgrGetActivePlayer",
 "ClntObjMgrObjectPtr",
 "CGObject_C::GetPosition",
@@ -120986,11 +120987,11 @@
 "2.0f",
 "30.0f"
 ],
-"branches": 25,
+"branches": 26,
 "stub": false,
-"lines": 302,
+"lines": 316,
 "refs": [],
-"line": 211
+"line": 212
 },
 "CGWorldFrame::OnWorldUpdate": {
 "files": [
@@ -121043,7 +121044,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 514
+"line": 529
 },
 "Script_GetInventorySlotInfo": {
 "files": [

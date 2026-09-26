@@ -15263,7 +15263,7 @@
   "status": "ported"
  },
  "004f8ea0": {
-  "branchRatio": 0.56,
+  "branchRatio": 0.538,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.224,
@@ -15272,7 +15272,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1824,
+  "frozenSize": 1829,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -59797,7 +59797,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapGetQuality",
-  "frozenSize": 0,
+  "frozenSize": 18,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 18,
