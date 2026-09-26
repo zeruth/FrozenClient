@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 08:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 08:30 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,13 +17,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5381, mapped 1420 (=) (26.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1438 (=) (25.5%) | |
 | **render surface** (the modules that draw the world) | **4520, mapped 853 (=) (18.9%)** | |
-| frozen functions (src/, from PDB + source) | 13834, stubs 1700 | |
+| frozen functions (src/, from PDB + source) | 13833, stubs 1700 | |
 
 Match evidence: annotated 2165, callgraph 239, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 08:07 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
+Previous run: 2026-09-26 08:21 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
 
 ## Lua API coverage (binding tables)
 
@@ -570,7 +570,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `M2Init` | model | 4489 | src/model/M2Init.cpp |
 | `GetPredOutside` | m4vh263dec | 4486 | vendor/m4vh263dec/src/get_pred_outside.cpp |
 | `T1_Decoder_Parse_Charstrings` | lib/freetype-2.0 | 4304 | vendor/freetype-2.0.9/src/psaux/t1decode.c |
-| `ParseChunk` | world | 4052 | src/world/Terrain.cpp |
 | `doContent` | lib/expat-2.0 | 3900 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
 | `CWorld::UpdateOutdoorLight` | world | 3841 | src/world/CWorld.cpp |
 | `LzmaDec_DecodeReal` | lib/stormlib-9.31 | 3776 | lib/squall/vendor/stormlib-9.31/src/lzma/c/lzmadec.c |
@@ -578,7 +577,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
 | `VlcDequantH263IntraBlock` | m4vh263dec | 3168 | vendor/m4vh263dec/src/vlc_dequant.cpp |
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
-| `LoadTile` | world | 3123 | src/world/Terrain.cpp |
+| `LoadTile` | world | 3107 | src/world/Terrain.cpp |
 | `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
 | `Liquid::DrawShaderMaterial` | world | 2851 | src/world/map/liquidmaterialsettings.cpp |
@@ -593,6 +592,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ChrClassesRec::Read` | db | 2561 | src/db/rec/ChrClassesRec.cpp |
 | `luaK_posfix` | lib/lua-5.1 | 2528 | vendor/lua-5.1.3/src/lcode.c |
 | `DetailDoodad::PrepareCell` | world | 2497 | src/world/map/detaildoodad.cpp |
+| `ParseChunk` | world | 2462 | src/world/Terrain.cpp |
 | `CBackdropGenerator::SetOutput` | ui | 2401 | src/ui/CBackdropGenerator.cpp |
 | `FactionRec::Read` | db | 2368 | src/db/rec/FactionRec.cpp |
 | `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 03:11 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 | 2026-09-26 03:12 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 | 2026-09-26 03:14 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 | 2026-09-26 03:18 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 08:02 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:07 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:21 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
+| 2026-09-26 08:30 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

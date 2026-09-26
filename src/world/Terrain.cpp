@@ -130,8 +130,6 @@ struct TerrainTile {
     int32_t x = -1;
     int32_t y = -1;
     bool loaded = false;
-    HTEXTURE textures[256] = { nullptr };
-    uint32_t textureCount = 0;
     TerrainChunk chunks[256];
 
     // Placement uniqueIds this tile loaded (a large object listed in several tiles is owned by the
@@ -168,14 +166,11 @@ struct WmoGroup {
     uint16_t* indices = nullptr;
     uint32_t indexCount = 0;
 
-    WmoBatch* batches = nullptr;
     uint32_t batchCount = 0;
 
     uint8_t* ndotl = nullptr; // static per-vertex sun term for exterior groups (re-lighting)
-    uint8_t* ao = nullptr;    // (unused legacy occlusion slot)
     CImVector* mocvAdd = nullptr; // exterior MOCV: additive local light (dark except near glows)
     bool interior = false;    // interior groups keep their baked MOCV (torch-lit, do not cycle)
-    C3Vector groupAmbient = { 0.35f, 0.35f, 0.35f }; // this room's avg interior colour, for units in it
 
     C3Vector boundsMin = { 0.0f, 0.0f, 0.0f };
     C3Vector boundsMax = { 0.0f, 0.0f, 0.0f };
@@ -250,7 +245,6 @@ struct WmoInstance {
     // Portal graph (MOPV/MOPT/MOPR), world space. Empty for WMOs without portals, which then fall
     // back to a plain per-group frustum test.
     C3Vector* portalVerts = nullptr;
-    uint32_t portalVertCount = 0;
     WmoPortal* portals = nullptr;
     uint32_t portalCount = 0;
     WmoPortalRef* portalRefs = nullptr;
@@ -278,9 +272,6 @@ struct WmoInstance {
     C3Vector bboxMin = { 0.0f, 0.0f, 0.0f };
     C3Vector bboxMax = { 0.0f, 0.0f, 0.0f };
     bool hasBounds = false;
-
-    HTEXTURE* textures = nullptr; // one per MOMT material
-    uint32_t textureCount = 0;
 
     // M2 doodads placed inside the WMO (MODD); the world scene draws them, we own the references
     CM2Model** doodads = nullptr;
@@ -964,28 +955,9 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
         rangeCount++;
     }
 
-    // Materials -> textures (MOMT material's texture1 is an offset into the MOTX name block)
-    if (nMaterials && momt && motx) {
-        out.textures = static_cast<HTEXTURE*>(SMemAlloc(nMaterials * sizeof(HTEXTURE), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-        out.textureCount = nMaterials;
-
-        for (uint32_t i = 0; i < nMaterials; i++) {
-            uint32_t texOfs = *reinterpret_cast<const uint32_t*>(momt + i * 64 + 0x0C);
-            const char* texName = motx + texOfs;
-            CStatus status;
-
-            // WRAP on both axes, always. This used to derive clamping from MOMT flags 0x40 and
-            // 0x80, with a comment asserting the reference clamps decals, windows and bordered
-            // textures. **It does not**, checked 2026-09-23. Every WMO material texture in the
-            // reference is loaded through one helper, FUN_007d9990, which takes a filename and
-            // nothing else and builds its flags as CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap,
-            // GxTex_Wrap, 0, 0, 0, 1). Its caller FUN_007d7710 is unmistakably the MOMT loop: it
-            // indexes 64-byte materials and reads texture1 at +0x0C and texture2 at +0x18, which
-            // is the layout read just above. All five call sites reach the same hardcoded flags,
-            // so there is no path on which the reference clamps one of these.
-            out.textures[i] = TextureCreate(texName, CGxTexFlags(GxTex_LinearMipLinear, GxTex_Wrap, GxTex_Wrap, 0, 0, 0, 1), &status, 0);
-        }
-    }
+    // The MOMT -> texture load used to sit here, filling WmoInstance::textures for the batch
+    // array above. Both are gone: CMapObj::LoadMaterialTextures loads the real copy, so the
+    // stand-in was loading every WMO material texture a second time and sampling neither.
 
     // Group file path: replace the root's ".wmo" extension with "_NNN.wmo"
     char base[260];
@@ -1014,7 +986,6 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
     // plane normal is rotated as a direction and its distance recomputed from a transformed portal
     // vertex, so the plane still contains the polygon and MOPR's side signs stay valid.
     if (mopv && mopt && mopr && mopvCount && moptCount && moprCount) {
-        out.portalVertCount = mopvCount;
         out.portalVerts = static_cast<C3Vector*>(SMemAlloc(mopvCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
 
         for (uint32_t i = 0; i < mopvCount; i++) {
@@ -1154,7 +1125,6 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 grp.texcoords = static_cast<C2Vector*>(SMemAlloc(movtCount * sizeof(C2Vector), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
                 grp.indices = static_cast<uint16_t*>(SMemAlloc(moviCount * sizeof(uint16_t), __FILE__, __LINE__, 0));
                 grp.ndotl = static_cast<uint8_t*>(SMemAlloc(movtCount, __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-                grp.ao = static_cast<uint8_t*>(SMemAlloc(movtCount, __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
                 grp.mocvAdd = static_cast<CImVector*>(SMemAlloc(movtCount * sizeof(CImVector), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
                 grp.interior = !exterior;
                 grp.portalStart = mogpPortalStart;
@@ -1278,9 +1248,6 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                     float gr = static_cast<float>(grpMocvR / grpMocvN) / 255.0f + out.interiorAmbient.x;
                     float gg = static_cast<float>(grpMocvG / grpMocvN) / 255.0f + out.interiorAmbient.y;
                     float gb = static_cast<float>(grpMocvB / grpMocvN) / 255.0f + out.interiorAmbient.z;
-                    grp.groupAmbient.x = gr > 1.0f ? 1.0f : gr;
-                    grp.groupAmbient.y = gg > 1.0f ? 1.0f : gg;
-                    grp.groupAmbient.z = gb > 1.0f ? 1.0f : gb;
                 }
 
                 // World-space bounding box of the group, for view-frustum culling. Computed from
@@ -1377,26 +1344,12 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                     }
                 }
 
-                if (mobaCount) {
-                    grp.batches = static_cast<WmoBatch*>(SMemAlloc(mobaCount * sizeof(WmoBatch), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-
-                    for (uint32_t bch = 0; bch < mobaCount; bch++) {
-                        const uint8_t* e = moba + bch * 24;
-                        uint32_t startIndex = *reinterpret_cast<const uint32_t*>(e + 12);
-                        uint16_t count = *reinterpret_cast<const uint16_t*>(e + 16);
-                        uint8_t materialId = e[23];
-
-                        WmoBatch& b = grp.batches[grp.batchCount++];
-                        b.indexStart = startIndex;
-                        b.indexCount = count;
-                        b.texture = (materialId < out.textureCount) ? out.textures[materialId] : nullptr;
-                        b.blend = (momt && materialId < nMaterials) ? *reinterpret_cast<const uint32_t*>(momt + materialId * 64 + 0x08) : 0;
-                        uint32_t matFlags = (momt && materialId < nMaterials) ? *reinterpret_cast<const uint32_t*>(momt + materialId * 64 + 0x00) : 0;
-                        b.twoSided = (matFlags & 0x4) != 0;
-                        b.unlit = (matFlags & 0x1) != 0;
-                        b.unfogged = (matFlags & 0x2) != 0;
-                    }
-                }
+                // The WmoBatch array is gone. It carried each batch's texture, blend mode and
+                // material flags for RenderWmos, which was deleted once the reference pass took
+                // over the WMO draw -- so nothing has read a batch since. Only the COUNT is still
+                // live: BlobShadowDrawWmo and WmoUpdateVisibility gate on batchCount to skip a
+                // group with no drawable geometry, so MOBA is still counted.
+                grp.batchCount = mobaCount;
 
                 if (mliq && mliqSize >= 30) {
                     LoadWmoLiquid(out, out.groupCount, nGroups, mliq, mliqSize, mogpGroupLiquid, mohdFlags, worldPos, cs, sn);
@@ -1549,16 +1502,11 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
     tile.x = tileX;
     tile.y = tileY;
     tile.loaded = true;
-    tile.textureCount = 0;
     tile.wmos = nullptr;
     tile.wmoCount = 0;
 
     for (auto& chunk : tile.chunks) {
         chunk.valid = false;
-    }
-
-    for (auto& t : tile.textures) {
-        t = nullptr;
     }
 
     char path[256];
@@ -1631,13 +1579,10 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
         offset += 8 + chunkSize;
     }
 
-    tile.textureCount = textureCount;
-
-    for (uint32_t i = 0; i < textureCount; i++) {
-        CStatus status;
-        // Trilinear + mipmaps, like the reference's ground textures, to avoid distance shimmer
-        tile.textures[i] = TextureCreate(textureNames[i], CGxTexFlags(GxTex_LinearMipLinear, 1, 1, 0, 0, 0, 1), &status, 0);
-    }
+    // The MTEX ground textures used to be loaded here, one HTEXTURE per name per tile. They were
+    // sampled only by RenderShaded and RenderFallback; with those gone nothing read them, and
+    // CMapRenderChunk loads the real ones itself. The names are still collected because the MTEX
+    // walk is part of the chunk scan, but no texture is created from them any more.
 
     if (mcin) {
         for (int32_t i = 0; i < 256; i++) {
@@ -1844,9 +1789,7 @@ void FreeTile(TerrainTile& tile) {
                 if (grp.colors) SMemFree(grp.colors, __FILE__, __LINE__, 0);
                 if (grp.texcoords) SMemFree(grp.texcoords, __FILE__, __LINE__, 0);
                 if (grp.indices) SMemFree(grp.indices, __FILE__, __LINE__, 0);
-                if (grp.batches) SMemFree(grp.batches, __FILE__, __LINE__, 0);
                 if (grp.ndotl) SMemFree(grp.ndotl, __FILE__, __LINE__, 0);
-                if (grp.ao) SMemFree(grp.ao, __FILE__, __LINE__, 0);
                 if (grp.mocvAdd) SMemFree(grp.mocvAdd, __FILE__, __LINE__, 0);
                 if (grp.mocv) SMemFree(grp.mocv, __FILE__, __LINE__, 0);
                 if (grp.queryVerts) SMemFree(grp.queryVerts, __FILE__, __LINE__, 0);
@@ -1857,12 +1800,6 @@ void FreeTile(TerrainTile& tile) {
                 SMemFree(w.mapObj.m_materials, __FILE__, __LINE__, 0);
                 w.mapObj.m_materials = nullptr;
                 w.mapObj.m_materialCount = 0;
-            }
-
-            for (uint32_t t = 0; t < w.textureCount; t++) {
-                if (w.textures[t]) {
-                    HandleClose(w.textures[t]);
-                }
             }
 
             for (uint32_t di = 0; di < w.doodadCount; di++) {
@@ -1891,7 +1828,6 @@ void FreeTile(TerrainTile& tile) {
 
             if (w.liquids) SMemFree(w.liquids, __FILE__, __LINE__, 0);
             if (w.groups) SMemFree(w.groups, __FILE__, __LINE__, 0);
-            if (w.textures) SMemFree(w.textures, __FILE__, __LINE__, 0);
         }
 
         SMemFree(tile.wmos, __FILE__, __LINE__, 0);
@@ -1905,14 +1841,7 @@ void FreeTile(TerrainTile& tile) {
         chunk.valid = false;
     }
 
-    for (uint32_t i = 0; i < tile.textureCount; i++) {
-        if (tile.textures[i]) {
-            HandleClose(tile.textures[i]);
-            tile.textures[i] = nullptr;
-        }
-    }
 
-    tile.textureCount = 0;
     tile.loaded = false;
     tile.x = -1;
     tile.y = -1;

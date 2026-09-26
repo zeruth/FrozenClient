@@ -46977,7 +46977,7 @@
    "src/world/map/cmaprenderchunk.cpp"
   ],
   "frozen": "AlphaTexCallback",
-  "frozenSize": 103,
+  "frozenSize": 70,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 64,
