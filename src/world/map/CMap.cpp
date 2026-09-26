@@ -1239,9 +1239,6 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::BucketMapObjDefGroups();
     }
 
-    // The grass buffers, rebuilt only when something has asked for it.
-    DetailDoodad::CreateBuffers();
-
     CWorldScene::UpdateCameraLiquid();
 
     GxRsPush();
@@ -1268,6 +1265,11 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     CMap::CreateRenderChunkPools();
 
+    // The grass buffers, rebuilt only when something has asked for it. The reference creates
+    // them here, next to the render chunk pools and after the frustum is set -- not at the top
+    // of the frame, which is where frozen had them.
+    DetailDoodad::CreateBuffers();
+
     // TODO FUN_007ae060(), FUN_007b2a80(): the detail doodad buffers
 
     memset(CWorldScene::s_rowStats, 0, sizeof(CWorldScene::s_rowStats));
@@ -1276,10 +1278,9 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::s_horizonBuffer[i] = -1000000.0f;
     }
 
-    // The frame's distant occluders, from the map's hand-authored volumes.
-    MapOcclusion::BuildVolumes(cameraPos, CWorldScene::s_frustums[0], 0);
-
-    // TODO FUN_007cd910(), FUN_007cc810(): the low-detail terrain
+    // TODO FUN_007cd910() resets the occlusion arrays and FUN_007cc810() feeds the fixed
+    // horizon occluders (MapHorizonTable.hpp has the five of them). The occlusion VOLUMES are
+    // not built here -- they belong at the top of CWorldScene::Traverse, where they now are.
 
     if (!CWorldScene::s_cameraGroup) {
         CWorldScene::s_frameStamp++;

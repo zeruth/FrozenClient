@@ -44262,6 +44262,19 @@
   "refSize": 184,
   "status": "ported"
  },
+ "00791980": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "MapOcclusion::BuildVolumes",
+  "frozenSize": 173,
+  "how": "callgraph",
+  "module": "WorldParam.cpp",
+  "refSize": 806,
+  "status": "ported"
+ },
  "00791cb0": {
   "branchRatio": 0.467,
   "constOverlap": 0.182,
@@ -48747,7 +48760,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.143,
+  "fidelity": 0.286,
   "files": [
    "src/world/map/MapOcclusion.cpp"
   ],

@@ -1,6 +1,7 @@
 #include "world/CWorldScene.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
+#include "world/map/MapOcclusion.hpp"
 #include "world/CWorld.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
@@ -1152,7 +1153,11 @@ int32_t CWorldScene::ChunkRectInView(const int32_t* rect) {
 // (FUN_007935a0), entities (FUN_00793060, FUN_007987a0) and occluders (FUN_00793760) are not
 // ported yet.
 void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
-    // TODO FUN_007cd850(&cameraPos, s_frustumCorners, portal)
+    // The distant occluders, rebuilt for THIS traversal. The reference does it here and first,
+    // not once a frame in CMap::Render, which is where frozen had it: a nested portal traversal
+    // needs volumes built against its own frustum, and doing it once outside means every
+    // traversal after the first culls against the wrong ones.
+    MapOcclusion::BuildVolumes(CWorldScene::s_cameraPos, CWorldScene::s_frustumCorners, 0);
 
     CWorldScene::s_frustumDepth++;
     CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];

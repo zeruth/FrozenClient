@@ -75,11 +75,17 @@ static void AddVolume(const C3Vector& camera, const float* vertices, uint32_t co
 }
 
 // ref: FUN_007cd850
-void BuildVolumes(const C3Vector& camera, const CWFrustum& frustum, int32_t restricted) {
+void BuildVolumes(const C3Vector& camera, const C3Vector* corners, int32_t restricted) {
     CWorldScene::s_occlusionPlanes.SetCount(0);
     CWorldScene::s_occlusionVolumes.SetCount(0);
 
     BuildBoxes();
+
+    // The reference builds its own frustum here from the corners it was handed, rather than
+    // taking one ready-made. That is what makes this per-traversal.
+    CWFrustum frustum;
+
+    frustum.SetCorners(corners);
 
     for (uint32_t i = 0; i < sizeof(VOLUMES) / sizeof(VOLUMES[0]); i++) {
         const SVolume& volume = VOLUMES[i];
