@@ -1687,8 +1687,36 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
         float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
         float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
 
-        if (dx * dx + dy * dy + dz * dz < 3600.0f) {
+        // `near` is a legacy Windows macro, like `far` -- the second time that has bitten in this
+        // session, so this one is named around it.
+        bool isNear = dx * dx + dy * dy + dz * dz < 3600.0f;
+
+        if (isNear) {
             s_vsDrawnNear++;
+        }
+
+        // The decisive comparison. The CULL uses m_sphere.c, which is the model's sphere centre
+        // through m_placement. The DRAW uses the model's matrixB4, which CreateDoodadDef set from
+        // that same m_placement. If these two disagree for a doodad that is about to be drawn, the
+        // doodad is culled in one place and rendered in another -- and the difference says by how
+        // much and in which direction. If they agree, the doodad path is right and the fault is in
+        // the M2 render.
+        static uint32_t s_shown = 0;
+
+        if (isNear && s_shown < 10) {
+            s_shown++;
+
+            const C44Matrix& m = entity->m_model->matrixB4;
+
+            ProbeLog("DOODADXFORM %u: sphere=(%.1f %.1f %.1f) matrixB4.d=(%.1f %.1f %.1f) "
+                     "pos=(%.1f %.1f %.1f) cam=(%.1f %.1f %.1f) scale=%.3f",
+                     s_shown,
+                     entity->m_sphere.c.x, entity->m_sphere.c.y, entity->m_sphere.c.z,
+                     m.d0, m.d1, m.d2,
+                     entity->m_position.x, entity->m_position.y, entity->m_position.z,
+                     CWorldScene::s_cameraPos.x, CWorldScene::s_cameraPos.y,
+                     CWorldScene::s_cameraPos.z,
+                     entity->m_scale);
         }
     }
 
