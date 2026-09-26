@@ -272,37 +272,32 @@ Widen the gate, or move, before concluding a distance-gated port is broken.
 
 ### What each remaining item needs
 
-| item | state | what it needs |
+Checked against the tree on 2026-09-25, not carried forward. The previous version of this table
+said item 2 still needed the large portal internals and item 7's volumes came from the .wdl.
+Both were wrong, and both cost time before being caught, so every row below was re-verified
+against `matches.tsv` and the source rather than trusted.
+
+| item | state | what is actually left |
 |---|---|---|
-| 2 map objects | draws, lit, interiors walked; portal tail filled | the large portal internals (`FUN_007ac060` 1591, `FUN_007a9380` 2146), the WMO doodads and blob receivers, and floor light -- which is gated on the unported placement code that writes `m_field80`, not on analysis |
-| 4 liquids | everything but the draw | the `Liquid` module: seven `IMaterial` implementations named in overrides.json, `CInstance`, `CreateSurface` (1421), five constant-setup routines and the `vsLiquidWater`/`psLiquidWater` pair, about 9 KB |
-| 6 detail doodads | **DONE** | scatter, instance fill, buffers, both fills, state setup, fade ramp, queue and pass all ported; Terrain.cpp's stand-in deleted. Only `FUN_007b10e0` (the shader-path constants) is left as a TODO, unreachable because frozen never loads the module's shaders. Not looked at on screen |
-| 7 occluders | **volumes done and verified; low-detail mesh not drawn** | the .wdl loads and the 62 occlusion volumes build and occlude. What is left is drawing the low-detail terrain itself (`FUN_007cd910`, `FUN_007cc810`) and the extruded volume path behind `FUN_007f9650` |
-| 8 sky | not started | the DayNight block, which also owns the per-instance ambient the map objects substitute for |
-| 9 weather | not started | ~14 KB across 17 functions against a 58-line stub -- the queue's "~290 lines" is well short |
-| 10 map shadow | not started | the shadow map module, its render targets and the shadowed terrain shader sets |
-| 11 close out | two thirds done | `OnWorldRender`'s ordering, which waits on 4 and 6 |
+| 1 terrain | **done** | -- |
+| 2 map objects | **renders**; def creation, both row visits, the whole portal walk, `CMapObj::Render` and floor light are all ported and tagged | the WMO **blob receivers** -- `BlobShadowDrawWmo` is still a Terrain.cpp stand-in -- and the group **doodad collision queries** (`FUN_007c9dd0` 820 and `FUN_007cab70` 1348, plus five helpers). Neither is on the render path |
+| 3 doodads | **done** | -- |
+| 4 liquids | the reader, creation, row insert, visit, point query, camera liquid and now `CreateSurface` are ported | the **draw**: seven `IMaterial` implementations, the two-bucket manager and its dispatch (`FUN_008a2240`), and the geometry the factory defers. `CreateSurface` is one line from being wired and that line is the first thing to try |
+| 5 blob shadows | **done** | -- |
+| 6 detail doodads | **done** | only `FUN_007b10e0`, the shader-path constants, unreachable while the module's shaders are not loaded |
+| 7 occluders | the .wdl loads and the 62 volumes build and occlude | the low-detail terrain **mesh** itself (`FUN_007cd910`, `FUN_007cc810`), and the extruded volume path behind the polygon clipper `FUN_007f9650` |
+| 8 sky | not started | `SkyRender` and `SkyBodiesRender` are still Terrain.cpp's own |
+| 9 weather | not started | `TerrainSetWeather` and `WeatherRender` are still Terrain.cpp's own; ~14 KB across 17 reference functions, not the "~290 lines" the queue estimates |
+| 10 map shadow | partly | `FUN_007bb670` (448, the receiver plane) and `FUN_007bb570` (248) are unported; `ShadowMap.cpp` has three binds still marked TODO |
+| 11 close out | queries done | `OnWorldRender`'s ordering, which waits on 4 |
 
-### How the work actually went, for whoever picks it up
+### What is left in Terrain.cpp (5592 lines)
 
-The items that closed were the ones where the module under the entry point was shallow enough
-to finish in one go. The ones that have not closed are all **draws**, and the reason is not
-missing analysis -- items 4 and 6 are decoded to their constants. It is that a draw has no
-invariant to test without looking at the screen.
-
-Everything landed this session was bounded by a counter and a log instead: a chunk that must
-round-trip its own centre (2500 checked, none wrong), a triangle fan that must reproduce its
-centre vertex (120 probes, worst error 0.0008 yards), a camera depth that must equal the offset
-it was placed at (12 of 20 probes, error 0.0000), 448 chunks building liquid, 133 doodads drawn
-a frame out of 798 links walked. That works for queries. It does not work for "does the water
-look right", which is why the two big draws want a session with the screen available.
-
-Three traps worth knowing, all of which cost time here: a counter that counts the wrong thing
-reads as success (`placed=3440` was counting a flag write, caught only because a companion log
-line printed zero times); a log check passes on a missing file unless it refuses to
-(`scratchpad/run.sh` now does, and also refuses a build older than the newest source); and
-`recomp.py --fix` lists functions that are **linked but unfaithful**, so everything in it is
-already ported -- check `matches.tsv` for the address before decompiling anything from it.
+The stand-in is down from 6488 but the remaining entry points name exactly what is left to do:
+`TerrainSetWeather` and `WeatherRender` (item 9), `LiquidRender` (item 4's draw),
+`BlobShadowDrawWmo` (item 2's receivers), `SkyRender` and `SkyBodiesRender` (item 8),
+`UnderwaterOverlayRender`, and the load/update/view scaffolding that holds them together.
+`TerrainRender` still runs the view and visibility half when the frame has not already done it.
 
 ## What "done" means for a module
 
