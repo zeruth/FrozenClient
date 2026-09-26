@@ -1236,7 +1236,7 @@ void CMap::UpdateFrameLiquids() {
 // Everything else the reference does here is listed in place as it comes; the map objects,
 // liquids, sky and the rest still draw from the stand-in and CGWorldFrame around this call.
 void CMap::Render(const C3Vector& cameraPos, float dt) {
-    if (!CWorldScene::s_cameraGroup) {
+    if (!CWorldScene::s_cameraDef) {
         CWorldScene::BucketMapObjDefGroups();
     }
 
@@ -1283,7 +1283,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // horizon occluders (MapHorizonTable.hpp has the five of them). The occlusion VOLUMES are
     // not built here -- they belong at the top of CWorldScene::Traverse, where they now are.
 
-    if (!CWorldScene::s_cameraGroup) {
+    if (!CWorldScene::s_cameraDef) {
         CWorldScene::s_frameStamp++;
         CWorldScene::s_window.minX = 0.0f;
         CWorldScene::s_window.minY = 0.0f;
@@ -1332,19 +1332,24 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         //   FUN_007d59b0 casts a segment straight down from the camera and returns TWO hits, one
         //   map object and one group index each. Which of the two slots a hit fills is decided by
         //   the def's own flag 0x400, not by order or distance. Slot 0's object becomes
-        //   s_cameraGroup (0x00cd87a4) and its groups go to the list at 0x00cdb0d4; slot 1's
-        //   becomes 0x00cd87a0 and its groups go to 0x00cdb0e4.
+        //   s_cameraDef (0x00cd87a4) and its groups go to the list at 0x00cdb0d4; slot 1's
+        //   becomes s_cameraDefFlagged (0x00cd87a0) and its groups go to 0x00cdb0e4.
         //
         // So the list walked first, under the inverted window, is the flag-0x400 object's, and the
         // one walked second is the object the camera is actually inside. Each insert is a set
         // insert (FUN_00792fc0: scan, skip if present, else append), so a group is listed once
         // however many times it is found.
         //
-        // PORT THIS FROM THE TOP. s_cameraGroup is never assigned anywhere in frozen, so this
-        // whole branch is unreachable and porting the traversal below it would land under an unset
-        // flag. FUN_00795d40 is what makes it live, and it needs FUN_007d59b0 (793 bytes) plus
-        // FUN_007ae840 / FUN_007ae880 / FUN_007af280 / FUN_007aeb10 / FUN_007b3990. The pieces
-        // frozen already has for it are CMapObjGroup::QuerySegment and the hit statics it fills.
+        // The chain that assigns s_cameraDef is now ported bottom to top --
+        // SegmentIntersectsBox, the three CMapObj bounds queries, QuerySegmentPortals,
+        // QuerySegmentMapObjs and CWorldScene::UpdateCameraDef -- but UpdateCameraDef is
+        // deliberately NOT CALLED, and this branch is why. The moment it starts returning a
+        // building, s_cameraDef goes non-null and every interior traverses nothing and goes black,
+        // which is worse than the outdoor traversal that runs there today.
+        //
+        // So the two land together: FUN_00794250 (608 bytes) and FUN_00799f80 (467), plus the row
+        // reset, and the call to UpdateCameraDef in the same change. CMapObj::EnterPortalWalk, the
+        // other half, is already ported and faithful.
     }
 
     // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks

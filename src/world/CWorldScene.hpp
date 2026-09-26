@@ -10,6 +10,7 @@
 #include "world/map/CMapBaseObj.hpp"
 #include "world/map/CMapEntity.hpp"
 #include <storm/List.hpp>
+#include <storm/Array.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Plane.hpp>
@@ -172,10 +173,19 @@ class CWorldScene {
         static int32_t s_visibleEntityCount;                // DAT_00cd872c
         static int32_t s_visibleCount8624;                  // DAT_00cd8624
         static int32_t s_frameStamp;                        // DAT_00cd87b0
-        // DAT_00cd87a4: the map OBJECT the camera is inside, not one of its groups -- the groups
-        // go into the index list at 0x00cdb0d4 instead. Set by FUN_00795d40, which is not ported,
-        // so this stays null and every indoor branch that tests it is dead. See CMap::Render.
-        static void* s_cameraGroup;
+        // DAT_00cd87a4: the placed building the camera is inside, and DAT_00cd87a0 the second one
+        // when the query found a def carrying flag 0x400 as well. Named s_cameraGroup before, which
+        // was wrong twice over -- it is a def, not a group, and there are two of them.
+        //
+        // Still null: UpdateCameraDef computes them but nothing calls it yet, because CMap::Render
+        // would then take an indoor branch that has no traversal in it. See the note there.
+        static CMapObjDef* s_cameraDef;
+        static CMapObjDef* s_cameraDefFlagged;
+        // The group indices of each of those two, which is what the portal walks are handed
+        // (0x00cdb0d4 and 0x00cdb0e4). Set membership, not sequences -- a group appears once
+        // however many times the query reports it.
+        static TSGrowableArray<int32_t> s_cameraGroupIndices;
+        static TSGrowableArray<int32_t> s_cameraFlaggedGroupIndices;
         static float s_cameraGroundHeight;                  // DAT_00cd8790
         static int32_t s_hasMapObjs;                        // DAT_00cd8778
         // The groups the traversal found, in the order it found them (DAT_00cdb080)
@@ -186,6 +196,14 @@ class CWorldScene {
         static ViewWindow s_window;                         // DAT_00adf570
         static ViewWindow s_portalWindow;                   // DAT_00adf58c
         static const int32_t s_quadrantVertex[4];           // DAT_00aeee3c: the chunk vertex nearest the camera per quadrant
+
+        // Put a group index in one of the two lists if it is not already there. ref: FUN_00792fc0
+        static void AddGroupIndexUnique(TSGrowableArray<int32_t>& list, int32_t groupIndex);
+
+        // Work out which building, and which room of it, the camera is in, by dropping a segment
+        // straight down from it. Fills s_cameraDef, s_cameraDefFlagged and the two index lists.
+        // ref: FUN_00795d40
+        static void UpdateCameraDef();
 
         // Static functions
         static void Initialize();

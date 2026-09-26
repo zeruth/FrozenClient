@@ -392,6 +392,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // group-state gates as SegmentVsGroupBounds. ref: FUN_007ae970
         bool PointInGroupBounds(const C3Vector& point, uint32_t groupIndex, float slack);
 
+        // One group's own name, out of MOGN. Null until the group's file has arrived, same gates as
+        // the bounds queries. ref: FUN_007aeae0
+        const char* GroupName(uint32_t groupIndex);
+
         // Which groups the segment passes between, by walking the PORTALS rather than the geometry.
         //
         // Every group whose bounds the segment touches has its portal references tried; a portal

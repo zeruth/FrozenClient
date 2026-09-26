@@ -44405,6 +44405,22 @@
   "refSize": 19,
   "status": "ported"
  },
+ "00792fc0": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddGroupIndexUnique",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 150,
+  "status": "ported"
+ },
  "00793060": {
   "branchRatio": 0.167,
   "constOverlap": 0.033,
@@ -44531,6 +44547,22 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 2291,
+  "status": "ported"
+ },
+ "00795d40": {
+  "branchRatio": 0.923,
+  "constOverlap": 0.069,
+  "faithful": false,
+  "fidelity": 0.312,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::UpdateCameraDef",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 575,
   "status": "ported"
  },
  "007964a0": {
@@ -45635,6 +45667,22 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 48,
+  "status": "ported"
+ },
+ "007aeae0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GroupName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 47,
   "status": "ported"
  },
  "007aeb10": {

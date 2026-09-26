@@ -252,6 +252,21 @@ bool CMapObj::PointInGroupBounds(const C3Vector& point, uint32_t groupIndex, flo
     return true;
 }
 
+// ref: FUN_007aeae0
+const char* CMapObj::GroupName(uint32_t groupIndex) {
+    if (!this->m_rootLoaded) {
+        return nullptr;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    if (!group || !(group->m_state & 0x1)) {
+        return nullptr;
+    }
+
+    return group->m_name;
+}
+
 // ref: FUN_007af280
 // Where a segment crosses from one group into another. This is the query that tells the client
 // which room it is in: not by asking what the segment hits, but by finding the last PORTAL it

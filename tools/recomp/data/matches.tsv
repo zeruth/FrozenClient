@@ -2781,6 +2781,7 @@ addr	how	frozen	evidence
 00792df0	annotated	CWorldScene::AddLiquid	tag in src/world/CWorldScene.cpp
 00792e60	annotated	CWorldScene::AddEntity	tag in src/world/CWorldScene.cpp
 00792fa0	annotated	CWorldScene::AddDetailDoodads	tag in src/world/CWorldScene.cpp
+00792fc0	annotated	CWorldScene::AddGroupIndexUnique	tag in src/world/CWorldScene.cpp
 00793060	annotated	CWorldScene::TraverseRowEntities	tag in src/world/CWorldScene.cpp
 007935a0	annotated	CWorldScene::TraverseRowLiquids	tag in src/world/CWorldScene.cpp
 00793760	annotated	CWorldScene::TraverseRowOccluders	tag in src/world/CWorldScene.cpp
@@ -2789,6 +2790,7 @@ addr	how	frozen	evidence
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
 007946d0	annotated	CWorldScene::SubmitOccluderBox	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
+00795d40	annotated	CWorldScene::UpdateCameraDef	tag in src/world/CWorldScene.cpp
 007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
 007983b0	override	CWFrustum::Alloc	
 007984a0	annotated	CWorldScene::RenderDetailDoodads	tag in src/world/CWorldScene.cpp
@@ -2858,6 +2860,7 @@ addr	how	frozen	evidence
 007ae970	annotated	CMapObj::PointInGroupBounds	tag in src/world/map/CMapObj.cpp
 007aea80	annotated	CMapObj::GetGroup	tag in src/world/map/CMapObj.cpp
 007aeab0	annotated	CMapObj::WaitForGroup	tag in src/world/map/CMapObj.cpp
+007aeae0	annotated	CMapObj::GroupName	tag in src/world/map/CMapObj.cpp
 007aeb10	annotated	CMapObj::GroupInfo	tag in src/world/map/CMapObj.cpp
 007af280	annotated	CMapObj::QuerySegmentPortals	tag in src/world/map/CMapObj.cpp
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp

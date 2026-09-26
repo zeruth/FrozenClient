@@ -77,7 +77,10 @@ int32_t CWorldScene::s_visibleMapObjCount;
 int32_t CWorldScene::s_visibleEntityCount;
 int32_t CWorldScene::s_visibleCount8624;
 int32_t CWorldScene::s_frameStamp;
-void* CWorldScene::s_cameraGroup;
+CMapObjDef* CWorldScene::s_cameraDef;
+CMapObjDef* CWorldScene::s_cameraDefFlagged;
+TSGrowableArray<int32_t> CWorldScene::s_cameraGroupIndices;
+TSGrowableArray<int32_t> CWorldScene::s_cameraFlaggedGroupIndices;
 float CWorldScene::s_cameraGroundHeight;
 int32_t CWorldScene::s_hasMapObjs;
 CWorldScene::ViewWindow CWorldScene::s_window;
@@ -1159,7 +1162,7 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
     // not in CMap::Render, which is where frozen had it.
     //
     // Being precise about why, because the first version of this comment overstated it: CMap::Render
-    // does NOT call Traverse twice. It has an outdoor branch and an indoor branch on s_cameraGroup
+    // does NOT call Traverse twice. It has an outdoor branch and an indoor branch on s_cameraDef
     // and takes one of them, so Traverse runs once a frame from there. Traverse has a second
     // caller elsewhere, and building the volumes inside it is simply where the reference puts
     // them -- each traversal against the corners it was handed.
@@ -1819,7 +1822,7 @@ void CWorldScene::UpdateCameraLiquid() {
     uint32_t liquidType = 0;
     float height = 0.0f;
 
-    if (!CWorldScene::s_cameraGroup) {
+    if (!CWorldScene::s_cameraDef) {
         if (CMap::GetTerrainLiquid(CWorldScene::s_cameraPos, &liquidType, &height, 1)) {
             CWorldScene::s_cameraLiquidDepth = height - CWorldScene::s_cameraPos.z;
         }
@@ -2200,4 +2203,115 @@ void CWorldScene::RenderDetailDoodads() {
     GxXformPop(GxXform_Tex1);
     GxXformPop(GxXform_World);
     GxRsPop();
+}
+
+// ref: FUN_00792fc0
+// A set insert. The reference scans the whole array first and does nothing if the value is already
+// there, which is what keeps a group from being walked twice when the query reports it from both
+// its geometry and a portal.
+void CWorldScene::AddGroupIndexUnique(TSGrowableArray<int32_t>& list, int32_t groupIndex) {
+    for (uint32_t i = 0; i < list.Count(); i++) {
+        if (list[i] == groupIndex) {
+            return;
+        }
+    }
+
+    list.Add(1, &groupIndex);
+}
+
+// ref: FUN_00795d40
+// Which building the camera is standing in. The whole thing is one downward segment: from the
+// camera to 1760 units below it, which is more than the world is tall, so it always reaches ground
+// or a floor.
+//
+// NOT CALLED YET, and that is deliberate rather than an oversight. CMap::Render picks its traversal
+// on s_cameraDef being null, and the indoor side of that branch has no traversal in it -- so the
+// moment this starts returning a building, interiors would traverse nothing and go black. It lands
+// together with FUN_00794250 and FUN_00799f80, which are what the indoor branch needs.
+void CWorldScene::UpdateCameraDef() {
+    CWorldScene::s_cameraDef = nullptr;
+    CWorldScene::s_cameraDefFlagged = nullptr;
+    CWorldScene::s_cameraGroupIndices.SetCount(0);
+    CWorldScene::s_cameraFlaggedGroupIndices.SetCount(0);
+
+    // TODO the reference also clears the two display strings it fills below, at 0x00cd8628 (0x104
+    // bytes, the area name) and 0x00cd8730 (0x40 bytes, the subarea). Frozen's UI does not read
+    // them, so neither is carried.
+
+    if (!(CWorld::s_enables & CWorld::Enables::Enable_100)) {
+        return;
+    }
+
+    // 1760 is DAT_00a3e6e8.
+    const C3Vector& camera = CWorldScene::s_cameraPos;
+
+    C3Vector start = camera;
+    C3Vector end = { camera.x, camera.y, camera.z - 1760.0f };
+
+    CMapObjDef* defs[2] = { nullptr, nullptr };
+    uint32_t groups[4] = { 0xffff, 0xffff, 0xffff, 0xffff };
+
+    // TODO FUN_007a39f0 runs first, over the terrain, and its hit is what names the area when the
+    // segment lands outdoors. Not ported, so the outdoor case is silent rather than wrong.
+
+    if (!QuerySegmentMapObjs(start, end, 1.0f, defs, groups)) {
+        return;
+    }
+
+    CWorldScene::s_cameraDef = defs[0];
+
+    if (defs[0]) {
+        // TODO the reference copies the root's own name and the group's (CMapObj::GroupName, which
+        // is ported) into the two display strings here.
+
+        CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraGroupIndices,
+                                        static_cast<int32_t>(groups[0]));
+
+        if (groups[1] != 0xffff) {
+            CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraGroupIndices,
+                                             static_cast<int32_t>(groups[1]));
+        }
+
+        // The two groups' flags together decide whether the indoor pass needs a fresh full-screen
+        // window seeded into the scene's.
+        uint32_t flags = 0;
+
+        if (groups[0] != 0xffff) {
+            SMOGroupInfo* info = defs[0]->m_mapObj ? defs[0]->m_mapObj->GroupInfo(groups[0])
+                                                   : nullptr;
+
+            if (info) {
+                flags |= info->flags;
+            }
+        }
+
+        if (groups[1] != 0xffff) {
+            SMOGroupInfo* info = defs[0]->m_mapObj ? defs[0]->m_mapObj->GroupInfo(groups[1])
+                                                   : nullptr;
+
+            if (info) {
+                flags |= info->flags;
+            }
+        }
+
+        if (flags & 0x40140) {
+            // TODO seed the window. The reference builds a full-screen ViewWindow -- the rect
+            // (0, 0, 1, 1) at depth 0, through FUN_00790570 -- merges it into s_window with
+            // FUN_007905b0, and appends it to a list with FUN_00795d00 (which is one
+            // FUN_007940f0(list, 1, window) whose list frozen has not identified). Without it the
+            // indoor pass starts from whatever window the last frame left.
+        }
+    }
+
+    CWorldScene::s_cameraDefFlagged = defs[1];
+
+    if (defs[1]) {
+        CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraFlaggedGroupIndices,
+                                         static_cast<int32_t>(groups[2]));
+
+        if (groups[3] != 0xffff) {
+            CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraFlaggedGroupIndices,
+                                             static_cast<int32_t>(groups[3]));
+        }
+    }
 }
