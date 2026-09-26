@@ -75,7 +75,7 @@ addr	how	frozen	evidence
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
-00421800	callgraph	sprintf	only unmatched callee of 0053c430=CM2Shared::LoadSkinProfile
+00421800	sticky	sprintf	held from the previous run, where it was callgraph
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 00876d90=CShaderEffectManager::LoadEffectFile
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
@@ -1383,7 +1383,6 @@ addr	how	frozen	evidence
 0053bd10	override	CGMinimapFrame::HasTrackingSpell	
 0053be70	table	Script_GetSpellTabInfo	binding "GetSpellTabInfo" in s_ScriptFunctions ~ table 00accce0
 0053c0b0	override	Script_ReturnZero	
-0053c430	string	CM2Shared::LoadSkinProfile	score 0.50 shared %02d.skin
 0053d990	sticky	CGActionBar::GetActionID	held from the previous run, where it was sticky
 0053dc20	sticky	SpellIconPath	held from the previous run, where it was sticky
 0053dd30	table	Script_ReturnNil	binding "HasPetSpells" in s_ScriptFunctions ~ table 00accce0
@@ -3206,6 +3205,7 @@ addr	how	frozen	evidence
 007d7050	annotated	CMapArea::CMapArea	tag in src/world/map/CMapArea.cpp
 007d7150	annotated	CMapArea::BeginLoad	tag in src/world/map/CMapArea.cpp
 007d71d0	override	CMapBaseObj::~CMapBaseObj	
+007d7260	override	CMapBaseObj::CMapBaseObj	
 007d72d0	annotated	CMapObj::ClearMaterialTextures	tag in src/world/map/CMapObj.cpp
 007d7310	annotated	CMapObjGroup::ResolveLiquidType	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7380	annotated	CMapObjGroup::FixVertexColors	tag in src/world/map/CMapObjGroupLoad.cpp
@@ -3478,6 +3478,7 @@ addr	how	frozen	evidence
 008261b0	annotated	CM2Model::GetSequenceVariationCount	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
 008264b0	annotated	CM2Model::HasBone	tag in src/model/CM2Model.cpp
+008265e0	annotated	CM2Model::SetBoneFlags	tag in src/model/CM2Model.cpp
 008266b0	annotated	CM2Model::GetBoneSequenceState	tag in src/model/CM2Model.cpp
 008267e0	annotated	CM2Model::GetBoneUint90	tag in src/model/CM2Model.cpp
 00826870	annotated	CM2Model::GetBoneSequenceId	tag in src/model/CM2Model.cpp
@@ -3495,6 +3496,7 @@ addr	how	frozen	evidence
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008275f0	annotated	CM2Model::HasEvent	tag in src/model/CM2Model.cpp
 00827670	annotated	CM2Model::GetEvent	tag in src/model/CM2Model.cpp
+00827780	annotated	CM2Model::GetEventTimestamp	tag in src/model/CM2Model.cpp
 008278e0	annotated	CM2Model::HasCamera	tag in src/model/CM2Model.cpp
 00827960	annotated	CM2Model::GetCameraById	tag in src/model/CM2Model.cpp
 008279f0	override	CM2Model::SetParticleEmission	
@@ -3505,6 +3507,10 @@ addr	how	frozen	evidence
 0082ad50	callgraph	C3Vector::operator-	only unmatched callee of 0082d6f0=CM2Model::AnimateTextureTransformsMT
 0082af40	override	M2AnimateTrack<fixed16,float>	
 0082b0a0	override	M2AnimateTrack<C3Vector,C3Vector>	
+0082b270	override	M2AnimateTrack<unsigned char,unsigned char>	
+0082b340	override	M2AnimateTrack<float,float>	
+0082b460	override	M2AnimateSplineTrack<M2SplineKey<C3Vector>,C3Vector>	
+0082b8a0	override	M2AnimateSplineTrack<M2SplineKey<float>,float>	
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
@@ -3518,6 +3524,7 @@ addr	how	frozen	evidence
 00831330	annotated	CM2Model::GetAttachmentWorldPosition	tag in src/model/CM2Model.cpp
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
+008317e0	annotated	CM2Model::GetEventWorldPosition	tag in src/model/CM2Model.cpp
 00831af0	annotated	CM2Model::SetupLighting	tag in src/model/CM2Model.cpp
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
 00831e20	override	CM2Model::CancelAllDeferredSequences	
@@ -3538,6 +3545,8 @@ addr	how	frozen	evidence
 00834ab0	annotated	CM2Light::Unlink	tag in src/model/CM2Light.cpp
 00834ae0	annotated	CM2Light::SetDirection	tag in src/model/CM2Light.cpp
 00834c70	annotated	CM2Light::Link	tag in src/model/CM2Light.cpp
+00834d90	annotated	CM2Lighting::AddAmbient	tag in src/model/CM2Lighting.cpp
+00834dc0	annotated	CM2Lighting::AddDiffuse	tag in src/model/CM2Lighting.cpp
 00834f60	annotated	CM2Lighting::AddLight	tag in src/model/CM2Lighting.cpp
 008350a0	override	CM2Lighting::CameraSpace	
 00835280	annotated	CM2Lighting::SetupSunlight	tag in src/model/CM2Lighting.cpp
@@ -3550,6 +3559,7 @@ addr	how	frozen	evidence
 00835970	annotated	CM2Shared::AddRef	tag in src/model/CM2Shared.cpp
 008359c0	annotated	CM2Shared::CallbackWhenLoaded	tag in src/model/CM2Shared.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
+00835a80	annotated	M2SkinFileName	tag in src/model/CM2Shared.cpp
 00835ae0	override	M2Init	
 00835b30	override	M2Init	
 00835b80	override	M2Init	

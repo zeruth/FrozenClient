@@ -36,10 +36,24 @@ int32_t CM2Lighting::GetSunlight(C3Vector* dir, C3Vector* ambient, C3Vector* dif
     return 1;
 }
 
+// ref: FUN_00834d90
 void CM2Lighting::AddAmbient(const C3Vector& ambColor) {
     this->m_sunAmbient = this->m_sunAmbient + ambColor;
 }
 
+// ref: FUN_00834dc0
+// Accumulate one directional light. The direction goes into VIEW space through the scene's
+// view matrix (3x3 only -- a direction has no translation) and is then accumulated four times:
+// once weighted by each colour channel, and once by the colour's LUMINANCE. Those are the
+// Rec. 709 weights, and they are the reference's own -- 0.212671, 0.71516 and 0.072169, read
+// out of 0x00a45638, 0x00a4563c and 0x00a45634.
+//
+// m_sunDir keeps the RAW direction, not the view-space one, and m_sunDiffuse is ASSIGNED rather
+// than accumulated -- so with more than one directional light those two describe the last one
+// added while the four accumulators describe all of them. That asymmetry is the reference's.
+//
+// Reading this also pins the scene matrix at +0x84 as m_view, which agrees with m_viewInv
+// landing at +0xc4 one C44Matrix later.
 void CM2Lighting::AddDiffuse(const C3Vector& dirColor, const C3Vector& dir) {
     C3Vector viewDir = dir;
 

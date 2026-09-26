@@ -94,9 +94,15 @@ class IMaterial {
         // environment, the geometry, the unknown at +0x0c, the camera position, the placement
         // matrix, the bounding sphere and the settings -- in that order.
         //
-        // ref: FUN_008a48f0, 2173 bytes of device state, shader selection and constant setup.
-        // Implemented -- every override forwards to DrawShaderMaterial. This comment said "still a
-        // stub ... the last thing between this stack and water on screen" long after it had landed.
+        // The reference's body for this is FUN_008a48f0 -- 2173 bytes of device state, shader
+        // selection and constant setup. Implemented here: every override forwards to
+        // DrawShaderMaterial, which carries the port and the `Part of ref:` notes.
+        //
+        // NOT TAGGED, on purpose, and this is not an oversight to correct: the reference has
+        // four of these bodies differing only in the shader pair, and which one 008a48f0 is has
+        // not been established. See the note on 008a48f0 in overrides.json. A `// ref:` here
+        // would also be in the wrong place even once that is settled -- tags go on the
+        // definition in the .cpp, not on a declaration in a header.
         virtual void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                           const C44Matrix*, const CAaSphere*, CMaterialSettings*) {}
 

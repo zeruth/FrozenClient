@@ -3301,5 +3301,29 @@
   "007225e0": {
     "frozen": "CGUnit_C::GetGenderedText",
     "note": "50% call order for one documented reason: the reference reads the gender off the player info block (+0x1008) when the unit IS the active player and off the descriptor otherwise, so it calls ClntObjMgrGetActivePlayer to decide. frozen reads the descriptor either way -- it is the same unit's own gender byte, so the two agree, and frozen has no cached copy to prefer. GENDER_MALE and GENDER_FEMALE are already 2 and 3, the values the reference passes."
+  },
+  "0082b270": {
+    "frozen": "M2AnimateTrack<unsigned char,unsigned char>",
+    "note": "The 1-byte instantiation: element stride 1, and no interpolation at all -- the trackType != 0 path stores the same key the trackType == 0 path does. Its secondary walk calls FindKey and then THROWS THE VALUE AWAY, which is exactly what frozen's empty M2BlendValue<T> compiles to for a type that cannot be interpolated, and is the strongest evidence that frozen's template is the right shape for this family. The family sits in one contiguous block with the two the map already had -- 00828680 is M2AnimateTrack<M2CompQuat,C4Quaternion> and 0082b0a0 is M2AnimateTrack<C3Vector,C3Vector> -- and every member takes the same five arguments (model, bone, track, modelTrack, defaultValue) and reads the same bone offsets: the primary sequence at +0x40, the secondary at +0x64, the blend weight at +0xa8."
+  },
+  "0082b340": {
+    "frozen": "M2AnimateTrack<float,float>",
+    "note": "The 4-byte float instantiation: element stride 4, a scalar lerp on trackType 1, and a scalar lerp against the secondary sequence by the bone's weight. The family sits in one contiguous block with the two the map already had -- 00828680 is M2AnimateTrack<M2CompQuat,C4Quaternion> and 0082b0a0 is M2AnimateTrack<C3Vector,C3Vector> -- and every member takes the same five arguments (model, bone, track, modelTrack, defaultValue) and reads the same bone offsets: the primary sequence at +0x40, the secondary at +0x64, the blend weight at +0xa8."
+  },
+  "0082b460": {
+    "frozen": "M2AnimateSplineTrack<M2SplineKey<C3Vector>,C3Vector>",
+    "note": "The C3Vector SPLINE instantiation -- key stride 0x24, which is M2SplineKey<C3Vector>'s nine floats. Reading this is what closed two open questions in src/model/M2Animate.hpp: frozen's cubic Bezier and cubic Hermite weights, which had been written from the M2 format rather than transcribed, agree with the reference coefficient for coefficient AND do not premultiply the tangents by the key interval; and the spline track IS blended against the secondary sequence, which frozen had left out with a note saying the reference's version had not been found. Both are now ported. The family sits in one contiguous block with the two the map already had -- 00828680 is M2AnimateTrack<M2CompQuat,C4Quaternion> and 0082b0a0 is M2AnimateTrack<C3Vector,C3Vector> -- and every member takes the same five arguments (model, bone, track, modelTrack, defaultValue) and reads the same bone offsets: the primary sequence at +0x40, the secondary at +0x64, the blend weight at +0xa8."
+  },
+  "0082b8a0": {
+    "frozen": "M2AnimateSplineTrack<M2SplineKey<float>,float>",
+    "note": "The float SPLINE instantiation -- key stride 0xc, M2SplineKey<float>'s three floats, with the same trackType 1/2/3 switch and the same secondary blend as the C3Vector one at 0082b460. The family sits in one contiguous block with the two the map already had -- 00828680 is M2AnimateTrack<M2CompQuat,C4Quaternion> and 0082b0a0 is M2AnimateTrack<C3Vector,C3Vector> -- and every member takes the same five arguments (model, bone, track, modelTrack, defaultValue) and reads the same bone offsets: the primary sequence at +0x40, the secondary at +0x64, the blend weight at +0xa8."
+  },
+  "0082bb50": {
+    "status": "unlinked",
+    "note": "One more member of the M2AnimateTrack family (the block runs 00828680, 0082b0a0, 0082b270, 0082b340, 0082b460, 0082b8a0, 0082bb50), and the one instantiation frozen does NOT have: its element stride is 2 AND it stores 2 bytes into the model track, so both T1 and T2 are 16-bit. Like the unsigned char one it does not interpolate -- the trackType != 0 path stores the same key as trackType == 0. frozen's nearest instantiation is M2AnimateTrack<fixed16,float>, which is a different function: it WIDENS to a 4-byte float. Deliberately left unlinked rather than pinned to that, because a tag is a claim that the two ARE the same function. It becomes linkable if a caller is ever found that wants a raw 16-bit track value."
+  },
+  "0053c430": {
+    "status": "unlinked",
+    "note": "REJECTED string match, recorded so it is not inferred again. The string matcher bound this to CM2Shared::LoadSkinProfile because both carried the only two copies of \"%02d.skin\" in their binaries; extracting M2SkinFileName (00835a80) out of LoadSkinProfile moved frozen's copy and the link went away, which is the right outcome. This is not LoadSkinProfile: 233 bytes, no SFile::OpenEx, and it does something else entirely -- looks a record up in the table at 0x00ad4a38 by an id range-checked against 0x00ad4a28/0x00ad4a24, lowercases the path it finds there, and tests the extension against \".mdl\" before building a skin name. A model-path resolver over a DBC, with 12 callers. The real LoadSkinProfile is in M2Shared.cpp at 0083xxxx, opens the file and parses it."
   }
 }

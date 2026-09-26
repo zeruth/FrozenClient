@@ -75,6 +75,22 @@ void M2AnimFileName(const char* modelPath, uint32_t sequenceId, uint32_t variati
     SStrPrintf(out + len, static_cast<uint32_t>(outSize - len), "%04d-%02d.anim", sequenceId, variationIndex);
 }
 
+// ref: FUN_00835a80
+// "<model path without extension><profile:02d>.skin", the sibling of M2AnimFileName above.
+// Unbounded, like the reference: it copies with a byte loop and appends with sprintf, trusting
+// the caller's buffer. Every caller passes a STORM_MAX_PATH one.
+void M2SkinFileName(const char* modelPath, uint32_t profile, char* out) {
+    strcpy(out, modelPath);
+
+    char* dot = strrchr(out, '.');
+
+    if (dot) {
+        *dot = '\0';
+    }
+
+    sprintf(&out[strlen(out)], "%02d.skin", profile);
+}
+
 // The .anim buffer is 16-byte aligned: 16 spare bytes, the pad size kept in the byte before the
 // data so the free can recover the allocation.
 //
@@ -999,17 +1015,9 @@ int32_t CM2Shared::Load(SFile* file, int32_t a3, CAaBox* a4) {
 }
 
 int32_t CM2Shared::LoadSkinProfile(uint32_t profile) {
-    // TODO
-    // the file path logic is in its own function
-
     char skinFilePath[STORM_MAX_PATH];
 
-    strcpy(skinFilePath, this->m_filePath);
-    char* v4 = strrchr(skinFilePath, '.');
-    if (v4) {
-        *v4 = 0;
-    }
-    sprintf(&skinFilePath[strlen(skinFilePath)], "%02d.skin", profile);
+    M2SkinFileName(this->m_filePath, profile, skinFilePath);
 
     SFile* fileptr;
 

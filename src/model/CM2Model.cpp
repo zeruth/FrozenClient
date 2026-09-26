@@ -2053,6 +2053,77 @@ C44Matrix CM2Model::GetAttachmentWorldTransform(uint32_t id) {
     return transform * this->m_scene->m_viewInv;
 }
 
+// ref: FUN_00827780
+uint32_t CM2Model::GetEventTimestamp(uint32_t animId, uint32_t eventId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+
+    // The reference INLINES the animation-id lookup here -- the same hash with quadratic
+    // probing, falling back to a linear scan when the model carries no hash -- rather than
+    // calling it. Sub8260C0 with no variation hops is that lookup exactly, so this calls it
+    // instead of keeping a third copy of it in this file.
+    uint16_t sequenceIndex = CM2Model::Sub8260C0(data, animId, 0);
+
+    if (sequenceIndex >= data->sequences.Count()) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < data->events.Count(); i++) {
+        auto& event = data->events[i];
+
+        if (event.eventId != eventId) {
+            continue;
+        }
+
+        // DIVERGENCE, and a deliberate one. The reference indexes the event's per-sequence
+        // timestamp array by the sequence index and then takes element 0 of it, with NO count
+        // check on either -- it trusts every event track to carry one entry per sequence and
+        // every entry to hold at least one time. An M2Array resolves its data as (its own
+        // address + offset), so element 0 of an EMPTY one is a wild pointer rather than null
+        // (CLAUDE.md lists this first among the bug classes here), and a model that breaks that
+        // trust would read garbage or fault. Both counts are checked, and a miss answers 0 --
+        // which is what the reference already returns for an event the model does not have, so
+        // no caller can tell the two apart.
+        auto& track = event.eventTrack;
+
+        if (sequenceIndex >= track.sequenceTimes.Count()
+            || !track.sequenceTimes[sequenceIndex].times.Count()) {
+            return 0;
+        }
+
+        return track.sequenceTimes[sequenceIndex].times[0];
+    }
+
+    return 0;
+}
+
+// ref: FUN_008317e0
+C3Vector& CM2Model::GetEventWorldPosition(C3Vector& out, uint32_t eventId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    C3Vector* local;
+    uint16_t boneIndex;
+
+    if (!this->GetEvent(eventId, &local, &boneIndex)) {
+        out = C3Vector(0.0f, 0.0f, 0.0f);
+
+        return out;
+    }
+
+    this->Animate();
+
+    // The same model-to-world step GetAttachmentWorldTransform ends on, which is what identifies
+    // the scene matrix the reference reaches for here (+0xc4) as m_viewInv.
+    out = (*local * this->m_boneMatrices[boneIndex]) * this->m_scene->m_viewInv;
+
+    return out;
+}
+
 // ref: FUN_004f5e20
 CAaBox& CM2Model::GetBoundingBox(CAaBox& bounds) {
     if (!this->m_shared->m_m2DataLoaded) {
@@ -2854,7 +2925,12 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 4: {
-                // TODO
+                this->SetBoneFlags(
+                    modelCall->args[0],
+                    modelCall->args[1],
+                    modelCall->args[2]
+                );
+
                 break;
             }
 
@@ -4667,6 +4743,47 @@ void CM2Model::SetBoneSequenceSpeed(uint32_t boneId, float speed) {
     sequence.uint10 = static_cast<int32_t>(llrint(static_cast<float>(length) * fabsf(inverse))) + start;
     sequence.float14 = speed;
     sequence.float18 = inverse;
+}
+
+// ref: FUN_008265e0
+void CM2Model::SetBoneFlags(uint32_t boneId, uint32_t value, uint32_t mask) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 4;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = boneId;
+        modelCall->args[1] = value;
+        modelCall->args[2] = mask;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return;
+    }
+
+    // The masked merge is 16-bit on BOTH sides and the store is 32-bit, so the reference
+    // clears the top half of the word every time it is called. Transcribed rather than
+    // tidied: the flag bits Animate reads all live in the low half, and widening the merge
+    // would preserve bits the reference drops.
+    auto& flags = this->m_bones[boneIndex].flags;
+    flags = (flags & 0xFFFF & ~mask) | (value & mask & 0xFFFF);
 }
 
 // ref: FUN_00827460

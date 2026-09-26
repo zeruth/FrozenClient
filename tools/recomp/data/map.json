@@ -1227,7 +1227,7 @@
   "files": [],
   "frozen": "sprintf",
   "frozenSize": 94,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "OggDecompress.cpp",
   "refSize": 30,
   "status": "ported"
@@ -22144,22 +22144,6 @@
   "module": "SpellBookFrame.cpp",
   "refSize": 52,
   "status": "diverged"
- },
- "0053c430": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.4,
-  "files": [
-   "src/model/CM2Shared.cpp",
-   "src/model/cm2shared.cpp"
-  ],
-  "frozen": "CM2Shared::LoadSkinProfile",
-  "frozenSize": 0,
-  "how": "string",
-  "module": "SpellBookFrame.cpp",
-  "refSize": 233,
-  "status": "ported"
  },
  "0053d990": {
   "branchRatio": 0.0,
@@ -46181,7 +46165,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 267,
+  "frozenSize": 247,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -48869,7 +48853,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDef",
-  "frozenSize": 424,
+  "frozenSize": 375,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -49029,7 +49013,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDefGroup",
-  "frozenSize": 551,
+  "frozenSize": 532,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 103,
@@ -49157,7 +49141,7 @@
    "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapDoodadDef::CMapDoodadDef",
-  "frozenSize": 275,
+  "frozenSize": 241,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 362,
@@ -49573,7 +49557,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::CMapChunk",
-  "frozenSize": 449,
+  "frozenSize": 427,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 507,
@@ -51126,7 +51110,7 @@
    "src/world/map/cmaparea.cpp"
   ],
   "frozen": "CMapArea::CMapArea",
-  "frozenSize": 283,
+  "frozenSize": 247,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 207,
@@ -51161,6 +51145,21 @@
   "how": "override",
   "module": "MapArea.cpp",
   "refSize": 136,
+  "status": "ported"
+ },
+ "007d7260": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/cmapbaseobj.cpp"
+  ],
+  "frozen": "CMapBaseObj::CMapBaseObj",
+  "frozenSize": 57,
+  "how": "override",
+  "module": "MapArea.cpp",
+  "refSize": 51,
   "status": "ported"
  },
  "007d72d0": {
@@ -55506,6 +55505,22 @@
   "refSize": 120,
   "status": "ported"
  },
+ "008265e0": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.071,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetBoneFlags",
+  "frozenSize": 212,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 206,
+  "status": "ported"
+ },
  "008266b0": {
   "branchRatio": 0.556,
   "constOverlap": 0.043,
@@ -55778,6 +55793,22 @@
   "refSize": 125,
   "status": "ported"
  },
+ "00827780": {
+  "branchRatio": 0.294,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetEventTimestamp",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 338,
+  "status": "ported"
+ },
  "008278e0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -55927,6 +55958,58 @@
   "module": "M2Scene.cpp",
   "refSize": 450,
   "status": "faithful"
+ },
+ "0082b270": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<unsigned char,unsigned char>",
+  "frozenSize": 373,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 200,
+  "status": "ported"
+ },
+ "0082b340": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<float,float>",
+  "frozenSize": 449,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 273,
+  "status": "ported"
+ },
+ "0082b460": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateSplineTrack<M2SplineKey<C3Vector>,C3Vector>",
+  "frozenSize": 914,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 1082,
+  "status": "ported"
+ },
+ "0082b8a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateSplineTrack<M2SplineKey<float>,float>",
+  "frozenSize": 951,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 679,
+  "status": "ported"
  },
  "0082bd60": {
   "branchRatio": 1.0,
@@ -56136,6 +56219,22 @@
   "refSize": 420,
   "status": "ported"
  },
+ "008317e0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetEventWorldPosition",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 178,
+  "status": "ported"
+ },
  "00831af0": {
   "branchRatio": 0.6,
   "constOverlap": 0.0,
@@ -56268,13 +56367,13 @@
   "branchRatio": 0.535,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.388,
+  "fidelity": 0.403,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 4832,
+  "frozenSize": 4856,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -56456,11 +56555,43 @@
   "refSize": 276,
   "status": "ported"
  },
+ "00834d90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::AddAmbient",
+  "frozenSize": 46,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "00834dc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::AddDiffuse",
+  "frozenSize": 506,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 408,
+  "status": "ported"
+ },
  "00834f60": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Lighting.cpp",
    "src/model/cm2lighting.cpp"
@@ -56646,6 +56777,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 89,
+  "status": "ported"
+ },
+ "00835a80": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "M2SkinFileName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 85,
   "status": "ported"
  },
  "00835ae0": {

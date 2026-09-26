@@ -56,6 +56,15 @@ class CMapBaseObj {
         TSLink<CMapBaseObj> m_lameAssLink;
         STORM_EXPLICIT_LIST(CMapBaseObjLink, ownerLink) m_parentLinkList;
 
+        // Member functions
+        // ref: FUN_007d7260
+        // Out of line ON PURPOSE. The reference has a real constructor here -- vtable, zero
+        // links, the parent-link list built on ownerLink, type 1, link count 0, flags 0 -- and
+        // the default member initializers above say exactly that, so the body is defaulted.
+        // Declared rather than left implicit because an implicit constructor is inlined into
+        // every subclass and leaves no function to match the reference's against.
+        CMapBaseObj();
+
         // Public virtual member functions
         virtual ~CMapBaseObj() = default;
         virtual void SelectLights(CM2Lighting* lighting) {};

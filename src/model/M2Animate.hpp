@@ -59,17 +59,20 @@ void M2InterpolateLinear(const M2CompQuat& startValue, const M2CompQuat& endValu
 // track of type 2 or 3 held whatever it last had and never animated at all -- the switch in
 // M2AnimateSplineTrack below reaches them for exactly those two types.
 //
-// **These are written from the M2 format rather than transcribed from the reference**, which is
-// worth being explicit about because this project's rule is to decompile first. The reference's
-// own versions were not located: the spline evaluation is template-instantiated and the search for
-// its distinctive 36-byte key indexing landed on the camera lookup instead. What they compute is
-// the definition of a cubic Bezier and a cubic Hermite over the key layout frozen already
-// declares, `{ value, inTan, outTan }`, not an inference from how the screen looks.
+// These were originally written from the M2 format because the reference's own versions could
+// not be found. THEY HAVE NOW BEEN FOUND AND THEY AGREE, coefficient for coefficient:
+// FUN_0082b460 is the C3Vector instantiation (36-byte keys) and FUN_0082b8a0 the float one
+// (12-byte keys), and both build their weights out of three constants -- 1.0 at 0x009e1130,
+// 2.0 at 0x00a4040c and 3.0 at 0x009ebbc4, with 6.0 at 0x009e8cf8 in the Bezier.
 //
-// The one convention that could still differ is tangent scaling -- some engines premultiply the
-// tangents by the key interval. If curved tracks animate but with visibly wrong curvature, that is
-// the first thing to check, and it is the whole of the risk here: the previous behaviour was no
-// animation whatsoever, so a curve that is close is strictly better than a value that is frozen.
+//   trackType 2  -t^3 + 3t^2 - 3t + 1, 3t^3 - 6t^2 + 3t, 3t^2 - 3t^3, t^3
+//                = (1-t)^3, 3t(1-t)^2, 3t^2(1-t), t^3, against value, outTan, inTan, value
+//   trackType 3  2t^3 - 3t^2 + 1, t^3 - 2t^2 + t, 3t^2 - 2t^3, t^3 - t^2
+//                = h00, h10, h01, h11, against value, outTan, value, inTan
+//
+// which is what is written below. The open question that note carried -- whether the reference
+// premultiplies the tangents by the key interval -- is answered NO: the tangents enter the sum
+// raw, with nothing but the polynomial weight on them.
 void M2InterpolateCubicBezier(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
     float t = ratio;
     float u = 1.0f - t;
@@ -174,11 +177,59 @@ void M2AnimateSplineTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track
         }
     }
 
-    // NOT BLENDED, and not by oversight. The blend at the end of M2AnimateTrack below was read
-    // from FUN_00828680 and FUN_0082b0a0, which are the NON-spline pair; a spline track's keys
-    // are M2SplineKey<T> and interpolate through `.value`, so whatever the reference does here
-    // is a different function that has not been read. Copying the shape of the other one would
-    // be guessing.
+    // Blend with the secondary sequence.
+    //
+    // The note that used to stand here said a spline track is not blended because the reference's
+    // spline function had not been read. It has now (FUN_0082b460 and FUN_0082b8a0) and it DOES
+    // blend, by the same rule as the non-spline pair: re-run the interpolator against the
+    // secondary sequence and lerp the two results by the bone's weight.
+    //
+    // Two details are the reference's own rather than this template's symmetry. The secondary
+    // walk takes the DEFAULT value when the secondary sequence has no keys -- it does not leave
+    // the primary value alone -- so a bone fading out of a sequence the track does not cover
+    // fades towards the default. And that walk has no trackType == 0 case at all: it tests 2,
+    // then 3, then falls through to linear. Unreachable, because trackType == 0 returns above
+    // before ever getting here, but it is why the switch below carries a `default` where the
+    // primary one lists 1 explicitly.
+    if (modelBone->floatA8 == 0.0f || track.loopIndex != 0xFFFF) {
+        return;
+    }
+
+    auto secondIndex = modelBone->secondarySequence.uint4 < track.sequenceKeys.Count()
+        ? modelBone->secondarySequence.uint4
+        : 0;
+
+    auto& secondKeys = track.sequenceKeys[secondIndex];
+
+    T2 secondary = defaultValue;
+
+    if (secondKeys.keys.Count()) {
+        uint32_t nextKey;
+        float ratio;
+
+        // currentKey2 is this walk's own cursor, for the same reason the non-spline template
+        // keeps one: sharing currentKey would make each walk fight the other's search.
+        model->FindKey(&modelBone->secondarySequence, track, modelTrack.currentKey2, nextKey, ratio);
+
+        auto& startKey = secondKeys.keys[modelTrack.currentKey2];
+        auto& endKey = secondKeys.keys[nextKey];
+
+        switch (track.trackType) {
+            case 2:
+                M2InterpolateCubicBezier(startKey, endKey, ratio, secondary);
+                break;
+
+            case 3:
+                M2InterpolateCubicHermite(startKey, endKey, ratio, secondary);
+                break;
+
+            default:
+                M2InterpolateLinear(startKey.value, endKey.value, ratio, secondary);
+                break;
+        }
+    }
+
+    M2BlendValue(modelTrack.currentValue, secondary, modelBone->floatA8);
 }
 
 // Mix a track value with the one the secondary sequence produced, by the bone's blend

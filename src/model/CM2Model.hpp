@@ -426,12 +426,33 @@ class CM2Model {
         bool BoneHasParent(uint32_t boneId);
         // ref: FUN_00827000
         void SetBoneSequenceSpeed(uint32_t boneId, float speed);
+
+        // ref: FUN_008265e0
+        // Force bits of a key bone's runtime flag word. Animate ORs this word into the
+        // AUTHORED bone flags, so this is how an owner turns on billboarding or the
+        // ignore-parent-transform behaviour for a bone the artist did not mark. Only the bits in
+        // `mask` move; the rest keep what they had. Queued as model call 4 before the load.
+        void SetBoneFlags(uint32_t boneId, uint32_t value, uint32_t mask);
         // ref: FUN_00827460
         void GetAttachmentPosition(C3Vector* position, uint32_t id);
         // ref: FUN_008275f0
         int32_t HasEvent(uint32_t eventId);
         // ref: FUN_00827670
         int32_t GetEvent(uint32_t eventId, C3Vector** position, uint16_t* boneIndex);
+
+        // ref: FUN_00827780
+        // WHEN an animation event fires, in sequence time: the first timestamp authored for
+        // `eventId` inside the animation `animId`. Zero when the model has neither, which is the
+        // same answer as "at the very start" -- the reference does not distinguish them either,
+        // so a caller that cares has to ask whether the event exists first.
+        uint32_t GetEventTimestamp(uint32_t animId, uint32_t eventId);
+
+        // ref: FUN_008317e0
+        // Where an authored animation event is RIGHT NOW, in world space: its local position
+        // carried through the bone it hangs off and then out of view space. The origin when the
+        // model has no such event. Animates first, because the bone matrix has to be current --
+        // this is what tells a footfall or a weapon-swing event where to put its effect.
+        C3Vector& GetEventWorldPosition(C3Vector& out, uint32_t eventId);
         // ref: FUN_008278e0
         int32_t HasCamera(uint32_t cameraId);
         // ref: FUN_00827960
