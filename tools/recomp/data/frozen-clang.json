@@ -198833,7 +198833,8 @@
 "CMapObj::WaitForGroup",
 "BoxDistanceSq",
 "CAaBox::Intersects",
-"CWorldScene::BucketMapObjDefGroup"
+"CWorldScene::BucketMapObjDefGroup",
+"CWorldScene::SubmitOccluderBox"
 ],
 "strings": [],
 "consts": [
@@ -198843,11 +198844,12 @@
 "0x20",
 "0x8",
 "0x80",
-"1"
+"1",
+"50.0f"
 ],
-"branches": 21,
+"branches": 20,
 "stub": false,
-"lines": 84,
+"lines": 106,
 "refs": [],
 "line": 249
 },
@@ -198894,7 +198896,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 340
+"line": 362
 },
 "CMapObj::QuerySkipFlags": {
 "files": [

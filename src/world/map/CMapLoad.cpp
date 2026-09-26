@@ -252,9 +252,6 @@ void CMap::UpdateMapObjDefs(int32_t update) {
     for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
         auto mapObj = def->m_mapObj;
 
-        if (def->m_flags & 0x80) {
-        }
-
         if (CWorld::s_farBox.Intersects(def->m_bounds)) {
             if (canWait && !mapObj->m_rootLoaded) {
                 mapObj->WaitForRoot();
@@ -321,12 +318,37 @@ void CMap::UpdateMapObjDefs(int32_t update) {
                     }
 
                     // TODO the group's portals, walked from here into the neighbours they open
+
+                    // TODO two more occlusion feeds the reference runs per visible group, both
+                    // needing a list frozen's CMapObjGroup does not carry:
+                    //
+                    //   FUN_00794ad0(defGroup, 50.0f) submits the GROUP's own box as an occluder,
+                    //   through SubmitOccluderBox again plus FUN_00791eb0.
+                    //
+                    //   Then it walks the group's occluder-EDGE list at +0x1b0 -- each record holds
+                    //   two points at +0x04 and +0x10 and links on at +0x20 -- brings both points
+                    //   out by the def's placement matrix, and hands each edge to the horizon
+                    //   clipper FUN_007927e0. That clipper cuts an edge at the 33.33-yard distance
+                    //   row boundaries and links one CWorldOccluder per row; see
+                    //   MapHorizonTable.hpp, which describes it for the fixed occluders.
+                    //
+                    // frozen has nothing at +0x1b0 (its m_link is at +0x1b4), so the edges are not
+                    // read at load either.
                 }
             }
         }
 
+        // Every building near enough becomes an occluder, whether or not it is inside the far box
+        // above -- the reference makes this call outside that test. FUN_007946d0 is
+        // CWorldScene::SubmitOccluderBox, which this TODO named correctly and then described
+        // wrongly as a collision grid; and the distance is the 50.0 at 0x009f22ec, not FLT_MAX, so
+        // only buildings within fifty yards are offered.
+        //
+        // It costs almost nothing today because SubmitOccluderBox builds its five faces and then
+        // stops at its own TODO, the volume submission FUN_00792360. Wiring it now is what makes
+        // that TODO the only thing between here and buildings occluding.
         if (!(def->m_flags & 0x80)) {
-            // TODO FUN_007946d0(def->m_bounds, FLT_MAX): the def's place in the collision grid
+            CWorldScene::SubmitOccluderBox(def->m_bounds, 50.0f);
         }
     }
 }

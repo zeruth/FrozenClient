@@ -44001,7 +44001,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "DistancePointBox",
-  "frozenSize": 0,
+  "frozenSize": 123,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 153,
@@ -44545,7 +44545,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SubmitOccluderBox",
-  "frozenSize": 0,
+  "frozenSize": 143,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1009,
@@ -46264,16 +46264,16 @@
   "status": "ported"
  },
  "007b6110": {
-  "branchRatio": 0.389,
+  "branchRatio": 0.37,
   "constOverlap": 0.071,
   "faithful": false,
-  "fidelity": 0.529,
+  "fidelity": 0.588,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMap::UpdateMapObjDefs",
-  "frozenSize": 1027,
+  "frozenSize": 1110,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 989,
