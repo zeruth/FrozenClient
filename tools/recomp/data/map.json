@@ -49843,7 +49843,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::ParseChunks",
-  "frozenSize": 803,
+  "frozenSize": 801,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 657,

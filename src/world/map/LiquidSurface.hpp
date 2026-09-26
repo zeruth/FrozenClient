@@ -103,21 +103,45 @@ class CMaterialSettings;
 // is a triangle STRIP while the index count is six per quad, which is a list -- one of the two
 // readings is wrong and it has not been resolved yet, so check it against a run before trusting
 // either.
-class CChunkGeomFactory {
+// A liquid surface's geometry, whichever kind it is. The reference gives BOTH of its factories a
+// four-slot vtable and stores either one in Liquid::CInstance's +0x08, so the pair is polymorphic
+// there rather than two unrelated classes:
+//
+//   CChunkGeomFactory  vtable 0x00a404c0, build FUN_007d4ab0  -- terrain chunks
+//   CMeshGeomFactory   vtable 0x00a404d4, build FUN_007d43f0  -- map object (WMO) groups
+//
+// Slot 1 is the release and slot 2 the build, which are the two the instance and the material
+// actually call through, so those are the two this base makes virtual. The refcount sits at +0x04
+// in both, right after the vtable, which is where the reference keeps it too.
+class IGeomFactory {
     public:
-        // TODO +0x00 vtable, +0x04, +0x08 the dirty flag, +0x0c
         uint32_t m_refCount = 1;
+
+        virtual ~IGeomFactory() = default;
+
+        void AddRef();
+
+        // The reference's vtable slot 1.
+        virtual void Release() = 0;
+
+        // The reference's vtable slot 2: build the surface's vertices and indices, or hand back
+        // what was built last time.
+        virtual int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
+                              CGxBatch* batch) = 0;
+};
+
+class CChunkGeomFactory : public IGeomFactory {
+    public:
+        // TODO +0x08 the dirty flag, +0x0c
         TSGrowableArray<CChunkLiquid*> m_layers;   // +0x10 .. +0x1c
         // TODO +0x1c the cached buffer holder, +0x20 .. +0x2c the cached batch,
         // +0x34 the 4x4 every layer's own matrix is derived from
 
-        void AddRef();
-        void Release();
+        void Release() override;
 
-        // Build the surface's vertices and indices, or hand back what was built last time.
         // ref: FUN_007d4ab0 (the vtable's slot 2)
         int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
-                      CGxBatch* batch);
+                      CGxBatch* batch) override;
 
         // The buffer pair built last time, and what it was built for.
         CGxBuf* m_vertexBuf = nullptr;
@@ -164,7 +188,7 @@ class CInstance {
     public:
         IMaterial* m_material = nullptr;              // +0x00
         CMaterialSettings* m_settings = nullptr;      // +0x04
-        CChunkGeomFactory* m_geometry = nullptr;      // +0x08
+        IGeomFactory* m_geometry = nullptr;           // +0x08
         // +0x0c: the wave manager, a Liquid::CWaveManager -- identified from the RTTI name the
         // reference's allocator passes (".?AVCWaveManager@Liquid@@" at 0x00af16a0). It is a
         // refcounted SINGLETON at 0x00d2dd2c, made by the first CChunkLiquid to need it and shared

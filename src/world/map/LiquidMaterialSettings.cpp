@@ -614,7 +614,7 @@ void SetupWaves(CWaveManager* manager, const CMaterialSettings& settings) {
 // Part of ref: FUN_008a48f0 -- the shared body behind all four shader materials, which differ only
 // in the shader pair they hand it.
 void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
-                        CClientEnvironment* environment, CChunkGeomFactory* geometry,
+                        CClientEnvironment* environment, IGeomFactory* geometry,
                         CWaveManager* waveManager, const C3Vector& cameraPos,
                         const C44Matrix* placement, const CAaSphere* sphere,
                         CMaterialSettings* settings) {
@@ -838,7 +838,7 @@ void CMaterialProcWater::EnsureShaders() {
     LoadPair(s_vsProcWater, 4, vertexName, s_psProcWater, 1, pixelName);
 }
 
-void CMaterialWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
+void CMaterialWater::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                           const C3Vector& cameraPos, const C44Matrix* placement,
                           const CAaSphere* sphere, CMaterialSettings* settings) {
     DrawShaderMaterial(s_vsWater, s_psWater, environment, geometry,
@@ -846,7 +846,7 @@ void CMaterialWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* ge
                        settings);
 }
 
-void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
+void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                                 const C3Vector& cameraPos, const C44Matrix* placement,
                                 const CAaSphere* sphere, CMaterialSettings* settings) {
     DrawShaderMaterial(s_vsWaterNoSpec, s_psWaterNoSpec, environment, geometry,
@@ -854,7 +854,7 @@ void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, CChunkGeomFacto
                        placement, sphere, settings);
 }
 
-void CMaterialMagma::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
+void CMaterialMagma::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                           const C3Vector& cameraPos, const C44Matrix* placement,
                           const CAaSphere* sphere, CMaterialSettings* settings) {
     // Magma loads ONE vertex program rather than four, so the permutation is always 0 -- which is
@@ -867,7 +867,7 @@ void CMaterialMagma::Draw(CClientEnvironment* environment, CChunkGeomFactory* ge
                        settings);
 }
 
-void CMaterialProcWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
+void CMaterialProcWater::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                               const C3Vector& cameraPos, const C44Matrix* placement,
                               const CAaSphere* sphere, CMaterialSettings* settings) {
     DrawShaderMaterial(s_vsProcWater, s_psProcWater, environment, geometry,

@@ -10,8 +10,8 @@
 
 namespace Liquid {
 
-class CChunkGeomFactory;
 class CClientEnvironment;
+class IGeomFactory;
 
 // Everything one kind of liquid needs to draw, flattened out of LiquidType.dbc and the
 // LiquidMaterial row it names. One of these is built the first time a liquid type is asked for
@@ -96,7 +96,7 @@ class IMaterial {
         //
         // Still a stub. The body is FUN_008a48f0, 2173 bytes of device state, shader selection and
         // constant setup, and it is the last thing between this stack and water on screen.
-        virtual void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+        virtual void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                           const C44Matrix*, const CAaSphere*, CMaterialSettings*) {}
 
         // Load this material's shader pair, once for the whole class.
@@ -107,7 +107,7 @@ class IMaterial {
 class CMaterialWater : public IMaterial {
     public:
         void EnsureShaders() override;
-        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+        void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
@@ -115,7 +115,7 @@ class CMaterialWater : public IMaterial {
 class CMaterialWaterNoSpec : public IMaterial {
     public:
         void EnsureShaders() override;
-        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+        void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
@@ -123,7 +123,7 @@ class CMaterialWaterNoSpec : public IMaterial {
 class CMaterialMagma : public IMaterial {
     public:
         void EnsureShaders() override;
-        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+        void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
@@ -132,7 +132,7 @@ class CMaterialMagma : public IMaterial {
 class CMaterialProcWater : public IMaterial {
     public:
         void EnsureShaders() override;
-        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+        void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 

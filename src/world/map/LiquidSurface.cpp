@@ -30,7 +30,7 @@ static TSGrowableArray<CChunkLiquid*> s_gather;
 // off and every layer becomes its own surface -- see the note in CreateSurface.
 static int32_t s_mergeNeighbours = 0;
 
-void CChunkGeomFactory::AddRef() {
+void IGeomFactory::AddRef() {
     this->m_refCount++;
 }
 
