@@ -79,9 +79,24 @@ class CM2Model {
 
         // Member variables
         uint32_t m_refCount = 1;
+
+        // THE MODEL HAS TWO FLAG STORAGES AND THEY ARE NOT INTERCHANGEABLE. This one is the
+        // CREATION flags, the reference's +0x04: what the caller asked for when the model was made.
+        // Bit 0x20 is the streaming bit that IsLoaded consults; bit 0x1 is read by CM2Scene and the
+        // simple-model UI.
+        //
+        // The model's per-frame STATE is the bitfield block below, which is the reference's +0x10 --
+        // the word its own code ORs draw bits into. `m_flag8` there is what puts the model on
+        // m_scene->m_drawList, so a caller marking a model visible must set THAT, not a bit in the
+        // word above. Writing `m_flags |= 0x8` instead is silent: it compiles, it sets a creation
+        // flag nobody reads for visibility, and the model simply never draws. That is exactly what
+        // kept every terrain doodad off the screen until 2026-09-26.
         uint32_t m_flags = 0;
+
         CM2Model** m_scenePrev = nullptr;
         CM2Model* m_sceneNext = nullptr;
+
+        // The reference's +0x10 state word, one bit per member, named by bit value.
         uint32_t m_loaded : 1;
         uint32_t m_flag2 : 1;
         uint32_t m_flag4 : 1;
