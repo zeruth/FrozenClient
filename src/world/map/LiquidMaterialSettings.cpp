@@ -336,6 +336,14 @@ const uint32_t VS_PROJECTION = 0;
 const uint32_t VS_FOG = 4;
 const uint32_t VS_WORLD_VIEW = 5;
 const uint32_t VS_SUN_DIR = 33;
+const uint32_t VS_WAVE_PHASE_A = 46;
+const uint32_t VS_WAVE_PHASE_B = 47;
+const uint32_t VS_WAVE_A = 48;        // 48,49,50, one per wave
+const uint32_t VS_WAVE_RECIP_A = 51;
+const uint32_t VS_WAVE_RECIP_B = 52;
+const uint32_t VS_WAVE_B = 53;        // 53,54,55, one per wave
+const uint32_t VS_WAVE_RECIP_C = 56;
+const uint32_t VS_WAVE_SCALAR = 57;
 const uint32_t VS_TEX_MATRIX = 9;
 const uint32_t VS_SCALE = 25;
 const uint32_t VS_ROT_SCALE = 29;
@@ -344,6 +352,9 @@ const uint32_t VS_SPLIT = 46;        // where the second vertex upload starts
 const uint32_t PS_MVP = 0;
 const uint32_t PS_FOG_COLOR = 4;
 const uint32_t PS_CAMERA = 5;
+// psSun[] is uploaded starting at this register, so an index into it is (register - this).
+const uint32_t PS_SUN_BASE = 6;
+const uint32_t PS_WAVE = 10;         // 10 and 11
 
 struct Constants {
     C4Vector vs[VS_REGISTERS];
@@ -476,12 +487,137 @@ void SetupSunConstants(const CM2Lighting& lighting) {
     StoreVector(&s_constants.psSun[3], lighting.m_sunSpecular, 50.0f);
 }
 
+// The floor every reciprocal in the wave constants is clamped to, so a zero rate cannot divide.
+// DAT_009e1134.
+const float WAVE_EPSILON = 0.0010000000474974513f;
+
+// A wave's phase: the clock times its rate, taken modulo 8192 and scaled so 1024 steps make a full
+// turn -- so the phase wraps every 1024 and the register carries up to eight turns of it. The two
+// constants are 1/1024 (0x00a1c8a0) and 2*pi (0x009f193c).
+float WavePhase(float rate) {
+    int32_t stamp = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+    float ticks = static_cast<float>(stamp);
+
+    uint32_t phase = static_cast<uint32_t>(static_cast<int64_t>(nearbyintf(ticks * rate)));
+
+    return static_cast<float>(phase & 0x1fff) * 0.0009765625f * 6.2831854820251465f;
+}
+
+float* Components(C4Vector& v) {
+    return reinterpret_cast<float*>(&v);
+}
+
+// ref: FUN_008a3620
+// One of the first three waves. `pair` is two floats straight through; the rest are a rate and two
+// reciprocals, and the last is the rate the phase is taken at.
+void SetupWaveA(uint32_t index, const float* pair, float recipA, float recipB, float scalar,
+                float rate) {
+    Components(s_constants.vs[VS_WAVE_PHASE_A])[index] = WavePhase(rate);
+
+    C4Vector& wave = s_constants.vs[VS_WAVE_A + index];
+
+    wave.x = pair[0];
+    wave.y = pair[1];
+    wave.z = 1.0f / (recipA < WAVE_EPSILON ? WAVE_EPSILON : recipA);
+    wave.w = scalar;
+
+    Components(s_constants.vs[VS_WAVE_RECIP_A])[index] =
+        1.0f / (recipB < WAVE_EPSILON ? WAVE_EPSILON : recipB);
+}
+
+// ref: FUN_008a3710
+// One of the second three. Two pairs this time, and three scalars that land in three different
+// registers rather than alongside each other.
+void SetupWaveB(uint32_t index, const float* pairA, const float* pairB, float recipA, float recipB,
+                float scalar, float rate) {
+    Components(s_constants.vs[VS_WAVE_PHASE_B])[index] = WavePhase(rate);
+
+    float a = recipA < WAVE_EPSILON ? WAVE_EPSILON : recipA;
+    float b = recipB < WAVE_EPSILON ? WAVE_EPSILON : recipB;
+
+    Components(s_constants.vs[VS_WAVE_RECIP_B])[index] = 1.0f / b;
+
+    C4Vector& wave = s_constants.vs[VS_WAVE_B + index];
+
+    wave.x = pairA[0];
+    wave.y = pairA[1];
+    wave.z = pairB[0];
+    wave.w = pairB[1];
+
+    Components(s_constants.vs[VS_WAVE_RECIP_C])[index] = 1.0f / a;
+    Components(s_constants.vs[VS_WAVE_SCALAR])[index] = scalar;
+}
+
+// ref: FUN_008a3810
+// The last seven stage floats, and the only part of the wave block that needs no wave manager --
+// which is why it carries real values today where the six above do not. Note the scramble: the
+// SEVENTH float lands before the fifth and sixth.
+void SetupWaveConstants(const CMaterialSettings& settings) {
+    float rate = settings.GetStageFloat(11);
+
+    if (rate < WAVE_EPSILON) {
+        rate = WAVE_EPSILON;
+    }
+
+    s_constants.psSun[PS_WAVE - PS_SUN_BASE].x = 1.0f / rate;
+    s_constants.psSun[PS_WAVE - PS_SUN_BASE].y = settings.GetStageFloat(12);
+    s_constants.psSun[PS_WAVE - PS_SUN_BASE].z = settings.GetStageFloat(13);
+    s_constants.psSun[PS_WAVE - PS_SUN_BASE].w = settings.GetStageFloat(14);
+
+    s_constants.psSun[PS_WAVE + 1 - PS_SUN_BASE].x = settings.GetStageFloat(17);
+    s_constants.psSun[PS_WAVE + 1 - PS_SUN_BASE].y = settings.GetStageFloat(15);
+    s_constants.psSun[PS_WAVE + 1 - PS_SUN_BASE].z = settings.GetStageFloat(16);
+    s_constants.psSun[PS_WAVE + 1 - PS_SUN_BASE].w = 0.0f;
+}
+
+// Part of ref: FUN_008a48f0 -- the six wave records, walked out of the manager the surface holds.
+//
+// The first three are six dwords each and the second three eight, and a record past the end of what
+// the manager offers is filled with zeroes rather than skipped -- so with no manager at all, which
+// is where frozen is, every wave register takes the reference's own zero-fill values.
+void SetupWaves(CWaveManager* manager, const CMaterialSettings& settings) {
+    const float* records = nullptr;
+    const float* end = nullptr;
+
+    if (manager) {
+        // TODO the manager's vtable slots 3 and 4: a pointer to its records and a DWORD count.
+        // Liquid::CWaveManager is not ported, so there is nothing to ask.
+    }
+
+    static const float ZERO_PAIR[2] = { 0.0f, 0.0f };
+
+    for (uint32_t i = 0; i < 3; i++) {
+        if (records && records + 6 <= end) {
+            SetupWaveA(i, &records[0], records[2], records[3], records[4], records[5]);
+
+            records += 6;
+        } else {
+            SetupWaveA(i, ZERO_PAIR, 0.0f, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    for (uint32_t i = 0; i < 3; i++) {
+        if (records && records + 8 <= end) {
+            SetupWaveB(i, &records[0], &records[2], records[4], records[5], records[6],
+                       records[7]);
+
+            records += 8;
+        } else {
+            SetupWaveB(i, ZERO_PAIR, ZERO_PAIR, 0.0f, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    SetupWaveConstants(settings);
+}
+
 // Part of ref: FUN_008a48f0 -- the shared body behind all four shader materials, which differ only
 // in the shader pair they hand it.
 void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
                         CClientEnvironment* environment, CChunkGeomFactory* geometry,
-                        const C3Vector& cameraPos, const C44Matrix* placement,
-                        const CAaSphere* sphere, CMaterialSettings* settings) {
+                        CWaveManager* waveManager, const C3Vector& cameraPos,
+                        const C44Matrix* placement, const CAaSphere* sphere,
+                        CMaterialSettings* settings) {
     // LIQCOUNT: one counter per rejection point, so a run says which gate the water dies at rather
     // than just "no water". Remove with the lighting constants.
     static uint32_t s_calls = 0;
@@ -585,6 +721,7 @@ void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
 
     SetupLightConstants(lighting);
     SetupSunConstants(lighting);
+    SetupWaves(waveManager, *settings);
 
     // Four texture matrices, one per stage float pair.
     for (uint32_t i = 0; i < 4; i++) {
@@ -701,21 +838,23 @@ void CMaterialProcWater::EnsureShaders() {
     LoadPair(s_vsProcWater, 4, vertexName, s_psProcWater, 1, pixelName);
 }
 
-void CMaterialWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+void CMaterialWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
                           const C3Vector& cameraPos, const C44Matrix* placement,
                           const CAaSphere* sphere, CMaterialSettings* settings) {
-    DrawShaderMaterial(s_vsWater, s_psWater, environment, geometry, cameraPos, placement, sphere,
+    DrawShaderMaterial(s_vsWater, s_psWater, environment, geometry,
+                       static_cast<CWaveManager*>(waveManager), cameraPos, placement, sphere,
                        settings);
 }
 
-void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
                                 const C3Vector& cameraPos, const C44Matrix* placement,
                                 const CAaSphere* sphere, CMaterialSettings* settings) {
-    DrawShaderMaterial(s_vsWaterNoSpec, s_psWaterNoSpec, environment, geometry, cameraPos,
+    DrawShaderMaterial(s_vsWaterNoSpec, s_psWaterNoSpec, environment, geometry,
+                       static_cast<CWaveManager*>(waveManager), cameraPos,
                        placement, sphere, settings);
 }
 
-void CMaterialMagma::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+void CMaterialMagma::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
                           const C3Vector& cameraPos, const C44Matrix* placement,
                           const CAaSphere* sphere, CMaterialSettings* settings) {
     // Magma loads ONE vertex program rather than four, so the permutation is always 0 -- which is
@@ -723,14 +862,16 @@ void CMaterialMagma::Draw(CClientEnvironment* environment, CChunkGeomFactory* ge
     // one-entry array through the same body would index past it, so magma clamps here.
     CGxShader* shaders[4] = { s_vsMagma[0], s_vsMagma[0], s_vsMagma[0], s_vsMagma[0] };
 
-    DrawShaderMaterial(shaders, s_psMagma, environment, geometry, cameraPos, placement, sphere,
+    DrawShaderMaterial(shaders, s_psMagma, environment, geometry,
+                       static_cast<CWaveManager*>(waveManager), cameraPos, placement, sphere,
                        settings);
 }
 
-void CMaterialProcWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+void CMaterialProcWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void* waveManager,
                               const C3Vector& cameraPos, const C44Matrix* placement,
                               const CAaSphere* sphere, CMaterialSettings* settings) {
-    DrawShaderMaterial(s_vsProcWater, s_psProcWater, environment, geometry, cameraPos, placement,
+    DrawShaderMaterial(s_vsProcWater, s_psProcWater, environment, geometry,
+                       static_cast<CWaveManager*>(waveManager), cameraPos, placement,
                        sphere, settings);
 }
 
