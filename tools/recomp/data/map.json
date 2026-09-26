@@ -36541,7 +36541,7 @@
   "files": [],
   "frozen": "WowClientDB<LiquidTypeRec>::GetRecord",
   "frozenSize": 29,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "DBCache.cpp",
   "refSize": 34,
   "status": "ported"
@@ -45148,7 +45148,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::AllocHitRecord",
-  "frozenSize": 0,
+  "frozenSize": 98,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 74,
@@ -45164,7 +45164,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::AllocHitIndices",
-  "frozenSize": 0,
+  "frozenSize": 45,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 50,
@@ -45203,10 +45203,10 @@
   "status": "ported"
  },
  "007a6630": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.179,
+  "branchRatio": 0.438,
+  "constOverlap": 0.25,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/world/map/CMapObjGroup.cpp",
    "src/world/map/cmapobjgroup.cpp"
@@ -45228,7 +45228,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "MapQueryBoxTerrain",
-  "frozenSize": 815,
+  "frozenSize": 1184,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 272,
@@ -48668,10 +48668,26 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::AllocHitRecord",
-  "frozenSize": 0,
+  "frozenSize": 98,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 124,
+  "status": "ported"
+ },
+ "007c7790": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
+  ],
+  "frozen": "ClassifyCornerZ",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 60,
   "status": "ported"
  },
  "007c77d0": {
@@ -49356,6 +49372,38 @@
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 391,
+  "status": "ported"
+ },
+ "007ce5d0": {
+  "branchRatio": 0.611,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::RecordHits",
+  "frozenSize": 791,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 907,
+  "status": "ported"
+ },
+ "007ce960": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::QueryBox",
+  "frozenSize": 469,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 529,
   "status": "ported"
  },
  "007cee10": {

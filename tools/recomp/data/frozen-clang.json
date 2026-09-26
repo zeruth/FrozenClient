@@ -195491,7 +195491,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 21
+"line": 24
 },
 "CChunkLiquid::UpdateForFrame": {
 "files": [
@@ -195509,7 +195509,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 45
+"line": 48
 },
 "CChunkLiquid::ReleaseSurface": {
 "files": [
@@ -195524,7 +195524,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 66
+"line": 69
 },
 "CChunkLiquid::GetBounds": {
 "files": [
@@ -195539,7 +195539,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 77
+"line": 80
 },
 "CChunkLiquid::UpdateAnim": {
 "files": [
@@ -195558,7 +195558,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 88
+"line": 91
 },
 "CChunkLiquid::ReadTileFlags": {
 "files": [
@@ -195579,7 +195579,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 108
+"line": 111
 },
 "CChunkLiquid::CoversTile": {
 "files": [
@@ -195595,7 +195595,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 127
+"line": 130
 },
 "CChunkLiquid::GetHeightAt": {
 "files": [
@@ -195616,7 +195616,111 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 148
+"line": 151
+},
+"ClassifyCornerZ": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"signbit",
+"signbit"
+],
+"strings": [],
+"consts": [
+"0",
+"0x04",
+"0x20"
+],
+"branches": 2,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 195
+},
+"TileSplit": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"TileTriangles::TileTriangles",
+"TileTriangles::TileTriangles"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 212
+},
+"CChunkLiquid::TileRect": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 229
+},
+"CChunkLiquid::RecordHits": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"TileSplit",
+"TileSplit",
+"CChunkLiquid::CoversTile",
+"CMapObjGroup::AllocHitRecord",
+"CMapObjGroup::AllocHitPlacement",
+"C44Matrix::Identity",
+"CMapObjGroup::AllocHitIndices"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"3",
+"6"
+],
+"branches": 11,
+"stub": false,
+"lines": 93,
+"refs": [],
+"line": 242
+},
+"CChunkLiquid::QueryBox": {
+"files": [
+"src/world/map/cchunkliquid.cpp"
+],
+"callseq": [
+"CiRect::CiRect",
+"CChunkLiquid::TileRect",
+"CiRect::Intersection",
+"ClassifyCornerZ",
+"CChunkLiquid::RecordHits"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"84"
+],
+"branches": 2,
+"stub": false,
+"lines": 30,
+"refs": [],
+"line": 345
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -201231,7 +201335,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 48
+"line": 50
 },
 "CMapObjGroup::AllocHitRecord": {
 "files": [
@@ -201252,7 +201356,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 61
+"line": 63
 },
 "CMapObjGroup::AllocHitIndices": {
 "files": [
@@ -201268,7 +201372,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 122
+"line": 124
 },
 "CMapObjGroup::AllocHitPlacement": {
 "files": [
@@ -201285,7 +201389,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 138
+"line": 140
 },
 "TriangleOutsideBox": {
 "files": [
@@ -201308,7 +201412,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 155
+"line": 157
 },
 "CMapObjGroup::QueryEnd": {
 "files": [
@@ -201324,7 +201428,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 173
+"line": 175
 },
 "CMapObjGroup::~CMapObjGroup": {
 "files": [
@@ -201339,7 +201443,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 183
+"line": 185
 },
 "CMapObjGroup::FreeQueryData": {
 "files": [
@@ -201360,7 +201464,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 187
+"line": 189
 },
 "CMapObjGroupSegmentQuery::Init": {
 "files": [
@@ -201389,7 +201493,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 209
+"line": 211
 },
 "CMapObjGroupSegmentQuery::CachedLeaf": {
 "files": [
@@ -201402,7 +201506,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 247
+"line": 249
 },
 "CMapObjGroupSegmentQuery::TestFace": {
 "files": [
@@ -201427,7 +201531,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 252
+"line": 254
 },
 "CMapObjGroup::SegmentQueryNode": {
 "files": [
@@ -201459,7 +201563,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 310
+"line": 312
 },
 "CMapObjGroup::SegmentQueryLeaf": {
 "files": [
@@ -201477,7 +201581,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 398
+"line": 400
 },
 "CMapObjGroupDualSegmentQuery::Init": {
 "files": [
@@ -201506,7 +201610,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 425
+"line": 427
 },
 "CMapObjGroupDualSegmentQuery::CachedLeaf": {
 "files": [
@@ -201519,7 +201623,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 458
+"line": 460
 },
 "CMapObjGroupDualSegmentQuery::TestFace": {
 "files": [
@@ -201539,7 +201643,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 463
+"line": 465
 },
 "CMapObjGroupDualSegmentQuery::Results": {
 "files": [
@@ -201554,7 +201658,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 523
+"line": 525
 },
 "CMapObjGroup::DualQueryNode": {
 "files": [
@@ -201586,7 +201690,7 @@
 "stub": false,
 "lines": 83,
 "refs": [],
-"line": 564
+"line": 566
 },
 "CMapObjGroup::DualQueryLeaf": {
 "files": [
@@ -201604,7 +201708,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 649
+"line": 651
 },
 "CMapObjGroupBoxQuery::TestFace": {
 "files": [
@@ -201626,7 +201730,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 676
+"line": 678
 },
 "CMapObjGroup::BoxQueryNode": {
 "files": [
@@ -201649,7 +201753,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 699
+"line": 701
 },
 "CMapObjGroup::BoxQueryLeaf": {
 "files": [
@@ -201666,7 +201770,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 747
+"line": 749
 },
 "CMapObjGroup::RecordHits": {
 "files": [
@@ -201688,7 +201792,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 770
+"line": 772
 },
 "CMapObjGroup::QuerySegment": {
 "files": [
@@ -201711,7 +201815,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 838
+"line": 840
 },
 "CMapObjGroup::QuerySegmentFace": {
 "files": [
@@ -201733,7 +201837,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 870
+"line": 872
 },
 "CMapObjGroup::QuerySegmentDual": {
 "files": [
@@ -201754,7 +201858,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 899
+"line": 901
 },
 "CMapObjGroup::QueryBox": {
 "files": [
@@ -201779,7 +201883,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 920
+"line": 922
 },
 "CMapObjGroup::SampleColorAtFace": {
 "files": [
@@ -201814,7 +201918,7 @@
 "stub": false,
 "lines": 117,
 "refs": [],
-"line": 957
+"line": 959
 },
 "ClassifyCorner": {
 "files": [
@@ -201844,7 +201948,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1107
+"line": 1109
 },
 "TerrainCollectHits": {
 "files": [
@@ -201873,7 +201977,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 1138
+"line": 1140
 },
 "MapQueryBoxChunk": {
 "files": [
@@ -201884,14 +201988,21 @@
 "CiRect::CiRect",
 "CiRect::Intersection",
 "CiRect::operator=",
-"TerrainCollectHits"
+"TerrainCollectHits",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::Head",
+"TSList<CChunkLiquid,TSGetExplicitLink<CChunkLiquid> >::Next",
+"WowClientDB<LiquidTypeRec>::GetRecord",
+"CChunkLiquid::QueryBox"
 ],
 "strings": [],
 "consts": [
 "0",
 "0x100",
+"0x10000",
+"0x20000",
 "0x30000",
 "0x3f",
+"0x4",
 "0xf",
 "16",
 "4",
@@ -201899,11 +202010,11 @@
 "7",
 "8"
 ],
-"branches": 4,
+"branches": 7,
 "stub": false,
-"lines": 51,
+"lines": 65,
 "refs": [],
-"line": 1234
+"line": 1236
 },
 "MapQueryBoxTerrain": {
 "files": [
@@ -201925,7 +202036,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1290
+"line": 1306
 },
 "MapQueryBox": {
 "files": [
@@ -201943,7 +202054,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1313
+"line": 1329
 },
 "CMapObjGroup::VertexFormat": {
 "files": [

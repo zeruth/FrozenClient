@@ -4,6 +4,7 @@
 #include <storm/List.hpp>
 #include <tempest/Vector.hpp>
 #include <tempest/Box.hpp>
+#include <tempest/Rect.hpp>
 #include "util/BitArray.hpp"
 #include <cstdint>
 
@@ -105,6 +106,19 @@ class CChunkLiquid {
         // The surface height at a point inside one tile, `frac` being how far across it lies.
         // False when the tile is outside the layer's rectangle. ref: FUN_007ce0b0
         bool GetHeightAt(const float* frac, const uint32_t* tile, float* height) const;
+
+        // The layer's tile rectangle, +0x34 through +0x40 read as one CiRect the way the reference
+        // reads it. Its "Y" slot is the m_tileX axis; see the note on those fields.
+        const CiRect& TileRect() const;
+
+        // The layer as a receiver for a projected decal: its wet triangles inside the caster's
+        // box go into the shared hit-record pool, and the decal module re-draws them. So a blob
+        // shadow falls on water. `cellRect` counts cells of the chunk's eight-by-eight grid and
+        // `box` is in the chunk's own space, both as the world query hands them over.
+        // ref: FUN_007ce960
+        bool QueryBox(void* object, const CAaBox& box, const CiRect& cellRect);
+        // ref: FUN_007ce5d0
+        bool RecordHits(void* object, const uint8_t* outcodes, const CiRect& rect, const int32_t* span);
 };
 
 #endif

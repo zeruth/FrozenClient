@@ -3,6 +3,8 @@
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CChunkLiquid.hpp"
+#include "db/Db.hpp"
 #include <storm/Memory.hpp>
 #include <tempest/Intersect.hpp>
 #include <tempest/Rect.hpp>
@@ -1271,14 +1273,28 @@ bool MapQueryBoxChunk(int32_t chunkCol, int32_t chunkRow, const CiRect& cellRect
         hit = TerrainCollectHits(chunk, cells, local, object);
     }
 
+    // The chunk's LIQUID LAYERS, so a decal lands on water too. The list the reference walks is at
+    // +0x100 / +0x108, which is m_liquidList, and the per-entry lookup proves it: it reads the
+    // entry's +0x04 as a LiquidType.dbc id and tests bit 2 of that row's flags.
+    //
+    // The flag filter applies only when bit 0x10000 is set WITHOUT 0x20000. The blob's mask is
+    // 0x220122, whose 0x30000 half is 0x20000, so the filter is off and every layer is offered.
     if (queryMask & 0x30000) {
-        // TODO FUN_007ce960, reached once per entry of the chunk's map-object-def list at +0x100 /
-        // +0x108: the chunk's DOODADS against the same box and cell rect, appending their own hit
-        // records. Bit 0x10000 without 0x20000 filters the list by a per-def flag first
-        // (DAT_00ad4084's entry, bit 2). Nothing frozen calls passes either bit: the blob's mask is
-        // 0x220122, whose 0x30000 half is 0x20000, so the filter is off and the collector would run
-        // -- this is the one piece of the terrain half still missing, and it only adds doodad
-        // receivers, not ground ones.
+        bool filterByFlag = (queryMask & 0x10000) != 0 && (queryMask & 0x20000) == 0;
+
+        for (auto liquid = chunk->m_liquidList.Head(); liquid; liquid = chunk->m_liquidList.Next(liquid)) {
+            if (filterByFlag) {
+                // The reference reads the row's flags without checking that the id was in range, so
+                // an id outside LiquidType.dbc would fault; frozen skips the layer instead.
+                auto row = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquid->m_liquidType));
+
+                if (!row || !(row->m_flags & 0x4)) {
+                    continue;
+                }
+            }
+
+            hit |= liquid->QueryBox(object, local, cells);
+        }
     }
 
     return hit;

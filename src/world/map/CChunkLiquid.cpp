@@ -5,6 +5,9 @@
 #include "world/map/LiquidVertexData.hpp"
 
 #include "world/CWorld.hpp"
+#include "world/map/CMapObjGroup.hpp"
+#include <tempest/Matrix.hpp>
+#include <cmath>
 
 static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
 // How long a layer keeps its surface after it was last seen. DAT_00a4040c
@@ -169,4 +172,203 @@ bool CChunkLiquid::GetHeightAt(const float* frac, const uint32_t* tile, float* h
     *height = (b - a) * frac[1] + a;
 
     return true;
+}
+
+// ================================================================================================
+// The layer as a decal receiver. A blob shadow, or any other projected decal, lands on water the
+// same way it lands on the ground: its triangles go into the shared hit-record pool and the decal
+// module re-draws them.
+// ================================================================================================
+
+namespace {
+
+// DAT_00a3fdb8, the slack the outcode allows: a vertex this far outside a face of the box still
+// counts as inside it. The same constant, and the same bit assignment, as the terrain collector's
+// corner classification in CMapObjGroup.cpp -- only the two z bits are wanted here, because x and y
+// are already settled by clipping the tile rectangle.
+constexpr float CORNER_EPSILON = 0.0194444433f;
+
+// Which of the box's two z faces the vertex lies outside of, in bits 2 and 5 of the same outcode the
+// terrain collector's six-face ClassifyCorner builds. The reference has this as its own function with
+// exactly one caller, the classify loop below.
+// ref: FUN_007c7790
+uint8_t ClassifyCornerZ(const CAaBox& box, const C3Vector& v) {
+    uint8_t code = 0;
+
+    code |= std::signbit(v.z - box.b.z + CORNER_EPSILON) ? 0x04 : 0;
+    code |= std::signbit(box.t.z - v.z + CORNER_EPSILON) ? 0x20 : 0;
+
+    return code;
+}
+
+// The two triangles of one tile, as offsets from its first vertex, where `stride` is however many
+// entries a row of the array being indexed holds. The vertex array and the outcode array have
+// different strides -- the layer's whole row against the queried rectangle's -- so the same split is
+// applied twice with different numbers (the pairs of stack triples at 0x007ce5eb and 0x007ce5f9).
+struct TileTriangles {
+    int32_t offset[2][3];
+};
+
+TileTriangles TileSplit(int32_t stride) {
+    TileTriangles split;
+    split.offset[0][0] = 0;
+    split.offset[0][1] = stride;
+    split.offset[0][2] = stride + 1;
+    split.offset[1][0] = 0;
+    split.offset[1][1] = stride + 1;
+    split.offset[1][2] = 1;
+
+    return split;
+}
+
+} // namespace
+
+// The layer's own tile rectangle, +0x34 through +0x40, which the reference reads as a CiRect. Its
+// "Y" slot is the m_tileX axis and its "X" slot the m_tileY one, the same way round as the two
+// fields: see the note on m_tileX.
+const CiRect& CChunkLiquid::TileRect() const {
+    return *reinterpret_cast<const CiRect*>(&this->m_tileX);
+}
+
+// ref: FUN_007ce5d0
+// Append the layer's wet triangles inside `rect` to the hit-record pool, skipping any triangle whose
+// three corners are all beyond one face of the caster's box. `outcodes` is one byte per vertex of
+// `rect`, row-major, which the caller has already classified.
+//
+// One record covers the whole layer, allocated on the first triangle kept, and it is stamped with
+// the layer's CHUNK rather than the layer -- the same owner a terrain record carries. Its `heights`
+// stays null, so a liquid receiver takes the stream builders' triangle-expansion path with the
+// winding test: the layer's own vertices carry their z.
+bool CChunkLiquid::RecordHits(void* object, const uint8_t* outcodes, const CiRect& rect, const int32_t* span) {
+    // The reference threads its caller's owner argument in here and never reads it: a liquid record
+    // is stamped with the layer's chunk, the way a terrain one is stamped with its own.
+    (void)object;
+
+    // How many vertices a row of the layer's array holds, and of the queried rectangle's.
+    int32_t layerStride = static_cast<int32_t>(this->m_tileEndY - this->m_tileY) + 1;
+    int32_t rectStride = span[0] + 1;
+
+    TileTriangles vertexSplit = TileSplit(layerStride);
+    TileTriangles outcodeSplit = TileSplit(rectStride);
+
+    // The layer vertex the rectangle starts at, and how far to skip at the end of each of its rows.
+    int32_t vertex = (rect.minY - static_cast<int32_t>(this->m_tileX)) * layerStride
+                   - static_cast<int32_t>(this->m_tileY) + rect.minX;
+    int32_t vertexRowSkip = layerStride - span[0];
+
+    CMapObjHitRecord* record = nullptr;
+    uint16_t* indices = nullptr;
+
+    for (int32_t row = 0; row < span[1]; row++) {
+        for (int32_t col = 0; col < span[0]; col++) {
+            bool wet = this->CoversTile(static_cast<uint32_t>(rect.minX + col),
+                                        static_cast<uint32_t>(rect.minY + row));
+
+            for (int32_t t = 0; wet && t < 2; t++) {
+                const int32_t* oc = outcodeSplit.offset[t];
+
+                if ((outcodes[oc[0]] & outcodes[oc[1]] & outcodes[oc[2]]) != 0) {
+                    continue;
+                }
+
+                if (!record) {
+                    record = CMapObjGroup::AllocHitRecord();
+
+                    // Unlike the terrain collector, this one gives up on the whole layer the moment
+                    // a pool is full rather than carrying on with a record it cannot fill.
+                    if (!record) {
+                        return false;
+                    }
+
+                    record->object = this->m_chunk;
+
+                    C44Matrix* placement = CMapObjGroup::AllocHitPlacement();
+
+                    if (placement) {
+                        placement->Identity();
+                        placement->d0 = this->m_chunk->m_position.x;
+                        placement->d1 = this->m_chunk->m_position.y;
+                        placement->d2 = this->m_chunk->m_position.z;
+                    }
+
+                    record->placement = placement;
+                    record->vertices = this->m_vertices;
+
+                    indices = CMapObjGroup::AllocHitIndices(static_cast<uint32_t>(span[0] * span[1] * 6));
+                    record->indices = indices;
+
+                    if (!indices) {
+                        return false;
+                    }
+                }
+
+                const int32_t* vs = vertexSplit.offset[t];
+
+                for (int32_t k = 0; k < 3; k++) {
+                    uint16_t index = static_cast<uint16_t>(vs[k] + vertex);
+
+                    indices[record->indexCount] = index;
+                    record->indexCount++;
+
+                    if (index < record->minIndex) {
+                        record->minIndex = index;
+                    }
+
+                    if (index > record->maxIndex) {
+                        record->maxIndex = index;
+                    }
+                }
+
+                record->faceCount += 1;
+            }
+
+            vertex++;
+            outcodes++;
+        }
+
+        outcodes++;
+        vertex += vertexRowSkip;
+    }
+
+    return record != nullptr;
+}
+
+// ref: FUN_007ce960
+// The layer half of the world box query: clip the caster's cell rectangle to the tiles this layer
+// covers, classify each vertex of what is left against the box, and hand the outcodes to RecordHits.
+//
+// Only the z bits are computed. The caller's rectangle has already settled x and y, and the clip
+// against the layer's own rectangle settles the rest -- which is why the classification here is two
+// comparisons a vertex rather than six.
+//
+// `cellRect` counts CELLS; the clip wants vertices, so both maxima grow by one first.
+bool CChunkLiquid::QueryBox(void* object, const CAaBox& box, const CiRect& cellRect) {
+    CiRect wanted;
+    wanted.minY = cellRect.minY;
+    wanted.minX = cellRect.minX;
+    wanted.maxY = cellRect.maxY + 1;
+    wanted.maxX = cellRect.maxX + 1;
+
+    CiRect rect = CiRect::Intersection(this->TileRect(), wanted);
+
+    int32_t span[2] = { rect.maxX - rect.minX, rect.maxY - rect.minY };
+
+    // A layer covers at most nine vertices each way, so the reference's stack buffer is 84 bytes.
+    uint8_t outcodes[84];
+
+    int32_t layerStride = static_cast<int32_t>(this->m_tileEndY - this->m_tileY) + 1;
+    int32_t vertex = (rect.minY - static_cast<int32_t>(this->m_tileX)) * layerStride
+                   - static_cast<int32_t>(this->m_tileY) + rect.minX;
+
+    uint8_t* out = outcodes;
+
+    for (int32_t row = 0; row <= span[1]; row++) {
+        for (int32_t col = 0; col <= span[0]; col++) {
+            *out++ = ClassifyCornerZ(box, this->m_vertices[vertex + col]);
+        }
+
+        vertex += layerStride;
+    }
+
+    return this->RecordHits(object, outcodes, rect, span);
 }
