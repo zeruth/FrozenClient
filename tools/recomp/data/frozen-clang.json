@@ -194931,35 +194931,21 @@
 "TerrainUiShaders",
 "CGxDevice::ShaderCreate",
 "CGxDevice::ShaderCreate",
-"MakeRawShader",
-"MakeRawShader",
-"MakeRawShader",
-"MakeRawShader",
-"MakeArbShader",
-"MakeArbShader",
-"MakeArbShader",
-"MakeArbShader",
-"SysMsgPrintf",
 "TerrainUiShaders"
 ],
 "strings": [
-"MISSING",
 "Shaders\\Pixel",
 "Shaders\\Vertex",
-"Terrain: api %d shaders vs %s ps %s blob %s detail %s -> %s",
-"UI",
-"fallback",
-"ok",
-"shaded"
+"UI"
 ],
 "consts": [
 "0",
 "1",
 "2"
 ],
-"branches": 9,
+"branches": 2,
 "stub": false,
-"lines": 51,
+"lines": 20,
 "refs": [],
 "line": 48
 },
@@ -206384,7 +206370,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 119
+"line": 112
 },
 "DoodadCullRadius": {
 "files": [
@@ -206401,7 +206387,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 154
+"line": 147
 },
 "DoodadCullCenter": {
 "files": [
@@ -206421,7 +206407,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 176
+"line": 169
 },
 "SphereVisible": {
 "files": [
@@ -206440,43 +206426,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 201
-},
-"MakeArbShader": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"MakeRawShader"
-],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 3,
-"refs": [],
-"line": 228
-},
-"MakeRawShader": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CGxShader::CGxShader",
-"TSGrowableArray<unsigned char>::SetCount",
-"TSBaseArray<unsigned char>::Ptr",
-"memcpy",
-"CGxDevice::IShaderCreate"
-],
-"strings": [],
-"consts": [
-"0"
-],
-"branches": 3,
-"stub": false,
-"lines": 25,
-"refs": [],
-"line": 232
+"line": 194
 },
 "TerrainLoad": {
 "files": [
@@ -206492,7 +206442,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 359
+"line": 289
 },
 "TerrainUnload": {
 "files": [
@@ -206508,7 +206458,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 366
+"line": 296
 },
 "TerrainUpdate": {
 "files": [
@@ -206530,7 +206480,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 372
+"line": 302
 },
 "TerrainUpdateView": {
 "files": [
@@ -206557,7 +206507,7 @@
 "GxRsSet",
 "GxRsSet",
 "GxRsSet",
-"TerrainUpdateView::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:454:31)::operator void (*)(CM2Model *, void *)",
+"TerrainUpdateView::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:384:31)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachMapObjDoodad"
 ],
 "strings": [],
@@ -206572,31 +206522,24 @@
 "stub": false,
 "lines": 68,
 "refs": [],
-"line": 409
+"line": 339
 },
 "TerrainRender": {
 "files": [
 "src/world/terrain.cpp"
 ],
 "callseq": [
-"EnsureShaders",
-"CGxShader::Valid",
-"CGxShader::Valid",
-"CGxShader::Valid",
-"CGxShader::Valid",
-"GxRsPush",
-"TerrainUpdateView",
-"GxRsPop"
+"TerrainUpdateView"
 ],
 "strings": [],
 "consts": [
 "0"
 ],
-"branches": 3,
+"branches": 2,
 "stub": false,
-"lines": 45,
+"lines": 11,
 "refs": [],
-"line": 478
+"line": 415
 },
 "TerrainViewProjT": {
 "files": [
@@ -206609,7 +206552,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 563
+"line": 428
 },
 "TerrainFogActive": {
 "files": [
@@ -206622,7 +206565,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 567
+"line": 432
 },
 "TerrainUiShaders": {
 "files": [
@@ -206639,7 +206582,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 571
+"line": 436
 },
 "TerrainPointIsIndoors": {
 "files": [
@@ -206663,7 +206606,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 589
+"line": 454
 },
 "WeatherDensityCallback": {
 "files": [

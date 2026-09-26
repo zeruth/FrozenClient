@@ -4,8 +4,6 @@
 #include "world/map/CMap.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMapChunk.hpp"
-#include "world/TerrainShadersD3d9.hpp"
-#include "world/TerrainShadersArb.hpp"
 #include "world/CWorld.hpp"
 #include "db/Db.hpp"
 #include "world/ParticleFx.hpp"
@@ -79,12 +77,7 @@ int32_t s_mapID = -1;
 C3Vector s_cameraPos = { 0.0f, 0.0f, 0.0f };
 
 // Per-pixel terrain shader (D3D bytecode compiled from terrain_vs/ps.hlsl)
-CGxShader* s_terrainVS = nullptr;
-CGxShader* s_terrainPS = nullptr;
-CGxShader* s_blobDecalPS = nullptr; // paired with s_terrainVS for the coplanar shadow pass
-CGxShader* s_detailPS = nullptr;    // paired with s_terrainVS for ground doodads
 bool s_terrainShaderTried = false;
-bool s_useTerrainShader = false;
 
 // Fallback path for non-D3D backends: the UI shaders, multi-pass per-vertex alpha
 CGxShader* s_uiVertexShader[2] = { nullptr, nullptr };
@@ -220,41 +213,14 @@ bool SphereVisible(const C3Vector& c, float r) {
 // convention (local X is up; local Y/Z are the horizontal plane rotated by the yaw) was verified
 // against the MODF world-space bounding box.
 
-CGxShader* MakeRawShader(int32_t target, const unsigned char* code, uint32_t len);
 
-// ARB programs are text rather than compiled bytecode, so they arrive as a char array. The device
-// does not care which it is handed -- it reads shader->code either way -- so this only spares the
-// call sites a cast apiece.
-CGxShader* MakeArbShader(int32_t target, const char* code, uint32_t len) {
-    return MakeRawShader(target, reinterpret_cast<const unsigned char*>(code), len);
-}
-
-CGxShader* MakeRawShader(int32_t target, const unsigned char* code, uint32_t len) {
-    if (!g_theGxDevicePtr || !code || !len) {
-        return nullptr;
-    }
-
-    auto shader = new (std::nothrow) CGxShader();
-
-    if (!shader) {
-        return nullptr;
-    }
-
-    shader->target = target;
-    shader->loaded = 0;
-    shader->code.SetCount(len);
-    memcpy(shader->code.Ptr(), code, len);
-
-    g_theGxDevicePtr->IShaderCreate(shader);
-
-    if (!shader->valid) {
-        delete shader;
-        return nullptr;
-    }
-
-    return shader;
-}
-
+// The UI shader pair, which is the only program this file still owns. It is what DayNight,
+// Weather, OverheadIcons and ParticleFx draw their quads through, via TerrainUiShaders.
+//
+// The stand-in's own terrain, blob-decal and detail-doodad programs used to be built here too, in
+// D3D9 bytecode and again in ARB assembly. Nothing reads them any more: the chunks draw through
+// CMap::GetTerrainVertexShader's .bls permutations, the detail doodads through DetailDoodad's own
+// state, and the blob decal is gone. They were created on every map load and never bound.
 void EnsureShaders() {
     if (s_terrainShaderTried) {
         return;
@@ -266,42 +232,9 @@ void EnsureShaders() {
         return;
     }
 
-    // Always create the UI shaders for the fallback path
     g_theGxDevicePtr->ShaderCreate(s_uiVertexShader, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
     g_theGxDevicePtr->ShaderCreate(&s_uiPixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);
-
-    EGxApi api = g_theGxDevicePtr->m_api;
-
-    if (api == GxApi_D3d9 || api == GxApi_D3d9Ex) {
-        s_terrainVS = MakeRawShader(GxSh_Vertex, g_terrainVsD3d9, g_terrainVsD3d9_len);
-        s_terrainPS = MakeRawShader(GxSh_Pixel, g_terrainPsD3d9, g_terrainPsD3d9_len);
-        s_blobDecalPS = MakeRawShader(GxSh_Pixel, g_blobDecalPsD3d9, g_blobDecalPsD3d9_len);
-        s_detailPS = MakeRawShader(GxSh_Pixel, g_detailPsD3d9, g_detailPsD3d9_len);
-        s_useTerrainShader = (s_terrainVS && s_terrainPS);
-    } else if (api == GxApi_GLL || api == GxApi_OpenGl) {
-        // The same four programs in ARB assembly. Without these the GL backends had no terrain
-        // program at all and every chunk fell through to the fixed-function pass, which drew the mesh
-        // untextured -- the flat white ground Android rendered under correctly textured models.
-        s_terrainVS = MakeArbShader(GxSh_Vertex, g_terrainVsArb, sizeof(g_terrainVsArb) - 1);
-        s_terrainPS = MakeArbShader(GxSh_Pixel, g_terrainPsArb, sizeof(g_terrainPsArb) - 1);
-        s_blobDecalPS = MakeArbShader(GxSh_Pixel, g_blobDecalPsArb, sizeof(g_blobDecalPsArb) - 1);
-        s_detailPS = MakeArbShader(GxSh_Pixel, g_detailPsArb, sizeof(g_detailPsArb) - 1);
-        s_useTerrainShader = (s_terrainVS && s_terrainPS);
-    }
-
-    SysMsgPrintf(
-        SYSMSG_INFO,
-        "Terrain: api %d shaders vs %s ps %s blob %s detail %s -> %s",
-        static_cast<int32_t>(api),
-        s_terrainVS ? "ok" : "MISSING",
-        s_terrainPS ? "ok" : "MISSING",
-        s_blobDecalPS ? "ok" : "MISSING",
-        s_detailPS ? "ok" : "MISSING",
-        s_useTerrainShader ? "shaded" : "fallback"
-    );
 }
-
-
 
 
 // ------------------------------------------------------------------------------------------------
@@ -351,9 +284,6 @@ struct Mh2oInfo {
 // ------------------------------------------------------------------------------------------------
 
 } // namespace (weather state)
-
-
-
 
 
 void TerrainLoad(const char* mapName, int32_t mapID) {
@@ -475,89 +405,24 @@ void TerrainUpdateView() {
     s_viewUpdated = true;
 }
 
+// All that is left of the stand-in's render: make sure this frame's view half has run.
+//
+// The passes this used to make are all the map's now -- CWorldScene::RenderTerrain draws the chunks,
+// RenderMapObjs the buildings, Liquid::Draw both water buckets -- and the blob decal that outlived
+// them was deleted once it could no longer reproduce a receiver's depth. What is still wanted from
+// here is the frustum, the view-projection and the fog flag that DayNight, Weather and the entity
+// cull read, plus the buildings' own prop cull.
 void TerrainRender() {
     if (!s_mapName[0]) {
         return;
     }
 
-    EnsureShaders();
-
-    bool haveShaded = s_useTerrainShader && s_terrainVS && s_terrainVS->Valid() && s_terrainPS && s_terrainPS->Valid();
-    bool haveFallback = s_uiVertexShader[0] && s_uiVertexShader[0]->Valid() && s_uiPixelShader && s_uiPixelShader->Valid();
-
-    if (!haveShaded && !haveFallback) {
-        return;
-    }
-
-    GxRsPush();
-
-    // The view/frustum/visibility half normally runs here, but the frame may have run it already so
-    // that the shadow map could see this frame's visibility before anything drew. Running the
-    // doodad sweep twice would be pure waste.
     if (!s_viewUpdated) {
         TerrainUpdateView();
     }
 
     s_viewUpdated = false;
-
-
-    // The terrain chunks draw through the ported map (CMap::Render -> CWorldScene::RenderTerrain)
-    // since 2026-09-25, and the two stand-in passes that used to draw them are gone. What still
-    // reads this copy of the chunk geometry is the blob shadow receiver walk, which re-draws a
-    // chunk's own triangles under a decal; retiring that is what finally frees the tile data.
-    (void)haveShaded;
-
-    // The stand-in's WMO visibility sweep used to run here, walking every instance and recursing
-    // through its portals to set WmoGroup::visFrame and visDepth. Every reader of those two flags
-    // has now gone -- RenderWmos, BlobShadowDrawWmo and LiquidRender -- so the sweep, the portal
-    // recursion and the frustum narrowing it did were pure per-frame waste. The reference's own
-    // portal walk (CMapObj::WalkPortals) is what decides visibility now.
-
-    // The liquids belong to CMap::Render, which draws both buckets through the reference material.
-    // This used to call LiquidRender(0) as well, and the comment here already said the liquids were
-    // CMap::Render's -- so every opaque surface was drawn twice from the moment the material draw
-    // started working.
-
-    GxRsPop();
 }
-
-
-// ------------------------------------------------------------------------------------------------
-// Liquids (MH2O). The reference builds Liquid::CInstance objects per chunk layer and draws them in
-// two sorted buckets (FUN_008a2240(cam, 0) opaque inside CMap::Render, (cam, 1) transparent in the
-// world frame's transparent block) with the animated LiquidType surface textures.
-// ------------------------------------------------------------------------------------------------
-
-// One entry per liquid vertex. A terrain MH2O layer is at most 9x9 = 81, but a WMO MLIQ grid runs
-// to (xtiles+1)*(ytiles+1) and is much larger, so this grows to the biggest surface drawn; a fixed
-// 81 read off the end of the array for any WMO liquid.
-std::vector<CImVector> s_liquidColor;
-uint8_t s_liquidAlpha = 0;
-
-
-
-// ------------------------------------------------------------------------------------------------
-// Blob shadows (the reference's CWorldScene FUN_00793980: per scene entity with a model, project
-// Textures\ShadowBlob.blp onto the ground through FUN_007e4480). The chunk mesh under the entity
-// is redrawn with the blob texture and planar texture coordinates centred on the entity, so the
-// decal follows the terrain exactly; depth is tested less-equal against the identical geometry.
-// ------------------------------------------------------------------------------------------------
-
-HTEXTURE s_shadowBlob = nullptr;
-bool s_shadowBlobTried = false;
-bool s_blobActive = false;
-
-// Blob shadows on WMO floors. Same technique as the terrain receivers: re-draw the receiver's own
-// triangles through the same vertex program and per-instance matrix the base pass used, with a
-// depth-EQUAL test, and derive the blob coordinate from the vertex XY (instance-local here).
-// Scratch index list for the WMO shadow receiver gather, reused every call.
-std::vector<uint16_t> s_shadowIndices;
-
-// How dark a blob is. A constant at the reference's own call site, not a light ratio.
-// DAT_009f98d8
-static const float BLOB_SHADOW_STRENGTH = 0.4f;
-
-// The scene's frustum, not the stand-in's copy of one.
 
 
 const C44Matrix& TerrainViewProjT() {
