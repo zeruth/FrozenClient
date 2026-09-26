@@ -202669,6 +202669,45 @@
 "refs": [],
 "line": 1059
 },
+"Liquid::IMaterial::~IMaterial": {
+"files": [
+"src/world/map/liquidmaterialsettings.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 63
+},
+"Liquid::IMaterial::Draw": {
+"files": [
+"src/world/map/liquidmaterialsettings.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 68
+},
+"Liquid::IMaterial::EnsureShaders": {
+"files": [
+"src/world/map/liquidmaterialsettings.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 71
+},
 "Liquid::CMaterialSettings::LoadFromDbc": {
 "files": [
 "src/world/map/liquidmaterialsettings.cpp"
@@ -202689,7 +202728,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 21
+"line": 24
 },
 "Liquid::CMaterialSettings::LoadTextures": {
 "files": [
@@ -202723,7 +202762,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 66
+"line": 69
 },
 "Liquid::GetMaterialSettings": {
 "files": [
@@ -202753,7 +202792,129 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 130
+"line": 133
+},
+"Liquid::ProcWaterSuffix": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [],
+"strings": [
+""
+],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 185
+},
+"Liquid::LoadPair": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"CGxDevice::ShaderCreate",
+"CGxDevice::ShaderCreate"
+],
+"strings": [
+"Shaders\\Pixel",
+"Shaders\\Vertex"
+],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 189
+},
+"Liquid::CMaterialWater::EnsureShaders": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::LoadPair"
+],
+"strings": [
+"psLiquidWater",
+"vsLiquidWater"
+],
+"consts": [
+"1",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 207
+},
+"Liquid::CMaterialWaterNoSpec::EnsureShaders": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::LoadPair"
+],
+"strings": [
+"psLiquidWaterNoSpec",
+"vsLiquidWaterNoSpec"
+],
+"consts": [
+"1",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 220
+},
+"Liquid::CMaterialMagma::EnsureShaders": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::LoadPair"
+],
+"strings": [
+"psLiquidMagma",
+"vsLiquidMagma"
+],
+"consts": [
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 235
+},
+"Liquid::CMaterialProcWater::EnsureShaders": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::ProcWaterSuffix",
+"SStrPrintf",
+"Liquid::ProcWaterSuffix",
+"SStrPrintf",
+"Liquid::LoadPair"
+],
+"strings": [
+"psLiquidProcWater%s",
+"vsLiquidProcWater%s"
+],
+"consts": [
+"1",
+"256",
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 248
 },
 "Liquid::GetMaterial": {
 "files": [
@@ -202766,6 +202927,13 @@
 "TSBaseArray<Liquid::IMaterial *>::operator[]",
 "TSBaseArray<Liquid::IMaterial *>::operator[]",
 "GxCaps",
+"Liquid::CMaterialMagma::CMaterialMagma",
+"Liquid::CMaterialMagmaFFP::CMaterialMagmaFFP",
+"Liquid::CMaterialProcWater::CMaterialProcWater",
+"Liquid::CMaterialProcWaterFFP::CMaterialProcWaterFFP",
+"Liquid::CMaterialWater::CMaterialWater",
+"Liquid::CMaterialWaterFFP::CMaterialWaterFFP",
+"Liquid::IMaterial::EnsureShaders",
 "TSGrowableArray<Liquid::IMaterial *>::GrowToFit",
 "TSBaseArray<Liquid::IMaterial *>::operator[]"
 ],
@@ -202774,13 +202942,14 @@
 ],
 "consts": [
 "1",
+"2",
 "3"
 ],
-"branches": 4,
+"branches": 10,
 "stub": false,
-"lines": 47,
+"lines": 65,
 "refs": [],
-"line": 180
+"line": 272
 },
 "Liquid::ReleaseMaterials": {
 "files": [
@@ -202799,7 +202968,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 229
+"line": 339
 },
 "Liquid::ReleaseMaterialSettings": {
 "files": [
@@ -202831,7 +203000,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 240
+"line": 350
 },
 "Liquid::CChunkGeomFactory::AddRef": {
 "files": [

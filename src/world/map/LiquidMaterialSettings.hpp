@@ -53,9 +53,54 @@ class CMaterialSettings {
 
 // What actually draws a surface. There is one implementation a liquid material -- water, magma
 // and procedural water -- in two flavours each, one written against the shaders and one against
-// the fixed-function pipe, and the bank picks between them once from the device's caps. None of
-// the six is ported yet; their names are recorded in overrides.json.
-class IMaterial;
+// the fixed-function pipe, and the bank picks between them once from the device's caps.
+//
+// Each shader flavour loads its own vertex and pixel pair the first time one is constructed, and
+// the permutation counts are the reference's: four vertex programs and one pixel program for
+// every one of them except magma, which has one of each.
+class IMaterial {
+    public:
+        virtual ~IMaterial() {}
+
+        // The reference's vtable slot 2, reached from the two-bucket dispatch. Not ported: it is
+        // FUN_008a48f0, 2173 bytes of device state and constant setup, and nothing calls this
+        // yet because the dispatch is not ported either.
+        virtual void Draw() {}
+
+        // Load this material's shader pair, once for the whole class.
+        virtual void EnsureShaders() {}
+};
+
+// LiquidMaterial 1, the shader path with specular. ref: FUN_008a3f70 / FUN_008a4790
+class CMaterialWater : public IMaterial {
+    public:
+        void EnsureShaders() override;
+};
+
+// LiquidMaterial 1 without specular. ref: FUN_008a4070 / FUN_008a47f0
+class CMaterialWaterNoSpec : public IMaterial {
+    public:
+        void EnsureShaders() override;
+};
+
+// LiquidMaterial 2, magma and slime. ref: FUN_008a4190 / FUN_008a4870
+class CMaterialMagma : public IMaterial {
+    public:
+        void EnsureShaders() override;
+};
+
+// LiquidMaterial 3, procedural water. Its shader names carry a suffix the reference is handed
+// from outside the module. ref: FUN_008a3e00 / FUN_008a4710
+class CMaterialProcWater : public IMaterial {
+    public:
+        void EnsureShaders() override;
+};
+
+// The fixed-function flavours. They load no shaders, which is the whole point of them.
+// ref: FUN_008a4850, FUN_008a48d0, FUN_008a4770
+class CMaterialWaterFFP : public IMaterial {};
+class CMaterialMagmaFFP : public IMaterial {};
+class CMaterialProcWaterFFP : public IMaterial {};
 
 // The settings for one liquid type, built on first use. A type the DBC does not carry logs and
 // comes back as water. ref: FUN_008a28f0

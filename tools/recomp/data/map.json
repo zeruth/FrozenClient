@@ -48783,7 +48783,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateForFrame",
-  "frozenSize": 128,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 24,
@@ -48953,7 +48953,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateForFrame",
-  "frozenSize": 128,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 50,
@@ -60760,6 +60760,66 @@
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 50,
   "status": "verified"
+ },
+ "008a3e00": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialProcWater::EnsureShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 184,
+  "status": "ported"
+ },
+ "008a3f70": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialWater::EnsureShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "008a4070": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialWaterNoSpec::EnsureShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "008a4190": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialMagma::EnsureShaders",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 102,
+  "status": "ported"
  },
  "008a65d0": {
   "branchRatio": 1.0,

@@ -1,6 +1,9 @@
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "db/Db.hpp"
 #include "gx/CGxCaps.hpp"
+#include "gx/Device.hpp"
+#include "gx/shader/CGxShader.hpp"
+#include "gx/CGxDevice.hpp"
 #include "gx/Gx.hpp"
 #include "util/Log.hpp"
 #include <storm/Array.hpp>
@@ -171,6 +174,95 @@ CMaterialSettings* GetMaterialSettings(int32_t liquidType) {
 // water shares one material. DAT_00d43b2c / DAT_00d43b28
 static TSGrowableArray<IMaterial*> s_materialBank;
 
+// The shader pairs, one set a material class, loaded once each. The reference keeps them as loose
+// globals and guards each with its own instance counter; a static here does the same job.
+namespace {
+
+// The procedural water shaders take a suffix. The reference is given one from outside the module
+// (a setter at 0x008a1770 copies it into 0x00d439f0 along with a float and four counters); nothing
+// in frozen calls that, so the names come out unsuffixed.
+// TODO identify the caller and what it passes.
+const char* ProcWaterSuffix() {
+    return "";
+}
+
+void LoadPair(CGxShader** vertex, int32_t vertexCount, const char* vertexName,
+              CGxShader** pixel, int32_t pixelCount, const char* pixelName) {
+    g_theGxDevicePtr->ShaderCreate(vertex, GxSh_Vertex, "Shaders\\Vertex", vertexName, vertexCount);
+    g_theGxDevicePtr->ShaderCreate(pixel, GxSh_Pixel, "Shaders\\Pixel", pixelName, pixelCount);
+}
+
+CGxShader* s_vsWater[4];
+CGxShader* s_psWater[1];
+CGxShader* s_vsWaterNoSpec[4];
+CGxShader* s_psWaterNoSpec[1];
+CGxShader* s_vsMagma[1];
+CGxShader* s_psMagma[1];
+CGxShader* s_vsProcWater[4];
+CGxShader* s_psProcWater[1];
+
+}
+
+// ref: FUN_008a3f70
+void CMaterialWater::EnsureShaders() {
+    static bool s_loaded = false;
+
+    if (s_loaded) {
+        return;
+    }
+
+    s_loaded = true;
+
+    LoadPair(s_vsWater, 4, "vsLiquidWater", s_psWater, 1, "psLiquidWater");
+}
+
+// ref: FUN_008a4070
+void CMaterialWaterNoSpec::EnsureShaders() {
+    static bool s_loaded = false;
+
+    if (s_loaded) {
+        return;
+    }
+
+    s_loaded = true;
+
+    LoadPair(s_vsWaterNoSpec, 4, "vsLiquidWaterNoSpec",
+             s_psWaterNoSpec, 1, "psLiquidWaterNoSpec");
+}
+
+// ref: FUN_008a4190
+// The only one of the four with a single vertex permutation rather than four.
+void CMaterialMagma::EnsureShaders() {
+    static bool s_loaded = false;
+
+    if (s_loaded) {
+        return;
+    }
+
+    s_loaded = true;
+
+    LoadPair(s_vsMagma, 1, "vsLiquidMagma", s_psMagma, 1, "psLiquidMagma");
+}
+
+// ref: FUN_008a3e00
+void CMaterialProcWater::EnsureShaders() {
+    static bool s_loaded = false;
+
+    if (s_loaded) {
+        return;
+    }
+
+    s_loaded = true;
+
+    char vertexName[256];
+    char pixelName[256];
+
+    SStrPrintf(vertexName, sizeof(vertexName), "vsLiquidProcWater%s", ProcWaterSuffix());
+    SStrPrintf(pixelName, sizeof(pixelName), "psLiquidProcWater%s", ProcWaterSuffix());
+
+    LoadPair(s_vsProcWater, 4, vertexName, s_psProcWater, 1, pixelName);
+}
+
 // ref: FUN_008a1fa0
 // Which of a material's two implementations is used is decided once, from the device: the
 // shader ones need vertex shaders at all and pixel shader model 3. The two capability slots the
@@ -211,14 +303,32 @@ IMaterial* GetMaterial(int32_t liquidType) {
 
     IMaterial* material = nullptr;
 
-    // TODO the six implementations, none of them ported: for material 1 water, either
-    // CMaterialWater (FUN_008a4790) or CMaterialWaterNoSpec (FUN_008a47f0) on the shader path
-    // depending on whether specular is wanted, else CMaterialWaterFFP (FUN_008a4850); for 2
-    // magma, CMaterialMagma (FUN_008a4870) or CMaterialMagmaFFP (FUN_008a48d0); for 3
-    // procedural water, CMaterialProcWater (FUN_008a4710) or CMaterialProcWaterFFP
-    // (FUN_008a4770). Until they land the bank hands back nothing and no surface draws.
-    (void)shaders;
+    // Material 1 is water, 2 magma and slime, 3 procedural water. Each has a shader flavour and
+    // a fixed-function one, and the caps decide which.
+    //
+    // TODO the specular choice. The reference picks CMaterialWater or CMaterialWaterNoSpec on a
+    // setting frozen does not model; with specular is the richer of the two, so it is what this
+    // takes.
+    switch (materialId) {
+    case 2:
+        material = shaders ? static_cast<IMaterial*>(new CMaterialMagma())
+                           : static_cast<IMaterial*>(new CMaterialMagmaFFP());
+        break;
 
+    case 3:
+        material = shaders ? static_cast<IMaterial*>(new CMaterialProcWater())
+                           : static_cast<IMaterial*>(new CMaterialProcWaterFFP());
+        break;
+
+    default:
+        material = shaders ? static_cast<IMaterial*>(new CMaterialWater())
+                           : static_cast<IMaterial*>(new CMaterialWaterFFP());
+        break;
+    }
+
+    if (material) {
+        material->EnsureShaders();
+    }
     s_materialBank.GrowToFit(materialId, 1);
     s_materialBank[materialId] = material;
 
