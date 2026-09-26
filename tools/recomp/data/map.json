@@ -40819,6 +40819,22 @@
   "refSize": 59,
   "status": "ported"
  },
+ "0071de90": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.286,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::CanPlayTurnAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 156,
+  "status": "ported"
+ },
  "0071df30": {
   "branchRatio": 0.5,
   "constOverlap": 0.118,
@@ -40833,6 +40849,38 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 138,
+  "status": "ported"
+ },
+ "0071dfc0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::HasAirborneDeathAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 45,
+  "status": "ported"
+ },
+ "0071e340": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.4,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetPostureAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 180,
   "status": "ported"
  },
  "0071e400": {
@@ -41486,6 +41534,22 @@
   "how": "annotated",
   "module": "Vehicle_C.cpp",
   "refSize": 50,
+  "status": "ported"
+ },
+ "007571c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CVehicle_C.cpp",
+   "src/object/client/cvehicle_c.cpp"
+  ],
+  "frozen": "CVehicle_C::ControlsPassengerAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Vehicle_C.cpp",
+  "refSize": 59,
   "status": "ported"
  },
  "00757200": {

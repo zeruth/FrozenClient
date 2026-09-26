@@ -96050,6 +96050,82 @@
 "refs": [],
 "line": 2616
 },
+"CGUnit_C::GetPostureAnimation": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CVehiclePassenger_C::GetSeatAnimation",
+"CGUnit_C::GetCurrentAnimationId",
+"GetAnimationBehavior",
+"CMovementShared::GetMoveFlags",
+"CMovementShared::IsUnsupportedOrHovering"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1D0",
+"0x1FA",
+"0x20000",
+"0x2200000",
+"0x29",
+"0x78",
+"0x800004",
+"0xC1",
+"3"
+],
+"branches": 6,
+"stub": false,
+"lines": 37,
+"refs": [],
+"line": 2697
+},
+"CGUnit_C::CanPlayTurnAnimation": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CMovementShared::GetMoveFlags",
+"CMovementShared::IsUnsupportedHoveringSwimmingOrSlowFalling",
+"CVehicle_C::ControlsPassengerAnimation",
+"CGUnit_C::GetCurrentAnimationId",
+"IsEmoteAnimation",
+"IsSpellCastAnimation",
+"IsThrownAnimation",
+"IsBowAnimation",
+"IsRifleAnimation"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1800",
+"0x30",
+"0x40000C"
+],
+"branches": 3,
+"stub": false,
+"lines": 22,
+"refs": [],
+"line": 2736
+},
+"CGUnit_C::HasAirborneDeathAnimation": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"CGUnit_C::ResolveAnimation",
+"CM2Model::HasSequence"
+],
+"strings": [],
+"consts": [
+"0x1D2"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 2760
+},
 "MovementWrapAngle": {
 "files": [
 "src/object/client/cmovement_c.cpp"
@@ -96290,6 +96366,24 @@
 "lines": 11,
 "refs": [],
 "line": 81
+},
+"CVehicle_C::ControlsPassengerAnimation": {
+"files": [
+"src/object/client/cvehicle_c.cpp"
+],
+"callseq": [
+"CVehicle_C::HasFlag26",
+"CVehicle_C::OwnerIsControllingAnimation"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 94
 },
 "CVehicleCamera_C::ConvertSmoothFacingFromRawToWorld": {
 "files": [

@@ -2692,3 +2692,77 @@ bool CGUnit_C::CanPlayActionAnimation(int32_t animID, int32_t currentAnimID) {
 
     return allow;
 }
+
+// ref: FUN_0071e340
+void CGUnit_C::GetPostureAnimation(uint32_t* out, int32_t ignore464) const {
+    auto passenger = this->m_vehiclePassenger;
+
+    if (passenger && passenger->m_state == 3
+        && passenger->GetSeatAnimation(passenger->m_seat) != 0x1FA) {
+        return;
+    }
+
+    // Mid-jump (0x4) or in the airborne-death state (0x800000): leave the caller's choice alone.
+    if (this->m_animFlags & 0x800004) {
+        return;
+    }
+
+    uint32_t current = this->GetCurrentAnimationId();
+
+    if (ignore464 == 0 && GetAnimationBehavior(static_cast<int32_t>(current)) == 0x1D0) {
+        *out = current;
+
+        return;
+    }
+
+    // Swimming or flying.
+    if (this->m_localMove.GetMoveFlags() & 0x2200000) {
+        *out = 0x29;
+
+        return;
+    }
+
+    // The stealth creep flag, byte 2 bit 1 of UNIT_FIELD_BYTES_1.
+    if (this->m_unit->bytes1 & 0x20000) {
+        *out = 0x78;
+
+        return;
+    }
+
+    *out = this->m_move->IsUnsupportedOrHovering() ? 0xC1 : 0;
+}
+
+// ref: FUN_0071de90
+bool CGUnit_C::CanPlayTurnAnimation() const {
+    // 0x30 is turning left or right; 0x1800 of the animation flags is mid-jump.
+    if (((this->m_localMove.GetMoveFlags() & 0x30) == 0 && (this->m_animFlags & 0x1800) == 0)
+        || this->m_move->IsUnsupportedHoveringSwimmingOrSlowFalling()) {
+        return false;
+    }
+
+    if (this->m_vehicle && this->m_vehicle->m_rec
+        && this->m_vehicle->ControlsPassengerAnimation()) {
+        return false;
+    }
+
+    int32_t current = static_cast<int32_t>(this->GetCurrentAnimationId());
+
+    if (!IsEmoteAnimation(current) && !IsSpellCastAnimation(current) && !IsThrownAnimation(current)
+        && !IsBowAnimation(current) && !IsRifleAnimation(current)
+        && (this->m_animFlags & 0x40000C) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dfc0
+bool CGUnit_C::HasAirborneDeathAnimation() {
+    uint32_t animID = this->ResolveAnimation(0x1D2, nullptr);
+
+    if (this->m_model) {
+        return this->m_model->HasSequence(animID);
+    }
+
+    return false;
+}

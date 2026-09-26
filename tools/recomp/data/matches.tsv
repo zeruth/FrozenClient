@@ -2559,7 +2559,10 @@ addr	how	frozen	evidence
 0071dd80	annotated	IsAnimationBehavior1Or131Or466To467	tag in src/object/client/CGUnit_C.cpp
 0071dde0	annotated	IsDeathAnimation	tag in src/object/client/CGUnit_C.cpp
 0071de50	annotated	IsAnimationBehavior133To134	tag in src/object/client/CGUnit_C.cpp
+0071de90	annotated	CGUnit_C::CanPlayTurnAnimation	tag in src/object/client/CGUnit_C.cpp
 0071df30	annotated	CGUnit_C::ReplaceIdleWithHover	tag in src/object/client/CGUnit_C.cpp
+0071dfc0	annotated	CGUnit_C::HasAirborneDeathAnimation	tag in src/object/client/CGUnit_C.cpp
+0071e340	annotated	CGUnit_C::GetPostureAnimation	tag in src/object/client/CGUnit_C.cpp
 0071e400	annotated	CGUnit_C::ApplyEffectAnimation	tag in src/object/client/CGUnit_C.cpp
 0071ed80	annotated	CGUnit_C::GetShadowBox	tag in src/object/client/CGUnit_C.cpp
 0071f300	annotated	CGUnit_C::GetCreatureType	tag in src/object/client/CGUnit_C.cpp
@@ -2601,6 +2604,7 @@ addr	how	frozen	evidence
 00756df0	annotated	CVehicle_C::SetStateBit	tag in src/object/client/CVehicle_C.cpp
 00756e10	annotated	CVehicle_C::ClearStateBit	tag in src/object/client/CVehicle_C.cpp
 00756f40	annotated	CVehicle_C::OwnerIsControllingAnimation	tag in src/object/client/CVehicle_C.cpp
+007571c0	annotated	CVehicle_C::ControlsPassengerAnimation	tag in src/object/client/CVehicle_C.cpp
 00757200	annotated	VehicleSendEjectPassenger	tag in src/object/client/CVehicle_C.cpp
 00759c60	annotated	CVehicleCamera_C::ConvertSmoothFacingFromRawToWorld	tag in src/object/client/CVehicleCamera_C.cpp
 0075b5b0	annotated	CAaBox::IsPointInside	tag in lib/typhoon/tempest/box/CAaBox.cpp

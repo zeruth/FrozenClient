@@ -39,6 +39,11 @@ class CVehicle_C {
         void RemoveSlot(WOWGUID guid);
         bool HasStateBits() const;
 
+        // ref: FUN_007571c0
+        // The vehicle, not the seat, decides its riders' animations: either flag 26 is set or its
+        // owner is driving the pose.
+        bool ControlsPassengerAnimation() const;
+
         // ref: FUN_00756f40
         // The vehicle's row allows it (Vehicle.dbc flag 0x10000) and its owner is either holding an
         // animation or has something pending: the owner, not the seat, drives the pose.

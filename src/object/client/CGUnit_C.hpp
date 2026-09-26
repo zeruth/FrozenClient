@@ -217,6 +217,23 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // applies, chosen by the vehicle's own move-flags-2 bit 0x40. Zero when neither is set.
         uint32_t SeatAllowsExitAnimation(const VehicleSeatRec* seat) const;
 
+        // ref: FUN_0071e340
+        // The pose a unit holds when it is not doing anything else, written into `out`: 41 SwimIdle
+        // while swimming or flying, 120 while creeping, 193 Hover while hovering, 0 Stand otherwise.
+        // Leaves `out` alone entirely when the seat is animating the rider or the unit is mid-jump or
+        // mid-fall, and keeps whatever is playing when its behaviour is 464 (unless `ignore464`).
+        void GetPostureAnimation(uint32_t* out, int32_t ignore464) const;
+
+        // ref: FUN_0071de90
+        // The unit may turn in place: it is turning or jumping, is not hovering, swimming or falling
+        // slowly, is not having its pose driven by a vehicle, and is not already playing an emote, a
+        // cast or a ranged attack.
+        bool CanPlayTurnAnimation() const;
+
+        // ref: FUN_0071dfc0
+        // The model carries the airborne death animation (behaviour 466, once resolved).
+        bool HasAirborneDeathAnimation();
+
         // ref: FUN_00715880
         // Stand states 0 Stand, 1 Sit, and 4 through 6 (the three chair heights). Notably not 2
         // Sit-chair or 3 Sleep.

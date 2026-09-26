@@ -89,3 +89,8 @@ bool CVehicle_C::OwnerIsControllingAnimation() const {
 
     return (this->m_owner->m_animFlags & 0x400) != 0 || this->m_owner->m_intFA4 != -1;
 }
+
+// ref: FUN_007571c0
+bool CVehicle_C::ControlsPassengerAnimation() const {
+    return this->HasFlag26() != 0 || this->OwnerIsControllingAnimation();
+}
