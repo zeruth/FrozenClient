@@ -1300,8 +1300,32 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::Traverse(&CWorldScene::s_portalWindow, 0);
     } else {
         CWorldScene::s_frameStamp++;
-        // TODO the portal walk from the camera's group (FUN_007b3b20 x2, FUN_00794190 x2), then
-        // Traverse(&s_portalWindow, 1) or FUN_00794250(), and FUN_00799f80(&window)
+
+        // TODO the indoor traversal. Nothing here means nothing is traversed while the camera is
+        // inside a building: the distance rows keep whatever the last outdoor frame left in
+        // them, so what draws indoors is stale. Decoded from FUN_0079a870 so it is transcription:
+        //
+        //   if (some second indoor flag at 0x00cd87a0) {
+        //       CMapObj::EnterPortalWalk(<list at 0x00cdb0e4>);   // already ported, faithful
+        //       reset the window INVERTED -- min FLT_MAX, max FLT_MIN, both depths -1
+        //       reset the row arrays twice (FUN_00794190, a TSGrowableArray SetCount)
+        //   }
+        //   CMapObj::EnterPortalWalk(<list at 0x00cdb0d4>);
+        //   if (window.depth < 0) {
+        //       FUN_00794250();                      // 608 bytes: nothing visible, tear down
+        //   } else {
+        //       s_nearChunkDistance = window.depth + CHUNK_SIZE;
+        //       CWorldScene::Traverse(&s_portalWindow, 1);
+        //   }
+        //   FUN_00799f80(&a zeroed 4-vector);        // 467 bytes
+        //
+        // The inverted window is the point of the first walk: it starts with nothing visible and
+        // the portal walk widens it to whatever the portals actually expose. The second walk then
+        // runs against that. Note this branch and the outdoor one are EXCLUSIVE -- Traverse runs
+        // once a frame, not twice, however the fidelity diff renders it.
+        //
+        // What is missing beyond the two functions above is which lists 0x00cdb0d4 and
+        // 0x00cdb0e4 are; frozen names neither.
     }
 
     // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks

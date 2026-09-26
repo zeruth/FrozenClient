@@ -1154,9 +1154,13 @@ int32_t CWorldScene::ChunkRectInView(const int32_t* rect) {
 // ported yet.
 void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
     // The distant occluders, rebuilt for THIS traversal. The reference does it here and first,
-    // not once a frame in CMap::Render, which is where frozen had it: a nested portal traversal
-    // needs volumes built against its own frustum, and doing it once outside means every
-    // traversal after the first culls against the wrong ones.
+    // not in CMap::Render, which is where frozen had it.
+    //
+    // Being precise about why, because the first version of this comment overstated it: CMap::Render
+    // does NOT call Traverse twice. It has an outdoor branch and an indoor branch on s_cameraGroup
+    // and takes one of them, so Traverse runs once a frame from there. Traverse has a second
+    // caller elsewhere, and building the volumes inside it is simply where the reference puts
+    // them -- each traversal against the corners it was handed.
     MapOcclusion::BuildVolumes(CWorldScene::s_cameraPos, CWorldScene::s_frustumCorners, 0);
 
     CWorldScene::s_frustumDepth++;
