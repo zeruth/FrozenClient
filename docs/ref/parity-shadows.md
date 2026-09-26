@@ -715,3 +715,58 @@ The reference does use depth-EQUAL, but only on the branch where the strength is
 has to reproduce anything: `FUN_007e4370` sets world and view to identity and the receiver walk draws
 gathered geometry with the projection as a texture transform. Re-porting means porting that walk, not
 reviving the re-draw.
+
+## The receiver walk, read but not ported (FUN_007e3e80)
+
+This is the one function between the ported chain and shadows on screen. Read 2026-09-26 from the
+decompilation plus the disassembly; five things in it are worth having written down.
+
+**Which ramp is chosen, and by what.** Stage 1 takes `ShadowMod` when the blending mode already set
+is 4, with `ColorOp1` and `AlphaOp1` both 2; otherwise it takes `ShadowAdd` with both 0. The blob
+projector (`FUN_007e4480`) sets blending mode 4, so **the blob shadow uses ShadowMod** and the
+additive ramp belongs to some other decal kind. Both go to `GxRs_Texture1`.
+
+**How the position becomes a texture coordinate.** `GxRs_TexGen0` and `GxRs_TexGen1` are both set to
+2, and the two matrices `DecalBuildTransforms` built are pushed as `GxXform_Tex0` and `GxXform_Tex1`.
+That pair is the whole projection: the receiver's own vertex position is generated into both stages'
+texture coordinates and transformed by those matrices. Two more states, `GxRs_Unk61` and
+`GxRs_Unk62`, are set to 1; they have no name in frozen's enum yet.
+
+**Polygon offset comes from the strength.** When the strength argument is non-zero:
+
+```
+GxRs_PolygonOffset = (strength + strength) * 3.051804e-05     // DAT_00a41170, about 1/32768
+```
+
+So at the blob's strength of 0.4 the offset is about 2.4e-05. This is the concrete form of the note
+in CLAUDE.md that polygon offset is decal-only in the reference, and it is the reference's actual
+answer to coplanar depth -- a strength-scaled nudge, alongside the depth-EQUAL branch that only the
+zero-strength callers take.
+
+**Only upward-facing triangles receive.** `FUN_007e2fd0` streams the receiver's triangles into a
+0x18-byte vertex format -- position, then the constant `(0, 0, 1)` from `DAT_00af4644` -- and keeps a
+triangle only when `(p2-p1) x (p3-p1)` is non-negative in XY. A wall gets no blob. `FUN_007e2fd0`'s
+second argument selects a variant on bit 2.
+
+**Where the receivers come from.** A static registry, not a traversal:
+
+| address | what |
+|---|---|
+| `DAT_00cd8080` | 32 receiver descriptors, **0x24 bytes each** (`eax*9*4` in the allocator) |
+| `DAT_00cb752c` | how many are in use |
+| `FUN_007a6140` | allocate one: bail at 32, zero the 0x24 bytes, seed `+0x1c` to `0xffff` |
+
+The descriptor, from its readers:
+
+```
++0x00  void*      required non-null
++0x04  C3Vector*  the receiver's vertices, stride 0xc
++0x0c  int32      0 takes the triangle path
++0x10  uint16*    the receiver's indices
++0x18  uint16     index count; the walk skips an entry whose count*3 exceeds 0x10000
++0x1c  uint16     seeded to 0xffff
+```
+
+The allocator sits at `0x7a6140`, in the map-object code, so the WMO pass is one of the things that
+registers receivers. **Finding every filler is the next step**, and it is what frozen has to grow: it
+has no receiver registry at all, and without one the ported projector has nothing to project onto.
