@@ -2,6 +2,7 @@
 #define WORLD_C_WORLD_SCENE_HPP
 
 #include "world/map/CMapChunk.hpp"
+#include "world/map/DetailDoodad.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapRenderChunk.hpp"
 #include "gx/Texture.hpp"
@@ -115,6 +116,9 @@ class CWorldScene {
         // Every liquid layer this frame reached, in the order the rows were visited, near to
         // far. The rows hand their layers over one at a time through the same link.
         static STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) s_frameLiquidList;  // DAT_00adfc34
+        // Every chunk that scattered grass and is near enough to draw it this frame. A chunk
+        // puts itself here from PrepareRender; the pass empties it.
+        static STORM_EXPLICIT_LIST(DetailDoodad::CDetailDoodadData, m_frameLink) s_frameDetailDoodadList;
         static C4Plane s_rowPlanes[ROW_COUNT];              // DAT_00cdab48: the front plane of each row
         static C3Vector s_frustumCorners[8];                // DAT_00cdb108: the camera frustum in world space
         static CWFrustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
@@ -227,6 +231,12 @@ class CWorldScene {
         static void TraverseRowOccluders(Row* row);
 
         // ref: FUN_00799980
+        // Draw every chunk's grass. ref: FUN_007984a0
+        static void RenderDetailDoodads();
+
+        // Queue one chunk's grass for this frame's pass. ref: FUN_00792fa0
+        static void AddDetailDoodads(DetailDoodad::CDetailDoodadData* instance);
+
         static void TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand);
         // ref: FUN_007987a0
         static void TraverseRowStaticEntities(Row* row, uint32_t detailBand);

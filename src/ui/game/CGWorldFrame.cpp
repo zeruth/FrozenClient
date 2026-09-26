@@ -429,7 +429,7 @@ void CGWorldFrame::OnWorldRender() {
         }
 
         // Detail doodads after the opaque models (reference FUN_007984a0)
-        DetailDoodadRender();
+        CWorldScene::RenderDetailDoodads();
 
         // Transparent block (FUN_004f8ea0): above liquid it is pass 2, liquid, weather, barriers,
         // pass 1; under liquid the reference reverses it so the water surface is composited last:

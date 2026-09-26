@@ -4,6 +4,7 @@
 #include "world/map/CMapRenderChunk.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidVertexData.hpp"
 #include "db/Db.hpp"
@@ -106,8 +107,7 @@ void CMapChunk::Destroy() {
     }
 
     if (this->m_detailDoodads) {
-        // TODO FUN_007b3960: give the instance back to the WDETAILDOODADINST heap. That heap is
-        // not created yet either -- it comes with the scatter builder.
+        DetailDoodad::ReleaseInstance(this->m_detailDoodads);
         this->m_detailDoodads = nullptr;
     }
 
@@ -614,8 +614,18 @@ void CMapChunk::PrepareRender() {
         this->m_renderChunk->Build();
     }
 
-    if ((CWorld::s_enables & CWorld::Enables::Enable_DetailDoodads) && this->m_sortDistance < 70.0f) {
-        // TODO if (!m_detailDoodads) FUN_007d3390(this); if (m_detailDoodads) FUN_00792fa0(m_detailDoodads)
+    if ((CWorld::s_enables & CWorld::Enables::Enable_DetailDoodads) &&
+        this->m_sortDistance < DetailDoodad::s_fadeDistance) {
+        // Scattered once, the first time the chunk comes near enough, and kept. Asking is also
+        // what starts the grass models loading, so a chunk that comes up empty is asked again
+        // next frame rather than being marked as having none.
+        if (!this->m_detailDoodads) {
+            this->m_detailDoodads = DetailDoodad::CreateInstance(this);
+        }
+
+        if (this->m_detailDoodads) {
+            CWorldScene::AddDetailDoodads(this->m_detailDoodads);
+        }
     }
 }
 

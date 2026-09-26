@@ -44358,6 +44358,22 @@
   "refSize": 241,
   "status": "verified"
  },
+ "00792fa0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddDetailDoodads",
+  "frozenSize": 120,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
  "00793060": {
   "branchRatio": 0.167,
   "constOverlap": 0.033,
@@ -44516,6 +44532,22 @@
   "how": "override",
   "module": "WorldParam.cpp",
   "refSize": 230,
+  "status": "ported"
+ },
+ "007984a0": {
+  "branchRatio": 0.308,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::RenderDetailDoodads",
+  "frozenSize": 1435,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 756,
   "status": "ported"
  },
  "007987a0": {
@@ -45573,6 +45605,36 @@
   "refSize": 217,
   "status": "ported"
  },
+ "007b11b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "BuildFadeTexels",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 180,
+  "status": "ported"
+ },
+ "007b1270": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "FadeTextureCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 47,
+  "status": "ported"
+ },
  "007b12b0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -45622,7 +45684,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -45678,6 +45740,21 @@
   "refSize": 136,
   "status": "ported"
  },
+ "007b2d30": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.158,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "SetupState",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 798,
+  "status": "ported"
+ },
  "007b3050": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -45712,7 +45789,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/world/map/DetailDoodad.cpp"
   ],
@@ -45747,6 +45824,21 @@
    "src/world/map/DetailDoodad.cpp"
   ],
   "frozen": "Draw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 39,
+  "status": "ported"
+ },
+ "007b3960": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp"
+  ],
+  "frozen": "ReleaseInstance",
   "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
@@ -48927,6 +49019,19 @@
   "refSize": 323,
   "status": "ported"
  },
+ "007d3390": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "DetailDoodad::CreateInstance",
+  "frozenSize": 320,
+  "how": "callorder",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 2662,
+  "status": "ported"
+ },
  "007d3e10": {
   "branchRatio": 0.444,
   "constOverlap": 0.0,
@@ -48960,16 +49065,16 @@
   "status": "ported"
  },
  "007d3fe0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.1,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::PrepareRender",
-  "frozenSize": 249,
+  "frozenSize": 616,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 177,

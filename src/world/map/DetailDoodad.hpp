@@ -178,6 +178,11 @@ extern int32_t s_rebuild;                      // DAT_00d1c4c0
 // applies the doodad's brightness ramp and the buffer keeps the raw colour; when they were not,
 // the ramp is baked into the vertex colour on the way in.
 extern int32_t s_useShaders;                   // DAT_00d1c4f0
+// How far detail doodads are drawn, and the distance the fade is built around. The reference
+// keeps it in a writable global seeded from the groundEffectDist CVar.
+extern float s_fadeDistance;                   // DAT_00adeeb8, 70.0
+// The 64x8 ramp the fixed-function path fades the grass out with.
+extern HTEXTURE s_fadeTexture;                 // DAT_00d1c4e0
 
 // One scattered doodad. 0x2c bytes, laid out as the reference's, which keeps these in a
 // growable array on each of the instance's four batches. Only the triangle's NORMAL is kept,
@@ -277,6 +282,16 @@ void DrawBatch(SBatch* batch);
 
 // Draw a chunk's detail doodads, one call per texture it uses. ref: FUN_007b36b0
 void Draw(CDetailDoodadData* instance);
+
+// Put the device into the state the grass draws in, and say whether the shader path was taken.
+// ref: FUN_007b2d30
+int32_t SetupState();
+
+// Take an instance for a chunk and scatter it. Null when the chunk scatters nothing.
+CDetailDoodadData* CreateInstance(CMapChunk* chunk);
+
+// Give one back. ref: FUN_007b3960
+void ReleaseInstance(CDetailDoodadData* instance);
 
 // Give the pools and every buffer back. ref: FUN_007b29b0
 void ReleaseBuffers();

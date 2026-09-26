@@ -41,7 +41,6 @@ void TerrainSetWeather(int32_t effectType, float intensity, const float* color, 
 void WeatherRender();
 // Detail (ground effect) doodads: the grass/pebble batches of the chunks near the camera, drawn
 // after the opaque models (reference: FUN_007984a0 after M2 pass 0).
-void DetailDoodadRender();
 // Underwater overlay: a tinted, scrolling liquid-texture sheet in front of the camera while it is
 // submerged (reference: CMap FUN_0079ca70 after the transparent block).
 void UnderwaterOverlayRender();

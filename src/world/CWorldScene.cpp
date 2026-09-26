@@ -40,6 +40,7 @@ static const float ANIMATE_RANGE_SQ = 100.0f;
 STORM_EXPLICIT_LIST(CMapRenderChunk, m_link) CWorldScene::s_renderChunkLists[CWorldScene::RENDER_LIST_COUNT];
 CWorldScene::Row CWorldScene::s_rows[CWorldScene::ROW_COUNT];
 STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) CWorldScene::s_frameLiquidList;
+STORM_EXPLICIT_LIST(DetailDoodad::CDetailDoodadData, m_frameLink) CWorldScene::s_frameDetailDoodadList;
 STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) CWorldScene::s_frameEntityList;
 C4Plane CWorldScene::s_rowPlanes[CWorldScene::ROW_COUNT];
 C3Vector CWorldScene::s_frustumCorners[8];
@@ -2066,4 +2067,98 @@ void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
         // TODO FUN_00792360(quad, 4, maxDistance, 0, 0, 0).
         (void)faces[i];
     }
+}
+
+// ref: FUN_00792fa0
+// Queued once a frame. The flag is what keeps a chunk that is visited twice from being drawn
+// twice; the pass clears it as it takes the instance.
+void CWorldScene::AddDetailDoodads(DetailDoodad::CDetailDoodadData* instance) {
+    if (instance->m_queued) {
+        return;
+    }
+
+    instance->m_queued = 1;
+
+    CWorldScene::s_frameDetailDoodadList.LinkToTail(instance);
+}
+
+// ref: FUN_007984a0
+// One chunk at a time: work out the light reaching it, put its origin in the world matrix, and
+// let the module draw its batches. The state is set once for the whole pass, not per chunk.
+//
+// This function reads like a general model pass and is not one -- the vtable, matrix and
+// position it touches are the CHUNK's, reached through the instance's back-pointer.
+void CWorldScene::RenderDetailDoodads() {
+    if (!CWorldScene::s_frameDetailDoodadList.Head()) {
+        return;
+    }
+
+    GxRsPush();
+    GxXformPush(GxXform_World);
+    GxXformPush(GxXform_Tex1);
+
+    int32_t shaderPath = DetailDoodad::SetupState();
+
+    auto scene = CWorld::GetM2Scene();
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+
+    for (auto instance = CWorldScene::s_frameDetailDoodadList.Head(); instance; ) {
+        // Read before the node moves: the pass unlinks it as it goes.
+        auto next = CWorldScene::s_frameDetailDoodadList.Next(instance);
+
+        auto chunk = instance->m_chunk;
+
+        instance->m_queued = 0;
+
+        CM2Lighting lighting;
+
+        CAaSphere sphere;
+
+        sphere.c = chunk->m_center;
+        sphere.r = chunk->m_radius;
+
+        lighting.Initialize(scene, sphere);
+
+        if (scene) {
+            scene->SelectLights(&lighting);
+        }
+
+        chunk->SelectLights(&lighting);
+
+        // The grass is in the chunk's own space, so the chunk's origin goes in the matrix --
+        // less the camera, which is what keeps the vertices small enough to stay precise.
+        C44Matrix placement;
+
+        C3Vector origin;
+
+        origin.x = chunk->m_position.x - cameraPos.x;
+        origin.y = chunk->m_position.y - cameraPos.y;
+        origin.z = chunk->m_position.z - cameraPos.z;
+
+        placement.Translate(origin);
+
+        if (!shaderPath) {
+            lighting.SetupGxLights(&cameraPos);
+            lighting.SetupGxFog();
+
+            GxXformSet(GxXform_World, placement);
+        } else {
+            // TODO ref: FUN_007b10e0 hands the matrix and 23 constants to the module's vertex
+            // shader. Unreachable while the module's shaders are not loaded.
+        }
+
+        DetailDoodad::Draw(instance);
+
+
+        // The reference unlinks here and relinks the instance into a third list, reusing the
+        // one link for each in turn. Frozen keeps the instance on its chunk, so there is
+        // nothing to relink it into and the unlink is the whole of it.
+        instance->m_frameLink.Unlink();
+
+        instance = next;
+    }
+
+    GxXformPop(GxXform_Tex1);
+    GxXformPop(GxXform_World);
+    GxRsPop();
 }

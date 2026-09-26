@@ -2778,6 +2778,7 @@ addr	how	frozen	evidence
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
 00792df0	annotated	CWorldScene::AddLiquid	tag in src/world/CWorldScene.cpp
 00792e60	annotated	CWorldScene::AddEntity	tag in src/world/CWorldScene.cpp
+00792fa0	annotated	CWorldScene::AddDetailDoodads	tag in src/world/CWorldScene.cpp
 00793060	annotated	CWorldScene::TraverseRowEntities	tag in src/world/CWorldScene.cpp
 007935a0	annotated	CWorldScene::TraverseRowLiquids	tag in src/world/CWorldScene.cpp
 00793760	annotated	CWorldScene::TraverseRowOccluders	tag in src/world/CWorldScene.cpp
@@ -2788,6 +2789,7 @@ addr	how	frozen	evidence
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
 007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
 007983b0	override	CWFrustum::Alloc	
+007984a0	annotated	CWorldScene::RenderDetailDoodads	tag in src/world/CWorldScene.cpp
 007987a0	annotated	CWorldScene::TraverseRowStaticEntities	tag in src/world/CWorldScene.cpp
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
@@ -2854,6 +2856,8 @@ addr	how	frozen	evidence
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
 007b1000	annotated	RotateBasisAboutZ	tag in src/world/map/DetailDoodad.cpp
+007b11b0	annotated	BuildFadeTexels	tag in src/world/map/DetailDoodad.cpp
+007b1270	annotated	FadeTextureCallback	tag in src/world/map/DetailDoodad.cpp
 007b12b0	annotated	FillIndexBuffer	tag in src/world/map/DetailDoodad.cpp
 007b1b10	annotated	OnModelLoaded	tag in src/world/map/DetailDoodad.cpp
 007b1b50	annotated	FillVertexBuffer	tag in src/world/map/DetailDoodad.cpp
@@ -2861,11 +2865,13 @@ addr	how	frozen	evidence
 007b29b0	annotated	ReleaseBuffers	tag in src/world/map/DetailDoodad.cpp
 007b2a80	annotated	CreateBuffers	tag in src/world/map/DetailDoodad.cpp
 007b2ca0	annotated	AcquireBuffers	tag in src/world/map/DetailDoodad.cpp
+007b2d30	annotated	SetupState	tag in src/world/map/DetailDoodad.cpp
 007b3050	annotated	EnsureModel	tag in src/world/map/DetailDoodad.cpp
 007b31e0	annotated	AddPlacement	tag in src/world/map/DetailDoodad.cpp
 007b3390	annotated	DrawBatch	tag in src/world/map/DetailDoodad.cpp
 007b3530	annotated	IsReady	tag in src/world/map/DetailDoodad.cpp
 007b36b0	annotated	Draw	tag in src/world/map/DetailDoodad.cpp
+007b3960	annotated	ReleaseInstance	tag in src/world/map/DetailDoodad.cpp
 007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b3b20	annotated	CMapObj::EnterPortalWalk	tag in src/world/map/CMapObjDraw.cpp
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
@@ -3065,6 +3071,7 @@ addr	how	frozen	evidence
 007d2d70	annotated	CMapRenderChunk::DrawWorld	tag in src/world/map/CMapRenderChunk.cpp
 007d3010	annotated	CMapRenderChunk::DrawSolidLocal	tag in src/world/map/CMapRenderChunk.cpp
 007d3240	annotated	CMapRenderChunk::DrawSolidWorld	tag in src/world/map/CMapRenderChunk.cpp
+007d3390	callorder	DetailDoodad::CreateInstance	same slot between linked calls in 007d3fe0=CMapChunk::PrepareRender
 007d3e10	annotated	CWorldScene::SelectChunkShaders	tag in src/world/CWorldScene.cpp
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp

@@ -10,6 +10,11 @@
 #include "gx/Buffer.hpp"
 #include "gx/RenderState.hpp"
 #include "gx/CGxCaps.hpp"
+#include "gx/Transform.hpp"
+#include "world/CWorld.hpp"
+#include <tempest/Matrix.hpp>
+#include <storm/Memory.hpp>
+#include <new>
 #include <tempest/Random.hpp>
 #include <cstring>
 #include <cmath>
@@ -38,6 +43,15 @@ CGxPool* s_indexPool = nullptr;
 TSGrowableArray<CGxBuf*> s_buffers;
 int32_t s_rebuild = 1;
 int32_t s_useShaders = 0;
+float s_fadeDistance = 70.0f;
+HTEXTURE s_fadeTexture = nullptr;
+
+// DAT_00cd766c: the grass alpha cutoff, 0x80 unless a CVar frozen does not register moves it.
+// Set after the blending mode, which would otherwise have just put the device default there.
+static uint32_t s_alphaRef = 0x80;
+
+static void FadeTextureCallback(EGxTexCommand, uint32_t, uint32_t, uint32_t,
+                                uint32_t, void*, uint32_t&, const void*&);
 
 // How many the density setting scatters per chunk before the ceiling applies.
 static const uint32_t PER_DENSITY_UNIT = 0x40;
@@ -133,6 +147,13 @@ void Initialize() {
     // on, so with no shaders loaded the vertex fill has to bake the brightness ramp into the
     // vertex colour itself. Setting it without loading them would drop the ramp entirely.
     s_useShaders = 0;
+
+    // The fixed-function fade ramp. 64 by 8 so the device will filter it, ARGB so the alpha is
+    // the ramp and the colour stays white.
+    if (!s_fadeTexture) {
+        s_fadeTexture = TextureCreate(64, 8, GxTex_Argb8888, GxTex_Argb8888, CGxTexFlags(),
+                                      nullptr, FadeTextureCallback, __FILE__, __LINE__);
+    }
 
     // The reference takes the highest id straight off the DBC; frozen's WowClientDB keeps that
     // private, so it is found by looking, which comes to the same table.
@@ -884,6 +905,138 @@ void Draw(CDetailDoodadData* instance) {
             DrawBatch(&instance->m_batches[i]);
         }
     }
+}
+
+// ref: FUN_007b11b0
+// A 64 by 8 ramp, white throughout, opaque at one end and clear at the other: alpha steps by
+// four across the 64 columns and every row is the same. All eight rows exist only because the
+// device wants a power-of-two texture it will filter.
+static void BuildFadeTexels(const void** data) {
+    static uint32_t s_texels[64 * 8];
+    static bool s_built = false;
+
+    if (!s_built) {
+        s_built = true;
+
+        memset(s_texels, 0, sizeof(s_texels));
+    }
+
+    uint32_t alpha = 0;
+
+    // Filled from the far column back, so the fully clear end is the last one.
+    for (uint32_t i = 0; i < 64; i++) {
+        uint32_t texel = 0x00ffffffu | (alpha << 24);
+
+        for (uint32_t row = 0; row < 8; row++) {
+            s_texels[row * 64 + (63 - i)] = texel;
+        }
+
+        alpha += 4;
+    }
+
+    *data = s_texels;
+}
+
+// ref: FUN_007b1270
+// The texture's generator. Only the latch matters: the ramp is static, so it is handed over
+// whole with its own pitch.
+static void FadeTextureCallback(EGxTexCommand command, uint32_t width, uint32_t, uint32_t,
+                                uint32_t, void*, uint32_t& pitch, const void*& data) {
+    if (command != GxTex_Latch) {
+        return;
+    }
+
+    BuildFadeTexels(&data);
+
+    pitch = width * 4;
+}
+
+// ref: FUN_007b2d30
+// The state the grass draws in. The shader path sets a pixel shader and its constants and
+// reports 1; without shaders the fade is done with a second texture stage instead -- the ramp
+// above, addressed by a generated coordinate, with a texture matrix that puts the fade in the
+// last tenth or so of the draw distance.
+int32_t SetupState() {
+    GxRsSet(GxRs_Culling, 0);
+    GxRsSet(GxRs_BlendingMode, 2);
+    GxRsSet(GxRs_AlphaRef, s_alphaRef);
+    GxRsSet(GxRs_DepthWrite, 1);
+
+    if (s_useShaders) {
+        // TODO ref: the pixel shader table (DAT_00d1c488) indexed by the shadow map's shader
+        // level, then FUN_007b15d0 and FUN_00874760. Unreachable while s_useShaders is 0,
+        // which it is because frozen never loads the module's shaders.
+        return 1;
+    }
+
+    GxRsSet(GxRs_ColorOp0, 0);
+    GxRsSet(GxRs_AlphaOp0, 0);
+    GxRsSet(GxRs_MatDiffuse, -1);
+
+    GxRsSet(GxRs_Texture1, TextureGetGxTex(s_fadeTexture, 0, nullptr));
+
+    GxRsSet(GxRs_ColorOp1, 0);
+    GxRsSet(GxRs_AlphaOp1, 0);
+    GxRsSet(GxRs_TexGen1, 3);
+    GxRsSet(GxRs_Unk62, 1);
+
+    // 1 / (distance * 0.15) is about a tenth of the draw distance, and the translate puts the
+    // opaque end of the ramp at 0.85 of it -- so the grass is solid until the last 15%.
+    C44Matrix fade;
+
+    fade.Scale(1.0f / (s_fadeDistance * 0.15f));
+    fade.RotateAroundY(1.5707963705062866f);
+
+    C3Vector offset;
+
+    offset.x = 0.0f;
+    offset.y = 0.0f;
+    offset.z = s_fadeDistance * -0.8500000238418579f;
+
+    fade.Translate(offset);
+
+    GxXformSet(GxXform_Tex1, fade);
+
+    return 0;
+}
+
+// Take an instance for a chunk and scatter it.
+//
+// The reference takes these from a "WDETAILDOODADINST" object heap, which frozen does not have;
+// this allocates one instead. Recorded rather than hidden: the behaviour is the same, the
+// allocator is not.
+CDetailDoodadData* CreateInstance(CMapChunk* chunk) {
+    auto instance = static_cast<CDetailDoodadData*>(
+        SMemAlloc(sizeof(CDetailDoodadData), __FILE__, __LINE__, 0x0));
+
+    if (!instance) {
+        return nullptr;
+    }
+
+    new (instance) CDetailDoodadData();
+
+    instance->m_chunk = chunk;
+
+    if (!Scatter(chunk, instance)) {
+        ReleaseInstance(instance);
+
+        return nullptr;
+    }
+
+    return instance;
+}
+
+// ref: FUN_007b3960
+void ReleaseInstance(CDetailDoodadData* instance) {
+    if (!instance) {
+        return;
+    }
+
+    instance->m_frameLink.Unlink();
+
+    instance->~CDetailDoodadData();
+
+    SMemFree(instance, __FILE__, __LINE__, 0x0);
 }
 
 }

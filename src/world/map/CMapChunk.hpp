@@ -3,6 +3,7 @@
 
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/CMapBaseObj.hpp"
+#include "world/map/DetailDoodad.hpp"
 #include "gx/CGxBatch.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
@@ -121,7 +122,7 @@ class CMapChunk : public CMapBaseObj {
         // The chunk's scattered grass, taken from the WDETAILDOODADINST heap by the
         // scatter builder and given back to it on destroy (FUN_007b3960). Null until the
         // chunk has come near enough to scatter.
-        void* m_detailDoodads = nullptr;     // +0xa4
+        DetailDoodad::CDetailDoodadData* m_detailDoodads = nullptr;     // +0xa4
         CMapRenderChunk* m_renderChunk = nullptr; // +0xa8
         int32_t m_renderChunkReady = 0;      // +0xac
         uint32_t m_areaId = 0;               // +0xb0: the MCNK header's areaId
