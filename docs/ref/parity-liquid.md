@@ -310,10 +310,45 @@ off the GROUP, at `group->+0x10` and `group->+0x14`, each holding a `CGxBuf` at 
 early-returns the cached batch when both buffers report ready at `+0x1c`/`+0x1d`. Attribute offsets
 come from `GxVertexAttribOffset` for attrs 0, 3, 4, 6 and 7, each gated on `FUN_00681260(format, n)`.
 
-**The three writers, unsized before 2026-09-26:** `FUN_007a7cc0` (388), `FUN_007a7920` (462) and
-`FUN_007a7f60` (944). These are the real content and are NOT yet read. Both `FUN_007a7cc0` and
-`FUN_007a7f60` take a 16-float identity matrix on the stack plus the factory's `+0x14`, `+0x1c`,
-`+0x20` and the attribute pointer set.
+**The three writers:** `FUN_007a7cc0` (388), `FUN_007a7920` (462) and `FUN_007a7f60` (944). The
+first was decoded 2026-09-26; the other two are still unread.
+
+`FUN_007a7cc0(group, &matrix, this+0x14, this->+0x1c, this->+0x20, this+0x28, stride, &attr0,
+&attr3, &attr4, &attr6, &attr8)` is the **vertex writer over the MLIQ grid**, and it returns the
+vertex count the third writer is then handed:
+
+```
+step = _DAT_00a3fdc0                         // the tile step
+y = m_liquidPos.y (+0x128)
+for row in 0 .. m_liquidYVerts (+0x118):
+    x = m_liquidPos.x (+0x124)
+    for col in 0 .. m_liquidXVerts (+0x114):
+        v = m_liquidVerts (+0x134) + (m_liquidXVerts * row + col) * 8
+        height = *(float*)(v + 4)            // the 8-byte entry's height, as frozen already notes
+        emit through FUN_007a7b00(group, &matrix, &pos, v, ...)   // NOT yet read
+        x += step
+    y += step
+return (m_liquidXVerts + dupCols) * (dupRows + m_liquidYVerts)
+```
+
+**The `+0x28` block is a pair of duplicate-index lists**, and this is the part that would have been
+guessed wrong. Relative to the `this+0x28` pointer the writer receives:
+
+| offset | meaning |
+|---|---|
+| `+0x04` (`this+0x2c`) | how many COLUMNS are duplicated |
+| `+0x08` (`this+0x30`) | the byte array of those column indices |
+| `+0x14` (`this+0x3c`) | how many ROWS are duplicated |
+| `+0x18` (`this+0x40`) | the byte array of those row indices |
+
+When the current column or row index matches the next entry in its list, the vertex is emitted
+**twice** -- a seam split. That is what the `+ this->+0x2c` / `+ this->+0x3c` terms in the build's
+vertex count are for, which cross-checks the field map: the two independently agree.
+
+**Still unknown for this piece:** `FUN_007a7b00` (the per-vertex emit), the two remaining writers,
+and **who fills the duplicate lists** -- nothing in the build or `FUN_007d49b0` writes `+0x2c`/`+0x3c`,
+so there is a prepare step elsewhere that has not been found. Do not port the writer until that is
+located, or the mesh will be built with no seams where the reference splits them.
 
 **The queue, `FUN_00793d20`** (679 bytes), called from `CMap::Render` at `0x0079acce`. Walks the
 def-group list at `DAT_00cdb08c`/`DAT_00cdb094`, unlinking each through a link at `+0xb8`/`+0xbc`,
