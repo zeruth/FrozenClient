@@ -1027,6 +1027,34 @@ CDetailDoodadData* CreateInstance(CMapChunk* chunk) {
     return instance;
 }
 
+// Part of ref: FUN_007b3780
+// Give a batch's buffer pair back to the ring. WITHOUT THIS THE RING DRAINS AND NEVER REFILLS:
+// every chunk that scatters takes a pair, so once as many chunks have scattered as the ring has
+// pairs, every batch after that falls through to a streaming buffer of its own and the pool
+// stops doing anything. That is not hypothetical -- a run measured over 8,000 instances in 200
+// frames against a ring of 128.
+//
+// Only pairs that came FROM the pool go back; a streaming fallback is not the ring's to keep.
+// The reference tests the vertex buffer's pool and returns both on that answer, and pushes the
+// vertex one first so the index is on top, which is the order AcquireBuffers pops them in.
+static void ReturnBuffers(SBatch* batch) {
+    if (!batch->vertexBuf || batch->vertexBuf->m_pool != s_vertexPool) {
+        batch->vertexBuf = nullptr;
+        batch->indexBuf = nullptr;
+
+        return;
+    }
+
+    CGxBuf* vertexBuf = batch->vertexBuf;
+    CGxBuf* indexBuf = batch->indexBuf;
+
+    s_buffers.Add(1, &vertexBuf);
+    s_buffers.Add(1, &indexBuf);
+
+    batch->vertexBuf = nullptr;
+    batch->indexBuf = nullptr;
+}
+
 // ref: FUN_007b3960
 void ReleaseInstance(CDetailDoodadData* instance) {
     if (!instance) {
@@ -1034,6 +1062,18 @@ void ReleaseInstance(CDetailDoodadData* instance) {
     }
 
     instance->m_frameLink.Unlink();
+
+    // The reference walks the batches backwards, clearing each and handing its buffers back
+    // before the placements array goes. ref: FUN_007b3780
+    for (int32_t i = 3; i >= 0; i--) {
+        SBatch* batch = &instance->m_batches[i];
+
+        batch->texture = nullptr;
+        batch->vertexTotal = 0;
+        batch->indexTotal = 0;
+
+        ReturnBuffers(batch);
+    }
 
     instance->~CDetailDoodadData();
 

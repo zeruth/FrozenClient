@@ -202617,12 +202617,31 @@
 "refs": [],
 "line": 1009
 },
+"DetailDoodad::ReturnBuffers": {
+"files": [
+"src/world/map/detaildoodad.cpp"
+],
+"callseq": [
+"TSGrowableArray<CGxBuf *>::Add",
+"TSGrowableArray<CGxBuf *>::Add"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 17,
+"refs": [],
+"line": 1040
+},
 "DetailDoodad::ReleaseInstance": {
 "files": [
 "src/world/map/detaildoodad.cpp"
 ],
 "callseq": [
 "TSLink<DetailDoodad::CDetailDoodadData>::Unlink",
+"DetailDoodad::ReturnBuffers",
 "DetailDoodad::CDetailDoodadData::~CDetailDoodadData",
 "SMemFree"
 ],
@@ -202630,13 +202649,15 @@
 "c:\\users\\tyler\\runicworld-client\\src\\world\\map\\detaildoodad.cpp"
 ],
 "consts": [
-"0x0"
+"0",
+"0x0",
+"3"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 11,
+"lines": 23,
 "refs": [],
-"line": 1031
+"line": 1059
 },
 "Liquid::CMaterialSettings::LoadFromDbc": {
 "files": [
