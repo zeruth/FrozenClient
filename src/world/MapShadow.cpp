@@ -152,6 +152,12 @@ void MapShadowSetup(const C3Vector& focus) {
     // frozen produced 0.963 where the reference holds 0.829, a far steeper light and correspondingly
     // wrong shadow length. Confirmed against the value the reference stores at 0x00D43180:
     // reference -0.3956 -0.3956 -0.8288, this code -0.3970 -0.3970 -0.8275.
+    //
+    // BOTH NUMBERS ARE NOW READ RATHER THAN MATCHED. The reference applies them in FUN_007bb570,
+    // which multiplies the light direction's z by DAT_009ebf34 and clamps it against
+    // DAT_00a400fc before normalizing. Read out of the image on 2026-09-25 those are exactly
+    // 5.0 and -1.2, so the 5.0f and -1.2f below are the reference's own constants and not a fit
+    // to an observed vector.
     C3Vector lit = CWorld::GetOutdoorDirection();
     C3Vector dir = { -lit.x, -lit.y, -lit.z * 5.0f };
 

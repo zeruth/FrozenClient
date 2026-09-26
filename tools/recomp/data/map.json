@@ -48768,7 +48768,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateAnim",
-  "frozenSize": 79,
+  "frozenSize": 101,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 66,

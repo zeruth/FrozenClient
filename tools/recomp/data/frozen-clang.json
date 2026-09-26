@@ -203202,7 +203202,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 103,
+"lines": 109,
 "refs": [],
 "line": 143
 },
@@ -203217,7 +203217,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 247
+"line": 253
 },
 "MapShadowLightView": {
 "files": [
@@ -203230,7 +203230,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 251
+"line": 257
 },
 "MapShadowTexMatrix": {
 "files": [
@@ -203243,7 +203243,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 255
+"line": 261
 },
 "MapShadowSize": {
 "files": [
@@ -203256,7 +203256,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 259
+"line": 265
 },
 "MapShadowBegin": {
 "files": [
@@ -203304,7 +203304,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 264
+"line": 270
 },
 "MapShadowEnd": {
 "files": [
@@ -203340,7 +203340,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 325
+"line": 331
 },
 "MapShadowTexture": {
 "files": [
@@ -203353,7 +203353,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 353
+"line": 359
 },
 "MapShadowRequestDump": {
 "files": [
@@ -203371,7 +203371,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 357
+"line": 363
 },
 "Fold": {
 "files": [

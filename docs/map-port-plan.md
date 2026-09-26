@@ -287,9 +287,22 @@ against `matches.tsv` and the source rather than trusted.
 | 6 detail doodads | **done** | only `FUN_007b10e0`, the shader-path constants, unreachable while the module's shaders are not loaded |
 | 7 occluders | the .wdl loads and the 62 volumes build and occlude | the low-detail terrain **mesh** itself (`FUN_007cd910`, `FUN_007cc810`), and the extruded volume path behind the polygon clipper `FUN_007f9650` |
 | 8 sky | not started | `SkyRender` and `SkyBodiesRender` are still Terrain.cpp's own |
-| 9 weather | not started | `TerrainSetWeather` and `WeatherRender` are still Terrain.cpp's own; ~14 KB across 17 reference functions, not the "~290 lines" the queue estimates |
-| 10 map shadow | partly | `FUN_007bb670` (448, the receiver plane) and `FUN_007bb570` (248) are unported; `ShadowMap.cpp` has three binds still marked TODO |
+| 9 weather | not started | `TerrainSetWeather` and `WeatherRender` are still Terrain.cpp's own. **Measured: 24 functions, 17.1 KB**, spanning 0x00789000..0x0078d600 -- three effect classes (a pattern/rain sheet, SnowMist01 and WeatherMist) each with its own shader and texture setup, plus the driver at `FUN_0078ca50`. Do not size this from the `MapWeather.cpp` module listing: most of what that names is `CWorldParam` callbacks, and the effect classes it needs sit outside it |
+| 10 map shadow | partly | **the top of a subsystem, not a bounded port**: `FUN_007bb570` (248) reaches `FUN_00875f80`, which alone calls thirteen further functions. Its light-direction half is already in `MapShadowSetup`, and its two constants are now read rather than matched (see below). `FUN_007bb670` (448, the receiver plane) and `FUN_008750b0` (822, the cascade matrices) are pure math and portable on their own; `ShadowMap.cpp` has three binds still marked TODO |
 | 11 close out | queries done | `OnWorldRender`'s ordering, which waits on 4 |
+
+### Constants confirmed against the image rather than matched
+
+Two claims in the tree were checked by reading WoW.exe's data section on 2026-09-25, which needs
+no running client and is worth doing before trusting any hand-derived number:
+
+- **The map shadow light.** `MapShadowSetup` exaggerates the light direction's z by 5.0 and
+  clamps it at -1.2, which had only ever been fitted to an observed vector. The reference applies
+  the same rule in `FUN_007bb570` from `DAT_009ebf34` and `DAT_00a400fc`, and those read exactly
+  5.0 and -1.2. The constants are the reference's own.
+- **The sky dome.** `SKY_RING_ZENITH` reads `{0, 0.17, 0.20, 0.23, 0.24, 0.25, 1.0}` and the
+  azimuth step 1/24. The table at 0x00a41a90 matches to the digit and 0x00a41cec is 0.0416666679.
+  That claim, unlike two others found stale this session, holds.
 
 ### What is left in Terrain.cpp (5592 lines)
 
