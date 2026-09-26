@@ -486,3 +486,40 @@ constant is right for the reference's own depth setup and wrong for ours.
 **Not yet confirmed on screen.** The capture after the change is angled at the ground rather than the
 horizon, and distant structures in it look faded rather than brightened, which is consistent but not
 proof. The ring is obvious from a horizon view, so this needs one look.
+
+## Moving the sky out of Terrain.cpp into a DayNight module
+
+Item 8 asks for "the DayNight module", which is where the reference keeps this. Frozen's sky is
+already reference-DERIVED (the sun direction from FUN_007eea90, the dome's zenith table from
+0x00a41a90, the highlight from FUN_007f0530) but it lives in `src/world/Terrain.cpp`, the stand-in
+file item 11 wants emptied. The extraction was scoped on 2026-09-26 and is mechanically clean.
+
+**It is gated on a verification run, deliberately.** Everything in this area is "built, unverified",
+and at noon a correct port and no port look identical. Relocating ~740 lines first would mean that
+any later wrongness could not be attributed -- broken by the move, or broken all along. **Verify the
+sky at dawn or dusk in a zone that sets `highlightSky`, then move it.**
+
+**The four regions**, by line number as of a5d3ad95:
+
+| lines | contents |
+|---|---|
+| 649..744 | `SKY_RINGS`/`SKY_SEGS`/`SKY_RING_ZENITH`/`SKY_RADIUS`, the dome arrays `s_skyPos`/`s_skyUv`/`s_skyCol`/`s_skyIdx`, `SKY_WHITE_DIM`, the viewport pair, the star and skybox scene pointers, `SkyWhiteCallback`, `BuildSkyDome` |
+| 983..988 | `SkyboxLightingCallback` |
+| 3321..3342 | `SkyRelease` |
+| 4712..5328 | `SKY_BODY_RADIUS`, `SkyBodyKey`, `InterpBodyBand`, the SUN/MOON theta, phi, size and glare-visibility bands, `s_bodyTexture`/`s_glareTexture`, `DrawSkyBody`, `DrawGlare`, `SkyBodiesRender`, `SKY_HIGHLIGHT_STRENGTH`/`SKY_HIGHLIGHT_PROFILE`, `SkyLerp`, `SkyRender` |
+
+**Coupling is three substitutions and one accessor.** The regions reference NO tile, chunk, WMO or
+terrain-shader state at all -- verified by scanning them for `TerrainTile`, `TerrainChunk`,
+`s_tiles`, `WmoInstance`, `WmoGroup`, `ChunkMatrixT`, `s_visFrame`, `s_fogActive`, `s_terrainVS` and
+`s_detailPS`, all zero. Of 23 statics the block touches, 18 are its own. What is left:
+
+1. `s_cameraPos` -> `CWorldScene::s_cameraPos`, the reference's own camera global.
+2. `s_cameraLiquidKind >= 0` (one test, at the top of `SkyRender`) -> `CWorld::IsCameraUnderLiquid()`,
+   which `TerrainUpdate` already sets from exactly that expression.
+3. `s_uiVertexShader[0]` / `s_uiPixelShader` and the `EnsureShaders()` call -> the existing public
+   `TerrainUiShaders(vs, ps)`, which calls `EnsureShaders` itself.
+4. `s_skyWhite` has ONE user outside the sky regions, at line 3933, which takes it as a fallback
+   white texture. That needs a small accessor (or its own 8x8 white), or the move breaks it.
+
+`InterpBodyBand` is a sky helper that a function-name scan misses; it must move with the block.
+Nothing else in Terrain.cpp calls it.
