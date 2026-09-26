@@ -186,11 +186,23 @@ void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
     C3Vector diffuse = { 0.0f, 0.0f, 0.0f };
 
     if (mode == 1 || mode == 2) {
-        // Diverged: the reference reads two LightParams columns per zone that frozen has not
-        // ported. Take the sun the same way the terrain pass does instead, including its
-        // fallback -- without that fallback the world's own ambient and diffuse are both zero
-        // and every building draws black, which is exactly what happened the first time this
-        // ran.
+        // Diverged, and here is exactly what from, so closing it is not a hunt:
+        //
+        // The reference does NOT read LightParams columns here. It reads four already-resolved
+        // PACKED colours out of the DayNight block, one pair per mode, each byte scaled by
+        // DAT_00a45564 and taken blue-green-red:
+        //
+        //     mode 1   ambient at DayNight +0x1a8, diffuse at +0x1ac
+        //     mode 2   ambient at +0x1b0,          diffuse at +0x1b4
+        //
+        // Those four are copied into place by the function at 0x007ee750 -- +0x1a8 comes
+        // straight from +0xd8 -- so they are a resolved copy of bands frozen already
+        // interpolates, not new DBC data. What is missing is the mapping from those block
+        // offsets back to band numbers, which is one objdump session on 0x007ee750.
+        //
+        // Until then, take the sun the same way the terrain pass does, including its fallback --
+        // without that fallback the world's own ambient and diffuse are both zero and every
+        // building draws black, which is exactly what happened the first time this ran.
         C3Vector sunDir = { 0.0f, 0.0f, 0.0f };
         CM2Lighting lighting;
         CAaSphere origin = { sunDir, 0.0f };
