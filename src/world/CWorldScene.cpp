@@ -1662,8 +1662,10 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
 // walk when the map says its doodads are sorted that way, and a doodad already reached through
 // another chunk this frame is skipped.
 void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand) {
-    // DOODADPROBE: one counter per gate, and the first few sphere centres against the camera, so a
-    // run says whether they are being rejected or simply drawn in the wrong place.
+    // DOODADPROBE: per-gate counters, plus a histogram of the detail levels and radii actually
+    // seen in each period. The first version sampled the first six doodads ever walked, which is
+    // before any model has loaded -- so it reported detail=0 r=0 for everything and proved nothing.
+    // This samples the steady state instead.
     static uint32_t s_seen = 0;
     static uint32_t s_byBand = 0;
     static uint32_t s_noModel = 0;
@@ -1672,31 +1674,64 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
     static uint32_t s_occluded = 0;
     static uint32_t s_visited = 0;
     static uint32_t s_ticks = 0;
-    static uint32_t s_shown = 0;
+
+    // This period only.
+    static uint32_t s_detailHist[5] = {};
+    static uint32_t s_zeroRadius = 0;
+    static uint32_t s_sampled = 0;
+    static float s_maxRadius = 0.0f;
+    static uint32_t s_bandHist[5] = {};
+
+    if (detailBand < 5) {
+        s_bandHist[detailBand]++;
+    }
 
     if (++s_ticks >= 240) {
         s_ticks = 0;
 
+        const WorldDetailBands& bands = CWorld::GetDetailBands();
+
         ProbeLog(
-                     "DOODADWALK: seen=%u byBand=%u noModel=%u stamped=%u outFrustum=%u "
-                     "occluded=%u visited=%u  cam=(%.0f %.0f %.0f)",
-                     s_seen, s_byBand, s_noModel, s_stamped, s_outFrustum, s_occluded, s_visited,
-                     CWorldScene::s_cameraPos.x, CWorldScene::s_cameraPos.y,
-                     CWorldScene::s_cameraPos.z);
+            "DOODADWALK: seen=%u byBand=%u noModel=%u stamped=%u outFrustum=%u occluded=%u "
+            "visited=%u  cam=(%.0f %.0f %.0f)",
+            s_seen, s_byBand, s_noModel, s_stamped, s_outFrustum, s_occluded, s_visited,
+            CWorldScene::s_cameraPos.x, CWorldScene::s_cameraPos.y, CWorldScene::s_cameraPos.z);
+
+        ProbeLog(
+            "DOODADDETAIL: sampled=%u detail[0..4]=%u/%u/%u/%u/%u zeroRadius=%u maxRadius=%.1f",
+            s_sampled, s_detailHist[0], s_detailHist[1], s_detailHist[2], s_detailHist[3],
+            s_detailHist[4], s_zeroRadius, s_maxRadius);
+
+        ProbeLog(
+            "DOODADBANDS: chunkBand[0..4]=%u/%u/%u/%u/%u  farDist=%.0f/%.0f/%.0f/%.0f/%.0f",
+            s_bandHist[0], s_bandHist[1], s_bandHist[2], s_bandHist[3], s_bandHist[4],
+            sqrtf(bands.farDistSq[0]), sqrtf(bands.farDistSq[1]), sqrtf(bands.farDistSq[2]),
+            sqrtf(bands.farDistSq[3]), sqrtf(bands.farDistSq[4]));
+
+        for (uint32_t i = 0; i < 5; i++) {
+            s_detailHist[i] = 0;
+            s_bandHist[i] = 0;
+        }
+
+        s_zeroRadius = 0;
+        s_sampled = 0;
+        s_maxRadius = 0.0f;
     }
 
     for (auto link = links->Head(); link; link = links->Next(link)) {
         auto entity = static_cast<CMapStaticEntity*>(link->owner);
 
         s_seen++;
+        s_sampled++;
 
-        if (s_shown < 6) {
-            s_shown++;
+        if (entity->m_detailLevel < 5) {
+            s_detailHist[entity->m_detailLevel]++;
+        }
 
-            ProbeLog(
-                         "DOODADWALK %u: sphere=(%.0f %.0f %.0f) r=%.1f detail=%u band=%u",
-                         s_shown, entity->m_sphere.c.x, entity->m_sphere.c.y, entity->m_sphere.c.z,
-                         entity->m_sphere.r, entity->m_detailLevel, detailBand);
+        if (entity->m_sphere.r == 0.0f) {
+            s_zeroRadius++;
+        } else if (entity->m_sphere.r > s_maxRadius) {
+            s_maxRadius = entity->m_sphere.r;
         }
 
         if (entity->m_detailLevel < detailBand) {
