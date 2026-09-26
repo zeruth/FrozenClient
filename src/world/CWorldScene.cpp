@@ -3,7 +3,6 @@
 #include "world/map/LiquidSurface.hpp"
 #include "world/map/MapOcclusion.hpp"
 #include "world/CWorld.hpp"
-#include "util/Log.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
 #include "db/Db.hpp"
@@ -1225,23 +1224,6 @@ void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
         }
 
         int32_t band = CWorldScene::DistanceBand(chunk->m_sortDistance);
-
-        // DOODADPROBE: the chunk's own distance against the band it produced. UpdateSortDistance
-        // early-returns for a chunk outside the frustum and leaves m_sortDistance STALE, so a near
-        // chunk can carry a large old distance, land in a far band, and have its doodads skipped.
-        {
-            static uint32_t s_shown = 0;
-
-            if (s_shown < 8) {
-                s_shown++;
-
-                ProbeLog(
-                             "CHUNKBAND %u: sortDistance=%.1f band=%d doodads=%s",
-                             s_shown, chunk->m_sortDistance, band,
-                             chunk->m_entityLinkList.Head() ? "yes" : "none");
-            }
-        }
-
         CWorldScene::TraverseChunkDoodads(&chunk->m_entityLinkList, band);
         (void)band;
 
@@ -1599,35 +1581,10 @@ int32_t CWorldScene::SphereOutsideFrustum(const C3Vector& center, float radius) 
 // A placed thing the traversal reached: it leaves whatever row it was in, takes its distance
 // along the camera forward, and tells its model to draw. Past the far edge of its detail band
 // it is dropped, and through the band's fade width it draws thinner rather than vanishing.
-// DOODADPROBE counters for this function; it is the last gate on the path with none, and `visited`
-// in the walk above counts ENTRIES here rather than successes.
-static uint32_t s_vsEnter = 0;
-static uint32_t s_vsFlag20 = 0;
-static uint32_t s_vsFarCull = 0;
-static uint32_t s_vsFadeCull = 0;
-static uint32_t s_vsNoModel = 0;
-static uint32_t s_vsDrawn = 0;
-static uint32_t s_vsDrawnNear = 0;      // drawn within 60 yards
-static uint32_t s_vsFarCullNear = 0;    // dropped by the far cull despite being within 60 yards
-static uint32_t s_vsTicks = 0;
-
 void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
     entity->m_rowLink.Unlink();
 
-    s_vsEnter++;
-
-    if (++s_vsTicks >= 2000) {
-        s_vsTicks = 0;
-
-        ProbeLog("DOODADVISIT: enter=%u flag20=%u farCull=%u fadeCull=%u noModel=%u drawn=%u "
-                 "drawnNear=%u farCullNear=%u",
-                 s_vsEnter, s_vsFlag20, s_vsFarCull, s_vsFadeCull, s_vsNoModel, s_vsDrawn,
-                 s_vsDrawnNear, s_vsFarCullNear);
-    }
-
     if ((entity->m_flags & 0x20) || !(CWorld::s_enables & 0x1)) {
-        s_vsFlag20++;
-
         return;
     }
 
@@ -1650,12 +1607,6 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
         float distanceSq = dx * dx + dy * dy + dz * dz;
 
         if (bands.farDistSq[band] < distanceSq) {
-            s_vsFarCull++;
-
-            if (distanceSq < 3600.0f) {
-                s_vsFarCullNear++;
-            }
-
             return;
         }
 
@@ -1664,8 +1615,6 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
 
             if (fade <= 1.0f) {
                 if (fade <= 0.01f) {
-                    s_vsFadeCull++;
-
                     return;
                 }
 
@@ -1675,49 +1624,7 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
     }
 
     if (!entity->m_model) {
-        s_vsNoModel++;
-
         return;
-    }
-
-    s_vsDrawn++;
-
-    {
-        float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
-        float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
-        float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
-
-        // `near` is a legacy Windows macro, like `far` -- the second time that has bitten in this
-        // session, so this one is named around it.
-        bool isNear = dx * dx + dy * dy + dz * dz < 3600.0f;
-
-        if (isNear) {
-            s_vsDrawnNear++;
-        }
-
-        // The decisive comparison. The CULL uses m_sphere.c, which is the model's sphere centre
-        // through m_placement. The DRAW uses the model's matrixB4, which CreateDoodadDef set from
-        // that same m_placement. If these two disagree for a doodad that is about to be drawn, the
-        // doodad is culled in one place and rendered in another -- and the difference says by how
-        // much and in which direction. If they agree, the doodad path is right and the fault is in
-        // the M2 render.
-        static uint32_t s_shown = 0;
-
-        if (isNear && s_shown < 10) {
-            s_shown++;
-
-            const C44Matrix& m = entity->m_model->matrixB4;
-
-            ProbeLog("DOODADXFORM %u: sphere=(%.1f %.1f %.1f) matrixB4.d=(%.1f %.1f %.1f) "
-                     "pos=(%.1f %.1f %.1f) cam=(%.1f %.1f %.1f) scale=%.3f",
-                     s_shown,
-                     entity->m_sphere.c.x, entity->m_sphere.c.y, entity->m_sphere.c.z,
-                     m.d0, m.d1, m.d2,
-                     entity->m_position.x, entity->m_position.y, entity->m_position.z,
-                     CWorldScene::s_cameraPos.x, CWorldScene::s_cameraPos.y,
-                     CWorldScene::s_cameraPos.z,
-                     entity->m_scale);
-        }
     }
 
     entity->m_model->SetAnimating(1);
@@ -1737,81 +1644,10 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
 // walk when the map says its doodads are sorted that way, and a doodad already reached through
 // another chunk this frame is skipped.
 void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand) {
-    // DOODADPROBE: per-gate counters, plus a histogram of the detail levels and radii actually
-    // seen in each period. The first version sampled the first six doodads ever walked, which is
-    // before any model has loaded -- so it reported detail=0 r=0 for everything and proved nothing.
-    // This samples the steady state instead.
-    static uint32_t s_seen = 0;
-    static uint32_t s_byBand = 0;
-    static uint32_t s_noModel = 0;
-    static uint32_t s_stamped = 0;
-    static uint32_t s_outFrustum = 0;
-    static uint32_t s_occluded = 0;
-    static uint32_t s_visited = 0;
-    static uint32_t s_ticks = 0;
-
-    // This period only.
-    static uint32_t s_detailHist[5] = {};
-    static uint32_t s_zeroRadius = 0;
-    static uint32_t s_sampled = 0;
-    static float s_maxRadius = 0.0f;
-    static uint32_t s_bandHist[5] = {};
-
-    if (detailBand < 5) {
-        s_bandHist[detailBand]++;
-    }
-
-    if (++s_ticks >= 240) {
-        s_ticks = 0;
-
-        const WorldDetailBands& bands = CWorld::GetDetailBands();
-
-        ProbeLog(
-            "DOODADWALK: seen=%u byBand=%u noModel=%u stamped=%u outFrustum=%u occluded=%u "
-            "visited=%u  cam=(%.0f %.0f %.0f)",
-            s_seen, s_byBand, s_noModel, s_stamped, s_outFrustum, s_occluded, s_visited,
-            CWorldScene::s_cameraPos.x, CWorldScene::s_cameraPos.y, CWorldScene::s_cameraPos.z);
-
-        ProbeLog(
-            "DOODADDETAIL: sampled=%u detail[0..4]=%u/%u/%u/%u/%u zeroRadius=%u maxRadius=%.1f",
-            s_sampled, s_detailHist[0], s_detailHist[1], s_detailHist[2], s_detailHist[3],
-            s_detailHist[4], s_zeroRadius, s_maxRadius);
-
-        ProbeLog(
-            "DOODADBANDS: chunkBand[0..4]=%u/%u/%u/%u/%u  farDist=%.0f/%.0f/%.0f/%.0f/%.0f",
-            s_bandHist[0], s_bandHist[1], s_bandHist[2], s_bandHist[3], s_bandHist[4],
-            sqrtf(bands.farDistSq[0]), sqrtf(bands.farDistSq[1]), sqrtf(bands.farDistSq[2]),
-            sqrtf(bands.farDistSq[3]), sqrtf(bands.farDistSq[4]));
-
-        for (uint32_t i = 0; i < 5; i++) {
-            s_detailHist[i] = 0;
-            s_bandHist[i] = 0;
-        }
-
-        s_zeroRadius = 0;
-        s_sampled = 0;
-        s_maxRadius = 0.0f;
-    }
-
     for (auto link = links->Head(); link; link = links->Next(link)) {
         auto entity = static_cast<CMapStaticEntity*>(link->owner);
 
-        s_seen++;
-        s_sampled++;
-
-        if (entity->m_detailLevel < 5) {
-            s_detailHist[entity->m_detailLevel]++;
-        }
-
-        if (entity->m_sphere.r == 0.0f) {
-            s_zeroRadius++;
-        } else if (entity->m_sphere.r > s_maxRadius) {
-            s_maxRadius = entity->m_sphere.r;
-        }
-
         if (entity->m_detailLevel < detailBand) {
-            s_byBand++;
-
             if (CMap::s_wdtHeader[0] & 0x8) {
                 return;
             }
@@ -1820,8 +1656,6 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
         }
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
-            s_noModel++;
-
             // Not drawing, but its box still feeds the horizon buffer.
             // TODO CWorldScene::SubmitOccluderBox(box, 0.0f) with the model's bounds brought
             // out to world space. What that sink is for is still open; see the note there.
@@ -1832,8 +1666,6 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
         }
 
         if (entity->m_frameStamp == CWorldScene::s_frameStamp) {
-            s_stamped++;
-
             continue;
         }
 
@@ -1844,18 +1676,12 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
             entity->m_visible = 0;
 
             if (CWorldScene::SphereOccluded(entity->m_sphere.c, entity->m_sphere.r, 0x10) < 2) {
-                s_visited++;
-
                 CWorldScene::VisitStaticEntity(entity);
 
                 CWorldScene::s_visibleEntityCount++;
 
                 continue;
             }
-
-            s_occluded++;
-        } else {
-            s_outFrustum++;
         }
 
         // Out of sight: it keeps animating only if it asked to, or if the camera is near

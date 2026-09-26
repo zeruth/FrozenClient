@@ -8,7 +8,6 @@
 #include "world/map/CMapObjDef.hpp"
 #include "model/CM2Scene.hpp"
 #include "world/CWorld.hpp"
-#include "util/Log.hpp"
 #include "world/CWorldScene.hpp"
 #include <tempest/Matrix.hpp>
 #include <cmath>
@@ -379,28 +378,6 @@ CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const 
     def->m_position.x = origin.x - mddf->position.z;
     def->m_position.y = origin.y - mddf->position.x;
     def->m_position.z = origin.z + mddf->position.y;
-
-    // DOODADPROBE: the raw record against what it became, for the first few, plus a running count.
-    // If the raw position is near zero every time, the MDDF pointer is wrong; if the raw looks sane
-    // and the result does not, the axis mapping or the origin is.
-    {
-        static uint32_t s_made = 0;
-
-        if (s_made < 6) {
-            ProbeLog(
-                         "DOODADPROBE %u: raw=(%.1f %.1f %.1f) -> world=(%.1f %.1f %.1f) "
-                         "scale=%u name=%s",
-                         s_made, mddf->position.x, mddf->position.y, mddf->position.z,
-                         def->m_position.x, def->m_position.y, def->m_position.z,
-                         mddf->scale, name ? name : "<null>");
-        }
-
-        s_made++;
-
-        if (s_made == 400) {
-            ProbeLog( "DOODADPROBE: 400 defs placed");
-        }
-    }
 
     // Nothing knows how far it reaches until its model arrives, so both start on the point.
     def->m_sphere.c = def->m_position;

@@ -44354,7 +44354,7 @@
   ],
   "frozen": "CWorldScene::VisitStaticEntity",
   "frozenSize": 450,
-  "how": "annotated",
+  "how": "callgraph",
   "module": "WorldParam.cpp",
   "refSize": 501,
   "status": "ported"
