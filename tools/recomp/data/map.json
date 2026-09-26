@@ -50479,7 +50479,7 @@
    "src/world/terrain.cpp"
   ],
   "frozen": "BlobShadowDraw",
-  "frozenSize": 1223,
+  "frozenSize": 1399,
   "how": "override",
   "module": "DeclinedWords.cpp",
   "refSize": 1370,
@@ -50495,7 +50495,7 @@
    "src/world/terrain.cpp"
   ],
   "frozen": "BlobShadowDrawCaster",
-  "frozenSize": 579,
+  "frozenSize": 563,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 96,
