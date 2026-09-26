@@ -2387,6 +2387,25 @@ void CWorldScene::UpdateCameraDef() {
     }
 }
 
+// ref: FUN_00790a80
+// The transparent liquid pass: the fog states, then liquid bucket 1, then the post-liquid decals.
+//
+// This is where the reference drains bucket 1 -- from the world frame's transparent block, between
+// an M2 pass and the weather (0x004f9170 above water, 0x004f91b0 below it) -- NOT from CMap::Render,
+// which is where frozen used to do it because this wrapper was unported. That divergence is now
+// closed and the note at CMap::Render's bucket-0 draw says so.
+void CWorldScene::DrawLiquidPass() {
+    CWorld::SetupFogRenderStates();
+
+    if (CWorld::s_enables & CWorld::Enables::Enable_Liquid) {
+        Liquid::Draw(CWorldScene::s_cameraPos, 1);
+    }
+
+    // TODO FUN_0079d5e0, 2552 bytes: the decals that draw after the liquid -- the reference's own
+    // post-liquid pass, which builds a rotated quad per decal and draws it through the native
+    // projection. Nothing in frozen stands in for it.
+}
+
 // ------------------------------------------------------------------------------------------------
 // The frame's world view state, and the UI shader pair the world's quad passes draw through. Both
 // lived in the stand-in renderer until 2026-09-26, purely because that was the file that ran first.

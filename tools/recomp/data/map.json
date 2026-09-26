@@ -15272,7 +15272,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1789,
+  "frozenSize": 1805,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -15288,7 +15288,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldUpdate",
-  "frozenSize": 645,
+  "frozenSize": 696,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1493,
@@ -44277,6 +44277,21 @@
   "refSize": 339,
   "status": "verified"
  },
+ "00790a80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/world/CWorldScene.cpp"
+  ],
+  "frozen": "CWorldScene::DrawLiquidPass",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 44,
+  "status": "ported"
+ },
  "00790af0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -48621,8 +48636,8 @@
    "src/world/map/CMapObjGroupLoad.cpp",
    "src/world/map/cmapobjgroupload.cpp"
   ],
-  "frozen": "CMapObjGroup::GetLiquidAt",
-  "frozenSize": 498,
+  "frozen": "CMapObjGroup::FirstLiquidTileType",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 75,
@@ -49912,7 +49927,7 @@
   "branchRatio": 0.786,
   "constOverlap": 0.22,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapObjGroupLoad.cpp",
    "src/world/map/cmapobjgroupload.cpp"
@@ -68083,7 +68098,7 @@
    "src/world/particlefx.cpp"
   ],
   "frozen": "ParticleFxRender",
-  "frozenSize": 80,
+  "frozenSize": 71,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 50,

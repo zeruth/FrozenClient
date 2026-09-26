@@ -509,6 +509,7 @@ void CGWorldFrame::OnWorldRender() {
         if (CWorld::IsCameraUnderLiquid()) {
             if (scene) { scene->Draw(M2PASS_1); }
             WeatherRender();
+            CWorldScene::DrawLiquidPass();
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
             OverheadIconsRender();
@@ -516,6 +517,7 @@ void CGWorldFrame::OnWorldRender() {
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
             OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
+            CWorldScene::DrawLiquidPass();
             WeatherRender();
             if (scene) { scene->Draw(M2PASS_1); }
         }

@@ -162,6 +162,10 @@ class CWorldScene {
         static CGxShader* s_uiVertexShader[2];
         static CGxShader* s_uiPixelShader;
 
+        // The transparent liquid pass, drained from the world frame's transparent block where the
+        // reference drains it. ref: FUN_00790a80
+        static void DrawLiquidPass();
+
         static void UpdateWorldView();
         static void EnsureUiShaders();
         static void UiShaders(CGxShader*& vs, CGxShader*& ps);

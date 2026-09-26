@@ -435,9 +435,6 @@ void CMapObjGroup::LoadMaterialTextures(uint32_t materialId) {
     textures->texture2 = CMap::LoadTexture(name2);
 }
 
-// ref: FUN_007c8d80
-// The type of the group's first liquid tile, as the low nibble of its flag byte plus one; 0xf
-// means the tile has none, and a grid of nothing but those answers zero.
 // ref: FUN_007c8360
 // Is `localPos` under this group's liquid, and if so which kind and at what height.
 //
@@ -528,6 +525,9 @@ bool CMapObjGroup::GetLiquidAt(const C3Vector& localPos, uint32_t* outType, floa
     return true;
 }
 
+// ref: FUN_007c8d80
+// The type of the group's first liquid tile, as the low nibble of its flag byte plus one; 0xf
+// means the tile has none, and a grid of nothing but those answers zero.
 uint8_t CMapObjGroup::FirstLiquidTileType() const {
     int32_t count = this->m_liquidYTiles * this->m_liquidXTiles;
 

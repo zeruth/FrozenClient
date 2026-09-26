@@ -1462,14 +1462,10 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     if (CWorld::s_enables & CWorld::Enables::Enable_Liquid) {
         Liquid::Draw(cameraPos, 0);
 
-        // DIVERGED: the reference draws bucket 1 from the function at 0x00790a80 -- fog states,
-        // this draw, then FUN_0079d5e0 -- which CGWorldFrame calls at 0x004f9170 and 0x004f91b0,
-        // after CMap::Render has returned. That function is not ported, and leaving the bucket
-        // undrawn would let it grow without bound across frames with m_queued stuck at 1 on every
-        // procedural surface. So it is drained here instead. Today the only observable difference
-        // is the order, because the material draw is still a stub; move this to 0x00790a80's
-        // counterpart when that pass lands.
-        Liquid::Draw(cameraPos, 1);
+        // Bucket 1 is NOT drained here. It is CWorldScene::DrawLiquidPass's, called from the
+        // world frame's transparent block, which is where the reference drains it (FUN_00790a80 at
+        // 0x004f9170 and 0x004f91b0). Frozen used to drain it here because that wrapper was
+        // unported; it is ported now, so the divergence this comment used to record is closed.
     }
 
     // The buildings' props, culled against the frustum this pass has just established.
