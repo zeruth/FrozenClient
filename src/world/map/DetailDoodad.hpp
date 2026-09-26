@@ -153,6 +153,15 @@ static const uint16_t HOLE_MASK[16] = {
 //    normal instead of merely turning it about Z. Only 30 of the 580 GroundEffectDoodad rows
 //    set the flag that selects it, and none of them appear in the starting zone, so across 832
 //    placements it ran exactly zero times.
+//
+//    REVIEWED TERM BY TERM against the reference on 2026-09-25, since it cannot be run here:
+//    the perpendicular is (0, n.z, -n.y) normalized with the x component multiplied by a
+//    constant that reads 0.0; row 0 is n x u, row 1 is u, row 2 is n; the Z rotation folds the
+//    axis term away because the axis is +Z, leaving row 2 scaled by exactly 1; the vertex
+//    transform multiplies by the frame in the same order; and the frame cache keys on
+//    cell & 0xfc for the group with cell & 3 for the slot, starting from the same 0xffff
+//    sentinel. All of it agrees. That is not the same as having seen it, but it is no longer
+//    merely unexamined.
 
 // One kind of detail doodad: the row that names it, and the model once something has asked for
 // it. The model is not opened until a chunk that wants this kind comes into range.
