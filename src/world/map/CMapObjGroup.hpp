@@ -289,6 +289,12 @@ class CMapObjGroup {
         void SetBsp(CAaBspNode* nodes, uint32_t nodeCount, uint16_t* faceRefs, uint32_t faceRefCount, const CAaBox& bounds);
         void FixVertexColors();
         void LoadMaterialTextures(uint32_t materialId);
+        // The liquid surface at a point, in this GROUP's own space: the MLIQ height grid sampled
+        // bilinearly, gated on the tile under the point actually carrying liquid. Answers only when
+        // the point is BELOW the surface, which is what makes it a submersion test rather than a
+        // height probe. ref: FUN_007c8360
+        bool GetLiquidAt(const C3Vector& localPos, uint32_t* outType, float* outHeight);
+
         uint8_t FirstLiquidTileType() const;
         void BuildLiquidVertices();
         void BuildAntiPortals();

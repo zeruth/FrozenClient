@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 09:04 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 09:16 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4366 (=) (16.2%) | 920.1k (16.8%) |
-| &nbsp;&nbsp;ported | 3685 (=) | 741.3k |
+| mapped to a frozen function | 4368 (+2) (16.2%) | 920.6k (16.8%) |
+| &nbsp;&nbsp;ported | 3687 (+2) | 741.7k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2231 (=) (8.3%)** | **290.3k (5.3%)** |
-| unmapped | 22589 | 4.46M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1420 (=) (26.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1438 (=) (25.5%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 853 (=) (18.9%)** | |
-| frozen functions (src/, from PDB + source) | 13814, stubs 1700 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2232 (+1) (8.3%)** | **290.3k (5.3%)** |
+| unmapped | 22587 | 4.45M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1422 (+2) (26.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1440 (+2) (25.5%) | |
+| **render surface** (the modules that draw the world) | **4520, mapped 854 (+1) (18.9%)** | |
+| frozen functions (src/, from PDB + source) | 13815, stubs 1700 | |
 
-Match evidence: annotated 2165, callgraph 239, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2166, callgraph 240, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 08:53 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
+Previous run: 2026-09-26 09:04 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
 
 ## Lua API coverage (binding tables)
 
@@ -168,12 +168,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | DetailDoodad.cpp | 159 | 40.8k | 81 (50.9%) | 47.5% | 1 | 3 | 68 |
 | VehicleCamera_C.cpp | 94 | 40.6k | 5 (5.3%) | 1.4% | 0 | 0 | 38 |
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
-| DBCache.cpp | 235 | 38.6k | 46 (19.6%) | 12.1% | 0 | 0 | 82 |
+| DBCache.cpp | 235 | 38.6k | 47 (20.0%) | 12.2% | 0 | 0 | 82 |
 | TradeSkillFrame.cpp | 160 | 38.4k | 14 (8.8%) | 2.7% | 5 | 0 | 20 |
 | TextureCache.cpp | 250 | 38.4k | 36 (14.4%) | 15.0% | 2 | 0 | 77 |
 | GameObject_C.cpp | 285 | 38.0k | 16 (5.6%) | 3.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 155 | 37.1k | 13 (8.4%) | 11.1% | 0 | 0 | 85 |
-| MapChunk.cpp | 126 | 36.5k | 58 (46.0%) | 54.1% | 0 | 1 | 82 |
+| MapChunk.cpp | 126 | 36.5k | 59 (46.8%) | 55.2% | 0 | 1 | 82 |
 | ConsoleVar.cpp | 242 | 36.1k | 96 (39.7%) | 35.0% | 2 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 9 | 1 | 4 |
 | TextureBlob.cpp | 212 | 34.4k | 53 (25.0%) | 33.0% | 0 | 0 | 83 |
@@ -561,7 +561,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 |---|---|---:|---|
 | `GetPredAdvancedBy0x1` | m4vh263dec | 8257 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CFF_Parse_CharStrings` | lib/freetype-2.0 | 7964 | vendor/freetype-2.0.9/src/cff/cffgload.c |
-| `LoadWmoInstance` | world | 7627 | src/world/Terrain.cpp |
 | `doProlog` | lib/expat-2.0 | 7308 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
 | `ParticleFxRenderImpl` | world | 7232 | src/world/ParticleFx.cpp |
 | `GetPredAdvancedBy1x0` | m4vh263dec | 5923 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
@@ -575,9 +574,9 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `LzmaDec_DecodeReal` | lib/stormlib-9.31 | 3776 | lib/squall/vendor/stormlib-9.31/src/lzma/c/lzmadec.c |
 | `DecodeVOLHeader` | m4vh263dec | 3581 | vendor/m4vh263dec/src/vop.cpp |
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
-| `LoadTile` | world | 3298 | src/world/Terrain.cpp |
 | `VlcDequantH263IntraBlock` | m4vh263dec | 3168 | vendor/m4vh263dec/src/vlc_dequant.cpp |
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
+| `LoadWmoInstance` | world | 3088 | src/world/Terrain.cpp |
 | `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
 | `Liquid::DrawShaderMaterial` | world | 2851 | src/world/map/liquidmaterialsettings.cpp |
@@ -599,6 +598,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `DecodeShortHeader` | m4vh263dec | 2324 | vendor/m4vh263dec/src/vop.cpp |
 | `DetailDoodad::Scatter` | world | 2320 | src/world/map/detaildoodad.cpp |
 | `BuildSkyDome` | world | 2303 | src/world/DayNight.cpp |
+| `TT_CharMap_Load` | lib/freetype-2.0 | 2236 | vendor/freetype-2.0.9/src/sfnt/ttcmap.c |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 03:26 | 4358 (16.2%) | 2228 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:01 | 4359 (16.2%) | 2228 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:06 | 4361 (16.2%) | 2229 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:16 | 4364 (16.2%) | 2230 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 08:49 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:53 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:04 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
+| 2026-09-26 09:16 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

@@ -36501,6 +36501,19 @@
   "refSize": 86,
   "status": "ported"
  },
+ "006839f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "WowClientDB<LiquidTypeRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
  "00683a20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -44249,10 +44262,10 @@
   "status": "ported"
  },
  "00790920": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.917,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.375,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -48535,6 +48548,22 @@
   "refSize": 882,
   "status": "ported"
  },
+ "007c8360": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.056,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapObjGroupLoad.cpp",
+   "src/world/map/cmapobjgroupload.cpp"
+  ],
+  "frozen": "CMapObjGroup::GetLiquidAt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 416,
+  "status": "ported"
+ },
  "007c8560": {
   "branchRatio": 0.333,
   "constOverlap": 0.062,
@@ -48592,7 +48621,7 @@
    "src/world/map/CMapObjGroupLoad.cpp",
    "src/world/map/cmapobjgroupload.cpp"
   ],
-  "frozen": "CMapObjGroup::FirstLiquidTileType",
+  "frozen": "CMapObjGroup::GetLiquidAt",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunk.cpp",
@@ -49883,7 +49912,7 @@
   "branchRatio": 0.786,
   "constOverlap": 0.22,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.8,
   "files": [
    "src/world/map/CMapObjGroupLoad.cpp",
    "src/world/map/cmapobjgroupload.cpp"

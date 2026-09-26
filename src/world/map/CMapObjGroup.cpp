@@ -831,7 +831,11 @@ bool CMapObjGroup::QuerySegment(const C3Segment& segment, float* t, uint32_t que
     this->RecordHits(placement, object, 0);
 
     if ((queryFlags & 0x30000) && (this->m_flags & 0x1000)) {
-        // TODO FUN_007c9dd0: the group's doodads
+        // TODO FUN_007c9dd0: the group's LIQUID, not its doodads -- this said doodads, and the
+        // gate above disproves it: MOGP 0x1000 is has-water (has-doodads is 0x800), and
+        // FUN_007c9dd0 reads m_liquidXTiles/YTiles, m_liquidPos and m_liquidMinZ/MaxZ. It is the
+        // segment form of the point query ported as CMapObjGroup::GetLiquidAt (FUN_007c8360),
+        // so a segment query cannot yet hit an indoor water surface.
     }
 
     bool hit = CMapObjGroup::s_hitRecordCount != recordsBefore;
@@ -862,7 +866,7 @@ bool CMapObjGroup::QuerySegmentFace(const C3Segment& segment, float* t, uint32_t
     }
 
     if ((queryFlags & 0x30000) && (this->m_flags & 0x1000)) {
-        // TODO FUN_007c9dd0: the group's doodads; a hit there reports face 0
+        // TODO FUN_007c9dd0: the group's LIQUID (see the note above); a hit reports face 0
     }
 
     CMapObjGroup::QueryEnd(this->m_polys);

@@ -2288,6 +2288,7 @@ addr	how	frozen	evidence
 00683100	annotated	CGxDevice::MasterEnable	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
 00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
+006839f0	callgraph	WowClientDB<LiquidTypeRec>::GetRecord	only unmatched callee of 007c8360=CMapObjGroup::GetLiquidAt
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
 00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
 006844c0	annotated	CGxDevice::PrimVertexFormat	tag in src/gx/CGxDevice.cpp
@@ -3040,10 +3041,11 @@ addr	how	frozen	evidence
 007c7a00	annotated	TriangleOutsideBox	tag in src/world/map/CMapObjGroup.cpp
 007c7ae0	override	CMapObjGroup::RecordHits	
 007c7fe0	annotated	CMapObjGroup::SampleColorAtFace	tag in src/world/map/CMapObjGroup.cpp
+007c8360	annotated	CMapObjGroup::GetLiquidAt	tag in src/world/map/CMapObjGroupLoad.cpp
 007c8560	annotated	CMapObjGroup::FillVertexBuffer	tag in src/world/map/CMapObjGroupBuffers.cpp
 007c8b90	annotated	CMapObjGroup::FillIndexBuffer	tag in src/world/map/CMapObjGroupBuffers.cpp
 007c8c60	annotated	CMapObjGroup::BuildLiquidVertices	tag in src/world/map/CMapObjGroupLoad.cpp
-007c8d80	annotated	CMapObjGroup::FirstLiquidTileType	tag in src/world/map/CMapObjGroupLoad.cpp
+007c8d80	annotated	CMapObjGroup::GetLiquidAt	tag in src/world/map/CMapObjGroupLoad.cpp
 007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9ab0	annotated	CMapObjGroup::DualQueryLeaf	tag in src/world/map/CMapObjGroup.cpp

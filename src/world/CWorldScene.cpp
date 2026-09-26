@@ -1842,10 +1842,37 @@ void CWorldScene::UpdateCameraLiquid() {
             CWorldScene::s_cameraLiquidDepth = height - CWorldScene::s_cameraPos.z;
         }
     } else {
-        // TODO inside a building the reference moves the camera into the group's space through
-        // the def's inverse placement and asks FUN_007c8360, the group's own liquid query.
-        // Neither that nor the group liquid it reads is ported, so a camera indoors is treated
-        // as being in no liquid at all.
+        // Inside a building: into the def's own space, then ask the rooms the camera is standing in.
+        // s_cameraGroupIndices is what UpdateCameraDef left behind, so this asks only those rooms
+        // rather than every group of the building.
+        auto def = CWorldScene::s_cameraDef;
+
+        if (def->m_mapObj) {
+            C3Vector local = CWorldScene::s_cameraPos * def->m_inversePlacement;
+
+            for (uint32_t i = 0; i < CWorldScene::s_cameraGroupIndices.Count(); i++) {
+                uint32_t groupIndex = CWorldScene::s_cameraGroupIndices[i];
+
+                if (groupIndex == 0xffff) {
+                    continue;
+                }
+
+                auto group = def->m_mapObj->GetGroup(groupIndex, 0);
+
+                if (!group) {
+                    continue;
+                }
+
+                if (group->GetLiquidAt(local, &liquidType, &height)) {
+                    // The depth is a WORLD vertical distance, as the outdoor branch produces, and
+                    // the group's height is in the building's space -- so measure it there too,
+                    // against the same local position that answered the query.
+                    CWorldScene::s_cameraLiquidDepth = height - local.z;
+
+                    break;
+                }
+            }
+        }
     }
 
     bool left = false;

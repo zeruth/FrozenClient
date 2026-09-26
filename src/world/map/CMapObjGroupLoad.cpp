@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObj.hpp"
+#include "db/Db.hpp"
 #include "async/AsyncFileRead.hpp"
 #include "async/CAsyncObject.hpp"
 #include "gx/shader/CShaderEffect.hpp"
@@ -11,6 +12,7 @@
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include <cstring>
+#include <cmath>
 
 // Loading one WMO group file (reference MapObjRead.cpp and the MapArea.cpp tail). A root's groups
 // live in <root>_000.wmo, _001.wmo and so on; each is read on its own and parsed into the group
@@ -436,6 +438,96 @@ void CMapObjGroup::LoadMaterialTextures(uint32_t materialId) {
 // ref: FUN_007c8d80
 // The type of the group's first liquid tile, as the low nibble of its flag byte plus one; 0xf
 // means the tile has none, and a grid of nothing but those answers zero.
+// ref: FUN_007c8360
+// Is `localPos` under this group's liquid, and if so which kind and at what height.
+//
+// A group whose MLIQ carries no tile grid at all answers yes at FLT_MAX: the reference treats it as
+// entirely filled, which is how a sealed water volume with no per-tile mask behaves.
+//
+// The vertical test is `pos.z < height + bias`, so a point exactly at the surface counts as under
+// it. The bias is 0.01 and applies only to liquids whose LiquidType row has flag 0x4.
+bool CMapObjGroup::GetLiquidAt(const C3Vector& localPos, uint32_t* outType, float* outHeight) {
+    // 1 / (CHUNK_SIZE / 8), the liquid tile step, as DAT_00aeee54 holds it.
+    static const float INV_TILE_STEP = 0.23999999463558197f;
+
+    // DAT_009f1968.
+    static const float SURFACE_BIAS = 0.00999999977648258f;
+
+    if (!this->m_liquidType) {
+        return false;
+    }
+
+    if (!this->m_liquidXTiles || !this->m_liquidYTiles) {
+        // No tile mask: the whole group is this liquid, unbounded above.
+        *outType = this->m_liquidType;
+        *outHeight = 3.4028234663852886e+38f;
+
+        return true;
+    }
+
+    float fx = (localPos.x - this->m_liquidPos.x) * INV_TILE_STEP;
+    float fy = (localPos.y - this->m_liquidPos.y) * INV_TILE_STEP;
+
+    int32_t tileX = static_cast<int32_t>(floorf(fx));
+    int32_t tileY = static_cast<int32_t>(floorf(fy));
+
+    if (tileX < 0 || tileY < 0) {
+        return false;
+    }
+
+    if (static_cast<uint32_t>(tileX) >= this->m_liquidXTiles
+        || static_cast<uint32_t>(tileY) >= this->m_liquidYTiles) {
+        return false;
+    }
+
+    // 0xf in the low nibble is the reference's "no liquid here" tile, the same sentinel
+    // LiquidTileCount skips.
+    if (!this->m_liquidTiles
+        || (this->m_liquidTiles[this->m_liquidXTiles * tileY + tileX] & 0xf) == 0xf) {
+        return false;
+    }
+
+    if (!this->m_liquidVerts) {
+        return false;
+    }
+
+    // Bilinear over the four grid heights around the point. The entries are eight bytes each with
+    // the height at +4, so the row stride is the VERTEX count, one more than the tile count.
+    uint32_t row0 = this->m_liquidXVerts * static_cast<uint32_t>(tileY) + static_cast<uint32_t>(tileX);
+    uint32_t row1 = row0 + this->m_liquidXVerts;
+
+    auto heightAt = [this](uint32_t index) {
+        return *reinterpret_cast<const float*>(this->m_liquidVerts + index * 8 + 4);
+    };
+
+    float tx = fx - static_cast<float>(tileX);
+    float ty = fy - static_cast<float>(tileY);
+
+    float h00 = heightAt(row0);
+    float a = h00 + (heightAt(row0 + 1) - h00) * tx;
+
+    float h10 = heightAt(row1);
+    float b = h10 + (heightAt(row1 + 1) - h10) * tx;
+
+    float height = a + (b - a) * ty;
+
+    float bias = 0.0f;
+    auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(this->m_liquidType));
+
+    if (rec && (rec->m_flags & 0x4)) {
+        bias = SURFACE_BIAS;
+    }
+
+    if (localPos.z >= height + bias) {
+        return false;
+    }
+
+    *outHeight = height;
+    *outType = this->m_liquidType;
+
+    return true;
+}
+
 uint8_t CMapObjGroup::FirstLiquidTileType() const {
     int32_t count = this->m_liquidYTiles * this->m_liquidXTiles;
 
