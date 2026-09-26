@@ -1599,10 +1599,35 @@ int32_t CWorldScene::SphereOutsideFrustum(const C3Vector& center, float radius) 
 // A placed thing the traversal reached: it leaves whatever row it was in, takes its distance
 // along the camera forward, and tells its model to draw. Past the far edge of its detail band
 // it is dropped, and through the band's fade width it draws thinner rather than vanishing.
+// DOODADPROBE counters for this function; it is the last gate on the path with none, and `visited`
+// in the walk above counts ENTRIES here rather than successes.
+static uint32_t s_vsEnter = 0;
+static uint32_t s_vsFlag20 = 0;
+static uint32_t s_vsFarCull = 0;
+static uint32_t s_vsFadeCull = 0;
+static uint32_t s_vsNoModel = 0;
+static uint32_t s_vsDrawn = 0;
+static uint32_t s_vsDrawnNear = 0;      // drawn within 60 yards
+static uint32_t s_vsFarCullNear = 0;    // dropped by the far cull despite being within 60 yards
+static uint32_t s_vsTicks = 0;
+
 void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
     entity->m_rowLink.Unlink();
 
+    s_vsEnter++;
+
+    if (++s_vsTicks >= 2000) {
+        s_vsTicks = 0;
+
+        ProbeLog("DOODADVISIT: enter=%u flag20=%u farCull=%u fadeCull=%u noModel=%u drawn=%u "
+                 "drawnNear=%u farCullNear=%u",
+                 s_vsEnter, s_vsFlag20, s_vsFarCull, s_vsFadeCull, s_vsNoModel, s_vsDrawn,
+                 s_vsDrawnNear, s_vsFarCullNear);
+    }
+
     if ((entity->m_flags & 0x20) || !(CWorld::s_enables & 0x1)) {
+        s_vsFlag20++;
+
         return;
     }
 
@@ -1625,6 +1650,12 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
         float distanceSq = dx * dx + dy * dy + dz * dz;
 
         if (bands.farDistSq[band] < distanceSq) {
+            s_vsFarCull++;
+
+            if (distanceSq < 3600.0f) {
+                s_vsFarCullNear++;
+            }
+
             return;
         }
 
@@ -1633,6 +1664,8 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
 
             if (fade <= 1.0f) {
                 if (fade <= 0.01f) {
+                    s_vsFadeCull++;
+
                     return;
                 }
 
@@ -1642,7 +1675,21 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
     }
 
     if (!entity->m_model) {
+        s_vsNoModel++;
+
         return;
+    }
+
+    s_vsDrawn++;
+
+    {
+        float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
+        float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
+        float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
+
+        if (dx * dx + dy * dy + dz * dz < 3600.0f) {
+            s_vsDrawnNear++;
+        }
     }
 
     entity->m_model->SetAnimating(1);
