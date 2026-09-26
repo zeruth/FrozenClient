@@ -255,6 +255,13 @@ CCharacterComponent* CCharacterComponent::AllocComponent() {
     return component;
 }
 
+// ref: FUN_004e7790
+// CreatureDisplayInfo packs a creature's geoset choices into ONE dword, four bits per band:
+// bits 0..3 pick within 100..199, bits 4..7 within 200..299, and so on to 800..899. A band whose
+// nibble is zero is left entirely alone -- not hidden -- which is why the whole-band hide sits
+// inside the `if` rather than before it.
+//
+// Pins CreatureDisplayInfoRec::m_creatureGeosetData at +0x38.
 void CCharacterComponent::ApplyMonsterGeosets(CM2Model* model, const CreatureDisplayInfoRec* displayInfoRec) {
     if (!model || !displayInfoRec || !displayInfoRec->m_creatureGeosetData) {
         return;

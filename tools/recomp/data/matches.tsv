@@ -919,6 +919,8 @@ addr	how	frozen	evidence
 004e6f90	annotated	ComponentCopyString	tag in src/component/CCharacterComponent.cpp
 004e7700	annotated	CCharacterComponent::ComponentCloseFingers	tag in src/component/CCharacterComponent.cpp
 004e7750	annotated	CCharacterComponent::ComponentOpenFingers	tag in src/component/CCharacterComponent.cpp
+004e7790	annotated	CCharacterComponent::ApplyMonsterGeosets	tag in src/component/CCharacterComponent.cpp
+004e7800	order	CCharacterComponent::FreeComponent	definition order between CCharacterComponent::ComponentOpenFingers and CCharacterComponent::GetSheatheLink in src/component/CCharacterComponent.cpp
 004e7940	annotated	CCharacterComponent::GetSheatheLink	tag in src/component/CCharacterComponent.cpp
 004e79a0	annotated	CCharacterComponent::RemoveLinkpt	tag in src/component/CCharacterComponent.cpp
 004e7af0	annotated	ComponentItemSlotToInvSlot	tag in src/component/CCharacterComponent.cpp
@@ -3518,6 +3520,7 @@ addr	how	frozen	evidence
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
+0082c970	annotated	CM2Model::OptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
 0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp
 0082e140	annotated	CM2Model::AnimateMTSimple	tag in src/model/CM2Model.cpp
@@ -3525,6 +3528,7 @@ addr	how	frozen	evidence
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
 008309c0	annotated	CM2Model::AnimateParticleEmitter	tag in src/model/CM2Model.cpp
 00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
+00830f90	annotated	CM2Model::ForceAnimate	tag in src/model/CM2Model.cpp
 00831330	annotated	CM2Model::GetAttachmentWorldPosition	tag in src/model/CM2Model.cpp
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp

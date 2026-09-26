@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 18:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 18:58 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4527 (+2) (16.8%) | 974.6k (17.8%) |
-| &nbsp;&nbsp;ported | 3848 (+2) | 797.0k |
-| &nbsp;&nbsp;stub (unimplemented body) | 577 (=) | 124.9k |
+| mapped to a frozen function | 4531 (+4) (16.8%) | 976.3k (17.8%) |
+| &nbsp;&nbsp;ported | 3851 (+3) | 797.4k |
+| &nbsp;&nbsp;stub (unimplemented body) | 578 (+1) | 126.2k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2319 (+1) (8.6%)** | **315.9k (5.8%)** |
-| unmapped | 22428 | 4.40M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1529 (+1) (28.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1550 (+2) (27.4%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 978 (+2) (21.6%)** | |
-| frozen functions (src/, from PDB + source) | 13900, stubs 1698 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2321 (+2) (8.6%)** | **316.0k (5.8%)** |
+| unmapped | 22424 | 4.40M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1533 (+4) (28.5%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1554 (+4) (27.5%) | |
+| **render surface** (the modules that draw the world) | **4520, mapped 980 (+2) (21.7%)** | |
+| frozen functions (src/, from PDB + source) | 13901, stubs 1698 | |
 
-Match evidence: annotated 2274, callgraph 243, callorder 111, cvar 31, handler 29, order 140, override 353, sticky 20, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2277, callgraph 243, callorder 111, cvar 31, handler 29, order 141, override 353, sticky 20, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 18:49 -- mapped 4525, ported 3846, stub 577, spine mapped 1528.
+Previous run: 2026-09-26 18:51 -- mapped 4527, ported 3848, stub 577, spine mapped 1529.
 
 ## Lua API coverage (binding tables)
 
@@ -137,7 +137,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 703 | 182.2k | 95 (13.5%) | 9.5% | 0 | 0 | 292 |
 | Player_C.cpp | 728 | 146.7k | 58 (8.0%) | 9.5% | 0 | 0 | 156 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
-| M2Scene.cpp | 283 | 101.1k | 160 (56.5%) | 62.6% | 7 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 162 (57.2%) | 64.0% | 8 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 17 (7.1%) | 9.2% | 0 | 0 | 1 |
 | GameUI.cpp | 487 | 95.7k | 231 (47.4%) | 47.7% | 78 | 0 | 70 |
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
@@ -161,7 +161,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | LFGInfo.cpp | 225 | 46.5k | 21 (9.3%) | 7.4% | 3 | 0 | 6 |
 | M2Shared.cpp | 65 | 45.9k | 25 (38.5%) | 50.4% | 1 | 0 | 19 |
 | CSimpleHyperlinkedFrame.cpp | 195 | 45.6k | 87 (44.6%) | 51.2% | 0 | 0 | 119 |
-| ScanDLLGlue.cpp | 183 | 44.9k | 22 (12.0%) | 8.3% | 3 | 0 | 41 |
+| ScanDLLGlue.cpp | 183 | 44.9k | 24 (13.1%) | 9.2% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
@@ -465,6 +465,7 @@ Module = the source file named by the reference's own assert strings near the fu
 
 | addr | module | size | callers | frozen | strings |
 |---|---|---:|---:|---|---|
+| 0082c970 | M2Scene.cpp? | 1353 | 3 | `CM2Model::OptimizeVisibleGeometry` [annotated] |  |
 | 00820ae0 | M2Scene.cpp? | 1109 | 1 | `CM2SceneRender::DrawBatchDoodad` [override] | BatchDoodad: model=%s index=%d |
 | 00779ae0 | SComp.cpp? | 183 | 10 | `MD5Final` [callorder] |  |
 | 00820720 | M2Scene.cpp? | 957 | 1 | `CM2SceneRender::DrawBatchProj` [override] | BatchProj: model=%s index=%d |
@@ -504,7 +505,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0062f1e0 | Tooltip.cpp | 571 | 0 | `CGTooltip_SetTradeTargetItem` [table] | Invalid trade slot in SetTradeTargetItem |
 | 0062f9e0 | Tooltip.cpp | 569 | 0 | `CGTooltip_SetInboxItem` [table] | Usage: %s:SetInboxItem(messageIndex, att |
 | 0053a300 | PartyFrame.cpp? | 568 | 0 | `Script_BNListConversation` [table] | %s%s%s, PLAYER_LIST_DELIMITER |
-| 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -729,7 +729,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
-| 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:16 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:20 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:22 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 18:38 | 4523 (16.8%) | 2316 (8.6%) | 577 | 1527/5381 | 2924/2964 | 1380 |
 | 2026-09-26 18:49 | 4525 (16.8%) | 2318 (8.6%) | 577 | 1528/5381 | 2924/2964 | 1380 |
 | 2026-09-26 18:51 | 4527 (16.8%) | 2319 (8.6%) | 577 | 1529/5381 | 2924/2964 | 1380 |
+| 2026-09-26 18:58 | 4531 (16.8%) | 2321 (8.6%) | 578 | 1533/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

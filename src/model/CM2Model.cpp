@@ -2053,6 +2053,21 @@ C44Matrix CM2Model::GetAttachmentWorldTransform(uint32_t id) {
     return transform * this->m_scene->m_viewInv;
 }
 
+// ref: FUN_00830f90
+void CM2Model::ForceAnimate() {
+    if (!this->m_loaded) {
+        return;
+    }
+
+    // Animate() is a no-op for a model whose m_animCounter already matches the scene's, which
+    // is how a model shared by several draws is only stepped once a frame. Putting the counter
+    // one BEHIND defeats exactly that test and nothing else -- so this is "step it again, now",
+    // for a caller that has just changed something the current bone matrices were built from.
+    this->m_animCounter = this->m_scene->uint14 - 1;
+
+    this->Animate();
+}
+
 // ref: FUN_00827780
 uint32_t CM2Model::GetEventTimestamp(uint32_t animId, uint32_t eventId) {
     if (!this->m_loaded) {
@@ -3152,6 +3167,19 @@ void CM2Model::LinkToCallbackListTail() {
     this->m_shared->m_callbackListTail = &this->m_callbackNext;
 }
 
+// ref: FUN_0082c970
+// STILL A STUB -- the tag is a claim about identity, not behaviour. Identified from its one
+// distinctive callee: the reference function calls CM2Model::UnoptimizeVisibleGeometry first
+// thing, and nothing else in the binary does. Its other callees say what it is for --
+// CGxDevice::PoolCreate, CGxDevice::BufCreate, CM2Shared::GetEffect -- so it collapses the
+// model's currently VISIBLE skin sections into one vertex pool and index buffer per effect,
+// hung off +0x2d0, so a character whose geosets have just been chosen draws in few batches
+// instead of one per section. 1353 bytes.
+//
+// This is the head of a blocked chain, not a leaf: CM2Model::SetIndices and the element flag
+// 0x4 path in CM2Scene / CM2SceneRender::DrawBatch are all unreachable until +0x2d0 is
+// allocated, and this is the only thing that allocates it. CM2Scene's batch comparator at
+// FUN_00824b70 reads +0x2d0 too.
 void CM2Model::OptimizeVisibleGeometry() {
     // TODO
 }

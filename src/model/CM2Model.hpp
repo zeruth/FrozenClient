@@ -440,6 +440,11 @@ class CM2Model {
         // ref: FUN_00827670
         int32_t GetEvent(uint32_t eventId, C3Vector** position, uint16_t* boneIndex);
 
+        // ref: FUN_00830f90
+        // Step this model's animation again even if it has already been stepped this frame, for
+        // a caller that has just changed something the current bone matrices were built from.
+        void ForceAnimate();
+
         // ref: FUN_00827780
         // WHEN an animation event fires, in sequence time: the first timestamp authored for
         // `eventId` inside the animation `animId`. Zero when the model has neither, which is the

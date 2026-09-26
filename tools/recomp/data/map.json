@@ -14744,6 +14744,38 @@
   "refSize": 63,
   "status": "ported"
  },
+ "004e7790": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/CCharacterComponent.cpp",
+   "src/component/ccharactercomponent.cpp"
+  ],
+  "frozen": "CCharacterComponent::ApplyMonsterGeosets",
+  "frozenSize": 162,
+  "how": "annotated",
+  "module": "ScanDLLGlue.cpp",
+  "refSize": 106,
+  "status": "ported"
+ },
+ "004e7800": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/CCharacterComponent.cpp",
+   "src/component/ccharactercomponent.cpp"
+  ],
+  "frozen": "CCharacterComponent::FreeComponent",
+  "frozenSize": 202,
+  "how": "order",
+  "module": "ScanDLLGlue.cpp",
+  "refSize": 311,
+  "status": "ported"
+ },
  "004e7940": {
   "branchRatio": 0.143,
   "constOverlap": 0.0,
@@ -56123,6 +56155,22 @@
   "refSize": 219,
   "status": "ported"
  },
+ "0082c970": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::OptimizeVisibleGeometry",
+  "frozenSize": 3,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 1353,
+  "status": "stub"
+ },
  "0082ced0": {
   "branchRatio": 0.571,
   "constOverlap": 0.024,
@@ -56233,6 +56281,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 451,
+  "status": "ported"
+ },
+ "00830f90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ForceAnimate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 24,
   "status": "ported"
  },
  "00831330": {
