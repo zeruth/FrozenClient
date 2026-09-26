@@ -691,13 +691,20 @@ void CMapObj::ParseChunks() {
     auto mopt = NextChunk(cursor);
     this->m_mopt = reinterpret_cast<SMOPortal*>(const_cast<uint8_t*>(mopt.body));
 
+    // m_portalCount MUST be taken from MOPT before it is used to size the rect array. It used to
+    // be assigned after, so SetCount always ran with the stale 0 and every root ended up with an
+    // EMPTY rect array -- which made WalkPortals reject every doorway on
+    // `portalIndex >= m_portalRects.Count()`. No portal was ever crossed, so a building's interior
+    // groups were never marked visible and its rooms drew nothing: Acherus was a shell with its
+    // doodads hanging in mid-air. The portals themselves parsed fine; only the array was empty.
+    this->m_portalCount = mopt.size / sizeof(SMOPortal);
+
     this->m_portalRects.SetCount(this->m_portalCount);
 
     for (uint32_t i = 0; i < this->m_portalCount; i++) {
         this->m_portalRects[i].flags = 0;
         this->m_portalRects[i].stamp = 0;
     }
-    this->m_portalCount = mopt.size / sizeof(SMOPortal);
 
     for (uint32_t i = 0; i < this->m_portalCount; i++) {
         auto portal = &this->m_mopt[i];

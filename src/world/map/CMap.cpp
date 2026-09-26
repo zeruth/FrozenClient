@@ -1353,25 +1353,6 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
                                      CWorldScene::s_cameraGroupIndices.Count());
         }
 
-        // WMOPROBE: does the indoor branch run, does the portal walk open anything, and how many
-        // rooms does it start from.
-        {
-            static uint32_t s_ticks = 0;
-
-            if (++s_ticks >= 120) {
-                s_ticks = 0;
-
-                ProbeLog("WMOINDOOR: def=%p flagged=%p rooms=%u flaggedRooms=%u "
-                         "portalDepth=%.3f visibleGroups=%s",
-                         static_cast<void*>(CWorldScene::s_cameraDef),
-                         static_cast<void*>(CWorldScene::s_cameraDefFlagged),
-                         CWorldScene::s_cameraGroupIndices.Count(),
-                         CWorldScene::s_cameraFlaggedGroupIndices.Count(),
-                         CWorldScene::s_portalWindow.depth,
-                         CWorldScene::s_visibleMapObjGroups.Head() ? "some" : "none");
-            }
-        }
-
         if (CWorldScene::s_portalWindow.depth < 0.0f) {
             // Nothing the portals expose. DIVERGED, deliberately: the reference tears all 64
             // distance rows down here (FUN_00794250) so the frame draws nothing at all. That is
