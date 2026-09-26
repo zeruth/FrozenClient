@@ -1,4 +1,12 @@
 {
+  "0078ca50": {
+    "status": "unlinked",
+    "note": "MapWeather's render: a weather record holds three independent effects at +0x13c, +0x140 and +0x144 and an enable flag at +0x194, and this draws whichever exist. Unported. The constants the three are built from are in src/world/map/MapWeatherTable.hpp, read out of the image 2026-09-25."
+  },
+  "0078c420": {
+    "status": "unlinked",
+    "note": "The shared constructor two of the three weather effects are built through, called as (this, rate, &extents, texture, angleA, angleB, floatC, floatD, 0x80): extents to +0x04..+0x0c, rate to +0x1c, the angles to +0x24 and +0x28, the last two floats to +0x34 and +0x38. The numbers are recovered (see MapWeatherTable.hpp); what they MEAN is not established, only where they go."
+  },
   "007cc890": {
     "status": "unlinked",
     "note": "The fixed horizon occluder's constructor: stores the map id, the vertex run and its count, and builds the box, extending min/max over x and y, max z from the vertices and min z from vertex z plus a negative `drop`. Frozen holds the five records it builds as a static table in src/world/map/MapHorizonTable.hpp, read out of the image on 2026-09-25 -- the records themselves live in zeroed memory at 0x00d2dc20 and are filled by a static initialiser at 0x009cec90, so they cannot be read as data without following that."
