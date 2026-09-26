@@ -82,6 +82,8 @@ void CMapStaticEntity::Place(const C44Matrix& placement) {
     // world flag 0x8000, which nothing sets, so the guard is left out and the clear always
     // applies. It reads the model without checking there is one; frozen checks.
     if (level < 3 && this->m_model) {
-        this->m_model->m_flags &= ~0x40u;
+        // m_flag40, not `m_flags & ~0x40`: the same two-storages confusion that stopped doodads
+        // drawing at all. The reference's flags word is frozen's bitfield block.
+        this->m_model->m_flag40 = 0;
     }
 }

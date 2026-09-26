@@ -1629,12 +1629,22 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
 
     entity->m_model->SetAnimating(1);
 
-    // Diverged: the reference chooses between two pairs of draw bits on a model field at
-    // +0x48, and frozen's CM2Model deliberately does not follow the reference's offsets there
-    // (see the note above its own +0x134 block). Every doodad takes the first pair. If
-    // doodads that carry attachments come out wrong, this is the line.
-    entity->m_model->m_flags |= 0x8;
-    entity->m_model->m_flags |= 0x10000;
+    // THE DRAW BITS ARE BITFIELDS, NOT `m_flags`. This wrote `m_flags |= 0x8`, and m_flags is a
+    // plain word at CM2Model +0x04 that nothing reads for visibility -- the draw list is built from
+    // the SEPARATE bitfield block beside it, where CM2Model::AnimateMT tests `m_flag8` to decide
+    // whether to push the model onto m_scene->m_drawList. So every doodad was queued into a field
+    // no one consumed and never drew.
+    //
+    // The reference's choice between two pairs of bits is on the model's +0x48, and that is its
+    // ATTACH PARENT: CM2Model::SetVisible makes the same test to pick between m_flag80 and m_flag8.
+    // An attached model is drawn through its parent, so it takes the second pair.
+    if (entity->m_model->m_attachParent) {
+        entity->m_model->m_flag80 = 1;
+        entity->m_model->m_flag20000 = 1;
+    } else {
+        entity->m_model->m_flag8 = 1;
+        entity->m_model->m_flag10000 = 1;
+    }
 
     entity->m_model->m_baseAlpha = alpha;
 }
@@ -1788,11 +1798,16 @@ void CWorldScene::TraverseRowEntities(Row* row) {
             // draw bits are set from its complement rather than unconditionally.
             uint32_t draw = ~(entity->m_flags7c >> 2) & 0x1;
 
-            // Diverged, the same field as in VisitStaticEntity: the reference picks between
-            // two pairs of draw bits on a model field at +0x48 that frozen's CM2Model does not
-            // line up with. Every entity takes the first pair.
-            entity->m_model->m_flags = (entity->m_model->m_flags & ~0x8u) | (draw * 0x8);
-            entity->m_model->m_flags = (entity->m_model->m_flags & ~0x10000u) | (draw << 16);
+            // The same bitfield mistake as in VisitStaticEntity, and the same fix: these are the
+            // bitfields the draw list is built from, not the m_flags word. The pair is chosen by
+            // the model having an attach parent, which is the reference's +0x48 test.
+            if (entity->m_model->m_attachParent) {
+                entity->m_model->m_flag80 = draw;
+                entity->m_model->m_flag20000 = draw;
+            } else {
+                entity->m_model->m_flag8 = draw;
+                entity->m_model->m_flag10000 = draw;
+            }
 
             // TODO the reference also hangs FUN_00780cd0 off the model here, the hook that
             // lets an entity answer for its own lighting.
