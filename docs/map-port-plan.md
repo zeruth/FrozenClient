@@ -248,13 +248,20 @@ table and constant the scatter builder uses has been read out of the reference's
   build, and its `TSBaseArray` has virtual methods so every `TSGrowableArray` carries a vtable
   the reference's does not. Do not write static_asserts against the reference offsets.
 
+### A trap for anything tested at the default spawn
+
+**Map 609 spawns on Acherus, 138 yards above the ground.** The camera sits at z 429 with the
+nearest terrain chunk centre at z 291 and 226 yards away, so ANY per-chunk distance gate is shut
+there -- the detail doodad pass drew nothing at its real 70 yard gate and the port was not why.
+Widen the gate, or move, before concluding a distance-gated port is broken.
+
 ### What each remaining item needs
 
 | item | state | what it needs |
 |---|---|---|
 | 2 map objects | draws, lit, interiors walked; portal tail filled | the large portal internals (`FUN_007ac060` 1591, `FUN_007a9380` 2146), the WMO doodads and blob receivers, and floor light -- which is gated on the unported placement code that writes `m_field80`, not on analysis |
 | 4 liquids | everything but the draw | the `Liquid` module: seven `IMaterial` implementations named in overrides.json, `CInstance`, `CreateSurface` (1421), five constant-setup routines and the `vsLiquidWater`/`psLiquidWater` pair, about 9 KB |
-| 6 detail doodads | **module complete, unwired** | every function is ported: scatter, instance fill, buffer acquire, both buffer fills, draw. What is left is the pass (`FUN_007984a0`, 756) with its state setup (`FUN_007b2d30`, 798) and shader-path constants (`FUN_007b10e0`, 197), and deleting Terrain.cpp's own scatter -- **in one change**, because both running would draw the grass twice |
+| 6 detail doodads | **DONE** | scatter, instance fill, buffers, both fills, state setup, fade ramp, queue and pass all ported; Terrain.cpp's stand-in deleted. Only `FUN_007b10e0` (the shader-path constants) is left as a TODO, unreachable because frozen never loads the module's shaders. Not looked at on screen |
 | 7 occluders | horizon live; volume test real but starved | the volumes come from the low-detail terrain: `FUN_007cd4e0` (857) builds their planes, `FUN_007cd850` walks 62 area records -- and that table is filled from the WDL, which `CMap::Load` still lists as a TODO |
 | 8 sky | not started | the DayNight block, which also owns the per-instance ambient the map objects substitute for |
 | 9 weather | not started | ~14 KB across 17 functions against a 58-line stub -- the queue's "~290 lines" is well short |
