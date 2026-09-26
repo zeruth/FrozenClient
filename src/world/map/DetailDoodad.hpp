@@ -95,8 +95,9 @@ static const uint16_t HOLE_MASK[16] = {
 //     plane. Where the chunk has MCCV, the cell also keeps the corner colour and the two colour
 //     deltas along the triangle's edges, all scaled by 2.
 //
-//     The plane must be NORMALIZED AND TURNED UPWARD, which frozen has no PlaneFromPoints to
-//     do for it. The cross product through the cell's centre comes out pointing under the
+//     The plane must be NORMALIZED AND TURNED UPWARD. Frozen does have PlaneFromPoints (it is
+//     in CWorldScene.cpp), but it takes three points and this builds the plane from a centre
+//     and two corners it already has, so the normalize is written out here. The cross product through the cell's centre comes out pointing under the
 //     ground and scaled by twice the triangle's area; CMapChunk::HeightAt can ignore both
 //     because its division cancels them, but MIN_NORMAL_Z is a slope against a unit normal, so
 //     left alone it rejects every placement on every chunk. It did: the first run scattered

@@ -44704,7 +44704,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 614,
+  "frozenSize": 661,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -47569,7 +47569,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeAreaLow",
-  "frozenSize": 0,
+  "frozenSize": 76,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 20,
@@ -48705,7 +48705,7 @@
    "src/world/map/maplowdetail.cpp"
   ],
   "frozen": "CMapLowDetail::Load",
-  "frozenSize": 2217,
+  "frozenSize": 2087,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 1105,
@@ -48721,10 +48721,25 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOccludedByVolumes",
-  "frozenSize": 441,
+  "frozenSize": 495,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 403,
+  "status": "ported"
+ },
+ "007cd850": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.143,
+  "files": [
+   "src/world/map/MapOcclusion.cpp"
+  ],
+  "frozen": "BuildVolumes",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 181,
   "status": "ported"
  },
  "007cde10": {

@@ -3052,6 +3052,7 @@ addr	how	frozen	evidence
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
+007cd850	annotated	BuildVolumes	tag in src/world/map/MapOcclusion.cpp
 007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
 007cde80	annotated	CChunkLiquid::GetBounds	tag in src/world/map/CChunkLiquid.cpp

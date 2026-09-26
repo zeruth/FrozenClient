@@ -304,8 +304,9 @@ static void PrepareCell(CMapChunk* chunk, uint32_t row, uint32_t col, SCell* cel
         // This winding puts the normal under the ground, and it comes out scaled by twice the
         // triangle's area. CMapChunk::HeightAt can leave both alone because its division
         // cancels them, but MIN_NORMAL_Z is a slope against a unit normal, so here the plane
-        // has to be turned up the right way and normalized -- which is what the reference's
-        // PlaneFromPoints hands back.
+        // has to be turned up the right way and normalized -- which is what PlaneFromPoints
+        // hands back, and frozen does have that (CWorldScene.cpp); it takes three points where
+        // this already holds a centre and two corners, so the normalize is written out.
         float len = sqrtf(nx * nx + ny * ny + nz * nz);
         float scale = len > 0.0f ? -1.0f / len : 0.0f;
 

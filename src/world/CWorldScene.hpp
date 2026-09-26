@@ -25,6 +25,9 @@ class CMapStaticEntity;
 // The per-frame scene of the world (reference WorldScene.cpp): the camera's view of the map, the
 // distance rows the map's objects are bucketed into, the render lists the visibility traversal
 // fills, and the passes that drain them.
+// The plane through three points, facing along (b - a) x (c - a). ref: FUN_007912c0
+void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const C3Vector& c);
+
 class CWorldScene {
     public:
         // Types

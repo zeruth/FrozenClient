@@ -496,7 +496,7 @@ void CWorldScene::RenderHiddenChunks() {
 
 // ref: FUN_007912c0
 // The plane through three points, facing along (b - a) x (c - a)
-static void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const C3Vector& c) {
+void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const C3Vector& c) {
     plane->n.x = (b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y);
     plane->n.y = (b.z - a.z) * (c.x - a.x) - (c.z - a.z) * (b.x - a.x);
     plane->n.z = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);

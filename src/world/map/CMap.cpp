@@ -4,6 +4,7 @@
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
 #include "world/map/MapLowDetail.hpp"
+#include "world/map/MapOcclusion.hpp"
 #include "world/map/CMapAreaMed.hpp"
 #include "world/map/CMapCacheLight.hpp"
 #include "world/map/CMapChunk.hpp"
@@ -1274,6 +1275,9 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     for (uint32_t i = 0; i < CWorldScene::HORIZON_COLUMNS; i++) {
         CWorldScene::s_horizonBuffer[i] = -1000000.0f;
     }
+
+    // The frame's distant occluders, from the map's hand-authored volumes.
+    MapOcclusion::BuildVolumes(cameraPos, CWorldScene::s_frustums[0], 0);
 
     // TODO FUN_007cd910(), FUN_007cc810(): the low-detail terrain
 
