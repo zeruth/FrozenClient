@@ -748,25 +748,23 @@ zero-strength callers take.
 triangle only when `(p2-p1) x (p3-p1)` is non-negative in XY. A wall gets no blob. `FUN_007e2fd0`'s
 second argument selects a variant on bit 2.
 
-**Where the receivers come from.** A static registry, not a traversal:
+**Where the receivers come from: the WMO BSP hit records, which frozen already has.** Not a
+traversal and not a registry the decal owns -- `DAT_00cd8080` / `DAT_00cb752c` are
+`CMapObjGroup::s_hitRecords` and `s_hitRecordCount`, and the allocator at `0x7a6140` is
+`CMapObjGroup::AllocHitRecord`, all three already ported. Every field the walk and the stream
+builder read maps onto the existing `CMapObjHitRecord`:
 
-| address | what |
-|---|---|
-| `DAT_00cd8080` | 32 receiver descriptors, **0x24 bytes each** (`eax*9*4` in the allocator) |
-| `DAT_00cb752c` | how many are in use |
-| `FUN_007a6140` | allocate one: bail at 32, zero the 0x24 bytes, seed `+0x1c` to `0xffff` |
+| reference | `CMapObjHitRecord` | how the decal uses it |
+|---|---|---|
+| `+0x00` | `placement` | required non-null; the walk skips a record without one |
+| `+0x04` | `vertices` | the receiver's vertices, stride 0xc |
+| `+0x0c` | `unused3` | **not unused**: `FUN_007e2fd0` branches on it, zero taking the triangle path |
+| `+0x10` | `indices` | three per hit face |
+| `+0x18` | `indexCount` | the walk skips a record whose `count * 3` exceeds 0x10000 |
+| `+0x1c` | `minIndex` | seeded to `0xffff` by `AllocHitRecord`, which is how the mapping was confirmed |
 
-The descriptor, from its readers:
+So the missing pieces are smaller than they looked: run a hit query over the caster's projection
+volume, then `FUN_007e3e80` to stream and draw what it found. The struct, the pools, the allocator
+and the BSP queries that fill them are all in the tree already.
 
-```
-+0x00  void*      required non-null
-+0x04  C3Vector*  the receiver's vertices, stride 0xc
-+0x0c  int32      0 takes the triangle path
-+0x10  uint16*    the receiver's indices
-+0x18  uint16     index count; the walk skips an entry whose count*3 exceeds 0x10000
-+0x1c  uint16     seeded to 0xffff
-```
-
-The allocator sits at `0x7a6140`, in the map-object code, so the WMO pass is one of the things that
-registers receivers. **Finding every filler is the next step**, and it is what frozen has to grow: it
-has no receiver registry at all, and without one the ported projector has nothing to project onto.
+One field name to fix when this lands: `CMapObjHitRecord::unused3` has a reader.
