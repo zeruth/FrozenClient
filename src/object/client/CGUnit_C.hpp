@@ -217,6 +217,13 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // applies, chosen by the vehicle's own move-flags-2 bit 0x40. Zero when neither is set.
         uint32_t SeatAllowsExitAnimation(const VehicleSeatRec* seat) const;
 
+        // ref: FUN_007385c0
+        // THE animation selector: turns "play this animation" into up to three bone sequences --
+        // the mount's, the unit's body, its upper body -- and applies them. `flags`: 0x1 no blend,
+        // 0x2 take the id as given, 0x4 skip the fallback resolve, 0x8 do not re-pick a special
+        // attack from what is in hand, 0x20 forwarded to the trail trigger.
+        void SetAnimation(uint32_t animID, uint32_t flags);
+
         // ref: FUN_0071e340
         // The pose a unit holds when it is not doing anything else, written into `out`: 41 SwimIdle
         // while swimming or flying, 120 while creeping, 193 Hover while hovering, 0 Stand otherwise.
@@ -343,6 +350,18 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // reference has a one-line accessor for "is attacking" over this pair of GUIDs alone
         // (FUN_0071af90, 17 call sites).
         WOWGUID m_attackTarget = 0;
+        // Asked for while the model was still loading (reference +0xb8c); replayed and cleared the
+        // next time the selector runs with the model there. -1 is nothing pending.
+        int32_t m_pendingAnimID = -1;
+        // Asked for and refused because the unit was mid-swing (reference +0xb88); the swing is sped
+        // up instead. -1 is nothing held.
+        int32_t m_heldAnimID = -1;
+        // The animation a rider holds while mounted (reference +0xb7c), applied when the mount model
+        // is built. Nothing writes it yet, so it reads 0 (Stand).
+        int32_t m_mountedAnimID = 0;
+        // Where the unit is in its attack cycle (reference +0xb5c); the selector only tests it
+        // against 2, and Unit_C.cpp's trail code against 1 and 2. Nothing ported writes it.
+        int32_t m_attackPhase = 0;
         // ref +0xfa4, not identified: the reference tests it against -1 as a "something is pending"
         // flag, alongside m_animFlags 0x400, when deciding whether a vehicle's owner is driving the
         // pose. Nothing ported writes it, so it stays -1 and the term reads false.

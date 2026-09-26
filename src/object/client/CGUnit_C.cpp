@@ -2766,3 +2766,452 @@ bool CGUnit_C::HasAirborneDeathAnimation() {
 
     return false;
 }
+
+// ref: FUN_007385c0
+// Transcribed against the disassembly rather than the decompilation: every predicate here takes its
+// animation id in a register, which Ghidra drops, so which id each one is asked about was read out
+// of 0x007385c0..0x007395c0 directly.
+//
+// Three calls the reference makes are NOT here, each because the thing it calls is not ported:
+// the weapon-trail release (FUN_00715ba0), the sound and trail trigger (FUN_00738180) and the
+// object-effect refresh (FUN_0071e5b0). Also absent, as in the appliers, is the walk that repeats a
+// change on every passenger riding this unit. All four are marked at the spot.
+void CGUnit_C::SetAnimation(uint32_t animID, uint32_t flags) {
+    if (!this->m_postInited || this->m_inReenable || !this->GetObjectModel() || !this->m_model) {
+        return;
+    }
+
+    if (!this->GetObjectModel()->IsLoaded(0, 0) || !this->m_model->IsLoaded(0, 0)) {
+        // Remember it and replay it once the model is there.
+        if (animID == 0xFFFFFFFF) {
+            return;
+        }
+
+        this->m_pendingAnimID = static_cast<int32_t>(animID);
+
+        return;
+    }
+
+    this->m_pendingAnimID = -1;
+
+    // Nothing but a death animation reaches a dead unit.
+    if (this->IsDeadOrFeigning() && !IsDeathAnimation(static_cast<int32_t>(animID))) {
+        return;
+    }
+
+    if (this->GetObjectModel()->m_animationOwner) {
+        return;
+    }
+
+    if (this->GetVehicleRec() && this->m_vehicle->HasFlag26()) {
+        return;
+    }
+
+    uint32_t animFlags = this->m_animFlags;
+
+    // Already lifting off or hovering: only a death or a behaviour-127/201/202 animation interrupts.
+    if (animFlags & 0xC0000) {
+        if (!IsDeathAnimation(static_cast<int32_t>(animID))
+            && !IsAnimationBehavior127Or201To202(static_cast<int32_t>(animID))) {
+            return;
+        }
+    }
+
+    if (animFlags & 0x2000000) {
+        return;
+    }
+
+    if ((animFlags & 0x2000) && !IsDeathAnimation(static_cast<int32_t>(animID))
+        && !IsAnimationBehavior127Or201To202(static_cast<int32_t>(animID))) {
+        return;
+    }
+
+    int32_t targetAnimID;
+
+    if (!(flags & 0x2)) {
+        // 57 Special1H / 58 Special2H asked for without flag 8: pick by what is in hand, and fall to
+        // 118 when the unit holds nothing.
+        if (!(flags & 0x8) && (animID == 0x39 || animID == 0x3A)) {
+            const uint8_t* mainHand = nullptr;
+            uint8_t mainHandPair[2] = {};
+            bool offHand = false;
+
+            auto mainRec = g_itemDB.GetRecord(this->m_unit->virtualItemSlotID[0]);
+
+            if (mainRec) {
+                mainHandPair[0] = static_cast<uint8_t>(mainRec->m_classID);
+                mainHandPair[1] = static_cast<uint8_t>(mainRec->m_subclassID);
+                mainHand = mainHandPair;
+            }
+
+            offHand = g_itemDB.GetRecord(this->m_unit->virtualItemSlotID[1]) != nullptr;
+
+            if (!mainHand && !offHand) {
+                animID = 0x76;
+            } else {
+                animID = IsTwoHandedWeapon(mainHand) ? 0x3A : 0x39;
+            }
+        }
+
+        targetAnimID = static_cast<int32_t>(animID);
+
+        if (!(flags & 0x4)) {
+            targetAnimID = static_cast<int32_t>(this->ResolveAnimation(animID, nullptr));
+        }
+    } else {
+        targetAnimID = static_cast<int32_t>(animID);
+    }
+
+    M2BoneSequenceState mountState;
+    M2BoneSequenceState bodyState;
+    M2BoneSequenceState upperState;
+    this->GetBoneSequenceStates(&mountState, &bodyState, &upperState, 0);
+
+    int32_t currentAnimID = static_cast<int32_t>(upperState.uint90);
+
+    if (upperState.uint90 == 0xFFFFFFFF) {
+        currentAnimID = static_cast<int32_t>(bodyState.uint90);
+    }
+
+    bool hasUpper = upperState.uint90 != 0xFFFFFFFF;
+
+    // Mid-swing with another swing asked for: just speed the current one up.
+    if ((this->m_animFlags & 0x20) && IsCombatAnimation(currentAnimID)
+        && IsCombatAnimation(targetAnimID)) {
+        uint32_t boneId = hasUpper ? this->m_upperBodyBoneId : 0xFFFFFFFF;
+        this->SetBoneSequenceSpeed(this->m_model, boneId, 2.0f, 0);
+        this->m_heldAnimID = targetAnimID;
+
+        return;
+    }
+
+    this->m_heldAnimID = -1;
+
+    // The reference releases the weapon trails here (FUN_00715ba0, which walks the two emitters the
+    // unit keeps at +0xb50); neither the emitters nor that function are ported.
+
+    float speed = 1.0f;
+    uint32_t startTime = 0;
+    uint32_t variation = 0xFFFFFFFF;
+
+    // Dying while already dead keeps the variation the model is holding, so a corpse does not
+    // restart into a different death.
+    if (IsAnimationBehavior6Or132Or467To468Or472(static_cast<int32_t>(animID))
+        && IsDeathAnimation(static_cast<int32_t>(this->GetCurrentAnimationId()))) {
+        this->m_model->GetBoneSequenceId(0xFFFFFFFF, &variation);
+    }
+
+    // A movement animation is played at the ratio of the unit's speed to the one it was authored at,
+    // and picked up at the phase the current animation had reached.
+    M2SequenceInfo info = {};
+    this->m_model->GetSequenceInfo(static_cast<uint32_t>(targetAnimID), 0, info);
+
+    if (info.moveSpeed != 0.0f && IsMovementAnimation(static_cast<uint32_t>(targetAnimID))
+        && (this->m_localMove.GetMoveFlags() & 0xC0000F)) {
+        speed = this->m_localMove.GetCurrentSpeed(0) / std::fabs(info.moveSpeed);
+
+        if (info.duration != 0) {
+            M2BoneSequenceState playing = {};
+            this->m_model->GetBoneSequenceState(0xFFFFFFFF, &playing);
+
+            M2SequenceInfo playingInfo = {};
+            this->m_model->GetSequenceInfo(playing.uint90, static_cast<int32_t>(playing.uint94),
+                                           playingInfo);
+
+            if (playingInfo.moveSpeed != 0.0f && playingInfo.duration != 0) {
+                startTime = static_cast<uint32_t>(
+                    (static_cast<uint64_t>(static_cast<uint32_t>(playing.currentTime))
+                     * info.duration / playingInfo.duration) % info.duration);
+            }
+        }
+    }
+
+    uint32_t blend = ~flags & 0x1;
+    uint32_t upperBlend = blend;
+    uint32_t bodyBlend = blend;
+
+    animFlags = this->m_animFlags;
+    uint32_t turnFlag = animFlags & 0x10;
+    uint32_t applyBody = animFlags & 0x40;
+    uint32_t applyUpper = animFlags & 0x20;
+
+    M2BoneSequenceState mountOut = mountState;
+    M2BoneSequenceState bodyOut = bodyState;
+    M2BoneSequenceState upperOut = upperState;
+
+    // The sequence the selector is aiming at, which each slot may be given a copy of.
+    M2BoneSequenceState target = {};
+    target.uint90 = static_cast<uint32_t>(targetAnimID);
+    target.uint94 = variation;
+    target.currentTime = static_cast<int32_t>(startTime);
+    target.speed = speed;
+
+    int32_t bodySkip = 1;
+    int32_t upperSkip = 1;
+
+    bool holding = this->m_unit->channelSpell == 0 && (animFlags & 0x400) != 0;
+
+    bool canAct = this->CanPlayActionAnimation(targetAnimID, currentAnimID);
+
+    if (canAct && applyUpper == 0) {
+        canAct = false;
+    }
+
+    bool boneDriven = this->m_upperBodyBoneId != 0xFFFFFFFF && this->GetVehicleRec()
+        && this->m_vehicle->TestFlag(this->m_upperBodyBoneId);
+
+    // A special attack, a death, or the airborne-death state takes the whole body.
+    if (IsSpecialAttackAnimation(targetAnimID) || IsDeathAnimation(targetAnimID)
+        || (this->m_animFlags & 0x20000)) {
+        canAct = false;
+        applyUpper = 0;
+        applyBody = 1;
+    }
+
+    // The reference lays the mounted case out first, so the original source tested for a mount
+    // rather than for its absence.
+    if (this->m_mountModel) {
+        // Mounted: the mount takes base-state animations and the rider takes actions.
+        if (IsBaseStateAnimation(targetAnimID)) {
+            mountOut = target;
+            mountOut.uint90 = this->ResolveAnimation(static_cast<uint32_t>(targetAnimID),
+                                                    this->m_mountModel);
+        }
+
+        if (!IsBaseStateAnimation(targetAnimID) && IsActionAnimation(targetAnimID)) {
+            upperOut = target;
+            upperSkip = 0;
+        }
+
+        // While mounted the rider's body holds the mounted pose, whatever the body state resolved to.
+        if (this->m_mountedAnimID
+            != GetAnimationBehavior(static_cast<int32_t>(bodyState.uint90))) {
+            bodyOut.uint90 = this->ResolveAnimation(static_cast<uint32_t>(this->m_mountedAnimID),
+                                                   this->m_model);
+            bodyOut.speed = 1.0f;
+            bodyOut.uint94 = 0xFFFFFFFF;
+            bodyOut.currentTime = 0;
+            bodyBlend = 0;
+            bodySkip = 0;
+        }
+    } else {
+        if (targetAnimID == 0x3D) {
+            // 61 EmoteTalk: upper body only.
+            upperOut = target;
+            upperSkip = 0;
+            applyUpper = 1;
+        } else if (targetAnimID == 0x3E && (this->m_move->GetMoveFlags() & 0x2200000)) {
+            // 62 EmoteTalkNoSheathe while swimming or flying: upper body only, body left alone.
+            upperOut = target;
+            upperSkip = 0;
+            applyUpper = 1;
+            applyBody = 0;
+        } else if (canAct) {
+            if ((IsEmoteAnimation(targetAnimID) && targetAnimID != 0x45)
+                || (!holding && !IsCombatOrReadyAnimation(currentAnimID)
+                    && !IsSpellCastOrReadySpellAnimation(currentAnimID)
+                    && this->m_attackPhase != 2)) {
+                upperOut = target;
+                upperSkip = 0;
+                applyUpper = 1;
+            } else if (!IsMovementAnimation(static_cast<uint32_t>(targetAnimID))
+                && !IsReadyAnimation(targetAnimID) && targetAnimID != 0) {
+                upperSkip = 0;
+                upperOut = target;
+                applyUpper = 1;
+
+                uint32_t moveFlags = this->m_localMove.GetMoveFlags();
+
+                // Swimming or flying but not moving under its own power: the body swims while the
+                // upper body does the action.
+                if ((moveFlags & 0x2200000) && !(moveFlags & 0xF)) {
+                    bodyOut.uint90 = this->ResolveAnimation(0x29, this->m_model);
+                    bodyOut.speed = 1.0f;
+                    bodyOut.uint94 = 0xFFFFFFFF;
+                    bodyOut.currentTime = 0;
+                    bodySkip = 0;
+                }
+            } else {
+                if (!hasUpper) {
+                    upperOut = bodyState;
+                    upperSkip = 1;
+                    applyUpper = 1;
+                }
+
+                bodySkip = 0;
+                bodyOut = target;
+            }
+        } else if (IsMovementAnimation(static_cast<uint32_t>(targetAnimID))
+            && (IsCombatAnimation(static_cast<int32_t>(bodyState.uint90))
+                || IsSpellCastAnimation(static_cast<int32_t>(bodyState.uint90)))) {
+            upperOut = bodyState;
+            upperSkip = 1;
+            applyUpper = 1;
+            bodySkip = 0;
+            bodyOut = target;
+        } else if (((IsCombatOrReadyAnimation(currentAnimID)
+                     && (IsReadyAnimation(targetAnimID) || targetAnimID == 0))
+                    || (IsSpellCastOrReadySpellAnimation(currentAnimID)
+                        && (IsReadySpellAnimation(targetAnimID) || IsReadyAnimation(targetAnimID)
+                            || targetAnimID == 0)))
+                   && hasUpper && !boneDriven) {
+            // Coming back to a ready pose while the upper body holds a combat one: let the body
+            // take the new animation and hand the upper body back what it was showing.
+            applyUpper = 1;
+            bodySkip = 1;
+            upperOut.uint90 = 0xFFFFFFFF;
+            upperSkip = 0;
+            bodyOut = upperState;
+        } else {
+            bodySkip = 0;
+            bodyOut = target;
+        }
+    }
+
+    // Hovering without swimming or flying: a slot that fell back to a grounded idle takes Hover.
+    if (this->m_move->IsUnsupportedOrHovering()
+        && !(this->m_move->GetMoveFlags() & 0x2200000)) {
+        if (this->ReplaceIdleWithHover(&bodyOut)) {
+            bodySkip = 0;
+        }
+
+        if (this->ReplaceIdleWithHover(&upperOut)) {
+            upperSkip = 0;
+        }
+    }
+
+    if (IsSpecialAttackAnimation(targetAnimID) || IsDeathAnimation(targetAnimID)
+        || (this->m_animFlags & 0x20000)) {
+        applyUpper = 0;
+        applyBody = 1;
+        bodyOut = target;
+
+        bodySkip = 0;
+
+        if (IsAnimationBehavior6Or132Or467To468Or472(targetAnimID)
+            && IsDeathAnimation(static_cast<int32_t>(this->GetCurrentAnimationId()))) {
+            bodySkip = 1;
+        }
+    }
+
+    // A running spell visual overrides all three slots -- except over a death.
+    if (!IsDeathAnimation(targetAnimID)
+        && this->ApplyEffectAnimation(&mountState, &bodyState, &upperState, hasUpper, &mountOut,
+                                      &bodyOut, &upperOut, &bodySkip, &upperSkip)) {
+        applyBody = 1;
+
+        if (hasUpper) {
+            applyUpper = 1;
+        }
+
+        if (this->m_mountModel) {
+            if (!IsBaseStateAnimation(static_cast<int32_t>(bodyOut.uint90))
+                && IsActionAnimation(static_cast<int32_t>(bodyOut.uint90))) {
+                upperOut = bodyOut;
+                upperSkip = bodySkip;
+                applyUpper = 1;
+            }
+
+            if (GetAnimationBehavior(static_cast<int32_t>(bodyOut.uint90))
+                != this->m_mountedAnimID) {
+                bodyOut.uint90 = this->ResolveAnimation(static_cast<uint32_t>(this->m_mountedAnimID),
+                                                       this->m_model);
+                bodyOut.speed = 1.0f;
+                bodyOut.uint94 = 0xFFFFFFFF;
+                bodyOut.currentTime = 0;
+                bodySkip = 0;
+                bodyBlend = 0;
+            }
+        }
+    }
+
+    // Aboard a vehicle and alive: the seat's animation wins over everything worked out above.
+    if (this->IsRidingVehicle() && this->m_unit->health > 0) {
+        auto seat = this->GetVehicleSeatRec();
+        int32_t seatAnim = this->m_vehiclePassenger->GetSeatAnimation(seat);
+
+        if (seatAnim != 0x1FA) {
+            // When the upper body is already showing something of its own, or the seat has no upper
+            // animation, the body slot simply takes the seat's and the upper slot is left as it is.
+            bool considerBody = true;
+
+            if (applyUpper) {
+                if (GetAnimationBehavior(static_cast<int32_t>(upperOut.uint90)) != 0) {
+                    considerBody = false;
+                } else if (this->m_vehiclePassenger->GetSeatUpperAnimation(seat) == 0) {
+                    considerBody = false;
+                } else {
+                    applyUpper = 0;
+                }
+            }
+
+            if (considerBody && GetAnimationBehavior(static_cast<int32_t>(bodyOut.uint90)) != 0) {
+                upperOut = bodyOut;
+                upperSkip = bodySkip;
+                applyUpper = 1;
+            }
+
+            bodyOut.speed = 1.0f;
+            bodyOut.uint90 = static_cast<uint32_t>(seatAnim);
+            bodyOut.uint94 = 0xFFFFFFFF;
+            bodyOut.currentTime = 0;
+            bodySkip = 0;
+        }
+    }
+
+    // A vehicle animating through the bone its rider sits on drives nothing itself.
+    if (boneDriven) {
+        applyUpper = 0;
+        currentAnimID = -1;
+    }
+
+    // Both slots resolved to the mounted pose: let the upper-body bone go so the mount drives it.
+    if (this->m_mountModel && upperOut.uint90 == static_cast<uint32_t>(this->m_mountedAnimID)
+        && bodyOut.uint90 == static_cast<uint32_t>(this->m_mountedAnimID)) {
+        applyUpper = 0;
+        currentAnimID = -1;
+        this->UnsetBoneSequence(this->m_model, this->m_upperBodyBoneId, 1, 0, 0);
+    }
+
+    // The mount's own sequence, when it changed or its speed did.
+    if (turnFlag && this->m_mountModel && mountOut.uint90 != 0xFFFFFFFF
+        && (mountState.uint90 != mountOut.uint90
+            || std::fabs(mountOut.speed - mountState.speed) > 0.01f)) {
+        this->SetBoneSequence(this->m_mountModel, 0xFFFFFFFF, mountOut.uint90, mountOut.uint94,
+                              static_cast<uint32_t>(mountOut.currentTime), mountOut.speed, blend, 1,
+                              0);
+    }
+
+    // Dying: release every bone sequence so nothing holds the corpse in a pose.
+    if (IsDeathAnimation(targetAnimID)) {
+        applyUpper = 0;
+
+        if (this->m_upperBodyBoneId != 0xFFFFFFFF) {
+            this->UnsetBoneSequence(this->m_model, this->m_upperBodyBoneId, 1, 0, 0);
+            this->UnsetBoneSequence(this->m_model, this->m_upperBodyBoneId, 1, 1, 0);
+        }
+
+        this->UnsetBoneSequence(this->m_model, 0xFFFFFFFF, 1, 0, 0);
+    }
+
+    if (!(applyBody && upperOut.uint90 == 0xFFFFFFFF && bodyOut.uint90 == upperState.uint90)
+        && applyUpper) {
+        uint32_t upperArg = upperBlend;
+
+        if (upperState.uint90 == 0xFFFFFFFF && upperOut.uint90 == bodyState.uint90) {
+            bodyBlend = 1;
+            upperArg = 0;
+        }
+
+        this->ApplySequence(&upperOut, upperState.uint90, 1, currentAnimID,
+                            static_cast<int32_t>(upperArg), upperSkip);
+    }
+
+    if (applyBody) {
+        this->ApplySequence(&bodyOut, bodyState.uint90, 0, currentAnimID,
+                            static_cast<int32_t>(bodyBlend), bodySkip);
+    }
+
+    // The reference finishes with the swing sound and trail trigger (FUN_00738180, called with
+    // (flags >> 5) & 0xffffff01) and the object-effect refresh (FUN_0071e5b0). Neither is ported.
+}

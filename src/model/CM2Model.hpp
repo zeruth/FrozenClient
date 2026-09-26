@@ -152,6 +152,11 @@ class CM2Model {
         CM2Model** m_drawPrev = nullptr;
         CM2Model* m_drawNext = nullptr;
         uint32_t* m_loops = nullptr;
+        // The reference's +0x64: set while an effect owns this model's animation, cleared when that
+        // effect goes away (CEffect's teardown and the unit's own reset both write 0 here).
+        // CGUnit_C::SetAnimation refuses to touch a model whose animation is owned this way.
+        // Nothing in frozen sets it yet, so it reads null and that gate never fires.
+        void* m_animationOwner = nullptr;
         uint32_t uint74 = 0;
         float float88 = 0.0f;
         // +0x8c: the scene time this model's emitters were last stepped at. The particle block in

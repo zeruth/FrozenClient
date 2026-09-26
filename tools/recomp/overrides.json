@@ -3121,5 +3121,9 @@
   "00723e30": {
     "frozen": "CGUnit_C::CanPlayActionAnimation",
     "note": "Ported whole except one term: for a player the reference also consults a CGPlayer_C field at +0x1944 that frozen has not recovered, so that term reads false. It is a field read, not a call, so the call order is complete (100%)."
+  },
+  "007385c0": {
+    "frozen": "CGUnit_C::SetAnimation",
+    "note": "Ported whole, and the 63% call-order score is mostly an artifact rather than missing behaviour. The reference INLINED FUN_00735a60 at four sites here, so its call list carries that function's seven calls four times over (IsRidingLiveVehicle, IsLoaded, BoneHasParent, UnsetBoneSequence, HasStateBits, ClntObjMgrObjectPtr, IsRidingLiveVehicle); frozen calls CGUnit_C::UnsetBoneSequence instead, which is what the original source wrote, so 28 of the reference's calls read as missing. Genuinely absent are three calls whose callees are not ported: FUN_00715ba0 (the weapon-trail release, which needs the two emitters at unit +0xb50), FUN_00738180 (the swing sound and trail trigger) and FUN_0071e5b0 (the object-effect refresh, which needs the ObjectEffect module). Each is marked at its spot in the source. Also missing, as in the appliers, is the walk that repeats a change on every passenger. Two inlined AnimationDataRec row lookups round out the difference. The branch layout was matched to the reference's (mounted case first), which moved the score from 58% to 63%."
   }
 }

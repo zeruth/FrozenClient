@@ -41108,17 +41108,17 @@
   "status": "ported"
  },
  "007385c0": {
-  "branchRatio": 0.016,
-  "constOverlap": 0.0,
+  "branchRatio": 0.326,
+  "constOverlap": 0.188,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.631,
   "files": [
    "src/object/client/CGUnit_C.cpp",
    "src/object/client/cgunit_c.cpp"
   ],
-  "frozen": "CGUnit_C::GetSequenceDuration",
-  "frozenSize": 100,
-  "how": "callgraph",
+  "frozen": "CGUnit_C::SetAnimation",
+  "frozenSize": 0,
+  "how": "override",
   "module": "Unit_C.cpp",
   "refSize": 4083,
   "status": "ported"
@@ -41127,7 +41127,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.0,
   "files": [
    "src/object/client/CGUnit_C.cpp",
    "src/object/client/cgunit_c.cpp"

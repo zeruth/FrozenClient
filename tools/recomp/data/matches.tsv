@@ -2577,7 +2577,7 @@ addr	how	frozen	evidence
 00735a60	override	CGUnit_C::UnsetBoneSequence	
 00735cc0	override	CGUnit_C::SetBoneSequenceSpeed	
 00737ef0	annotated	CGUnit_C::ApplySequence	tag in src/object/client/CGUnit_C.cpp
-007385c0	callgraph	CGUnit_C::GetSequenceDuration	only unmatched callee of 0073ab90=CGUnit_C::PlayEmote
+007385c0	override	CGUnit_C::SetAnimation	
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00743320	annotated	CGUnit_C::SetFlag21	tag in src/object/client/CGUnit_C.cpp
 00747b20	annotated	CVehiclePassenger_C::GetSeatAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
