@@ -26,6 +26,7 @@ linked weeks ago.
     python tools/recomp/unblocked.py --all           # every module, not just the render surface
     python tools/recomp/unblocked.py --module Map.cpp
     python tools/recomp/unblocked.py --max-size 800  # only ones small enough for one sitting
+    python tools/recomp/unblocked.py --summary       # where the remaining work actually is
 """
 
 import argparse
@@ -52,6 +53,58 @@ RENDER_MODULES = {
 }
 
 
+def is_template_instantiation(r):
+    # Container and template code tags its allocations with the MSVC mangled type name, so a
+    # function carrying one is almost always one instantiation of something frozen keeps as a
+    # single template. Those can never be linked one-to-one by name -- see the collapsed-key note
+    # on override 004b9760 -- so it is worth knowing how many of a module's gap they are.
+    for text in (r.get('strings') or []):
+        if '.?AV' in text or '.PAV' in text or '.?AU' in text or '.PAU' in text:
+            return True
+
+    return False
+
+
+def summarise(refs, mapped, args):
+    from collections import Counter
+
+    pool = []
+    for addr, r in refs.items():
+        if addr in mapped:
+            continue
+
+        module = r.get('module')
+
+        if args.module:
+            if module != args.module:
+                continue
+        elif not args.all and module not in RENDER_MODULES:
+            continue
+
+        pool.append(r)
+
+    unblocked = set()
+    for r in pool:
+        if not [c for c in (r.get('callees') or []) if c in refs and c not in mapped]:
+            unblocked.add(r['addr'])
+
+    print('%d unmapped%s' % (len(pool), '' if args.all or args.module else ' on the render surface'))
+    print('  %d of them have every callee linked already (portable now)' % len(unblocked))
+    print('  %d carry a mangled type name, so are container/template instantiations'
+          % sum(1 for r in pool if is_template_instantiation(r)))
+    print()
+    print('  module                       unmapped  portable  templated')
+
+    counts = Counter(r.get('module') for r in pool)
+
+    for module, total in counts.most_common():
+        rows = [r for r in pool if r.get('module') == module]
+        print('  %-26s %8d  %8d  %9d'
+              % (module[:26], total,
+                 sum(1 for r in rows if r['addr'] in unblocked),
+                 sum(1 for r in rows if is_template_instantiation(r))))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -60,6 +113,8 @@ def main():
     ap.add_argument('--max-size', type=int, default=0, metavar='N',
                     help='only functions of at most N code bytes')
     ap.add_argument('--limit', type=int, default=40, metavar='N')
+    ap.add_argument('--summary', action='store_true',
+                    help='per-module totals for everything unmapped, not just the unblocked')
     args = ap.parse_args()
 
     mapped = set(json.load(io.open(MAP, encoding='utf-8')).keys())
@@ -72,6 +127,11 @@ def main():
     sys.path.insert(0, HERE)
     import recomp
     recomp.assign_modules(refs)
+
+    if args.summary:
+        summarise(refs, mapped, args)
+
+        return
 
     rows = []
     for addr, r in refs.items():
