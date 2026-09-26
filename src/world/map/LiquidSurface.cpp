@@ -108,7 +108,7 @@ static CClientEnvironment* CreateEnvironment(uint32_t arg) {
 
     new (environment) CClientEnvironment();
 
-    environment->m_unk08 = arg;
+    environment->m_fixedLight = arg;
 
     return environment;
 }

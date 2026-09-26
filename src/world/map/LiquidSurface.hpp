@@ -77,10 +77,25 @@ class CChunkGeomFactory {
 
 // What the material reads the frame's environment through. Holds nothing yet: the reference
 // keeps a vtable, a null and the argument it was made with.
+// What a surface asks for its lighting. It carries no lighting itself -- two switches and a
+// virtual that fills a CM2Lighting on the caller's stack, which is the same shape the reference's
+// per-terrain-chunk setup (FUN_007d04a0) uses. See docs/ref/parity-liquid.md.
+//
+// The reference gives it a vtable at 0x00a404e8 with four slots. Slot 3 (FUN_007d4f40) is the one
+// that matters -- it sets the fog from the DayNight block by m_indoor, adds one light by
+// m_fixedLight, and runs CM2Scene::SelectLights over the block. It is decoded in full in
+// docs/ref/parity-liquid.md but NOT declared here, because the branch CreateSurface actually takes
+// is the blocked one: frozen has no CM2Light for the map's outdoor light, and no indoor fog pair.
 class CClientEnvironment {
     public:
-        uint32_t m_unk04 = 0;
-        uint32_t m_unk08 = 0;
+        // Which half of the DayNight block the fog comes from: the outdoor set at +0x8c..+0x98 or
+        // the indoor set at +0xa0..+0xac. Set through the reference's vtable slot 2, which is one
+        // `*(this+4) = arg` folded with CMapLiquidData::SetBody. +0x04
+        uint32_t m_indoor = 0;
+        // Which light the surface is lit by: 0 takes the map light block's own CM2Light (at
+        // 0x00ce04a8 + 0x58), anything else a fixed straight-down white directional light the
+        // reference builds once and keeps. CreateSurface passes 0. +0x08
+        uint32_t m_fixedLight = 0;
 
         void AddRef();
         void Release();
