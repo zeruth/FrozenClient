@@ -20,6 +20,7 @@ class CreatureSoundDataRec;
 class UnitBloodLevelsRec;
 
 class FactionTemplateRec;
+struct M2BoneSequenceState;
 
 class CGUnit_C : public CGObject_C, public CGUnit {
     public:
@@ -137,6 +138,42 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // Bit 0 of the vehicle state byte.
         uint8_t HasMoveFlags2Bit0() const;
 
+        // The animation layer: what the unit is playing now, and how an AnimationData id asked for
+        // becomes one the model actually carries.
+
+        // ref: FUN_00717260
+        // The AnimationData id the model is playing: the upper-body bone's when the unit has one
+        // and it is playing something, else the whole model's. -1 when there is no loaded model.
+        uint32_t GetCurrentAnimationId() const;
+
+        // ref: FUN_007176f0
+        // `animID` turned into an id `model` (or this unit's own model) can play. Tries the id at
+        // the unit's animation tier, then walks AnimationData's fallback chain, then drops a tier
+        // and starts over; falls back to the tier's default animation. Returns `animID` unchanged
+        // while the object is not yet posted or has no loaded model.
+        uint32_t ResolveAnimation(uint32_t animID, CM2Model* model);
+
+        // ref: FUN_00717600
+        // The first AnimationData row that is a tier's base behaviour (behaviour 0 at that tier)
+        // and that this unit's model carries. False when none does.
+        bool GetDefaultAnimationForTier(int32_t tier, int32_t* out) const;
+
+        // ref: FUN_007173f0
+        // The three bone sequences a unit animates through, in the order the reference reads them:
+        // `mount` from the mount model's root bone, `body` and `upper` from this unit's model at
+        // the root and at the upper-body bone. A slot with nothing playing comes back as animation
+        // -1 at speed 1, unless `keepFinished` -- which the mount slot never gets, so a finished
+        // mount sequence is always cleared.
+        void GetBoneSequenceStates(M2BoneSequenceState* mount, M2BoneSequenceState* body,
+                                   M2BoneSequenceState* upper, int32_t keepFinished) const;
+
+        // ref: FUN_0071df30
+        // Turns a bone sequence that resolved to a grounded idle -- 0 Stand, 8 StandWound or 25
+        // ReadyUnarmed -- into 193 Hover, and says whether it did. The animation selector calls
+        // this on each sequence it is about to apply to a unit that is hovering or unsupported, so
+        // it does not stand in mid-air.
+        bool ReplaceIdleWithHover(M2BoneSequenceState* state) const;
+
     protected:
         // Protected member functions
         int32_t GetLocalDisplayID() const;
@@ -165,6 +202,19 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         uint32_t m_deathStartTime = 0;  // scene time (ms) the Death fall began
         uint32_t m_deathDuration = 0;   // duration (ms) of the model's Death animation
         int32_t m_localDisplayID = 0;
+        // The mount the unit is riding, as its own model with the unit's model attached under it
+        // (the reference builds it in FUN_0073c0c0 from UNIT_FIELD_MOUNTDISPLAYID). Its root bone
+        // carries the mount's animation, which is why GetBoneSequenceStates reads it first.
+        CM2Model* m_mountModel = nullptr;
+        // Byte 3 of UNIT_FIELD_BYTES_1: 0 ground, 1 swim, 2 hover, 3 fly. ResolveAnimation asks
+        // AnimationData for the tiered variant of an animation before the plain one, so a flying
+        // unit gets the flying walk. The reference refreshes it from the descriptor in its
+        // SMSG_MOVE_SET_CAN_FLY-family handler (FUN_007167c0), which is not ported yet, so this
+        // still reads 0 (ground) for every unit.
+        int32_t m_animTier = 0;
+        // The bone the unit's upper body animates on, or -1 when its whole model animates as one.
+        // Set with the unit's model; -1 is the reference's "no split" sentinel.
+        uint32_t m_upperBodyBoneId = 0xFFFFFFFF;
         // TODO
         float m_smoothFacing;
         // TODO
@@ -284,5 +334,20 @@ bool IsAnimationBehavior1Or131Or466To467(int32_t animID);
 bool IsDeathAnimation(int32_t animID);
 // ref: FUN_0071de50
 bool IsAnimationBehavior133To134(int32_t animID);
+// ref: FUN_0071d510
+// 8 StandWound, 9 CombatWound, 10 CombatCritical.
+bool IsWoundAnimation(int32_t animID);
+// ref: FUN_0071dc70
+// IsSpellCastAnimation's set plus 51 ReadySpellDirected and 52 ReadySpellOmni, which is
+// IsReadySpellAnimation's set -- the reference tests the behaviour range inline rather than
+// calling it, so this does too.
+bool IsSpellCastOrReadySpellAnimation(int32_t animID);
+// ref: FUN_0071dcc0
+// IsSpellCastAnimation's set plus 107, 46 AttackBow and 49 AttackRifle.
+bool IsSpellCastOrRangedAttackAnimation(int32_t animID);
+// ref: FUN_0071dd30
+// IsCombatAnimation's set plus 25 ReadyUnarmed through 29 ReadyBow, which is IsReadyAnimation's
+// set, tested inline for the same reason.
+bool IsCombatOrReadyAnimation(int32_t animID);
 
 #endif

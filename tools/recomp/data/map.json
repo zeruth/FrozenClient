@@ -38141,12 +38141,13 @@
   "status": "ported"
  },
  "006c42f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalFixupColor",
   "frozenSize": 0,
@@ -39909,6 +39910,38 @@
   "refSize": 43,
   "status": "ported"
  },
+ "00717260": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetCurrentAnimationId",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "007173f0": {
+  "branchRatio": 0.727,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetBoneSequenceStates",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 332,
+  "status": "ported"
+ },
  "00717540": {
   "branchRatio": 0.375,
   "constOverlap": 0.0,
@@ -39925,6 +39958,22 @@
   "refSize": 191,
   "status": "ported"
  },
+ "00717600": {
+  "branchRatio": 0.467,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetDefaultAnimationForTier",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 176,
+  "status": "ported"
+ },
  "007176b0": {
   "branchRatio": 0.333,
   "constOverlap": 0.5,
@@ -39939,6 +39988,22 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 51,
+  "status": "ported"
+ },
+ "007176f0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::ResolveAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 383,
   "status": "ported"
  },
  "00717a20": {
@@ -40293,6 +40358,22 @@
   "refSize": 74,
   "status": "ported"
  },
+ "0071d510": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "IsWoundAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
  "0071d550": {
   "branchRatio": 0.333,
   "constOverlap": 0.25,
@@ -40517,6 +40598,54 @@
   "refSize": 70,
   "status": "ported"
  },
+ "0071dc70": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "IsSpellCastOrReadySpellAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "0071dcc0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.75,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "IsSpellCastOrRangedAttackAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 101,
+  "status": "ported"
+ },
+ "0071dd30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "IsCombatOrReadyAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "0071dd80": {
   "branchRatio": 0.5,
   "constOverlap": 0.25,
@@ -40563,6 +40692,22 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 59,
+  "status": "ported"
+ },
+ "0071df30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.118,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::ReplaceIdleWithHover",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 138,
   "status": "ported"
  },
  "0071ed80": {
@@ -50753,12 +50898,13 @@
   "status": "stub"
  },
  "007e2c40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowModGxTex",
   "frozenSize": 0,
@@ -50768,12 +50914,13 @@
   "status": "ported"
  },
  "007e2c60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowAddGxTex",
   "frozenSize": 0,
@@ -50783,12 +50930,13 @@
   "status": "ported"
  },
  "007e2c80": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowDestroy",
   "frozenSize": 83,
@@ -50798,12 +50946,13 @@
   "status": "ported"
  },
  "007e2d60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.143,
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalBuildTransforms",
   "frozenSize": 701,
@@ -50813,12 +50962,13 @@
   "status": "ported"
  },
  "007e2fd0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.889,
+  "constOverlap": 0.059,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalStreamReceiver",
   "frozenSize": 692,
@@ -50828,12 +50978,13 @@
   "status": "ported"
  },
  "007e32f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.889,
+  "constOverlap": 0.1,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalStreamReceiverColored",
   "frozenSize": 548,
@@ -50843,12 +50994,13 @@
   "status": "ported"
  },
  "007e3580": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalStreamIndices",
   "frozenSize": 0,
@@ -50858,12 +51010,13 @@
   "status": "ported"
  },
  "007e35f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalCollectReceivers",
   "frozenSize": 0,
@@ -50873,12 +51026,13 @@
   "status": "ported"
  },
  "007e36e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.333,
+  "constOverlap": 0.125,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowAddCallback",
   "frozenSize": 491,
@@ -50888,12 +51042,13 @@
   "status": "ported"
  },
  "007e3820": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.417,
+  "constOverlap": 0.273,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowModCallback",
   "frozenSize": 518,
@@ -50903,12 +51058,13 @@
   "status": "ported"
  },
  "007e3980": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.333,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowSetLOD",
   "frozenSize": 0,
@@ -50918,12 +51074,13 @@
   "status": "ported"
  },
  "007e3a20": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 0.8,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowLODCallback",
   "frozenSize": 290,
@@ -50933,12 +51090,13 @@
   "status": "ported"
  },
  "007e3e80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.265,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.483,
+  "fidelity": 0.586,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalDrawReceivers",
   "frozenSize": 1203,
@@ -50948,12 +51106,13 @@
   "status": "ported"
  },
  "007e4370": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "DecalDrawProjected",
   "frozenSize": 0,
@@ -50963,12 +51122,13 @@
   "status": "ported"
  },
  "007e4480": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.424,
+  "fidelity": 0.576,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowProjectBlob",
   "frozenSize": 2146,
@@ -50978,12 +51138,13 @@
   "status": "ported"
  },
  "007e49e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowDrawBlob",
   "frozenSize": 120,
@@ -50993,12 +51154,13 @@
   "status": "ported"
  },
  "007e4a40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
-   "src/world/Shadow.cpp"
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ShadowInit",
   "frozenSize": 400,
@@ -54249,6 +54411,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 261,
+  "status": "ported"
+ },
+ "00826050": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::HasSequenceResolved",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 107,
   "status": "ported"
  },
  "008260c0": {

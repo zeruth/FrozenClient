@@ -2502,8 +2502,12 @@ addr	how	frozen	evidence
 00715f90	annotated	CGUnit_C::GetCreatureTypeFlag12	tag in src/object/client/CGUnit_C.cpp
 00716710	annotated	CGUnit_C::IsPlayerControlled	tag in src/object/client/CGUnit_C.cpp
 00716fa0	annotated	CGUnit_C::IsMovingAtWalkPace	tag in src/object/client/CGUnit_C.cpp
+00717260	annotated	CGUnit_C::GetCurrentAnimationId	tag in src/object/client/CGUnit_C.cpp
+007173f0	annotated	CGUnit_C::GetBoneSequenceStates	tag in src/object/client/CGUnit_C.cpp
 00717540	annotated	ResolveAnimationBehavior	tag in src/object/client/CGUnit_C.cpp
+00717600	annotated	CGUnit_C::GetDefaultAnimationForTier	tag in src/object/client/CGUnit_C.cpp
 007176b0	annotated	GetAnimationBehavior	tag in src/object/client/CGUnit_C.cpp
+007176f0	annotated	CGUnit_C::ResolveAnimation	tag in src/object/client/CGUnit_C.cpp
 00717a20	annotated	CGUnit_C::GetModelData	tag in src/object/client/CGUnit_C.cpp
 00718a00	annotated	CGUnit_C::GetClassification	tag in src/object/client/CGUnit_C.cpp
 00718a90	annotated	CGUnit_C::GetCreatureTypeFlag10	tag in src/object/client/CGUnit_C.cpp
@@ -2526,6 +2530,7 @@ addr	how	frozen	evidence
 0071d380	annotated	IsSpellCastAnimation	tag in src/object/client/CGUnit_C.cpp
 0071d410	annotated	IsReadySpellAnimation	tag in src/object/client/CGUnit_C.cpp
 0071d450	annotated	IsUnarmedAnimation	tag in src/object/client/CGUnit_C.cpp
+0071d510	annotated	IsWoundAnimation	tag in src/object/client/CGUnit_C.cpp
 0071d550	annotated	IsSpecialAttackAnimation	tag in src/object/client/CGUnit_C.cpp
 0071d590	annotated	IsCombatAnimation	tag in src/object/client/CGUnit_C.cpp
 0071d6b0	annotated	IsBaseStateAnimation	tag in src/object/client/CGUnit_C.cpp
@@ -2540,9 +2545,13 @@ addr	how	frozen	evidence
 0071db70	annotated	IsAnimationBehavior466To468Or472	tag in src/object/client/CGUnit_C.cpp
 0071dbc0	annotated	IsAnimationBehavior6Or132Or467To468Or472	tag in src/object/client/CGUnit_C.cpp
 0071dc20	annotated	IsAnimationBehavior37To40Or467	tag in src/object/client/CGUnit_C.cpp
+0071dc70	annotated	IsSpellCastOrReadySpellAnimation	tag in src/object/client/CGUnit_C.cpp
+0071dcc0	annotated	IsSpellCastOrRangedAttackAnimation	tag in src/object/client/CGUnit_C.cpp
+0071dd30	annotated	IsCombatOrReadyAnimation	tag in src/object/client/CGUnit_C.cpp
 0071dd80	annotated	IsAnimationBehavior1Or131Or466To467	tag in src/object/client/CGUnit_C.cpp
 0071dde0	annotated	IsDeathAnimation	tag in src/object/client/CGUnit_C.cpp
 0071de50	annotated	IsAnimationBehavior133To134	tag in src/object/client/CGUnit_C.cpp
+0071df30	annotated	CGUnit_C::ReplaceIdleWithHover	tag in src/object/client/CGUnit_C.cpp
 0071ed80	annotated	CGUnit_C::GetShadowBox	tag in src/object/client/CGUnit_C.cpp
 0071f300	annotated	CGUnit_C::GetCreatureType	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
@@ -3400,6 +3409,7 @@ addr	how	frozen	evidence
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 00825ee0	annotated	CM2Model::HasSequence	tag in src/model/CM2Model.cpp
 00825f40	annotated	CM2Model::ResolveSequenceFallback	tag in src/model/CM2Model.cpp
+00826050	annotated	CM2Model::HasSequenceResolved	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 008261b0	annotated	CM2Model::GetSequenceVariationCount	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp

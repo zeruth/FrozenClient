@@ -11,6 +11,7 @@
 #include "ui/game/CGRaidInfo.hpp"
 #include <storm/Error.hpp>
 #include <tempest/Math.hpp>
+#include <cstring>
 
 WOWGUID CGUnit_C::s_activeMover;
 
@@ -1951,6 +1952,294 @@ bool IsAnimationBehavior133To134(int32_t animID) {
         if (behavior > 0x84 && behavior < 0x87) {
             return true;
         }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071d510
+bool IsWoundAnimation(int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x07 && behavior < 0x0B) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dc70
+bool IsSpellCastOrReadySpellAnimation(int32_t animID) {
+    if (IsSpellCastAnimation(animID)) {
+        return true;
+    }
+
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x32 && behavior < 0x35) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_0071dcc0
+bool IsSpellCastOrRangedAttackAnimation(int32_t animID) {
+    if (IsSpellCastAnimation(animID)) {
+        return true;
+    }
+
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec && rec->m_behaviorID == 0x6B) {
+        return true;
+    }
+
+    // The reference looks the row up a second time here instead of reusing the one it has, and
+    // reaches the last test through GetAnimationBehavior rather than the row.
+    rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec && rec->m_behaviorID == 0x2E) {
+        return true;
+    }
+
+    return GetAnimationBehavior(animID) == 0x31;
+}
+
+// ref: FUN_0071dd30
+bool IsCombatOrReadyAnimation(int32_t animID) {
+    if (IsCombatAnimation(animID)) {
+        return true;
+    }
+
+    auto rec = g_animationDataDB.GetRecord(animID);
+
+    if (rec) {
+        int32_t behavior = rec->m_behaviorID;
+
+        if (behavior > 0x18 && behavior < 0x1E) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// The reference's animation tier fallback table at 0x00a349b4, read in the outer loop of
+// ResolveAnimation: hover (2) drops to fly (3), and every other tier to ground (0).
+static const int32_t s_animTierFallback[4] = { 0, 0, 3, 0 };
+
+// ref: FUN_00717260
+uint32_t CGUnit_C::GetCurrentAnimationId() const {
+    if (!this->m_model || !this->m_model->IsLoaded(0, 0)) {
+        return 0xFFFFFFFF;
+    }
+
+    if (this->m_upperBodyBoneId != 0xFFFFFFFF) {
+        uint32_t animID = this->m_model->GetBoneUint90(this->m_upperBodyBoneId);
+
+        if (animID != 0xFFFFFFFF) {
+            return animID;
+        }
+    }
+
+    return this->m_model->GetBoneUint90(0xFFFFFFFF);
+}
+
+// ref: FUN_00717600
+bool CGUnit_C::GetDefaultAnimationForTier(int32_t tier, int32_t* out) const {
+    int32_t count = g_animationDataDB.GetNumRecords();
+
+    if (count <= 0) {
+        return false;
+    }
+
+    int32_t animID;
+    auto first = g_animationDataDB.GetRecordByIndex(0);
+
+    if (tier == 0 && first && first->m_behaviorID == 0 && first->m_behaviorTier == 0) {
+        animID = first->m_ID;
+    } else {
+        // Row id 0 exists but is not a tier-0 behaviour: the reference still takes id 0 here,
+        // spelling the literal out rather than reading the row it just looked up.
+        auto zero = g_animationDataDB.GetRecord(0);
+
+        if (zero && zero->m_behaviorTier != 0) {
+            animID = 0;
+        } else {
+            int32_t i = 0;
+
+            for (; i < count; i++) {
+                auto row = g_animationDataDB.GetRecordByIndex(i);
+
+                if (row && row->m_behaviorID == 0 && row->m_behaviorTier == tier) {
+                    break;
+                }
+            }
+
+            if (i >= count) {
+                return false;
+            }
+
+            animID = g_animationDataDB.GetRecordByIndex(i)->m_ID;
+        }
+    }
+
+    if (!this->m_model || !this->m_model->HasSequence(static_cast<uint32_t>(animID))) {
+        return false;
+    }
+
+    *out = animID;
+
+    return true;
+}
+
+// ref: FUN_007176f0
+uint32_t CGUnit_C::ResolveAnimation(uint32_t animID, CM2Model* model) {
+    int32_t tier = this->m_animTier;
+
+    // m_postInited and m_inReenable are bits 18 and 17 of the flag word the reference tests as
+    // 0x40000 and 0x20000: an object still being created, or on its way out, keeps the id it asked
+    // for.
+    if (!this->m_postInited || this->m_inReenable || !this->GetObjectModel()) {
+        return animID;
+    }
+
+    if (!this->GetObjectModel()->IsLoaded(0, 0)) {
+        return animID;
+    }
+
+    if (model) {
+        if (!model->IsLoaded(0, 0)) {
+            return animID;
+        }
+    } else {
+        model = this->GetObjectModel();
+    }
+
+    int32_t resolved = static_cast<int32_t>(animID & 0xFFFF);
+    int32_t visited[0x1FA];
+    int32_t tiersTried = 0;
+
+    while (true) {
+        memset(visited, 0, sizeof(visited));
+
+        uint32_t cursor = animID;
+
+        while (true) {
+            if (ResolveAnimationBehavior(static_cast<int32_t>(cursor), tier, &resolved)
+                && model->HasSequenceResolved(static_cast<uint32_t>(resolved))) {
+                return static_cast<uint32_t>(resolved);
+            }
+
+            auto rec = g_animationDataDB.GetRecord(static_cast<int32_t>(cursor));
+
+            if (cursor >= 0x1FA || visited[cursor] || !rec
+                || rec->m_fallback == static_cast<int32_t>(cursor)) {
+                break;
+            }
+
+            visited[cursor] = 1;
+            cursor = static_cast<uint32_t>(rec->m_fallback);
+        }
+
+        if (this->GetDefaultAnimationForTier(tier, &resolved)) {
+            return static_cast<uint32_t>(resolved);
+        }
+
+        // The reference loops here until a tier answers, and the ground tier falls back to itself,
+        // so a model carrying neither the animation nor its tier default would spin forever. Four
+        // passes is every tier the table can reach; frozen gives up instead of hanging.
+        if (tier < 0 || tier > 3 || ++tiersTried > 4) {
+            return static_cast<uint32_t>(resolved);
+        }
+
+        tier = s_animTierFallback[tier];
+    }
+}
+
+// ref: FUN_007173f0
+void CGUnit_C::GetBoneSequenceStates(M2BoneSequenceState* mount, M2BoneSequenceState* body,
+                                     M2BoneSequenceState* upper, int32_t keepFinished) const {
+    *mount = M2BoneSequenceState{};
+
+    if (this->m_mountModel && this->m_mountModel->IsLoaded(0, 0)) {
+        this->m_mountModel->GetBoneSequenceState(0xFFFFFFFF, mount);
+    } else {
+        mount->finished = 1;
+    }
+
+    if (mount->pastDuration) {
+        mount->finished = 1;
+    }
+
+    // The mount slot is cleared whatever keepFinished says -- only the two model slots below honour
+    // it, which is how a finished mount sequence always gives way to the unit's own.
+    if (mount->finished) {
+        mount->uint90 = 0xFFFFFFFF;
+        mount->speed = 1.0f;
+        mount->uint94 = 0xFFFFFFFF;
+        mount->currentTime = 0;
+    }
+
+    *body = M2BoneSequenceState{};
+    this->m_model->GetBoneSequenceState(0xFFFFFFFF, body);
+
+    if (body->pastDuration) {
+        body->finished = 1;
+    }
+
+    if (body->finished && keepFinished == 0) {
+        body->uint90 = 0xFFFFFFFF;
+        body->speed = 1.0f;
+        body->uint94 = 0xFFFFFFFF;
+        body->currentTime = 0;
+    }
+
+    *upper = M2BoneSequenceState{};
+
+    if (this->m_upperBodyBoneId == 0xFFFFFFFF) {
+        upper->finished = 1;
+    } else {
+        this->m_model->GetBoneSequenceState(this->m_upperBodyBoneId, upper);
+    }
+
+    if (upper->pastDuration) {
+        upper->finished = 1;
+    }
+
+    if (upper->finished && keepFinished == 0) {
+        upper->uint90 = 0xFFFFFFFF;
+        upper->speed = 1.0f;
+        upper->uint94 = 0xFFFFFFFF;
+        upper->currentTime = 0;
+    }
+}
+
+// ref: FUN_0071df30
+bool CGUnit_C::ReplaceIdleWithHover(M2BoneSequenceState* state) const {
+    if (state->uint90 == 0xFFFFFFFF) {
+        return false;
+    }
+
+    M2SequenceInfo info = {};
+    this->m_model->GetSequenceInfo(state->uint90, static_cast<int32_t>(state->uint94), info);
+
+    // The id the chain actually landed on, not the one asked for: a model without the airborne
+    // animation resolves it down to one of these three grounded idles.
+    if (info.sequenceId == 0x00 || info.sequenceId == 0x08 || info.sequenceId == 0x19) {
+        state->uint90 = 0xC1;
+        state->uint94 = 0xFFFFFFFF;
+
+        return true;
     }
 
     return false;

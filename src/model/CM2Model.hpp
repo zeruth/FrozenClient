@@ -368,6 +368,10 @@ class CM2Model {
         bool HasSequence(uint32_t sequenceId);
         // ref: FUN_00825f40
         uint32_t ResolveSequenceFallback(uint32_t sequenceId);
+        // ref: FUN_00826050
+        // HasSequence through the fallback chain: whether the model carries anything the chain from
+        // sequenceId reaches. HasSequence itself only answers for the id as asked.
+        bool HasSequenceResolved(uint32_t sequenceId);
         // ref: FUN_008261b0
         int32_t GetSequenceVariationCount(M2Data* data, uint32_t sequenceId);
         // ref: FUN_008264b0

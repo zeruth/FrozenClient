@@ -4225,6 +4225,22 @@ uint32_t CM2Model::ResolveSequenceFallback(uint32_t sequenceId) {
     return sequenceId;
 }
 
+// ref: FUN_00826050
+// The question CGUnit_C::ResolveAnimation asks of a model: not "do you carry this animation" but
+// "does its fallback chain end anywhere you carry". The reference spells the load wait out inline
+// here rather than calling through HasSequence, which is why this is its own function.
+bool CM2Model::HasSequenceResolved(uint32_t sequenceId) {
+    if (sequenceId > 0x1F9) {
+        return false;
+    }
+
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    return this->ResolveSequenceFallback(sequenceId) != 0xFFFFFFFF;
+}
+
 // ref: FUN_008261b0
 // How many variations `data` carries of one animation: the sequence the id resolves to plus every
 // hop along its variationNext chain. 0 when the id is not there.
