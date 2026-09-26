@@ -3,6 +3,7 @@
 #include "world/map/LiquidSurface.hpp"
 #include "world/map/MapOcclusion.hpp"
 #include "world/CWorld.hpp"
+#include "util/Log.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
 #include "db/Db.hpp"
@@ -1224,6 +1225,23 @@ void CWorldScene::TraverseRowChunks(Row* row, uint32_t rowIndex) {
         }
 
         int32_t band = CWorldScene::DistanceBand(chunk->m_sortDistance);
+
+        // DOODADPROBE: the chunk's own distance against the band it produced. UpdateSortDistance
+        // early-returns for a chunk outside the frustum and leaves m_sortDistance STALE, so a near
+        // chunk can carry a large old distance, land in a far band, and have its doodads skipped.
+        {
+            static uint32_t s_shown = 0;
+
+            if (s_shown < 8) {
+                s_shown++;
+
+                SysMsgPrintf(SYSMSG_INFO,
+                             "CHUNKBAND %u: sortDistance=%.1f band=%d doodads=%s",
+                             s_shown, chunk->m_sortDistance, band,
+                             chunk->m_entityLinkList.Head() ? "yes" : "none");
+            }
+        }
+
         CWorldScene::TraverseChunkDoodads(&chunk->m_entityLinkList, band);
         (void)band;
 
@@ -1644,10 +1662,46 @@ void CWorldScene::VisitStaticEntity(CMapStaticEntity* entity) {
 // walk when the map says its doodads are sorted that way, and a doodad already reached through
 // another chunk this frame is skipped.
 void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink)* links, uint32_t detailBand) {
+    // DOODADPROBE: one counter per gate, and the first few sphere centres against the camera, so a
+    // run says whether they are being rejected or simply drawn in the wrong place.
+    static uint32_t s_seen = 0;
+    static uint32_t s_byBand = 0;
+    static uint32_t s_noModel = 0;
+    static uint32_t s_stamped = 0;
+    static uint32_t s_outFrustum = 0;
+    static uint32_t s_occluded = 0;
+    static uint32_t s_visited = 0;
+    static uint32_t s_ticks = 0;
+    static uint32_t s_shown = 0;
+
+    if (++s_ticks >= 240) {
+        s_ticks = 0;
+
+        SysMsgPrintf(SYSMSG_INFO,
+                     "DOODADWALK: seen=%u byBand=%u noModel=%u stamped=%u outFrustum=%u "
+                     "occluded=%u visited=%u  cam=(%.0f %.0f %.0f)",
+                     s_seen, s_byBand, s_noModel, s_stamped, s_outFrustum, s_occluded, s_visited,
+                     CWorldScene::s_cameraPos.x, CWorldScene::s_cameraPos.y,
+                     CWorldScene::s_cameraPos.z);
+    }
+
     for (auto link = links->Head(); link; link = links->Next(link)) {
         auto entity = static_cast<CMapStaticEntity*>(link->owner);
 
+        s_seen++;
+
+        if (s_shown < 6) {
+            s_shown++;
+
+            SysMsgPrintf(SYSMSG_INFO,
+                         "DOODADWALK %u: sphere=(%.0f %.0f %.0f) r=%.1f detail=%u band=%u",
+                         s_shown, entity->m_sphere.c.x, entity->m_sphere.c.y, entity->m_sphere.c.z,
+                         entity->m_sphere.r, entity->m_detailLevel, detailBand);
+        }
+
         if (entity->m_detailLevel < detailBand) {
+            s_byBand++;
+
             if (CMap::s_wdtHeader[0] & 0x8) {
                 return;
             }
@@ -1656,6 +1710,8 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
         }
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
+            s_noModel++;
+
             // Not drawing, but its box still feeds the horizon buffer.
             // TODO CWorldScene::SubmitOccluderBox(box, 0.0f) with the model's bounds brought
             // out to world space. What that sink is for is still open; see the note there.
@@ -1666,6 +1722,8 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
         }
 
         if (entity->m_frameStamp == CWorldScene::s_frameStamp) {
+            s_stamped++;
+
             continue;
         }
 
@@ -1676,12 +1734,18 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
             entity->m_visible = 0;
 
             if (CWorldScene::SphereOccluded(entity->m_sphere.c, entity->m_sphere.r, 0x10) < 2) {
+                s_visited++;
+
                 CWorldScene::VisitStaticEntity(entity);
 
                 CWorldScene::s_visibleEntityCount++;
 
                 continue;
             }
+
+            s_occluded++;
+        } else {
+            s_outFrustum++;
         }
 
         // Out of sight: it keeps animating only if it asked to, or if the camera is near
