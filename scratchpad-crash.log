@@ -1,0 +1,304 @@
+Function not yet implemented: OutboundChatVolumeHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 29)
+Function not yet implemented: InboundChatVolumeHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 24)
+Function not yet implemented: VoiceChatModeHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 59)
+Function not yet implemented: VoiceActivationSensitivityHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 49)
+Function not yet implemented: EnableMicrophoneHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 9)
+Function not yet implemented: EnableVoiceChatHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 19)
+Function not yet implemented: SelfMuteHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 44)
+Function not yet implemented: PushToTalkButtonHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 39)
+Function not yet implemented: EnableReverbHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 14)
+Function not yet implemented: VoiceChatInputDriverHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 54)
+Function not yet implemented: VoiceChatOutputDriverHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 64)
+Function not yet implemented: OutputDriverHandler in C:\Users\tyler\runicworld-client\src\sound\CVarHandlers.cpp (line 34)
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg error: CM2Model: 4 of 4 particle emitters use an emitter type frozen does not implement (type 3, reference constructor 0x009820f0); those slots are null
+SysMsg info: Terrain: api 1 shaders vs ok ps ok blob ok detail ok -> shaded
+Function not yet implemented: CSimpleModel_SetGlow in C:\Users\tyler\runicworld-client\src\ui\simple\CSimpleModelScript.cpp (line 350)
+Function not yet implemented: CSimpleModelFFX_AddCharacterLight in C:\Users\tyler\runicworld-client\src\ui\simple\CSimpleModelFFXScript.cpp (line 51)
+Function not yet implemented: CSimpleModelFFX_AddLight in C:\Users\tyler\runicworld-client\src\ui\simple\CSimpleModelFFXScript.cpp (line 46)
+Function not yet implemented: CSimpleModelFFX_AddPetLight in C:\Users\tyler\runicworld-client\src\ui\simple\CSimpleModelFFXScript.cpp (line 56)
+Function not yet implemented: Script_StopAllSFX in C:\Users\tyler\runicworld-client\src\glue\GlueScript.cpp (line 979)
+Function not yet implemented: Script_ReadyForAccountDataTimes in C:\Users\tyler\runicworld-client\src\glue\GlueScript.cpp (line 1050)
+Function not yet implemented: Script_RequestRealmSplitInfo in C:\Users\tyler\runicworld-client\src\glue\GlueScript.cpp (line 741)
+SysMsg error: BLP load failed (no loader accepted it): Character\Tauren\Hair00_02.blp
+Function not yet implemented: `anonymous-namespace'::Script_RegisterStaticConstants in C:\Users\tyler\runicworld-client\src\ui\game\GMTicketInfoScript.cpp (line 143)
+Function not yet implemented: `anonymous-namespace'::Script_GetExistingLocales in C:\Users\tyler\runicworld-client\src\ui\game\GameScript.cpp (line 3018)
+Function not yet implemented: `anonymous-namespace'::Script_DropCursorMoney in C:\Users\tyler\runicworld-client\src\ui\game\GameScript.cpp (line 1058)
+SysMsg info: Bindings: 270 commands from Bindings.xml
+Function not yet implemented: debuginfo in C:\Users\tyler\runicworld-client\src\ui\LuaExtraFuncs.cpp (line 335)
+Function not yet implemented: `anonymous-namespace'::Script_GetWorldPVPQueueStatus in C:\Users\tyler\runicworld-client\src\ui\game\BattlefieldInfoScript.cpp (line 483)
+Function not yet implemented: BattlenetUI::Script_BNGetMaxPlayersInConversation in C:\Users\tyler\runicworld-client\src\ui\game\BattlenetUI.cpp (line 273)
+Function not yet implemented: GetDefaultLanguage (action stub)
+Function not yet implemented: SetChatWindowShown (action stub)
+Function not yet implemented: SetChatWindowLocked (action stub)
+Function not yet implemented: GetChatWindowSavedDimensions (action stub)
+Function not yet implemented: GetChatWindowSavedPosition (action stub)
+Function not yet implemented: `anonymous-namespace'::Script_RegisterForSave in C:\Users\tyler\runicworld-client\src\ui\game\GameScript.cpp (line 80)
+Function not yet implemented: GetCurrentMapZone (action stub)
+Function not yet implemented: `anonymous-namespace'::CGQuestPOIFrame_SetFillTexture in C:\Users\tyler\runicworld-client\src\ui\game\CGQuestPOIFrameScript.cpp (line 10)
+Function not yet implemented: `anonymous-namespace'::CGQuestPOIFrame_SetBorderTexture in C:\Users\tyler\runicworld-client\src\ui\game\CGQuestPOIFrameScript.cpp (line 32)
+Outdoor light map 0 default params 12, 82 lights: ambient(0.16,0.21,0.25) diffuse(0.46,0.47,0.47)
+Action buttons: state 1, 7 of 144 slots filled
+SysMsg error: BLP load failed (no loader accepted it): Character\Tauren\Hair00_00.blp
+Function not yet implemented: CombatLogResetFilter (action stub)
+Function not yet implemented: CombatLogAddFilter (action stub)
+Function not yet implemented: CombatLogSetCurrentEntry (action stub)
+Function not yet implemented: CombatLogGetCurrentEntry (action stub)
+Function not yet implemented: CombatTextSetActiveUnit (action stub)
+Function not yet implemented: GetLanguageByIndex (action stub)
+Function not yet implemented: `anonymous-namespace'::Script_SetUnit in C:\Users\tyler\runicworld-client\src\ui\game\CGCharacterModelBaseScript.cpp (line 10)
+Function not yet implemented: `anonymous-namespace'::Script_GetGMTicket in C:\Users\tyler\runicworld-client\src\ui\game\GMTicketInfoScript.cpp (line 52)
+Function not yet implemented: GetChatWindowMessages (action stub)
+Function not yet implemented: GetChatWindowChannels (action stub)
+Function not yet implemented: SetChatWindowUninteractable (action stub)
+Weather changed to 0, intensity 0.000000
+WMO ok   yaw    38.5 centre(  13.5    6.9    0.0) sizeRatio(0.67 0.71 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\STORMWIND.WMO
+WMO ok   yaw   -75.0 centre(   1.0    1.1    0.0) sizeRatio(0.81 0.84 1.00) WORLD\WMO\AZEROTH\BUILDINGS\ALTAROFSTORMS\ALTAROFSTORMS.WMO
+WMO ok   yaw     7.0 centre(   7.4    8.4   32.3) sizeRatio(0.93 0.84 0.81) WORLD\WMO\DUNGEON\AZ_BLACKROCK\BLACKROCK.WMO
+WMO ok   yaw   149.0 centre(   0.0    0.0    3.6) sizeRatio(0.87 0.85 0.79) WORLD\WMO\DUNGEON\MD_CAVETUNNELS\MD_CAVETUNNEL01.WMO
+WMO ok   yaw   -55.0 centre(  12.9    6.8    0.0) sizeRatio(0.84 0.87 1.00) WORLD\WMO\DUNGEON\AZ_BLACKROCK\BLACKROCK2.WMO
+WMO ok   yaw  -295.5 centre(   8.5    0.6    0.0) sizeRatio(0.74 0.73 1.00) WORLD\WMO\KALIMDOR\BUILDINGS\ORCFORTRESS\BLACKROCKORCFORTRESS.WMO
+WMO ok   yaw   209.5 centre(   0.0    0.2    0.0) sizeRatio(1.00 0.99 1.00) WORLD\WMO\KHAZMODAN\BUILDINGS\GREATWALL\GREATWALL_TOWER_01.WMO
+WMO ok   yaw   337.0 centre(   0.8    0.8    0.0) sizeRatio(0.96 0.84 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LIGHTHOUSE.WMO
+WMO ok   yaw    89.0 centre(   0.2    0.0    0.0) sizeRatio(0.97 0.99 1.00) WORLD\WMO\TRANSPORTS\TRANSPORT_SHIP\TRANSPORTSHIP.WMO
+WMO ok   yaw   -57.5 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPIECE01.WMO
+WMO ok   yaw    -0.5 centre(   0.0    0.0    0.0) sizeRatio(0.99 0.99 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPOST01.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWMAIN.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWMAIN.WMO
+WMO ok   yaw    -0.5 centre(   0.1    0.1    0.0) sizeRatio(1.00 0.99 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWSTAIR.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWSTAIR.WMO
+WMO ok   yaw     1.0 centre(   0.0    0.0    0.0) sizeRatio(0.98 0.98 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWTWR.WMO
+WMO ok   yaw  -149.0 centre(   1.1    2.0    0.0) sizeRatio(0.94 0.91 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\STORMWINDHANGAR.WMO
+WMO ok   yaw  -124.5 centre(   0.2    0.4    0.0) sizeRatio(0.85 0.80 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_SHIPSHELTER.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_DOCKS.WMO
+WMO ok   yaw   -14.5 centre(   0.0    0.0    0.0) sizeRatio(0.97 0.85 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWSTR.WMO
+WMO ok   yaw    18.0 centre(   0.0    0.0    0.0) sizeRatio(0.80 0.79 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STORMWIND\SW_HARBOR_LOWTWR.WMO
+WMO ok   yaw   -57.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPIECE01.WMO
+WMO ok   yaw    40.5 centre(   1.3    3.0    0.0) sizeRatio(0.82 0.53 1.00) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKBACK.WMO
+WMO ok   yaw   143.0 centre(   4.2    4.5    1.0) sizeRatio(0.86 0.82 0.63) WORLD\WMO\NORTHREND\BUILDINGS\HUMAN\ICEBREAKER\TRANSPORT_ICEBREAKER_SHIP_NOMASTS.WMO
+WMO ok   yaw   143.0 centre(   3.4    4.6    0.3) sizeRatio(0.88 0.81 0.82) WORLD\WMO\NORTHREND\BUILDINGS\HUMAN\ICEBREAKER\TRANSPORT_ICEBREAKER_SHIP_NOMASTS.WMO
+WMO ok   yaw   281.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPIECE01.WMO
+WMO ok   yaw    18.5 centre(   0.0    0.0    0.0) sizeRatio(0.77 0.77 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPOST01.WMO
+WMO ok   yaw   277.5 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPIECE01.WMO
+WMO ok   yaw     8.5 centre(   0.0    0.0    0.0) sizeRatio(0.87 0.87 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPOST01.WMO
+WMO ok   yaw   -12.5 centre(   0.0    0.0    0.0) sizeRatio(0.82 0.82 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPOST01.WMO
+WMO ok   yaw    20.5 centre(   0.0    0.0    0.0) sizeRatio(0.76 0.76 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPOST01.WMO
+WMO ok   yaw   280.5 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPIECE01.WMO
+WMO ok   yaw   427.3 centre(   0.0    0.0    5.3) sizeRatio(0.89 0.84 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -35.0 centre(   1.9   10.0    0.0) sizeRatio(0.83 0.73 1.00) WORLD\WMO\DUNGEON\MD_GOLDMINE\MD_GOLDMINE.WMO
+WMO ok   yaw  -100.5 centre(   0.4    1.3    0.0) sizeRatio(0.87 0.82 1.00) WORLD\WMO\KALIMDOR\BUILDINGS\ORCBLACKSMITH\ORCBLACKSMITH.WMO
+WMO ok   yaw   401.0 centre(   0.4    0.6    0.0) sizeRatio(0.77 0.73 1.00) WORLD\WMO\KALIMDOR\BUILDINGS\TROLLBURROW\TROLLBURROW.WMO
+WMO ok   yaw  -200.5 centre(   0.2    1.9    0.0) sizeRatio(0.86 0.71 0.94) WORLD\WMO\KALIMDOR\BUILDINGS\TROLLBURROW\TROLLBURROW.WMO
+WMO ok   yaw    95.0 centre(   0.6    0.2    0.0) sizeRatio(0.90 0.94 1.00) WORLD\WMO\DUNGEON\MD_CAVEDEN\MD_MUSHROOMDEN.WMO
+WMO ok   yaw    -8.0 centre(   2.8    2.0    0.0) sizeRatio(0.83 0.97 1.00) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\ELWYNN\ABBEYGATE\ABBEYGATE01.WMO
+WMO ok   yaw    92.5 centre(   0.0    0.0    5.3) sizeRatio(0.97 0.96 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -35.5 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPIECE01.WMO
+WMO ok   yaw    12.5 centre(   0.0    0.0    0.0) sizeRatio(0.82 0.82 1.00) WORLD\WMO\AZEROTH\BUILDINGS\KEEPWALL\WALLPOST01.WMO
+WMO ok   yaw  -201.5 centre(   4.9    6.9    0.0) sizeRatio(0.78 0.82 1.00) WORLD\WMO\AZEROTH\BUILDINGS\NSABBEY\NSABBEY.WMO
+WMO ok   yaw   -38.0 centre(   1.3    1.0    0.0) sizeRatio(0.98 0.97 1.00) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\ELWYNN\ABBEYGATE02\ABBEYGATE02.WMO
+WMO ok   yaw     8.5 centre(   1.1    6.5    0.0) sizeRatio(0.92 0.76 1.00) WORLD\WMO\DUNGEON\MD_SPIDERMINE\MD_SPIDERMINE.WMO
+WMO ok   yaw    44.5 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 0.99) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\ELWYNN\WIDEBRIDGE\ELWYNNWIDEBRIDGE.WMO
+WMO ok   yaw    69.5 centre(   1.1    0.7    0.0) sizeRatio(0.87 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\REDRIDGE_STABLE\REDRIDGE_STABLE.WMO
+WMO ok   yaw  -161.5 centre(   0.6    0.4    0.1) sizeRatio(0.93 0.93 0.91) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_HUMAN_FARM_BURNT\WESTFALLFARMHOUSEBURNT.WMO
+WMO ok   yaw    18.0 centre(   0.1    0.2    0.0) sizeRatio(0.77 0.80 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw    51.0 centre(   1.0    1.8    0.0) sizeRatio(0.74 0.75 1.00) WORLD\WMO\DUNGEON\MD_CAVEDEN\MD_MUSHROOMDEN.WMO
+WMO ok   yaw    -1.5 centre(   1.4    0.0    0.2) sizeRatio(0.89 0.97 0.69) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKBACK.WMO
+WMO ok   yaw   110.5 centre(   0.1    0.1    5.3) sizeRatio(0.90 0.84 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -23.5 centre(   5.0    2.7    0.0) sizeRatio(0.90 0.94 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARRACKS\HUMAN_BARRACKS.WMO
+WMO ok   yaw   224.5 centre(   0.1    0.0    5.3) sizeRatio(0.86 0.87 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   220.0 centre(   0.1    0.1    5.3) sizeRatio(0.86 0.87 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw  -235.5 centre(   0.1    0.1    5.3) sizeRatio(0.88 0.85 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw  -211.5 centre(   0.0    0.1    5.3) sizeRatio(0.85 0.88 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw    91.5 centre(  12.9    0.3    0.0) sizeRatio(0.57 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\GOLDSHIREBLACKSMITH\GOLDSHIREBLACKSMITH.WMO
+WMO ok   yaw   -97.0 centre(   0.7    0.6    0.0) sizeRatio(0.87 0.95 1.00) WORLD\WMO\AZEROTH\BUILDINGS\GOLDSHIREINN\GOLDSHIREINN.WMO
+WMO ok   yaw   150.5 centre(   0.2    2.1    0.0) sizeRatio(0.92 0.79 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMANTWOSTORY\HUMANTWOSTORY.WMO
+WMO ok   yaw   177.0 centre(   0.0    0.1    0.0) sizeRatio(0.94 0.94 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw    82.0 centre(   0.2    0.1    0.0) sizeRatio(0.87 0.87 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw   -23.0 centre(   0.2    0.2    0.0) sizeRatio(0.76 0.74 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw   -41.5 centre(   0.0    0.3    0.0) sizeRatio(0.71 0.68 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw  -138.0 centre(   3.3    3.9    0.0) sizeRatio(0.72 0.70 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MAGETOWER\MAGETOWER.WMO
+WMO ok   yaw   142.0 centre(   2.8    3.4    0.0) sizeRatio(0.80 0.78 1.00) WORLD\WMO\AZEROTH\BUILDINGS\LUMBERMILL\LUMBERMILL.WMO
+WMO ok   yaw   185.5 centre(   0.0    0.1    5.3) sizeRatio(0.92 0.94 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -33.5 centre(   0.0    0.1    5.3) sizeRatio(0.85 0.88 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   235.0 centre(   0.1    0.0    5.3) sizeRatio(0.87 0.85 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -86.0 centre(   0.2    0.0    0.0) sizeRatio(0.97 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STABLE\STABLE.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMANTWOSTORY\HUMANTWOSTORY.WMO
+WMO ok   yaw   -26.0 centre(   2.3    2.2    1.2) sizeRatio(0.68 0.75 0.62) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKBACK.WMO
+WMO ok   yaw   -26.0 centre(   2.2    6.5    1.2) sizeRatio(0.78 0.44 0.85) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKFRONT.WMO
+WMO ok   yaw   142.0 centre(   1.1    2.1    0.0) sizeRatio(0.78 0.69 1.00) WORLD\WMO\DUNGEON\MD_SHIPWRECK\SHIPWRECK_B.WMO
+WMO ok   yaw   137.5 centre(   0.0    0.0    0.0) sizeRatio(0.89 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_BARN\WESTFALL_BARN.WMO
+WMO ok   yaw  -381.0 centre(   0.8    8.9    0.0) sizeRatio(0.89 0.75 1.00) WORLD\WMO\DUNGEON\MD_GOLDMINE\MD_GOLDMINE.WMO
+WMO ok   yaw   131.0 centre(   0.0    0.2    5.2) sizeRatio(0.89 0.89 0.62) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_HUMAN_FARM\WESTFALL_HUMAN_FARM.WMO
+WMO ok   yaw    52.5 centre(   2.6    0.3    0.0) sizeRatio(0.75 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_HUMANTWOSTORY\WESTFALL_HUMANTWOSTORY.WMO
+WMO ok   yaw    85.5 centre(   0.0    0.0    0.0) sizeRatio(0.99 1.00 0.99) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\ELWYNN\WIDEBRIDGE\ELWYNNWIDEBRIDGE.WMO
+WMO ok   yaw    68.0 centre(   1.2    2.2    0.0) sizeRatio(0.75 0.84 1.00) WORLD\WMO\AZEROTH\BUILDINGS\GUARDTOWER\GUARDTOWER.WMO
+WMO ok   yaw  -136.0 centre(   0.2    0.0    0.0) sizeRatio(0.89 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMAN_FARM\MOONBROOK_HUMAN_FARM.WMO
+WMO ok   yaw    41.0 centre(   0.0    0.0    0.0) sizeRatio(0.88 0.90 1.00) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\ELWYNN\LIONBRIDGE\ELWYNNLIONBRIDGE.WMO
+WMO ok   yaw   -58.5 centre(   8.9    3.0    0.0) sizeRatio(0.75 0.66 1.00) WORLD\WMO\DUNGEON\MD_GOLDMINE\MD_GOLDMINE_VARIANTA.WMO
+WMO ok   yaw  -104.0 centre(  15.1    7.9    0.0) sizeRatio(0.73 0.89 1.00) WORLD\WMO\DUNGEON\MD_CRYPT\MD_CRYPT_C.WMO
+WMO ok   yaw    43.5 centre(   0.1    0.1    5.3) sizeRatio(0.86 0.87 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -49.5 centre(   0.1    0.1    5.3) sizeRatio(0.87 0.86 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw  -131.5 centre(   1.6    1.4    0.0) sizeRatio(0.82 0.84 1.00) WORLD\WMO\AZEROTH\BUILDINGS\STABLE\STABLE.WMO
+WMO ok   yaw     6.5 centre(   0.1    0.1    0.0) sizeRatio(0.89 0.91 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw    46.5 centre(   0.0    0.0    0.0) sizeRatio(0.90 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARN_SILO\BARN.WMO
+WMO ok   yaw    44.0 centre(   0.0    0.0    0.0) sizeRatio(0.89 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARN_SILO\BARN.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARN_SILO\SILO.WMO
+WMO ok   yaw   -48.0 centre(   0.0    0.1    0.0) sizeRatio(0.93 0.92 1.00) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\REDRIDGE\REDRIDGEDOCKS02\REDRIDGEDOCKS02.WMO
+WMO ok   yaw     1.5 centre(   1.2    0.3    0.0) sizeRatio(0.97 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WORLDTREE\DUSKWORLDTREE.WMO
+WMO ok   yaw   133.5 centre(   0.1    0.1    5.3) sizeRatio(0.87 0.86 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw   -83.0 centre(   0.0    0.0    0.0) sizeRatio(0.99 1.00 0.99) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\ELWYNN\WIDEBRIDGE\ELWYNNWIDEBRIDGE.WMO
+WMO ok   yaw   320.3 centre(   0.0    0.1    5.3) sizeRatio(0.86 0.87 0.61) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_FARM\FARM.WMO
+WMO ok   yaw  -314.5 centre(   0.0    0.0    0.0) sizeRatio(0.90 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARN_SILO\BARN.WMO
+WMO ok   yaw   -65.5 centre(   0.0    0.0    0.0) sizeRatio(0.99 1.00 0.99) WORLD\WMO\KHAZMODAN\COLLIDABLEDOODADS\WETLANDSFOOTBRIDGE\WETLANDSFOOTBRIDGE01.WMO
+WMO ok   yaw    20.5 centre(   0.2    0.2    0.0) sizeRatio(0.75 0.78 0.98) WORLD\WMO\DUNGEON\MD_ANIMALDEN\ANIMALDEN.WMO
+WMO ok   yaw  -122.5 centre(   0.2    2.5    0.0) sizeRatio(0.76 0.79 1.00) WORLD\WMO\AZEROTH\BUILDINGS\GUARDTOWER\GUARDTOWER.WMO
+WMO ok   yaw   134.3 centre(   3.0    0.6    0.1) sizeRatio(0.54 0.79 0.82) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKBACK.WMO
+WMO ok   yaw   458.8 centre(   2.5    1.6    0.4) sizeRatio(0.78 0.83 0.83) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKFRONT.WMO
+WMO ok   yaw  -143.0 centre(   0.0    0.0    0.0) sizeRatio(0.98 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_HUMAN_FARM_BURNT\WESTFALLFARMHOUSEBURNT.WMO
+WMO ok   yaw  -165.5 centre(   0.6    0.8    0.0) sizeRatio(0.96 0.66 1.00) WORLD\WMO\DUNGEON\MD_MOUNTAINCAVE\MD_MOUNTAINCAVE_MEDIUM.WMO
+WMO ok   yaw  -105.5 centre(   0.0    0.0    0.0) sizeRatio(0.80 0.81 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARN_SILO\SILO.WMO
+WMO ok   yaw   -68.5 centre(   1.3    2.2    0.0) sizeRatio(0.75 0.84 1.00) WORLD\WMO\AZEROTH\BUILDINGS\GUARDTOWER\GUARDTOWER.WMO
+WMO ok   yaw   -54.0 centre(   0.0    0.2    0.0) sizeRatio(0.90 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMAN_FARM\MOONBROOK_HUMAN_FARM.WMO
+WMO ok   yaw    94.5 centre(   0.3    0.0    0.0) sizeRatio(0.96 0.96 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_STABLE\WESTFALL_STABLE.WMO
+WMO ok   yaw   -37.5 centre(   2.7    3.5    0.0) sizeRatio(0.80 0.78 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_LUMBERMILL\WESTFALL_LUMBERMILL.WMO
+WMO ok   yaw  -125.5 centre(   0.8    0.4    0.0) sizeRatio(0.88 0.92 1.00) WORLD\WMO\AZEROTH\BUILDINGS\PRISON_CAMP\PRISONLONGHOUSE.WMO
+WMO ok   yaw    -1.5 centre(   0.0    0.1    0.1) sizeRatio(0.98 0.96 0.29) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\DUSKWOOD\OPENGRAVE\DUSKWOODOPENGRAVE.WMO
+WMO ok   yaw  -178.5 centre(   0.1    0.1    0.0) sizeRatio(0.95 0.98 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMANTWOSTORY\DUSKWOOD_HUMANTWOSTORY.WMO
+WMO ok   yaw   -21.5 centre(   2.8    1.8    5.6) sizeRatio(0.52 0.51 0.42) WORLD\WMO\KALIMDOR\BUILDINGS\NIGHTELFMOONWELL\DSNIGHTELFMOONWELLORNATE.WMO
+WMO ok   yaw   116.5 centre(   0.8    1.6    0.1) sizeRatio(0.90 0.84 0.84) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\MULGORE\TAURENTENT01\TAURENTENT01.WMO
+WMO ok   yaw    80.5 centre(   0.3    0.7    0.1) sizeRatio(0.92 0.90 0.89) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\MULGORE\TAURENTENT01\TAURENTENT01.WMO
+WMO ok   yaw   -89.5 centre(   0.0    0.0    0.0) sizeRatio(0.99 0.99 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMAN_FARM\DUSKWOODABANDONED_HUMAN_FARM.WMO
+WMO ok   yaw     6.1 centre(   0.2    0.8    0.0) sizeRatio(0.93 0.89 1.00) WORLD\WMO\DUNGEON\MD_CAVEDEN\MD_MUSHROOMDEN.WMO
+WMO ok   yaw    59.5 centre(   0.1    0.0    0.0) sizeRatio(0.88 0.85 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMAN_FARM\DUSKWOOD_HUMAN_FARM.WMO
+WMO ok   yaw   -88.0 centre(   0.0    0.0    0.0) sizeRatio(0.97 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMAN_FARM\DUSKWOOD_HUMAN_FARM.WMO
+WMO ok   yaw   -84.5 centre(   0.1    0.0    0.0) sizeRatio(0.94 0.92 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMAN_FARM\DUSKWOOD_HUMAN_FARM.WMO
+WMO ok   yaw    53.0 centre(   0.1    0.0    0.0) sizeRatio(0.87 0.86 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMAN_FARM\DUSKWOOD_HUMAN_FARM.WMO
+WMO ok   yaw     6.0 centre(   0.6    0.5    0.0) sizeRatio(0.91 0.92 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMANTWOSTORY\DUSKWOOD_HUMANTWOSTORY.WMO
+WMO ok   yaw   278.5 centre(   0.8    0.9    0.0) sizeRatio(0.89 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMANTWOSTORY\DUSKWOOD_HUMANTWOSTORY.WMO
+WMO ok   yaw   -25.0 centre(   4.0    1.9    0.0) sizeRatio(0.77 0.76 1.00) WORLD\WMO\AZEROTH\BUILDINGS\GUARDTOWER_RUINED\RUINEDHUMANGUARDTOWER01.WMO
+WMO ok   yaw   364.5 centre(   0.5    0.0    0.0) sizeRatio(0.96 0.94 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_INN\DUSKWOOD_INN.WMO
+WMO ok   yaw  -212.0 centre(   0.6    0.3    0.0) sizeRatio(0.62 0.82 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_BLACKSMITH\DUSKWOOD_BLACKSMITH.WMO
+WMO ok   yaw    98.0 centre(   1.1    0.7    0.0) sizeRatio(0.93 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_TOWNHALL_NOWALL\DUSKWOOD_TOWNHALL_NOWALL.WMO
+WMO ok   yaw    85.5 centre(   1.8    0.0    1.2) sizeRatio(0.79 0.89 0.62) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKBACK.WMO
+WMO ok   yaw    85.5 centre(   3.4    1.4    1.2) sizeRatio(0.70 0.90 0.85) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\WRECKEDELVENDESTROYER\ELVENDESTROYERWRECKFRONT.WMO
+WMO ok   yaw  -251.0 centre(   0.0    0.0    0.0) sizeRatio(0.78 0.78 1.00) WORLD\WMO\AZEROTH\BUILDINGS\HUMAN_BARN_SILO\SILO.WMO
+WMO ok   yaw   -93.5 centre(   0.0    0.0    0.0) sizeRatio(0.96 0.98 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_BARN\WESTFALL_BARN.WMO
+WMO ok   yaw   -91.0 centre(   0.9    0.1    0.0) sizeRatio(0.98 0.98 1.00) WORLD\WMO\DUNGEON\AZ_DEADMINES\AZ_DEADMINES_A.WMO
+WMO ok   yaw    92.5 centre(   0.0    0.0    0.0) sizeRatio(0.96 0.96 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMAN_FARM\MOONBROOK_HUMAN_FARM.WMO
+WMO ok   yaw   179.5 centre(   0.0    0.0    0.0) sizeRatio(0.99 0.99 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMAN_FARM\MOONBROOK_HUMAN_FARM.WMO
+WMO ok   yaw   -68.0 centre(   0.0    0.2    0.0) sizeRatio(0.91 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMAN_FARM\MOONBROOK_HUMAN_FARM.WMO
+WMO ok   yaw    88.5 centre(   0.1    0.0    0.0) sizeRatio(0.99 0.98 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_STABLE\WESTFALL_STABLE.WMO
+WMO ok   yaw   180.5 centre(   0.0    0.0    0.0) sizeRatio(0.98 0.99 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMANTWOSTORY\MOONBROOK_HUMANTWOSTORY.WMO
+WMO ok   yaw     0.0 centre(   0.0    0.0    0.0) sizeRatio(1.00 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_INN\MOONBROOK_INN.WMO
+WMO ok   yaw  -174.0 centre(   1.1    0.1    0.0) sizeRatio(0.92 0.86 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_BLACKSMITH\MOONBROOK_BLACKSMITH.WMO
+WMO ok   yaw    92.0 centre(   0.3    0.2    0.0) sizeRatio(0.98 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_TOWNHALL_NOWALL\MOONBROOK_TOWNHALL_NOWALL.WMO
+WMO ok   yaw   -19.0 centre(   3.0    0.1    0.3) sizeRatio(0.59 0.80 0.92) WORLD\WMO\AZEROTH\COLLIDABLE DOODADS\WESTFALL\WESTFALLGRAINSILO01\WESTFALLGRAINSILO01.WMO
+WMO ok   yaw   134.0 centre(   0.0    0.2    0.0) sizeRatio(0.89 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\MOONBROOK_HUMAN_FARM\MOONBROOK_HUMAN_FARM.WMO
+WMO ok   yaw  -122.0 centre(   3.4    2.6    0.0) sizeRatio(0.75 0.78 1.00) WORLD\WMO\AZEROTH\BUILDINGS\WESTFALL_MAGETOWER\WESTFALL_MAGETOWER.WMO
+WMO ok   yaw     1.0 centre(   0.1    0.2    0.0) sizeRatio(0.99 0.97 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_INN\DUSKWOODABANDONED_INN.WMO
+WMO ok   yaw   -39.5 centre(   0.8    0.6    0.2) sizeRatio(0.92 0.95 0.79) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\DARKSHORE\DARKSHOREDOCKS\DARKSHOREDOCKS01.WMO
+WMO ok   yaw    91.5 centre(   0.1    0.1    0.0) sizeRatio(0.98 0.95 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMANTWOSTORY\DUSKWOODABANDONED_HUMANTWOSTORY.WMO
+WMO ok   yaw  -175.5 centre(   0.7    0.8    0.1) sizeRatio(0.88 0.88 0.84) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMAN_FARM\DUSKWOODABANDONED_HUMAN_FARM.WMO
+WMO ok   yaw    38.5 centre(   0.1    0.1    0.0) sizeRatio(0.86 0.88 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMAN_FARM\DUSKWOODABANDONED_HUMAN_FARM.WMO
+WMO ok   yaw   -38.5 centre(   0.0    0.1    0.0) sizeRatio(0.86 0.87 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMAN_FARM\DUSKWOODABANDONED_HUMAN_FARM.WMO
+WMO ok   yaw   -90.5 centre(   0.0    0.0    0.0) sizeRatio(0.99 1.00 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_BARN\DUSKWOODABANDONED_BARN.WMO
+WMO ok   yaw   -43.0 centre(   0.0    0.1    0.0) sizeRatio(0.86 0.87 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMAN_FARM\DUSKWOODABANDONED_HUMAN_FARM.WMO
+WMO ok   yaw   165.0 centre(   0.5    0.8    0.0) sizeRatio(0.92 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_STABLE\DUSKWOOD_STABLE.WMO
+WMO ok   yaw    52.5 centre(  10.6    9.5    0.0) sizeRatio(0.76 0.64 1.00) WORLD\WMO\DUNGEON\MD_OGREMOUND\MD_OGREMOUND.WMO
+WMO ok   yaw   418.0 centre(   2.3    0.2    0.0) sizeRatio(0.78 0.92 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMANTWOSTORY\DUSKWOODABANDONED_HUMANTWOSTORY.WMO
+WMO ok   yaw    40.0 centre(   1.0    0.8    0.0) sizeRatio(0.88 0.90 0.99) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\MULGORE\TAURENTENT01\TAURENTENT01.WMO
+WMO ok   yaw   -94.5 centre(   0.1    0.1    0.0) sizeRatio(0.94 0.96 0.99) WORLD\WMO\KALIMDOR\COLLIDABLEDOODADS\MULGORE\TAURENTENT01\TAURENTENT01.WMO
+WMO ok   yaw    24.5 centre(   0.1    0.1    0.0) sizeRatio(0.84 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_HUMAN_FARM\DUSKWOODABANDONED_HUMAN_FARM.WMO
+WMO ok   yaw   -47.5 centre(   0.0    0.0    0.0) sizeRatio(0.90 0.89 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOODABANDONED_BARN\DUSKWOODABANDONED_BARN.WMO
+WMO ok   yaw  -141.5 centre(   0.7    0.9    0.0) sizeRatio(0.74 0.75 1.00) WORLD\WMO\DUNGEON\MD_CAVEDEN\MD_MUSHROOMDEN.WMO
+WMO ok   yaw  -156.5 centre(   0.1    0.1    0.0) sizeRatio(0.84 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMAN_FARM\DUSKWOOD_HUMAN_FARM.WMO
+WMO ok   yaw  -178.5 centre(   3.2    0.3    0.0) sizeRatio(0.98 0.98 1.00) WORLD\WMO\DUNGEON\MD_CRYPT\MD_CRYPT_D.WMO
+WMO ok   yaw  -119.0 centre(   2.8    2.1    0.0) sizeRatio(0.86 0.91 1.00) WORLD\WMO\AZEROTH\BUILDINGS\CHAPEL\DUSKWOODCHAPEL.WMO
+WMO ok   yaw    -3.5 centre(   0.0    0.1    0.0) sizeRatio(0.95 0.94 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_HUMAN_FARM\DUSKWOOD_HUMAN_FARM.WMO
+WMO ok   yaw  -136.5 centre(   0.0    0.0    0.0) sizeRatio(0.89 0.90 1.00) WORLD\WMO\AZEROTH\BUILDINGS\DUSKWOOD_BARN\DUSKWOOD_BARN.WMO
+WMO ok   yaw   177.5 centre(   0.2    0.5    0.0) sizeRatio(0.98 0.91 1.00) WORLD\WMO\DUNGEON\MD_GOLDMINE\MD_GOLDMINE_1ROOM.WMO
+SkyBodies: sun ok moon ok moon02 ok sunGlare ok moonGlare ok
+Clouds: reached; built 1 front tex ok vs ok ps ok density 0.500
+MapShadow: focus -> uv(0.5005 0.5005) depth 0.5000  light(-0.422 -0.422 -0.802)  OK
+MapShadow: targets allocated 1024x1024 (R32F + D24X8)
+IRenderTargetSet: rebuilt texture, handle now 0000023FF2CDAE80
+IRenderTargetSet: rebuilt texture, handle now 0000023FC0E57460
+MapShadow: caster pass submitting 55 opaque model batches

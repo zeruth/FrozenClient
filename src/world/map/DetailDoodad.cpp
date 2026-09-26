@@ -100,7 +100,16 @@ void CreateBuffers() {
     }
 
     s_vertexBytes = s_perChunk * VERTEX_STRIDE;
-    s_indexCount = s_perChunk * 2;
+
+    // THE INDEX CAPACITY IS s_perChunk, NOT s_perChunk * 2, and getting that wrong overflowed the
+    // index buffer by up to 2x and crashed in DrawBatch a few seconds after world entry.
+    //
+    // The reference keeps two globals here and only one of them means anything. DAT_00d1c4cc holds
+    // s_perChunk and is read in exactly two places -- BufCreate's element count below, and the room
+    // check in AddPlacement -- so the batch can never accumulate more indices than its buffer
+    // holds. _DAT_00d1c4c4 holds s_perChunk * 2 and, checked against the whole .text, is WRITTEN
+    // three times and never read: it is dead. This was ported against the dead one.
+    s_indexCount = s_perChunk;
 
     uint32_t pairs = BUFFER_COUNT / 2;
 
@@ -127,7 +136,7 @@ void CreateBuffers() {
                                      i * s_perChunk * VERTEX_STRIDE);
         s_buffers.Add(1, &vertexBuf);
 
-        auto indexBuf = GxBufCreate(s_indexPool, 2, s_perChunk, i * s_perChunk * 2);
+        auto indexBuf = GxBufCreate(s_indexPool, 2, s_indexCount, i * s_indexCount * 2);
         s_buffers.Add(1, &indexBuf);
     }
 

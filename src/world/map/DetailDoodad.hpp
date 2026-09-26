@@ -215,7 +215,9 @@ struct CDetailDoodadInstAdd {
 struct SBatch {
     HTEXTURE texture = nullptr;     // +0x00: the key -- batches are keyed by texture, not model
     uint32_t vertexTotal = 0;       // +0x04: running, against s_perChunk
-    uint32_t indexTotal = 0;        // +0x08: running, against s_indexCount
+    // +0x08: running, against s_indexCount -- which is the index buffer's CAPACITY (s_perChunk),
+    // not the s_perChunk * 2 the reference also computes and never reads. See CreateBuffers.
+    uint32_t indexTotal = 0;
     // The pair out of the ring this batch draws from, taken at draw time rather than at
     // scatter time, so a chunk that is scattered and never drawn costs no buffer.
     CGxBuf* vertexBuf = nullptr;    // +0x0c
