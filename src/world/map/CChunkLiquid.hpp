@@ -11,6 +11,7 @@ class CMapChunk;
 
 namespace Liquid {
     class CVertexData;
+    class CInstance;
 }
 
 // A chunk's liquid layer ("WCHUNKLIQUID" heap, 64 to a block, 0x444 bytes each). Not a
@@ -60,8 +61,9 @@ class CChunkLiquid {
         BitArray m_exists;                    // +0x48
         // MCLQ's own eight-by-eight grid, a byte a tile. Null on an MH2O layer.
         const uint8_t* m_tileMask = nullptr;  // +0x54
-        // TODO +0x58: the drawn surface, released through the Liquid module on destroy
-        void* m_surface = nullptr;        // +0x58
+        // The drawn surface this layer belongs to, shared with any other layer it merged
+        // with. Made on first sight, let go two seconds after the layer stops being visible.
+        Liquid::CInstance* m_surface = nullptr;  // +0x58
         CMapChunk* m_chunk = nullptr;     // +0x5c
         TSLink<CChunkLiquid> m_link;      // +0x60
         // The frame's link, used by two lists in turn and never by both: the distance row the
@@ -79,6 +81,10 @@ class CChunkLiquid {
         void BuildVertices();
 
         // Let the surface go, if one was ever built. ref: FUN_007cde10
+        // Make the layer's surface if it has none and mark it seen this frame.
+        // ref: FUN_007cf9a0
+        void UpdateForFrame();
+
         void ReleaseSurface();
 
         // The layer's world box: its chunk's, with the height range narrowed to the layer's own.

@@ -3053,7 +3053,7 @@ addr	how	frozen	evidence
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
 007cd850	annotated	BuildVolumes	tag in src/world/map/MapOcclusion.cpp
-007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
+007cde10	annotated	CChunkLiquid::UpdateForFrame	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
 007cde80	annotated	CChunkLiquid::GetBounds	tag in src/world/map/CChunkLiquid.cpp
 007cdf80	annotated	CChunkLiquid::BuildVertices	tag in src/world/map/CChunkLiquid.cpp
@@ -3061,6 +3061,8 @@ addr	how	frozen	evidence
 007ce180	annotated	CChunkLiquid::ReadTileFlags	tag in src/world/map/CChunkLiquid.cpp
 007ce1f0	annotated	CChunkLiquid::CoversTile	tag in src/world/map/CChunkLiquid.cpp
 007cee10	callgraph	CChunkLiquid::CChunkLiquid	only unmatched callee of 007c0980=CMap::AllocChunkLiquid
+007cf200	annotated	CreateSurface	tag in src/world/map/LiquidSurface.cpp
+007cf9a0	annotated	CChunkLiquid::UpdateForFrame	tag in src/world/map/CChunkLiquid.cpp
 007cfb10	annotated	CMapChunk::FeedHorizon	tag in src/world/map/CMapChunk.cpp
 007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
 007d0050	annotated	CMapRenderChunk::SetupVertexShader	tag in src/world/map/CMapRenderChunk.cpp
@@ -3078,7 +3080,9 @@ addr	how	frozen	evidence
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
+007d49d0	annotated	CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
 007d4f10	annotated	CMapLiquidData::SetBody	tag in src/world/map/CMapLiquidData.cpp
+007d5120	annotated	CreateEnvironment	tag in src/world/map/LiquidSurface.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
 007d66d0	annotated	CMapChunk::CanPairWith	tag in src/world/map/CMapChunk.cpp
 007d6810	annotated	CMapArea::PairRenderChunks	tag in src/world/map/CMapArea.cpp
@@ -3791,6 +3795,8 @@ addr	how	frozen	evidence
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
+008a1700	annotated	CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
+008a1ac0	annotated	CInstance::Release	tag in src/world/map/LiquidSurface.cpp
 008a1f50	annotated	ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1fa0	annotated	GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2450	annotated	CMaterialSettings::LoadTextures	tag in src/world/map/LiquidMaterialSettings.cpp
@@ -3847,6 +3853,7 @@ addr	how	frozen	evidence
 008b12d0	string	ItemSubClassRec::GetFilename	unique "DBFilesClient\ItemSubClass.dbc"
 008b1940	string	ItemVisualsRec::GetFilename	unique "DBFilesClient\ItemVisuals.dbc"
 008b2710	string	LiquidTypeRec::GetFilename	unique "DBFilesClient\LiquidType.dbc"
+008b2a90	string	LiquidMaterialRec::GetFilename	unique "DBFilesClient\LiquidMaterial.dbc"
 008b2b10	string	LoadingScreensRec::GetFilename	unique "DBFilesClient\LoadingScreens.dbc"
 008b3aa0	string	MapRec::GetFilename	unique "DBFilesClient\Map.dbc"
 008b4810	string	NameGenRec::GetFilename	unique "DBFilesClient\NameGen.dbc"

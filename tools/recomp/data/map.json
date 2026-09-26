@@ -44704,7 +44704,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 661,
+  "frozenSize": 645,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -47995,7 +47995,7 @@
   "branchRatio": 0.371,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.65,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -48721,7 +48721,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOccludedByVolumes",
-  "frozenSize": 495,
+  "frozenSize": 441,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 403,
@@ -48751,8 +48751,8 @@
    "src/world/map/CChunkLiquid.cpp",
    "src/world/map/cchunkliquid.cpp"
   ],
-  "frozen": "CChunkLiquid::ReleaseSurface",
-  "frozenSize": 16,
+  "frozen": "CChunkLiquid::UpdateForFrame",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 24,
@@ -48865,6 +48865,37 @@
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 209,
+  "status": "ported"
+ },
+ "007cf200": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.133,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CreateSurface",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 1421,
+  "status": "ported"
+ },
+ "007cf9a0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::UpdateForFrame",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 50,
   "status": "ported"
  },
  "007cfb10": {
@@ -49138,6 +49169,21 @@
   "refSize": 689,
   "status": "ported"
  },
+ "007d49d0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CreateGeomFactory",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 220,
+  "status": "ported"
+ },
  "007d4f10": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -49153,6 +49199,21 @@
   "module": "MapChunkLiquid.cpp",
   "refSize": 13,
   "status": "verified"
+ },
+ "007d5120": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CreateEnvironment",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 47,
+  "status": "ported"
  },
  "007d6690": {
   "branchRatio": 0.25,
@@ -60271,6 +60332,36 @@
   "refSize": 3,
   "status": "ported"
  },
+ "008a1700": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CInstance::AddRef",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 5,
+  "status": "ported"
+ },
+ "008a1ac0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CInstance::Release",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 60,
+  "status": "ported"
+ },
  "008a1f50": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -61148,6 +61239,22 @@
    "src/db/rec/liquidtyperec.cpp"
   ],
   "frozen": "LiquidTypeRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008b2a90": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/LiquidMaterialRec.cpp",
+   "src/db/rec/liquidmaterialrec.cpp"
+  ],
+  "frozen": "LiquidMaterialRec::GetFilename",
   "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",

@@ -2,7 +2,11 @@
 #include "util/SFile.hpp"
 
 const char* LiquidMaterialRec::GetFilename() {
-    return "DBFilesClient\LiquidMaterial.dbc";
+    // The separator is TWO backslashes in the source. Written with one, "\L" is not an
+    // escape, the backslash is dropped and the path becomes "DBFilesClientLiquidMaterial.dbc"
+    // -- a file that does not exist, so the DBC loads zero rows and every liquid material
+    // lookup fails. That is what happened here; see the same note in LightFloatBandRec.
+    return "DBFilesClient\\LiquidMaterial.dbc";
 }
 
 uint32_t LiquidMaterialRec::GetNumColumns() {

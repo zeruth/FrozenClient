@@ -1,5 +1,6 @@
 #include "world/CWorldScene.hpp"
 #include "world/map/CChunkLiquid.hpp"
+#include "world/map/LiquidSurface.hpp"
 #include "world/CWorld.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
@@ -1059,10 +1060,12 @@ void CWorldScene::TraverseRowLiquids(Row* row) {
 
         if (AaBoxVsPlanes6(CWorldScene::s_clipFrustum.planes, box)
             && !CWorldScene::BoxOccluded(box, 0)) {
-            // TODO FUN_007ce520 (the layer's bounding sphere) then
-            // CWorldScene::SphereOccludedByVolumes on it, then FUN_007cf9a0 (the layer's own
-            // per-frame update) and, when the liquid sound switch is on, FUN_008a20c0 to wake
-            // the surface. None of those three is ported, so nothing is woken yet.
+            // TODO FUN_007ce520 builds the layer's bounding sphere and
+            // CWorldScene::SphereOccludedByVolumes is asked about it first; and when the liquid
+            // sound switch is on, FUN_008a20c0 wakes the surface's sound. Neither is ported.
+            // TODO call liquid->UpdateForFrame() here. It is ported and its surface creation
+            // is checked, but it has never been run in place -- see the note on UpdateForFrame
+            // for why the runs that would have shown it were not trustworthy.
         }
 
         liquid = next;

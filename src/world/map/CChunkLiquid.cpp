@@ -1,4 +1,5 @@
 #include "world/map/CChunkLiquid.hpp"
+#include "world/map/LiquidSurface.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/LiquidVertexData.hpp"
 
@@ -37,6 +38,29 @@ void CChunkLiquid::BuildVertices() {
 }
 
 // ref: FUN_007cde10
+// ref: FUN_007cf9a0
+// NOT CALLED YET, and the reason is only half known. Its own work is done and checked: a
+// bounded run built forty surfaces with every invariant clean. What is not established is what
+// happens once it runs for real, because it reaches the liquid material bank and the machine
+// this was tested on ran out of disk part way through -- after which the COMMITTED BASELINE
+// stops at the same point too, so nothing measured after that separates a real hang from a full
+// disk. Wire it and re-test on a machine with room before believing either way.
+//
+// A layer that is being looked at wants a surface. Asking for one is also what makes it, so a
+// layer keeps asking until it has one; and the timer resets each frame it is seen, which is what
+// keeps the surface alive while it stays in view.
+void CChunkLiquid::UpdateForFrame() {
+    if (!this->m_surface) {
+        Liquid::CreateSurface(this);
+    }
+
+    // TODO with a surface in hand the reference queues it for the frame's draw
+    // (FUN_007d62a0 with the manager from FUN_00780640), gated on the surface having geometry.
+    // The draw is not ported, so nothing is queued yet.
+
+    this->m_animTime = 0.0f;
+}
+
 void CChunkLiquid::ReleaseSurface() {
     if (this->m_surface) {
         // TODO FUN_008a1ac0: the Liquid module hands the drawn surface back to its own pool.
@@ -61,7 +85,9 @@ void CChunkLiquid::GetBounds(CAaBox* box) const {
 void CChunkLiquid::UpdateAnim() {
     if (this->m_animTime >= LIQUID_SURFACE_LINGER) {
         if (this->m_surface) {
-            // TODO FUN_008a1710: hand the drawn surface back to the Liquid module's pool.
+            // The layer lets go; the surface frees itself once the last of its layers has.
+            this->m_surface->Release();
+            this->m_surface = nullptr;
         }
 
         this->m_animTime = -1.0f;

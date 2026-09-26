@@ -154,8 +154,15 @@ CMaterialSettings* GetMaterialSettings(int32_t liquidType) {
 
         SysMsgPrintf(SYSMSG_ERROR, "Settings Bank: Liquid type [%d] not found, defaulting to water!", liquidType);
 
-        // Water. The reference loops rather than recursing, so a missing water row would spin;
-        // it never happens, because no map loads without one.
+        // DIVERGENCE, and a deliberate one. The reference loops back to water rather than
+        // recursing, on the assumption that a water row always exists -- and if it does not, it
+        // spins forever printing this line. That is not hypothetical: it happened here, and a
+        // single run wrote ten million copies of this message before the client died. Frozen
+        // gives up instead and lets the caller cope with a null.
+        if (liquidType == 1) {
+            return nullptr;
+        }
+
         liquidType = 1;
     }
 }
@@ -181,6 +188,12 @@ IMaterial* GetMaterial(int32_t liquidType) {
         }
 
         SysMsgPrintf(SYSMSG_ERROR, "Material Bank: Liquid type [%d] not found, defaulting to water!", liquidType);
+
+        // The same divergence as the settings bank above: the reference would spin here if the
+        // water row were missing, and frozen's is.
+        if (liquidType == 1) {
+            return nullptr;
+        }
 
         liquidType = 1;
     }
