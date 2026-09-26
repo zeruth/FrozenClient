@@ -120915,9 +120915,9 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Head",
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "vector<CM2Model *,std::allocator<CM2Model *> >::push_back",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:376:30)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:416:30)::operator void (*)(CM2Model *, void *)",
 "TerrainForEachDoodad",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:382:34)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:422:34)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachDoodadModel",
 "CWorld::GetTickTimeMs",
 "CM2Scene::AdvanceTime",
@@ -120971,7 +120971,7 @@
 ],
 "branches": 25,
 "stub": false,
-"lines": 256,
+"lines": 302,
 "refs": [],
 "line": 211
 },
@@ -121026,7 +121026,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 468
+"line": 514
 },
 "Script_GetInventorySlotInfo": {
 "files": [

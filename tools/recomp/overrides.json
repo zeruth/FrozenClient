@@ -3073,5 +3073,13 @@
   "00872ad0": {
     "status": "unlinked",
     "note": "Sets CShaderEffect::s_enableShaders, and GATES it: `s_enableShaders = arg && <the global at 0x00d43020>`, so a caller asking for shaders does not get them unless that capability is set. frozen's CShaderEffect::InitShaderSystem assigns s_enableShaders unconditionally and also sets s_usePcfFiltering, s_fogMul and s_useAlphaRef, so it is not this function and must not be tagged with it -- a definition-order inference bound them together while a stranded tag had shifted the sequence by one, which is how it was noticed. Worth revisiting as a behaviour difference: frozen can turn shaders on where the reference would refuse."
+  },
+  "007b36b0": {
+    "status": "ported",
+    "note": "DetailDoodad::Draw. MEASUREMENT CAVEAT, not a port problem. This address and 0x008a2240 both bind to a frozen function the tool records as plain `Draw`, because each is written bare inside its own namespace (namespace Liquid and namespace DetailDoodad) and several of recomp.py's matchers key on the last name component. The PDB itself distinguishes them correctly -- `Liquid::Draw` and `DetailDoodad::Draw` are separate S_GPROC32 entries -- so both LINKS are right; what is unreliable is which body the fidelity and call-sequence comparison used for each, and the \"carries 2 tags\" warning --diff prints for them. Fixing it means qualifying the name the tag resolver produces, which touches matching everywhere and wants its own change."
+  },
+  "008a2240": {
+    "status": "ported",
+    "note": "Liquid::Draw, the two-bucket dispatch. MEASUREMENT CAVEAT, not a port problem. This address and 0x007b36b0 both bind to a frozen function the tool records as plain `Draw`, because each is written bare inside its own namespace (namespace Liquid and namespace DetailDoodad) and several of recomp.py's matchers key on the last name component. The PDB itself distinguishes them correctly -- `Liquid::Draw` and `DetailDoodad::Draw` are separate S_GPROC32 entries -- so both LINKS are right; what is unreliable is which body the fidelity and call-sequence comparison used for each, and the \"carries 2 tags\" warning --diff prints for them. Fixing it means qualifying the name the tag resolver produces, which touches matching everywhere and wants its own change."
   }
 }
