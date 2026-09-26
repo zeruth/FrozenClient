@@ -87,8 +87,6 @@ struct TerrainChunk {
     C3Vector boundsMax = { 0.0f, 0.0f, 0.0f };
 
     // MH2O liquid layers on this chunk (world-space surface meshes), see ParseLiquid
-    struct ChunkLiquid* liquids = nullptr;
-    uint32_t liquidCount = 0;
 
     // Raw MCNK ground-effect inputs, still parsed out of the chunk: per 8x8 cell the dominant
     // layer (predTex, 2 bits per cell) and the cells that get no doodad at all. The map's own
@@ -97,35 +95,6 @@ struct TerrainChunk {
     bool valid = false;
 };
 
-
-// One MH2O layer of a chunk: a height-field mesh over the cells the layer covers
-struct ChunkLiquid {
-    C3Vector* verts = nullptr;
-    C2Vector* uvs = nullptr;
-    // Per-vertex colour, present only when the layer carries MH2O depth data. Alpha comes from the
-    // water depth so shallows fade out at the shoreline the way the reference does; without it the
-    // whole surface is one flat alpha and the water meets the bank on a hard line.
-    CImVector* colors = nullptr;
-    uint16_t* indices = nullptr;
-    // 0..255 per vertex: how deep this vertex is, kept so the colours above can be rebuilt when the
-    // light changes without re-reading the ADT.
-    uint8_t* depthRamp = nullptr;
-    uint32_t vertCount = 0;
-    uint32_t indexCount = 0;
-    int32_t liquidType = 0; // LiquidType.dbc id
-    int32_t kind = 0;       // LiquidType.m_type: 0 water, 1 ocean, 2 magma, 3 slime
-    C3Vector boundsMin = { 0.0f, 0.0f, 0.0f };
-    C3Vector boundsMax = { 0.0f, 0.0f, 0.0f };
-
-    int32_t group = -1; // owning WMO group index for MLIQ surfaces, -1 for terrain (MH2O) layers
-
-    // Cell rectangle within the chunk's 8x8 grid and the covered-cell mask, for point queries
-    uint8_t xOffset = 0;
-    uint8_t yOffset = 0;
-    uint8_t width = 0;
-    uint8_t height = 0;
-    uint8_t cellMask[8] = { 0 };
-};
 
 struct TerrainTile {
     int32_t x = -1;
@@ -201,8 +170,6 @@ struct WmoInstance {
 
 
     // MLIQ surfaces (one per group that carries liquid), same mesh type as the terrain layers
-    struct ChunkLiquid* liquids = nullptr;
-    uint32_t liquidCount = 0;
 
     // Vertices are stored relative to this, the instance's placement position, and the origin is
     // folded back in by a per-instance matrix at draw time. Same reason as TerrainChunk::localPos:
@@ -483,10 +450,7 @@ void RebakeChunkColors(TerrainChunk& chunk) {
     }
 }
 
-void ParseLiquid(TerrainChunk& chunk, int32_t chunkIndex, const uint8_t* mh2o, uint32_t mh2oSize);
-void ParseLegacyLiquid(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize);
 
-int32_t LiquidAt(const C3Vector& pos, float& surfaceZ);
 
 
 // Scatter the chunk's detail doodads (the reference's DetailDoodad batch builder): per 8x8 cell the
@@ -627,133 +591,6 @@ void WmoDoodadLightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg
 // placement derived from the MODF entry, and build per-material textured batches. The placement
 // convention (local X is up; local Y/Z are the horizontal plane rotated by the yaw) was verified
 // against the MODF world-space bounding box.
-
-// WMO group liquid (MLIQ): a height grid in group-local space with per-tile flags. The surface is
-// baked to world space with the group's placement, exactly like its geometry, and rendered through
-// the same liquid buckets as the terrain water (reference: FUN_00793d20 builds Liquid::CInstance
-// per group and logs "WMO: Liquid type [%d] not found, defaulting to water!" for unknown ids).
-void LoadWmoLiquid(WmoInstance& out, uint32_t groupIndex, uint32_t nGroups, const uint8_t* mliq, uint32_t mliqSize,
-                   uint32_t groupLiquid, uint16_t mohdFlags, const C3Vector& worldPos, float cs, float sn) {
-    uint32_t xverts = *reinterpret_cast<const uint32_t*>(mliq + 0);
-    uint32_t yverts = *reinterpret_cast<const uint32_t*>(mliq + 4);
-    uint32_t xtiles = *reinterpret_cast<const uint32_t*>(mliq + 8);
-    uint32_t ytiles = *reinterpret_cast<const uint32_t*>(mliq + 12);
-    const float* base = reinterpret_cast<const float*>(mliq + 16);
-
-    if (!xverts || !yverts || xverts > 256 || yverts > 256 || xtiles + 1 != xverts || ytiles + 1 != yverts) {
-        return;
-    }
-
-    const uint8_t* verts = mliq + 30;
-    const uint8_t* tiles = verts + xverts * yverts * 8;
-
-    if (30 + xverts * yverts * 8 + xtiles * ytiles > mliqSize) {
-        return;
-    }
-
-    // Liquid type: with MOHD flag 0x4 the group's value is a LiquidType id; otherwise the legacy
-    // basic type (0 water, 1 ocean, 2 magma, 3 slime) maps onto LiquidType ids 1..4, taken from
-    // the group when it names one and from the tile flags when it does not (15 = "per tile").
-    int32_t liquidType;
-
-    if (mohdFlags & 0x4) {
-        liquidType = static_cast<int32_t>(groupLiquid);
-    } else if (groupLiquid < 15) {
-        liquidType = static_cast<int32_t>(groupLiquid) + 1;
-    } else {
-        liquidType = -1; // resolved from the first covered tile below
-    }
-
-    uint32_t covered = 0;
-
-    for (uint32_t t = 0; t < xtiles * ytiles; t++) {
-        uint8_t f = tiles[t];
-
-        if ((f & 0x0F) == 0x0F) {
-            continue;
-        }
-
-        if (liquidType < 0) {
-            liquidType = (f & 0x3) + 1;
-        }
-
-        covered++;
-    }
-
-    if (!covered || liquidType < 0) {
-        return;
-    }
-
-    if (!out.liquids) {
-        out.liquids = static_cast<ChunkLiquid*>(SMemAlloc(nGroups * sizeof(ChunkLiquid), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-    }
-
-    ChunkLiquid& liq = out.liquids[out.liquidCount];
-    liq.group = static_cast<int32_t>(groupIndex);
-    liq.liquidType = liquidType;
-
-    auto rec = g_liquidTypeDB.GetRecord(liquidType);
-    liq.kind = rec ? rec->m_type : 0;
-
-    liq.vertCount = xverts * yverts;
-    liq.verts = static_cast<C3Vector*>(SMemAlloc(liq.vertCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
-    liq.uvs = static_cast<C2Vector*>(SMemAlloc(liq.vertCount * sizeof(C2Vector), __FILE__, __LINE__, 0));
-    liq.indices = static_cast<uint16_t*>(SMemAlloc(covered * 6 * sizeof(uint16_t), __FILE__, __LINE__, 0));
-
-    for (uint32_t j = 0; j < yverts; j++) {
-        for (uint32_t i = 0; i < xverts; i++) {
-            uint32_t k = j * xverts + i;
-            // Each vertex is 8 bytes: flow/depth data then the height (the second float)
-            float h = *reinterpret_cast<const float*>(verts + k * 8 + 4);
-            // WMO model space is Z-up, so the grid runs along the two horizontal components from
-            // the MLIQ base corner and the per-vertex height is the vertical one. (An earlier pass
-            // here put the height into component 0 to match a vertex transform that was itself
-            // wrong; both are corrected now and they agree.)
-            float lx = base[0] + i * UNIT_SIZE;
-            float ly = base[1] + j * UNIT_SIZE;
-            float lz = h;
-
-            // Same placement transform as the group's MOVT vertices
-            liq.verts[k].x = worldPos.x + (lx * cs - ly * sn);
-            liq.verts[k].y = worldPos.y + (lx * sn + ly * cs);
-            liq.verts[k].z = worldPos.z + lz;
-            liq.uvs[k].x = i * 0.25f;
-            liq.uvs[k].y = j * 0.25f;
-
-            if (k == 0) {
-                liq.boundsMin = liq.boundsMax = liq.verts[k];
-            } else {
-                const C3Vector& v = liq.verts[k];
-                liq.boundsMin.x = v.x < liq.boundsMin.x ? v.x : liq.boundsMin.x;
-                liq.boundsMin.y = v.y < liq.boundsMin.y ? v.y : liq.boundsMin.y;
-                liq.boundsMin.z = v.z < liq.boundsMin.z ? v.z : liq.boundsMin.z;
-                liq.boundsMax.x = v.x > liq.boundsMax.x ? v.x : liq.boundsMax.x;
-                liq.boundsMax.y = v.y > liq.boundsMax.y ? v.y : liq.boundsMax.y;
-                liq.boundsMax.z = v.z > liq.boundsMax.z ? v.z : liq.boundsMax.z;
-            }
-        }
-    }
-
-    uint32_t n = 0;
-
-    for (uint32_t j = 0; j < ytiles; j++) {
-        for (uint32_t i = 0; i < xtiles; i++) {
-            if ((tiles[j * xtiles + i] & 0x0F) == 0x0F) {
-                continue;
-            }
-
-            uint16_t a = static_cast<uint16_t>(j * xverts + i);
-            uint16_t b = static_cast<uint16_t>(a + 1);
-            uint16_t c = static_cast<uint16_t>(a + xverts);
-            uint16_t d = static_cast<uint16_t>(c + 1);
-            liq.indices[n++] = a; liq.indices[n++] = c; liq.indices[n++] = b;
-            liq.indices[n++] = b; liq.indices[n++] = c; liq.indices[n++] = d;
-        }
-    }
-
-    liq.indexCount = n;
-    out.liquidCount++;
-}
 
 void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, uint32_t doodadSet, WmoInstance& out) {
     void* rootData = nullptr;
@@ -1026,7 +863,8 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 grp.batchCount = mobaCount;
 
                 if (mliq && mliqSize >= 30) {
-                    LoadWmoLiquid(out, out.groupCount, nGroups, mliq, mliqSize, mogpGroupLiquid, mohdFlags, worldPos, cs, sn);
+                    // MLIQ fed LiquidAt's indoor pools; CMapObjGroup::GetLiquidAt answers that
+                    // from the reference group's own MLIQ now.
                 }
 
                 out.groupCount++;
@@ -1249,12 +1087,10 @@ void LoadTile(TerrainTile& tile, int32_t tileX, int32_t tileY) {
                 ParseChunk(tile.chunks[i], bytes + mcnkOffset + 8, mcnkSize);
 
                 if (mh2o) {
-                    ParseLiquid(tile.chunks[i], i, mh2o, mh2oSize);
-                }
-
-                // Tiles without MH2O (or chunks it does not cover) still carry the pre-WotLK MCLQ
-                if (!tile.chunks[i].liquidCount) {
-                    ParseLegacyLiquid(tile.chunks[i], bytes + mcnkOffset + 8, mcnkSize);
+                    // MH2O and MCLQ used to be parsed here into the stand-in's own liquid
+                    // layers. They fed only LiquidAt, and the camera-liquid query is the
+                    // reference's now: CMap::GetTerrainLiquid over CMapChunk::CreateLiquid's
+                    // layers outdoors, CMapObjGroup::GetLiquidAt over the group's MLIQ indoors.
                 }
 
             }
@@ -1369,24 +1205,6 @@ void FreeTile(TerrainTile& tile) {
         tile.ownedUniqueCount = 0;
     }
 
-    for (auto& chunk : tile.chunks) {
-        for (uint32_t l = 0; l < chunk.liquidCount; l++) {
-            ChunkLiquid& liq = chunk.liquids[l];
-            if (liq.verts) SMemFree(liq.verts, __FILE__, __LINE__, 0);
-            if (liq.uvs) SMemFree(liq.uvs, __FILE__, __LINE__, 0);
-            if (liq.colors) SMemFree(liq.colors, __FILE__, __LINE__, 0);
-            if (liq.depthRamp) SMemFree(liq.depthRamp, __FILE__, __LINE__, 0);
-            if (liq.indices) SMemFree(liq.indices, __FILE__, __LINE__, 0);
-        }
-
-        if (chunk.liquids) {
-            SMemFree(chunk.liquids, __FILE__, __LINE__, 0);
-            chunk.liquids = nullptr;
-        }
-
-        chunk.liquidCount = 0;
-    }
-
     if (tile.wmos) {
         for (uint32_t i = 0; i < tile.wmoCount; i++) {
             WmoInstance& w = tile.wmos[i];
@@ -1408,16 +1226,6 @@ void FreeTile(TerrainTile& tile) {
             if (w.doodadScale) SMemFree(w.doodadScale, __FILE__, __LINE__, 0);
             if (w.doodadAmbient) SMemFree(w.doodadAmbient, __FILE__, __LINE__, 0);
 
-            for (uint32_t li = 0; li < w.liquidCount; li++) {
-                ChunkLiquid& liq = w.liquids[li];
-                if (liq.verts) SMemFree(liq.verts, __FILE__, __LINE__, 0);
-                if (liq.uvs) SMemFree(liq.uvs, __FILE__, __LINE__, 0);
-                if (liq.colors) SMemFree(liq.colors, __FILE__, __LINE__, 0);
-            if (liq.depthRamp) SMemFree(liq.depthRamp, __FILE__, __LINE__, 0);
-                if (liq.indices) SMemFree(liq.indices, __FILE__, __LINE__, 0);
-            }
-
-            if (w.liquids) SMemFree(w.liquids, __FILE__, __LINE__, 0);
             if (w.groups) SMemFree(w.groups, __FILE__, __LINE__, 0);
         }
 
@@ -1560,290 +1368,6 @@ struct Mh2oInfo {
     uint32_t ofsMask;
     uint32_t ofsHeightMap;
 };
-
-void ParseLiquid(TerrainChunk& chunk, int32_t chunkIndex, const uint8_t* mh2o, uint32_t mh2oSize) {
-    if (!chunk.valid || static_cast<uint32_t>(chunkIndex + 1) * sizeof(Mh2oHeader) > mh2oSize) {
-        return;
-    }
-
-    const Mh2oHeader* hdr = reinterpret_cast<const Mh2oHeader*>(mh2o) + chunkIndex;
-
-    if (!hdr->layerCount || !hdr->ofsInformation) {
-        return;
-    }
-
-    uint32_t layers = hdr->layerCount > 4 ? 4 : hdr->layerCount;
-
-    if (hdr->ofsInformation + layers * sizeof(Mh2oInfo) > mh2oSize) {
-        return;
-    }
-
-    // The chunk's north-west corner (row 0, column 0 of the height grid)
-    float posX = chunk.position[0].x;
-    float posY = chunk.position[0].y;
-
-    chunk.liquids = static_cast<ChunkLiquid*>(SMemAlloc(layers * sizeof(ChunkLiquid), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-
-    for (uint32_t l = 0; l < layers; l++) {
-        const Mh2oInfo* info = reinterpret_cast<const Mh2oInfo*>(mh2o + hdr->ofsInformation) + l;
-        uint32_t w = info->width;
-        uint32_t h = info->height;
-
-        if (!w || !h || info->xOffset + w > 8 || info->yOffset + h > 8) {
-            continue;
-        }
-
-        uint32_t vw = w + 1;
-        uint32_t vh = h + 1;
-        const float* heights = nullptr;
-
-        if (info->vertexFormat != 2 && info->ofsHeightMap && info->ofsHeightMap + vw * vh * sizeof(float) <= mh2oSize) {
-            heights = reinterpret_cast<const float*>(mh2o + info->ofsHeightMap);
-        }
-
-        // Vertex data layout by format: 0 = heights then depth bytes, 1 = heights then UVs,
-        // 2 = depth bytes only, 3 = heights, UVs, then depth bytes. Only 0, 2 and 3 carry depth.
-        const uint8_t* depth = nullptr;
-
-        if (info->ofsHeightMap) {
-            uint32_t n = vw * vh;
-            uint32_t off = info->ofsHeightMap;
-
-            if (info->vertexFormat == 2) {
-                depth = mh2o + off;
-            } else {
-                off += n * sizeof(float); // heights
-
-                if (info->vertexFormat == 3) {
-                    off += n * 2 * sizeof(float); // uvs
-                }
-
-                if (info->vertexFormat == 0 || info->vertexFormat == 3) {
-                    depth = mh2o + off;
-                }
-            }
-
-            if (depth && off + n > mh2oSize) {
-                depth = nullptr;
-            }
-        }
-
-        const uint8_t* mask = nullptr;
-
-        if (info->ofsMask && info->ofsMask + 8 <= mh2oSize) {
-            mask = mh2o + info->ofsMask;
-        }
-
-        ChunkLiquid& liq = chunk.liquids[chunk.liquidCount];
-        liq.liquidType = info->liquidType;
-        liq.xOffset = info->xOffset;
-        liq.yOffset = info->yOffset;
-        liq.width = static_cast<uint8_t>(w);
-        liq.height = static_cast<uint8_t>(h);
-
-        // Re-pack the layer's sub-rect bitmap into the chunk's 8x8 grid, which is what LiquidAt
-        // queries against.
-        for (int32_t m = 0; m < 8; m++) {
-            liq.cellMask[m] = 0;
-        }
-
-        for (uint32_t j = 0; j < h; j++) {
-            for (uint32_t i = 0; i < w; i++) {
-                uint32_t bit = j * w + i;
-                bool covered = mask ? (mask[bit >> 3] & (1 << (bit & 7))) != 0 : true;
-
-                if (covered) {
-                    liq.cellMask[info->yOffset + j] |= static_cast<uint8_t>(1 << (info->xOffset + i));
-                }
-            }
-        }
-
-        auto rec = g_liquidTypeDB.GetRecord(info->liquidType);
-        liq.kind = rec ? rec->m_type : 0;
-
-        liq.vertCount = vw * vh;
-        liq.verts = static_cast<C3Vector*>(SMemAlloc(liq.vertCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
-        liq.uvs = static_cast<C2Vector*>(SMemAlloc(liq.vertCount * sizeof(C2Vector), __FILE__, __LINE__, 0));
-
-        if (depth) {
-            liq.colors = static_cast<CImVector*>(SMemAlloc(liq.vertCount * sizeof(CImVector), __FILE__, __LINE__, 0));
-            // One byte of depth ramp per vertex, so the colours can be rebuilt when the light
-            // changes without re-reading the ADT. The reference rebuilds its gradient table for the
-            // same reason; baking once at load leaves water lit by whatever zone it loaded under.
-            liq.depthRamp = static_cast<uint8_t*>(SMemAlloc(liq.vertCount, __FILE__, __LINE__, 0));
-        }
-        liq.indices = static_cast<uint16_t*>(SMemAlloc(w * h * 6 * sizeof(uint16_t), __FILE__, __LINE__, 0));
-
-        for (uint32_t j = 0; j < vh; j++) {
-            for (uint32_t i = 0; i < vw; i++) {
-                uint32_t k = j * vw + i;
-                float row = static_cast<float>(info->yOffset + j);
-                float col = static_cast<float>(info->xOffset + i);
-                liq.verts[k].x = posX - row * UNIT_SIZE;
-                liq.verts[k].y = posY - col * UNIT_SIZE;
-                liq.verts[k].z = heights ? heights[k] : info->minHeight;
-                // Surface texture repeats every four cells (~16.7 yd), continuous across chunks
-                liq.uvs[k].x = col * 0.25f;
-                liq.uvs[k].y = row * 0.25f;
-
-                if (liq.colors) {
-                    // MH2O depth is 0 at the shoreline and 255 at full depth. LiquidType's
-                    // maxDarkenDepth says how deep the surface reaches full opacity.
-                    float maxDepth = rec && rec->m_maxDarkenDepth > 0.0f ? rec->m_maxDarkenDepth : 8.0f;
-                    float d = static_cast<float>(depth[k]) / 255.0f * 16.0f; // bytes span ~16 yards
-                    float t = d / maxDepth;
-
-                    if (t < 0.0f) t = 0.0f;
-                    if (t > 1.0f) t = 1.0f;
-
-                    if (liq.depthRamp) {
-                        liq.depthRamp[k] = static_cast<uint8_t>(t * 255.0f);
-                    }
-
-                    // Colour interpolates from the shallow endpoint to the deep one across the
-                    // same depth ramp, which is what the reference's 512-entry gradient table is.
-                    // Magma and slime are not light-driven and stay white, tinted by their texture.
-                    if (liq.kind == 2 || liq.kind == 3) {
-                        liq.colors[k].b = 0xFF;
-                        liq.colors[k].g = 0xFF;
-                        liq.colors[k].r = 0xFF;
-                    } else {
-                        const C3Vector& shallowC = CWorld::GetLiquidShallow(liq.kind == 1);
-                        const C3Vector& deepC = CWorld::GetLiquidDeep(liq.kind == 1);
-
-                        liq.colors[k].r = static_cast<uint8_t>((shallowC.x + (deepC.x - shallowC.x) * t) * 255.0f);
-                        liq.colors[k].g = static_cast<uint8_t>((shallowC.y + (deepC.y - shallowC.y) * t) * 255.0f);
-                        liq.colors[k].b = static_cast<uint8_t>((shallowC.z + (deepC.z - shallowC.z) * t) * 255.0f);
-                    }
-
-                    // Interpolate the alpha from shallow to deep, the way the reference's gradient
-                    // does, instead of ramping from zero. The old form multiplied the depth ramp by
-                    // a fixed opacity, so a surface at zero depth came out FULLY TRANSPARENT; the
-                    // reference starts it at the LightParams shallow alpha (0.5 for river water,
-                    // 0.75 for ocean on these params) and only reaches full at maxDarkenDepth.
-                    float alpha;
-
-                    if (liq.kind == 2 || liq.kind == 3) {
-                        alpha = 1.0f;   // magma and slime are opaque and not light-driven
-                    } else {
-                        float shallow = CWorld::GetLiquidAlpha(liq.kind == 1, 0);
-                        float deep = CWorld::GetLiquidAlpha(liq.kind == 1, 1);
-                        alpha = shallow + (deep - shallow) * t;
-                    }
-
-                    liq.colors[k].a = static_cast<uint8_t>(alpha * 255.0f);
-                }
-
-                if (k == 0) {
-                    liq.boundsMin = liq.boundsMax = liq.verts[k];
-                } else {
-                    const C3Vector& v = liq.verts[k];
-                    liq.boundsMin.x = v.x < liq.boundsMin.x ? v.x : liq.boundsMin.x;
-                    liq.boundsMin.y = v.y < liq.boundsMin.y ? v.y : liq.boundsMin.y;
-                    liq.boundsMin.z = v.z < liq.boundsMin.z ? v.z : liq.boundsMin.z;
-                    liq.boundsMax.x = v.x > liq.boundsMax.x ? v.x : liq.boundsMax.x;
-                    liq.boundsMax.y = v.y > liq.boundsMax.y ? v.y : liq.boundsMax.y;
-                    liq.boundsMax.z = v.z > liq.boundsMax.z ? v.z : liq.boundsMax.z;
-                }
-            }
-        }
-
-        uint32_t n = 0;
-
-        for (uint32_t j = 0; j < h; j++) {
-            for (uint32_t i = 0; i < w; i++) {
-                if (mask) {
-                    // The exists bitmap covers this layer's w x h sub-rect, packed row by row --
-                    // ceil(w*h/8) bytes -- not the chunk's full 8x8 grid. Indexing it as an 8x8
-                    // grid read the wrong bits and produced water over the wrong cells.
-                    uint32_t bit = j * w + i;
-
-                    if (!(mask[bit >> 3] & (1 << (bit & 7)))) {
-                        continue;
-                    }
-                }
-
-                uint16_t a = static_cast<uint16_t>(j * vw + i);
-                uint16_t b = static_cast<uint16_t>(a + 1);
-                uint16_t c = static_cast<uint16_t>(a + vw);
-                uint16_t d = static_cast<uint16_t>(c + 1);
-                liq.indices[n++] = a; liq.indices[n++] = c; liq.indices[n++] = b;
-                liq.indices[n++] = b; liq.indices[n++] = c; liq.indices[n++] = d;
-            }
-        }
-
-        liq.indexCount = n;
-
-        if (n) {
-            chunk.liquidCount++;
-        } else {
-            SMemFree(liq.verts, __FILE__, __LINE__, 0);
-            SMemFree(liq.uvs, __FILE__, __LINE__, 0);
-            SMemFree(liq.indices, __FILE__, __LINE__, 0);
-            liq.verts = nullptr; liq.uvs = nullptr; liq.indices = nullptr;
-        }
-    }
-}
-
-
-// The liquid surface above a point, if the point lies under one of the loaded MH2O layers: the
-// covering cell's highest corner is the surface. Returns the layer's kind, or -1 when in air.
-// The terrain half is the map's now (CMap::GetTerrainLiquid, which reads the real MH2O
-// per-tile mask and interpolates the layer's own surface). The WMO half below is still the
-// stand-in's: the reference keeps interior pools and canals in a separate query
-// (FUN_007a09d0, over the group BSP) that frozen has not ported, and dropping this loop would
-// stop the client noticing them at all.
-int32_t LiquidAt(const C3Vector& pos, float& surfaceZ) {
-    int32_t found = -1;
-    surfaceZ = 0.0f;
-
-    {
-        uint32_t liquidType = 0;
-        float height = 0.0f;
-
-        if (CMap::GetTerrainLiquid(pos, &liquidType, &height, 0)) {
-            auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
-
-            found = rec ? rec->m_type : 0;
-            s_cameraLiquidType = static_cast<int32_t>(liquidType);
-            surfaceZ = height;
-        }
-    }
-
-    // A surface is above the point when the point is inside its box and under its top. Terrain
-    // layers additionally resolve the exact covering cell; WMO surfaces (canals, interior pools)
-    // are tested by box alone, which is enough to decide submersion.
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
-        }
-
-        for (uint32_t wi = 0; wi < tile.wmoCount && tile.wmos; wi++) {
-            const WmoInstance& w = tile.wmos[wi];
-
-            for (uint32_t l = 0; l < w.liquidCount; l++) {
-                const ChunkLiquid& liq = w.liquids[l];
-
-                if (!liq.indexCount || pos.x < liq.boundsMin.x || pos.x > liq.boundsMax.x
-                    || pos.y < liq.boundsMin.y || pos.y > liq.boundsMax.y
-                    || pos.z > liq.boundsMax.z || pos.z < liq.boundsMin.z) {
-                    continue;
-                }
-
-                if (found < 0 || liq.boundsMax.z > surfaceZ) {
-                    found = liq.kind;
-                    s_cameraLiquidType = liq.liquidType;
-                    surfaceZ = liq.boundsMax.z;
-                }
-            }
-        }
-
-    }
-
-    return found;
-}
-
-
 
 // ------------------------------------------------------------------------------------------------
 // Weather (the reference's MapWeather: FUN_0078ca50 draws three emitters -- rain drops
@@ -2018,7 +1542,7 @@ void WeatherRender() {
 
     WeatherUpdate(s_cameraPos, dt);
 
-    if (!s_weatherAlive || s_cameraLiquidKind >= 0) {
+    if (!s_weatherAlive || CWorld::IsCameraUnderLiquid()) {
         return;
     }
 
@@ -2135,139 +1659,6 @@ void WeatherRender() {
 
 namespace {
 
-// MCLQ (the pre-MH2O chunk liquid the reference still reads when a chunk has no MH2O data): the
-// MCNK flags name the kind (0x4 river, 0x8 ocean, 0x10 magma, 0x20 slime), then min/max height,
-// a 9x9 vertex grid (8 bytes each, height in the second float) and 8x8 tile flags (low nibble
-// 0xF = no liquid).
-void ParseLegacyLiquid(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSize) {
-    if (!chunk.valid) {
-        return;
-    }
-
-    uint32_t mcnkFlags = *reinterpret_cast<const uint32_t*>(mcnk + 0x00);
-    uint32_t ofsLiquid = *reinterpret_cast<const uint32_t*>(mcnk + 0x60);
-    uint32_t sizeLiquid = *reinterpret_cast<const uint32_t*>(mcnk + 0x64);
-
-    if (!ofsLiquid || sizeLiquid <= 8 || ofsLiquid + sizeLiquid > mcnkSize + 8) {
-        return;
-    }
-
-    int32_t liquidType;
-
-    if (mcnkFlags & 0x10) {
-        liquidType = 3; // magma
-    } else if (mcnkFlags & 0x20) {
-        liquidType = 4; // slime
-    } else if (mcnkFlags & 0x8) {
-        liquidType = 2; // ocean
-    } else if (mcnkFlags & 0x4) {
-        liquidType = 1; // river
-    } else {
-        return;
-    }
-
-    // Some files carry an MCLQ sub-chunk header; the reference's ofsLiquid points at the data
-    const uint8_t* liq = mcnk + ofsLiquid;
-
-    if (sizeLiquid < 8 + 81 * 8 + 64) {
-        return;
-    }
-
-    const uint8_t* verts = liq + 8;
-    const uint8_t* tiles = verts + 81 * 8;
-
-    uint32_t covered = 0;
-
-    for (int32_t t = 0; t < 64; t++) {
-        if ((tiles[t] & 0x0F) != 0x0F) {
-            covered++;
-        }
-    }
-
-    if (!covered) {
-        return;
-    }
-
-    // ParseLiquid may have allocated the array and then found every layer unusable, leaving a
-    // live pointer with a zero count; overwriting it here would leak that block.
-    if (chunk.liquids) {
-        SMemFree(chunk.liquids, __FILE__, __LINE__, 0);
-        chunk.liquids = nullptr;
-    }
-
-    chunk.liquids = static_cast<ChunkLiquid*>(SMemAlloc(sizeof(ChunkLiquid), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
-    ChunkLiquid& l = chunk.liquids[0];
-    l.liquidType = liquidType;
-
-    auto rec = g_liquidTypeDB.GetRecord(liquidType);
-    l.kind = rec ? rec->m_type : (liquidType - 1);
-    l.xOffset = 0; l.yOffset = 0; l.width = 8; l.height = 8;
-
-    for (int32_t m = 0; m < 8; m++) {
-        uint8_t mask = 0;
-
-        for (int32_t c = 0; c < 8; c++) {
-            if ((tiles[m * 8 + c] & 0x0F) != 0x0F) {
-                mask |= static_cast<uint8_t>(1 << c);
-            }
-        }
-
-        l.cellMask[m] = mask;
-    }
-
-    float posX = chunk.position[0].x;
-    float posY = chunk.position[0].y;
-
-    l.vertCount = 81;
-    l.verts = static_cast<C3Vector*>(SMemAlloc(81 * sizeof(C3Vector), __FILE__, __LINE__, 0));
-    l.uvs = static_cast<C2Vector*>(SMemAlloc(81 * sizeof(C2Vector), __FILE__, __LINE__, 0));
-    l.indices = static_cast<uint16_t*>(SMemAlloc(covered * 6 * sizeof(uint16_t), __FILE__, __LINE__, 0));
-
-    for (int32_t j = 0; j < 9; j++) {
-        for (int32_t i = 0; i < 9; i++) {
-            int32_t k = j * 9 + i;
-            float h = *reinterpret_cast<const float*>(verts + k * 8 + 4);
-            l.verts[k].x = posX - j * UNIT_SIZE;
-            l.verts[k].y = posY - i * UNIT_SIZE;
-            l.verts[k].z = h;
-            l.uvs[k].x = i * 0.25f;
-            l.uvs[k].y = j * 0.25f;
-
-            if (k == 0) {
-                l.boundsMin = l.boundsMax = l.verts[k];
-            } else {
-                const C3Vector& v = l.verts[k];
-                l.boundsMin.x = v.x < l.boundsMin.x ? v.x : l.boundsMin.x;
-                l.boundsMin.y = v.y < l.boundsMin.y ? v.y : l.boundsMin.y;
-                l.boundsMin.z = v.z < l.boundsMin.z ? v.z : l.boundsMin.z;
-                l.boundsMax.x = v.x > l.boundsMax.x ? v.x : l.boundsMax.x;
-                l.boundsMax.y = v.y > l.boundsMax.y ? v.y : l.boundsMax.y;
-                l.boundsMax.z = v.z > l.boundsMax.z ? v.z : l.boundsMax.z;
-            }
-        }
-    }
-
-    uint32_t n = 0;
-
-    for (int32_t j = 0; j < 8; j++) {
-        for (int32_t i = 0; i < 8; i++) {
-            if ((tiles[j * 8 + i] & 0x0F) == 0x0F) {
-                continue;
-            }
-
-            uint16_t a = static_cast<uint16_t>(j * 9 + i);
-            uint16_t b = static_cast<uint16_t>(a + 1);
-            uint16_t c = static_cast<uint16_t>(a + 9);
-            uint16_t d = static_cast<uint16_t>(c + 1);
-            l.indices[n++] = a; l.indices[n++] = c; l.indices[n++] = b;
-            l.indices[n++] = b; l.indices[n++] = c; l.indices[n++] = d;
-        }
-    }
-
-    l.indexCount = n;
-    chunk.liquidCount = 1;
-}
-
 } // namespace
 
 void TerrainLoad(const char* mapName, int32_t mapID) {
@@ -2311,12 +1702,9 @@ void TerrainUpdate(const C3Vector& cameraPos) {
     {
         float surfaceZ;
         s_cameraLiquidType = -1;
-        s_cameraLiquidKind = LiquidAt(cameraPos, surfaceZ);
-        CWorld::SetCameraUnderLiquid(s_cameraLiquidKind >= 0);
-
-        // The sky moved to DayNight.cpp and keeps its own copies of these two; pushing them from
-        // here is what makes that a pure relocation -- same values, same moment in the frame.
-        SkySetCameraState(cameraPos, s_cameraLiquidKind);
+        // The camera liquid is CWorldScene::UpdateCameraLiquid's now, terrain and indoor halves
+        // both, and it sets CWorld::SetCameraUnderLiquid itself.
+        SkySetCameraState(cameraPos);
     }
 
     // Recompute the outdoor light for the current time of day; models and the sky read it directly,
@@ -2431,63 +1819,12 @@ void TerrainUpdate(const C3Vector& cameraPos) {
         }
     }
 
-// The per-frame view half of the terrain pass: the frustum every other system culls against, the
-// fog render states and doodad visibility. Split out of TerrainRender so the frame can establish
-// visibility before the shadow map renders its casters, which has to happen before any drawing.
-// Rebuild every loaded liquid surface's vertex colours from the current light.
-//
-// Colour and alpha are baked per vertex at load, so without this a water surface keeps the light
-// parameters of whatever zone it happened to load under -- crossing a zone boundary or waiting for
-// dusk would leave it stale. The reference has the same problem and solves it by rebuilding its
-// gradient table; this rebuilds the baked vertices, which is the same idea against a different
-// layout. Only runs when the light parameter set actually changes.
-void TerrainRebakeLiquidColors() {
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
-        }
-
-        for (auto& chunk : tile.chunks) {
-            for (uint32_t l = 0; l < chunk.liquidCount; l++) {
-                ChunkLiquid& liq = chunk.liquids[l];
-
-                if (!liq.colors || !liq.depthRamp || liq.kind == 2 || liq.kind == 3) {
-                    continue;
-                }
-
-                const C3Vector& shallowC = CWorld::GetLiquidShallow(liq.kind == 1);
-                const C3Vector& deepC = CWorld::GetLiquidDeep(liq.kind == 1);
-                float shallowA = CWorld::GetLiquidAlpha(liq.kind == 1, 0);
-                float deepA = CWorld::GetLiquidAlpha(liq.kind == 1, 1);
-
-                for (uint32_t k = 0; k < liq.vertCount; k++) {
-                    float t = liq.depthRamp[k] / 255.0f;
-
-                    liq.colors[k].r = static_cast<uint8_t>((shallowC.x + (deepC.x - shallowC.x) * t) * 255.0f);
-                    liq.colors[k].g = static_cast<uint8_t>((shallowC.y + (deepC.y - shallowC.y) * t) * 255.0f);
-                    liq.colors[k].b = static_cast<uint8_t>((shallowC.z + (deepC.z - shallowC.z) * t) * 255.0f);
-                    liq.colors[k].a = static_cast<uint8_t>((shallowA + (deepA - shallowA) * t) * 255.0f);
-                }
-            }
-        }
-    }
-}
-
 void TerrainUpdateView() {
     if (!s_mapName[0]) {
         return;
     }
 
     // Water is baked per vertex, so it has to follow the light rather than the load. Rebake only
-    // when the parameter set actually changes -- walking every loaded liquid every frame would be
-    // pure waste, and the colours only move when the light does.
-    static int32_t s_bakedParams = -1;
-
-    if (CWorld::GetOutdoorParamsID() != s_bakedParams) {
-        s_bakedParams = CWorld::GetOutdoorParamsID();
-        TerrainRebakeLiquidColors();
-    }
-
     // Build exactly the transform the M2 scene uses: the eye-at-origin view translated by
     // -cameraPos, times the native projection, transposed for the shader.
     C44Matrix view;
@@ -2667,7 +2004,12 @@ std::vector<CImVector> s_liquidColor;
 uint8_t s_liquidAlpha = 0;
 
 void UnderwaterOverlayRender() {
-    if (s_cameraLiquidKind < 0) {
+    // Both the gate and the liquid kind come from the reference camera-liquid query now
+    // (CWorldScene::UpdateCameraLiquid), which records the LiquidType row the camera is submerged
+    // in. 0 means not submerged.
+    int32_t cameraLiquidType = static_cast<int32_t>(CWorldScene::s_cameraLiquidType);
+
+    if (!cameraLiquidType) {
         return;
     }
 
@@ -2678,7 +2020,7 @@ void UnderwaterOverlayRender() {
     // The surface texture of the liquid the camera is in, scrolled slowly for the caustic look.
     // LiquidAt recorded the exact type when it decided the camera was submerged, so there is no
     // need to walk every tile and chunk again looking for a surface of the same kind.
-    LiquidTextures* set = s_cameraLiquidType >= 0 ? GetLiquidTextures(s_cameraLiquidType) : nullptr;
+    LiquidTextures* set = GetLiquidTextures(cameraLiquidType);
     uint32_t now = CWorld::GetM2Scene() ? CWorld::GetM2Scene()->m_time : 0;
     HTEXTURE tex = (set && set->frameCount) ? set->frames[(now / 50) % set->frameCount] : nullptr;
 

@@ -30,6 +30,6 @@ HTEXTURE SkyWhiteTexture();
 
 // Push the camera state this module needs. Called where the terrain already tracks it, so the sky
 // sees exactly the values, at exactly the moment, it saw before the move.
-void SkySetCameraState(const C3Vector& cameraPos, int32_t cameraLiquidKind);
+void SkySetCameraState(const C3Vector& cameraPos);
 
 #endif

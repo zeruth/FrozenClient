@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 09:16 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 09:25 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4368 (+2) (16.2%) | 920.6k (16.8%) |
-| &nbsp;&nbsp;ported | 3687 (+2) | 741.7k |
+| mapped to a frozen function | 4368 (=) (16.2%) | 920.6k (16.8%) |
+| &nbsp;&nbsp;ported | 3687 (=) | 741.7k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2232 (+1) (8.3%)** | **290.3k (5.3%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **2232 (=) (8.3%)** | **290.3k (5.3%)** |
 | unmapped | 22587 | 4.45M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1422 (+2) (26.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1440 (+2) (25.5%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 854 (+1) (18.9%)** | |
-| frozen functions (src/, from PDB + source) | 13815, stubs 1700 | |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1422 (=) (26.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1440 (=) (25.5%) | |
+| **render surface** (the modules that draw the world) | **4520, mapped 854 (=) (18.9%)** | |
+| frozen functions (src/, from PDB + source) | 13814, stubs 1700 | |
 
 Match evidence: annotated 2166, callgraph 240, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 09:04 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
+Previous run: 2026-09-26 09:16 -- mapped 4368, ported 3687, stub 578, spine mapped 1422.
 
 ## Lua API coverage (binding tables)
 
@@ -565,7 +565,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ParticleFxRenderImpl` | world | 7232 | src/world/ParticleFx.cpp |
 | `GetPredAdvancedBy1x0` | m4vh263dec | 5923 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `std::_Matcher3<wchar_t,std::regex_traits<wchar_t>,wchar_t const *,void>::_Match_pat` | glue | 4820 |  |
-| `ParseLegacyLiquid` | world | 4522 | src/world/Terrain.cpp |
+| `ParseLegacyLiquid` | world | 4522 |  |
 | `M2Init` | model | 4489 | src/model/M2Init.cpp |
 | `GetPredOutside` | m4vh263dec | 4486 | vendor/m4vh263dec/src/get_pred_outside.cpp |
 | `T1_Decoder_Parse_Charstrings` | lib/freetype-2.0 | 4304 | vendor/freetype-2.0.9/src/psaux/t1decode.c |
@@ -584,7 +584,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `GetPredAdvancedBy1x1` | m4vh263dec | 2737 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CGxString::CreateGeometry` | gx | 2696 | src/gx/font/CGxString.cpp |
 | `DetailDoodad::FillVertexBuffer` | world | 2690 | src/world/map/detaildoodad.cpp |
-| `ParseLiquid` | world | 2616 | src/world/Terrain.cpp |
+| `ParseLiquid` | world | 2616 |  |
 | `SFileOpenArchive` | lib/stormlib-9.31 | 2611 | lib/squall/vendor/stormlib-9.31/src/SFileOpenArchive.cpp |
 | `AchievementRec::Read` | db | 2604 | src/db/rec/AchievementRec.cpp |
 | `storeAtts` | lib/expat-2.0 | 2588 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 04:01 | 4359 (16.2%) | 2228 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:06 | 4361 (16.2%) | 2229 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:16 | 4364 (16.2%) | 2230 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:17 | 4364 (16.2%) | 2230 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 08:53 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:04 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:16 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
+| 2026-09-26 09:25 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

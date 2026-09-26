@@ -1893,6 +1893,12 @@ void CWorldScene::UpdateCameraLiquid() {
 
     CWorldScene::s_cameraLiquidType = liquidType;
 
+    // The world's "camera is submerged" switch is set from HERE now, not from the stand-in's own
+    // LiquidAt. Both halves that feed it are reference queries over parsed liquid data --
+    // CMap::GetTerrainLiquid walks the chunk's CChunkLiquid list, and CMapObjGroup::GetLiquidAt
+    // samples the group's MLIQ grid -- so neither depends on the liquid material drawing.
+    CWorld::SetCameraUnderLiquid(liquidType != 0);
+
     if (left) {
         // TODO FUN_007f1070(1): what the reference does on coming out of liquid.
     }

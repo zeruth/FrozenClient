@@ -39,7 +39,6 @@ namespace {
 // SkySetCameraState, is what makes the move a pure relocation rather than a rewrite: every
 // expression below is unchanged from what shipped.
 C3Vector s_cameraPos = { 0.0f, 0.0f, 0.0f };
-int32_t s_cameraLiquidKind = -1;
 
 // The UI shader pair the sky draws through. Terrain.cpp owns their creation, and its public
 // accessor ensures them, so this stands in for the file-local pair plus EnsureShaders().
@@ -529,7 +528,7 @@ C3Vector SkyLerp(const C3Vector& a, const C3Vector& b, float t) {
 void SkyRender() {
     // The reference skips the whole sky pass while the camera is under liquid; the clear colour
     // (the underwater fog) is the backdrop instead.
-    if (s_cameraLiquidKind >= 0) {
+    if (CWorld::IsCameraUnderLiquid()) {
         return;
     }
 
@@ -843,7 +842,6 @@ HTEXTURE SkyWhiteTexture() {
     return s_skyWhite;
 }
 
-void SkySetCameraState(const C3Vector& cameraPos, int32_t cameraLiquidKind) {
+void SkySetCameraState(const C3Vector& cameraPos) {
     s_cameraPos = cameraPos;
-    s_cameraLiquidKind = cameraLiquidKind;
 }

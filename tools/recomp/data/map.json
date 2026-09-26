@@ -44271,7 +44271,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCameraLiquid",
-  "frozenSize": 113,
+  "frozenSize": 494,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 339,
@@ -48558,7 +48558,7 @@
    "src/world/map/cmapobjgroupload.cpp"
   ],
   "frozen": "CMapObjGroup::GetLiquidAt",
-  "frozenSize": 0,
+  "frozenSize": 498,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 416,
@@ -48622,7 +48622,7 @@
    "src/world/map/cmapobjgroupload.cpp"
   ],
   "frozen": "CMapObjGroup::GetLiquidAt",
-  "frozenSize": 0,
+  "frozenSize": 498,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 75,
