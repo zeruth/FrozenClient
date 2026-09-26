@@ -25,8 +25,6 @@ void BlobShadowDraw(const C3Vector& pos, float radius);
 // here: the reference applies no distance cap and no size floor, because the box it is handed
 // decides everything. ref: FUN_007e49e0
 void BlobShadowDrawCaster(CM2Model* model, const CAaBox& box);
-// The same decal on WMO floors (interiors, bridges, platforms).
-void BlobShadowDrawWmo(const C3Vector& pos, float radius);
 void BlobShadowsEnd();
 // Weather: state from SMSG_WEATHER (effectType 1 rain, 2 snow, 3 sand/mist, else clear); the
 // particle field is simulated and drawn around the camera in the transparent block.

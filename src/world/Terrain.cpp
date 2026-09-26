@@ -187,13 +187,6 @@ struct WmoGroup {
     // it deliberately keeps only up-facing triangles, and deciding whether a point is inside a room
     // needs the ceiling above it, which faces down.
 
-    std::vector<std::vector<uint32_t>> shadowGrid; // cell -> triangle start offsets into `indices`
-    float shadowCellSize = 0.0f;
-    float shadowGridMinX = 0.0f;
-    float shadowGridMinY = 0.0f;
-    int32_t shadowCellsX = 0;
-    int32_t shadowCellsY = 0;
-    bool shadowGridBuilt = false;
 
     // MOGP portal reference range (into WmoInstance::portalRefs) and the frame stamp of the last
     // visibility pass that reached this group (see WmoUpdateVisibility)
@@ -3001,34 +2994,9 @@ void TerrainUpdate(const C3Vector& cameraPos) {
             }
         }
 
-        // Re-light exterior WMO groups too; interior groups keep their static torch-lit MOCV
-        if (tile.wmos) {
-                for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-                    WmoInstance& w = tile.wmos[wi];
-
-                    for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                        WmoGroup& grp = w.groups[gi];
-
-                        if (grp.interior || !grp.ndotl) {
-                            continue;
-                        }
-
-                        for (uint32_t v = 0; v < grp.vertexCount; v++) {
-                            float nd = grp.ndotl[v] / 255.0f;
-                            float addR = grp.mocvAdd ? grp.mocvAdd[v].r : 0.0f;
-                            float addG = grp.mocvAdd ? grp.mocvAdd[v].g : 0.0f;
-                            float addB = grp.mocvAdd ? grp.mocvAdd[v].b : 0.0f;
-                            float fr = (amb.x + dif.x * nd) * 255.0f + addR;
-                            float fg = (amb.y + dif.y * nd) * 255.0f + addG;
-                            float fb = (amb.z + dif.z * nd) * 255.0f + addB;
-                            grp.colors[v].r = static_cast<uint8_t>(fr > 255.0f ? 255.0f : fr);
-                            grp.colors[v].g = static_cast<uint8_t>(fg > 255.0f ? 255.0f : fg);
-                            grp.colors[v].b = static_cast<uint8_t>(fb > 255.0f ? 255.0f : fb);
-                            grp.colors[v].a = 0xFF;
-                        }
-                    }
-                }
-            }
+        // The exterior WMO groups used to be re-lit here on every light change, writing
+        // WmoGroup::colors. Nothing draws those colours any more -- the reference pass lights its
+        // own groups -- so the work produced nothing and is gone with the arrays it wrote.
         }
     }
 
@@ -3498,112 +3466,6 @@ void BlobShadowDraw(const C3Vector& pos, float radius) {
 // Scratch index list for the WMO shadow receiver gather, reused every call.
 std::vector<uint16_t> s_shadowIndices;
 
-// Bucket a group's up-facing triangles into a uniform XY grid, once.
-//
-// Only up-facing triangles go in: a blob shadow belongs on floors, not on the walls beside them, and
-// filtering here means the per-frame gather never looks at a wall triangle at all.
-void BuildWmoShadowGrid(WmoGroup& grp) {
-    if (grp.shadowGridBuilt) {
-        return;
-    }
-
-    grp.shadowGridBuilt = true;
-
-    if (!grp.indexCount || !grp.positions) {
-        return;
-    }
-
-    // Anchor the grid on the vertices it is about to bin, not on grp.bounds.
-    //
-    // bounds stayed in world space when the group's vertices were rebased onto the instance
-    // origin, so anchoring on it mixed frames by that origin -- thousands of yards for most
-    // buildings. Both the binning and the lookup use local coordinates, so they agreed with each
-    // other and the results stayed correct; every cell index simply came out far negative and
-    // clamped to the corner. The whole group landed in one cell and every lookup read it, which
-    // is the exhaustive per-caster scan this grid exists to avoid.
-    float minX = grp.positions[0].x;
-    float minY = grp.positions[0].y;
-    float maxX = minX;
-    float maxY = minY;
-
-    for (uint32_t v = 1; v < grp.vertexCount; v++) {
-        const C3Vector& p = grp.positions[v];
-        minX = p.x < minX ? p.x : minX;
-        minY = p.y < minY ? p.y : minY;
-        maxX = p.x > maxX ? p.x : maxX;
-        maxY = p.y > maxY ? p.y : maxY;
-    }
-
-    float spanX = maxX - minX;
-    float spanY = maxY - minY;
-
-    if (spanX <= 0.0f || spanY <= 0.0f) {
-        return;
-    }
-
-    // Cells a few yards across: small enough that a blob touches only a handful, large enough that
-    // the grid stays small for a building-sized group.
-    const float CELL = 8.0f;
-    const int32_t MAX_CELLS = 128;
-
-    grp.shadowCellSize = CELL;
-    grp.shadowGridMinX = minX;
-    grp.shadowGridMinY = minY;
-    grp.shadowCellsX = static_cast<int32_t>(spanX / CELL) + 1;
-    grp.shadowCellsY = static_cast<int32_t>(spanY / CELL) + 1;
-
-    // A pathologically large group would otherwise allocate a huge grid; widen the cells instead.
-    while (grp.shadowCellsX > MAX_CELLS || grp.shadowCellsY > MAX_CELLS) {
-        grp.shadowCellSize *= 2.0f;
-        grp.shadowCellsX = static_cast<int32_t>(spanX / grp.shadowCellSize) + 1;
-        grp.shadowCellsY = static_cast<int32_t>(spanY / grp.shadowCellSize) + 1;
-    }
-
-    grp.shadowGrid.clear();
-    grp.shadowGrid.resize(static_cast<size_t>(grp.shadowCellsX) * grp.shadowCellsY);
-
-    for (uint32_t i = 0; i + 2 < grp.indexCount; i += 3) {
-        uint16_t a = grp.indices[i];
-        uint16_t b = grp.indices[i + 1];
-        uint16_t c = grp.indices[i + 2];
-
-        if (a >= grp.vertexCount || b >= grp.vertexCount || c >= grp.vertexCount) {
-            continue;
-        }
-
-        const C3Vector& pa = grp.positions[a];
-        const C3Vector& pb = grp.positions[b];
-        const C3Vector& pc = grp.positions[c];
-
-        float ux = (pb.x - pa.x) * (pc.y - pa.y) - (pc.x - pa.x) * (pb.y - pa.y);
-
-        if (ux <= 0.0f) {
-            continue;
-        }
-
-        float minX = pa.x < pb.x ? (pa.x < pc.x ? pa.x : pc.x) : (pb.x < pc.x ? pb.x : pc.x);
-        float maxX = pa.x > pb.x ? (pa.x > pc.x ? pa.x : pc.x) : (pb.x > pc.x ? pb.x : pc.x);
-        float minY = pa.y < pb.y ? (pa.y < pc.y ? pa.y : pc.y) : (pb.y < pc.y ? pb.y : pc.y);
-        float maxY = pa.y > pb.y ? (pa.y > pc.y ? pa.y : pc.y) : (pb.y > pc.y ? pb.y : pc.y);
-
-        int32_t c0 = static_cast<int32_t>((minX - grp.shadowGridMinX) / grp.shadowCellSize);
-        int32_t c1 = static_cast<int32_t>((maxX - grp.shadowGridMinX) / grp.shadowCellSize);
-        int32_t r0 = static_cast<int32_t>((minY - grp.shadowGridMinY) / grp.shadowCellSize);
-        int32_t r1 = static_cast<int32_t>((maxY - grp.shadowGridMinY) / grp.shadowCellSize);
-
-        c0 = c0 < 0 ? 0 : c0;
-        r0 = r0 < 0 ? 0 : r0;
-        c1 = c1 >= grp.shadowCellsX ? grp.shadowCellsX - 1 : c1;
-        r1 = r1 >= grp.shadowCellsY ? grp.shadowCellsY - 1 : r1;
-
-        for (int32_t cy = r0; cy <= r1; cy++) {
-            for (int32_t cx = c0; cx <= c1; cx++) {
-                grp.shadowGrid[static_cast<size_t>(cy) * grp.shadowCellsX + cx].push_back(i);
-            }
-        }
-    }
-}
-
 // How dark a blob is. A constant at the reference's own call site, not a light ratio.
 // DAT_009f98d8
 static const float BLOB_SHADOW_STRENGTH = 0.4f;
@@ -3661,126 +3523,24 @@ void BlobShadowDrawCaster(CM2Model* model, const CAaBox& box) {
     }
 
     BlobShadowDraw(centre, radius);
-    BlobShadowDrawWmo(centre, radius);
-}
 
-void BlobShadowDrawWmo(const C3Vector& pos, float radius) {
-    if (!s_blobActive || radius <= 0.0f) {
-        return;
-    }
-
-    float inv = 0.5f / radius;
-
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded || !tile.wmos) {
-            continue;
-        }
-
-        for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-            WmoInstance& w = tile.wmos[wi];
-
-            if (w.hasBounds && (w.bboxMax.x < pos.x - radius || w.bboxMin.x > pos.x + radius
-                || w.bboxMax.y < pos.y - radius || w.bboxMin.y > pos.y + radius)) {
-                continue;
-            }
-
-            C44Matrix instanceT = ChunkMatrixT(w.origin);
-            bool matrixSet = false;
-
-            for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                WmoGroup& grp = w.groups[gi];
-
-                if (!grp.vertexCount || !grp.batchCount || grp.visFrame != s_visFrame) {
-                    continue;
-                }
-
-                // Only the group the caster is standing in or above, and only near its floor
-                if (grp.boundsMax.x < pos.x - radius || grp.boundsMin.x > pos.x + radius
-                    || grp.boundsMax.y < pos.y - radius || grp.boundsMin.y > pos.y + radius
-                    || grp.boundsMax.z < pos.z - 4.0f * radius - 2.0f || grp.boundsMin.z > pos.z + 2.0f * radius + 2.0f) {
-                    continue;
-                }
-
-                // Gather only the triangles under the caster instead of re-drawing the whole group.
-                // A WMO group can be an entire building floor -- tens of thousands of triangles --
-                // and redrawing that once per caster would cost more than the rest of the frame.
-                // The reference does the same thing (a receiver gather with a CPU cull) rather than
-                // re-submitting the receiver's own index buffer.
-                float lx = pos.x - w.origin.x;
-                float ly = pos.y - w.origin.y;
-
-                BuildWmoShadowGrid(grp);
-
-                s_shadowIndices.clear();
-
-                // Only the grid cells the footprint touches. That is the whole point of the grid:
-                // the previous form walked grp.indexCount for every caster, every frame.
-                if (grp.shadowCellsX > 0 && grp.shadowCellsY > 0) {
-                    int32_t c0 = static_cast<int32_t>((lx - radius - grp.shadowGridMinX) / grp.shadowCellSize);
-                    int32_t c1 = static_cast<int32_t>((lx + radius - grp.shadowGridMinX) / grp.shadowCellSize);
-                    int32_t r0 = static_cast<int32_t>((ly - radius - grp.shadowGridMinY) / grp.shadowCellSize);
-                    int32_t r1 = static_cast<int32_t>((ly + radius - grp.shadowGridMinY) / grp.shadowCellSize);
-
-                    c0 = c0 < 0 ? 0 : c0;
-                    r0 = r0 < 0 ? 0 : r0;
-                    c1 = c1 >= grp.shadowCellsX ? grp.shadowCellsX - 1 : c1;
-                    r1 = r1 >= grp.shadowCellsY ? grp.shadowCellsY - 1 : r1;
-
-                    for (int32_t cy = r0; cy <= r1; cy++) {
-                        for (int32_t cx = c0; cx <= c1; cx++) {
-                            for (uint32_t i : grp.shadowGrid[cy * grp.shadowCellsX + cx]) {
-                                uint16_t a = grp.indices[i];
-                                uint16_t b = grp.indices[i + 1];
-                                uint16_t c = grp.indices[i + 2];
-
-                                const C3Vector& pa = grp.positions[a];
-                                const C3Vector& pb = grp.positions[b];
-                                const C3Vector& pc = grp.positions[c];
-
-                                float minX = pa.x < pb.x ? (pa.x < pc.x ? pa.x : pc.x) : (pb.x < pc.x ? pb.x : pc.x);
-                                float maxX = pa.x > pb.x ? (pa.x > pc.x ? pa.x : pc.x) : (pb.x > pc.x ? pb.x : pc.x);
-                                float minY = pa.y < pb.y ? (pa.y < pc.y ? pa.y : pc.y) : (pb.y < pc.y ? pb.y : pc.y);
-                                float maxY = pa.y > pb.y ? (pa.y > pc.y ? pa.y : pc.y) : (pb.y > pc.y ? pb.y : pc.y);
-
-                                if (maxX < lx - radius || minX > lx + radius
-                                    || maxY < ly - radius || minY > ly + radius) {
-                                    continue;
-                                }
-
-                                s_shadowIndices.push_back(a);
-                                s_shadowIndices.push_back(b);
-                                s_shadowIndices.push_back(c);
-                            }
-                        }
-                    }
-                }
-
-                if (s_shadowIndices.empty()) {
-                    continue;
-                }
-
-                if (!matrixSet) {
-                    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&instanceT), 4);
-                    matrixSet = true;
-                }
-
-                float decal[4] = { lx, ly, inv, 1.0f };
-                GxShaderConstantsSet(GxSh_Pixel, 0, decal, 1);
-
-                GxPrimLockVertexPtrs(
-                    grp.vertexCount,
-                    grp.positions, sizeof(C3Vector),
-                    nullptr, 0,
-                    grp.colors, sizeof(CImVector),
-                    nullptr, 0,
-                    grp.texcoords, sizeof(C2Vector),
-                    nullptr, 0
-                );
-                GxDrawLockedElements(GxPrim_Triangles, static_cast<uint32_t>(s_shadowIndices.size()), s_shadowIndices.data());
-                GxPrimUnlockVertexPtrs();
-            }
-        }
-    }
+    // BlobShadowDrawWmo used to follow, putting the same decal on building floors. It was removed
+    // on 2026-09-26 because it had stopped being able to draw anything, silently, when the WMO draw
+    // moved to the reference pass.
+    //
+    // The decal works by re-drawing the receiver's own triangles and selecting with a depth-EQUAL
+    // test (GxRs_DepthFunc = 1 in BlobShadowsBegin), so it only lands where the re-draw reproduces
+    // the receiver's depth EXACTLY. For terrain that holds: the same terrain vertex program, the
+    // same c0..c3 constants, the same local vertices. For a WMO it no longer does --
+    // CWorldScene::RenderMapObjs draws a group through CShaderEffect with its world-view at c31 and
+    // the group's FILE-space vertices, where this pass used s_terrainVS at c0 over the stand-in's
+    // yawed, origin-rebased copy. Different vertices through a different program cannot agree in
+    // the low bits of z, so every pixel failed the EQUAL test.
+    //
+    // Bringing them back means the reference's own method, which is not this: FUN_007e4480 builds a
+    // texture PROJECTION matrix and lets the receiver draw itself with an extra stage, which is why
+    // the reference can shadow any receiver regardless of its shader. That is recorded as the
+    // divergence on FUN_007e4480 in overrides.json.
 }
 
 void BlobShadowsEnd() {
