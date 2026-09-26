@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 17:40 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 17:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4485 (=) (16.6%) | 950.7k (17.3%) |
-| &nbsp;&nbsp;ported | 3806 (=) | 773.1k |
+| mapped to a frozen function | 4512 (=) (16.7%) | 970.9k (17.7%) |
+| &nbsp;&nbsp;ported | 3833 (=) | 793.3k |
 | &nbsp;&nbsp;stub (unimplemented body) | 577 (=) | 124.9k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2308 (=) (8.6%)** | **303.3k (5.5%)** |
-| unmapped | 22470 | 4.43M |
+| **faithful** (linked, not stub, call order >= 80%) | **2311 (=) (8.6%)** | **314.7k (5.7%)** |
+| unmapped | 22443 | 4.41M |
 | world spine (reachable from OnFrameRender) | 5381, mapped 1518 (=) (28.2%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1537 (=) (27.2%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 936 (=) (20.7%)** | |
+| **render surface** (the modules that draw the world) | **4520, mapped 963 (=) (21.3%)** | |
 | frozen functions (src/, from PDB + source) | 13889, stubs 1698 | |
 
-Match evidence: annotated 2264, callgraph 244, callorder 111, cvar 31, handler 29, order 140, override 320, sticky 19, string 307, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2264, callgraph 244, callorder 111, cvar 31, handler 29, order 140, override 347, sticky 19, string 307, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 17:39 -- mapped 4485, ported 3806, stub 577, spine mapped 1518.
+Previous run: 2026-09-26 17:50 -- mapped 4512, ported 3833, stub 577, spine mapped 1518.
 
 ## Lua API coverage (binding tables)
 
@@ -137,7 +137,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 703 | 182.2k | 94 (13.4%) | 9.4% | 0 | 0 | 292 |
 | Player_C.cpp | 728 | 146.7k | 58 (8.0%) | 9.5% | 0 | 0 | 156 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
-| M2Scene.cpp | 283 | 101.1k | 133 (47.0%) | 57.2% | 7 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 150 (53.0%) | 59.3% | 7 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 17 (7.1%) | 9.2% | 0 | 0 | 1 |
 | GameUI.cpp | 487 | 95.7k | 231 (47.4%) | 47.7% | 78 | 0 | 70 |
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
@@ -159,7 +159,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.6% | 0 | 0 | 68 |
 | ScriptEvents.cpp | 225 | 46.9k | 171 (76.0%) | 72.7% | 27 | 0 | 26 |
 | LFGInfo.cpp | 225 | 46.5k | 21 (9.3%) | 7.4% | 3 | 0 | 6 |
-| M2Shared.cpp | 65 | 45.9k | 15 (23.1%) | 10.9% | 1 | 0 | 19 |
+| M2Shared.cpp | 65 | 45.9k | 25 (38.5%) | 50.4% | 1 | 0 | 19 |
 | CSimpleHyperlinkedFrame.cpp | 195 | 45.6k | 87 (44.6%) | 51.2% | 0 | 0 | 119 |
 | ScanDLLGlue.cpp | 183 | 44.9k | 22 (12.0%) | 8.3% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
@@ -565,7 +565,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ParticleFxRenderImpl` | world | 7232 | src/world/ParticleFx.cpp |
 | `GetPredAdvancedBy1x0` | m4vh263dec | 5923 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `std::_Matcher3<wchar_t,std::regex_traits<wchar_t>,wchar_t const *,void>::_Match_pat` | glue | 4820 |  |
-| `M2Init` | model | 4489 | src/model/M2Init.cpp |
 | `GetPredOutside` | m4vh263dec | 4486 | vendor/m4vh263dec/src/get_pred_outside.cpp |
 | `T1_Decoder_Parse_Charstrings` | lib/freetype-2.0 | 4304 | vendor/freetype-2.0.9/src/psaux/t1decode.c |
 | `CWorld::UpdateOutdoorLight` | world | 3948 | src/world/CWorld.cpp |
@@ -599,6 +598,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ltc_ecc_projective_add_point` | lib/stormlib-9.31 | 2210 | lib/squall/vendor/stormlib-9.31/src/libtomcrypt/src/pk/ecc/ltc_ecc_projective_add_point.c |
 | `statement` | lib/lua-5.1 | 2204 | vendor/lua-5.1.3/src/lparser.c |
 | `ValidateNameInternal` | glue | 2189 | src/glue/Character.cpp |
+| `PlayerNameRenderWorldText` | ui | 2162 | src/ui/game/PlayerName.cpp |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -640,12 +640,12 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00798da0 | `CWorldScene::RenderTerrain` | 83% | 31 | 50 | 38 | 10 | 0% | 1379 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
+| 00838b10 | `M2Init` | 100% | 6 | 89 | 63 | 129 | 14% | 1376 |
 | 007e4480 | `ShadowProjectBlob` | 58% | 33 | 47 | 10 | 8 | 0% | 1370 |
+| 008385a0 | `M2Init` | 100% | 6 | 89 | 63 | 129 | 6% | 1368 |
+| 00839ef0 | `M2Init` | 100% | 6 | 89 | 63 | 129 | 0% | 1368 |
 | 0079a870 | `CMap::Render` | 34% | 54 | 37 | 24 | 13 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
-| 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
-| 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
-| 0052a980 | `WowClientInit` | 14% | 59 | 24 | 23 | 2 | 0% | 1267 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -726,8 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 16:49 | 4477 (16.6%) | 2305 (8.6%) | 577 | 1511/5381 | 2924/2964 | 1380 |
-| 2026-09-26 16:50 | 4477 (16.6%) | 2305 (8.6%) | 577 | 1511/5381 | 2924/2964 | 1380 |
 | 2026-09-26 16:50 | 4477 (16.6%) | 2305 (8.6%) | 577 | 1511/5381 | 2924/2964 | 1380 |
 | 2026-09-26 16:51 | 4477 (16.6%) | 2305 (8.6%) | 577 | 1511/5381 | 2924/2964 | 1380 |
 | 2026-09-26 16:58 | 4480 (16.6%) | 2305 (8.6%) | 577 | 1514/5381 | 2924/2964 | 1380 |
@@ -751,6 +749,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 17:39 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:39 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:40 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
+| 2026-09-26 17:50 | 4512 (16.7%) | 2311 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
+| 2026-09-26 17:52 | 4512 (16.7%) | 2311 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

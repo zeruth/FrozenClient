@@ -2917,7 +2917,12 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 13: {
-                // TODO
+                // Set flag 8 on every RIBBON emitter (FUN_00824230 queues this type and, once
+                // loaded, walks m_shared->m_data->ribbons calling CM2Ribbon::SetFlag8 on each).
+                // CM2Ribbon::SetFlag8 exists here; the emitter ARRAY does not -- CM2Model has no
+                // m_ribbonEmitters, and nothing creates ribbons yet because unit movement is not
+                // ported. Adding the array before anything fills it would only put a loop over
+                // nothing behind this case.
                 break;
             }
 
