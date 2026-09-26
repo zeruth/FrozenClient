@@ -11,7 +11,6 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CGObject_C.hpp"
 #include "object/Types.hpp"
-#include "world/Terrain.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "gx/Device.hpp"

@@ -6,7 +6,7 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
-#include "world/Terrain.hpp"
+#include "world/Weather.hpp"
 #include "world/DayNight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
@@ -283,12 +283,20 @@ void CGWorldFrame::OnWorldRender() {
     // is the sky; clearing to the sky colour as well would double it.
     // The clear, the projection refresh and the terrain chunks are CMap::Render's now (the clear
     // colour logic above lives there); the map objects and liquids still come from the stand-in
-    // TerrainRender, and the sky follows them as in the reference.
+    // the view state, and the sky follows them as in the reference.
     CMap::Render(this->m_camera->Position(), CWorld::GetTickTimeSec());
-    TerrainRender();
+
+    // The frame's view-projection and fog flag, which the sky, the weather, the overhead icons and
+    // the particle passes all read. Built after CMap::Render so it sees this frame's transforms.
+    if (!CWorldScene::s_viewUpdated) {
+        CWorldScene::UpdateWorldView();
+    }
+
+    CWorldScene::s_viewUpdated = false;
+
     SkyRender();
 
-    // Frustum-cull entities: TerrainRender has refreshed the frustum, so only in-view objects
+    // Frustum-cull entities: UpdateWorldView has refreshed the frustum, so only in-view objects
     // animate and draw, matching the reference (the scene itself does no view culling). Server
     // positions are always valid, so there is no visibility/animation deadlock.
     auto objMgr = ClntObjMgrGetCurrent();
@@ -388,7 +396,7 @@ void CGWorldFrame::OnWorldRender() {
     auto scene = CWorld::GetM2Scene();
 
     {
-        // Fog the models with the same data-driven fog the terrain and WMOs use (TerrainRender has
+        // Fog the models with the same data-driven fog the terrain and WMOs use (UpdateWorldView has
         // already set the fog colour/distances); the guard keeps clear zones unfogged.
         bool useFog = CWorld::GetFogEnd() > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
 
@@ -433,8 +441,7 @@ void CGWorldFrame::OnWorldRender() {
             // terrain pass so terrain can sample the same frame's map; frozen cannot yet, because
             // Animate depends on the visibility the terrain pass establishes. The map is therefore
             // one frame behind what terrain will read in S4. Closing that gap means hoisting
-            // TerrainUpdateView and the visibility sweep above this block, which is why
-            // TerrainUpdateView was split out of TerrainRender.
+            // CWorldScene::UpdateWorldView above this block.
             // Gated on the shadow map quality, which is what the reference gates it on, and which
             // frozen also needs for a plainer reason: NOTHING SAMPLES THE MAP YET. MapShadowTexture
             // and MapShadowTexMatrix have no callers, and every bind point that would use them
@@ -560,7 +567,12 @@ void CGWorldFrame::OnWorldUpdate() {
 
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
-    TerrainUpdate(this->m_camera->Position());
+    // What the stand-in's per-frame update still did: refresh the outdoor light, and hand the
+    // camera to the two modules that build their geometry around it.
+    CWorld::UpdateOutdoorLight();
+    SkySetCameraState(this->m_camera->Position());
+    WeatherSetCameraPos(this->m_camera->Position());
+    CWorldScene::s_worldCameraPos = this->m_camera->Position();
 
     // Poll the server for questgiver status; nothing populates the overhead markers otherwise.
     QuestStatusUpdate(OsGetAsyncTimeMs());

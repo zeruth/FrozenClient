@@ -149,6 +149,22 @@ class CWorldScene {
         static float s_cameraLiquidDepth;                   // DAT_00cd8790
         // Which LiquidType the camera was in last frame, so a change can be noticed.
         static uint32_t s_cameraLiquidType;
+
+        // The frame's world view state. Built by UpdateWorldView, read by the sky, the weather, the
+        // overhead icons and the particle passes.
+        static C44Matrix s_viewNoTranslate;
+        static C44Matrix s_projNative;
+        static C44Matrix s_viewProjT;
+        static C3Vector s_worldCameraPos;
+        static bool s_fogActive;
+        static bool s_viewUpdated;
+        static bool s_terrainShaderTried;
+        static CGxShader* s_uiVertexShader[2];
+        static CGxShader* s_uiPixelShader;
+
+        static void UpdateWorldView();
+        static void EnsureUiShaders();
+        static void UiShaders(CGxShader*& vs, CGxShader*& ps);
         static C4Plane s_viewPlane;                         // DAT_00cd8f80: the plane through the camera facing the view
         static C4Plane s_viewPlane2d;                       // DAT_00cd8f90: the same with the direction flattened
         static CAaBox s_frustumBounds;                      // DAT_00cd8f44

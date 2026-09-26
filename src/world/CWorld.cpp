@@ -4,7 +4,7 @@
 #include "world/map/CMapEntity.hpp"
 #include "world/CWorldScene.hpp"
 #include <tempest/ColorConvert.hpp>
-#include "world/Terrain.hpp"
+#include "world/DayNight.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
@@ -956,7 +956,9 @@ void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapI
     CWorld::s_prevWindowMaxX = CMap::s_chunkWindowMaxX;
 
     CMap::Load(mapName, mapID);
-    TerrainLoad(mapName, mapID);
+    // The stand-in's own load hook is gone; what it did that still matters is release the
+    // sky's private scenes so the next map does not inherit the last one's skybox.
+    SkyRelease();
 
     // TODO the terrain, map objects, and doodads around the position are loaded here, and the
     // original reports their progress through the callback as they come in

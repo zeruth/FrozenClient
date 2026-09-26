@@ -194,3 +194,35 @@ bool CMapEntity::FloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector
 
     return false;
 }
+
+// Is a point inside an interior room?
+//
+// Same walk as TerrainInteriorAmbientAt below, minus the ambient and minus its logging, because
+// this one answers a game question rather than a lighting one and Lua can ask it at any time.
+//
+// DIVERGENCE worth knowing before trusting it. The reference does not search at all: the player
+// object carries its current area context and the answer is a field lookup. This walks every
+// loaded tile's buildings and tests containment geometrically, and the note on
+// TerrainInteriorAmbientAt records where that is known to be wrong -- an interior group's bounding
+// box can reach out over an open deck on a large single-WMO structure like Ebon Hold, so a point
+// standing outside can test as inside. The geometry test after the box narrows it but does not
+// close it.
+bool CMapEntity::PointIsIndoors(const C3Vector& pos) {
+    // The reference does not test containment in a room volume at all: it drops a segment and asks
+    // what surface is under you. QuerySegmentMapObjs already discards a slot whose group carries the
+    // exterior flag, so a non-zero answer IS "the floor below this point belongs to a room" -- which
+    // is the same question CWorldScene::UpdateCameraDef asks to decide the camera is indoors, with
+    // the same 1760-unit drop and maxT of 1.0.
+    //
+    // This replaces a stand-in containment test (a per-group spatial grid plus an above/below
+    // triangle count) whose imprecision the header used to warn about. Standing on an exterior
+    // bridge above a room now reads as outdoors, because the bridge is the nearer surface, which is
+    // the behaviour the reference has.
+    C3Vector start = pos;
+    C3Vector end = { pos.x, pos.y, pos.z - 1760.0f };
+
+    CMapObjDef* defs[2] = { nullptr, nullptr };
+    uint32_t groups[4] = { 0xffff, 0xffff, 0xffff, 0xffff };
+
+    return QuerySegmentMapObjs(start, end, 1.0f, defs, groups) != 0;
+}

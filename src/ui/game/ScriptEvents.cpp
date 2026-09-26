@@ -7,7 +7,7 @@
 #include "ui/game/CGRaidInfo.hpp"
 #include <cmath>
 #include "object/client/CGPlayer_C.hpp"
-#include "world/Terrain.hpp"
+#include "world/map/CMapEntity.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGItem_C.hpp"
@@ -2447,7 +2447,7 @@ static bool PlayerIndoorsState(bool& indoors) {
         return false;
     }
 
-    indoors = TerrainPointIsIndoors(player->GetPosition());
+    indoors = CMapEntity::PointIsIndoors(player->GetPosition());
 
     return true;
 }

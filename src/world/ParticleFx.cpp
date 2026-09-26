@@ -1,6 +1,6 @@
 #include "world/ParticleFx.hpp"
 #include <cstdio>
-#include "world/Terrain.hpp"
+#include "world/CWorldScene.hpp"
 #include "world/CWorld.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2Shared.hpp"
@@ -383,7 +383,7 @@ static void ParticleFxRenderImpl(CM2Model* only, const C3Vector& cameraPos, cons
                                  const C44Matrix& viewProjT, int32_t fog) {
     CGxShader* vs = nullptr;
     CGxShader* ps = nullptr;
-    TerrainUiShaders(vs, ps);
+    CWorldScene::UiShaders(vs, ps);
 
     if (!vs || !ps || !vs->Valid() || !ps->Valid() || s_models.empty()) {
         return;
@@ -646,7 +646,7 @@ static void ParticleFxRenderImpl(CM2Model* only, const C3Vector& cameraPos, cons
 // ref: FUN_00980f70
 void ParticleFxRender() {
     ParticleFxRenderImpl(nullptr, CWorld::GetCameraPos(), CWorld::GetCameraDir(),
-                         TerrainViewProjT(), TerrainFogActive() ? 1 : 0);
+                         CWorldScene::s_viewProjT, CWorldScene::s_fogActive ? 1 : 0);
 }
 
 void ParticleFxRenderModel(CM2Model* model, const C3Vector& cameraPos, const C3Vector& cameraDir,

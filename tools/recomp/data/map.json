@@ -44830,7 +44830,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 931,
+  "frozenSize": 936,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,

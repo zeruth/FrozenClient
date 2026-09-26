@@ -17,7 +17,7 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/QuestStatusCache.hpp"
 #include "world/CWorld.hpp"
-#include "world/Terrain.hpp"
+#include "world/CWorldScene.hpp"
 #include <tempest/Matrix.hpp>
 #include <tempest/Vector.hpp>
 
@@ -101,7 +101,7 @@ void OverheadIconsRender() {
 
     CGxShader* vs = nullptr;
     CGxShader* ps = nullptr;
-    TerrainUiShaders(vs, ps);
+    CWorldScene::UiShaders(vs, ps);
 
     if (!vs || !ps) {
         return;
@@ -142,7 +142,7 @@ void OverheadIconsRender() {
             GxRsSet(GxRs_VertexShader, vs);
             GxRsSet(GxRs_PixelShader, ps);
 
-            const C44Matrix& viewProjT = TerrainViewProjT();
+            const C44Matrix& viewProjT = CWorldScene::s_viewProjT;
             GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&viewProjT), 4);
         }
 

@@ -27,4 +27,8 @@ void WeatherRender();
 // The full-screen tint and caustic overlay while the camera is submerged.
 void UnderwaterOverlayRender();
 
+// Apply a weather change: effectType 1 rain, 2 snow, 3 sand/mist, anything else clear. Declared
+// here now that the stand-in header it lived in is gone.
+void TerrainSetWeather(int32_t effectType, float intensity, const float* color, const char* texture, bool abrupt);
+
 #endif

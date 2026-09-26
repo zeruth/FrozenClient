@@ -1,4 +1,7 @@
 #include "world/CWorldScene.hpp"
+#include "gx/Shader.hpp"
+#include "world/Weather.hpp"
+#include "world/DayNight.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
 #include "world/map/MapOcclusion.hpp"
@@ -12,7 +15,6 @@
 #include "model/CM2Model.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CGUnit_C.hpp"
-#include "world/Terrain.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapStaticEntity.hpp"
 #include "world/CWFrustum.hpp"
@@ -2383,4 +2385,81 @@ void CWorldScene::UpdateCameraDef() {
                                              groups[3]);
         }
     }
+}
+
+// ------------------------------------------------------------------------------------------------
+// The frame's world view state, and the UI shader pair the world's quad passes draw through. Both
+// lived in the stand-in renderer until 2026-09-26, purely because that was the file that ran first.
+// ------------------------------------------------------------------------------------------------
+
+C44Matrix CWorldScene::s_viewNoTranslate;
+C44Matrix CWorldScene::s_projNative;
+C44Matrix CWorldScene::s_viewProjT;
+C3Vector CWorldScene::s_worldCameraPos = { 0.0f, 0.0f, 0.0f };
+bool CWorldScene::s_fogActive = false;
+bool CWorldScene::s_viewUpdated = false;
+bool CWorldScene::s_terrainShaderTried = false;
+CGxShader* CWorldScene::s_uiVertexShader[2] = { nullptr, nullptr };
+CGxShader* CWorldScene::s_uiPixelShader = nullptr;
+
+// The UI shader pair, which is the only program this file still owns. It is what DayNight,
+// Weather, OverheadIcons and ParticleFx draw their quads through, via CWorldScene::UiShaders.
+//
+// The stand-in's own terrain, blob-decal and detail-doodad programs used to be built here too, in
+// D3D9 bytecode and again in ARB assembly. Nothing reads them any more: the chunks draw through
+// CMap::GetTerrainVertexShader's .bls permutations, the detail doodads through DetailDoodad's own
+// state, and the blob decal is gone. They were created on every map load and never bound.
+void CWorldScene::EnsureUiShaders() {
+    if (CWorldScene::s_terrainShaderTried) {
+        return;
+    }
+
+    CWorldScene::s_terrainShaderTried = true;
+
+    if (!g_theGxDevicePtr) {
+        return;
+    }
+
+    g_theGxDevicePtr->ShaderCreate(CWorldScene::s_uiVertexShader, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
+    g_theGxDevicePtr->ShaderCreate(&CWorldScene::s_uiPixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);
+}
+
+void CWorldScene::UiShaders(CGxShader*& vs, CGxShader*& ps) {
+    CWorldScene::EnsureUiShaders();
+    vs = CWorldScene::s_uiVertexShader[0];
+    ps = CWorldScene::s_uiPixelShader;
+}
+
+void CWorldScene::UpdateWorldView() {
+    // Water is baked per vertex, so it has to follow the light rather than the load. Rebake only
+    // Build exactly the transform the M2 scene uses: the eye-at-origin view translated by
+    // -cameraPos, times the native projection, transposed for the shader.
+    C44Matrix view;
+    GxXformView(view);
+    CWorldScene::s_viewNoTranslate = view; // camera at the origin; per-chunk matrices add their own translation
+
+    C3Vector invCameraPos = { -CWorldScene::s_worldCameraPos.x, -CWorldScene::s_worldCameraPos.y, -CWorldScene::s_worldCameraPos.z };
+    view.Translate(invCameraPos);
+
+    C44Matrix proj;
+    GxXformProjNative(proj);
+    CWorldScene::s_projNative = proj;
+
+    C44Matrix viewProj = view * proj;
+    CWorldScene::s_viewProjT = viewProj.Transpose();
+
+    // Data-driven fog: enable it whenever the fog begins within the view distance, so geometry
+    // between the fog start and the far plane is hazed even when the fog end lies beyond the far
+    // clip (linear fog handles the partial factor). Colours and distances come from Light.dbc.
+    float fogEnd = CWorld::GetFogEnd();
+    CWorldScene::s_fogActive = fogEnd > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
+
+    // The fog RENDER STATES are not set here any more. CMap::Render already calls
+    // CWorld::SetupFogRenderStates, and this block ran afterwards and overwrote its work with a
+    // worse conversion: it truncated each channel instead of CM2Lighting::FogColorByte's clamped
+    // rounding, never clamped above 1.0 -- so an overbright fog colour overflowed its byte and
+    // corrupted the packed value through the shift -- and left alpha at 0 where the reference sets
+    // 0xFF. Only the flag survives, which is all Weather asks for.
+
+    CWorldScene::s_viewUpdated = true;
 }

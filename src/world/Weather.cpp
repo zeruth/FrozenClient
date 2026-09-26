@@ -1,5 +1,4 @@
 #include "world/Weather.hpp"
-#include "world/Terrain.hpp"
 #include "console/CVar.hpp"
 #include "db/Db.hpp"
 #include <common/DataStore.hpp>
@@ -58,7 +57,6 @@ Weather::Weather() {
 }
 
 #include "world/Weather.hpp"
-#include "world/Terrain.hpp"
 #include "world/DayNight.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
@@ -92,7 +90,7 @@ CGxShader* s_uiVertexShader[1] = { nullptr };
 CGxShader* s_uiPixelShader = nullptr;
 
 void EnsureShaders() {
-    TerrainUiShaders(s_uiVertexShader[0], s_uiPixelShader);
+    CWorldScene::UiShaders(s_uiVertexShader[0], s_uiPixelShader);
 }
 
 } // namespace
@@ -415,10 +413,10 @@ void WeatherRender() {
     GxRsSet(GxRs_BlendingMode, GxBlend_Alpha);
     GxRsSet(GxRs_AlphaRef, 0);
     GxRsSet(GxRs_Lighting, 0);
-    GxRsSet(GxRs_Fog, TerrainFogActive() ? 1 : 0);
+    GxRsSet(GxRs_Fog, CWorldScene::s_fogActive ? 1 : 0);
     GxRsSet(GxRs_VertexShader, s_uiVertexShader[0]);
     GxRsSet(GxRs_PixelShader, s_uiPixelShader);
-    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&TerrainViewProjT()), 4);
+    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&CWorldScene::s_viewProjT), 4);
     GxRsSet(GxRs_Texture0, TextureGetGxTex(s_weatherTexture, 0, nullptr));
 
     GxPrimLockVertexPtrs(
@@ -495,7 +493,7 @@ void UnderwaterOverlayRender() {
     GxRsSet(GxRs_Fog, 0);
     GxRsSet(GxRs_VertexShader, s_uiVertexShader[0]);
     GxRsSet(GxRs_PixelShader, s_uiPixelShader);
-    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&TerrainViewProjT()), 4);
+    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&CWorldScene::s_viewProjT), 4);
     GxRsSet(GxRs_Texture0, tex ? TextureGetGxTex(tex, 0, nullptr) : (SkyWhiteTexture() ? TextureGetGxTex(SkyWhiteTexture(), 0, nullptr) : nullptr));
     GxPrimLockVertexPtrs(4, pos, sizeof(C3Vector), nullptr, 0, col, sizeof(CImVector), nullptr, 0, uv, sizeof(C2Vector), nullptr, 0);
     GxDrawLockedElements(GxPrim_Triangles, 6, idx);

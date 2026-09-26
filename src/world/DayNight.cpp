@@ -1,5 +1,4 @@
 #include "world/DayNight.hpp"
-#include "world/Terrain.hpp"
 #include "world/map/CMap.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/CWorld.hpp"
@@ -46,7 +45,7 @@ CGxShader* s_uiVertexShader[1] = { nullptr };
 CGxShader* s_uiPixelShader = nullptr;
 
 void EnsureShaders() {
-    TerrainUiShaders(s_uiVertexShader[0], s_uiPixelShader);
+    CWorldScene::UiShaders(s_uiVertexShader[0], s_uiPixelShader);
 }
 
 // --- Sky dome ---------------------------------------------------------------------------------

@@ -19,6 +19,10 @@ class CMapEntity : public CMapStaticEntity {
         // was the thing that owned a list of buildings to search.
         static bool FloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient);
 
+        // Is a world position inside an interior WMO room? Answered the reference's way, by
+        // dropping a segment and asking whether the surface below belongs to a non-exterior group.
+        static bool PointIsIndoors(const C3Vector& pos);
+
         // Member variables
         void* m_handler = nullptr;
         void* m_handlerParam = nullptr;
