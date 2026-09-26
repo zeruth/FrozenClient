@@ -269,7 +269,17 @@ void CGObject_C::SetModel(CM2Model* model) {
 }
 
 void CGObject_C::SetModelFinish(CM2Model* model) {
-    // TODO
+    // The reference registers the owner's callbacks from its own model-creation paths (the unit
+    // model builder and the mount builder both call FUN_00823fe0 and FUN_00824060). frozen attaches
+    // a model to an object in one place, so it happens here, for units only -- they are the only
+    // owner with handlers so far.
+    if (!model || !this->IsA(TYPE_UNIT)) {
+        return;
+    }
+
+    model->SetSequenceDoneCallback(CGUnit_C::OnSequenceDone, this->GetGUID());
+
+    // TODO the anim-event handler (FUN_00734a40 -> FUN_00732650) is not ported yet.
 }
 
 void CGObject_C::SetObjectLocked(int32_t locked) {

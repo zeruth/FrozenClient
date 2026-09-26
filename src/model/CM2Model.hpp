@@ -4,6 +4,7 @@
 #include "gx/Camera.hpp"
 #include "gx/Texture.hpp"
 #include "model/CM2Lighting.hpp"
+#include "util/GUID.hpp"
 #include <cstdint>
 #include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
@@ -28,6 +29,17 @@ struct M2ModelTextureWeight;
 struct M2SequenceFallback;
 struct M2TrackBase;
 struct CM2SequencePlayBack;
+
+class CM2Model;
+
+// The two callbacks a model's owner may register on it. The sequence-done one fires when a bone's
+// animation is replaced or runs out; the anim-event one fires on an authored event key. Both carry
+// the owner's GUID rather than a pointer, so a dead owner cannot be called through.
+typedef void (*M2SequenceDoneCallback)(CM2Model* model, uint32_t boneId, uint32_t animId,
+                                       int32_t a4, int32_t a5, WOWGUID owner);
+typedef void (*M2AnimEventCallback)(CM2Model* model, uint32_t boneId, uint32_t eventId,
+                                    uint32_t eventData, const C3Vector* position, uint32_t a6,
+                                    WOWGUID owner);
 
 struct CM2ModelCall {
     uint32_t type = -1;
@@ -152,6 +164,13 @@ class CM2Model {
         CM2Model** m_drawPrev = nullptr;
         CM2Model* m_drawNext = nullptr;
         uint32_t* m_loops = nullptr;
+        // ref +0x78 / +0x80: told when a bone sequence ends. CGUnit_C registers its own handler here
+        // so a unit can pick what follows the animation that just finished.
+        M2SequenceDoneCallback m_sequenceDoneCallback = nullptr;
+        WOWGUID m_sequenceDoneOwner = 0;
+        // ref +0x1c4 / +0x1c8: told about the authored animation events (footfalls, weapon swings).
+        M2AnimEventCallback m_animEventCallback = nullptr;
+        WOWGUID m_animEventOwner = 0;
         // The reference's +0x64: set while an effect owns this model's animation, cleared when that
         // effect goes away (CEffect's teardown and the unit's own reset both write 0 here).
         // CGUnit_C::SetAnimation refuses to touch a model whose animation is owned this way.
@@ -354,7 +373,16 @@ class CM2Model {
         void SetWorldTransform(const C3Vector& position, float orientation, float scale);
         void SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas);
         void Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId);
-        int32_t Sub8269C0(uint32_t boneId, uint16_t boneIndex);
+        // ref: FUN_008269c0
+        // Tell the owner that the sequence on `boneIndex` has ended, and say whether the model
+        // survived the call (it may release itself from inside the handler). Every path that
+        // replaces or clears a bone's sequence goes through this first.
+        int32_t NotifySequenceDone(uint32_t boneId, uint16_t boneIndex);
+
+        // ref: FUN_00823fe0
+        void SetSequenceDoneCallback(M2SequenceDoneCallback callback, WOWGUID owner);
+        // ref: FUN_00824060
+        void SetAnimEventCallback(M2AnimEventCallback callback, WOWGUID owner);
         void Sub826E60(uint32_t* a2, uint32_t* a3);
         void UnlinkFromAnimateList();
         void UnlinkFromAttachList();

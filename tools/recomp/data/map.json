@@ -41475,6 +41475,38 @@
   "refSize": 204,
   "status": "ported"
  },
+ "0073bff0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.533,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::OnAnimationFinished",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 159,
+  "status": "ported"
+ },
+ "0073c140": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::OnSequenceDone",
+  "frozenSize": 255,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 137,
+  "status": "ported"
+ },
  "00743320": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -41800,7 +41832,7 @@
    "src/object/client/cvehicle_c.cpp"
   ],
   "frozen": "CVehicle_C::TestFlag",
-  "frozenSize": 0,
+  "frozenSize": 43,
   "how": "annotated",
   "module": "UnitCombat_C.cpp",
   "refSize": 55,
@@ -54946,6 +54978,38 @@
   "refSize": 121,
   "status": "ported"
  },
+ "00823fe0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetSequenceDoneCallback",
+  "frozenSize": 103,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 126,
+  "status": "ported"
+ },
+ "00824060": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetAnimEventCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 129,
+  "status": "ported"
+ },
  "00824320": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -55363,17 +55427,17 @@
   "status": "ported"
  },
  "008269c0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.571,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
-  "frozen": "CM2Model::Sub8269C0",
-  "frozenSize": 0,
-  "how": "override",
+  "frozen": "CM2Model::NotifySequenceDone",
+  "frozenSize": 205,
+  "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 158,
   "status": "diverged"
@@ -56018,7 +56082,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnsetBoneSequence",
-  "frozenSize": 529,
+  "frozenSize": 568,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 618,
@@ -56034,7 +56098,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetBoneSequence",
-  "frozenSize": 1161,
+  "frozenSize": 1182,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,

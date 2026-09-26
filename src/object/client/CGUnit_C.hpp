@@ -224,6 +224,19 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // a candidate whose bit is clear still stops the chain, but writes nothing, which pins the
         // unit to what it is already playing.
 
+        // ref: FUN_0073c140
+        // The handler a unit registers on its model: the sequence on one of its bones has ended.
+        // Static, because the model calls it with the owner's GUID rather than a pointer.
+        static void OnSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t a4,
+                                   int32_t interrupted, WOWGUID owner);
+
+        // ref: FUN_0073bff0
+        // What OnSequenceDone does once it has the unit: clear the "playing X" bit the finished
+        // animation set, and -- when it ran to its end rather than being cut off -- hand the unit
+        // back its 0x10/0x20/0x40 permissions so the chooser may pick what follows.
+        void OnAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID,
+                                 int32_t interrupted);
+
         // ref: FUN_0073ac30
         void UpdateAnimation(uint32_t setFlags, uint32_t allow);
 

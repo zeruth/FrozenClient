@@ -3469,7 +3469,7 @@ LABEL_30:
     }
 
     if (this->m_shared->m_data->sequences[v16].flags & 0x20) {
-        if (this->Sub8269C0(boneId, boneIndex)) {
+        if (this->NotifySequenceDone(boneId, boneIndex)) {
             this->CancelDeferredSequences(boneIndex, a8 != 0);
 
             auto& modelBone = this->m_bones[boneIndex];
@@ -3496,7 +3496,7 @@ LABEL_30:
 int32_t CM2Model::ApplySequencePlayBack(uint16_t sequenceIndex, CM2SequencePlayBack* playback) {
     auto data = this->m_shared->m_data;
 
-    if (!this->Sub8269C0(data->bones[playback->boneIndex].boneId, playback->boneIndex)) {
+    if (!this->NotifySequenceDone(data->bones[playback->boneIndex].boneId, playback->boneIndex)) {
         return 0;
     }
 
@@ -3918,8 +3918,90 @@ void CM2Model::Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId) {
 // no such callback member yet, so the whole body is skipped and 1 -- "the model is still here,
 // carry on" -- is the correct answer rather than a placeholder. It stops being correct the day
 // the callback is ported; UnsetBoneSequence is the caller that depends on it.
-int32_t CM2Model::Sub8269C0(uint32_t boneId, uint16_t boneIndex) {
-    return 1;
+// ref: FUN_008269c0
+int32_t CM2Model::NotifySequenceDone(uint32_t boneId, uint16_t boneIndex) {
+    auto callback = this->m_sequenceDoneCallback;
+
+    if (!callback) {
+        return 1;
+    }
+
+    auto& modelBone = this->m_bones[boneIndex];
+
+    // Nothing to report when the bone holds no sequence, or holds one already parked on its last
+    // frame -- that one was reported when it parked.
+    if (modelBone.sequence.uint8 == 0xFFFF || modelBone.sequence.uintA != 0) {
+        return 1;
+    }
+
+    auto data = this->m_shared->m_data;
+    auto& bone = data->bones[boneIndex];
+
+    // Only a bone with an id, or the root, reports; and the root reports as id -1.
+    if (bone.boneId == 0xFFFFFFFF && boneIndex != 0) {
+        return 1;
+    }
+
+    uint32_t reportId = (bone.parentIndex == 0xFFFF) ? 0xFFFFFFFF : boneId;
+
+    this->AddRef();
+    callback(this, reportId, modelBone.uint90, 1, 0, this->m_sequenceDoneOwner);
+
+    return this->Release() != 0;
+}
+
+// ref: FUN_00823fe0
+void CM2Model::SetSequenceDoneCallback(M2SequenceDoneCallback callback, WOWGUID owner) {
+    if (this->m_sequenceDoneCallback == callback && this->m_sequenceDoneOwner == owner) {
+        return;
+    }
+
+    this->m_sequenceDoneOwner = owner;
+    this->m_sequenceDoneCallback = callback;
+
+    if (!this->m_loaded) {
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    // The per-frame callback sweep is only worth running while somebody is listening: a model with a
+    // single sequence never finishes one, and one with no events has nothing to report.
+    if (callback) {
+        this->m_flag400000 = 1;
+
+        return;
+    }
+
+    if (data->sequences.Count() < 2 && (!this->m_animEventCallback || data->events.Count() == 0)) {
+        this->m_flag400000 = 0;
+    }
+}
+
+// ref: FUN_00824060
+void CM2Model::SetAnimEventCallback(M2AnimEventCallback callback, WOWGUID owner) {
+    if (this->m_animEventCallback == callback && this->m_animEventOwner == owner) {
+        return;
+    }
+
+    this->m_animEventOwner = owner;
+    this->m_animEventCallback = callback;
+
+    if (!this->m_loaded) {
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    if (callback && data->events.Count() != 0) {
+        this->m_flag400000 = 1;
+
+        return;
+    }
+
+    if (!this->m_sequenceDoneCallback && data->sequences.Count() < 2) {
+        this->m_flag400000 = 0;
+    }
 }
 
 void CM2Model::Sub826E60(uint32_t* a2, uint32_t* a3) {
@@ -4062,7 +4144,7 @@ void CM2Model::UnsetBoneSequence(uint32_t boneId, int32_t a3, int32_t a4) {
         return;
     }
 
-    if (!this->Sub8269C0(boneId, boneIndex)) {
+    if (!this->NotifySequenceDone(boneId, boneIndex)) {
         return;
     }
 

@@ -3998,3 +3998,60 @@ void CGUnit_C::UpdateAnimation(uint32_t setFlags, uint32_t allow) {
         this->m_lastStandState = this->m_unit->bytes1 & 0xFF;
     }
 }
+
+// ref: FUN_0073bff0
+void CGUnit_C::OnAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID,
+                                   int32_t interrupted) {
+    if (this->m_deferredAnimID == animID) {
+        this->m_deferredAnimID = -1;
+    }
+
+    // Clear the "currently playing X" bits the finished animation set (see m_animFlags): 192 LiftOff
+    // and 200 clear the airborne bit, 121 and 37 clear their own.
+    if (animID == 0xC0 || animID == 200) {
+        this->m_animFlags &= ~0x40000;
+    }
+
+    if (animID == 0x79) {
+        this->m_animFlags &= ~0x80000;
+    } else if (animID == 0x25) {
+        this->m_animFlags &= ~0x800000;
+    }
+
+    if (interrupted == 0) {
+        // The animation ran to its end. While deciding what follows it the unit is allowed only a
+        // mount change (0x10) -- that is what stops the follow-up from being overridden mid-choice --
+        // and once the choice is made all three of 0x10/0x20/0x40 come back.
+        this->m_animFlags = (this->m_animFlags & ~0x60) | 0x10;
+
+        // The reference then calls FUN_0073b510 here (1392 bytes), which picks the animation that
+        // follows the one that just ended. It is not ported, so the follow-up is whatever the next
+        // UpdateAnimation chooses; the flag handling around it, which is what unblocks the chooser,
+        // is here.
+
+        this->m_animFlags |= 0x70;
+    } else if (animID == 0x27 || animID == 0xBB) {
+        // A jump that was cut short is no longer in progress.
+        this->m_animFlags &= ~0x4;
+    }
+}
+
+// ref: FUN_0073c140
+void CGUnit_C::OnSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t a4,
+                              int32_t interrupted, WOWGUID owner) {
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(owner, TYPE_UNIT, __FILE__, __LINE__));
+
+    if (!unit) {
+        return;
+    }
+
+    // A mounted unit whose vehicle animates through this bone lets the vehicle handle it instead.
+    // FUN_00757280, the vehicle-side handler, is not ported, so that case is simply not handled --
+    // it cannot arise while nothing creates a CVehicle_C.
+    if (unit->m_mountModel && unit->m_vehicle && unit->m_vehicle->m_rec
+        && unit->m_vehicle->TestFlag(boneId)) {
+        return;
+    }
+
+    unit->OnAnimationFinished(model, boneId, static_cast<int32_t>(animID), interrupted);
+}
