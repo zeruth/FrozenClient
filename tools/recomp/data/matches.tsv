@@ -1307,6 +1307,7 @@ addr	how	frozen	evidence
 0052e1b0	table	Script_SetPartyAssignment	binding "SetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052e400	table	Script_ClearPartyAssignment	binding "ClearPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052e420	table	Script_ChangePlayerDifficulty	binding "ChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
+0052e570	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00737ef0=CGUnit_C::ApplySequence
 005302b0	string	Script_Stub_FlagTutorial	score 0.50 shared FlagTutorial
 00530ec0	table	Script_BNConnected	binding "BNConnected" in s_ScriptFunctions ~ table 00accae8
 00530f20	table	Script_IsBNLogin	binding "IsBNLogin" in s_ScriptFunctions ~ table 00accae8
@@ -2561,6 +2562,7 @@ addr	how	frozen	evidence
 00735820	override	CGUnit_C::SetBoneSequence	
 00735a60	override	CGUnit_C::UnsetBoneSequence	
 00735cc0	override	CGUnit_C::SetBoneSequenceSpeed	
+00737ef0	annotated	CGUnit_C::ApplySequence	tag in src/object/client/CGUnit_C.cpp
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00743320	annotated	CGUnit_C::SetFlag21	tag in src/object/client/CGUnit_C.cpp
 007487e0	annotated	CVehiclePassenger_C::IsRidingLiveVehicle	tag in src/object/client/CVehiclePassenger_C.cpp

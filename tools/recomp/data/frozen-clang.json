@@ -95775,6 +95775,62 @@
 "refs": [],
 "line": 2323
 },
+"CGUnit_C::ApplySequence": {
+"files": [
+"src/object/client/cgunit_c.cpp"
+],
+"callseq": [
+"IsSpellCastOrReadySpellAnimation",
+"IsCombatOrReadyAnimation",
+"WowClientDB<AnimationDataRec>::GetRecord",
+"IsDeathAnimation",
+"CM2Model::GetSequenceInfo",
+"CM2Model::GetBoneSequenceSpeed",
+"fabs",
+"CGUnit_C::SetBoneSequenceSpeed",
+"CGUnit_C::SetBoneSequence",
+"GetAnimationBehavior",
+"IsAnimationBehavior466To468Or472",
+"CMovementShared::GetMoveFlags",
+"IsCombatAnimation",
+"IsSpellCastAnimation"
+],
+"strings": [],
+"consts": [
+"0",
+"0x18",
+"0x1CA",
+"0x1E",
+"0x2000",
+"0x20000",
+"0x2000000",
+"0x2201000",
+"0x27",
+"0x4",
+"0x400",
+"0x40000",
+"0x400000",
+"0x4000000",
+"0x79",
+"0x7F",
+"0x8",
+"0x80000",
+"0xC0",
+"0xC1",
+"0xC8",
+"0xC9",
+"0xFFFFFFFF",
+"1",
+"1.0f",
+"2.3841858e-07f",
+"3"
+],
+"branches": 23,
+"stub": false,
+"lines": 103,
+"refs": [],
+"line": 2340
+},
 "MovementWrapAngle": {
 "files": [
 "src/object/client/cmovement_c.cpp"

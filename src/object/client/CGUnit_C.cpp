@@ -2256,7 +2256,7 @@ bool CGUnit_C::ReplaceIdleWithHover(M2BoneSequenceState* state) const {
 
 // ref: FUN_00735820
 void CGUnit_C::SetBoneSequence(CM2Model* model, uint32_t boneId, uint32_t animID, uint32_t variation,
-                               uint32_t blendTime, float speed, int32_t a8, int32_t a9,
+                               uint32_t time, float speed, int32_t a8, int32_t a9,
                                int32_t fromPassenger) {
     if (!model) {
         return;
@@ -2273,13 +2273,13 @@ void CGUnit_C::SetBoneSequence(CM2Model* model, uint32_t boneId, uint32_t animID
         a8 = 0;
     }
 
-    model->SetBoneSequence(boneId, animID, variation, blendTime, speed, a8, a9);
+    model->SetBoneSequence(boneId, animID, variation, time, speed, a8, a9);
 
     M2BoneSequenceState state = {};
 
     if (model->IsLoaded(0, 0) && model->HasBone(boneId)
         && (model->GetBoneSequenceState(boneId, &state), state.uint90 == animID)
-        && blendTime > 0 && std::fabs(speed) > 0.001f && state.finished) {
+        && time > 0 && std::fabs(speed) > 0.001f && state.finished) {
         // The model is already holding this sequence at its end: let it go rather than restart it.
         // Bone 0x1a is the one exception -- it is put back on its idle instead of released.
         if (boneId == 0xFFFFFFFF || boneId == 0x1A) {
@@ -2334,4 +2334,110 @@ void CGUnit_C::SetBoneSequenceSpeed(CM2Model* model, uint32_t boneId, float spee
     model->SetBoneSequenceSpeed(boneId, speed);
 
     // Passenger propagation goes here (reference 0x735d3e).
+}
+
+// ref: FUN_00737ef0
+void CGUnit_C::ApplySequence(M2BoneSequenceState* state, uint32_t currentAnimID, int32_t upperBody,
+                             int32_t targetAnimID, int32_t a8, int32_t skipInfoCheck) {
+    uint32_t animID = state->uint90;
+
+    bool busy = this->m_unit->channelSpell != 0 || (this->m_animFlags & 0x400) != 0;
+
+    // A unit that is attacking, channelling, casting or standing ready restarts these sequences from
+    // their first variation instead of keeping whichever one it was showing: the behaviour range the
+    // reference tests inline here is IsReadyAnimation's, and 0 is Stand.
+    if (this->m_attackTarget || busy || IsSpellCastOrReadySpellAnimation(targetAnimID)
+        || IsCombatOrReadyAnimation(targetAnimID)) {
+        auto rec = g_animationDataDB.GetRecord(static_cast<int32_t>(animID));
+
+        if ((rec && rec->m_behaviorID > 0x18 && rec->m_behaviorID < 0x1E) || animID == 0) {
+            state->uint94 = 0;
+        }
+    }
+
+    if (IsDeathAnimation(static_cast<int32_t>(animID))) {
+        state->speed = 1.0f;
+    }
+
+    if (!(this->m_stateFlags & 0x80000)) {
+        a8 = 0;
+    }
+
+    // The variation the state carries may belong to a different sequence than the one the fallback
+    // chain lands on; when it does, start at variation 0 rather than an index that is not there.
+    if (skipInfoCheck == 0 && animID != 0xFFFFFFFF && state->uint94 != 0xFFFFFFFF) {
+        M2SequenceInfo info = {};
+        this->m_model->GetSequenceInfo(animID, 0, info);
+
+        if (info.sequenceId != animID) {
+            state->uint94 = 0;
+        }
+    }
+
+    uint32_t boneId = upperBody ? this->m_upperBodyBoneId : 0xFFFFFFFF;
+
+    // Already playing it: re-time rather than restart, and do not even do that when the speed is
+    // where it should be.
+    if (currentAnimID == animID) {
+        if (std::fabs(this->m_model->GetBoneSequenceSpeed(boneId) - state->speed) < 2.3841858e-07f) {
+            return;
+        }
+
+        this->SetBoneSequenceSpeed(this->m_model, boneId, state->speed, 0);
+
+        return;
+    }
+
+    if (animID == 0xFFFFFFFF) {
+        return;
+    }
+
+    if (upperBody != 0 && this->m_upperBodyBoneId == 0xFFFFFFFF) {
+        return;
+    }
+
+    this->SetBoneSequence(this->m_model, boneId, animID, state->uint94,
+                          static_cast<uint32_t>(state->currentTime), state->speed, a8, 1, 0);
+
+    // Record what class of animation is now playing, by behaviour id.
+    int32_t behavior = GetAnimationBehavior(static_cast<int32_t>(animID));
+
+    if (behavior < 0xC1) {
+        if (behavior == 0xC0) {
+            this->m_animFlags |= 0x40000;
+        } else if (behavior == 0x27) {
+            this->m_animFlags |= 0x4;
+        } else if (behavior == 0x79) {
+            this->m_animFlags |= 0x80000;
+        } else if (behavior == 0x7F) {
+            this->m_animFlags |= 0x8;
+        }
+    } else if (behavior > 0xC9) {
+        if (static_cast<uint32_t>(behavior) - 0x1CA < 3) {
+            this->m_animFlags |= 0x2000000;
+        }
+    } else if (behavior == 0xC9) {
+        this->m_animFlags |= 0x400000;
+    } else if (behavior == 0xC8) {
+        this->m_animFlags |= 0x40000;
+    }
+
+    // Dying in the air at the fly tier while actually airborne (flying, swimming or falling far).
+    if (IsAnimationBehavior466To468Or472(static_cast<int32_t>(animID)) && this->m_animTier == 3
+        && (this->m_localMove.GetMoveFlags() & 0x2201000)) {
+        this->m_animFlags |= 0x4000000;
+    } else {
+        this->m_animFlags &= ~0x4000000;
+    }
+
+    uint32_t flags = this->m_animFlags;
+
+    if (flags & 0x20000) {
+        if (!IsCombatAnimation(static_cast<int32_t>(animID))
+            && !IsSpellCastAnimation(static_cast<int32_t>(animID))) {
+            return;
+        }
+
+        this->m_animFlags = flags | 0x2000;
+    }
 }

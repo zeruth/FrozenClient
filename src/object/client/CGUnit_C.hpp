@@ -176,7 +176,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // restarted; bone 0x1a is put back on its idle rather than released. `fromPassenger` marks
         // the recursive call a vehicle makes on its riders.
         void SetBoneSequence(CM2Model* model, uint32_t boneId, uint32_t animID, uint32_t variation,
-                             uint32_t blendTime, float speed, int32_t a8, int32_t a9,
+                             uint32_t time, float speed, int32_t a8, int32_t a9,
                              int32_t fromPassenger);
 
         // ref: FUN_00735a60
@@ -188,6 +188,15 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // Re-time the sequence on `boneId` without restarting it.
         void SetBoneSequenceSpeed(CM2Model* model, uint32_t boneId, float speed,
                                   int32_t fromPassenger);
+
+        // ref: FUN_00737ef0
+        // Put one of the three bone sequences a unit animates through onto its model: fix up the
+        // variation the state carries, note what class of animation is now playing in m_animFlags,
+        // and then either re-time the sequence the bone already holds or start the new one.
+        // `targetAnimID` is the animation the selector is heading for, which decides whether the
+        // variation is reset; `skipInfoCheck` skips the variation-against-sequence check.
+        void ApplySequence(M2BoneSequenceState* state, uint32_t currentAnimID, int32_t upperBody,
+                           int32_t targetAnimID, int32_t a8, int32_t skipInfoCheck);
 
         // ref: FUN_0071df30
         // Turns a bone sequence that resolved to a grounded idle -- 0 Stand, 8 StandWound or 25
@@ -244,6 +253,15 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // 0x2000000 behaviours 458 to 460, 0x4000000 an airborne death at the fly tier, 0x80000
         // behaviour 121. 0x8000000 suppresses the blend on every sequence the unit sets.
         uint32_t m_animFlags = 0;
+        // Who the unit is swinging at (reference +0xa20), zero when it is not attacking. The
+        // reference has a one-line accessor for "is attacking" over this pair of GUIDs alone
+        // (FUN_0071af90, 17 call sites).
+        WOWGUID m_attackTarget = 0;
+        // The unit's second state word (reference +0xa30). Only one of its bits is read by the code
+        // ported so far: 0x80000, which has to be set for a sequence to keep the blend flag its
+        // caller asked for. The rest are written from a dozen places in Unit_C.cpp and are not
+        // identified yet.
+        uint32_t m_stateFlags = 0;
         // The unit's ride, while it is aboard a vehicle (reference +0xf60). Null means not riding,
         // which is always, until something creates one.
         CVehiclePassenger_C* m_vehiclePassenger = nullptr;
