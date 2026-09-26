@@ -2107,9 +2107,8 @@
     "note": "Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py. frozen's body is a bare return; the reference is 311 bytes that clear five floats on the stack and walk frame rectangles, so it genuinely computes occlusion. The link itself looks right (the name and the shape agree); only the claim that it was ported was wrong."
   },
   "008269c0": {
-    "frozen": "CM2Model::Sub8269C0",
-    "status": "diverged",
-    "note": "frozen returns a constant 1 and that is the correct answer, not a placeholder. The reference only does anything when the model's sequence-finished callback pointer is set: it raises the refcount, invokes the callback, releases, and returns 0 if that release destroyed the model. frozen has no such callback member yet, so \"the model is still here, carry on\" is right. Recorded as diverged rather than stub on 2026-09-23 so tools/audit-ported.py stops reporting it; it stops being correct the day the callback is ported, and UnsetBoneSequence is the caller that depends on it."
+    "frozen": "CM2Model::NotifySequenceDone",
+    "note": "Ported 2026-09-26. The 2026-09-23 note here recorded it as diverged because frozen returned a constant 1 with no callback member, and said in as many words that it would stop being correct the day the callback was ported. It has been: the callback slots, their setters (FUN_00823fe0/FUN_00824060) and the unit-side handlers are in, and this function now raises the refcount, invokes the handler and reports whether the release destroyed the model. Renamed from Sub8269C0 at the same time."
   },
   "00492e40": {
     "status": "unlinked",
@@ -3125,5 +3124,9 @@
   "007385c0": {
     "frozen": "CGUnit_C::SetAnimation",
     "note": "Ported whole, and the 63% call-order score is mostly an artifact rather than missing behaviour. The reference INLINED FUN_00735a60 at four sites here, so its call list carries that function's seven calls four times over (IsRidingLiveVehicle, IsLoaded, BoneHasParent, UnsetBoneSequence, HasStateBits, ClntObjMgrObjectPtr, IsRidingLiveVehicle); frozen calls CGUnit_C::UnsetBoneSequence instead, which is what the original source wrote, so 28 of the reference's calls read as missing. Genuinely absent are three calls whose callees are not ported: FUN_00715ba0 (the weapon-trail release, which needs the two emitters at unit +0xb50), FUN_00738180 (the swing sound and trail trigger) and FUN_0071e5b0 (the object-effect refresh, which needs the ObjectEffect module). Each is marked at its spot in the source. Also missing, as in the appliers, is the walk that repeats a change on every passenger. Two inlined AnimationDataRec row lookups round out the difference. The branch layout was matched to the reference's (mounted case first), which moved the score from 58% to 63%."
+  },
+  "00831fc0": {
+    "frozen": "CM2Model::SequenceFinished",
+    "note": "Confirmed by --propose (score 14.9, clearly ahead) and then by reading both. The 71% call-order score is structural: the reference takes one record off a deferred queue that FUN_008321e0 flushes, so its list carries the queue plumbing and an inline indirect call where frozen calls its own m_sequenceDoneCallback; frozen takes the four values as arguments. Same computation. What matters is that the natural-end notification is now here at all: it is the only path that reports interrupted=0, which is what hands a unit back its animation permissions. Verified at runtime 2026-09-26 -- 25 units reported m_animFlags reaching 0x70 from real sequence completions."
   }
 }

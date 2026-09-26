@@ -3475,7 +3475,7 @@ addr	how	frozen	evidence
 008267e0	annotated	CM2Model::GetBoneUint90	tag in src/model/CM2Model.cpp
 00826870	annotated	CM2Model::GetBoneSequenceId	tag in src/model/CM2Model.cpp
 00826930	annotated	CM2Model::GetBoneSequenceSpeed	tag in src/model/CM2Model.cpp
-008269c0	annotated	CM2Model::NotifySequenceDone	tag in src/model/CM2Model.cpp
+008269c0	override	CM2Model::NotifySequenceDone	
 00826a60	annotated	CM2Model::BoneHasParent	tag in src/model/CM2Model.cpp
 00826b00	callgraph	CM2Model::SetupBoneSequence	only unmatched callee of 00826c40=CM2Model::SetPrimaryBoneSequence, 00826dd0=CM2Model::SetSecondaryBoneSequence
 00826c40	override	CM2Model::SetPrimaryBoneSequence	
@@ -3515,6 +3515,7 @@ addr	how	frozen	evidence
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
 00831e20	override	CM2Model::CancelAllDeferredSequences	
 00831ec0	override	CM2Model::CancelDeferredSequences	
+00831fc0	override	CM2Model::SequenceFinished	
 00832640	override	CM2Model::~CM2Model	
 00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	

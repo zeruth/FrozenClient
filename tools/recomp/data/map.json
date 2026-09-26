@@ -55469,10 +55469,10 @@
   ],
   "frozen": "CM2Model::NotifySequenceDone",
   "frozenSize": 205,
-  "how": "annotated",
+  "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 158,
-  "status": "diverged"
+  "status": "ported"
  },
  "00826a60": {
   "branchRatio": 0.5,
@@ -56086,6 +56086,22 @@
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 246,
+  "status": "ported"
+ },
+ "00831fc0": {
+  "branchRatio": 0.882,
+  "constOverlap": 0.074,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SequenceFinished",
+  "frozenSize": 851,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 529,
   "status": "ported"
  },
  "00832640": {

@@ -3135,9 +3135,19 @@ int32_t CM2Model::ProcessCallbacks() {
     return 1;
 }
 
-// One bone sequence has just run out. Roll the next variation of the same animation and start it,
-// carrying the overshoot so the new sequence begins where the old one actually ended rather than at
-// the frame boundary.
+// ref: FUN_00831fc0
+// One bone sequence has just run out: tell the owner, then roll the next variation of the same
+// animation and start it, carrying the overshoot so the new sequence begins where the old one
+// actually ended rather than at the frame boundary.
+//
+// The reference takes one record off a deferred queue instead of four arguments (the queue is
+// flushed by FUN_008321e0, which also carries the animation-event records); the computation is the
+// same and the record's fields are these four plus the callback and its owner.
+//
+// THE CALLBACK HERE IS THE ONE THAT REPORTS A NATURAL END. NotifySequenceDone reports a sequence
+// being REPLACED and passes 1 for `interrupted`; this passes 0, which is what lets the owner treat
+// the animation as finished -- for a unit, that is what hands back its permission to choose the
+// next one (CGUnit_C::OnAnimationFinished).
 void CM2Model::SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas) {
     auto data = this->m_shared->m_data;
 
@@ -3178,9 +3188,23 @@ void CM2Model::SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t
     auto& sequence = data->sequences[seqIndex];
 
     if (sequence.flags & 0x1) {
-        // Plays once and holds its last frame -- nothing follows it.
+        // Plays once and holds its last frame.
         modelBone.sequence.uintA = 1;
+    }
 
+    // The owner is told even for a play-once sequence -- it has still ended -- and may hand the
+    // bone something else from inside the handler, so the match is re-checked after.
+    if (this->m_sequenceDoneCallback) {
+        this->m_sequenceDoneCallback(this, boneId, modelBone.uint90, 0, static_cast<int32_t>(overshoot),
+                                    this->m_sequenceDoneOwner);
+
+        if (modelBone.sequence.uint8 != seqIndexWas || modelBone.sequence.uintC != startTimeWas) {
+            return;
+        }
+    }
+
+    if (sequence.flags & 0x1) {
+        // Nothing follows a play-once sequence.
         return;
     }
 
