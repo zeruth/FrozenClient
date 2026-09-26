@@ -18,14 +18,6 @@ void TerrainUpdate(const C3Vector& cameraPos);
 void TerrainUpdateView();
 
 void TerrainRender();
-// Blob shadows: call Begin once per frame after the opaque world, Draw per entity, then End.
-void BlobShadowsBegin();
-void BlobShadowDraw(const C3Vector& pos, float radius);
-// Whether one model should cast a blob at all, and the blob it casts. Every caster goes through
-// here: the reference applies no distance cap and no size floor, because the box it is handed
-// decides everything. ref: FUN_007e49e0
-void BlobShadowDrawCaster(CM2Model* model, const CAaBox& box);
-void BlobShadowsEnd();
 // Weather: state from SMSG_WEATHER (effectType 1 rain, 2 snow, 3 sand/mist, else clear); the
 // particle field is simulated and drawn around the camera in the transparent block.
 void TerrainSetWeather(int32_t effectType, float intensity, const float* color, const char* texture, bool abrupt);

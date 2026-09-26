@@ -1943,7 +1943,12 @@ void CWorldScene::DrawEntityShadows() {
                 M2SequenceInfo info;
 
                 entity->m_model->GetSequenceInfo(0, 0, info);
-                BlobShadowDrawCaster(entity->m_model, info.extent);
+
+                // TODO the decal itself: FUN_007e49e0 picks the footprint from this box and
+                // FUN_007e4480 projects it onto the receiver. Frozen's stand-in decal was deleted
+                // once the receiver's base pass moved to CMapRenderChunk and the depth-EQUAL trick
+                // it relied on stopped matching; see the note at the call site in CGWorldFrame.
+                (void)info;
             }
 
             entity = next;
@@ -1957,8 +1962,8 @@ void CWorldScene::DrawEntityShadows() {
         if (entity->m_flags7c & 0x800) {
             CAaBox shadowBox;
 
-            BlobShadowDrawCaster(entity->m_model,
-                                 static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox));
+            // Same TODO as above: the box is what the reference's decal draw takes.
+            (void)static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox);
         }
 
         // TODO the object's own per-frame hook, vtable slot 29, runs here.

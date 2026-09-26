@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 09:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 10:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4368 (=) (16.2%) | 920.6k (16.8%) |
-| &nbsp;&nbsp;ported | 3687 (=) | 741.7k |
+| mapped to a frozen function | 4366 (-1) (16.2%) | 919.1k (16.8%) |
+| &nbsp;&nbsp;ported | 3686 (=) | 741.6k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2232 (=) (8.3%)** | **290.3k (5.3%)** |
-| unmapped | 22587 | 4.45M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1422 (=) (26.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1440 (=) (25.5%) | |
+| **faithful** (linked, not stub, call order >= 80%) | **2231 (=) (8.3%)** | **290.2k (5.3%)** |
+| unmapped | 22589 | 4.46M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1420 (-1) (26.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1438 (-1) (25.5%) | |
 | **render surface** (the modules that draw the world) | **4520, mapped 854 (=) (18.9%)** | |
-| frozen functions (src/, from PDB + source) | 13802, stubs 1700 | |
+| frozen functions (src/, from PDB + source) | 13785, stubs 1700 | |
 
-Match evidence: annotated 2166, callgraph 240, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2165, callgraph 240, callorder 111, cvar 32, handler 29, order 140, override 306, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 09:46 -- mapped 4368, ported 3687, stub 578, spine mapped 1422.
+Previous run: 2026-09-26 10:02 -- mapped 4367, ported 3686, stub 578, spine mapped 1421.
 
 ## Lua API coverage (binding tables)
 
@@ -217,7 +217,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | KnowledgeBase.cpp | 119 | 17.8k | 2 (1.7%) | 0.1% | 1 | 0 | 0 |
 | MailInfo.cpp | 77 | 17.8k | 13 (16.9%) | 6.2% | 2 | 0 | 7 |
 | AddOns.cpp | 98 | 17.5k | 9 (9.2%) | 0.9% | 0 | 0 | 7 |
-| DeclinedWords.cpp | 72 | 17.4k | 18 (25.0%) | 26.4% | 4 | 0 | 32 |
+| DeclinedWords.cpp | 72 | 17.4k | 16 (22.2%) | 18.2% | 4 | 0 | 32 |
 | OsClipboard.cpp | 74 | 16.8k | 31 (41.9%) | 37.5% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 13 (14.9%) | 4.9% | 1 | 0 | 33 |
 | QuestLog.cpp | 80 | 16.4k | 15 (18.8%) | 21.3% | 9 | 0 | 2 |
@@ -588,7 +588,6 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `ChrClassesRec::Read` | db | 2561 | src/db/rec/ChrClassesRec.cpp |
 | `luaK_posfix` | lib/lua-5.1 | 2528 | vendor/lua-5.1.3/src/lcode.c |
 | `DetailDoodad::PrepareCell` | world | 2497 | src/world/map/detaildoodad.cpp |
-| `ParseChunk` | world | 2462 | src/world/Terrain.cpp |
 | `CBackdropGenerator::SetOutput` | ui | 2401 | src/ui/CBackdropGenerator.cpp |
 | `FactionRec::Read` | db | 2368 | src/db/rec/FactionRec.cpp |
 | `normal_prologTok` | lib/expat-2.0 | 2360 | lib/common/vendor/expat-2.0.1/lib/xmltok_impl.c |
@@ -599,6 +598,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `WriteCmpData` | lib/stormlib-9.31 | 2231 | lib/squall/vendor/stormlib-9.31/src/pklib/implode.c |
 | `ltc_ecc_projective_add_point` | lib/stormlib-9.31 | 2210 | lib/squall/vendor/stormlib-9.31/src/libtomcrypt/src/pk/ecc/ltc_ecc_projective_add_point.c |
 | `statement` | lib/lua-5.1 | 2204 | vendor/lua-5.1.3/src/lparser.c |
+| `ValidateNameInternal` | glue | 2189 | src/glue/Character.cpp |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -713,7 +713,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 00767460 | `CVar::LookupRegistered` | override | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 0076e720 | `SStrChrR` | override | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
 | 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
-| 007e4480 | `BlobShadowsBegin` | override | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
+| 007e4480 | `BlobShadowsBegin` | unlinked | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 008154e0 | `StringToBOOL` | override | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 00819210 | `FrameScript_Execute` | unlinked | one side every frame, the other never | [0, 0, 0] | [20, 20, 20] |
 | 0084f9f0 | `luaL_checklstring` | callgraph | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
@@ -726,8 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 04:23 | 4365 (16.2%) | 2230 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
-| 2026-09-26 04:24 | 4365 (16.2%) | 2230 (8.3%) | 578 | 1419/5382 | 2924/2964 | 1380 |
 | 2026-09-26 04:25 | 4366 (16.2%) | 2230 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 05:19 | 4366 (16.2%) | 2230 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 05:38 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
@@ -751,6 +749,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 09:40 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:46 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:52 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
+| 2026-09-26 10:02 | 4367 (16.2%) | 2231 (8.3%) | 578 | 1421/5381 | 2924/2964 | 1380 |
+| 2026-09-26 10:03 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

@@ -20360,7 +20360,7 @@
    "src/world/weather.cpp"
   ],
   "frozen": "ReceiveWeather",
-  "frozenSize": 257,
+  "frozenSize": 513,
   "how": "handler",
   "module": "GameUI.cpp",
   "refSize": 2495,
@@ -39568,7 +39568,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "AaBoxIsDegenerate",
-  "frozenSize": 42,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "Item_C.cpp",
   "refSize": 65,
@@ -44536,13 +44536,13 @@
   "branchRatio": 0.294,
   "constOverlap": 0.053,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.273,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::DrawEntityShadows",
-  "frozenSize": 367,
+  "frozenSize": 346,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 398,
@@ -50497,38 +50497,6 @@
   "module": "DeclinedWords.cpp",
   "refSize": 132,
   "status": "stub"
- },
- "007e4480": {
-  "branchRatio": 0.7,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.061,
-  "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
-  ],
-  "frozen": "BlobShadowDraw",
-  "frozenSize": 1399,
-  "how": "override",
-  "module": "DeclinedWords.cpp",
-  "refSize": 1370,
-  "status": "diverged"
- },
- "007e49e0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/world/Terrain.cpp",
-   "src/world/terrain.cpp"
-  ],
-  "frozen": "BlobShadowDrawCaster",
-  "frozenSize": 563,
-  "how": "annotated",
-  "module": "DeclinedWords.cpp",
-  "refSize": 96,
-  "status": "ported"
  },
  "007e6480": {
   "branchRatio": 0.0,

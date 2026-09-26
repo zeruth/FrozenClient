@@ -354,33 +354,32 @@ void CGWorldFrame::OnWorldRender() {
             }
         }
 
-        // Blob shadows under the visible units (reference: CMap::Render draws them after the sky
-        // and before the M2 passes). The footprint follows the model's bounding radius so a large
-        // creature casts a proportionally larger blob.
-        BlobShadowsBegin();
-
-        // Units and game objects cast through the reference's own pass, which drains the
-        // frame's entity list -- already reduced to what the traversal could see. It replaces a
-        // walk over the object manager that picked its casters by model flags, which is not how
-        // the reference chooses them.
+        // The blob decal pass is gone, and with it the whole stand-in that backed it. It could no
+        // longer put a decal on anything, for the same reason the WMO half could not (cf7768ff):
+        // the decal re-draws the receiver's own triangles and selects with a depth-EQUAL test, so it
+        // lands only where its re-draw reproduces the receiver's depth bit for bit -- and the
+        // receiver's base pass is CMapRenderChunk's now, which disagrees with it three ways over.
         //
-        // The reference runs this from CMap::Render, between the sky and the model passes.
-        // Frozen runs it here because the pass state it needs is set up here; moving it belongs
-        // with reducing OnWorldRender to the reference's order.
+        //   program   the reference pass binds CMap::GetTerrainVertexShader(lights, layers,
+        //             specular, colour, chunkSpecular, shadow), a .bls permutation; the decal bound
+        //             frozen's own embedded s_terrainVS
+        //   constants the reference uploads the whole TerrainConstants block at GxSh_Vertex 0
+        //             (view, viewTransposed, proj, three lights, texture scales); the decal wrote a
+        //             single 4-register matrix over the same registers, which that shader reads as
+        //             its `view` field
+        //   streams   the reference streams position + normal (+ MCCV colour) through a device
+        //             vertex format; the decal locked position + colour + texcoord
+        //
+        // Any one of those is enough for the depths to differ, so every pixel failed the test.
+        //
+        // The way back is the reference's own method, which is not this one: FUN_007e4480 builds a
+        // texture PROJECTION matrix and lets the receiver draw itself with an extra stage, which is
+        // how it shadows a receiver of any shader without needing to reproduce its depth. That is
+        // already the recorded divergence on FUN_007e4480 in overrides.json.
+
+        // The caster enumeration itself is the reference's own pass and stays: it drains the
+        // frame's entity list, which is what decides who casts.
         CWorldScene::DrawEntityShadows();
-
-        // Doodads do NOT cast blob shadows, and a walk that made them was frozen's own
-        // invention. In the reference BlobShadowDraw has one caller, its gate; the gate has two,
-        // both inside the entity shadow pass; and no doodad is ever registered through
-        // CWorld::AddObject -- a doodad is a CMapStaticEntity and never reaches that list at
-        // all. Props are shadowed by the terrain's baked shadow map instead, which is why only
-        // units carry a blob in the game.
-        //
-        // Removing the walk also removes the cost caps it needed: it ran over every doodad of
-        // every loaded tile, and a profile had found the main thread inside the WMO half of that
-        // draw on six samples of nine.
-
-        BlobShadowsEnd();
     }
 
     // NOTE: only the M2 scene draws may sit behind this guard. Detail doodads, liquids, weather,

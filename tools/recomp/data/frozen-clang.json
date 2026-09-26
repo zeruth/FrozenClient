@@ -120919,9 +120919,7 @@
 "CWorldScene::SphereOutsideFrustum",
 "CM2Model::SetVisible",
 "CM2Model::SetAnimating",
-"BlobShadowsBegin",
 "CWorldScene::DrawEntityShadows",
-"BlobShadowsEnd",
 "CWorld::GetM2Scene",
 "CWorld::GetFogEnd",
 "CWorld::GetFogStart",
@@ -120932,9 +120930,9 @@
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Head",
 "TSList<CGObject_C,TSGetExplicitLink<CGObject_C> >::Next",
 "vector<CM2Model *,std::allocator<CM2Model *> >::push_back",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:417:35)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:416:35)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachMapObjDoodad",
-"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:423:34)::operator void (*)(CM2Model *, void *)",
+"CGWorldFrame::OnWorldRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\ui\\game\\cgworldframe.cpp:422:34)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachDoodadModel",
 "CWorld::GetTickTimeMs",
 "CM2Scene::AdvanceTime",
@@ -120987,7 +120985,7 @@
 ],
 "branches": 26,
 "stub": false,
-"lines": 318,
+"lines": 317,
 "refs": [],
 "line": 213
 },
@@ -121042,7 +121040,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 532
+"line": 531
 },
 "Script_GetInventorySlotInfo": {
 "files": [
@@ -188182,23 +188180,18 @@
 },
 "FourCC": {
 "files": [
-"src/ui/simple/movieavi.cpp",
-"src/world/terrain.cpp"
+"src/ui/simple/movieavi.cpp"
 ],
 "callseq": [],
 "strings": [],
 "consts": [
-"0",
-"1",
 "16",
-"2",
 "24",
-"3",
 "8"
 ],
 "branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 6,
 "refs": [],
 "line": 11
 },
@@ -194717,10 +194710,8 @@
 "ClntObjMgrObjectPtr",
 "M2SequenceInfo::M2SequenceInfo",
 "CM2Model::GetSequenceInfo",
-"BlobShadowDrawCaster",
 "CAaBox::CAaBox",
-"CGUnit_C::GetShadowBox",
-"BlobShadowDrawCaster"
+"CGUnit_C::GetShadowBox"
 ],
 "strings": [
 "c:\\users\\tyler\\runicworld-client\\src\\world\\cworldscene.cpp"
@@ -194732,7 +194723,7 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 52,
+"lines": 57,
 "refs": [],
 "line": 1917
 },
@@ -194767,7 +194758,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 1977
+"line": 1982
 },
 "CWorldScene::TraverseRowOccluders": {
 "files": [
@@ -194792,7 +194783,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 2066
+"line": 2071
 },
 "CWorldScene::SubmitOccluderBox": {
 "files": [
@@ -194814,7 +194805,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 2136
+"line": 2141
 },
 "CWorldScene::AddDetailDoodads": {
 "files": [
@@ -194831,7 +194822,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2181
+"line": 2186
 },
 "CWorldScene::RenderDetailDoodads": {
 "files": [
@@ -194873,7 +194864,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 2197
+"line": 2202
 },
 "CWorldScene::AddGroupIndexUnique": {
 "files": [
@@ -194893,7 +194884,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2276
+"line": 2281
 },
 "CWorldScene::UpdateCameraDef": {
 "files": [
@@ -194928,7 +194919,7 @@
 "stub": false,
 "lines": 87,
 "refs": [],
-"line": 2295
+"line": 2300
 },
 "EnsureShaders": {
 "files": [
@@ -206369,25 +206360,6 @@
 "refs": [],
 "line": 50
 },
-"ChunkMatrixT": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"C3Vector::C3Vector",
-"C44Matrix::C44Matrix",
-"C44Matrix::Translate",
-"operator*",
-"C44Matrix::Transpose"
-],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 10,
-"refs": [],
-"line": 169
-},
 "ExtractFrustum": {
 "files": [
 "src/world/terrain.cpp"
@@ -206412,7 +206384,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 189
+"line": 119
 },
 "DoodadCullRadius": {
 "files": [
@@ -206429,7 +206401,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 224
+"line": 154
 },
 "DoodadCullCenter": {
 "files": [
@@ -206449,7 +206421,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 246
+"line": 176
 },
 "SphereVisible": {
 "files": [
@@ -206468,191 +206440,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 271
-},
-"BuildIndices": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0",
-"1",
-"17",
-"8",
-"9"
-],
-"branches": 2,
-"stub": false,
-"lines": 20,
-"refs": [],
-"line": 283
-},
-"BuildHoleIndices": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0",
-"0x000F",
-"0x00F0",
-"0x0F00",
-"0x1111",
-"0x2222",
-"0x4444",
-"0x8888",
-"0xF000",
-"1",
-"17",
-"4",
-"8",
-"9"
-],
-"branches": 3,
-"stub": false,
-"lines": 27,
-"refs": [],
-"line": 306
-},
-"ReadChunkTag": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"4"
-],
-"branches": 0,
-"stub": false,
-"lines": 5,
-"refs": [],
-"line": 334
-},
-"RebakeChunkColors": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CWorld::GetOutdoorAmbient",
-"CWorld::GetOutdoorDiffuse"
-],
-"strings": [],
-"consts": [
-"0",
-"0.0001f",
-"1.0f",
-"127.0f",
-"145",
-"255.0f"
-],
-"branches": 6,
-"stub": false,
-"lines": 20,
-"refs": [],
-"line": 346
-},
-"ParseChunk": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CWorld::GetOutdoorDirection",
-"RebakeChunkColors",
-"C3Vector::operator=",
-"floorf",
-"floorf",
-"C3Vector::operator=",
-"C3Vector::operator="
-],
-"strings": [],
-"consts": [
-"0",
-"0.0f",
-"0.5f",
-"0.7f",
-"0x00",
-"0x1",
-"0x14",
-"0x18",
-"0x1C",
-"0x24",
-"0x2C",
-"0x3C",
-"0x40",
-"0x68",
-"0x6C",
-"0x70",
-"0x74",
-"0x8000",
-"0xFF",
-"1",
-"1.0f",
-"127",
-"127.0f",
-"145",
-"17",
-"2",
-"255.0f",
-"3",
-"5.0f",
-"8",
-"8.0f",
-"9"
-],
-"branches": 24,
-"stub": false,
-"lines": 113,
-"refs": [],
-"line": 375
-},
-"LoadTile": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"SStrPrintf",
-"SFile::Load",
-"ReadChunkTag",
-"FourCC",
-"ParseChunk",
-"SMemFree"
-],
-"strings": [
-"MCIN",
-"World\\Maps\\%s\\%s_%d_%d.adt",
-"c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp"
-],
-"consts": [
-"0",
-"16",
-"256",
-"4",
-"8"
-],
-"branches": 7,
-"stub": false,
-"lines": 47,
-"refs": [],
-"line": 500
-},
-"FreeTile": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"1"
-],
-"branches": 1,
-"stub": false,
-"lines": 14,
-"refs": [],
-"line": 548
+"line": 201
 },
 "MakeArbShader": {
 "files": [
@@ -206667,7 +206455,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 568
+"line": 228
 },
 "MakeRawShader": {
 "files": [
@@ -206688,7 +206476,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 572
+"line": 232
 },
 "TerrainLoad": {
 "files": [
@@ -206696,16 +206484,15 @@
 ],
 "callseq": [
 "TerrainUnload",
-"SStrCopy",
-"BuildIndices"
+"SStrCopy"
 ],
 "strings": [],
 "consts": [],
-"branches": 1,
+"branches": 0,
 "stub": false,
-"lines": 9,
+"lines": 6,
 "refs": [],
-"line": 699
+"line": 359
 },
 "TerrainUnload": {
 "files": [
@@ -206713,18 +206500,15 @@
 ],
 "callseq": [
 "SkyRelease",
-"FreeTile",
 "CWorld::SetCameraUnderLiquid"
 ],
 "strings": [],
-"consts": [
-"1"
-],
-"branches": 2,
+"consts": [],
+"branches": 0,
 "stub": false,
-"lines": 15,
+"lines": 5,
 "refs": [],
-"line": 709
+"line": 366
 },
 "TerrainUpdate": {
 "files": [
@@ -206734,30 +206518,19 @@
 "C3Vector::operator=",
 "SkySetCameraState",
 "WeatherSetCameraPos",
-"CWorld::UpdateOutdoorLight",
-"CWorld::GetHorizonFarClip",
-"ceilf",
-"FreeTile",
-"LoadTile",
-"CWorld::GetOutdoorAmbient",
-"CWorld::GetOutdoorDiffuse",
-"RebakeChunkColors"
+"CWorld::UpdateOutdoorLight"
 ],
 "strings": [],
 "consts": [
 "0",
-"0.01f",
 "1",
-"1000.0f",
-"2",
-"32.0f",
-"63"
+"32.0f"
 ],
-"branches": 22,
+"branches": 1,
 "stub": false,
-"lines": 134,
+"lines": 36,
 "refs": [],
-"line": 725
+"line": 372
 },
 "TerrainUpdateView": {
 "files": [
@@ -206784,7 +206557,7 @@
 "GxRsSet",
 "GxRsSet",
 "GxRsSet",
-"TerrainUpdateView::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:905:31)::operator void (*)(CM2Model *, void *)",
+"TerrainUpdateView::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:454:31)::operator void (*)(CM2Model *, void *)",
 "CMap::ForEachMapObjDoodad"
 ],
 "strings": [],
@@ -206799,7 +206572,7 @@
 "stub": false,
 "lines": 68,
 "refs": [],
-"line": 860
+"line": 409
 },
 "TerrainRender": {
 "files": [
@@ -206823,142 +206596,7 @@
 "stub": false,
 "lines": 45,
 "refs": [],
-"line": 929
-},
-"BlobShadowsBegin": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CStatus::CStatus",
-"CGxTexFlags::CGxTexFlags",
-"TextureCreate",
-"CGxShader::Valid",
-"GxRsPush",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"TextureGetGxTex",
-"GxRsSet"
-],
-"strings": [
-"Textures\\ShadowBlob.blp"
-],
-"consts": [
-"0",
-"1"
-],
-"branches": 2,
-"stub": false,
-"lines": 40,
-"refs": [],
-"line": 1001
-},
-"BlobShadowStrength": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CWorld::GetOutdoorAmbient",
-"CWorld::GetOutdoorDiffuse"
-],
-"strings": [],
-"consts": [
-"0.0f",
-"0.11f",
-"0.15f",
-"0.3f",
-"0.59f",
-"0.5f",
-"0.85f"
-],
-"branches": 3,
-"stub": false,
-"lines": 17,
-"refs": [],
-"line": 1071
-},
-"BlobShadowDraw": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"ChunkMatrixT",
-"GxShaderConstantsSet",
-"BlobShadowStrength",
-"GxShaderConstantsSet",
-"GxPrimLockVertexPtrs",
-"BuildHoleIndices",
-"GxDrawLockedElements",
-"GxDrawLockedElements",
-"GxPrimUnlockVertexPtrs"
-],
-"strings": [],
-"consts": [
-"0",
-"0.0f",
-"0.5f",
-"1",
-"145",
-"2.0f",
-"32.0f",
-"4",
-"4.0f",
-"768"
-],
-"branches": 7,
-"stub": false,
-"lines": 63,
-"refs": [],
-"line": 1089
-},
-"BlobShadowDrawCaster": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CM2Model::IsDrawable",
-"AaBoxIsDegenerate",
-"CVar::GetInt",
-"sqrtf",
-"C3Vector::C3Vector",
-"C3Vector::C3Vector",
-"BlobShadowDraw"
-],
-"strings": [],
-"consts": [
-"0",
-"0.0f",
-"0.5f",
-"1"
-],
-"branches": 6,
-"stub": false,
-"lines": 68,
-"refs": [],
-"line": 1167
-},
-"BlobShadowsEnd": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"GxRsPop"
-],
-"strings": [],
-"consts": [],
-"branches": 1,
-"stub": false,
-"lines": 6,
-"refs": [],
-"line": 1236
+"line": 478
 },
 "TerrainViewProjT": {
 "files": [
@@ -206971,7 +206609,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1246
+"line": 563
 },
 "TerrainFogActive": {
 "files": [
@@ -206984,7 +206622,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1250
+"line": 567
 },
 "TerrainUiShaders": {
 "files": [
@@ -207001,7 +206639,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1254
+"line": 571
 },
 "TerrainPointIsIndoors": {
 "files": [
@@ -207025,7 +206663,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1272
+"line": 589
 },
 "WeatherDensityCallback": {
 "files": [

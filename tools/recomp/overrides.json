@@ -1459,7 +1459,7 @@
   "00873480": {
     "frozen": "CShaderEffect::SetTexMtx_Identity",
     "status": "ported",
-    "note": "the second call in SetupTextures’ early-exit loop, per texture unit"
+    "note": "the second call in SetupTextures\u2019 early-exit loop, per texture unit"
   },
   "004b8910": {
     "frozen": "CreateBlpSync",
@@ -3113,5 +3113,9 @@
   "008c6c80": {
     "status": "excluded",
     "note": "CWaveManager's vtable slot 3, `leal 0x8(%ecx), %eax` -- the record block starts at +0x08. Ported as an inline accessor, so nothing in the PDB to bind."
+  },
+  "007e49e0": {
+    "status": "unlinked",
+    "note": "BlobShadowDrawCaster: the reference's per-caster blob entry, which picks the footprint from the caster's box and hands it to the decal draw at FUN_007e4480. Frozen HAD this at fidelity 1.00 and it was deleted on 2026-09-26, so this is now genuinely unlinked and the metric drop from 4368 to 4367 is that deletion, not a silent regression. Why: frozen's decal draw could no longer put a decal on anything. It re-drew the receiver's triangles and selected with a depth-EQUAL test, which needs the re-draw to reproduce the receiver's depth bit for bit, and the receiver's base pass is CMapRenderChunk's now -- a different vertex program (a .bls permutation from CMap::GetTerrainVertexShader, not frozen's embedded s_terrainVS), a different constant block at the same registers (the whole TerrainConstants at GxSh_Vertex 0, where the decal wrote one matrix), and a different vertex layout (position+normal+MCCV through a device format, where the decal locked position+colour+texcoord). The WMO half had failed the same way and went first, in cf7768ff. Re-port both together the reference's way: FUN_007e4480 builds a texture PROJECTION matrix and lets the receiver draw itself with an extra stage, which is how it shadows a receiver of any shader without reproducing its depth. CWorldScene::DrawEntityShadows still enumerates the casters and carries a TODO at each call naming this pair."
   }
 }
