@@ -768,3 +768,47 @@ volume, then `FUN_007e3e80` to stream and draw what it found. The struct, the po
 and the BSP queries that fill them are all in the tree already.
 
 One field name to fix when this lands: `CMapObjHitRecord::unused3` has a reader.
+
+## The one remaining gap: the query that fills the hit records
+
+Everything from the caster's box down to the draw is ported. What is missing is the query in the
+middle, and it is a chain of seven functions, mapped end to end on 2026-09-26:
+
+```
+FUN_007e35f0   228  the setup: stash the caster's box at DAT_00d38058..6c, reset the five
+                    hit-record counters, run both halves, return whether either found anything
+ +- FUN_0077f340   9  -> FUN_007a6af0   69  the WMO/terrain dispatcher, on the flag mask
+ |   +- FUN_007a6940  419  mask & 0x300f0: walk the loaded map-object instances, bring the box
+ |   |                     into each one's space through its matrix at +0xb0, test its bounds
+ |   |                     (FUN_007ae7e0), then
+ |   |    +- FUN_007aef00  252  per instance: walk its groups, box-vs-group-bounds, then
+ |   |         +- FUN_007cb7b0  183  per group: the BSP box walk (FUN_007ca920), then
+ |   |              CMapObjGroup::RecordHits -- which frozen already has -- and, on
+ |   |              mask & 0x30000, the group's own extra collector FUN_007c94b0
+ |   +- FUN_007a6830  272  mask & 0x30100: turn the box into tile/chunk coordinates and
+ |        +- FUN_007a6630  507  per chunk: look it up in CMap::s_areaGrid, rebase the box onto
+ |             the chunk's origin at +0x7c, then
+ |             +- FUN_007a6260  956  mask & 0x100: THE TERRAIN HIT COLLECTOR, which appends
+ |                  hit records for terrain triangles -- this is what puts a blob on the ground
+ +- FUN_0077f350   9  -> FUN_007a2aa0  447  the M2 half, up to ten receivers into DAT_00d38014
+```
+
+About 2.7 KB without the M2 half. The bottom of the WMO branch already exists in frozen as
+`CMapObjGroup::QueryBox` (`FUN_007cb180`) and `CMapObjGroup::RecordHits` (`FUN_007c7ae0`), and
+`FUN_007cb7b0` is the sibling that takes a plain box where `QueryBox` takes a plane hull.
+
+**Which bits of the mask matter.** The blob's mask is `0x220122`, and every branch it selects:
+
+| test | result for `0x220122` | effect |
+|---|---|---|
+| `mask & 0x300f0` | `0x20020`, non-zero | the WMO instance walk runs |
+| `mask & 0x30100` | `0x20100`, non-zero | the terrain tile walk runs |
+| `mask & 0x100` | set | the terrain hit collector runs -- blobs land on the ground |
+| `mask & 0x30000` | `0x20000`, non-zero | the per-group extra collector runs |
+| `mask & 2` | set | the plain stream builder, not the coloured `FUN_007e32f0` |
+| `mask & 4` | clear | the winding test is applied: upward-facing triangles only |
+
+**One thing still to read off the asm.** `FUN_007e35f0` takes its caster box in `ESI` and two flags in
+`EAX` and `EBX`, all three of which Ghidra drops, so which of `FUN_007e3e80`'s arguments they come
+from has not been established. That is a short disassembly read at the top of `FUN_007e3e80` and it
+should be done before porting the setup.
