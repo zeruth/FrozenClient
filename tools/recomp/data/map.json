@@ -10005,6 +10005,38 @@
   "refSize": 30,
   "status": "ported"
  },
+ "004b5600": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureGetFileType",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "004b5670": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureBuildAlternateName",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 119,
+  "status": "ported"
+ },
  "004b5750": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -14870,6 +14902,22 @@
   "how": "annotated",
   "module": "CharacterComponent.cpp",
   "refSize": 1189,
+  "status": "ported"
+ },
+ "004f2be0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.067,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "CACHEENTRY::LoadTexture",
+  "frozenSize": 508,
+  "how": "override",
+  "module": "TextureCache.cpp",
+  "refSize": 253,
   "status": "ported"
  },
  "004f2d80": {
@@ -56726,6 +56774,22 @@
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 148,
+  "status": "ported"
+ },
+ "0083d410": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::Load",
+  "frozenSize": 271,
+  "how": "override",
+  "module": "M2Shared.cpp",
+  "refSize": 245,
   "status": "ported"
  },
  "0083d510": {

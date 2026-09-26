@@ -40,6 +40,19 @@ class CACHEENTRY : public TSHashObject<CACHEENTRY, HASHKEY_NONE> {
         bool NeedsLoad();
 };
 
+// ref: FUN_004b5600
+// Which of the two texture containers a filename names, by extension: 1 for .TGA, 2 for .BLP,
+// 0 for anything else (including no extension at all).
+int32_t TextureGetFileType(const char* fileName);
+
+// ref: FUN_004b5670
+// `fileName` with its extension swapped for the OTHER container's, written into `out`. Returns
+// the type it produced, so a caller can tell what it is about to open; 0 when `type` is 0, in
+// which case `out` is just a copy. This is what lets a missing .BLP fall back to the .TGA beside
+// it and the other way round.
+int32_t TextureBuildAlternateName(const char* fileName, int32_t type, char* out,
+                                  uint32_t outSize);
+
 void* TextureCacheCreateTexture(const char* fileName);
 
 void TextureCacheDestroyTexture(void* texture);

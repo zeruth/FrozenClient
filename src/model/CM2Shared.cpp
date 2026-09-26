@@ -951,13 +951,23 @@ int32_t CM2Shared::InitializeSkinProfile() {
     return 1;
 }
 
+// ref: FUN_0083d410
+// Start the .m2 read. The bounding box argument lands in aaBox154 -- whose name already carried
+// the reference's offset, and FUN_0083d410 confirms it.
 int32_t CM2Shared::Load(SFile* file, int32_t a3, CAaBox* a4) {
-    // TODO
-    // this->dword8 ^= (this->dword8 ^ (4 * (a3 != 0))) & 4;
+    // What a3 means, from FUN_0083d410: it is the flag-4 bit of the shared's state word, set
+    // when the caller wants it and cleared when it does not. The old comment here had the
+    // expression but not the member.
+    this->m_flag4 = (a3 != 0) ? 1 : 0;
 
     this->m_dataSize = SFile::GetFileSize(file, 0);
 
-    // TODO use proper allocation function here
+    // The reference allocates this out of the sequence-buffer pool (SequenceBufferAlloc, a
+    // 16-byte-aligning wrapper over SMemAlloc) rather than the general heap. Swapping it here
+    // alone would leave the allocation and its free in different pools, and the free side is the
+    // wider change already described at CM2Model.cpp's m_boneMatrices teardown -- the same
+    // divergence, found the same way, and it stands for the same reason: nothing here needs the
+    // stricter alignment.
     this->m_data = static_cast<M2Data*>(SMemAlloc(this->m_dataSize, __FILE__, __LINE__, 0));
 
     if (!this->m_data) {

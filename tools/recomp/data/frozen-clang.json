@@ -45365,7 +45365,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 18
+"line": 19
 },
 "TCTEXTUREINFO::TCTEXTUREINFO": {
 "files": [
@@ -45381,7 +45381,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 35
+"line": 36
 },
 "CACHEENTRY::CACHEENTRY": {
 "files": [
@@ -45396,7 +45396,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 43
+"line": 44
 },
 "CACHEENTRY::AddRef": {
 "files": [
@@ -45409,7 +45409,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 53
+"line": 54
 },
 "CACHEENTRY::Info": {
 "files": [
@@ -45422,7 +45422,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 57
+"line": 58
 },
 "CACHEENTRY::IsLoading": {
 "files": [
@@ -45437,7 +45437,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 61
+"line": 62
 },
 "CACHEENTRY::IsMissing": {
 "files": [
@@ -45450,13 +45450,68 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 65
+"line": 66
+},
+"TextureGetFileType": {
+"files": [
+"src/component/texture.cpp"
+],
+"callseq": [
+"SStrChrR",
+"SStrLen",
+"SStrCmpI",
+"SStrCmpI"
+],
+"strings": [
+".BLP",
+".TGA"
+],
+"consts": [
+"0",
+"0x7FFFFFFF",
+"1",
+"2",
+"4"
+],
+"branches": 3,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 71
+},
+"TextureBuildAlternateName": {
+"files": [
+"src/component/texture.cpp"
+],
+"callseq": [
+"SStrCopy",
+"SStrChrR",
+"SStrPack",
+"SStrPack"
+],
+"strings": [
+".BLP",
+".TGA"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 5,
+"stub": false,
+"lines": 29,
+"refs": [],
+"line": 86
 },
 "CACHEENTRY::LoadTexture": {
 "files": [
 "src/component/texture.cpp"
 ],
 "callseq": [
+"SFile::OpenEx",
+"TextureGetFileType",
+"TextureBuildAlternateName",
 "SFile::OpenEx",
 "AsyncFileReadAllocObject",
 "SFile::GetFileSize",
@@ -45470,13 +45525,14 @@
 "0",
 "0x0",
 "1",
-"126"
+"126",
+"260"
 ],
 "branches": 2,
 "stub": false,
-"lines": 28,
+"lines": 34,
 "refs": [],
-"line": 69
+"line": 118
 },
 "CACHEENTRY::NeedsLoad": {
 "files": [
@@ -45489,7 +45545,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 98
+"line": 153
 },
 "TextureCacheAllocEntry": {
 "files": [
@@ -45513,7 +45569,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 102
+"line": 157
 },
 "TextureCacheCreateTexture": {
 "files": [
@@ -45533,7 +45589,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 127
+"line": 182
 },
 "TextureCacheDestroyTexture": {
 "files": [
@@ -45546,7 +45602,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 144
+"line": 199
 },
 "TextureCacheGetInfo": {
 "files": [
@@ -45570,7 +45626,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 148
+"line": 203
 },
 "TextureCacheGetMip": {
 "files": [
@@ -45586,7 +45642,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 176
+"line": 231
 },
 "TextureCacheGetPal": {
 "files": [
@@ -45601,7 +45657,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 193
+"line": 248
 },
 "TextureCacheHasMips": {
 "files": [
@@ -45616,7 +45672,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 210
+"line": 265
 },
 "WowClientDB::GetNumRecords": {
 "files": [
@@ -84781,11 +84837,11 @@
 "0",
 "1"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 36,
+"lines": 43,
 "refs": [],
-"line": 954
+"line": 957
 },
 "CM2Shared::LoadSkinProfile": {
 "files": [
@@ -84817,7 +84873,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 991
+"line": 1001
 },
 "CM2Shared::Release": {
 "files": [
@@ -84832,7 +84888,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1048
+"line": 1058
 },
 "CM2Shared::SetIndices": {
 "files": [
@@ -84864,7 +84920,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1071
+"line": 1081
 },
 "CM2Shared::SetVertices": {
 "files": [
@@ -84896,7 +84952,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 1132
+"line": 1142
 },
 "CM2Shared::SubstituteSimpleShaders": {
 "files": [
@@ -84923,7 +84979,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 1198
+"line": 1208
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
@@ -84936,7 +84992,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1274
+"line": 1284
 },
 "M2Init": {
 "files": [

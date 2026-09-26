@@ -3169,5 +3169,13 @@
   "0073d940": {
     "status": "unlinked",
     "note": "--propose offered CCharacterCreation::CreateComponent for this, on the strength of the CM2Model calls alone. It is not that: frozen's CreateComponent is the character-creation SCREEN in src/glue, while this is anchored to Unit_C.cpp and calls CGUnit_C::UpdateAnimation, CGUnit_C::SetBoneSequence and both model callback setters -- it is a unit model builder, a sibling of FUN_0073e410 (359 bytes). Worth porting for its own sake: it is one of the sites that calls UpdateAnimation when a unit's model changes, which is what the animation chain still needs wiring to."
+  },
+  "0083d410": {
+    "frozen": "CM2Shared::Load",
+    "note": "Confirmed by --propose (7.1) and by reading; aaBox154 already carried the reference offset this function writes, which settled it. 75% call order for one reason, named at the definition: the reference allocates the .m2 data out of the sequence-buffer pool (SequenceBufferAlloc) and frozen uses SMemAlloc. Swapping it alone would put the allocation and its free in different pools; it is the same divergence already recorded at CM2Model's m_boneMatrices teardown and it stands for the same reason. Reading this function also settled what a3 means -- the flag-4 bit of the state word -- which frozen now sets."
+  },
+  "004f2be0": {
+    "frozen": "CACHEENTRY::LoadTexture",
+    "note": "100% call order once its TODO was filled. The TODO was the alternate-extension retry, and the reference supplies both halves of it: FUN_004b5600 reads the container type off the extension and FUN_004b5670 swaps it for the other one."
   }
 }

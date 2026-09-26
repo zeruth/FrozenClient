@@ -5,6 +5,7 @@
 #include "gx/Texture.hpp"
 #include "util/SFile.hpp"
 #include <common/ObjectAlloc.hpp>
+#include <storm/String.hpp>
 
 // Deliberately immortal: allocated once and never destroyed. Its nodes live in an ObjectAlloc
 // heap, and static destruction order across translation units is unspecified, so when this table
@@ -66,10 +67,64 @@ bool CACHEENTRY::IsMissing() {
     return this->m_missing;
 }
 
+// ref: FUN_004b5600
+int32_t TextureGetFileType(const char* fileName) {
+    auto extension = SStrChrR(fileName, '.');
+
+    if (!extension || SStrLen(extension) != 4) {
+        return 0;
+    }
+
+    if (SStrCmpI(extension, ".TGA", 0x7FFFFFFF) == 0) {
+        return 1;
+    }
+
+    return SStrCmpI(extension, ".BLP", 0x7FFFFFFF) == 0 ? 2 : 0;
+}
+
+// ref: FUN_004b5670
+int32_t TextureBuildAlternateName(const char* fileName, int32_t type, char* out,
+                                  uint32_t outSize) {
+    if (fileName != out) {
+        SStrCopy(out, fileName, outSize);
+    }
+
+    if (type == 0) {
+        return 0;
+    }
+
+    auto extension = SStrChrR(out, '.');
+
+    if (extension) {
+        *extension = '\0';
+    }
+
+    if (type == 1) {
+        SStrPack(out, ".BLP", outSize);
+
+        return 2;
+    }
+
+    if (type == 2) {
+        SStrPack(out, ".TGA", outSize);
+
+        return 1;
+    }
+
+    return type;
+}
+
+// ref: FUN_004f2be0
 int32_t CACHEENTRY::LoadTexture() {
     SFile* file;
     if (!SFile::OpenEx(nullptr, this->m_fileName, 0x0, &file)) {
-        // TODO discover file type + pick alternate filename
+        // Not there under the name asked for: the two containers sit side by side in the
+        // archives, so try the other one before giving up.
+        char alternate[260];
+        auto type = TextureGetFileType(this->m_fileName);
+
+        TextureBuildAlternateName(this->m_fileName, type, alternate, sizeof(alternate));
+        SFile::OpenEx(nullptr, alternate, 0x0, &file);
     }
 
     if (!file) {

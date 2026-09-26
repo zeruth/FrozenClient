@@ -625,6 +625,8 @@ addr	how	frozen	evidence
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
 004b54f0	annotated	TextureHasAlpha	tag in src/gx/Texture.cpp
 004b55e0	annotated	TextureFreeMem	tag in src/gx/Texture.cpp
+004b5600	annotated	TextureGetFileType	tag in src/component/Texture.cpp
+004b5670	annotated	TextureBuildAlternateName	tag in src/component/Texture.cpp
 004b5750	annotated	TextureGetTexFlags	tag in src/gx/Texture.cpp
 004b5800	annotated	TextureHasPendingData	tag in src/gx/Texture.cpp
 004b58d0	annotated	CBLPFile::CBLPFile	tag in src/gx/blp/CBLPFile.cpp
@@ -656,7 +658,7 @@ addr	how	frozen	evidence
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
-004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read, 007d85e0=CMapObjGroup::Read
+004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 004f2be0=CACHEENTRY::LoadTexture, 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read
 004ba3d0	annotated	AsyncFileReadLinkObject	tag in src/async/AsyncFileRead.cpp
 004bab50	override	AsyncFileReadObject	
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
@@ -927,6 +929,7 @@ addr	how	frozen	evidence
 004eaf70	annotated	ComponentRemoveAttachments	tag in src/component/CCharacterComponent.cpp
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
+004f2be0	override	CACHEENTRY::LoadTexture	
 004f2d80	annotated	TextureCacheHasMips	tag in src/component/Texture.cpp
 004f2f60	callgraph	CACHEENTRY::CACHEENTRY	only unmatched callee of 004f3110=TextureCacheAllocEntry
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
@@ -3555,6 +3558,7 @@ addr	how	frozen	evidence
 0083ca90	annotated	CM2Shared::InitSequence	tag in src/model/CM2Shared.cpp
 0083d2d0	callgraph	CM2Shared::DestroySequenceLoad	only unmatched callee of 0083d370=CM2Shared::CancelSequenceLoads
 0083d370	annotated	CM2Shared::CancelSequenceLoads	tag in src/model/CM2Shared.cpp
+0083d410	override	CM2Shared::Load	
 0083d510	override	CM2Shared::CancelSequenceLoads	
 0083d5b0	override	CM2Shared::~CM2Shared	
 0083d840	annotated	CM2Shared::SequenceLoadedCallback	tag in src/model/CM2Shared.cpp
