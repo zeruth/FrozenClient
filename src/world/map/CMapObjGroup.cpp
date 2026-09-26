@@ -1,7 +1,11 @@
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapObj.hpp"
+#include "world/map/CMap.hpp"
+#include "world/map/CMapArea.hpp"
+#include "world/map/CMapChunk.hpp"
 #include <storm/Memory.hpp>
 #include <tempest/Intersect.hpp>
+#include <tempest/Rect.hpp>
 #include <cmath>
 #include <cstring>
 
@@ -14,8 +18,9 @@ uint32_t CMapObjGroup::s_hitFlags = 0;
 uint32_t CMapObjGroup::s_hitRecordCount = 0;
 uint32_t CMapObjGroup::s_hitFacePoolCount = 0;
 uint32_t CMapObjGroup::s_hitIndexPoolCount = 0;
-uint32_t CMapObjGroup::s_unk7538 = 0;
+uint32_t CMapObjGroup::s_hitPlacementCount = 0;
 CMapObjHitRecord CMapObjGroup::s_hitRecords[0x20];
+C44Matrix CMapObjGroup::s_hitPlacements[0x20];
 uint16_t CMapObjGroup::s_hitFacePool[0x4000];
 uint16_t CMapObjGroup::s_hitIndexPool[0xc000];
 
@@ -65,7 +70,7 @@ CMapObjHitRecord* CMapObjGroup::AllocHitRecord(uint32_t indexCount, uint32_t fac
         record->placement = nullptr;
         record->vertices = nullptr;
         record->vertexCount = 0;
-        record->unused3 = 0;
+        record->heights = nullptr;
         record->indices = nullptr;
         record->faces = nullptr;
         record->indexCount = 0;
@@ -95,7 +100,7 @@ CMapObjHitRecord* CMapObjGroup::AllocHitRecord() {
         record->placement = nullptr;
         record->vertices = nullptr;
         record->vertexCount = 0;
-        record->unused3 = 0;
+        record->heights = nullptr;
         record->indices = nullptr;
         record->faces = nullptr;
         record->indexCount = 0;
@@ -121,6 +126,22 @@ uint16_t* CMapObjGroup::AllocHitIndices(uint32_t count) {
         CMapObjGroup::s_hitIndexPoolCount = count + CMapObjGroup::s_hitIndexPoolCount;
 
         return &CMapObjGroup::s_hitIndexPool[start];
+    }
+
+    CMapObjGroup::s_hitFlags |= 0x1;
+
+    return nullptr;
+}
+
+// The placement pool's bump allocator. The reference inlines this at its one call site, the terrain
+// hit collector, and shares the overflow flag with the other two pools.
+C44Matrix* CMapObjGroup::AllocHitPlacement() {
+    uint32_t i = CMapObjGroup::s_hitPlacementCount;
+
+    if (CMapObjGroup::s_hitPlacementCount + 1 < 0x20) {
+        CMapObjGroup::s_hitPlacementCount++;
+
+        return &CMapObjGroup::s_hitPlacements[i];
     }
 
     CMapObjGroup::s_hitFlags |= 0x1;
@@ -1049,4 +1070,265 @@ bool CMapObjGroup::SampleColorAtFace(const C3Vector& point, uint16_t face, CImVe
     *outFlag = this->m_polys[face].flags & 0x1;
 
     return true;
+}
+
+// ================================================================================================
+// The world box query: what under an axis-aligned box can receive a projected decal.
+//
+// The reference lays these next to the hit-record allocators above (007a6140 .. 007a6af0), which is
+// why they live here rather than with CMap, and passes the box and the mask between them in
+// callee-saved registers; they are arguments here.
+// ================================================================================================
+
+namespace {
+
+// How many of a chunk's eight-by-eight cells fit in a yard, and the half a cell the rounding wants
+// (DAT_00a3fdb4 and DAT_00adfe3c: this module's own copies of the pair CMap's point queries use).
+constexpr float CELLS_PER_YARD = 0.239999995f;
+constexpr float CELL_ROUND_BIAS = 0.5f;
+constexpr float MAP_HALF_EXTENT = 17066.666f;
+
+// The slack the corner classification allows, DAT_00a3fdb8: a vertex this far outside a face of the
+// box still counts as inside it, so a triangle exactly level with the box's floor is kept.
+constexpr float CORNER_EPSILON = 0.0194444433f;
+
+// A cell of a chunk is a four-triangle fan about an inner vertex. These are the five vertices as
+// offsets from the cell's first outer vertex, and the four triangles as triples of the same offsets
+// (DAT_00a40618 and the table immediately before it at 0x00a405e8). 0 and 1 are the near outer pair,
+// 17 and 18 the far one -- the row stride is 17 because MCVT interleaves an eight-vertex inner row
+// after every nine-vertex outer row -- and 9 is the inner vertex.
+constexpr int32_t CELL_VERTEX_OFFSETS[5] = { 0, 9, 17, 1, 18 };
+constexpr int32_t CELL_TRIANGLES[4][3] = { { 17, 9, 0 }, { 9, 1, 0 }, { 9, 17, 18 }, { 9, 18, 1 } };
+
+// One bit per face of the box the vertex lies outside of: x, y, z below the minimum in bits 0..2,
+// then above the maximum in bits 3..5. Three corners sharing a bit put their whole triangle outside.
+// The reference reads the sign bit of each difference straight out of the float.
+// ref: FUN_007a61d0
+uint8_t ClassifyCorner(const CAaBox& box, const float* v) {
+    uint8_t code = 0;
+
+    code |= std::signbit(v[0] - box.b.x + CORNER_EPSILON) ? 0x01 : 0;
+    code |= std::signbit(v[1] - box.b.y + CORNER_EPSILON) ? 0x02 : 0;
+    code |= std::signbit(v[2] - box.b.z + CORNER_EPSILON) ? 0x04 : 0;
+    code |= std::signbit(box.t.x - v[0] + CORNER_EPSILON) ? 0x08 : 0;
+    code |= std::signbit(box.t.y - v[1] + CORNER_EPSILON) ? 0x10 : 0;
+    code |= std::signbit(box.t.z - v[2] + CORNER_EPSILON) ? 0x20 : 0;
+
+    return code;
+}
+
+// The terrain hit collector: every triangle of the chunk's cells in `cellRect` that the box reaches,
+// appended to ONE hit record shared by the whole chunk. This is what puts a blob shadow on the
+// ground.
+//
+// A terrain receiver differs from a WMO one in the two ways the record has to carry:
+//
+// * Its vertices are the single shared CMapChunk::s_vertexTable, which holds chunk-local XY for all
+//   145 vertices and is the same table for every chunk on the map, so the z has to come from
+//   somewhere else. That is what the record's `heights` field is for, and both decal stream builders
+//   switch to their one-vertex-per-index path when it is set.
+// * It has no placement matrix of its own, so one is taken from the pool beside the record pool and
+//   filled with a translation to the chunk's origin.
+//
+// The shared table's z IS patched in place from the chunk's heights before a corner is classified.
+// It is scratch: nothing else on the map reads z from that table, and a receiver's own z reaches the
+// vertex stream through `heights` rather than through the table.
+//
+// ref: FUN_007a6260
+bool TerrainCollectHits(CMapChunk* chunk, const CiRect& cellRect, const CAaBox& box, void* object) {
+    // The reference reserves twelve indices per cell of the whole rect, four triangles' worth, up
+    // front rather than per triangle.
+    uint32_t cellCount = static_cast<uint32_t>((cellRect.maxY - cellRect.minY) + 1)
+                       * static_cast<uint32_t>((cellRect.maxX - cellRect.minX) + 1);
+
+    bool collected = false;
+    CMapObjHitRecord* record = nullptr;
+    uint16_t* indices = nullptr;
+
+    for (int32_t row = cellRect.minY; row <= cellRect.maxY; row++) {
+        for (int32_t col = cellRect.minX; col <= cellRect.maxX; col++) {
+            if (CMapChunk::s_holeMask[(col >> 1) + (row >> 1) * 4] & chunk->m_header->holes) {
+                continue;
+            }
+
+            int32_t base = row * 0x11 + col;
+
+            // Indexed by the vertex offset, so 19 entries used of the reference's 20-byte slot.
+            uint8_t corner[20] = { 0 };
+
+            for (int32_t i = 0; i < 5; i++) {
+                int32_t offset = CELL_VERTEX_OFFSETS[i];
+                CMapChunk::s_vertexTable[base + offset][2] = chunk->m_heights[base + offset];
+                corner[offset] = ClassifyCorner(box, CMapChunk::s_vertexTable[base + offset]);
+            }
+
+            for (int32_t t = 0; t < 4; t++) {
+                const int32_t* tri = CELL_TRIANGLES[t];
+
+                if ((corner[tri[0]] & corner[tri[1]] & corner[tri[2]]) != 0) {
+                    continue;
+                }
+
+                // One record for the chunk, allocated on its first hit. The flag is set whether or
+                // not the pools had room, so a chunk that overflows them is not retried.
+                if (!collected) {
+                    collected = true;
+                    record = CMapObjGroup::AllocHitRecord();
+
+                    if (record) {
+                        record->object = chunk;
+
+                        // The reference fills the placement without checking the pointer, which
+                        // would fault if the placement pool overflowed. It cannot: the two pools
+                        // hold 32 each, a record takes at most one placement, and both counters
+                        // reset together.
+                        C44Matrix* placement = CMapObjGroup::AllocHitPlacement();
+
+                        if (placement) {
+                            placement->Identity();
+                            placement->d0 = chunk->m_position.x;
+                            placement->d1 = chunk->m_position.y;
+                            placement->d2 = chunk->m_position.z;
+                        }
+
+                        record->placement = placement;
+                        record->vertices = reinterpret_cast<const C3Vector*>(CMapChunk::s_vertexTable);
+                        record->vertexCount = 0;
+                        record->heights = chunk->m_heights;
+
+                        indices = CMapObjGroup::AllocHitIndices(cellCount * 12);
+                        record->indices = indices;
+                    }
+                }
+
+                if (!record || !record->indices || !record->vertices) {
+                    continue;
+                }
+
+                for (int32_t k = 0; k < 3; k++) {
+                    uint16_t index = static_cast<uint16_t>(tri[k] + base);
+
+                    *indices++ = index;
+
+                    if (index < record->minIndex) {
+                        record->minIndex = index;
+                    }
+
+                    if (index > record->maxIndex) {
+                        record->maxIndex = index;
+                    }
+                }
+
+                record->indexCount += 3;
+                record->faceCount += 1;
+            }
+        }
+    }
+
+    return collected;
+}
+
+// One chunk of the terrain walk: find it, bring the box into its space, clip the cell rect to its
+// own eight-by-eight, and collect.
+// ref: FUN_007a6630
+bool MapQueryBoxChunk(int32_t chunkCol, int32_t chunkRow, const CiRect& cellRect, const CAaBox& box,
+                      void* object, uint32_t queryMask) {
+    CMapArea* area = CMap::s_areaGrid[((chunkRow >> 4) & 0x3f) * 64 + ((chunkCol >> 4) & 0x3f)];
+
+    if (!area || area->m_asyncObject) {
+        return false;
+    }
+
+    CMapChunk* chunk = area->m_chunks[(chunkRow & 0xf) * 16 + (chunkCol & 0xf)];
+
+    if (!chunk) {
+        return false;
+    }
+
+    CAaBox local;
+    local.b.x = box.b.x - chunk->m_position.x;
+    local.b.y = box.b.y - chunk->m_position.y;
+    local.b.z = box.b.z - chunk->m_position.z;
+    local.t.x = box.t.x - chunk->m_position.x;
+    local.t.y = box.t.y - chunk->m_position.y;
+    local.t.z = box.t.z - chunk->m_position.z;
+
+    // The rect the caller built spans the whole box in map-wide cells; rebase it onto this chunk's
+    // first cell and clip it to the eight it has. The reference keeps the 0,0,7,7 rect in a lazily
+    // initialised static (DAT_00cfbe94), which is a constant here.
+    static const CiRect CHUNK_CELLS = { 0, 0, 7, 7 };
+
+    CiRect cells;
+    cells.minY = cellRect.minY - chunkRow * 8;
+    cells.minX = cellRect.minX - chunkCol * 8;
+    cells.maxY = cellRect.maxY - chunkRow * 8;
+    cells.maxX = cellRect.maxX - chunkCol * 8;
+    cells = CiRect::Intersection(cells, CHUNK_CELLS);
+
+    bool hit = false;
+
+    if (queryMask & 0x100) {
+        hit = TerrainCollectHits(chunk, cells, local, object);
+    }
+
+    if (queryMask & 0x30000) {
+        // TODO FUN_007ce960, reached once per entry of the chunk's map-object-def list at +0x100 /
+        // +0x108: the chunk's DOODADS against the same box and cell rect, appending their own hit
+        // records. Bit 0x10000 without 0x20000 filters the list by a per-def flag first
+        // (DAT_00ad4084's entry, bit 2). Nothing frozen calls passes either bit: the blob's mask is
+        // 0x220122, whose 0x30000 half is 0x20000, so the filter is off and the collector would run
+        // -- this is the one piece of the terrain half still missing, and it only adds doodad
+        // receivers, not ground ones.
+    }
+
+    return hit;
+}
+
+} // namespace
+
+// ref: FUN_007a6830
+bool MapQueryBoxTerrain(const CAaBox& box, void* object, uint32_t queryMask) {
+    // The map's cell addressing is transposed and inverted: the row comes from x and the column
+    // from y, and both count down from the map's positive corner, so the box's MAXIMUM gives the
+    // low end of each range. CiRect's Y slot carries the row and its X slot the column, which is
+    // the same pairing CWorldScene::s_frustumChunkRect uses.
+    CiRect cellRect;
+    cellRect.minY = static_cast<int32_t>(roundf(-(box.t.x - MAP_HALF_EXTENT) * CELLS_PER_YARD - CELL_ROUND_BIAS));
+    cellRect.minX = static_cast<int32_t>(roundf(-(box.t.y - MAP_HALF_EXTENT) * CELLS_PER_YARD - CELL_ROUND_BIAS));
+    cellRect.maxY = static_cast<int32_t>(roundf(-(box.b.x - MAP_HALF_EXTENT) * CELLS_PER_YARD - CELL_ROUND_BIAS));
+    cellRect.maxX = static_cast<int32_t>(roundf(-(box.b.y - MAP_HALF_EXTENT) * CELLS_PER_YARD - CELL_ROUND_BIAS));
+
+    bool hit = false;
+
+    for (int32_t chunkRow = cellRect.minY >> 3; chunkRow <= (cellRect.maxY >> 3); chunkRow++) {
+        for (int32_t chunkCol = cellRect.minX >> 3; chunkCol <= (cellRect.maxX >> 3); chunkCol++) {
+            hit |= MapQueryBoxChunk(chunkCol, chunkRow, cellRect, box, object, queryMask);
+        }
+    }
+
+    return hit;
+}
+
+// ref: FUN_007a6af0
+bool MapQueryBox(const CAaBox& box, void* object, uint32_t queryMask) {
+    bool hit = false;
+
+    if (queryMask & 0x300f0) {
+        // TODO FUN_007a6940, 419 bytes: the MAP-OBJECT half. It walks the loaded instance list
+        // (DAT_00d25438 / DAT_00d25440, which frozen does not carry yet), brings the box into each
+        // instance's space through its matrix at +0xb0, tests the instance bounds, then walks its
+        // groups (FUN_007aef00, 252 bytes) and each group's BSP against the plain box
+        // (FUN_007cb7b0, 183 bytes, the sibling of CMapObjGroup::QueryBox that takes a box where
+        // QueryBox takes a plane hull, calling the box node walk FUN_007ca920 and then
+        // CMapObjGroup::RecordHits, both of which frozen already has). Until it lands a blob does
+        // not fall on a building floor through this path; BlobShadowDrawWmo covers that case its own
+        // way. docs/ref/parity-shadows.md maps the chain function by function.
+    }
+
+    if (queryMask & 0x30100) {
+        // Both halves run: the reference ORs their results rather than short-circuiting.
+        hit |= MapQueryBoxTerrain(box, object, queryMask);
+    }
+
+    return hit;
 }

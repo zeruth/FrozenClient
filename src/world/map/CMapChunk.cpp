@@ -18,8 +18,7 @@
 float CMapChunk::s_vertexTable[145][3];
 float CMapChunk::s_invCellSize;
 
-// Row-major bit for each 2x2 cell of a chunk's 4x4 hole grid (DAT_00a3faf0)
-static const uint16_t s_holeMask[16] = {
+const uint16_t CMapChunk::s_holeMask[16] = {
     0x0001, 0x0002, 0x0004, 0x0008,
     0x0010, 0x0020, 0x0040, 0x0080,
     0x0100, 0x0200, 0x0400, 0x0800,
@@ -266,7 +265,7 @@ int16_t CMapChunk::BuildIndices(uint16_t* indices, int16_t baseVertex) {
 
     for (int32_t row = 0; row < 8; row++) {
         for (int32_t col = 0; col < 8; col++) {
-            if (s_holeMask[(col >> 1) + (row >> 1) * 4] & this->m_header->holes) {
+            if (CMapChunk::s_holeMask[(col >> 1) + (row >> 1) * 4] & this->m_header->holes) {
                 continue;
             }
 
@@ -499,7 +498,7 @@ bool CMapChunk::HeightAt(const C3Vector& position, uint32_t col, uint32_t row, f
     col &= 7;
     row &= 7;
 
-    if (s_holeMask[(col >> 1) + (row >> 1) * 4] & this->m_header->holes) {
+    if (CMapChunk::s_holeMask[(col >> 1) + (row >> 1) * 4] & this->m_header->holes) {
         return false;
     }
 

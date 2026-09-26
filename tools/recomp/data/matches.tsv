@@ -2829,6 +2829,11 @@ addr	how	frozen	evidence
 007a2180	annotated	CMap::AddCellSpanX	tag in src/world/map/CMap.cpp
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
+007a61d0	annotated	ClassifyCorner	tag in src/world/map/CMapObjGroup.cpp
+007a6260	annotated	TerrainCollectHits	tag in src/world/map/CMapObjGroup.cpp
+007a6630	annotated	MapQueryBoxChunk	tag in src/world/map/CMapObjGroup.cpp
+007a6830	annotated	MapQueryBoxTerrain	tag in src/world/map/CMapObjGroup.cpp
+007a6af0	annotated	MapQueryBox	tag in src/world/map/CMapObjGroup.cpp
 007a6b40	annotated	CMapObj::SetVisibleCallback	tag in src/world/map/CMapObjDraw.cpp
 007a6b60	annotated	CMapObj::ReportVisible	tag in src/world/map/CMapObjDraw.cpp
 007a6b90	annotated	CMapObj::ScreenBounds	tag in src/world/map/CMapObjDraw.cpp
@@ -3188,6 +3193,7 @@ addr	how	frozen	evidence
 007e4370	annotated	DecalDrawProjected	tag in src/world/Shadow.cpp
 007e4480	annotated	ShadowProjectBlob	tag in src/world/Shadow.cpp
 007e49e0	annotated	ShadowDrawBlob	tag in src/world/Shadow.cpp
+007e4a40	override	ShadowInit	
 007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
 007e7c70	annotated	CoinSplit	tag in src/ui/game/GameScript.cpp
 007e7cc0	override	CoinIconFormat	

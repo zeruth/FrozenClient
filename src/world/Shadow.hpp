@@ -16,9 +16,15 @@ class CVar;
 //
 // It is a PROJECTED DECAL: the caster's bounding box becomes a texture projection, and the
 // receiver's own triangles are re-drawn with the blob texture on one stage and a fade ramp on the
-// next. What is ported here is the module's state and its gate; the projector (FUN_007e4480), the
-// identity-transform wrapper (FUN_007e4370) and the receiver walk (FUN_007e3e80 / FUN_007e3aa0 over
-// FUN_007e2fd0, FUN_007e32f0, FUN_007e3580, FUN_007e35f0) are not, and ShadowDrawBlob says so.
+// next. The module is ported end to end as of 2026-09-26 -- state and gate, the projector
+// (FUN_007e4480), the identity-transform wrapper (FUN_007e4370), the receiver walk (FUN_007e3e80)
+// with all three stream builders, the collection setup (FUN_007e35f0) and, in CMapObjGroup.cpp, the
+// world query that fills the receiver list (MapQueryBox, FUN_007a6af0).
+//
+// Two things still stand between that and a blob on screen, and neither is in this module. The
+// query's MAP-OBJECT half is not ported, so a blob does not reach a building floor through it
+// (MapQueryBox carries the note). And nothing here has been SEEN RUNNING: a blob needs
+// `shadowLOD` 1 and `extShadowQuality` 0, and this whole path has never been on screen.
 
 // The blob texture, and the two generated fade ramps.
 HTEXTURE ShadowBlobTexture();

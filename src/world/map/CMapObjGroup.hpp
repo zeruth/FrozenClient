@@ -124,10 +124,13 @@ struct CMapObjHitRecord {
     const C44Matrix* placement;   // the instance's placement matrix
     const C3Vector* vertices;     // MOVT
     uint32_t vertexCount;
-    // NOT unused: the decal module's stream builders branch on it (FUN_007e2fd0, FUN_007e32f0),
-    // zero taking the expanded-triangle path. Nothing in frozen sets it, so the other path is
-    // unreachable here; rename it when whatever writes it is identified.
-    uint32_t unused3;
+    // The receiver's SEPARATE HEIGHT ARRAY, one float per vertex, and the thing that lets a terrain
+    // chunk be a receiver at all: the terrain hit collector (FUN_007a6260) points `vertices` at the
+    // single shared CMapChunk::s_vertexTable, which carries chunk-local XY only, and puts the
+    // chunk's own MCVT here. Non-zero switches both decal stream builders (FUN_007e2fd0,
+    // FUN_007e32f0) to their one-vertex-per-index path, where each vertex's z comes from this array
+    // instead of from `vertices`. Null for a WMO receiver, whose vertices carry their own z.
+    const float* heights;
     uint16_t* indices;            // three per hit face, from the shared index pool
     uint16_t* faces;              // hit face numbers, from the shared face pool
     uint16_t indexCount;
@@ -153,6 +156,26 @@ static_assert(sizeof(SMOBatch) == 0x18, "SMOBatch is 24 bytes");
 // ref: FUN_007c7a00
 bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b, const C3Vector& c);
 
+// The world box query: everything under an axis-aligned box that can receive a projected decal,
+// appended to the shared hit-record pool. The decal module resets the pool, calls this, and then
+// re-draws each record's triangles (src/world/Shadow.cpp).
+//
+// `queryMask` selects which classes of geometry the walk visits, and the bits are not independent:
+//   & 0x300f0  the loaded map-object instances are walked
+//   & 0x30100  the terrain chunks are walked
+//   & 0x100    within a chunk, its terrain triangles are collected
+//   & 0x30000  within a chunk or a group, its doodads are collected as well
+// The blob shadow passes 0x220122, so it collects terrain triangles and WMO faces but not doodads
+// of either kind.
+//
+// ref: FUN_007a6af0
+bool MapQueryBox(const CAaBox& box, void* object, uint32_t queryMask);
+
+// The terrain half on its own, reached through the dispatcher above: turn the box into a range of
+// chunks and collect each one.
+// ref: FUN_007a6830
+bool MapQueryBoxTerrain(const CAaBox& box, void* object, uint32_t queryMask);
+
 class CMapObjGroup {
     public:
         // Static variables: the pool of hit records the queries append to (reference globals
@@ -162,12 +185,14 @@ class CMapObjGroup {
         static uint32_t s_hitRecordCount;        // DAT_00cb752c
         static uint32_t s_hitFacePoolCount;      // DAT_00cb7530
         static uint32_t s_hitIndexPoolCount;     // DAT_00cb7534
-        // DAT_00cb7538: the cursor into a pool of 32 placement matrices at DAT_00cd7880, which the
-        // decal module's terrain collector (FUN_007a6260) uses because a terrain receiver has no
-        // instance matrix of its own to point its hit record at. Every query resets it. The pool
-        // itself is not here yet and comes with that collector.
-        static uint32_t s_unk7538;
+        // DAT_00cb7538: the cursor into the placement pool below, which the terrain hit collector
+        // needs because a terrain chunk has no instance matrix of its own to point a record at.
+        // Every query resets it.
+        static uint32_t s_hitPlacementCount;
         static CMapObjHitRecord s_hitRecords[0x20];
+        // DAT_00cd7880: 32 placement matrices, immediately below the record pool in the reference
+        // and the same count, one per record.
+        static C44Matrix s_hitPlacements[0x20];
         static uint16_t s_hitFacePool[0x4000];   // DAT_00cb7540
         static uint16_t s_hitIndexPool[0xc000];  // DAT_00cbf540
 
@@ -177,6 +202,9 @@ class CMapObjGroup {
         static CMapObjHitRecord* AllocHitRecord();
         // ref: FUN_007a6190
         static uint16_t* AllocHitIndices(uint32_t count);
+        // The placement pool's bump allocator, inlined at its one call site in the reference
+        // (FUN_007a6260) the way AllocHitRecord is not.
+        static C44Matrix* AllocHitPlacement();
         static void QueryEnd(SMOPoly* polys);
 
         // Member variables, with the reference's offsets.

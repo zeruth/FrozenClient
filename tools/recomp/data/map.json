@@ -36556,7 +36556,7 @@
    "lib/typhoon/tempest/rect/cirect.cpp"
   ],
   "frozen": "CiRect::Intersection",
-  "frozenSize": 0,
+  "frozenSize": 83,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 88,
@@ -45170,6 +45170,86 @@
   "refSize": 50,
   "status": "ported"
  },
+ "007a61d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "ClassifyCorner",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 144,
+  "status": "ported"
+ },
+ "007a6260": {
+  "branchRatio": 0.619,
+  "constOverlap": 0.081,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "TerrainCollectHits",
+  "frozenSize": 2438,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 956,
+  "status": "ported"
+ },
+ "007a6630": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.179,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "MapQueryBoxChunk",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 507,
+  "status": "ported"
+ },
+ "007a6830": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "MapQueryBoxTerrain",
+  "frozenSize": 815,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 272,
+  "status": "ported"
+ },
+ "007a6af0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "MapQueryBox",
+  "frozenSize": 16,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 69,
+  "status": "ported"
+ },
  "007a6b40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -48140,7 +48220,7 @@
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::BuildIndices",
-  "frozenSize": 862,
+  "frozenSize": 878,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 247,
@@ -48652,7 +48732,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::RecordHits",
-  "frozenSize": 639,
+  "frozenSize": 640,
   "how": "override",
   "module": "MapChunk.cpp",
   "refSize": 1062,
@@ -50693,7 +50773,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "DecalStreamReceiver",
-  "frozenSize": 564,
+  "frozenSize": 692,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 785,
@@ -50708,7 +50788,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "DecalStreamReceiverColored",
-  "frozenSize": 452,
+  "frozenSize": 548,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 634,
@@ -50813,7 +50893,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "DecalDrawReceivers",
-  "frozenSize": 1014,
+  "frozenSize": 1203,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 1264,
@@ -50843,7 +50923,7 @@
    "src/world/Shadow.cpp"
   ],
   "frozen": "ShadowProjectBlob",
-  "frozenSize": 2134,
+  "frozenSize": 2146,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 1370,
@@ -50862,6 +50942,21 @@
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 96,
+  "status": "ported"
+ },
+ "007e4a40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowInit",
+  "frozenSize": 400,
+  "how": "override",
+  "module": "DeclinedWords.cpp",
+  "refSize": 298,
   "status": "ported"
  },
  "007e6480": {

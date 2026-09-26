@@ -381,11 +381,10 @@ const C3Vector DECAL_VERTEX_NORMAL = { 0.0f, 0.0f, 1.0f };
 // a triangle is kept only when its XY cross product is non-negative, i.e. it faces up. Bit 2 of the
 // flags skips the test; the blob's mask (0x220122) has that bit clear, so blobs are upward-only.
 //
-// DIVERGED, and the field name in CMapObjHitRecord is about to be wrong: the reference branches on
-// the record's +0x0c, which frozen calls `unused3`. A non-zero value takes a different path that
-// emits one vertex per index and reads a float per vertex out of that field, and the local
-// accounting in the decompilation does not add up to a 0x18 vertex, so it is not reproduced here.
-// Nothing in frozen ever sets that field -- AllocHitRecord zeroes it -- so the path is unreachable.
+// A record with a HEIGHT ARRAY takes the other path entirely, and that is the terrain receiver's:
+// one vertex per index in index order, no triangle expansion and no winding test, with each vertex's
+// z read out of the array instead of out of the shared vertex table. It leaves batch.m_count alone,
+// which is why the caller sets it to the index count before calling either builder.
 static void DecalStreamReceiver(const CMapObjHitRecord& record, CGxBatch& batch, uint32_t flags) {
     auto stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x18, record.indexCount);
 
@@ -396,6 +395,27 @@ static void DecalStreamReceiver(const CMapObjHitRecord& record, CGxBatch& batch,
     auto vertices = reinterpret_cast<float*>(g_theGxDevicePtr->BufLock(stream));
 
     if (!vertices) {
+        return;
+    }
+
+    if (record.heights) {
+        float* out = vertices;
+
+        for (uint32_t i = 0; i < record.indexCount; i++) {
+            uint16_t v = record.indices[i];
+
+            *out++ = record.vertices[v].x;
+            *out++ = record.vertices[v].y;
+            *out++ = record.heights[v];
+            *out++ = DECAL_VERTEX_NORMAL.x;
+            *out++ = DECAL_VERTEX_NORMAL.y;
+            *out++ = DECAL_VERTEX_NORMAL.z;
+        }
+
+        g_theGxDevicePtr->BufUnlock(stream, 0);
+        stream->unk1C = 1;
+        GxPrimVertexPtr(stream, GxVBF_PN);
+
         return;
     }
 
@@ -456,11 +476,9 @@ uint32_t s_decalM2ReceiverCount = 0;
 // halves the arguments ask for, and say whether anything was found. `wantM2` and `wantHits` are the
 // reference's own out-parameters, and the walk reads them to decide which of its two loops to run.
 //
-// The five counters reset here are the hit-record pools CMapObjGroup owns. Worth recording while
-// passing: `s_unk7538` is not a mystery any more -- the terrain collector (FUN_007a6260) uses it as
-// the cursor into a 32-entry pool of placement matrices at DAT_00cd7880, which it needs because a
-// terrain receiver has no instance matrix of its own to point at. frozen has the counter but not
-// the pool, and the pool comes with that collector.
+// The five counters reset here are the hit-record pools CMapObjGroup owns, the last of them the
+// cursor into the 32 placement matrices the terrain collector hands out -- a terrain chunk has no
+// instance matrix of its own for a record to point at, so it gets one from there.
 int32_t DecalCollectReceivers(const CAaBox& casterBox, uint32_t queryMask, uint32_t flags, uint32_t* wantM2, uint32_t* wantHits) {
     *wantM2 = flags & 1;
 
@@ -486,17 +504,18 @@ int32_t DecalCollectReceivers(const CAaBox& casterBox, uint32_t queryMask, uint3
         CMapObjGroup::s_hitRecordCount = 0;
         CMapObjGroup::s_hitFacePoolCount = 0;
         CMapObjGroup::s_hitIndexPoolCount = 0;
-        CMapObjGroup::s_unk7538 = 0;
+        CMapObjGroup::s_hitPlacementCount = 0;
 
         s_decalQueryMask = queryMask;
 
-        // TODO FUN_007a6af0, reached through the one-line wrapper FUN_0077f340: the dispatcher, and
-        // with it the whole query. On mask & 0x300f0 it walks the loaded map-object instances
-        // (FUN_007a6940 -> FUN_007aef00 -> FUN_007cb7b0, whose bottom is frozen's
-        // CMapObjGroup::QueryBox and RecordHits); on mask & 0x30100 it walks the terrain tiles
-        // (FUN_007a6830 -> FUN_007a6630 -> FUN_007a6260, the 956-byte collector that appends a hit
-        // record per terrain triangle the volume cuts). That terrain half is what puts a blob on
-        // the ground, and it is the last thing missing. docs/ref/parity-shadows.md maps the chain.
+        // The query itself, reached in the reference through the one-line wrapper FUN_0077f340. Its
+        // terrain half is ported and is what puts a blob on the ground; the map-object half is not,
+        // and MapQueryBox carries the note saying what it still needs.
+        //
+        // The reference's three arguments all arrive in registers, the box in ESI and the mask in
+        // EBX, and the third -- the owner a hit record is stamped with -- is never set on this path.
+        // Only the map-object half reads it: a terrain record is stamped with its own chunk.
+        MapQueryBox(s_decalCasterBox, nullptr, queryMask);
     }
 
     return (s_decalM2ReceiverCount != 0 || CMapObjGroup::s_hitRecordCount != 0) ? 1 : 0;
@@ -523,8 +542,8 @@ static void DecalFixupColor(uint32_t& color) {
 // GxVBF_PC. The colour is the same for every vertex -- the decal's own, already fixed up for the
 // device's byte order -- so this is a flat tint, not per-vertex shading.
 //
-// Same two branches as the plain builder: the winding test on bit 2 of the flags, and the
-// unreachable path on the record's +0x0c.
+// Same two branches as the plain builder: the winding test on bit 2 of the flags, and the height-
+// array path a terrain receiver takes.
 static void DecalStreamReceiverColored(const CMapObjHitRecord& record, CGxBatch& batch, uint32_t color, uint32_t flags) {
     auto stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x10, record.indexCount);
 
@@ -535,6 +554,27 @@ static void DecalStreamReceiverColored(const CMapObjHitRecord& record, CGxBatch&
     auto vertices = reinterpret_cast<uint32_t*>(g_theGxDevicePtr->BufLock(stream));
 
     if (!vertices) {
+        return;
+    }
+
+    if (record.heights) {
+        uint32_t* out = vertices;
+
+        for (uint32_t i = 0; i < record.indexCount; i++) {
+            uint16_t v = record.indices[i];
+
+            auto position = reinterpret_cast<float*>(out);
+            position[0] = record.vertices[v].x;
+            position[1] = record.vertices[v].y;
+            position[2] = record.heights[v];
+            out[3] = color;
+            out += 4;
+        }
+
+        g_theGxDevicePtr->BufUnlock(stream, 0);
+        stream->unk1C = 1;
+        GxPrimVertexPtr(stream, GxVBF_PC);
+
         return;
     }
 

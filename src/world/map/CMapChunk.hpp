@@ -81,6 +81,11 @@ class CMapChunk : public CMapBaseObj {
         // the inner row interleaved after each outer row as MCVT stores heights. z is unused.
         static float s_vertexTable[145][3];  // DAT_00d25498
         static float s_invCellSize;          // DAT_00d25488: -1 / s_vertexTable[1][1]
+        // Row-major bit for each 2x2 cell of a chunk's 4x4 hole grid (DAT_00a3faf0). A static
+        // here rather than a file-local table because the terrain decal collector in
+        // CMapObjGroup.cpp reads it too, as the reference's own module-level table is read across
+        // translation units.
+        static const uint16_t s_holeMask[16];
 
         // Raise the horizon along this chunk's two far edges, the ones facing the camera.
         // ref: FUN_007cfb10

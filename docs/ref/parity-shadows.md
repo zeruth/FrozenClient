@@ -758,7 +758,7 @@ builder read maps onto the existing `CMapObjHitRecord`:
 |---|---|---|
 | `+0x00` | `placement` | required non-null; the walk skips a record without one |
 | `+0x04` | `vertices` | the receiver's vertices, stride 0xc |
-| `+0x0c` | `unused3` | **not unused**: `FUN_007e2fd0` branches on it, zero taking the triangle path |
+| `+0x0c` | `heights` | **not unused**: the receiver's separate height array. Non-zero switches both stream builders to one vertex per index, z read from here. It is what lets a terrain chunk be a receiver, since its vertices are the shared XY-only `CMapChunk::s_vertexTable` |
 | `+0x10` | `indices` | three per hit face |
 | `+0x18` | `indexCount` | the walk skips a record whose `count * 3` exceeds 0x10000 |
 | `+0x1c` | `minIndex` | seeded to `0xffff` by `AllocHitRecord`, which is how the mapping was confirmed |
@@ -767,12 +767,32 @@ So the missing pieces are smaller than they looked: run a hit query over the cas
 volume, then `FUN_007e3e80` to stream and draw what it found. The struct, the pools, the allocator
 and the BSP queries that fill them are all in the tree already.
 
-One field name to fix when this lands: `CMapObjHitRecord::unused3` has a reader.
+Done 2026-09-26: `CMapObjHitRecord::unused3` is `heights`, and both stream builders now take its path.
 
-## The one remaining gap: the query that fills the hit records
+## The query that fills the hit records --- terrain half ported 2026-09-26
 
-Everything from the caster's box down to the draw is ported. What is missing is the query in the
-middle, and it is a chain of seven functions, mapped end to end on 2026-09-26:
+Everything from the caster's box down to the draw is ported, and so is the terrain half of the query
+in the middle: `MapQueryBox` / `MapQueryBoxTerrain` and their two helpers live in
+`src/world/map/CMapObjGroup.cpp`, next to the hit-record allocators, which is where the reference
+keeps them. **Built, never seen running.** A blob needs `shadowLOD` 1 and `extShadowQuality` 0.
+
+Ported: `FUN_007a6af0` (the dispatcher), `FUN_007a6830` (box to chunk range), `FUN_007a6630` (one
+chunk: find it, rebase the box, clip the cell rect), `FUN_007a6260` (the terrain hit collector),
+`FUN_007a61d0` (the corner outcode). With them: the 32-matrix placement pool at `DAT_00cd7880`
+(`CMapObjGroup::s_hitPlacements`, allocated by `AllocHitPlacement`, cursor `s_hitPlacementCount` --
+the old `s_unk7538`), and the two static tables, the cell's five vertex offsets `{0,9,17,1,18}` from
+`0x00a40618` and its four triangles `{17,9,0} {9,1,0} {9,17,18} {9,18,1}` from `0x00a405e8`.
+
+Still open, both inside the chain below:
+
+* **The map-object half**, `FUN_007a6940` -> `FUN_007aef00` -> `FUN_007cb7b0`, about 1.1 KB. Its
+  blocker is the loaded map-object instance list at `DAT_00d25438` / `DAT_00d25440`, which frozen
+  does not carry; its bottom (`CMapObjGroup::RecordHits`, the box node walk) is already here, and
+  `FUN_007ca920` is the box sibling of the hull walk frozen has as `BoxQueryNode` (`FUN_007ca440`).
+* **The per-chunk doodad collector**, `FUN_007ce960`, on `mask & 0x30000`. The blob's mask has that
+  bit, so this adds doodad receivers -- not ground ones.
+
+The chain, a chain of seven functions mapped end to end on 2026-09-26:
 
 ```
 FUN_007e35f0   228  the setup: stash the caster's box at DAT_00d38058..6c, reset the five

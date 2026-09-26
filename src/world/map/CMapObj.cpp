@@ -69,7 +69,7 @@ bool CMapObj::GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CIm
         CMapObjGroup::s_hitRecordCount = 0;
         CMapObjGroup::s_hitFacePoolCount = 0;
         CMapObjGroup::s_hitIndexPoolCount = 0;
-        CMapObjGroup::s_unk7538 = 0;
+        CMapObjGroup::s_hitPlacementCount = 0;
 
         uint8_t unused;
 
@@ -468,7 +468,7 @@ int32_t QuerySegmentMapObjs(const C3Vector& start, const C3Vector& end, float ma
             CMapObjGroup::s_hitRecordCount = 0;
             CMapObjGroup::s_hitFacePoolCount = 0;
             CMapObjGroup::s_hitIndexPoolCount = 0;
-            CMapObjGroup::s_unk7538 = 0;
+            CMapObjGroup::s_hitPlacementCount = 0;
 
             // The reference hands a throwaway byte here -- it points at the top byte of its own
             // maxT argument, which nothing reads afterwards.

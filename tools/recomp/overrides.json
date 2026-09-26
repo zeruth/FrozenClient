@@ -717,8 +717,9 @@
     "note": "'Invalid function pointer: %p' guard around a callback (callers: ConsoleCommandExecute, CVarSetCommandHandler ...); the reference calls it 100x/frame. frozen has no such guard; CVar::Set was a mis-annotation."
   },
   "007e4a40": {
-    "status": "unlinked",
-    "note": "ShadowInit: builds the ShadowAdd/ShadowMod 64x8 ramp textures once (parity-shadows.md); frozen has no counterpart yet"
+    "frozen": "ShadowInit",
+    "status": "ported",
+    "note": "Builds the blob texture and the two generated ShadowAdd/ShadowMod 64x8 ramps once and registers the shadowLOD CVar (parity-shadows.md). The `unlinked` status here was stale from before src/world/Shadow.cpp existed and contradicted the function's own ref tag; corrected 2026-09-26."
   },
   "007f2790": {
     "status": "unlinked",
