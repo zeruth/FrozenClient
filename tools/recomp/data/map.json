@@ -15263,7 +15263,7 @@
   "status": "ported"
  },
  "004f8ea0": {
-  "branchRatio": 0.538,
+  "branchRatio": 0.519,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.224,
@@ -44278,12 +44278,13 @@
   "status": "verified"
  },
  "00790a80": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
-   "src/world/CWorldScene.cpp"
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::DrawLiquidPass",
   "frozenSize": 47,
@@ -44836,7 +44837,7 @@
   "status": "ported"
  },
  "0079a870": {
-  "branchRatio": 0.458,
+  "branchRatio": 0.542,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.34,
@@ -44897,6 +44898,21 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 33,
+  "status": "ported"
+ },
+ "0079d5e0": {
+  "branchRatio": 0.151,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.038,
+  "files": [
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::Draw",
+  "frozenSize": 809,
+  "how": "callgraph",
+  "module": "WorldParam.cpp",
+  "refSize": 2552,
   "status": "ported"
  },
  "0079e470": {
@@ -47169,6 +47185,22 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 438,
+  "status": "ported"
+ },
+ "007bb670": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowSetupPlane",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 448,
   "status": "ported"
  },
  "007bd450": {
@@ -50512,6 +50544,21 @@
   "module": "DeclinedWords.cpp",
   "refSize": 132,
   "status": "stub"
+ },
+ "007e2d60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/liquidmaterialsettings.hpp"
+  ],
+  "frozen": "Liquid::IMaterial::Draw",
+  "frozenSize": 3,
+  "how": "callgraph",
+  "module": "DeclinedWords.cpp",
+  "refSize": 623,
+  "status": "ported"
  },
  "007e6480": {
   "branchRatio": 0.0,
@@ -59878,16 +59925,16 @@
   "status": "ported"
  },
  "00874660": {
-  "branchRatio": 0.333,
-  "constOverlap": 0.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.286,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.125,
   "files": [
    "src/world/ShadowMap.cpp",
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindTerrain",
-  "frozenSize": 3,
+  "frozenSize": 456,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 247,

@@ -1,4 +1,8 @@
 #include "world/map/CMap.hpp"
+#include "object/client/CGUnit_C.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "world/ShadowMap.hpp"
+#include "world/MapShadow.hpp"
 #include "world/ParticleFx.hpp"
 #include "world/map/VBBList.hpp"
 #include "world/map/CChunkLiquid.hpp"
@@ -1445,6 +1449,18 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     CShaderEffect::UpdateProjMatrix();
     CWorld::SetupFogRenderStates();
+
+    // The map object shadow plane, where the reference builds it -- FUN_007bb670 is called from
+    // CMap::Render at 0x0079abda, after the traversal and before the draws. Gated on the shadow
+    // quality like every other part of that path, so it is inert until the quality is wired.
+    if (ShadowMapGetQuality() > 0) {
+        auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__);
+
+        if (player) {
+            MapShadowSetupPlane(player->GetPosition());
+        }
+    }
+
     CWorldScene::RenderTerrain();
 
     CWorldScene::RenderMapObjs();

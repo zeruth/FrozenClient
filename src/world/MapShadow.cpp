@@ -8,6 +8,7 @@
 #include "gx/Transform.hpp"
 #include "gx/texture/CGxTex.hpp"
 #include <tempest/Matrix.hpp>
+#include <tempest/Plane.hpp>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -368,4 +369,56 @@ void MapShadowRequestDump(const char* path) {
 
     strncpy(s_dumpPath, path, sizeof(s_dumpPath) - 1);
     s_dumpPath[sizeof(s_dumpPath) - 1] = 0;
+}
+
+// The plane and height the MAP OBJECT and interior shadow binders read, and the last thing item 10
+// names. Only those binders consume it -- the terrain path never reads a plane -- which is why a
+// terrain-only port could skip this.
+C4Plane g_mapShadowPlane = { { 0.0f, 0.0f, 1.0f }, 0.0f };
+float g_mapShadowHeight = 0.0f;
+
+// ref: FUN_007bb670
+// Writes exactly two things: a plane through the player, and the player's height plus two.
+//
+// The normal is the WORLD matrix's third row, normalised -- (0, 0, 1) whenever that matrix is
+// identity, which it is at the reference's only call site. The point is the player position made
+// camera-relative and then pushed through world * view.
+//
+// UNCERTAIN, and the reference is what it is: this mixes a world-space normal with a view-space
+// point, which only produces a meaningful plane because the world matrix is identity there. Its
+// intended space was not resolved, so this reproduces the arithmetic rather than a cleaned-up
+// version of it. See docs/ref/parity-shadowmap.md section 6c.
+void MapShadowSetupPlane(const C3Vector& playerPos) {
+    C44Matrix world;
+    GxXformWorld(world);
+
+    C44Matrix view;
+    GxXformView(view);
+
+    C44Matrix worldView = world * view;
+
+    C3Vector normal = { world.c0, world.c1, world.c2 };
+    float length = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+
+    if (length > 0.0f) {
+        float inv = 1.0f / length;
+        normal.x *= inv;
+        normal.y *= inv;
+        normal.z *= inv;
+    }
+
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+    C3Vector relative = {
+        playerPos.x - cameraPos.x,
+        playerPos.y - cameraPos.y,
+        playerPos.z - cameraPos.z
+    };
+
+    C3Vector point = relative * worldView;
+
+    g_mapShadowPlane.n = normal;
+    g_mapShadowPlane.d = -(normal.x * point.x + normal.y * point.y + normal.z * point.z);
+
+    // DAT_00a4040c.
+    g_mapShadowHeight = playerPos.z + 2.0f;
 }

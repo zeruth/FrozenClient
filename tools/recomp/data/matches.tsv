@@ -2812,6 +2812,7 @@ addr	how	frozen	evidence
 0079adc0	annotated	CMapObjGroup::SetBsp	tag in src/world/map/CMapObjGroupLoad.cpp
 0079ae80	override	CMap::BuildBspLeafCache	
 0079b440	annotated	CMap::GetLoadedArea	tag in src/world/map/CMap.cpp
+0079d5e0	callgraph	Liquid::Draw	only unmatched callee of 00790a80=CWorldScene::DrawLiquidPass
 0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
 0079e5c0	annotated	CMap::GetTerrainPixelShader	tag in src/world/map/CMap.cpp
@@ -2955,6 +2956,7 @@ addr	how	frozen	evidence
 007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
 007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
 007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp
+007bb670	annotated	MapShadowSetupPlane	tag in src/world/MapShadow.cpp
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
@@ -3165,6 +3167,7 @@ addr	how	frozen	evidence
 007e29c0	handler	ReceiveGameTimeUpdate	SetMessageHandler(SMSG_GAME_TIME_UPDATE) on both sides
 007e2a50	handler	ReceiveServerTime	SetMessageHandler(SMSG_SERVERTIME) on both sides
 007e2b40	handler	ReceiveNewGameTime	SetMessageHandler(SMSG_GAME_TIME_SET) on both sides
+007e2d60	callgraph	Liquid::IMaterial::Draw	only unmatched callee of 0079d5e0=Liquid::Draw
 007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
 007e7c70	annotated	CoinSplit	tag in src/ui/game/GameScript.cpp
 007e7cc0	override	CoinIconFormat	

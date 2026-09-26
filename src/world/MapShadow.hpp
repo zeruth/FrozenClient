@@ -67,4 +67,13 @@ CGxTex* MapShadowTexture();
 // Debug: write the map out as a greyscale TGA on the next frame that renders it.
 void MapShadowRequestDump(const char* path);
 
+// The plane and height the map object and interior shadow binders sample against. Built by
+// MapShadowSetupPlane; the terrain path never reads them. ref: FUN_007bb670
+#include <tempest/Plane.hpp>
+
+extern C4Plane g_mapShadowPlane;
+extern float g_mapShadowHeight;
+
+void MapShadowSetupPlane(const C3Vector& playerPos);
+
 #endif
