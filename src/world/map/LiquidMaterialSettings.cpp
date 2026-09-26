@@ -2,6 +2,8 @@
 #include "db/Db.hpp"
 #include "gx/CGxCaps.hpp"
 #include "gx/Device.hpp"
+#include <cmath>
+#include <common/Time.hpp>
 #include "gx/shader/CGxShader.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Gx.hpp"
@@ -70,7 +72,7 @@ void CMaterialSettings::LoadTextures() {
     for (uint32_t slot = 0; slot < TEXTURE_SLOTS; slot++) {
         const char* name = this->m_textureName[slot];
 
-        this->m_current[slot] = nullptr;
+        this->m_resident[slot] = 0;
 
         if (!name[0]) {
             continue;
@@ -125,6 +127,81 @@ void CMaterialSettings::LoadTextures() {
         // not established, so m_framesAlt stays empty.
         (void)any;
     }
+}
+
+// ref: FUN_008a1d60
+// Which frame of a slot's animation is showing, and the thing that makes water move.
+//
+// Two jobs in one, and the second is the reason for m_framesAlt. Until every frame of the slot has
+// arrived the pick comes out of the stand-in set, and each still-pending frame gets its streaming
+// priority raised on the way past; once they have all landed the flag latches, the stand-ins are
+// closed, and every later call reads the real set directly.
+CGxTex* CMaterialSettings::GetFrame(uint32_t slot, uint32_t periodMs) {
+    uint32_t count = this->m_frames[slot].Count();
+
+    if (!count) {
+        return nullptr;
+    }
+
+    // A single still needs none of the machinery below, not even a resident check.
+    if (count == 1) {
+        return TextureGetGxTex(this->m_frames[slot][0], 0, nullptr);
+    }
+
+    TSGrowableArray<HTEXTURE>& frames = this->m_frames[slot];
+    TSGrowableArray<HTEXTURE>* pick = &frames;
+
+    if (!this->m_resident[slot]) {
+        if (!this->m_framesAlt[slot].Count()) {
+            // No stand-ins: the slot simply does not draw until every frame has a GxTex.
+            for (uint32_t i = 0; i < count; i++) {
+                if (!TextureGetGxTex(frames[i], 0, nullptr)) {
+                    return nullptr;
+                }
+            }
+
+            this->m_resident[slot] = 1;
+        } else {
+            bool ready = true;
+
+            for (uint32_t i = 0; i < count; i++) {
+                if (TextureHasPendingData(frames[i])) {
+                    // Ask for it sooner, and show a stand-in this frame.
+                    TextureIncreasePriority(TextureGetTexturePtr(frames[i]));
+
+                    ready = false;
+                    break;
+                }
+            }
+
+            if (!ready) {
+                pick = &this->m_framesAlt[slot];
+            } else {
+                this->m_resident[slot] = 1;
+
+                for (uint32_t i = 0; i < this->m_framesAlt[slot].Count(); i++) {
+                    HandleClose(this->m_framesAlt[slot][i]);
+                }
+
+                this->m_framesAlt[slot].SetCount(0);
+            }
+        }
+    }
+
+    if (!periodMs) {
+        periodMs = 1;
+    }
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    float phase = static_cast<float>(now % periodMs) / static_cast<float>(periodMs);
+
+    // The reference writes this as round(count * phase - 0.5), and nearbyintf is the same
+    // half-to-even rounding the x87 ROUND it compiles to uses -- so this is exact, not a
+    // simplification to floor. phase < 1 keeps the result inside 0 .. count-1 without a clamp.
+    int32_t frame = static_cast<int32_t>(nearbyintf(static_cast<float>(count) * phase - 0.5f));
+
+    return TextureGetGxTex((*pick)[frame], 1, nullptr);
 }
 
 // ref: FUN_008a28f0

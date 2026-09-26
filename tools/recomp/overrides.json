@@ -3057,5 +3057,17 @@
   "007ce520": {
     "status": "unlinked",
     "note": "Builds a CChunkLiquid layer's bounding SPHERE, for the occlusion-volume test FUN_007cce00 that gates the row visit at 0x00793715 before UpdateForFrame runs. The callgraph matcher bound it to Liquid::Add once that was wired next door; that is wrong -- Liquid::Add is FUN_008a20c0. Not ported: CWorldScene::TraverseRowLiquids carries the TODO."
+  },
+  "008a16c0": {
+    "status": "excluded",
+    "note": "CMaterialSettings::GetInt -- returns m_int[i] at +0x308, which the liquid draw uses as an animation period in milliseconds for the slots that do not take the 1250 ms default. Ported as an inline accessor in LiquidMaterialSettings.hpp, so there is no frozen function in the PDB to bind."
+  },
+  "008a16e0": {
+    "status": "excluded",
+    "note": "CMaterialSettings::GetStageFloat -- returns one of the eighteen floats at +0x318 by FLAT index, which is how the draw asks for them (0..10 across both stages rather than a stage at a time). Ported as an inline accessor in LiquidMaterialSettings.hpp; nothing in the PDB to bind."
+  },
+  "008a1750": {
+    "status": "unlinked",
+    "note": "Returns the module float at 0x00b23f64, which the liquid draw multiplies into eight of the stage floats (the ones it does NOT multiply by 0x009ed910 instead). A setter at 0x008a1770 writes that global along with the procedural shader suffix, and nothing frozen has found calls it -- so what feeds it is still open. Not ported: porting the value without its writer would bake in whatever it happens to be."
   }
 }

@@ -60471,6 +60471,21 @@
   "refSize": 60,
   "status": "ported"
  },
+ "008a1d60": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "CMaterialSettings::GetFrame",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 481,
+  "status": "ported"
+ },
  "008a1f50": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,

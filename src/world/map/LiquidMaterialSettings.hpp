@@ -36,15 +36,20 @@ class CMaterialSettings {
         // Whether the water is drawn by the procedural shaders rather than the plain ones;
         // LiquidMaterial's own flag bit 0.
         uint8_t m_procedural;                                  // +0x360
-        // The frame the surface is showing right now, one a slot. Nothing here fills it; the
-        // draw picks it out of m_frames as the clock moves.
-        HTEXTURE m_current[TEXTURE_SLOTS];                     // +0x364
+        // Whether every frame of this slot has finished streaming, one a slot. Latched: it goes
+        // to 1 the first time all of them resolve and is never cleared, which is what lets
+        // GetFrame stop asking after that.
+        int32_t m_resident[TEXTURE_SLOTS];                     // +0x364
         // Every frame of each slot's animation. A slot whose name carries no "%d" holds the one
         // still image instead.
         TSGrowableArray<HTEXTURE> m_frames[TEXTURE_SLOTS];     // +0x37c
-        // A second set the reference loads beside the first and keeps only when it came out the
-        // same length. What distinguishes the two is the loader it uses, which frozen has not
-        // identified, so this stays empty.
+        // The stand-in frames, shown while m_frames is still streaming. GetFrame picks out of this
+        // set instead whenever any real frame still has pending data, and the moment they have all
+        // arrived it closes every handle here and empties the array -- so this set exists only for
+        // the first seconds of a map and is not a second quality level.
+        //
+        // It stays empty until the loader that fills it (FUN_004b8d70) is identified, which means
+        // a slot that is still streaming currently shows nothing rather than a placeholder.
         TSGrowableArray<HTEXTURE> m_framesAlt[TEXTURE_SLOTS];  // +0x3dc
 
         // Member functions
@@ -55,6 +60,22 @@ class CMaterialSettings {
         // Open each slot's frames. A name carrying "%d" is an animation, numbered from one until
         // the files run out; anything else is a single still. ref: FUN_008a2450
         void LoadTextures();
+
+        // The frame one slot is showing now, over an animation `periodMs` long. Null while the
+        // slot has nothing, or while its frames are still streaming and there is no stand-in.
+        // ref: FUN_008a1d60
+        CGxTex* GetFrame(uint32_t slot, uint32_t periodMs);
+
+        // One of the four ints at +0x308. The draw uses these as the animation period in
+        // milliseconds for the slots that do not take the default. ref: FUN_008a16c0
+        int32_t GetInt(uint32_t index) const { return this->m_int[index]; }
+
+        // One of the eighteen stage floats at +0x318, by FLAT index -- which is how the draw asks
+        // for them, walking 0..10 across the two stages rather than a stage at a time.
+        // ref: FUN_008a16e0
+        float GetStageFloat(uint32_t index) const {
+            return this->m_stage[index / STAGE_FLOATS][index % STAGE_FLOATS];
+        }
 };
 
 // What actually draws a surface. There is one implementation a liquid material -- water, magma
