@@ -15272,7 +15272,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1805,
+  "frozenSize": 1825,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -44286,7 +44286,7 @@
    "src/world/CWorldScene.cpp"
   ],
   "frozen": "CWorldScene::DrawLiquidPass",
-  "frozenSize": 0,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 44,
@@ -44845,7 +44845,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 936,
+  "frozenSize": 950,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
