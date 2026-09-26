@@ -1,0 +1,129 @@
+#ifndef WORLD_MAP_MAP_HORIZON_TABLE_HPP
+#define WORLD_MAP_MAP_HORIZON_TABLE_HPP
+
+#include <cstdint>
+
+// The reference's fixed horizon occluders, read out of its image rather than invented. A static
+// initialiser at 0x009cec90 registers five of them through FUN_007cc890; the records themselves
+// live in zeroed memory at 0x00d2dc20, which is why they cannot simply be read as a table.
+//
+// Each is a run of DISJOINT SEGMENTS, not a polyline: the walk steps two vertices at a time, so a
+// run of 22 vertices is eleven separate edges. Each segment is a vertical curtain -- the vertices
+// give its top and `drop` says how far below them it reaches.
+//
+// ALL FIVE ARE MAP 571 (Northrend). Nothing here applies to the 609 spawn the client auto-logs
+// into, so this cannot be exercised there.
+//
+// HOW THE REFERENCE USES THEM, so the feed can be written without re-deriving any of this:
+//
+//   FUN_007cc810 walks the five records once a frame. A record whose mapId is not the current
+//   map is skipped, and so is one whose box (which FUN_007cc890 builds from the vertices, with
+//   the minimum z lowered by `drop`) is outside the frustum. For the rest it hands each pair of
+//   vertices to FUN_007927e0 -- stepping two at a time, which is what makes the runs disjoint
+//   segments rather than polylines.
+//
+//   FUN_007927e0 is NOT a rasteriser, which is the easy thing to assume. It gates on the camera
+//   height lying inside a band, projects both ends through the plane at 0x00cd8f90 to get a
+//   distance, and turns that into a band index with a scale and bias. If either end is inside
+//   the first 64 bands it takes a segment record, and when the two ends land in DIFFERENT bands
+//   it splits the segment at every band boundary between them -- clipping against a table of
+//   planes at 0x00cdab5c, four floats each -- and links each piece into a list with
+//   FUN_006ded60. Only then does anything shade the horizon with them.
+//
+// That clipper and the list it feeds are what remains of item 7. The table below is the part
+// that cannot be re-derived from the decompilation, so it is captured here first.
+namespace MapHorizon {
+
+struct SOccluder {
+    int32_t mapId;
+    float drop;             // negative: how far the curtain hangs below its vertices
+    uint32_t firstVertex;
+    uint32_t vertexCount;
+};
+
+static const SOccluder OCCLUDERS[5] = {
+    { 571, -100.0f,   0, 22 },
+    { 571, -100.0f,  22, 16 },
+    { 571, -50.0f,  38,  6 },
+    { 571, -50.0f,  44,  6 },
+    { 571, -100.0f,  50, 22 },
+};
+
+static const float VERTICES[72][3] = {
+    { 2287.72998046875f, 5169.47998046875f, 44.16999816894531f },
+    { 2297.800048828125f, 5165.72021484375f, 44.16999816894531f },
+    { 2296.860107421875f, 5166.18994140625f, 33.630001068115234f },
+    { 2328.3798828125f, 5159.77001953125f, 33.630001068115234f },
+    { 2327.02001953125f, 5159.72998046875f, 45.0f },
+    { 2337.2099609375f, 5163.8798828125f, 45.0f },
+    { 2335.610107421875f, 5162.58984375f, 30.899999618530273f },
+    { 2364.89990234375f, 5187.669921875f, 30.899999618530273f },
+    { 2364.080078125f, 5186.9599609375f, 39.150001525878906f },
+    { 2372.4599609375f, 5196.06005859375f, 39.150001525878906f },
+    { 2372.9599609375f, 5192.89990234375f, 27.809999465942383f },
+    { 2381.719970703125f, 5230.60986328125f, 27.809999465942383f },
+    { 2381.6201171875f, 5229.2001953125f, 40.900001525878906f },
+    { 2381.3798828125f, 5239.990234375f, 40.900001525878906f },
+    { 2370.56005859375f, 5272.83984375f, 47.0f },
+    { 2365.47998046875f, 5281.81005859375f, 47.0f },
+    { 2366.570068359375f, 5281.31005859375f, 33.099998474121094f },
+    { 2342.169921875f, 5301.83984375f, 33.099998474121094f },
+    { 2341.389892578125f, 5302.18994140625f, 50.630001068115234f },
+    { 2325.2900390625f, 5313.2900390625f, 50.630001068115234f },
+    { 2325.2900390625f, 5313.2900390625f, 50.630001068115234f },
+    { 2314.610107421875f, 5303.97021484375f, 50.630001068115234f },
+    { 2189.10009765625f, 5348.6298828125f, 44.7400016784668f },
+    { 2200.340087890625f, 5343.43017578125f, 44.7400016784668f },
+    { 2122.22998046875f, 5368.759765625f, 32.36000061035156f },
+    { 2076.050048828125f, 5340.02001953125f, 32.36000061035156f },
+    { 2076.050048828125f, 5340.02001953125f, 32.36000061035156f },
+    { 2064.679931640625f, 5300.58984375f, 32.36000061035156f },
+    { 2065.10009765625f, 5302.509765625f, 64.31999969482422f },
+    { 2063.469970703125f, 5290.35986328125f, 64.31999969482422f },
+    { 2062.590087890625f, 5291.60009765625f, 51.33000183105469f },
+    { 2077.090087890625f, 5252.009765625f, 51.33000183105469f },
+    { 2077.090087890625f, 5252.009765625f, 51.33000183105469f },
+    { 2109.760009765625f, 5225.7900390625f, 51.33000183105469f },
+    { 2108.5f, 5228.31005859375f, 39.7599983215332f },
+    { 2190.550048828125f, 5195.10009765625f, 39.7599983215332f },
+    { 2189.10009765625f, 5348.6298828125f, 44.7400016784668f },
+    { 2200.340087890625f, 5343.43017578125f, 44.7400016784668f },
+    { 701.4099731445312f, -5045.22021484375f, 25.0f },
+    { 702.1500244140625f, -5032.52001953125f, 25.0f },
+    { 702.3200073242188f, -5034.81005859375f, 15.8100004196167f },
+    { 704.030029296875f, -4994.7900390625f, 15.8100004196167f },
+    { 703.4600219726562f, -4995.75f, 19.43000030517578f },
+    { 701.0700073242188f, -4983.97998046875f, 19.43000030517578f },
+    { 693.52001953125f, -4946.7001953125f, 20.299999237060547f },
+    { 690.3200073242188f, -4934.5400390625f, 19.360000610351562f },
+    { 691.1599731445312f, -4936.68994140625f, 15.399999618530273f },
+    { 675.8499755859375f, -4907.31005859375f, 15.399999618530273f },
+    { 676.5700073242188f, -4907.72021484375f, 28.3799991607666f },
+    { 670.0900268554688f, -4896.6201171875f, 28.3799991607666f },
+    { 3922.27001953125f, -3780.830078125f, 223.8800048828125f },
+    { 3931.1298828125f, -3816.64990234375f, 225.3000030517578f },
+    { 3930.429931640625f, -3816.25f, 247.0500030517578f },
+    { 3972.510009765625f, -3865.330078125f, 246.8800048828125f },
+    { 3985.02001953125f, -3862.97998046875f, 266.3800048828125f },
+    { 4019.300048828125f, -3871.85009765625f, 266.3800048828125f },
+    { 4018.840087890625f, -3870.280029296875f, 283.1400146484375f },
+    { 4057.419921875f, -3866.949951171875f, 283.6000061035156f },
+    { 4057.419921875f, -3866.949951171875f, 283.6000061035156f },
+    { 4090.5400390625f, -3839.409912109375f, 283.1400146484375f },
+    { 4097.93017578125f, -3813.610107421875f, 312.8599853515625f },
+    { 4108.39013671875f, -3773.719970703125f, 310.55999755859375f },
+    { 4108.39013671875f, -3773.719970703125f, 310.55999755859375f },
+    { 4085.139892578125f, -3743.489990234375f, 312.8599853515625f },
+    { 4070.070068359375f, -3716.090087890625f, 279.6300048828125f },
+    { 4032.639892578125f, -3689.239990234375f, 283.54998779296875f },
+    { 4032.639892578125f, -3689.239990234375f, 283.54998779296875f },
+    { 4005.669921875f, -3693.699951171875f, 279.6300048828125f },
+    { 4003.3798828125f, -3697.0400390625f, 266.739990234375f },
+    { 3963.340087890625f, -3709.25f, 240.4499969482422f },
+    { 3963.340087890625f, -3709.25f, 240.4499969482422f },
+    { 3936.93994140625f, -3745.72998046875f, 230.22000122070312f },
+};
+
+}
+
+#endif
