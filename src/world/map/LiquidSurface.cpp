@@ -4,6 +4,10 @@
 #include <storm/Memory.hpp>
 #include <cmath>
 #include <new>
+#include "gx/Buffer.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
+#include "gx/buffer/CGxBuf.hpp"
 
 
 namespace Liquid {
@@ -231,6 +235,293 @@ void CreateSurface(CChunkLiquid* liquid) {
 
     // The reference drops the reference CreateSurface itself holds, leaving the layers' own.
     instance->Release();
+}
+
+// ref: FUN_007ce390
+// One layer's vertices. They come straight out of CChunkLiquid::m_vertices -- which are built by
+// BuildVertices and verified -- transformed by the matrix the caller has already positioned for
+// this layer. Every attribute the format carries is written and its pointer advanced by the
+// stride, so the same body serves any format.
+static void WriteLayerVertices(const CChunkLiquid* layer, const C44Matrix& placement,
+                               uint32_t stride, uint8_t** position, uint8_t** normal,
+                               uint8_t** color, uint8_t** uv0, uint8_t** uv1) {
+    uint32_t countX = layer->m_tileEndX - layer->m_tileX + 1;
+    uint32_t countY = layer->m_tileEndY - layer->m_tileY + 1;
+
+    uint32_t n = countX * countY;
+
+    if (n > CChunkLiquid::MAX_VERTICES) {
+        n = CChunkLiquid::MAX_VERTICES;
+    }
+
+    for (uint32_t i = 0; i < n; i++) {
+        C3Vector p = layer->m_vertices[i] * placement;
+
+        if (*position) {
+            auto out = reinterpret_cast<float*>(*position);
+
+            out[0] = p.x;
+            out[1] = p.y;
+            out[2] = p.z;
+
+            *position += stride;
+        }
+
+        // Liquid always faces up, and is always white; the material does the colouring.
+        if (*normal) {
+            auto out = reinterpret_cast<float*>(*normal);
+
+            out[0] = 0.0f;
+            out[1] = 0.0f;
+            out[2] = 1.0f;
+
+            *normal += stride;
+        }
+
+        if (*color) {
+            *reinterpret_cast<uint32_t*>(*color) = 0xffffffffu;
+
+            *color += stride;
+        }
+
+        // TODO ref: with a per-type coordinate table (FUN_0079b870) the reference indexes it by a
+        // byte it reads back through the layer's vertex data. Without that table it writes zeroes,
+        // which is the branch this takes.
+        if (*uv0) {
+            auto out = reinterpret_cast<float*>(*uv0);
+
+            out[0] = 0.0f;
+            out[1] = 0.0f;
+
+            *uv0 += stride;
+        }
+
+        if (*uv1) {
+            auto out = reinterpret_cast<float*>(*uv1);
+
+            out[0] = 0.0f;
+            out[1] = 0.0f;
+
+            *uv1 += stride;
+        }
+    }
+}
+
+// ref: FUN_007ce270
+// One layer's indices, as a TRIANGLE STRIP. This is the part that is easy to get wrong: the
+// allocation is six indices a tile, which is what a triangle LIST would need, but what is written
+// is a strip -- and the strip is stitched across gaps with degenerate triangles, because a layer
+// only covers the tiles CoversTile says are wet. So the count written is almost never the count
+// allocated, and the batch's count is measured as it goes rather than computed up front.
+static void WriteLayerIndices(CChunkLiquid* layer, uint16_t* out, uint16_t base, CGxBatch* batch) {
+    uint16_t* start = out;
+
+    bool inStrip = false;
+    uint16_t other = 0;
+    uint16_t row = static_cast<uint16_t>(layer->m_tileEndY - layer->m_tileY + base);
+
+    for (uint32_t x = layer->m_tileX; x < layer->m_tileEndX; x++) {
+        uint16_t next = row + 1;
+        uint16_t far = static_cast<uint16_t>(row + 2);
+
+        for (uint32_t y = layer->m_tileY; y < layer->m_tileEndY; y++) {
+            if (!layer->CoversTile(y, x)) {
+                if (inStrip) {
+                    inStrip = false;
+
+                    *out++ = other;
+                }
+            } else {
+                if (!inStrip) {
+                    // Restart the strip: two degenerate entries, then the far row's vertex.
+                    *out++ = base;
+                    *out++ = base;
+                    *out++ = next;
+
+                    inStrip = true;
+                }
+
+                *out++ = static_cast<uint16_t>(base + 1);
+
+                other = far;
+
+                *out++ = other;
+            }
+
+            next++;
+            far++;
+            base++;
+        }
+
+        if (inStrip) {
+            *out++ = other;
+
+            inStrip = false;
+        }
+
+        base++;
+        row = next;
+    }
+
+    batch->m_count += static_cast<uint32_t>(out - start);
+}
+
+// ref: FUN_007d4ab0
+// The surface's geometry. Rebuilt only when it has to be: the pair from last time is handed back
+// untouched when both buffers still say they hold data, nothing has marked the factory dirty, and
+// the format has not changed.
+int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf,
+                                 CGxBuf** indexBuf, CGxBatch* batch) {
+    bool cached = this->m_vertexBuf && this->m_indexBuf
+               && this->m_vertexBuf->unk1C && this->m_vertexBuf->unk1D
+               && this->m_indexBuf->unk1C && this->m_indexBuf->unk1D
+               && !this->m_dirty && this->m_builtFormat == static_cast<uint32_t>(format);
+
+    if (cached) {
+        *vertexBuf = this->m_vertexBuf;
+        *indexBuf = this->m_indexBuf;
+        *batch = this->m_batch;
+
+        return 1;
+    }
+
+    // Counting pass. The index figure is the worst case -- six a tile, as a list would need --
+    // because the strip's real length is not known until the dry tiles have been skipped.
+    uint32_t totalVertices = 0;
+    uint32_t maxIndices = 0;
+
+    static TSGrowableArray<uint16_t> s_perLayerVertices;
+
+    s_perLayerVertices.SetCount(0);
+
+    for (uint32_t i = 0; i < this->m_layers.Count(); i++) {
+        const CChunkLiquid* layer = this->m_layers[i];
+
+        uint32_t spanX = layer->m_tileEndX - layer->m_tileX;
+        uint32_t spanY = layer->m_tileEndY - layer->m_tileY;
+
+        uint16_t vertices = static_cast<uint16_t>((spanX + 1) * (spanY + 1));
+
+        s_perLayerVertices.Add(1, &vertices);
+
+        totalVertices += vertices;
+        maxIndices += spanX * spanY * 6;
+    }
+
+    if (!totalVertices || !maxIndices) {
+        return 0;
+    }
+
+    uint32_t stride = GxVertexBufferFormatSize(format);
+
+    // DIVERGED: the reference takes its buffer pair from a pool keyed on the exact byte sizes
+    // (FUN_007cf140 walks a free list for stride*vertices and indices*2, FUN_007cefd0 makes one
+    // when nothing fits). Frozen streams a pair instead. That is an allocation strategy rather
+    // than behaviour, and the pool is worth porting on its own merits, not inside this.
+    if (!this->m_vertexBuf) {
+        this->m_vertexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, stride, totalVertices);
+        this->m_indexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, maxIndices);
+    }
+
+    if (!this->m_vertexBuf || !this->m_indexBuf) {
+        return 0;
+    }
+
+    *vertexBuf = this->m_vertexBuf;
+    *indexBuf = this->m_indexBuf;
+
+    if (this->m_dirty) {
+        this->m_vertexBuf->unk1C = 0;
+        this->m_indexBuf->unk1C = 0;
+    }
+
+    if (!this->m_vertexBuf->unk1C || !this->m_vertexBuf->unk1D) {
+        auto locked = reinterpret_cast<uint8_t*>(g_theGxDevicePtr->BufLock(this->m_vertexBuf));
+
+        if (locked) {
+            uint8_t* position = locked + GxVertexAttribOffset(format, GxVA_Position);
+            uint8_t* normal = nullptr;
+            uint8_t* color = nullptr;
+            uint8_t* uv0 = nullptr;
+            uint8_t* uv1 = nullptr;
+
+            // An attribute the format does not carry reads -1 out of the offset table, which is
+            // the same test the reference makes before it takes each pointer.
+            if (Buffer::s_vertexBufOffset[format][GxVA_Normal] >= 0) {
+                normal = locked + static_cast<uint32_t>(Buffer::s_vertexBufOffset[format][GxVA_Normal]);
+            }
+
+            if (Buffer::s_vertexBufOffset[format][GxVA_Color0] >= 0) {
+                color = locked + static_cast<uint32_t>(Buffer::s_vertexBufOffset[format][GxVA_Color0]);
+            }
+
+            if (Buffer::s_vertexBufOffset[format][GxVA_TexCoord0] >= 0) {
+                uv0 = locked + static_cast<uint32_t>(Buffer::s_vertexBufOffset[format][GxVA_TexCoord0]);
+            }
+
+            if (Buffer::s_vertexBufOffset[format][GxVA_TexCoord1] >= 0) {
+                uv1 = locked + static_cast<uint32_t>(Buffer::s_vertexBufOffset[format][GxVA_TexCoord1]);
+            }
+
+            // Every layer draws relative to the FIRST one, so a merged surface has a single
+            // origin rather than one per chunk.
+            const CChunkLiquid* first = this->m_layers[0];
+
+            for (uint32_t i = 0; i < this->m_layers.Count(); i++) {
+                const CChunkLiquid* layer = this->m_layers[i];
+
+                C44Matrix placement = this->m_placement;
+
+                C3Vector offset = {
+                    layer->m_origin.x - first->m_origin.x,
+                    layer->m_origin.y - first->m_origin.y,
+                    layer->m_origin.z - first->m_origin.z
+                };
+
+                placement.Translate(offset);
+
+                WriteLayerVertices(layer, placement, stride, &position, &normal, &color,
+                                   &uv0, &uv1);
+            }
+
+            g_theGxDevicePtr->BufUnlock(this->m_vertexBuf, 0);
+
+            this->m_vertexBuf->unk1C = 1;
+        }
+    }
+
+    if (!this->m_indexBuf->unk1C || !this->m_indexBuf->unk1D) {
+        batch->m_primType = GxPrim_TriangleStrip;
+        batch->m_start = 0;
+        batch->m_count = 0;
+        batch->m_minIndex = 0;
+        batch->m_maxIndex = static_cast<uint16_t>(totalVertices - 1);
+
+        auto locked = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(this->m_indexBuf));
+
+        if (locked) {
+            uint16_t base = 0;
+
+            for (uint32_t i = 0; i < this->m_layers.Count(); i++) {
+                WriteLayerIndices(this->m_layers[i], locked + batch->m_count, base, batch);
+
+                base = static_cast<uint16_t>(base + s_perLayerVertices[i]);
+            }
+
+            g_theGxDevicePtr->BufUnlock(this->m_indexBuf, 0);
+
+            this->m_indexBuf->unk1C = 1;
+        }
+
+        this->m_batch = *batch;
+    } else {
+        *batch = this->m_batch;
+    }
+
+    this->m_builtFormat = static_cast<uint32_t>(format);
+    this->m_dirty = 0;
+
+    return 1;
 }
 
 }

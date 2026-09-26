@@ -3062,6 +3062,8 @@ addr	how	frozen	evidence
 007ce0b0	annotated	CChunkLiquid::GetHeightAt	tag in src/world/map/CChunkLiquid.cpp
 007ce180	annotated	CChunkLiquid::ReadTileFlags	tag in src/world/map/CChunkLiquid.cpp
 007ce1f0	annotated	CChunkLiquid::CoversTile	tag in src/world/map/CChunkLiquid.cpp
+007ce270	annotated	WriteLayerIndices	tag in src/world/map/LiquidSurface.cpp
+007ce390	annotated	WriteLayerVertices	tag in src/world/map/LiquidSurface.cpp
 007cee10	callgraph	CChunkLiquid::CChunkLiquid	only unmatched callee of 007c0980=CMap::AllocChunkLiquid
 007cf200	annotated	CreateSurface	tag in src/world/map/LiquidSurface.cpp
 007cf9a0	annotated	CChunkLiquid::UpdateForFrame	tag in src/world/map/CChunkLiquid.cpp
@@ -3083,6 +3085,7 @@ addr	how	frozen	evidence
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
 007d49d0	annotated	CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
+007d4ab0	annotated	CChunkGeomFactory::Build	tag in src/world/map/LiquidSurface.cpp
 007d4f10	annotated	CMapLiquidData::SetBody	tag in src/world/map/CMapLiquidData.cpp
 007d5120	annotated	CreateEnvironment	tag in src/world/map/LiquidSurface.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp

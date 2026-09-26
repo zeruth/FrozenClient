@@ -194808,7 +194808,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 11,
+"lines": 10,
 "refs": [],
 "line": 52
 },
@@ -194823,7 +194823,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 64
+"line": 63
 },
 "CChunkLiquid::GetBounds": {
 "files": [
@@ -194838,7 +194838,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 74
+"line": 73
 },
 "CChunkLiquid::UpdateAnim": {
 "files": [
@@ -194857,7 +194857,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 85
+"line": 84
 },
 "CChunkLiquid::ReadTileFlags": {
 "files": [
@@ -194878,7 +194878,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 105
+"line": 104
 },
 "CChunkLiquid::CoversTile": {
 "files": [
@@ -194894,7 +194894,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 124
+"line": 123
 },
 "CChunkLiquid::GetHeightAt": {
 "files": [
@@ -194915,7 +194915,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 145
+"line": 144
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -202844,7 +202844,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 23
+"line": 27
 },
 "Liquid::CChunkGeomFactory::Release": {
 "files": [
@@ -202864,7 +202864,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 27
+"line": 31
 },
 "Liquid::CClientEnvironment::AddRef": {
 "files": [
@@ -202877,7 +202877,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 37
+"line": 41
 },
 "Liquid::CClientEnvironment::Release": {
 "files": [
@@ -202897,7 +202897,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 40
+"line": 44
 },
 "Liquid::CInstance::AddRef": {
 "files": [
@@ -202910,7 +202910,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 47
+"line": 51
 },
 "Liquid::CInstance::Release": {
 "files": [
@@ -202932,7 +202932,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 52
+"line": 56
 },
 "Liquid::CreateGeomFactory": {
 "files": [
@@ -202956,7 +202956,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 76
+"line": 80
 },
 "Liquid::CreateEnvironment": {
 "files": [
@@ -202976,7 +202976,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 96
+"line": 100
 },
 "Liquid::CreateSurface": {
 "files": [
@@ -203017,7 +203017,94 @@
 "stub": false,
 "lines": 120,
 "refs": [],
-"line": 115
+"line": 119
+},
+"Liquid::WriteLayerVertices": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"operator*"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0xffffffffu",
+"1",
+"1.0f",
+"2"
+],
+"branches": 7,
+"stub": false,
+"lines": 62,
+"refs": [],
+"line": 245
+},
+"Liquid::WriteLayerIndices": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"CChunkLiquid::CoversTile"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 6,
+"stub": false,
+"lines": 52,
+"refs": [],
+"line": 316
+},
+"Liquid::CChunkGeomFactory::Build": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"CGxBatch::operator=",
+"TSGrowableArray<unsigned short>::TSGrowableArray",
+"TSGrowableArray<unsigned short>::SetCount",
+"TSBaseArray<CChunkLiquid *>::Count",
+"TSBaseArray<CChunkLiquid *>::operator[]",
+"TSGrowableArray<unsigned short>::Add",
+"GxVertexBufferFormatSize",
+"CGxDevice::BufStream",
+"CGxDevice::BufStream",
+"CGxDevice::BufLock",
+"GxVertexAttribOffset",
+"TSBaseArray<CChunkLiquid *>::operator[]",
+"TSBaseArray<CChunkLiquid *>::Count",
+"TSBaseArray<CChunkLiquid *>::operator[]",
+"C44Matrix::C44Matrix",
+"C3Vector::C3Vector",
+"C44Matrix::Translate",
+"Liquid::WriteLayerVertices",
+"CGxDevice::BufUnlock",
+"CGxDevice::BufLock",
+"TSBaseArray<CChunkLiquid *>::Count",
+"TSBaseArray<CChunkLiquid *>::operator[]",
+"Liquid::WriteLayerIndices",
+"TSBaseArray<unsigned short>::operator[]",
+"CGxDevice::BufUnlock",
+"CGxBatch::operator=",
+"CGxBatch::operator="
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"6"
+],
+"branches": 16,
+"stub": false,
+"lines": 152,
+"refs": [],
+"line": 373
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

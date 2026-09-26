@@ -57,7 +57,6 @@ void CChunkLiquid::UpdateForFrame() {
     // TODO with a surface in hand the reference queues it for the frame's draw
     // (FUN_007d62a0 with the manager from FUN_00780640), gated on the surface having geometry.
     // The draw is not ported, so nothing is queued yet.
-
     this->m_animTime = 0.0f;
 }
 

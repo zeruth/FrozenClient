@@ -3,10 +3,13 @@
 
 #include <storm/Array.hpp>
 #include <tempest/Matrix.hpp>
+#include "gx/CGxBatch.hpp"
+#include "gx/buffer/Types.hpp"
 #include <tempest/Sphere.hpp>
 #include <cstdint>
 
 class CChunkLiquid;
+class CGxBuf;
 
 namespace Liquid {
 
@@ -57,6 +60,19 @@ class CChunkGeomFactory {
 
         void AddRef();
         void Release();
+
+        // Build the surface's vertices and indices, or hand back what was built last time.
+        // ref: FUN_007d4ab0 (the vtable's slot 2)
+        int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
+                      CGxBatch* batch);
+
+        // The buffer pair built last time, and what it was built for.
+        CGxBuf* m_vertexBuf = nullptr;
+        CGxBuf* m_indexBuf = nullptr;
+        CGxBatch m_batch;
+        uint32_t m_builtFormat = 0xffffffff;
+        int32_t m_dirty = 1;
+        C44Matrix m_placement;
 };
 
 // What the material reads the frame's environment through. Holds nothing yet: the reference
