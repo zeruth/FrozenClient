@@ -649,3 +649,69 @@ time on it.
 The comment above that function also claimed the reference derives this strength from the
 ShadowAdd/ShadowMod ramps and that those were undecoded. Both halves are wrong as of today: the ramps
 are decoded, and they are the stage-1 distance fade, not a strength. Corrected in place.
+
+## 2026-09-26: the reference's Shadow.cpp, and what is left of it
+
+The reference keeps the blob shadow in its own module, twenty functions and about 7.8 KB at
+`0x007e2c40..0x007e4b40`. Its own strings name it: `Textures\ShadowBlob.blp`, `ShadowAdd`,
+`ShadowMod`, `Shadow LOD set to %d`. `src/world/Shadow.cpp` is frozen's copy of it.
+
+| reference | what it is | frozen |
+|---|---|---|
+| `FUN_007e4a40` | `ShadowInit`: the blob texture, the two ramps, the `shadowLOD` CVar, the `extShadowQuality` lookup | ported |
+| `FUN_007e2c80` | release all three textures | `ShadowDestroy` |
+| `FUN_007e2c40` / `FUN_007e2c60` | the two ramp textures, for the draw's stage 1 | `ShadowModGxTex` / `ShadowAddGxTex` |
+| `FUN_007e36e0` / `FUN_007e3820` | the ramp generators, 64x8 ARGB | `ShadowAddCallback` / `ShadowModCallback` |
+| `FUN_007e3980` | `ShadowSetLOD`: store it, latch both ramps when it turns blobs on | ported |
+| `FUN_007e3a20` | the `shadowLOD` CVar callback, range (0, 1) | `ShadowLODCallback` |
+| `FUN_007e49e0` | the per-caster gate | `ShadowDrawBlob` |
+| `FUN_007e4480` | **the projector**: box -> texture projection, the decal state, the strength | **not ported** |
+| `FUN_007e4370` | identity world/view, then the receiver walk; 8 callers, shared with other decals | **not ported** |
+| `FUN_007e2d60` | the decal's transforms: camera-relative centre, the texture-gen matrix | **not ported** |
+| `FUN_007e3e80` / `FUN_007e3aa0` | the receiver walk, fixed-function and `CShaderEffect` | **not ported** |
+| `FUN_007e2fd0`, `FUN_007e32f0`, `FUN_007e3580`, `FUN_007e35f0` | the receiver geometry gatherers | **not ported** |
+| `FUN_007e2ce0` / `FUN_007e2d20` | `C3Vector` min / max into place | inlined |
+
+### Two facts worth keeping
+
+**Blob shadows and the shadow map are mutually exclusive.** `FUN_007e49e0` requires the
+`extShadowQuality` CVar to read below 1. Raise it and every blob stops drawing, because the map
+shadow is then covering the same ground. So the two paths are never both on, and a screenshot with
+both would be wrong.
+
+**The ramps are one trapezoid, read from the image.** Along the 64-texel row, `t` runs 0 to 12
+(`DAT_00a1047c`), fades up over the first 2 (`DAT_00a4040c`), holds at 1 until 10
+(`DAT_009e30cc`), then fades back down: about ten soft texels at each end. `ShadowAdd` is that as
+alpha over white. `ShadowMod` is its inverse as a grey, with the alpha cleared only where the grey
+reaches 255.
+
+### The projector, read but not written
+
+`FUN_007e4480(box, model, strength)`, 1370 bytes:
+
+- seeds a min/max accumulator at `-5` / `+5` (`DAT_009ebf34` / `DAT_009f267c`) and scales the box by
+  the length of the model matrix's first row, so a scaled model gets a scaled footprint;
+- rotates the four footprint corners by the model's matrix and takes their bounds -- **this is the
+  oriented rectangle** the older notes in this file wanted, rather than an axis-aligned circle;
+- pushes the near and far planes out by 5/3 and 1 of the half-height (`DAT_00af3e14` /
+  `DAT_00af3e18`);
+- sets `BlendingMode 4`, `Lighting 0`, `Fog 0`, `DepthWrite 0`, the blob on stage 0, `ColorOp0 5`,
+  `AlphaOp0 3`, and `DepthFunc` EQUAL **only when the strength argument is zero**;
+- takes the per-model strength from `+0x178`, clamps it to `[0, 1]`, and writes it as the alpha of a
+  white `CImVector`;
+- calls `FUN_007e4370(bounds, colour, texMatrix, 0.5, 0x220122, 0, strength)`.
+
+The strength at the only call site is the constant `0.4` at `0x009f98d8`.
+
+### Why the old frozen pass had to go, and what replaces it
+
+Frozen's pass re-drew the receiver's own triangles and picked the visible surface with a depth-EQUAL
+test. That needs the re-draw to reproduce the receiver's depth bit for bit, and it stopped being able
+to the moment the receiver's base pass became `CMapRenderChunk`'s -- a different vertex program, a
+different constant block at the same registers, a different vertex layout. It was deleted in
+`f4e53209` and `cf7768ff`.
+
+The reference does use depth-EQUAL, but only on the branch where the strength is zero, and it never
+has to reproduce anything: `FUN_007e4370` sets world and view to identity and the receiver walk draws
+gathered geometry with the projection as a texture transform. Re-porting means porting that walk, not
+reviving the re-draw.
