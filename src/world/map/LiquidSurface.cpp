@@ -8,6 +8,9 @@
 #include "gx/Buffer.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
+#include "world/CWorld.hpp"
+#include "model/CM2Scene.hpp"
+#include "model/CM2Lighting.hpp"
 #include "gx/buffer/CGxBuf.hpp"
 
 
@@ -323,7 +326,7 @@ static void WriteLayerIndices(CChunkLiquid* layer, uint16_t* out, uint16_t base,
 
     for (uint32_t x = layer->m_tileX; x < layer->m_tileEndX; x++) {
         uint16_t next = row + 1;
-        uint16_t far = static_cast<uint16_t>(row + 2);
+        uint16_t rowFar = static_cast<uint16_t>(row + 2);
 
         for (uint32_t y = layer->m_tileY; y < layer->m_tileEndY; y++) {
             if (!layer->CoversTile(y, x)) {
@@ -344,13 +347,13 @@ static void WriteLayerIndices(CChunkLiquid* layer, uint16_t* out, uint16_t base,
 
                 *out++ = static_cast<uint16_t>(base + 1);
 
-                other = far;
+                other = rowFar;
 
                 *out++ = other;
             }
 
             next++;
-            far++;
+            rowFar++;
             base++;
         }
 
@@ -651,6 +654,47 @@ void Draw(const C3Vector& cameraPos, uint32_t bucket) {
             g_theGxDevicePtr->LightSet(i, saved[i], zero);
             g_theGxDevicePtr->LightEnable(i, 1);
         }
+    }
+}
+
+// ref: FUN_007d4f40
+// The lighting a surface draws with. Two switches and then the scene's own lights on top, which is
+// the same shape CMap::SetupChunkLighting uses for terrain -- liquid is not a separate lighting
+// path, it just asks for its fog from a different half of the day/night block.
+void CClientEnvironment::SetupLighting(CM2Lighting* lighting) {
+    // DIVERGED, twice, and in the same way CMap::SetupChunkLighting already diverges.
+    //
+    // The reference reads the fog straight out of the day/night block: the outdoor colour from the
+    // three bytes at +0x8c..+0x8e times the 1/255 at 0x00a45564, with the three floats at +0x90,
+    // +0x94 and +0x98, or the INDOOR set at +0xa0..+0xa2 and +0xa4/+0xa8/+0xac when m_indoor is
+    // set. Frozen keeps its fog computed on CWorld rather than as a day/night struct and has no
+    // indoor pair at all, so both branches take the same values and the third float -- the fog
+    // density -- has no source. Wiring an indoor fog pair is its own change; the offsets above are
+    // what it needs.
+    lighting->SetFog(CWorld::GetFogColor(), CWorld::GetFogStart(), CWorld::GetFogEnd());
+
+    if (!this->m_fixedLight) {
+        // The map's own outdoor light. The reference adds the CM2Light living at the map light
+        // block's +0x58; frozen models that light as an ambient and a directional term instead,
+        // exactly as CMap::SetupChunkLighting does, so this is the same divergence already taken
+        // for terrain rather than a new one.
+        lighting->AddAmbient(CWorld::GetOutdoorAmbient());
+        lighting->AddDiffuse(CWorld::GetOutdoorDiffuse(), CWorld::GetOutdoorDirection());
+    } else {
+        // A fixed white light straight down. The reference builds one CM2Light for this once and
+        // keeps it: type 0, direction (0, 0, -1), white diffuse, visible. Nothing frozen has
+        // reaches this branch -- CreateSurface passes 0 -- but it costs nothing to be right.
+        C3Vector white = { 1.0f, 1.0f, 1.0f };
+        C3Vector down = { 0.0f, 0.0f, -1.0f };
+
+        lighting->AddDiffuse(white, down);
+    }
+
+    // Then the nearby lights the scene knows about, which is what makes a torch show on water.
+    auto scene = CWorld::GetM2Scene();
+
+    if (scene) {
+        scene->SelectLights(lighting);
     }
 }
 

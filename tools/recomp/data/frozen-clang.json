@@ -203108,7 +203108,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 28
+"line": 31
 },
 "Liquid::CChunkGeomFactory::Release": {
 "files": [
@@ -203128,7 +203128,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 32
+"line": 35
 },
 "Liquid::CClientEnvironment::AddRef": {
 "files": [
@@ -203141,7 +203141,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 42
+"line": 45
 },
 "Liquid::CClientEnvironment::Release": {
 "files": [
@@ -203161,7 +203161,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 45
+"line": 48
 },
 "Liquid::CInstance::AddRef": {
 "files": [
@@ -203174,7 +203174,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 52
+"line": 55
 },
 "Liquid::CInstance::Release": {
 "files": [
@@ -203196,7 +203196,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 57
+"line": 60
 },
 "Liquid::CreateGeomFactory": {
 "files": [
@@ -203220,7 +203220,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 81
+"line": 84
 },
 "Liquid::CreateEnvironment": {
 "files": [
@@ -203240,7 +203240,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 101
+"line": 104
 },
 "Liquid::CreateSurface": {
 "files": [
@@ -203281,7 +203281,7 @@
 "stub": false,
 "lines": 120,
 "refs": [],
-"line": 120
+"line": 123
 },
 "Liquid::WriteLayerVertices": {
 "files": [
@@ -203303,7 +203303,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 246
+"line": 249
 },
 "Liquid::WriteLayerIndices": {
 "files": [
@@ -203322,7 +203322,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 317
+"line": 320
 },
 "Liquid::CChunkGeomFactory::Build": {
 "files": [
@@ -203368,7 +203368,7 @@
 "stub": false,
 "lines": 152,
 "refs": [],
-"line": 374
+"line": 377
 },
 "Liquid::Add": {
 "files": [
@@ -203386,7 +203386,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 533
+"line": 536
 },
 "Liquid::Queued": {
 "files": [
@@ -203403,7 +203403,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 546
+"line": 549
 },
 "Liquid::SortAscending": {
 "files": [
@@ -203419,7 +203419,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 558
+"line": 561
 },
 "Liquid::SortDescending": {
 "files": [
@@ -203435,7 +203435,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 581
+"line": 584
 },
 "Liquid::Draw": {
 "files": [
@@ -203467,7 +203467,38 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 612
+"line": 615
+},
+"Liquid::CClientEnvironment::SetupLighting": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"CWorld::GetFogEnd",
+"CWorld::GetFogStart",
+"CWorld::GetFogColor",
+"CM2Lighting::SetFog",
+"CWorld::GetOutdoorAmbient",
+"CM2Lighting::AddAmbient",
+"CWorld::GetOutdoorDirection",
+"CWorld::GetOutdoorDiffuse",
+"CM2Lighting::AddDiffuse",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"CM2Lighting::AddDiffuse",
+"CWorld::GetM2Scene",
+"CM2Scene::SelectLights"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 2,
+"stub": false,
+"lines": 36,
+"refs": [],
+"line": 664
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

@@ -10,6 +10,7 @@
 
 class CChunkLiquid;
 class CGxBuf;
+class CM2Lighting;
 
 namespace Liquid {
 
@@ -81,11 +82,8 @@ class CChunkGeomFactory {
 // virtual that fills a CM2Lighting on the caller's stack, which is the same shape the reference's
 // per-terrain-chunk setup (FUN_007d04a0) uses. See docs/ref/parity-liquid.md.
 //
-// The reference gives it a vtable at 0x00a404e8 with four slots. Slot 3 (FUN_007d4f40) is the one
-// that matters -- it sets the fog from the DayNight block by m_indoor, adds one light by
-// m_fixedLight, and runs CM2Scene::SelectLights over the block. It is decoded in full in
-// docs/ref/parity-liquid.md but NOT declared here, because the branch CreateSurface actually takes
-// is the blocked one: frozen has no CM2Light for the map's outdoor light, and no indoor fog pair.
+// The reference gives it a vtable at 0x00a404e8 with four slots; slot 3 is SetupLighting below,
+// slot 2 the m_indoor setter, slot 1 the release. See docs/ref/parity-liquid.md.
 class CClientEnvironment {
     public:
         // Which half of the DayNight block the fog comes from: the outdoor set at +0x8c..+0x98 or
@@ -99,6 +97,12 @@ class CClientEnvironment {
 
         void AddRef();
         void Release();
+
+        // Fill a lighting block for this surface: the fog, one light, and then whatever the scene
+        // finds nearby. The caller owns the block and has already constructed it over the
+        // surface's sphere, which is what the reference's FUN_00790440 does one call earlier.
+        // The reference's vtable slot 3. ref: FUN_007d4f40
+        void SetupLighting(CM2Lighting* lighting);
 };
 
 // One drawable liquid surface: the material to draw it with, the layers it covers, and where it

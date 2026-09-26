@@ -49293,6 +49293,21 @@
   "refSize": 13,
   "status": "verified"
  },
+ "007d4f40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.111,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CClientEnvironment::SetupLighting",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 439,
+  "status": "ported"
+ },
  "007d5120": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
