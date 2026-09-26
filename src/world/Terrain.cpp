@@ -3516,8 +3516,10 @@ void TerrainRender() {
     // test and the blob shadow receivers all read the instance list it fills.
     WmoUpdateVisibility(s_cameraPos);
 
-    // Opaque liquids (magma, slime) belong to CMap::Render like the terrain and buildings
-    LiquidRender(0);
+    // The liquids belong to CMap::Render, which draws both buckets through the reference material.
+    // This used to call LiquidRender(0) as well, and the comment here already said the liquids were
+    // CMap::Render's -- so every opaque surface was drawn twice from the moment the material draw
+    // started working.
 
     GxRsPop();
 }
@@ -3591,137 +3593,6 @@ LiquidTextures* GetLiquidTextures(int32_t liquidType) {
 // 81 read off the end of the array for any WMO liquid.
 std::vector<CImVector> s_liquidColor;
 uint8_t s_liquidAlpha = 0;
-
-void LiquidRender(int32_t bucket) {
-    if (!s_uiVertexShader[0] || !s_uiVertexShader[0]->Valid() || !s_uiPixelShader || !s_uiPixelShader->Valid()) {
-        return;
-    }
-
-    bool opaque = bucket == 0;
-
-    // Gather the visible layers of this bucket; the transparent ones sort farthest first
-    struct LiquidRef { const ChunkLiquid* liq; float dist; };
-    static std::vector<LiquidRef> s_refs;
-    s_refs.clear();
-
-    auto consider = [&](const ChunkLiquid& liq) {
-        bool isOpaque = liq.kind == 2 || liq.kind == 3;
-
-        if (isOpaque != opaque || !liq.indexCount || !BoxVisible(liq.boundsMin, liq.boundsMax)) {
-            return;
-        }
-
-        float cx = (liq.boundsMin.x + liq.boundsMax.x) * 0.5f - s_cameraPos.x;
-        float cy = (liq.boundsMin.y + liq.boundsMax.y) * 0.5f - s_cameraPos.y;
-        float cz = (liq.boundsMin.z + liq.boundsMax.z) * 0.5f - s_cameraPos.z;
-        s_refs.push_back({ &liq, cx * cx + cy * cy + cz * cz });
-    };
-
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded) {
-            continue;
-        }
-
-        for (auto& chunk : tile.chunks) {
-            for (uint32_t l = 0; l < chunk.liquidCount; l++) {
-                consider(chunk.liquids[l]);
-            }
-        }
-
-        // WMO liquids follow their group's portal visibility from this frame's walk
-        for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-            const WmoInstance& w = tile.wmos[wi];
-
-            for (uint32_t l = 0; l < w.liquidCount; l++) {
-                const ChunkLiquid& liq = w.liquids[l];
-
-                if (liq.group >= 0 && static_cast<uint32_t>(liq.group) < w.groupCount && w.groups[liq.group].visFrame != s_visFrame) {
-                    continue;
-                }
-
-                consider(liq);
-            }
-        }
-    }
-
-    if (s_refs.empty()) {
-        return;
-    }
-
-    if (!opaque) {
-        std::sort(s_refs.begin(), s_refs.end(), [](const LiquidRef& a, const LiquidRef& b) { return a.dist > b.dist; });
-    }
-
-    // Surface animation: the frame sets cycle at ~20 fps off the world clock
-    uint32_t now = CWorld::GetM2Scene() ? CWorld::GetM2Scene()->m_time : 0;
-
-    GxRsPush();
-    GxRsSet(GxRs_DepthTest, 1);
-    GxRsSet(GxRs_DepthFunc, 0);
-    GxRsSet(GxRs_DepthWrite, opaque ? 1 : 0);
-    GxRsSet(GxRs_Culling, 0);
-    GxRsSet(GxRs_BlendingMode, opaque ? GxBlend_Opaque : GxBlend_Alpha);
-    GxRsSet(GxRs_AlphaRef, 0);
-    GxRsSet(GxRs_Lighting, 0);
-    GxRsSet(GxRs_Fog, s_fogActive ? 1 : 0);
-    GxRsSet(GxRs_VertexShader, s_uiVertexShader[0]);
-    GxRsSet(GxRs_PixelShader, s_uiPixelShader);
-    GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&s_viewProjT), 4);
-
-    int32_t lastType = -1;
-
-    for (const LiquidRef& ref : s_refs) {
-        const ChunkLiquid& liq = *ref.liq;
-
-        if (liq.liquidType != lastType) {
-            lastType = liq.liquidType;
-            LiquidTextures* set = GetLiquidTextures(liq.liquidType);
-            HTEXTURE tex = (set && set->frameCount) ? set->frames[(now / 50) % set->frameCount] : nullptr;
-            GxRsSet(GxRs_Texture0, tex ? TextureGetGxTex(tex, 0, nullptr) : nullptr);
-
-            // Water and ocean read as tinted, translucent surfaces; magma and slime are solid
-            uint8_t alpha = opaque ? 0xFF : (liq.kind == 1 ? 0xD8 : 0xC0);
-            s_liquidAlpha = alpha;
-        }
-
-        // Tint from the light data rather than drawing white. LightIntBand bands 14/15 (river) and
-        // 16/17 (ocean) are the shallow and deep endpoints -- confirmed in the reference's
-        // FUN_008a2bf0, which interpolates the pair across a 512-entry gradient indexed by depth.
-        // Only the shallow endpoint is used here: the depth gradient itself is still to port, and
-        // magma and slime are not light-driven at all, so they keep their own colour.
-        CImVector tint = { 0xFF, 0xFF, 0xFF, s_liquidAlpha };
-
-        if (liq.kind == 0 || liq.kind == 1) {
-            const C3Vector& shallow = CWorld::GetLiquidShallow(liq.kind == 1);
-            tint.r = static_cast<uint8_t>(shallow.x * 255.0f);
-            tint.g = static_cast<uint8_t>(shallow.y * 255.0f);
-            tint.b = static_cast<uint8_t>(shallow.z * 255.0f);
-        }
-
-        if (s_liquidColor.size() < liq.vertCount
-            || (liq.vertCount && (s_liquidColor[0].a != tint.a || s_liquidColor[0].r != tint.r))) {
-            s_liquidColor.assign(liq.vertCount > s_liquidColor.size() ? liq.vertCount : s_liquidColor.size(), tint);
-        }
-
-        // Depth-shaded surfaces bring their own per-vertex alpha (already scaled by the kind's
-        // base opacity at load); the rest use the flat fill.
-        const CImVector* colorStream = liq.colors ? liq.colors : s_liquidColor.data();
-
-        GxPrimLockVertexPtrs(
-            liq.vertCount,
-            liq.verts, sizeof(C3Vector),
-            nullptr, 0,
-            colorStream, sizeof(CImVector),
-            nullptr, 0,
-            liq.uvs, sizeof(C2Vector),
-            nullptr, 0
-        );
-        GxDrawLockedElements(GxPrim_Triangles, liq.indexCount, liq.indices);
-        GxPrimUnlockVertexPtrs();
-    }
-
-    GxRsPop();
-}
 
 void UnderwaterOverlayRender() {
     if (s_cameraLiquidKind < 0) {

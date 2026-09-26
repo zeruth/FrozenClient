@@ -28,9 +28,6 @@ void BlobShadowDrawCaster(CM2Model* model, const CAaBox& box);
 // The same decal on WMO floors (interiors, bridges, platforms).
 void BlobShadowDrawWmo(const C3Vector& pos, float radius);
 void BlobShadowsEnd();
-// Liquid surfaces: bucket 0 = opaque (magma, slime), drawn inside TerrainRender; bucket 1 = the
-// transparent water/ocean, drawn from the world frame's transparent block after M2 pass 2.
-void LiquidRender(int32_t bucket);
 // Weather: state from SMSG_WEATHER (effectType 1 rain, 2 snow, 3 sand/mist, else clear); the
 // particle field is simulated and drawn around the camera in the transparent block.
 void TerrainSetWeather(int32_t effectType, float intensity, const float* color, const char* texture, bool abrupt);

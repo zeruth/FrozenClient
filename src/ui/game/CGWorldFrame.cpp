@@ -496,10 +496,14 @@ void CGWorldFrame::OnWorldRender() {
         // The barrier pass is FUN_00794b50, reached through the wrapper FUN_0077f980 with the float
         // at frame+0xb14; 2200 bytes of streamed quads over a model. Not ported, and it is the only
         // thing missing from this block's order.
+        // Liquid bucket 1 is NOT drawn here any more. CMap::Render drains it (a divergence already
+        // recorded at that call: the reference drains it from 0x00790a80, which is unported), and
+        // once the material draw landed, calling the stand-in here as well drew every water surface
+        // TWICE -- which for an alpha-blended surface compounds the blend rather than being
+        // invisible.
         if (CWorld::IsCameraUnderLiquid()) {
             if (scene) { scene->Draw(M2PASS_1); }
             WeatherRender();
-            LiquidRender(1);
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
             OverheadIconsRender();
@@ -507,7 +511,6 @@ void CGWorldFrame::OnWorldRender() {
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
             OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
-            LiquidRender(1); // transparent water/ocean, sorted farthest first (liquid bucket 1)
             WeatherRender();
             if (scene) { scene->Draw(M2PASS_1); }
         }

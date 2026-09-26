@@ -120957,14 +120957,12 @@
 "CWorld::IsCameraUnderLiquid",
 "CM2Scene::Draw",
 "WeatherRender",
-"LiquidRender",
 "CM2Scene::Draw",
 "ParticleFxRender",
 "OverheadIconsRender",
 "CM2Scene::Draw",
 "ParticleFxRender",
 "OverheadIconsRender",
-"LiquidRender",
 "WeatherRender",
 "CM2Scene::Draw",
 "ParticleFxEndFrame",
@@ -120989,7 +120987,7 @@
 ],
 "branches": 26,
 "stub": false,
-"lines": 316,
+"lines": 319,
 "refs": [],
 "line": 213
 },
@@ -121044,7 +121042,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 530
+"line": 533
 },
 "Script_GetInventorySlotInfo": {
 "files": [
@@ -207603,7 +207601,6 @@
 "GxRsPush",
 "TerrainUpdateView",
 "WmoUpdateVisibility",
-"LiquidRender",
 "GxRsPop"
 ],
 "strings": [],
@@ -207612,7 +207609,7 @@
 ],
 "branches": 3,
 "stub": false,
-"lines": 42,
+"lines": 44,
 "refs": [],
 "line": 3482
 },
@@ -207639,70 +207636,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 3542
-},
-"LiquidRender": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CGxShader::Valid",
-"CGxShader::Valid",
-"vector<LiquidRef,std::allocator<LiquidRef> >::vector",
-"vector<LiquidRef,std::allocator<LiquidRef> >::clear",
-"LiquidRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:3607:21)::operator()",
-"LiquidRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:3607:21)::operator()",
-"vector<LiquidRef,std::allocator<LiquidRef> >::empty",
-"vector<LiquidRef,std::allocator<LiquidRef> >::end",
-"vector<LiquidRef,std::allocator<LiquidRef> >::begin",
-"std::sort",
-"CWorld::GetM2Scene",
-"CWorld::GetM2Scene",
-"GxRsPush",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxShaderConstantsSet",
-"_Vector_iterator<std::_Vector_val<std::_Simple_types<LiquidRef> > >::operator*",
-"GetLiquidTextures",
-"TextureGetGxTex",
-"GxRsSet",
-"CWorld::GetLiquidShallow",
-"vector<CImVector,std::allocator<CImVector> >::size",
-"vector<CImVector,std::allocator<CImVector> >::operator[]",
-"vector<CImVector,std::allocator<CImVector> >::operator[]",
-"vector<CImVector,std::allocator<CImVector> >::size",
-"vector<CImVector,std::allocator<CImVector> >::size",
-"vector<CImVector,std::allocator<CImVector> >::assign",
-"vector<CImVector,std::allocator<CImVector> >::data",
-"GxPrimLockVertexPtrs",
-"GxDrawLockedElements",
-"GxPrimUnlockVertexPtrs",
-"GxRsPop"
-],
-"strings": [],
-"consts": [
-"0",
-"0xC0",
-"0xD8",
-"0xFF",
-"1",
-"255.0f",
-"4",
-"50"
-],
-"branches": 24,
-"stub": false,
-"lines": 130,
-"refs": [],
-"line": 3595
+"line": 3544
 },
 "UnderwaterOverlayRender": {
 "files": [
@@ -207768,7 +207702,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 3726
+"line": 3597
 },
 "BlobShadowsBegin": {
 "files": [
@@ -207804,7 +207738,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 3800
+"line": 3671
 },
 "BlobShadowStrength": {
 "files": [
@@ -207828,7 +207762,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 3870
+"line": 3741
 },
 "BlobShadowDraw": {
 "files": [
@@ -207862,7 +207796,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 3888
+"line": 3759
 },
 "BuildWmoShadowGrid": {
 "files": [
@@ -207889,7 +207823,7 @@
 "stub": false,
 "lines": 101,
 "refs": [],
-"line": 3962
+"line": 3833
 },
 "BlobShadowDrawCaster": {
 "files": [
@@ -207916,7 +207850,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 4072
+"line": 3943
 },
 "BlobShadowDrawWmo": {
 "files": [
@@ -207956,7 +207890,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 4124
+"line": 3995
 },
 "BlobShadowsEnd": {
 "files": [
@@ -207971,7 +207905,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 4243
+"line": 4114
 },
 "TerrainViewProjT": {
 "files": [
@@ -207984,7 +207918,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 4253
+"line": 4124
 },
 "TerrainFogActive": {
 "files": [
@@ -207997,7 +207931,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 4257
+"line": 4128
 },
 "TerrainUiShaders": {
 "files": [
@@ -208014,7 +207948,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 4261
+"line": 4132
 },
 "TerrainForEachDoodad": {
 "files": [
@@ -208031,7 +207965,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 4267
+"line": 4138
 },
 "BuildWmoContainGrid": {
 "files": [
@@ -208058,7 +207992,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 4292
+"line": 4163
 },
 "WmoGroupContains": {
 "files": [
@@ -208081,7 +208015,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 4388
+"line": 4259
 },
 "TerrainPointIsIndoors": {
 "files": [
@@ -208098,7 +208032,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 4454
+"line": 4325
 },
 "TerrainWmoFloorLightAt": {
 "files": [
@@ -208118,7 +208052,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 4496
+"line": 4367
 },
 "WeatherDensityCallback": {
 "files": [
