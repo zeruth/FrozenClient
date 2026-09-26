@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-25 23:49 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-25 23:55 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 2131, callgraph 238, callorder 111, cvar 32, handler 2
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-25 23:38 -- mapped 4332, ported 3652, stub 578, spine mapped 1397.
+Previous run: 2026-09-25 23:51 -- mapped 4332, ported 3652, stub 578, spine mapped 1397.
 
 ## Lua API coverage (binding tables)
 
@@ -622,7 +622,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 007b1b50 | `FillVertexBuffer` | 50% | 4 | 16 | 17 | ? | ? | 2655 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
-| 00795400 | `CWorldScene::UpdateCamera` | 38% | 19 | 25 | 8 | 7 | 0% | 2291 |
+| 00795400 | `CWorldScene::UpdateCamera` | 56% | 19 | 30 | 8 | 8 | 0% | 2291 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
 | 007a9380 | `CMapObjGroup::DrawBatchesOutdoor` | 60% | 62 | 55 | 53 | 29 | 6% | 2146 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 76% | 45 | 24 | 21 | 10 | 11% | 2068 |
@@ -726,8 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 18:37 | 4307 (16.0%) | 2202 (8.2%) | 578 | 1385/5385 | 2924/2964 | 1380 |
-| 2026-09-25 19:19 | 4307 (16.0%) | 2202 (8.2%) | 578 | 1385/5385 | 2924/2964 | 1380 |
 | 2026-09-25 19:29 | 4309 (16.0%) | 2203 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
 | 2026-09-25 19:30 | 4309 (16.0%) | 2205 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
 | 2026-09-25 19:36 | 4313 (16.0%) | 2206 (8.2%) | 578 | 1386/5385 | 2924/2964 | 1380 |
@@ -751,6 +749,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-25 23:32 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
 | 2026-09-25 23:38 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
 | 2026-09-25 23:49 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
+| 2026-09-25 23:51 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
+| 2026-09-25 23:55 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
 
 ## How to move a row
 

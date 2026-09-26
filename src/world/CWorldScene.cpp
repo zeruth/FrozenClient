@@ -740,10 +740,35 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
     CWorldScene::s_viewPlane.n = CWorldScene::s_viewDir;
     CWorldScene::s_viewPlane.d = -(CWorldScene::s_viewDir.z * cameraPos.z + cameraPos.y * CWorldScene::s_viewDir.y + cameraPos.x * CWorldScene::s_viewDir.x);
 
-    // TODO the horizon occlusion matrix: identity when the view is vertical, otherwise the
-    // flattened view (FUN_006bfe60) translated by -cameraPos times the projection
-    C44Matrix identity;
-    CWorldScene::s_occlusionMatrix = identity;
+    // The horizon occlusion matrix: what ShadeHorizon projects a chunk's silhouette through to
+    // find the screen columns it covers. It was identity, and identity is not harmless here --
+    // the projection then leaves world coordinates, so every ridge raised the skyline at a
+    // column derived from dividing one world coordinate by another. The horizon test was running
+    // the whole time on that.
+    //
+    // The reference builds it the same way it builds any view: look along the FLATTENED view
+    // direction from the origin with +Z up, translate by minus the camera, and multiply by the
+    // projection. The flattening is the point -- the horizon is a skyline, so pitch must not
+    // tilt it. s_viewPlane2d.n already holds that direction, normalized, with z zero.
+    //
+    // A camera looking straight up or down has no flattened direction to aim along, which is
+    // what the length test catches; there the reference leaves identity, and so does this.
+    if (len2 <= 9.99999975e-05f) {
+        C44Matrix identity;
+        CWorldScene::s_occlusionMatrix = identity;
+    } else {
+        C3Vector eye = { 0.0f, 0.0f, 0.0f };
+        C3Vector target = { CWorldScene::s_viewPlane2d.n.x, CWorldScene::s_viewPlane2d.n.y, 0.0f };
+        C3Vector up = { 0.0f, 0.0f, 1.0f };
+
+        C44Matrix flattened;
+        MatrixLookAt(flattened, eye, target, up);
+
+        C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
+        flattened.Translate(back);
+
+        CWorldScene::s_occlusionMatrix = flattened * CWorldScene::s_projMatrix;
+    }
 
     // TODO FUN_009a81f0(PushSecondsUntil()): the sound listener
 }

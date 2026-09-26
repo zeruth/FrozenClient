@@ -44487,10 +44487,10 @@
   "status": "ported"
  },
  "00795400": {
-  "branchRatio": 0.875,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.375,
+  "fidelity": 0.562,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
