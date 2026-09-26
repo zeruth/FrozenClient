@@ -768,29 +768,6 @@ void ParseLegacyLiquid(TerrainChunk& chunk, const uint8_t* mcnk, uint32_t mcnkSi
 
 int32_t LiquidAt(const C3Vector& pos, float& surfaceZ);
 
-// Height of the chunk surface at a point inside it (bilinear over the 9x9 outer grid)
-float ChunkHeightAt(const TerrainChunk& chunk, float x, float y) {
-    float rowF = (chunk.position[0].x - x) / UNIT_SIZE;
-    float colF = (chunk.position[0].y - y) / UNIT_SIZE;
-
-    if (rowF < 0.0f) rowF = 0.0f;
-    if (rowF > 7.999f) rowF = 7.999f;
-    if (colF < 0.0f) colF = 0.0f;
-    if (colF > 7.999f) colF = 7.999f;
-
-    int32_t r = static_cast<int32_t>(rowF);
-    int32_t c = static_cast<int32_t>(colF);
-    float fr = rowF - r;
-    float fc = colF - c;
-
-    // Outer vertex (r, c) is at index r*17 + c (rows of 9 outer + 8 inner vertices)
-    float z00 = chunk.position[r * 17 + c].z;
-    float z01 = chunk.position[r * 17 + c + 1].z;
-    float z10 = chunk.position[(r + 1) * 17 + c].z;
-    float z11 = chunk.position[(r + 1) * 17 + c + 1].z;
-
-    return (z00 * (1.0f - fc) + z01 * fc) * (1.0f - fr) + (z10 * (1.0f - fc) + z11 * fc) * fr;
-}
 
 // Scatter the chunk's detail doodads (the reference's DetailDoodad batch builder): per 8x8 cell the
 // dominant layer's GroundEffectTexture names up to four doodads with weights and an amount; cells
@@ -2321,22 +2298,6 @@ void EnsureShaders() {
 }
 
 
-// Fallback for non-D3D backends: base opaque, then each overlay layer alpha-blended by the
-// combined alpha map sampled per vertex, through the UI shaders.
-uint8_t SampleCombined(const CImVector* map, float u, float v, int32_t layer) {
-    int32_t ax = static_cast<int32_t>(u * 63.0f + 0.5f);
-    int32_t ay = static_cast<int32_t>(v * 63.0f + 0.5f);
-    ax = ax < 0 ? 0 : (ax > 63 ? 63 : ax);
-    ay = ay < 0 ? 0 : (ay > 63 ? 63 : ay);
-    const CImVector& c = map[ay * 64 + ax];
-
-    // layer 0 reads the alpha channel, which carries the chunk's baked MCSH shadow map
-    if (layer == 0) {
-        return c.a;
-    }
-
-    return layer == 1 ? c.r : (layer == 2 ? c.g : c.b);
-}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -2611,212 +2572,7 @@ void WmoUpdateVisibility(const C3Vector& eye) {
     }
 }
 
-// WMO buildings render with the UI shader (one texture modulated by the per-vertex sun light),
-// which is exactly what a WMO material batch needs.
-void RenderWmos(const C44Matrix& viewProjT) {
-    if (!s_uiVertexShader[0] || !s_uiVertexShader[0]->Valid() || !s_uiPixelShader || !s_uiPixelShader->Valid()) {
-        return;
-    }
 
-    GxRsSet(GxRs_DepthTest, 1);
-    GxRsSet(GxRs_DepthFunc, 0);
-    GxRsSet(GxRs_Culling, 0);
-    GxRsSet(GxRs_Lighting, 0);
-    GxRsSet(GxRs_Fog, s_fogActive ? 1 : 0);
-
-    // Draw through the terrain vertex program where it exists: its inputs are exactly a WMO
-    // group's streams (position, colour, texcoord), and sharing one program is what lets the blob
-    // shadow pass re-draw this geometry with a bit-identical transform and a depth-EQUAL test.
-    bool wmoShaded = s_useTerrainShader && s_terrainVS && s_detailPS && s_detailPS->Valid();
-
-    GxRsSet(GxRs_VertexShader, wmoShaded ? s_terrainVS : s_uiVertexShader[0]);
-    GxRsSet(GxRs_PixelShader, wmoShaded ? s_detailPS : s_uiPixelShader);
-
-    // A full-bright white colour stream for F_UNLIT batches (a group's vertex colours hold baked
-    // lighting; unlit materials must ignore it and show texture x white, like the reference).
-    static CImVector* s_wmoWhite = nullptr;
-
-    if (!s_wmoWhite) {
-        s_wmoWhite = static_cast<CImVector*>(SMemAlloc(65536 * sizeof(CImVector), __FILE__, __LINE__, 0));
-
-        for (uint32_t i = 0; i < 65536; i++) {
-            s_wmoWhite[i].b = 0xFF;
-            s_wmoWhite[i].g = 0xFF;
-            s_wmoWhite[i].r = 0xFF;
-            s_wmoWhite[i].a = 0xFF;
-        }
-    }
-
-    // Opaque and alpha-tested batches first, with depth writes on. Alpha-blended batches draw after,
-    // depth-sorted (see below), so they layer over the solid geometry like the reference.
-    {
-        const int32_t pass = 0;
-        GxRsSet(GxRs_DepthWrite, 1);
-
-        for (auto& tile : s_tiles) {
-            if (!tile.loaded || !tile.wmos) {
-                continue;
-            }
-
-            for (uint32_t i = 0; i < tile.wmoCount; i++) {
-                WmoInstance& w = tile.wmos[i];
-
-                // Skip the whole building when its bounding box is off-screen (hierarchical cull).
-                if (w.hasBounds && !BoxVisible(w.bboxMin, w.bboxMax)) {
-                    continue;
-                }
-
-                // Vertices are instance-local, so the matrix carries the origin (see
-                // WmoInstance::origin).
-                C44Matrix instanceT = ChunkMatrixT(w.origin);
-                GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&instanceT), 4);
-
-                for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                    WmoGroup& grp = w.groups[gi];
-
-                    if (!grp.vertexCount || !grp.batchCount) {
-                        continue;
-                    }
-
-                    if (grp.visFrame != s_visFrame) {
-                        continue;
-                    }
-
-                    const CImVector* lockedColors = nullptr;
-
-                    for (uint32_t b = 0; b < grp.batchCount; b++) {
-                        const WmoBatch& batch = grp.batches[b];
-
-                        if (!batch.indexCount) {
-                            continue;
-                        }
-
-                        bool blended = batch.blend >= 2;
-
-                        if (blended != (pass == 1)) {
-                            continue;
-                        }
-
-                        // Unlit batches source a white colour stream so lighting drops out; lit
-                        // batches use the group's baked per-vertex colours. Re-lock when it changes.
-                        const CImVector* wantColors = batch.unlit ? s_wmoWhite : grp.colors;
-
-                        if (lockedColors != wantColors) {
-                            if (lockedColors) {
-                                GxPrimUnlockVertexPtrs();
-                            }
-
-                            GxPrimLockVertexPtrs(
-                                grp.vertexCount,
-                                grp.positions, sizeof(C3Vector),
-                                nullptr, 0,
-                                wantColors, sizeof(CImVector),
-                                nullptr, 0,
-                                grp.texcoords, sizeof(C2Vector),
-                                nullptr, 0
-                            );
-                            lockedColors = wantColors;
-                        }
-
-                        // Opaque, alpha-tested (blend 1), or alpha-blended (blend >= 2)
-                        EGxBlend mode = batch.blend == 0 ? GxBlend_Opaque : (batch.blend == 1 ? GxBlend_AlphaKey : GxBlend_Alpha);
-                        GxRsSet(GxRs_BlendingMode, mode);
-                        // Alpha-key materials discard nearly-transparent texels via the alpha test
-                        // (ref 224/255, matching the M2 path's 0.878); other modes disable it. Without
-                        // this the cutout texels render opaque instead of being punched through.
-                        GxRsSet(GxRs_AlphaRef, batch.blend == 1 ? 224 : 0);
-                        // Backface culling (engine default mode 1) unless the material is two-sided,
-                        // matching how the reference renders M2 and WMO materials
-                        GxRsSet(GxRs_Culling, batch.twoSided ? 0 : 1);
-                        // F_UNFOGGED materials are excluded from distance fog, like the reference
-                        GxRsSet(GxRs_Fog, (s_fogActive && !batch.unfogged) ? 1 : 0);
-                        GxRsSet(GxRs_Texture0, batch.texture ? TextureGetGxTex(batch.texture, 0, nullptr) : nullptr);
-                        GxDrawLockedElements(GxPrim_Triangles, batch.indexCount, grp.indices + batch.indexStart);
-                    }
-
-                    if (lockedColors) {
-                        GxPrimUnlockVertexPtrs();
-                    }
-                }
-            }
-        }
-    }
-
-    // Alpha-blended batches, drawn back-to-front so overlapping transparent surfaces layer in the
-    // right order (the reference depth-sorts transparency). Depth writes stay off so they never
-    // occlude one another. Each batch is keyed on its group's world-space centre distance.
-    struct BlendedRef { WmoGroup* grp; uint32_t batch; float dist; C3Vector origin; };
-    static std::vector<BlendedRef> s_blended;
-    s_blended.clear();
-
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded || !tile.wmos) {
-            continue;
-        }
-
-        for (uint32_t i = 0; i < tile.wmoCount; i++) {
-            WmoInstance& w = tile.wmos[i];
-
-            if (w.hasBounds && !BoxVisible(w.bboxMin, w.bboxMax)) {
-                continue;
-            }
-
-            for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                WmoGroup& grp = w.groups[gi];
-
-                if (!grp.vertexCount || !grp.batchCount || grp.visFrame != s_visFrame) {
-                    continue;
-                }
-
-                float cx = (grp.boundsMin.x + grp.boundsMax.x) * 0.5f - s_cameraPos.x;
-                float cy = (grp.boundsMin.y + grp.boundsMax.y) * 0.5f - s_cameraPos.y;
-                float cz = (grp.boundsMin.z + grp.boundsMax.z) * 0.5f - s_cameraPos.z;
-                float d = cx * cx + cy * cy + cz * cz;
-
-                for (uint32_t b = 0; b < grp.batchCount; b++) {
-                    if (grp.batches[b].indexCount && grp.batches[b].blend >= 2) {
-                        s_blended.push_back({ &grp, b, d, w.origin });
-                    }
-                }
-            }
-        }
-    }
-
-    std::sort(s_blended.begin(), s_blended.end(), [](const BlendedRef& a, const BlendedRef& b) {
-        return a.dist > b.dist; // farthest first
-    });
-
-    GxRsSet(GxRs_DepthWrite, 0);
-
-    for (const BlendedRef& ref : s_blended) {
-        WmoGroup& grp = *ref.grp;
-
-        C44Matrix instanceT = ChunkMatrixT(ref.origin);
-        GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&instanceT), 4);
-        const WmoBatch& batch = grp.batches[ref.batch];
-        const CImVector* colors = batch.unlit ? s_wmoWhite : grp.colors;
-
-        GxPrimLockVertexPtrs(
-            grp.vertexCount,
-            grp.positions, sizeof(C3Vector),
-            nullptr, 0,
-            colors, sizeof(CImVector),
-            nullptr, 0,
-            grp.texcoords, sizeof(C2Vector),
-            nullptr, 0
-        );
-
-        GxRsSet(GxRs_BlendingMode, GxBlend_Alpha);
-        GxRsSet(GxRs_AlphaRef, 0); // alpha-blended, not alpha-tested
-        GxRsSet(GxRs_Culling, batch.twoSided ? 0 : 1);
-        GxRsSet(GxRs_Fog, (s_fogActive && !batch.unfogged) ? 1 : 0);
-        GxRsSet(GxRs_Texture0, batch.texture ? TextureGetGxTex(batch.texture, 0, nullptr) : nullptr);
-        GxDrawLockedElements(GxPrim_Triangles, batch.indexCount, grp.indices + batch.indexStart);
-        GxPrimUnlockVertexPtrs();
-    }
-
-    GxRsSet(GxRs_AlphaRef, 0); // leave the alpha test disabled for later passes
-}
 
 // MH2O per-chunk header (12 bytes) and layer info (24 bytes)
 struct Mh2oHeader {
@@ -4648,10 +4404,6 @@ bool TerrainSphereVisible(const C3Vector& center, float radius) {
     return !CWorldScene::SphereOutsideFrustum(center, radius);
 }
 
-
-int32_t TerrainCameraLiquidKind() {
-    return s_cameraLiquidKind;
-}
 
 const C44Matrix& TerrainViewProjT() {
     return s_viewProjT;

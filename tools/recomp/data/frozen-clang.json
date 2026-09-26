@@ -194808,7 +194808,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 2087
+"line": 2103
 },
 "CWorldScene::AddDetailDoodads": {
 "files": [
@@ -194825,7 +194825,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2132
+"line": 2148
 },
 "CWorldScene::RenderDetailDoodads": {
 "files": [
@@ -194867,7 +194867,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 2148
+"line": 2164
 },
 "CWorldScene::AddGroupIndexUnique": {
 "files": [
@@ -194887,7 +194887,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2227
+"line": 2243
 },
 "CWorldScene::UpdateCameraDef": {
 "files": [
@@ -194922,7 +194922,7 @@
 "stub": false,
 "lines": 87,
 "refs": [],
-"line": 2246
+"line": 2262
 },
 "Liquid::CVertexData::~CVertexData": {
 "files": [
@@ -206037,26 +206037,6 @@
 "refs": [],
 "line": 745
 },
-"ChunkHeightAt": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0",
-"0.0f",
-"1",
-"1.0f",
-"17",
-"7.999f"
-],
-"branches": 4,
-"stub": false,
-"lines": 22,
-"refs": [],
-"line": 772
-},
 "ParseChunk": {
 "files": [
 "src/world/terrain.cpp"
@@ -206128,7 +206108,7 @@
 "stub": false,
 "lines": 202,
 "refs": [],
-"line": 800
+"line": 777
 },
 "SkyboxLightingCallback": {
 "files": [
@@ -206146,7 +206126,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1007
+"line": 984
 },
 "WmoDoodadLightingCallback": {
 "files": [
@@ -206169,7 +206149,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1012
+"line": 989
 },
 "LoadWmoLiquid": {
 "files": [
@@ -206207,7 +206187,7 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 1034
+"line": 1011
 },
 "LoadWmoInstance": {
 "files": [
@@ -206227,7 +206207,7 @@
 "FourCC",
 "FourCC",
 "FourCC",
-"LoadWmoInstance::(unnamed struct at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:1262:5)::(unnamed struct at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:1262:5)",
+"LoadWmoInstance::(unnamed struct at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:1239:5)::(unnamed struct at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:1239:5)",
 "SMemAlloc",
 "CStatus::CStatus",
 "CGxTexFlags::CGxTexFlags",
@@ -206377,7 +206357,7 @@
 "stub": false,
 "lines": 683,
 "refs": [],
-"line": 1157
+"line": 1134
 },
 "ClaimUnique": {
 "files": [
@@ -206397,7 +206377,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1844
+"line": 1821
 },
 "LoadTile": {
 "files": [
@@ -206493,7 +206473,7 @@
 "stub": false,
 "lines": 259,
 "refs": [],
-"line": 1862
+"line": 1839
 },
 "FreeTile": {
 "files": [
@@ -206553,7 +206533,7 @@
 "stub": false,
 "lines": 119,
 "refs": [],
-"line": 2122
+"line": 2099
 },
 "MakeArbShader": {
 "files": [
@@ -206568,7 +206548,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 2247
+"line": 2224
 },
 "MakeRawShader": {
 "files": [
@@ -206589,7 +206569,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 2251
+"line": 2228
 },
 "EnsureShaders": {
 "files": [
@@ -206626,28 +206606,7 @@
 "stub": false,
 "lines": 45,
 "refs": [],
-"line": 2277
-},
-"SampleCombined": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0",
-"0.5f",
-"1",
-"2",
-"63",
-"63.0f",
-"64"
-],
-"branches": 7,
-"stub": false,
-"lines": 14,
-"refs": [],
-"line": 2326
+"line": 2254
 },
 "BoxInPlanes": {
 "files": [
@@ -206666,7 +206625,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 2361
+"line": 2322
 },
 "PolyInPlanes": {
 "files": [
@@ -206685,7 +206644,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 2377
+"line": 2338
 },
 "NarrowFrustum": {
 "files": [
@@ -206712,7 +206671,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 2399
+"line": 2360
 },
 "WalkPortals": {
 "files": [
@@ -206735,7 +206694,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 2446
+"line": 2407
 },
 "BoxContains": {
 "files": [
@@ -206748,7 +206707,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 2509
+"line": 2470
 },
 "WmoUpdateVisibility": {
 "files": [
@@ -206778,78 +206737,7 @@
 "stub": false,
 "lines": 94,
 "refs": [],
-"line": 2519
-},
-"RenderWmos": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CGxShader::Valid",
-"CGxShader::Valid",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"CGxShader::Valid",
-"GxRsSet",
-"GxRsSet",
-"SMemAlloc",
-"GxRsSet",
-"BoxVisible",
-"ChunkMatrixT",
-"GxShaderConstantsSet",
-"GxPrimUnlockVertexPtrs",
-"GxPrimLockVertexPtrs",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"TextureGetGxTex",
-"GxRsSet",
-"GxDrawLockedElements",
-"GxPrimUnlockVertexPtrs",
-"vector<BlendedRef,std::allocator<BlendedRef> >::vector",
-"vector<BlendedRef,std::allocator<BlendedRef> >::clear",
-"BoxVisible",
-"vector<BlendedRef,std::allocator<BlendedRef> >::push_back",
-"vector<BlendedRef,std::allocator<BlendedRef> >::end",
-"vector<BlendedRef,std::allocator<BlendedRef> >::begin",
-"std::sort",
-"GxRsSet",
-"_Vector_iterator<std::_Vector_val<std::_Simple_types<BlendedRef> > >::operator*",
-"ChunkMatrixT",
-"GxShaderConstantsSet",
-"GxPrimLockVertexPtrs",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"GxRsSet",
-"TextureGetGxTex",
-"GxRsSet",
-"GxDrawLockedElements",
-"GxPrimUnlockVertexPtrs",
-"GxRsSet"
-],
-"strings": [
-"c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp"
-],
-"consts": [
-"0",
-"0.5f",
-"0xFF",
-"1",
-"2",
-"224",
-"4",
-"65536"
-],
-"branches": 39,
-"stub": false,
-"lines": 204,
-"refs": [],
-"line": 2616
+"line": 2480
 },
 "ParseLiquid": {
 "files": [
@@ -206897,7 +206785,7 @@
 "stub": false,
 "lines": 223,
 "refs": [],
-"line": 2841
+"line": 2597
 },
 "LiquidAt": {
 "files": [
@@ -206917,7 +206805,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 3073
+"line": 2829
 },
 "WeatherRand": {
 "files": [
@@ -206936,7 +206824,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 3162
+"line": 2918
 },
 "WeatherSeed": {
 "files": [
@@ -206968,7 +206856,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 3167
+"line": 2923
 },
 "WeatherDefaultTexture": {
 "files": [
@@ -206989,7 +206877,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 3180
+"line": 2936
 },
 "TerrainSetWeather": {
 "files": [
@@ -207018,7 +206906,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 3191
+"line": 2947
 },
 "WeatherUpdate": {
 "files": [
@@ -207055,7 +206943,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 3221
+"line": 2977
 },
 "WeatherRender": {
 "files": [
@@ -207151,7 +207039,7 @@
 "stub": false,
 "lines": 122,
 "refs": [],
-"line": 3289
+"line": 3045
 },
 "ParseLegacyLiquid": {
 "files": [
@@ -207195,7 +207083,7 @@
 "stub": false,
 "lines": 128,
 "refs": [],
-"line": 3419
+"line": 3175
 },
 "TerrainLoad": {
 "files": [
@@ -207212,7 +207100,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 3550
+"line": 3306
 },
 "SkyRelease": {
 "files": [
@@ -207233,7 +207121,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 3567
+"line": 3323
 },
 "TerrainUnload": {
 "files": [
@@ -207253,7 +207141,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 3587
+"line": 3343
 },
 "TerrainUpdate": {
 "files": [
@@ -207289,7 +207177,7 @@
 "stub": false,
 "lines": 154,
 "refs": [],
-"line": 3604
+"line": 3360
 },
 "TerrainRebakeLiquidColors": {
 "files": [
@@ -207313,7 +207201,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 3769
+"line": 3525
 },
 "TerrainUpdateView": {
 "files": [
@@ -207362,7 +207250,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 3801
+"line": 3557
 },
 "TerrainRender": {
 "files": [
@@ -207388,7 +207276,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 3878
+"line": 3634
 },
 "GetLiquidTextures": {
 "files": [
@@ -207413,7 +207301,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 3938
+"line": 3694
 },
 "LiquidRender": {
 "files": [
@@ -207424,8 +207312,8 @@
 "CGxShader::Valid",
 "vector<LiquidRef,std::allocator<LiquidRef> >::vector",
 "vector<LiquidRef,std::allocator<LiquidRef> >::clear",
-"LiquidRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:4003:21)::operator()",
-"LiquidRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:4003:21)::operator()",
+"LiquidRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:3759:21)::operator()",
+"LiquidRender::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\terrain.cpp:3759:21)::operator()",
 "vector<LiquidRef,std::allocator<LiquidRef> >::empty",
 "vector<LiquidRef,std::allocator<LiquidRef> >::end",
 "vector<LiquidRef,std::allocator<LiquidRef> >::begin",
@@ -207476,7 +207364,7 @@
 "stub": false,
 "lines": 130,
 "refs": [],
-"line": 3991
+"line": 3747
 },
 "UnderwaterOverlayRender": {
 "files": [
@@ -207540,7 +207428,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 4122
+"line": 3878
 },
 "BlobShadowsBegin": {
 "files": [
@@ -207576,7 +207464,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 4196
+"line": 3952
 },
 "BlobShadowStrength": {
 "files": [
@@ -207600,7 +207488,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 4266
+"line": 4022
 },
 "BlobShadowDraw": {
 "files": [
@@ -207634,7 +207522,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 4284
+"line": 4040
 },
 "BuildWmoShadowGrid": {
 "files": [
@@ -207661,7 +207549,7 @@
 "stub": false,
 "lines": 101,
 "refs": [],
-"line": 4358
+"line": 4114
 },
 "BlobShadowDrawCaster": {
 "files": [
@@ -207688,7 +207576,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 4468
+"line": 4224
 },
 "BlobShadowDrawWmo": {
 "files": [
@@ -207728,7 +207616,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 4520
+"line": 4276
 },
 "BlobShadowsEnd": {
 "files": [
@@ -207743,7 +207631,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 4639
+"line": 4395
 },
 "TerrainSphereVisible": {
 "files": [
@@ -207758,20 +207646,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 4647
-},
-"TerrainCameraLiquidKind": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 3,
-"refs": [],
-"line": 4652
+"line": 4403
 },
 "TerrainViewProjT": {
 "files": [
@@ -207784,7 +207659,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 4656
+"line": 4408
 },
 "TerrainFogActive": {
 "files": [
@@ -207797,7 +207672,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 4660
+"line": 4412
 },
 "TerrainUiShaders": {
 "files": [
@@ -207814,7 +207689,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 4664
+"line": 4416
 },
 "TerrainForEachDoodad": {
 "files": [
@@ -207831,7 +207706,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 4670
+"line": 4422
 },
 "BuildWmoContainGrid": {
 "files": [
@@ -207858,7 +207733,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 4695
+"line": 4447
 },
 "WmoGroupContains": {
 "files": [
@@ -207881,7 +207756,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 4791
+"line": 4543
 },
 "TerrainAreaIDAt": {
 "files": [
@@ -207898,7 +207773,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 4853
+"line": 4605
 },
 "TerrainPointIsIndoors": {
 "files": [
@@ -207915,7 +207790,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 4871
+"line": 4623
 },
 "TerrainWmoFloorLightAt": {
 "files": [
@@ -207935,7 +207810,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 4913
+"line": 4665
 },
 "InterpBodyBand": {
 "files": [
@@ -207954,7 +207829,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 4987
+"line": 4739
 },
 "DrawSkyBody": {
 "files": [
@@ -207997,7 +207872,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 5055
+"line": 4807
 },
 "DrawGlare": {
 "files": [
@@ -208041,7 +207916,7 @@
 "stub": false,
 "lines": 63,
 "refs": [],
-"line": 5115
+"line": 4867
 },
 "SkyBodiesRender": {
 "files": [
@@ -208102,7 +207977,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 5181
+"line": 4933
 },
 "SkyLerp": {
 "files": [
@@ -208117,7 +207992,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 5280
+"line": 5032
 },
 "SkyRender": {
 "files": [
@@ -208242,7 +208117,7 @@
 "stub": false,
 "lines": 309,
 "refs": [],
-"line": 5284
+"line": 5036
 },
 "WeatherDensityCallback": {
 "files": [
