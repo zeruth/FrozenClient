@@ -75,7 +75,7 @@ addr	how	frozen	evidence
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
-00421800	sticky	sprintf	held from the previous run, where it was callgraph
+00421800	sticky	sprintf	held from the previous run, where it was sticky
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 00876d90=CShaderEffectManager::LoadEffectFile
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
@@ -621,8 +621,10 @@ addr	how	frozen	evidence
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	ScreenshotRequest	unique "Screenshots"
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
+004b50a0	annotated	AsyncReadIsUnstarted	tag in src/component/Texture.cpp
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
+004b53a0	annotated	TextureIsSame	tag in src/gx/Texture.cpp
 004b54f0	annotated	TextureHasAlpha	tag in src/gx/Texture.cpp
 004b55e0	annotated	TextureFreeMem	tag in src/gx/Texture.cpp
 004b5600	annotated	TextureGetFileType	tag in src/component/Texture.cpp
@@ -661,6 +663,7 @@ addr	how	frozen	evidence
 004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 004f2be0=CACHEENTRY::LoadTexture, 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read
 004ba3d0	annotated	AsyncFileReadLinkObject	tag in src/async/AsyncFileRead.cpp
 004bab50	override	AsyncFileReadObject	
+004bac20	annotated	AsyncReadBumpPriority	tag in src/component/Texture.cpp
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
 004bc410	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0081b510=FrameScript_GetEventListeners
 004bd870	annotated	ConvertStringFlags	tag in src/gx/font/TextBlock.cpp
@@ -931,6 +934,7 @@ addr	how	frozen	evidence
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
 004f2be0	override	CACHEENTRY::LoadTexture	
 004f2d80	annotated	TextureCacheHasMips	tag in src/component/Texture.cpp
+004f2e50	annotated	TextureCacheGetInfo	tag in src/component/Texture.cpp
 004f2f60	callgraph	CACHEENTRY::CACHEENTRY	only unmatched callee of 004f3110=TextureCacheAllocEntry
 004f3110	string	TextureCacheAllocEntry	unique "TCACHEENTRY"
 004f38d0	callgraph	CACHEENTRY::AddRef	only unmatched callee of 004f3930=TextureCacheCreateTexture

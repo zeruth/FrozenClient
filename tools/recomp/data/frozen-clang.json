@@ -39880,6 +39880,131 @@
 ],
 "line": 185
 },
+"CGxBuf::CGxBuf": {
+"files": [
+"src/gx/buffer/cgxbuf.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 24
+},
+"CGxPool::CGxPool": {
+"files": [
+"src/gx/buffer/cgxpool.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 24
+},
+"CGxDevice::IRenderTargetSet": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 223
+},
+"CGxDevice::IRenderTargetDump": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 228
+},
+"CGxDevice::IScreenShot": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 229
+},
+"CGxDevice::SceneClear": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 239
+},
+"CGxDevice::Draw": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 242
+},
+"CGxDevice::IShaderBind": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [
+"00682fd0"
+],
+"line": 285
+},
+"CGxDevice::ITexBind": {
+"files": [
+"src/gx/cgxdevice.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [
+"00682fd0"
+],
+"line": 287
+},
 "DefaultAsyncObjectCleanupCallback": {
 "files": [
 "src/async/asyncfile.cpp"
@@ -39893,7 +40018,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 9
+"line": 10
 },
 "AsyncFileReadAllocObject": {
 "files": [
@@ -39917,7 +40042,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 13
+"line": 14
 },
 "AsyncFileReadCancel": {
 "files": [
@@ -39936,7 +40061,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 44
+"line": 45
 },
 "AsyncFileReadDestroyObject": {
 "files": [
@@ -39960,7 +40085,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 71
+"line": 72
 },
 "AsyncFileReadInitialize": {
 "files": [
@@ -39992,7 +40117,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 98
+"line": 99
 },
 "AsyncFileReadObject": {
 "files": [
@@ -40013,9 +40138,9 @@
 ],
 "branches": 5,
 "stub": false,
-"lines": 41,
+"lines": 40,
 "refs": [],
-"line": 134
+"line": 135
 },
 "AsyncFileReadCreateQueue": {
 "files": [
@@ -40712,131 +40837,6 @@
 "lines": 1,
 "refs": [],
 "line": 23
-},
-"CGxBuf::CGxBuf": {
-"files": [
-"src/gx/buffer/cgxbuf.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 24
-},
-"CGxPool::CGxPool": {
-"files": [
-"src/gx/buffer/cgxpool.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 24
-},
-"CGxDevice::IRenderTargetSet": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 223
-},
-"CGxDevice::IRenderTargetDump": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0"
-],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 228
-},
-"CGxDevice::IScreenShot": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [
-"0"
-],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 229
-},
-"CGxDevice::SceneClear": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 239
-},
-"CGxDevice::Draw": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [],
-"line": 242
-},
-"CGxDevice::IShaderBind": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [
-"00682fd0"
-],
-"line": 285
-},
-"CGxDevice::ITexBind": {
-"files": [
-"src/gx/cgxdevice.hpp"
-],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": false,
-"lines": 1,
-"refs": [
-"00682fd0"
-],
-"line": 287
 },
 "WowConnectionResponse::WCDisconnected": {
 "files": [
@@ -45349,6 +45349,36 @@
 "refs": [],
 "line": 170
 },
+"AsyncReadIsUnstarted": {
+"files": [
+"src/component/texture.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 24
+},
+"AsyncReadBumpPriority": {
+"files": [
+"src/component/texture.cpp"
+],
+"callseq": [
+"AsyncFileReadLinkObject"
+],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 33
+},
 "LoadSuccessCallback": {
 "files": [
 "src/component/texture.cpp"
@@ -45365,7 +45395,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 19
+"line": 41
 },
 "TCTEXTUREINFO::TCTEXTUREINFO": {
 "files": [
@@ -45381,7 +45411,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 36
+"line": 58
 },
 "CACHEENTRY::CACHEENTRY": {
 "files": [
@@ -45396,7 +45426,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 44
+"line": 66
 },
 "CACHEENTRY::AddRef": {
 "files": [
@@ -45409,7 +45439,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 54
+"line": 76
 },
 "CACHEENTRY::Info": {
 "files": [
@@ -45422,7 +45452,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 58
+"line": 80
 },
 "CACHEENTRY::IsLoading": {
 "files": [
@@ -45437,7 +45467,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 62
+"line": 84
 },
 "CACHEENTRY::IsMissing": {
 "files": [
@@ -45450,7 +45480,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 66
+"line": 88
 },
 "TextureGetFileType": {
 "files": [
@@ -45477,7 +45507,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 71
+"line": 93
 },
 "TextureBuildAlternateName": {
 "files": [
@@ -45502,7 +45532,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 86
+"line": 108
 },
 "CACHEENTRY::LoadTexture": {
 "files": [
@@ -45532,7 +45562,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 118
+"line": 140
 },
 "CACHEENTRY::NeedsLoad": {
 "files": [
@@ -45545,7 +45575,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 153
+"line": 175
 },
 "TextureCacheAllocEntry": {
 "files": [
@@ -45569,7 +45599,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 157
+"line": 179
 },
 "TextureCacheCreateTexture": {
 "files": [
@@ -45589,7 +45619,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 182
+"line": 204
 },
 "TextureCacheDestroyTexture": {
 "files": [
@@ -45602,7 +45632,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 199
+"line": 221
 },
 "TextureCacheGetInfo": {
 "files": [
@@ -45614,6 +45644,11 @@
 "CACHEENTRY::LoadTexture",
 "CACHEENTRY::IsLoading",
 "AsyncFileReadWait",
+"SFile::IsStreamingMode",
+"AsyncFileReadLockQueue",
+"AsyncReadIsUnstarted",
+"AsyncReadBumpPriority",
+"AsyncFileReadUnlockQueue",
 "CACHEENTRY::Info",
 "TCTEXTUREINFO::operator="
 ],
@@ -45622,11 +45657,11 @@
 "0",
 "1"
 ],
-"branches": 5,
+"branches": 7,
 "stub": false,
-"lines": 27,
+"lines": 44,
 "refs": [],
-"line": 203
+"line": 235
 },
 "TextureCacheGetMip": {
 "files": [
@@ -45642,7 +45677,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 231
+"line": 280
 },
 "TextureCacheGetPal": {
 "files": [
@@ -45657,7 +45692,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 248
+"line": 297
 },
 "TextureCacheHasMips": {
 "files": [
@@ -45672,7 +45707,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 265
+"line": 314
 },
 "WowClientDB::GetNumRecords": {
 "files": [
@@ -77471,7 +77506,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1373
+"line": 1380
 },
 "CGxTexFlags::operator==": {
 "files": [

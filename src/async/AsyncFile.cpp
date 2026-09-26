@@ -1,4 +1,5 @@
 #include "async/AsyncFile.hpp"
+#include "gx/Device.hpp"
 #include "async/AsyncFileRead.hpp"
 #include "async/CAsyncQueue.hpp"
 #include "event/Event.hpp"
@@ -35,7 +36,7 @@ CAsyncObject* AsyncFileReadAllocObject() {
     object->isCurrent = 0;
     object->char24 = 0;
     object->char25 = 0;
-    object->ptr1C = 0;
+    object->m_frameStamp = 0;
     object->priority = 126;
 
     return object;
@@ -155,8 +156,7 @@ void AsyncFileReadObject(CAsyncObject* object, int32_t a2) {
 
     if (AsyncFileRead::s_asyncWaitObject == object) {
         object->priority = object->priority > 127 ? 128 : 0;
-        // TODO
-        // object->ptr1C = g_theGxDevicePtr + 3944;
+        object->m_frameStamp = g_theGxDevicePtr->m_frameCount;
         object->char25 = 0;
     } else if (queue->int20) {
         // TODO

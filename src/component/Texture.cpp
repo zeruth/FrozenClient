@@ -2,6 +2,7 @@
 #include "async/AsyncFile.hpp"
 #include "async/AsyncFileRead.hpp"
 #include "gx/Blp.hpp"
+#include "gx/Device.hpp"
 #include "gx/Texture.hpp"
 #include "util/SFile.hpp"
 #include <common/ObjectAlloc.hpp>
@@ -15,6 +16,27 @@
 TSHashTable<CACHEENTRY, HASHKEY_NONE>& s_cacheTable = *new TSHashTable<CACHEENTRY, HASHKEY_NONE>();
 HASHKEY_NONE s_cacheKey;
 uint32_t* s_entryHeap;
+
+// ref: FUN_004b50a0
+// Has this read not been touched yet? Not handed to a thread, not read, not the one being
+// worked on -- so it is still sitting in a queue where its position can still be changed.
+// Bumping a read that is already in flight would do nothing but churn the list.
+static bool AsyncReadIsUnstarted(CAsyncObject* object) {
+    return !object->isCurrent && !object->isRead && !object->isProcessed;
+}
+
+// ref: FUN_004bac20
+// Move a queued read to the front of its priority band and stamp it with the current frame.
+// The stamp is what lets a texture wanted THIS frame outrank one asked for earlier and not
+// drawn since. char25 gates the relink: an object the blocking wait path has already claimed
+// (AsyncFileReadObject clears it there) is left exactly where it is.
+static void AsyncReadBumpPriority(CAsyncObject* object) {
+    object->m_frameStamp = g_theGxDevicePtr->m_frameCount;
+
+    if (object->char25) {
+        AsyncFileReadLinkObject(object, 1);
+    }
+}
 
 void LoadSuccessCallback(void* handle) {
     auto entry = static_cast<CACHEENTRY*>(handle);
@@ -200,6 +222,16 @@ void TextureCacheDestroyTexture(void* texture) {
     // TODO
 }
 
+// ref: FUN_004f2e50
+// A texture's dimensions and format, starting the load if it has not started and waiting for
+// it only when the caller says it will wait. Answers 0 for a texture whose size is not known
+// yet, which is why `force` exists: a caller that can draw a frame without this texture asks
+// with 0 and gets told to come back, and one that cannot asks with 1 and blocks.
+//
+// A MISSING texture answers 1 with whatever the entry holds, rather than 0 -- the miss is
+// recorded on the entry, so re-asking must not re-open the file. IsLoading carries the
+// reference's re-test of that flag AFTER LoadTexture, which matters: LoadTexture is what
+// discovers the file is absent.
 int32_t TextureCacheGetInfo(void* handle, TCTEXTUREINFO& info, int32_t force) {
     auto entry = static_cast<CACHEENTRY*>(handle);
 
@@ -216,7 +248,24 @@ int32_t TextureCacheGetInfo(void* handle, TCTEXTUREINFO& info, int32_t force) {
             if (force) {
                 AsyncFileReadWait(entry->m_asyncObject);
             } else {
-                // TODO increase streaming priority
+                // The caller will not wait, so the answer is "not yet" either way -- but if
+                // the data is coming off the network there is something useful to do first:
+                // tell the queue that somebody wants this texture NOW. Off streaming mode the
+                // read is local and already as fast as it gets, and the reference returns
+                // without taking the lock at all.
+                if (!SFile::IsStreamingMode()) {
+                    return 0;
+                }
+
+                AsyncFileReadLockQueue();
+
+                auto object = entry->m_asyncObject;
+
+                if (AsyncReadIsUnstarted(object)) {
+                    AsyncReadBumpPriority(object);
+                }
+
+                AsyncFileReadUnlockQueue();
 
                 return 0;
             }

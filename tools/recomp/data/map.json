@@ -2782,7 +2782,7 @@
   "branchRatio": 0.714,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.6,
   "files": [
    "src/ui/simple/CSimpleTexture.cpp",
    "src/ui/simple/csimpletexture.cpp"
@@ -9941,6 +9941,22 @@
   "refSize": 211,
   "status": "ported"
  },
+ "004b50a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "AsyncReadIsUnstarted",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleAnimScript.cpp",
+  "refSize": 27,
+  "status": "ported"
+ },
  "004b51c0": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
@@ -9972,6 +9988,22 @@
   "module": "Texture.cpp",
   "refSize": 103,
   "status": "stub"
+ },
+ "004b53a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureIsSame",
+  "frozenSize": 166,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 131,
+  "status": "ported"
  },
  "004b54f0": {
   "branchRatio": 1.0,
@@ -10543,7 +10575,7 @@
    "src/async/asyncfile.cpp"
   ],
   "frozen": "AsyncFileReadAllocObject",
-  "frozenSize": 401,
+  "frozenSize": 400,
   "how": "callgraph",
   "module": "Texture.cpp",
   "refSize": 185,
@@ -10575,10 +10607,26 @@
    "src/async/asyncfile.cpp"
   ],
   "frozen": "AsyncFileReadObject",
-  "frozenSize": 128,
+  "frozenSize": 144,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 196,
+  "status": "ported"
+ },
+ "004bac20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "AsyncReadBumpPriority",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 39,
   "status": "ported"
  },
  "004bad80": {
@@ -14934,6 +14982,22 @@
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 39,
+  "status": "ported"
+ },
+ "004f2e50": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetInfo",
+  "frozenSize": 217,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 149,
   "status": "ported"
  },
  "004f2f60": {

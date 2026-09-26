@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 18:38 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 18:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4523 (+2) (16.8%) | 974.2k (17.8%) |
-| &nbsp;&nbsp;ported | 3844 (+2) | 796.6k |
+| mapped to a frozen function | 4527 (+2) (16.8%) | 974.6k (17.8%) |
+| &nbsp;&nbsp;ported | 3848 (+2) | 797.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 577 (=) | 124.9k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2316 (+3) (8.6%)** | **315.6k (5.8%)** |
-| unmapped | 22432 | 4.40M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1527 (=) (28.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1546 (=) (27.4%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 975 (+3) (21.6%)** | |
-| frozen functions (src/, from PDB + source) | 13898, stubs 1698 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2319 (+1) (8.6%)** | **315.9k (5.8%)** |
+| unmapped | 22428 | 4.40M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1529 (+1) (28.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1550 (+2) (27.4%) | |
+| **render surface** (the modules that draw the world) | **4520, mapped 978 (+2) (21.6%)** | |
+| frozen functions (src/, from PDB + source) | 13900, stubs 1698 | |
 
-Match evidence: annotated 2270, callgraph 243, callorder 111, cvar 31, handler 29, order 140, override 353, sticky 20, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2274, callgraph 243, callorder 111, cvar 31, handler 29, order 140, override 353, sticky 20, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 18:32 -- mapped 4521, ported 3842, stub 577, spine mapped 1527.
+Previous run: 2026-09-26 18:49 -- mapped 4525, ported 3846, stub 577, spine mapped 1528.
 
 ## Lua API coverage (binding tables)
 
@@ -155,7 +155,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SpellBookFrame.cpp | 245 | 56.9k | 41 (16.7%) | 12.1% | 8 | 0 | 14 |
 | FFXEffects.cpp | 219 | 56.2k | 18 (8.2%) | 8.3% | 2 | 0 | 72 |
 | PartyFrame.cpp | 304 | 55.3k | 77 (25.3%) | 32.9% | 54 | 0 | 11 |
-| CSimpleAnimScript.cpp | 223 | 51.5k | 11 (4.9%) | 5.3% | 0 | 0 | 8 |
+| CSimpleAnimScript.cpp | 223 | 51.5k | 12 (5.4%) | 5.3% | 0 | 0 | 8 |
 | Minigame_C.cpp | 352 | 50.8k | 195 (55.4%) | 43.6% | 0 | 0 | 68 |
 | ScriptEvents.cpp | 225 | 46.9k | 171 (76.0%) | 72.7% | 27 | 0 | 26 |
 | LFGInfo.cpp | 225 | 46.5k | 21 (9.3%) | 7.4% | 3 | 0 | 6 |
@@ -170,7 +170,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
 | DBCache.cpp | 235 | 38.6k | 47 (20.0%) | 12.2% | 0 | 0 | 82 |
 | TradeSkillFrame.cpp | 160 | 38.4k | 14 (8.8%) | 2.7% | 5 | 0 | 20 |
-| TextureCache.cpp | 250 | 38.4k | 43 (17.2%) | 16.5% | 2 | 0 | 77 |
+| TextureCache.cpp | 250 | 38.4k | 44 (17.6%) | 16.8% | 2 | 0 | 77 |
 | GameObject_C.cpp | 285 | 38.0k | 19 (6.7%) | 3.9% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 155 | 37.1k | 14 (9.0%) | 11.3% | 0 | 0 | 85 |
 | MapChunk.cpp | 126 | 36.5k | 62 (49.2%) | 59.2% | 0 | 1 | 82 |
@@ -202,7 +202,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 52 (43.3%) | 46.7% | 15 | 0 | 0 |
 | PetNameCache.cpp | 117 | 22.5k | 4 (3.4%) | 3.1% | 0 | 0 | 35 |
-| Texture.cpp | 145 | 22.1k | 41 (28.3%) | 30.9% | 5 | 0 | 74 |
+| Texture.cpp | 145 | 22.1k | 43 (29.7%) | 31.7% | 5 | 0 | 74 |
 | ObjectEffect.cpp | 81 | 20.5k | 4 (4.9%) | 1.9% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 1 (1.1%) | 0.1% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
@@ -726,8 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 17:07 | 4481 (16.6%) | 2305 (8.6%) | 577 | 1515/5381 | 2924/2964 | 1380 |
-| 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
 | 2026-09-26 17:14 | 4485 (16.6%) | 2308 (8.6%) | 577 | 1518/5381 | 2924/2964 | 1380 |
@@ -751,6 +749,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 18:26 | 4520 (16.8%) | 2313 (8.6%) | 577 | 1526/5381 | 2924/2964 | 1380 |
 | 2026-09-26 18:32 | 4521 (16.8%) | 2313 (8.6%) | 577 | 1527/5381 | 2924/2964 | 1380 |
 | 2026-09-26 18:38 | 4523 (16.8%) | 2316 (8.6%) | 577 | 1527/5381 | 2924/2964 | 1380 |
+| 2026-09-26 18:49 | 4525 (16.8%) | 2318 (8.6%) | 577 | 1528/5381 | 2924/2964 | 1380 |
+| 2026-09-26 18:51 | 4527 (16.8%) | 2319 (8.6%) | 577 | 1529/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

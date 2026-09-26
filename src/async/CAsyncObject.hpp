@@ -18,7 +18,11 @@ class CAsyncObject {
         ASYNC_CALLBACK userPostloadCallback;
         ASYNC_CALLBACK userFailedCallback;
         CAsyncQueue* queue;
-        void* ptr1C;
+        // +0x1c. The frame the read was last ASKED FOR, out of CGxDevice::m_frameCount. The
+        // priority bump stamps it so that a texture being drawn now overtakes one requested
+        // earlier and not wanted since; nothing compares two stamps yet, but both of the
+        // reference's writers write this and neither writes a pointer.
+        uint32_t m_frameStamp;
         uint8_t priority;
         uint8_t isProcessed;
         uint8_t isRead;

@@ -1370,6 +1370,13 @@ void TextureInitialize() {
     // - rest of function
 }
 
+// ref: FUN_004b53a0
+// Does this texture already hold that file? The name is normalised the way the cache stores it
+// first -- the extension dropped, and if what is left still ends in a dot, whatever follows that
+// dot lowercased and the dot cut -- so "Foo.BLP" and "foo" compare equal. The two-step is the
+// reference's own and handles a name that carries two extensions.
+//
+// Pins CGxTex::filename at +0x6c, which is what the reference compares against.
 int32_t TextureIsSame(HTEXTURE textureHandle, const char* fileName) {
     char buf[STORM_MAX_PATH];
     uint32_t len = SStrCopy(buf, fileName, sizeof(buf));
