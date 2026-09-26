@@ -1,4 +1,5 @@
 #include "world/Weather.hpp"
+#include "world/Shadow.hpp"
 #include "ui/game/RaidTarget.hpp"
 #include "ui/game/CGActionBar.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
@@ -754,6 +755,8 @@ void StormInitialize() {
 void WowClientDestroy() {
     // TODO
 
+    ShadowDestroy();
+
     CGlueMgr::Shutdown();
 
     // TODO
@@ -830,8 +833,11 @@ void WowClientInit() {
     CWorldParam::Initialize();
     CWorld::Initialize();
 
+    // The blob shadow module, where the reference initializes it: right after CWorld::Initialize,
+    // which is also what registers the shadowLOD CVar whose callback generates the two fade ramps.
+    ShadowInit();
+
     // TODO
-    // ShadowInit();
     // GxuLightInitialize();
     // GxuLightBucketSizeSet(16.665001);
     InputControlInitialize();

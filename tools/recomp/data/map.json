@@ -1187,22 +1187,6 @@
   "refSize": 73,
   "status": "ported"
  },
- "004209b0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/console/CVar.cpp",
-   "src/console/cvar.cpp"
-  ],
-  "frozen": "CVar::GetInt",
-  "frozenSize": 4,
-  "how": "callgraph",
-  "module": "OggDecompress.cpp",
-  "refSize": 44,
-  "status": "ported"
- },
  "00421800": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -23250,17 +23234,14 @@
   "status": "ported"
  },
  "0054efe0": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.0,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [
-   "src/console/Detect.cpp",
-   "src/console/detect.cpp"
-  ],
-  "frozen": "ConsoleDetectGetResolutions",
-  "frozenSize": 645,
-  "how": "callgraph",
+  "files": [],
+  "frozen": "TSGrowableArray<C2iVector>::Reserve",
+  "frozenSize": 385,
+  "how": "sticky",
   "module": "BattlefieldInfo.cpp",
   "refSize": 102,
   "status": "ported"
@@ -23269,7 +23250,7 @@
   "branchRatio": 0.154,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.875,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
@@ -23292,7 +23273,7 @@
   ],
   "frozen": "SetupFormats",
   "frozenSize": 906,
-  "how": "callgraph",
+  "how": "callorder",
   "module": "BattlefieldInfo.cpp",
   "refSize": 615,
   "status": "ported"
@@ -41946,7 +41927,7 @@
   "branchRatio": 0.48,
   "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.35,
+  "fidelity": 0.45,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
@@ -43416,7 +43397,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.419,
+  "fidelity": 0.452,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
@@ -43886,7 +43867,7 @@
    "src/world/cworldparam.cpp"
   ],
   "frozen": "CWorldParam::ExtShadowQualityCallback",
-  "frozenSize": 3,
+  "frozenSize": 65,
   "how": "annotated",
   "module": "SEvt.cpp",
   "refSize": 64,
@@ -44904,7 +44885,7 @@
   "branchRatio": 0.151,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.038,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/liquidsurface.cpp"
   ],
@@ -47233,6 +47214,22 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 448,
+  "status": "ported"
+ },
+ "007bd3a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/CVar.cpp",
+   "src/console/cvar.cpp"
+  ],
+  "frozen": "CVar::GetInt",
+  "frozenSize": 4,
+  "how": "callorder",
+  "module": "DetailDoodad.cpp",
+  "refSize": 162,
   "status": "ported"
  },
  "007bd450": {
@@ -50577,19 +50574,124 @@
   "refSize": 132,
   "status": "stub"
  },
- "007e2d60": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+ "007e2c40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/liquidmaterialsettings.hpp"
+   "src/world/Shadow.cpp"
   ],
-  "frozen": "Liquid::IMaterial::Draw",
-  "frozenSize": 3,
-  "how": "callgraph",
+  "frozen": "ShadowModGxTex",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "DeclinedWords.cpp",
-  "refSize": 623,
+  "refSize": 19,
+  "status": "ported"
+ },
+ "007e2c60": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowAddGxTex",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
+ "007e2c80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowDestroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 85,
+  "status": "ported"
+ },
+ "007e36e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowAddCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 312,
+  "status": "ported"
+ },
+ "007e3820": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowModCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 350,
+  "status": "ported"
+ },
+ "007e3980": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowSetLOD",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
+ "007e3a20": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowLODCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 117,
+  "status": "ported"
+ },
+ "007e49e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowDrawBlob",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 96,
   "status": "ported"
  },
  "007e6480": {
@@ -59886,7 +59988,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapQualityName",
-  "frozenSize": 0,
+  "frozenSize": 28,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 27,
@@ -59966,7 +60068,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapQualitySupported",
-  "frozenSize": 0,
+  "frozenSize": 344,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 242,
@@ -59982,7 +60084,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapSetQuality",
-  "frozenSize": 0,
+  "frozenSize": 308,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 44,
@@ -60654,7 +60756,7 @@
   ],
   "frozen": "SESound::MuteChannelGroup",
   "frozenSize": 186,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "SoundEngine.cpp",
   "refSize": 64,
   "status": "ported"
@@ -60843,7 +60945,7 @@
   "files": [],
   "frozen": "sscanf",
   "frozenSize": 82,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 31,
   "status": "ported"

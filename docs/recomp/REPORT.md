@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 11:13 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 11:26 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4377 (=) (16.2%) | 923.4k (16.8%) |
-| &nbsp;&nbsp;ported | 3698 (+1) | 746.0k |
-| &nbsp;&nbsp;stub (unimplemented body) | 577 (-1) | 124.9k |
+| mapped to a frozen function | 4384 (=) (16.3%) | 924.1k (16.9%) |
+| &nbsp;&nbsp;ported | 3705 (+1) | 746.7k |
+| &nbsp;&nbsp;stub (unimplemented body) | 577 (=) | 124.9k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2238 (+1) (8.3%)** | **291.1k (5.3%)** |
-| unmapped | 22578 | 4.45M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1426 (=) (26.5%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1444 (=) (25.6%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 859 (=) (19.0%)** | |
-| frozen functions (src/, from PDB + source) | 13777, stubs 1699 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2244 (-1) (8.3%)** | **292.0k (5.3%)** |
+| unmapped | 22571 | 4.45M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1427 (-1) (26.5%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1445 (-1) (25.6%) | |
+| **render surface** (the modules that draw the world) | **4520, mapped 860 (+1) (19.0%)** | |
+| frozen functions (src/, from PDB + source) | 13789, stubs 1699 | |
 
-Match evidence: annotated 2177, callgraph 240, callorder 111, cvar 31, handler 29, order 140, override 306, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2185, callgraph 236, callorder 112, cvar 31, handler 29, order 140, override 306, sticky 19, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 11:11 -- mapped 4377, ported 3697, stub 578, spine mapped 1426.
+Previous run: 2026-09-26 11:25 -- mapped 4384, ported 3704, stub 577, spine mapped 1428.
 
 ## Lua API coverage (binding tables)
 
@@ -132,7 +132,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | module | ref fns | bytes | mapped | bytes | stub | verified | spine |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1250 | 271.0k | 5 (0.4%) | 0.4% | 0 | 0 | 71 |
-| OggDecompress.cpp | 1504 | 260.7k | 19 (1.3%) | 1.0% | 2 | 0 | 476 |
+| OggDecompress.cpp | 1504 | 260.7k | 18 (1.2%) | 1.0% | 2 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 958 | 184.0k | 99 (10.3%) | 3.4% | 0 | 5 | 93 |
 | Unit_C.cpp | 703 | 182.2k | 51 (7.3%) | 2.6% | 0 | 0 | 292 |
 | Player_C.cpp | 728 | 146.7k | 58 (8.0%) | 9.5% | 0 | 0 | 156 |
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
-| DetailDoodad.cpp | 159 | 40.8k | 84 (52.8%) | 49.4% | 1 | 3 | 68 |
+| DetailDoodad.cpp | 159 | 40.8k | 85 (53.5%) | 49.8% | 1 | 3 | 68 |
 | VehicleCamera_C.cpp | 94 | 40.6k | 5 (5.3%) | 1.4% | 0 | 0 | 38 |
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
 | DBCache.cpp | 235 | 38.6k | 47 (20.0%) | 12.2% | 0 | 0 | 82 |
@@ -217,7 +217,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | KnowledgeBase.cpp | 119 | 17.8k | 2 (1.7%) | 0.1% | 1 | 0 | 0 |
 | MailInfo.cpp | 77 | 17.8k | 13 (16.9%) | 6.2% | 2 | 0 | 7 |
 | AddOns.cpp | 98 | 17.5k | 9 (9.2%) | 0.9% | 0 | 0 | 7 |
-| DeclinedWords.cpp | 72 | 17.4k | 17 (23.6%) | 21.7% | 4 | 0 | 32 |
+| DeclinedWords.cpp | 72 | 17.4k | 24 (33.3%) | 24.6% | 4 | 0 | 32 |
 | OsClipboard.cpp | 74 | 16.8k | 36 (48.6%) | 39.8% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 13 (14.9%) | 4.9% | 1 | 0 | 33 |
 | QuestLog.cpp | 80 | 16.4k | 15 (18.8%) | 21.3% | 9 | 0 | 2 |
@@ -542,6 +542,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00832ea0 | `CM2Model::InitializeLoaded` | "%s", %s = %g; "%s", %s = %g, %s = %g; shared->farClip; shared->fieldOfView |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
+| 007bd3a0 | `CVar::GetInt` | enable instancing when rendering shadowmaps; enable scissoring when rendering shadowmaps; enable shadow frustum culling; shadowCull |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` |  = program.env  ;  = program.local;  = { program.env  ;  = { program.local |
 | 00631000 | `CGTooltip_SetAction` | ATTACK; PET_ACTION_%s; PET_MODE_%s; UberTooltips |
 | 005ccd90 | `Script_Stub_GetGuildEventInfo` | Usage: GetGuildEventInfo(index); d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; demote; invite |
@@ -551,7 +552,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00536e40 | `Script_BNReportPlayer` | ABUSE; BNET_REPORT_SENT; Report note is too long.; THREAT |
 | 00535180 | `Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
-| 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
 
 ## Largest frozen functions with no reference link
 
@@ -607,7 +607,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | addr | frozen | call order | ref calls | frozen calls | ref branches | frozen branches | consts | size |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 006277f0 | `TooltipSetItemInfo` | 23% | 604 | 54 | 797 | 37 | 4% | 24814 |
-| 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 230 | 4 | 0 | 40% | 6776 |
+| 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 229 | 4 | 0 | 40% | 6776 |
 | 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 54 | 152 | 55 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00832ea0 | `CM2Model::InitializeLoaded` | 39% | 71 | 52 | 170 | 91 | 8% | 5663 |
@@ -620,7 +620,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00823130 | `CM2SceneRender::Draw` | 86% | 25 | 28 | 39 | 12 | 0% | 2909 |
 | 007d3390 | `DetailDoodad::CreateInstance` | 67% | 18 | 4 | 48 | 2 | 0% | 2662 |
 | 007b1b50 | `FillVertexBuffer` | 50% | 4 | 16 | 17 | ? | ? | 2655 |
-| 0079d5e0 | `Liquid::Draw` | 4% | 31 | 8 | 53 | 8 | 0% | 2552 |
+| 0079d5e0 | `Liquid::Draw` | 0% | 31 | 8 | 53 | 8 | 0% | 2552 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 00795400 | `CWorldScene::UpdateCamera` | 56% | 19 | 30 | 8 | 8 | 0% | 2291 |
@@ -643,9 +643,9 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
-| 0052a980 | `WowClientInit` | 14% | 59 | 23 | 23 | 2 | 0% | 1267 |
+| 0052a980 | `WowClientInit` | 14% | 59 | 24 | 23 | 2 | 0% | 1267 |
 | 007c8560 | `CMapObjGroup::FillVertexBuffer` | 83% | 6 | 12 | 24 | 8 | 6% | 1255 |
-| 00780f50 | `CWorld::Initialize` | 42% | 31 | 15 | 4 | 4 | 0% | 1247 |
+| 00780f50 | `CWorld::Initialize` | 45% | 31 | 15 | 4 | 4 | 0% | 1247 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -726,9 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 08:30 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
-| 2026-09-26 08:36 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
-| 2026-09-26 08:40 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:49 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:53 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:04 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
@@ -751,6 +748,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 11:00 | 4374 (16.2%) | 2234 (8.3%) | 578 | 1426/5381 | 2924/2964 | 1380 |
 | 2026-09-26 11:11 | 4377 (16.2%) | 2237 (8.3%) | 578 | 1426/5381 | 2924/2964 | 1380 |
 | 2026-09-26 11:13 | 4377 (16.2%) | 2238 (8.3%) | 577 | 1426/5381 | 2924/2964 | 1380 |
+| 2026-09-26 11:25 | 4383 (16.3%) | 2244 (8.3%) | 577 | 1427/5381 | 2924/2964 | 1380 |
+| 2026-09-26 11:25 | 4384 (16.3%) | 2245 (8.3%) | 577 | 1428/5381 | 2924/2964 | 1380 |
+| 2026-09-26 11:26 | 4384 (16.3%) | 2244 (8.3%) | 577 | 1427/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 
