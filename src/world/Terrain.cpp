@@ -13,6 +13,7 @@
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjGroup.hpp"
+#include "world/map/CMapObjDef.hpp"
 #include "console/CVar.hpp"
 #include "model/CM2Scene.hpp"
 #include "model/CM2Model.hpp"
@@ -212,11 +213,8 @@ struct WmoGroup {
     // MOCV, and pointers at `positions` / `indices` above. Queries run in the same instance-local
     // space as `positions` (world minus WmoInstance::origin, rotation applied), where the
     // reference keeps WMO-local vertices and transforms the query through the placement instead.
-    CImVector* mocv = nullptr;
     // The group's vertices in the model's own space, before the placement yaw. Only the BSP
     // queries use these; everything that draws uses `positions`. See the note where it is filled.
-    C3Vector* queryVerts = nullptr;
-    CMapObjGroup objGroup;
 };
 
 // A WMO portal polygon (MOPT) in world space: a vertex range into WmoInstance::portalVerts plus
@@ -284,9 +282,6 @@ struct WmoInstance {
     C3Vector interiorAmbient = { 0.35f, 0.35f, 0.35f };
 
     // The root as the group queries reach it: the MOMT copy, the MOHD flags and ambient colour.
-    // mapObj.m_mohd points at this copy, which the ported group queries read the flags through.
-    SMOHeader mohd = {};
-    CMapObj mapObj;
 };
 
 // Distance from the map's NW corner to its centre (32 tiles), used to convert the corner-relative
@@ -884,12 +879,6 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                 out.interiorAmbient.z = ab / 255.0f;
             }
 
-            out.mohd.flags = mohdFlags;
-            out.mapObj.m_mohd = &out.mohd;
-            out.mapObj.m_ambientColor.b = ab;
-            out.mapObj.m_ambientColor.g = ag;
-            out.mapObj.m_ambientColor.r = ar;
-            out.mapObj.m_ambientColor.a = body[31];
         } else if (tag == FourCC("MOTX")) {
             motx = reinterpret_cast<const char*>(body);
         } else if (tag == FourCC("MOMT")) {
@@ -898,9 +887,6 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
             // The group queries read the materials through CMapObj, so keep a copy that outlives
             // the root file buffer
             if (sz >= sizeof(SMOMaterial)) {
-                out.mapObj.m_materialCount = sz / sizeof(SMOMaterial);
-                out.mapObj.m_materials = static_cast<SMOMaterial*>(SMemAlloc(out.mapObj.m_materialCount * sizeof(SMOMaterial), __FILE__, __LINE__, 0));
-                memcpy(out.mapObj.m_materials, body, out.mapObj.m_materialCount * sizeof(SMOMaterial));
             }
         } else if (tag == FourCC("MODN")) {
             modn = reinterpret_cast<const char*>(body);
@@ -1279,70 +1265,12 @@ void LoadWmoInstance(const char* rootPath, const C3Vector& worldPos, float ry, u
                     grp.indices[j] = movi[j];
                 }
 
-                // The reference-form group data the CMapObjGroup queries walk. Faces are MOVI
-                // triples; MOPY has one record per face, MOBR indexes faces, MOBN indexes MOBR.
-                {
-                    CMapObjGroup& og = grp.objGroup;
-                    uint32_t faceCount = moviCount / 3;
-
-                    og.m_flags = mogpFlags;
-                    og.m_indices = grp.indices;
-                    og.m_vertexCount = movtCount;
-                    og.m_faceCount = faceCount;
-                    og.m_mapObj = &out.mapObj;
-
-                    // The queries need the vertices in the model's OWN space, untouched by the
-                    // placement, because MOBN's split planes are axis-aligned in that space and
-                    // came straight out of the file. grp.positions is no good for this: it has
-                    // already been yawed into the instance's orientation, so walking the tree with
-                    // it navigates in the wrong frame and descends into the wrong subtrees. The
-                    // triangle tests would still be self-consistent, which is what makes the bug
-                    // quiet -- the query simply finds the wrong faces, or none.
-                    //
-                    // So keep a second copy in file space, and note the queries are handed a probe
-                    // transformed the same way (see TerrainWmoFloorLightAt).
-                    grp.queryVerts = static_cast<C3Vector*>(SMemAlloc(movtCount * sizeof(C3Vector), __FILE__, __LINE__, 0));
-
-                    for (uint32_t v = 0; v < movtCount; v++) {
-                        grp.queryVerts[v] = { movt[v * 3 + 0], movt[v * 3 + 1], movt[v * 3 + 2] };
-                    }
-
-                    og.m_vertices = grp.queryVerts;
-
-                    // ...and the bounds in that same file space.
-                    og.m_bounds.b = grp.queryVerts[0];
-                    og.m_bounds.t = grp.queryVerts[0];
-
-                    for (uint32_t v = 1; v < movtCount; v++) {
-                        const C3Vector& q = grp.queryVerts[v];
-                        og.m_bounds.b.x = q.x < og.m_bounds.b.x ? q.x : og.m_bounds.b.x;
-                        og.m_bounds.b.y = q.y < og.m_bounds.b.y ? q.y : og.m_bounds.b.y;
-                        og.m_bounds.b.z = q.z < og.m_bounds.b.z ? q.z : og.m_bounds.b.z;
-                        og.m_bounds.t.x = q.x > og.m_bounds.t.x ? q.x : og.m_bounds.t.x;
-                        og.m_bounds.t.y = q.y > og.m_bounds.t.y ? q.y : og.m_bounds.t.y;
-                        og.m_bounds.t.z = q.z > og.m_bounds.t.z ? q.z : og.m_bounds.t.z;
-                    }
-
-                    if (mopy && mopyCount >= faceCount && faceCount) {
-                        og.m_polys = static_cast<SMOPoly*>(SMemAlloc(faceCount * sizeof(SMOPoly), __FILE__, __LINE__, 0));
-                        memcpy(og.m_polys, mopy, faceCount * sizeof(SMOPoly));
-                    }
-
-                    if (og.m_polys && mobn && mobnCount && mobr && mobrCount) {
-                        og.m_bspNodes = static_cast<CAaBspNode*>(SMemAlloc(mobnCount * sizeof(CAaBspNode), __FILE__, __LINE__, 0));
-                        memcpy(og.m_bspNodes, mobn, mobnCount * sizeof(CAaBspNode));
-                        og.m_bspNodeCount = mobnCount;
-                        og.m_bspFaceRefs = static_cast<uint16_t*>(SMemAlloc(mobrCount * sizeof(uint16_t), __FILE__, __LINE__, 0));
-                        memcpy(og.m_bspFaceRefs, mobr, mobrCount * sizeof(uint16_t));
-                        og.m_bspFaceRefCount = mobrCount;
-                    }
-
-                    if (mocv && mocvCount >= movtCount) {
-                        grp.mocv = static_cast<CImVector*>(SMemAlloc(movtCount * sizeof(CImVector), __FILE__, __LINE__, 0));
-                        memcpy(grp.mocv, mocv, movtCount * sizeof(CImVector));
-                        og.m_colors = grp.mocv;
-                    }
-                }
+                // The stand-in used to build its OWN CMapObjGroup here -- a second copy of the
+                // MOPY polys, the MOBN BSP nodes, the MOBR face refs, the MOCV colours and a
+                // file-space vertex array -- purely so the ported BSP queries had something to walk.
+                // TerrainWmoFloorLightAt now runs those queries on the REFERENCE groups, which carry
+                // the same data from the same chunks, so all of it is gone: per group that is one
+                // BSP node array, one poly array, one face-ref array and two vertex-sized arrays.
 
                 // The WmoBatch array is gone. It carried each batch's texture, blend mode and
                 // material flags for RenderWmos, which was deleted once the reference pass took
@@ -1791,15 +1719,6 @@ void FreeTile(TerrainTile& tile) {
                 if (grp.indices) SMemFree(grp.indices, __FILE__, __LINE__, 0);
                 if (grp.ndotl) SMemFree(grp.ndotl, __FILE__, __LINE__, 0);
                 if (grp.mocvAdd) SMemFree(grp.mocvAdd, __FILE__, __LINE__, 0);
-                if (grp.mocv) SMemFree(grp.mocv, __FILE__, __LINE__, 0);
-                if (grp.queryVerts) SMemFree(grp.queryVerts, __FILE__, __LINE__, 0);
-                grp.objGroup.FreeQueryData();
-            }
-
-            if (w.mapObj.m_materials) {
-                SMemFree(w.mapObj.m_materials, __FILE__, __LINE__, 0);
-                w.mapObj.m_materials = nullptr;
-                w.mapObj.m_materialCount = 0;
             }
 
             for (uint32_t di = 0; di < w.doodadCount; di++) {
@@ -4125,51 +4044,61 @@ bool TerrainPointIsIndoors(const C3Vector& pos) {
 // whose box holds the probe is tried, and within it every interior group whose box holds it, first
 // hit wins. Exterior groups never answer, so a unit out on a deck is lit by the sky again.
 bool TerrainWmoFloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector* ambient) {
-    for (auto& tile : s_tiles) {
-        if (!tile.loaded || !tile.wmos) {
+    // Runs on the REFERENCE map objects, not the stand-in's copies. CMapEntity::FloorLight was
+    // always a ported reference function taking a CMapObj and a CMapObjGroup -- the stand-in was
+    // only supplying its own instances of those two, built out of its own arrays. The real ones
+    // carry the same MOBN/MOBR BSP and the same MOCV colours, and the portal walk that reaches
+    // them has worked since the m_portalRects fix, so this is a redirect rather than a rewrite.
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def;
+         def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (!def->m_mapObj) {
             continue;
         }
 
-        for (uint32_t wi = 0; wi < tile.wmoCount; wi++) {
-            WmoInstance& w = tile.wmos[wi];
+        // The whole building first, in world space, with the same asymmetric vertical window the
+        // stand-in used: a probe reaches a little above the unit and well below it, because the
+        // floor being stood on is what is wanted.
+        const CAaBox& box = def->m_bounds;
 
-            if (w.hasBounds && (pos.x < w.bboxMin.x || pos.x > w.bboxMax.x ||
-                                pos.y < w.bboxMin.y || pos.y > w.bboxMax.y ||
-                                pos.z + 1.0f < w.bboxMin.z || pos.z - 12.0f > w.bboxMax.z)) {
+        if (pos.x < box.b.x || pos.x > box.t.x || pos.y < box.b.y || pos.y > box.t.y
+            || pos.z + 1.0f < box.b.z || pos.z - 12.0f > box.t.z) {
+            continue;
+        }
+
+        // Into the building's own space, where the BSP planes and the group bounds live. The
+        // stand-in undid the placement by hand from a yaw sine and cosine; the def carries the
+        // whole inverse, which also covers the pitch and roll a hand-rolled yaw could not.
+        C3Vector local = pos * def->m_inversePlacement;
+
+        for (auto link = def->m_defGroupLinkList.Head(); link;
+             link = def->m_defGroupLinkList.Next(link)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+            if (!defGroup) {
                 continue;
             }
 
-            // Into the model's own space: undo the placement translation, then its yaw, so the
-            // probe matches WmoGroup::queryVerts and the BSP planes that were built alongside them.
-            float dx = pos.x - w.origin.x;
-            float dy = pos.y - w.origin.y;
+            uint32_t groupIndex = defGroup->m_groupIndex;
+            CMapObjGroup* group = def->m_mapObj->GetGroup(groupIndex, 0);
 
-            C3Vector local = {
-                dx * w.yawCos + dy * w.yawSin,
-                dy * w.yawCos - dx * w.yawSin,
-                pos.z - w.origin.z
-            };
+            // A group with no BSP or no vertex colours cannot answer the probe.
+            if (!group || !group->m_bspNodes || !group->m_colors) {
+                continue;
+            }
 
-            for (uint32_t gi = 0; gi < w.groupCount; gi++) {
-                WmoGroup& grp = w.groups[gi];
+            const CAaBox& gb = group->m_bounds;
 
-                // A group without a BSP or vertex colours cannot answer the probe
-                if (!grp.vertexCount || !grp.objGroup.m_bspNodes || !grp.objGroup.m_colors) {
-                    continue;
-                }
+            if (local.x < gb.b.x || local.x > gb.t.x || local.y < gb.b.y || local.y > gb.t.y
+                || local.z + 1.0f < gb.b.z || local.z - 12.0f > gb.t.z) {
+                continue;
+            }
 
-                if (pos.x < grp.boundsMin.x || pos.x > grp.boundsMax.x ||
-                    pos.y < grp.boundsMin.y || pos.y > grp.boundsMax.y ||
-                    pos.z + 1.0f < grp.boundsMin.z || pos.z - 12.0f > grp.boundsMax.z) {
-                    continue;
-                }
+            uint32_t flags = 0;
+            uint8_t alpha = 0;
 
-                uint32_t flags = 0;
-                uint8_t alpha = 0;
-
-                if (CMapEntity::FloorLight(local, &w.mapObj, &grp.objGroup, diffuse, ambient, &flags, &alpha)) {
-                    return true;
-                }
+            if (CMapEntity::FloorLight(local, def->m_mapObj, group, diffuse, ambient, &flags,
+                                       &alpha)) {
+                return true;
             }
         }
     }

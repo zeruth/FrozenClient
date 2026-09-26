@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 08:30 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 08:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -17,13 +17,13 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | world spine (reachable from OnFrameRender) | 5381, mapped 1420 (=) (26.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1438 (=) (25.5%) | |
 | **render surface** (the modules that draw the world) | **4520, mapped 853 (=) (18.9%)** | |
-| frozen functions (src/, from PDB + source) | 13833, stubs 1700 | |
+| frozen functions (src/, from PDB + source) | 13831, stubs 1700 | |
 
 Match evidence: annotated 2165, callgraph 239, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 08:21 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
+Previous run: 2026-09-26 08:30 -- mapped 4366, ported 3685, stub 578, spine mapped 1420.
 
 ## Lua API coverage (binding tables)
 
@@ -559,7 +559,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 
 | frozen | lib | code bytes | file |
 |---|---|---:|---|
-| `LoadWmoInstance` | world | 10533 | src/world/Terrain.cpp |
+| `LoadWmoInstance` | world | 9751 | src/world/Terrain.cpp |
 | `GetPredAdvancedBy0x1` | m4vh263dec | 8257 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
 | `CFF_Parse_CharStrings` | lib/freetype-2.0 | 7964 | vendor/freetype-2.0.9/src/cff/cffgload.c |
 | `doProlog` | lib/expat-2.0 | 7308 | lib/common/vendor/expat-2.0.1/lib/xmlparse.c |
@@ -575,9 +575,9 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `LzmaDec_DecodeReal` | lib/stormlib-9.31 | 3776 | lib/squall/vendor/stormlib-9.31/src/lzma/c/lzmadec.c |
 | `DecodeVOLHeader` | m4vh263dec | 3581 | vendor/m4vh263dec/src/vop.cpp |
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
+| `LoadTile` | world | 3168 | src/world/Terrain.cpp |
 | `VlcDequantH263IntraBlock` | m4vh263dec | 3168 | vendor/m4vh263dec/src/vlc_dequant.cpp |
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
-| `LoadTile` | world | 3107 | src/world/Terrain.cpp |
 | `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
 | `Liquid::DrawShaderMaterial` | world | 2851 | src/world/map/liquidmaterialsettings.cpp |
@@ -726,7 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 03:12 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 | 2026-09-26 03:14 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 | 2026-09-26 03:18 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 | 2026-09-26 03:20 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
@@ -751,6 +750,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 08:07 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:21 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 08:30 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
+| 2026-09-26 08:36 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 
