@@ -10127,7 +10127,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureIncreasePriority",
-  "frozenSize": 0,
+  "frozenSize": 3,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 81,
@@ -10898,7 +10898,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 571,
+  "frozenSize": 622,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 89,
@@ -10914,7 +10914,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 571,
+  "frozenSize": 622,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 51,
@@ -11174,7 +11174,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::RotationAroundZ",
-  "frozenSize": 0,
+  "frozenSize": 122,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 103,
@@ -14242,7 +14242,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::C44Matrix",
-  "frozenSize": 571,
+  "frozenSize": 622,
   "how": "annotated",
   "module": "CharacterCreation.cpp",
   "refSize": 63,
@@ -61049,6 +61049,21 @@
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 50,
   "status": "verified"
+ },
+ "008a32f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "SetupTransforms",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 448,
+  "status": "ported"
  },
  "008a3e00": {
   "branchRatio": -1.0,

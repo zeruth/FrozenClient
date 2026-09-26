@@ -202376,7 +202376,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 53,
+"lines": 62,
 "refs": [],
 "line": 83
 },
@@ -202411,7 +202411,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 140
+"line": 149
 },
 "DetailDoodad::EnsureModel": {
 "files": [
@@ -202435,7 +202435,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 201
+"line": 210
 },
 "DetailDoodad::OnModelLoaded": {
 "files": [
@@ -202456,7 +202456,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 227
+"line": 236
 },
 "DetailDoodad::IsReady": {
 "files": [
@@ -202476,7 +202476,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 241
+"line": 250
 },
 "DetailDoodad::PrepareCell": {
 "files": [
@@ -202500,7 +202500,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 272
+"line": 281
 },
 "DetailDoodad::SignedUnit": {
 "files": [
@@ -202520,7 +202520,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 347
+"line": 356
 },
 "DetailDoodad::Scatter": {
 "files": [
@@ -202576,7 +202576,7 @@
 "stub": false,
 "lines": 192,
 "refs": [],
-"line": 359
+"line": 368
 },
 "DetailDoodad::AddPlacement": {
 "files": [
@@ -202601,7 +202601,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 557
+"line": 566
 },
 "DetailDoodad::AcquireBuffers": {
 "files": [
@@ -202625,7 +202625,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 619
+"line": 628
 },
 "DetailDoodad::RotateBasisAboutZ": {
 "files": [
@@ -202651,7 +202651,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 643
+"line": 652
 },
 "DetailDoodad::SlopeBasis": {
 "files": [
@@ -202678,7 +202678,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 665
+"line": 674
 },
 "DetailDoodad::ShadeVertexColor": {
 "files": [
@@ -202702,7 +202702,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 695
+"line": 704
 },
 "DetailDoodad::FillVertexBuffer": {
 "files": [
@@ -202749,7 +202749,7 @@
 "stub": false,
 "lines": 100,
 "refs": [],
-"line": 723
+"line": 732
 },
 "DetailDoodad::FillIndexBuffer": {
 "files": [
@@ -202776,7 +202776,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 827
+"line": 836
 },
 "DetailDoodad::DrawBatch": {
 "files": [
@@ -202803,7 +202803,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 861
+"line": 870
 },
 "DetailDoodad::Draw": {
 "files": [
@@ -202821,7 +202821,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 903
+"line": 912
 },
 "DetailDoodad::BuildFadeTexels": {
 "files": [
@@ -202844,7 +202844,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 915
+"line": 924
 },
 "DetailDoodad::FadeTextureCallback": {
 "files": [
@@ -202861,7 +202861,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 944
+"line": 953
 },
 "DetailDoodad::SetupState": {
 "files": [
@@ -202904,7 +202904,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 960
+"line": 969
 },
 "DetailDoodad::CreateInstance": {
 "files": [
@@ -202926,7 +202926,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1009
+"line": 1018
 },
 "DetailDoodad::ReturnBuffers": {
 "files": [
@@ -202944,7 +202944,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1040
+"line": 1049
 },
 "DetailDoodad::ReleaseInstance": {
 "files": [
@@ -202968,7 +202968,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1059
+"line": 1068
 },
 "Liquid::CMaterialSettings::GetInt": {
 "files": [
@@ -203057,7 +203057,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 26
+"line": 34
 },
 "Liquid::CMaterialSettings::LoadTextures": {
 "files": [
@@ -203091,7 +203091,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 71
+"line": 79
 },
 "Liquid::CMaterialSettings::GetFrame": {
 "files": [
@@ -203128,7 +203128,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 139
+"line": 147
 },
 "Liquid::GetMaterialSettings": {
 "files": [
@@ -203158,7 +203158,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 210
+"line": 218
 },
 "Liquid::ProcWaterSuffix": {
 "files": [
@@ -203173,7 +203173,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 262
+"line": 270
 },
 "Liquid::LoadPair": {
 "files": [
@@ -203192,7 +203192,125 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 266
+"line": 274
+},
+"Liquid::StoreMatrix": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"memcpy"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 338
+},
+"Liquid::SetupTransforms": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"CGxDevice::XformView",
+"C44Matrix::C44Matrix",
+"operator*",
+"Liquid::StoreMatrix",
+"C44Matrix::C44Matrix",
+"CGxDevice::XformProjection",
+"Liquid::StoreMatrix",
+"operator*",
+"Liquid::StoreMatrix"
+],
+"strings": [],
+"consts": [
+"1.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 353
+},
+"Liquid::DrawShaderMaterial": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"SysMsgPrintf",
+"Liquid::CMaterialSettings::GetFrame",
+"Liquid::CMaterialSettings::GetFrame",
+"Liquid::CMaterialSettings::GetInt",
+"Liquid::CMaterialSettings::GetFrame",
+"Liquid::CMaterialSettings::GetInt",
+"Liquid::CMaterialSettings::GetFrame",
+"Liquid::CMaterialSettings::GetFrame",
+"Liquid::CMaterialSettings::GetInt",
+"Liquid::CMaterialSettings::GetFrame",
+"Liquid::CMaterialSettings::GetStageFloat",
+"Liquid::CMaterialSettings::GetStageFloat",
+"Liquid::CMaterialSettings::GetStageFloat",
+"Liquid::CMaterialSettings::GetStageFloat",
+"Liquid::CMaterialSettings::GetStageFloat",
+"GxRsPush",
+"CGxBatch::CGxBatch",
+"Liquid::CChunkGeomFactory::Build",
+"GxRsPop",
+"GxPrimVertexPtr",
+"CGxDevice::PrimIndexPtr",
+"CGxDevice::RsSet",
+"CGxDevice::RsSet",
+"CGxDevice::RsSet",
+"CGxDevice::RsSet",
+"CGxDevice::RsSet",
+"CGxDevice::RsSet",
+"Liquid::SetupTransforms",
+"CM2Lighting::CM2Lighting",
+"CM2Lighting::Initialize",
+"Liquid::CClientEnvironment::SetupLighting",
+"C44Matrix::RotationAroundZ",
+"C44Matrix::Scale",
+"Liquid::StoreMatrix",
+"C44Matrix::C44Matrix",
+"Liquid::StoreMatrix",
+"C44Matrix::RotationAroundZ",
+"C44Matrix::Scale",
+"Liquid::StoreMatrix",
+"GxShaderConstantsSet",
+"GxShaderConstantsSet",
+"GxShaderConstantsSet",
+"GxShaderConstantsSet",
+"CGxDevice::RsSet",
+"CGxDevice::RsSet",
+"CGxDevice::Draw",
+"GxRsPop"
+],
+"strings": [
+"LIQDRAW: calls=%u noInputs=%u noFrame=%u noGeom=%u drawn=%u lastIndices=%u lastPerm=%u"
+],
+"consts": [
+"0",
+"1",
+"1.0f",
+"10",
+"120",
+"1250",
+"2",
+"3",
+"4",
+"5",
+"57.295780181884766f",
+"8",
+"9"
+],
+"branches": 8,
+"stub": false,
+"lines": 154,
+"refs": [],
+"line": 381
 },
 "Liquid::CMaterialWater::EnsureShaders": {
 "files": [
@@ -203213,7 +203331,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 284
+"line": 542
 },
 "Liquid::CMaterialWaterNoSpec::EnsureShaders": {
 "files": [
@@ -203234,7 +203352,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 297
+"line": 555
 },
 "Liquid::CMaterialMagma::EnsureShaders": {
 "files": [
@@ -203254,7 +203372,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 312
+"line": 570
 },
 "Liquid::CMaterialProcWater::EnsureShaders": {
 "files": [
@@ -203280,7 +203398,70 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 325
+"line": 583
+},
+"Liquid::CMaterialWater::Draw": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::DrawShaderMaterial"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 601
+},
+"Liquid::CMaterialWaterNoSpec::Draw": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::DrawShaderMaterial"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 608
+},
+"Liquid::CMaterialMagma::Draw": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::DrawShaderMaterial"
+],
+"strings": [],
+"consts": [
+"0",
+"4"
+],
+"branches": 0,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 615
+},
+"Liquid::CMaterialProcWater::Draw": {
+"files": [
+"src/world/map/liquidmaterialsettings.cpp"
+],
+"callseq": [
+"Liquid::DrawShaderMaterial"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 627
 },
 "Liquid::GetMaterial": {
 "files": [
@@ -203315,7 +203496,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 349
+"line": 640
 },
 "Liquid::ReleaseMaterials": {
 "files": [
@@ -203334,7 +203515,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 416
+"line": 707
 },
 "Liquid::ReleaseMaterialSettings": {
 "files": [
@@ -203366,7 +203547,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 427
+"line": 718
 },
 "Liquid::CChunkGeomFactory::AddRef": {
 "files": [

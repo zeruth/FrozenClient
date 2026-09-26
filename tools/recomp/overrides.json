@@ -3093,5 +3093,9 @@
   "007ccd20": {
     "status": "diverged",
     "note": "Builds the bounding box of each of the 62 occlusion volumes by sweeping its vertices, once, behind a done flag -- the boxes live zeroed in the reference's own image at 0x00af0048 with a 10-float stride, so it fills the table in place. frozen keeps them in a separate s_boxes array beside the generated table, because MapOcclusionTable.hpp is const data, and its BuildBoxes is deliberately marked `Part of ref:` rather than tagged. Left that way: the reference body continues past the box sweep and what follows is not established."
+  },
+  "008a48f0": {
+    "status": "unlinked",
+    "note": "The liquid material draw. PARTIALLY ported as DrawShaderMaterial in LiquidMaterialSettings.cpp -- transforms, the six texture stages, the texture matrices, the four constant uploads, the shader permutation and the draw -- and deliberately NOT tagged, because three constant ranges are still zeroed (the lighting from FUN_008a38b0, the untransformed sun terms from FUN_008a3c90, and the wave animation from FUN_008a3620/3710/3810) and because the reference has FOUR shader draw bodies and which material owns this one is not established. Tag it when the ranges are filled and the body is identified. docs/ref/parity-liquid.md has the register map."
   }
 }

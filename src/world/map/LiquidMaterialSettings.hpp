@@ -107,18 +107,24 @@ class IMaterial {
 class CMaterialWater : public IMaterial {
     public:
         void EnsureShaders() override;
+        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+                  const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
 // LiquidMaterial 1 without specular. ref: FUN_008a4070 / FUN_008a47f0
 class CMaterialWaterNoSpec : public IMaterial {
     public:
         void EnsureShaders() override;
+        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+                  const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
 // LiquidMaterial 2, magma and slime. ref: FUN_008a4190 / FUN_008a4870
 class CMaterialMagma : public IMaterial {
     public:
         void EnsureShaders() override;
+        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+                  const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
 // LiquidMaterial 3, procedural water. Its shader names carry a suffix the reference is handed
@@ -126,6 +132,8 @@ class CMaterialMagma : public IMaterial {
 class CMaterialProcWater : public IMaterial {
     public:
         void EnsureShaders() override;
+        void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+                  const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
 };
 
 // The fixed-function flavours. They load no shaders, which is the whole point of them.

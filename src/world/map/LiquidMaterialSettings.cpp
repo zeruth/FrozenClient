@@ -2,6 +2,14 @@
 #include "db/Db.hpp"
 #include "gx/CGxCaps.hpp"
 #include "gx/Device.hpp"
+#include "gx/Shader.hpp"
+#include "gx/RenderState.hpp"
+#include <cstring>
+#include "gx/Transform.hpp"
+#include "model/CM2Lighting.hpp"
+#include "world/map/LiquidSurface.hpp"
+#include "gx/CGxBatch.hpp"
+#include "gx/Buffer.hpp"
 #include <cmath>
 #include <common/Time.hpp>
 #include "gx/shader/CGxShader.hpp"
@@ -280,6 +288,256 @@ CGxShader* s_psProcWater[1];
 
 }
 
+// ------------------------------------------------------------------------------------------------
+// The shader constant block
+//
+// The reference keeps these as loose globals and uploads four ranges out of them. Laying them out
+// by REGISTER instead makes the map checkable: a register is (address - base) / 16.
+//
+//   vertex  c0..c3    the projection                      0x00d44ca8
+//   vertex  c5..c8    the world-view                      0x00d44cf8
+//   vertex  c9,13,17,21  four texture matrices            0x00d44d38 onwards, 0x40 apart
+//   vertex  c25..c28  a scale from stage float 8          0x00d44e38
+//   vertex  c29..c32  RotationAroundZ(f10) * Scale(f9)    0x00d44e78
+//   vertex  c33..c45  the lighting, from FUN_008a38b0     0x00d44eb8   NOT FILLED YET
+//   vertex  c46..c57  from FUN_008a3620/3710/3810         0x00d44f88   NOT FILLED YET
+//   pixel   c0..c3    the model-view-projection           0x00b24120
+//   pixel   c5        the camera position, w = 1           0x00b24170
+//   pixel   c6..c11   the sun terms, from FUN_008a3c90     0x00d44c48   NOT FILLED YET
+//
+// The three unfilled ranges are the lighting and the wave animation. They are left zeroed rather
+// than guessed, so this draws water with the right geometry, textures and transform and flat
+// shading; the shape of each is in docs/ref/parity-liquid.md.
+
+namespace {
+
+const uint32_t VS_REGISTERS = 58;
+const uint32_t PS_REGISTERS = 6;
+
+const uint32_t VS_PROJECTION = 0;
+const uint32_t VS_WORLD_VIEW = 5;
+const uint32_t VS_TEX_MATRIX = 9;
+const uint32_t VS_SCALE = 25;
+const uint32_t VS_ROT_SCALE = 29;
+const uint32_t VS_SPLIT = 46;        // where the second vertex upload starts
+
+const uint32_t PS_MVP = 0;
+const uint32_t PS_CAMERA = 5;
+
+struct Constants {
+    C4Vector vs[VS_REGISTERS];
+    C4Vector psMvp[PS_REGISTERS];
+    C4Vector psSun[PS_REGISTERS];
+};
+
+Constants s_constants;
+
+// Straight copy, NOT transposed. frozen's own terrain and WMO shaders take transposed matrices,
+// but these are the reference's shaders out of the archives, and the reference stores each matrix
+// into this block with a plain sixteen-dword copy. Matching the shader, not the house style.
+void StoreMatrix(C4Vector* dst, const C44Matrix& m) {
+    memcpy(dst, &m, sizeof(C44Matrix));
+}
+
+// ref: FUN_008a32f0
+// The projection, the world-view and the combined transform.
+//
+// The world-view is the placement with the camera taken out of its translation, times the device's
+// VIEW matrix -- and that composes correctly here rather than double-counting the camera, because
+// frozen's CCamera builds its view matrix with the camera at the origin, which is the same
+// rotation-only convention the reference uses.
+//
+// DIVERGED: the reference negates the projection's third row when the device's flag at +0x1b4 is
+// clear -- a depth-range convention -- and frozen's CGxDevice has no such flag. The negation is
+// skipped. If water ends up at the wrong depth or fighting the terrain, this is the one knob.
+void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
+    C44Matrix view;
+    g_theGxDevicePtr->XformView(view);
+
+    C44Matrix local = placement;
+
+    local.d0 -= cameraPos.x;
+    local.d1 -= cameraPos.y;
+    local.d2 -= cameraPos.z;
+
+    C44Matrix worldView = local * view;
+
+    StoreMatrix(&s_constants.vs[VS_WORLD_VIEW], worldView);
+
+    C44Matrix projection;
+    g_theGxDevicePtr->XformProjection(projection);
+
+    StoreMatrix(&s_constants.vs[VS_PROJECTION], projection);
+    StoreMatrix(&s_constants.psMvp[PS_MVP], worldView * projection);
+
+    s_constants.psMvp[PS_CAMERA].x = cameraPos.x;
+    s_constants.psMvp[PS_CAMERA].y = cameraPos.y;
+    s_constants.psMvp[PS_CAMERA].z = cameraPos.z;
+    s_constants.psMvp[PS_CAMERA].w = 1.0f;
+}
+
+// Part of ref: FUN_008a48f0 -- the shared body behind all four shader materials, which differ only
+// in the shader pair they hand it.
+void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
+                        CClientEnvironment* environment, CChunkGeomFactory* geometry,
+                        const C3Vector& cameraPos, const C44Matrix* placement,
+                        const CAaSphere* sphere, CMaterialSettings* settings) {
+    // LIQCOUNT: one counter per rejection point, so a run says which gate the water dies at rather
+    // than just "no water". Remove with the lighting constants.
+    static uint32_t s_calls = 0;
+    static uint32_t s_noInputs = 0;
+    static uint32_t s_noFrame = 0;
+    static uint32_t s_noGeometry = 0;
+    static uint32_t s_drawn = 0;
+    static uint32_t s_lastIndices = 0;
+    static uint32_t s_lastPerm = 0;
+    static uint32_t s_ticks = 0;
+
+    s_calls++;
+
+    if (++s_ticks >= 120) {
+        s_ticks = 0;
+
+        SysMsgPrintf(SYSMSG_INFO,
+                     "LIQDRAW: calls=%u noInputs=%u noFrame=%u noGeom=%u drawn=%u "
+                     "lastIndices=%u lastPerm=%u",
+                     s_calls, s_noInputs, s_noFrame, s_noGeometry, s_drawn, s_lastIndices,
+                     s_lastPerm);
+    }
+
+    if (!geometry || !settings || !environment) {
+        s_noInputs++;
+
+        return;
+    }
+
+    // Six animation frames. 1250 ms for slots 0, 1 and 4; the other three take their period from
+    // m_int. A slot with nothing resolved aborts the whole draw, before any state is pushed.
+    CGxTex* frames[CMaterialSettings::TEXTURE_SLOTS];
+
+    static const uint32_t DEFAULT_PERIOD = 1250;
+
+    frames[0] = settings->GetFrame(0, DEFAULT_PERIOD);
+    frames[1] = settings->GetFrame(1, DEFAULT_PERIOD);
+    frames[2] = settings->GetFrame(2, static_cast<uint32_t>(settings->GetInt(1)));
+    frames[3] = settings->GetFrame(3, static_cast<uint32_t>(settings->GetInt(2)));
+    frames[4] = settings->GetFrame(4, DEFAULT_PERIOD);
+    frames[5] = settings->GetFrame(5, static_cast<uint32_t>(settings->GetInt(3)));
+
+    for (uint32_t i = 0; i < CMaterialSettings::TEXTURE_SLOTS; i++) {
+        if (!frames[i]) {
+            s_noFrame++;
+
+            return;
+        }
+    }
+
+    // The stage floats. The first four are scales and the next four angles; the multiplier the
+    // reference applies to the scales is a global that rests at 1.0, and the one it applies to the
+    // angles is 180/pi, so those four are radians on their way to degrees.
+    static const float ANGLE_SCALE = 57.295780181884766f;
+
+    float texScale[4];
+    float texAngle[4];
+
+    for (uint32_t i = 0; i < 4; i++) {
+        texScale[i] = settings->GetStageFloat(i);
+        texAngle[i] = settings->GetStageFloat(i + 4) * ANGLE_SCALE;
+    }
+
+    float scaleY = settings->GetStageFloat(8);
+    float extraScale = settings->GetStageFloat(9);
+    float extraAngle = settings->GetStageFloat(10) * ANGLE_SCALE;
+
+    GxRsPush();
+
+    CGxBuf* vertexBuf = nullptr;
+    CGxBuf* indexBuf = nullptr;
+    CGxBatch batch;
+
+    if (!geometry->Build(GxVBF_PT2, &vertexBuf, &indexBuf, &batch)) {
+        s_noGeometry++;
+
+        GxRsPop();
+
+        return;
+    }
+
+    GxPrimVertexPtr(vertexBuf, GxVBF_PT2);
+    g_theGxDevicePtr->PrimIndexPtr(indexBuf);
+
+    // The six frames do NOT go to the stages in slot order.
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<void*>(frames[0]));
+    g_theGxDevicePtr->RsSet(GxRs_Texture1, static_cast<void*>(frames[1]));
+    g_theGxDevicePtr->RsSet(GxRs_Texture2, static_cast<void*>(frames[4]));
+    g_theGxDevicePtr->RsSet(GxRs_Texture3, static_cast<void*>(frames[5]));
+    g_theGxDevicePtr->RsSet(GxRs_Texture4, static_cast<void*>(frames[2]));
+    g_theGxDevicePtr->RsSet(GxRs_Texture5, static_cast<void*>(frames[3]));
+
+    SetupTransforms(cameraPos, *placement);
+
+    // The lighting block the environment fills. Its own constants are not written yet, but building
+    // it is what selects the shader permutation below.
+    CM2Lighting lighting;
+    lighting.Initialize(nullptr, *sphere);
+
+    environment->SetupLighting(&lighting);
+
+    // Four texture matrices, one per stage float pair.
+    for (uint32_t i = 0; i < 4; i++) {
+        C44Matrix m = C44Matrix::RotationAroundZ(texAngle[i]);
+
+        m.Scale(texScale[i]);
+
+        StoreMatrix(&s_constants.vs[VS_TEX_MATRIX + i * 4], m);
+    }
+
+    // Then a plain scale, and a rotate-and-scale.
+    C44Matrix scale(1.0f);
+
+    scale.b1 = scaleY;
+
+    StoreMatrix(&s_constants.vs[VS_SCALE], scale);
+
+    C44Matrix rotScale = C44Matrix::RotationAroundZ(extraAngle);
+
+    rotScale.Scale(extraScale);
+
+    StoreMatrix(&s_constants.vs[VS_ROT_SCALE], rotScale);
+
+    // Four uploads, two ranges per target.
+    GxShaderConstantsSet(GxSh_Vertex, 0,
+                         reinterpret_cast<const float*>(&s_constants.vs[0]), VS_SPLIT);
+    GxShaderConstantsSet(GxSh_Pixel, 0,
+                         reinterpret_cast<const float*>(&s_constants.psMvp[0]), PS_REGISTERS);
+    GxShaderConstantsSet(GxSh_Vertex, VS_SPLIT,
+                         reinterpret_cast<const float*>(&s_constants.vs[VS_SPLIT]),
+                         VS_REGISTERS - VS_SPLIT);
+    GxShaderConstantsSet(GxSh_Pixel, PS_REGISTERS,
+                         reinterpret_cast<const float*>(&s_constants.psSun[0]), PS_REGISTERS);
+
+    // The vertex permutation is the local light count, clamped to three -- which is why every one
+    // of these materials loads four vertex programs and one pixel program.
+    uint32_t permutation = lighting.m_lightCount;
+
+    if (permutation > 2) {
+        permutation = 3;
+    }
+
+    g_theGxDevicePtr->RsSet(GxRs_VertexShader, static_cast<void*>(vertexShaders[permutation]));
+    g_theGxDevicePtr->RsSet(GxRs_PixelShader, static_cast<void*>(pixelShaders[0]));
+
+    g_theGxDevicePtr->Draw(&batch, 1);
+
+    s_drawn++;
+    s_lastIndices = batch.m_count;
+    s_lastPerm = permutation;
+
+    GxRsPop();
+}
+
+}
+
 // ref: FUN_008a3f70
 void CMaterialWater::EnsureShaders() {
     static bool s_loaded = false;
@@ -338,6 +596,39 @@ void CMaterialProcWater::EnsureShaders() {
     SStrPrintf(pixelName, sizeof(pixelName), "psLiquidProcWater%s", ProcWaterSuffix());
 
     LoadPair(s_vsProcWater, 4, vertexName, s_psProcWater, 1, pixelName);
+}
+
+void CMaterialWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+                          const C3Vector& cameraPos, const C44Matrix* placement,
+                          const CAaSphere* sphere, CMaterialSettings* settings) {
+    DrawShaderMaterial(s_vsWater, s_psWater, environment, geometry, cameraPos, placement, sphere,
+                       settings);
+}
+
+void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+                                const C3Vector& cameraPos, const C44Matrix* placement,
+                                const CAaSphere* sphere, CMaterialSettings* settings) {
+    DrawShaderMaterial(s_vsWaterNoSpec, s_psWaterNoSpec, environment, geometry, cameraPos,
+                       placement, sphere, settings);
+}
+
+void CMaterialMagma::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+                          const C3Vector& cameraPos, const C44Matrix* placement,
+                          const CAaSphere* sphere, CMaterialSettings* settings) {
+    // Magma loads ONE vertex program rather than four, so the permutation is always 0 -- which is
+    // what DrawShaderMaterial would pick anyway only when no local light was found. Passing the
+    // one-entry array through the same body would index past it, so magma clamps here.
+    CGxShader* shaders[4] = { s_vsMagma[0], s_vsMagma[0], s_vsMagma[0], s_vsMagma[0] };
+
+    DrawShaderMaterial(shaders, s_psMagma, environment, geometry, cameraPos, placement, sphere,
+                       settings);
+}
+
+void CMaterialProcWater::Draw(CClientEnvironment* environment, CChunkGeomFactory* geometry, void*,
+                              const C3Vector& cameraPos, const C44Matrix* placement,
+                              const CAaSphere* sphere, CMaterialSettings* settings) {
+    DrawShaderMaterial(s_vsProcWater, s_psProcWater, environment, geometry, cameraPos, placement,
+                       sphere, settings);
 }
 
 // ref: FUN_008a1fa0
