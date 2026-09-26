@@ -1,4 +1,5 @@
 #include "world/CWorldScene.hpp"
+#include "world/Shadow.hpp"
 #include "gx/Shader.hpp"
 #include "world/Weather.hpp"
 #include "world/DayNight.hpp"
@@ -1946,11 +1947,10 @@ void CWorldScene::DrawEntityShadows() {
 
                 entity->m_model->GetSequenceInfo(0, 0, info);
 
-                // TODO the decal itself: FUN_007e49e0 picks the footprint from this box and
-                // FUN_007e4480 projects it onto the receiver. Frozen's stand-in decal was deleted
-                // once the receiver's base pass moved to CMapRenderChunk and the depth-EQUAL trick
-                // it relied on stopped matching; see the note at the call site in CGWorldFrame.
-                (void)info;
+                // The reference's own gate and projector. They draw nothing yet -- the receiver
+                // walk behind DecalDrawProjected is still a TODO -- but the footprint, the
+                // projection volume and the decal state are all built the reference's way now.
+                ShadowDrawBlob(info.extent, entity->m_model);
             }
 
             entity = next;
@@ -1964,8 +1964,9 @@ void CWorldScene::DrawEntityShadows() {
         if (entity->m_flags7c & 0x800) {
             CAaBox shadowBox;
 
-            // Same TODO as above: the box is what the reference's decal draw takes.
-            (void)static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox);
+            static_cast<CGUnit_C*>(object)->GetShadowBox(shadowBox);
+
+            ShadowDrawBlob(shadowBox, entity->m_model);
         }
 
         // TODO the object's own per-frame hook, vtable slot 29, runs here.

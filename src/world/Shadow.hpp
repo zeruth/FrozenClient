@@ -6,6 +6,7 @@
 
 class C44Matrix;
 class CAaBox;
+class CImVector;
 class CM2Model;
 class CVar;
 
@@ -44,7 +45,15 @@ void ShadowSetLOD(int32_t lod);
 // ref: FUN_007e2d60
 void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& box, const C44Matrix* extra, float bias, int32_t absolute);
 
+// The wrapper every projected decal shares: transforms, the two texture matrices, the receiver
+// walk. ref: FUN_007e4370
+void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44Matrix& texMatrix, float bias, uint32_t receiverMask, int32_t flag, float strength);
+
+// Turn a caster's box into a projection volume and its texture matrix, set the decal state, draw.
+// ref: FUN_007e4480
+void ShadowProjectBlob(const CAaBox& casterBox, CM2Model* model, float strength);
+
 // Draw one caster's blob, if this caster gets one at all. ref: FUN_007e49e0
-void ShadowDrawBlob(CM2Model* model);
+void ShadowDrawBlob(const CAaBox& casterBox, CM2Model* model);
 
 #endif

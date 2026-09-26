@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 11:36 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 11:45 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
-| mapped to a frozen function | 4386 (+2) (16.3%) | 924.7k (16.9%) |
-| &nbsp;&nbsp;ported | 3707 (+2) | 747.3k |
+| mapped to a frozen function | 4389 (-1) (16.3%) | 926.3k (16.9%) |
+| &nbsp;&nbsp;ported | 3710 (-1) | 748.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 577 (=) | 124.9k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2245 (+1) (8.3%)** | **292.0k (5.3%)** |
-| unmapped | 22569 | 4.45M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1429 (+2) (26.6%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1447 (+2) (25.6%) | |
-| **render surface** (the modules that draw the world) | **4520, mapped 861 (+1) (19.0%)** | |
-| frozen functions (src/, from PDB + source) | 13791, stubs 1699 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2247 (-1) (8.3%)** | **292.2k (5.3%)** |
+| unmapped | 22566 | 4.45M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1432 (-1) (26.6%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1450 (-1) (25.7%) | |
+| **render surface** (the modules that draw the world) | **4520, mapped 860 (=) (19.0%)** | |
+| frozen functions (src/, from PDB + source) | 13793, stubs 1699 | |
 
-Match evidence: annotated 2186, callgraph 237, callorder 112, cvar 31, handler 29, order 140, override 306, sticky 19, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2188, callgraph 241, callorder 111, cvar 31, handler 29, order 140, override 306, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 11:26 -- mapped 4384, ported 3705, stub 577, spine mapped 1427.
+Previous run: 2026-09-26 11:44 -- mapped 4390, ported 3711, stub 577, spine mapped 1433.
 
 ## Lua API coverage (binding tables)
 
@@ -132,7 +132,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | module | ref fns | bytes | mapped | bytes | stub | verified | spine |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1250 | 271.0k | 5 (0.4%) | 0.4% | 0 | 0 | 71 |
-| OggDecompress.cpp | 1504 | 260.7k | 18 (1.2%) | 1.0% | 2 | 0 | 476 |
+| OggDecompress.cpp | 1504 | 260.7k | 19 (1.3%) | 1.0% | 2 | 0 | 476 |
 | ComSatSoundIOSoundEngine.cpp | 958 | 184.0k | 99 (10.3%) | 3.4% | 0 | 5 | 93 |
 | Unit_C.cpp | 703 | 182.2k | 51 (7.3%) | 2.6% | 0 | 0 | 292 |
 | Player_C.cpp | 728 | 146.7k | 58 (8.0%) | 9.5% | 0 | 0 | 156 |
@@ -165,7 +165,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | asiolist.cpp | 172 | 42.5k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
-| DetailDoodad.cpp | 159 | 40.8k | 85 (53.5%) | 49.8% | 1 | 3 | 68 |
+| DetailDoodad.cpp | 159 | 40.8k | 84 (52.8%) | 49.4% | 1 | 3 | 68 |
 | VehicleCamera_C.cpp | 94 | 40.6k | 5 (5.3%) | 1.4% | 0 | 0 | 38 |
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
 | DBCache.cpp | 235 | 38.6k | 47 (20.0%) | 12.2% | 0 | 0 | 82 |
@@ -184,7 +184,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | MapChunkLiquid.cpp | 76 | 30.8k | 35 (46.1%) | 52.9% | 0 | 2 | 46 |
 | MinimapFrame.cpp | 76 | 30.8k | 22 (28.9%) | 18.2% | 0 | 0 | 1 |
 | UnitMissileTrajectory_C.cpp | 93 | 30.6k | 4 (4.3%) | 1.4% | 0 | 0 | 57 |
-| Client.cpp | 167 | 30.6k | 59 (35.3%) | 39.5% | 10 | 0 | 30 |
+| Client.cpp | 167 | 30.6k | 60 (35.9%) | 39.7% | 10 | 0 | 30 |
 | CGlueMgr.cpp | 182 | 28.8k | 94 (51.6%) | 57.0% | 24 | 0 | 1 |
 | LoadingScreen.cpp | 200 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 79 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
@@ -217,7 +217,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | KnowledgeBase.cpp | 119 | 17.8k | 2 (1.7%) | 0.1% | 1 | 0 | 0 |
 | MailInfo.cpp | 77 | 17.8k | 13 (16.9%) | 6.2% | 2 | 0 | 7 |
 | AddOns.cpp | 98 | 17.5k | 9 (9.2%) | 0.9% | 0 | 0 | 7 |
-| DeclinedWords.cpp | 72 | 17.4k | 25 (34.7%) | 28.1% | 4 | 0 | 32 |
+| DeclinedWords.cpp | 72 | 17.4k | 27 (37.5%) | 37.3% | 4 | 0 | 32 |
 | OsClipboard.cpp | 74 | 16.8k | 36 (48.6%) | 39.8% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 13 (14.9%) | 4.9% | 1 | 0 | 33 |
 | QuestLog.cpp | 80 | 16.4k | 15 (18.8%) | 21.3% | 9 | 0 | 2 |
@@ -542,7 +542,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00832ea0 | `CM2Model::InitializeLoaded` | "%s", %s = %g; "%s", %s = %g, %s = %g; shared->farClip; shared->fieldOfView |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
-| 007bd3a0 | `CVar::GetInt` | enable instancing when rendering shadowmaps; enable scissoring when rendering shadowmaps; enable shadow frustum culling; shadowCull |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` |  = program.env  ;  = program.local;  = { program.env  ;  = { program.local |
 | 00631000 | `CGTooltip_SetAction` | ATTACK; PET_ACTION_%s; PET_MODE_%s; UberTooltips |
 | 005ccd90 | `Script_Stub_GetGuildEventInfo` | Usage: GetGuildEventInfo(index); d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; demote; invite |
@@ -552,6 +551,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00536e40 | `Script_BNReportPlayer` | ABUSE; BNET_REPORT_SENT; Report note is too long.; THREAT |
 | 00535180 | `Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
+| 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
 
 ## Largest frozen functions with no reference link
 
@@ -639,13 +639,13 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00798da0 | `CWorldScene::RenderTerrain` | 83% | 31 | 50 | 38 | 10 | 0% | 1379 |
 | 00631000 | `CGTooltip_SetAction` | 14% | 51 | 7 | 43 | 2 | 0% | 1377 |
+| 007e4480 | `ShadowProjectBlob` | 42% | 33 | 41 | 10 | ? | ? | 1370 |
 | 0079a870 | `CMap::Render` | 34% | 54 | 37 | 24 | 13 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | 47% | 57 | 19 | 40 | 8 | 4% | 1310 |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` | 70% | 10 | 9 | 66 | ? | ? | 1299 |
 | 0052a980 | `WowClientInit` | 14% | 59 | 24 | 23 | 2 | 0% | 1267 |
 | 007c8560 | `CMapObjGroup::FillVertexBuffer` | 83% | 6 | 12 | 24 | 8 | 6% | 1255 |
-| 00780f50 | `CWorld::Initialize` | 45% | 31 | 15 | 4 | 4 | 0% | 1247 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -713,7 +713,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 00767460 | `CVar::LookupRegistered` | override | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 0076e720 | `SStrChrR` | override | one side every frame, the other never | [6, 3, 2] | [0, 0, 0] |
 | 0076f010 | `ISStrVPrintf` | callgraph | one side every frame, the other never | [13, 7, 5] | [0, 0, 0] |
-| 007e4480 | `BlobShadowsBegin` | unlinked | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
+| 007e4480 | `BlobShadowsBegin` | annotated | one side every frame, the other never | [0, 0, 0] | [1, 1, 1] |
 | 008154e0 | `StringToBOOL` | override | one side every frame, the other never | [2, 2, 2] | [0, 0, 0] |
 | 00819210 | `FrameScript_Execute` | unlinked | one side every frame, the other never | [0, 0, 0] | [20, 20, 20] |
 | 0084f9f0 | `luaL_checklstring` | callgraph | one side every frame, the other never | [1, 1, 1] | [0, 0, 0] |
@@ -726,8 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 08:53 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
-| 2026-09-26 09:04 | 4366 (16.2%) | 2231 (8.3%) | 578 | 1420/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:16 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:25 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
 | 2026-09-26 09:40 | 4368 (16.2%) | 2232 (8.3%) | 578 | 1422/5381 | 2924/2964 | 1380 |
@@ -751,6 +749,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 11:25 | 4384 (16.3%) | 2245 (8.3%) | 577 | 1428/5381 | 2924/2964 | 1380 |
 | 2026-09-26 11:26 | 4384 (16.3%) | 2244 (8.3%) | 577 | 1427/5381 | 2924/2964 | 1380 |
 | 2026-09-26 11:36 | 4386 (16.3%) | 2245 (8.3%) | 577 | 1429/5381 | 2924/2964 | 1380 |
+| 2026-09-26 11:44 | 4390 (16.3%) | 2248 (8.3%) | 577 | 1433/5381 | 2924/2964 | 1380 |
+| 2026-09-26 11:45 | 4389 (16.3%) | 2247 (8.3%) | 577 | 1432/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

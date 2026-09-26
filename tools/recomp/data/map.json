@@ -1011,6 +1011,22 @@
   "refSize": 55,
   "status": "ported"
  },
+ "00408c30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/RenderState.cpp",
+   "src/gx/renderstate.cpp"
+  ],
+  "frozen": "GxRsSetAlphaRef",
+  "frozenSize": 12,
+  "how": "callorder",
+  "module": "Client.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
  "004090c0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -1185,6 +1201,22 @@
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 73,
+  "status": "ported"
+ },
+ "004209b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/console/CVar.cpp",
+   "src/console/cvar.cpp"
+  ],
+  "frozen": "CVar::GetInt",
+  "frozenSize": 4,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 44,
   "status": "ported"
  },
  "00421800": {
@@ -23250,14 +23282,17 @@
   "status": "ported"
  },
  "0054efe0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
-  "files": [],
-  "frozen": "TSGrowableArray<C2iVector>::Reserve",
-  "frozenSize": 385,
-  "how": "sticky",
+  "files": [
+   "src/console/Detect.cpp",
+   "src/console/detect.cpp"
+  ],
+  "frozen": "ConsoleDetectGetResolutions",
+  "frozenSize": 645,
+  "how": "callgraph",
   "module": "BattlefieldInfo.cpp",
   "refSize": 102,
   "status": "ported"
@@ -23266,7 +23301,7 @@
   "branchRatio": 0.154,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.875,
+  "fidelity": 0.25,
   "files": [
    "src/ui/game/CGVideoOptionsScript.cpp",
    "src/ui/game/cgvideooptionsscript.cpp"
@@ -23289,7 +23324,7 @@
   ],
   "frozen": "SetupFormats",
   "frozenSize": 906,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "BattlefieldInfo.cpp",
   "refSize": 615,
   "status": "ported"
@@ -41943,7 +41978,7 @@
   "branchRatio": 0.48,
   "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.45,
+  "fidelity": 0.35,
   "files": [
    "src/console/Device.cpp",
    "src/console/device.cpp"
@@ -43413,7 +43448,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.452,
+  "fidelity": 0.419,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
@@ -44549,7 +44584,7 @@
   "branchRatio": 0.294,
   "constOverlap": 0.053,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.364,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -47230,22 +47265,6 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 448,
-  "status": "ported"
- },
- "007bd3a0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/console/CVar.cpp",
-   "src/console/cvar.cpp"
-  ],
-  "frozen": "CVar::GetInt",
-  "frozenSize": 4,
-  "how": "callorder",
-  "module": "DetailDoodad.cpp",
-  "refSize": 162,
   "status": "ported"
  },
  "007bd450": {
@@ -50710,11 +50729,41 @@
   "refSize": 117,
   "status": "ported"
  },
- "007e49e0": {
+ "007e4370": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "DecalDrawProjected",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 268,
+  "status": "ported"
+ },
+ "007e4480": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.424,
+  "files": [
+   "src/world/Shadow.cpp"
+  ],
+  "frozen": "ShadowProjectBlob",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 1370,
+  "status": "ported"
+ },
+ "007e49e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/Shadow.cpp"
   ],
@@ -60787,7 +60836,7 @@
   ],
   "frozen": "SESound::MuteChannelGroup",
   "frozenSize": 186,
-  "how": "sticky",
+  "how": "callgraph",
   "module": "SoundEngine.cpp",
   "refSize": 64,
   "status": "ported"

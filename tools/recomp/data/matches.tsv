@@ -62,6 +62,7 @@ addr	how	frozen	evidence
 00408490	callgraph	CGxDevice::RsPush	only unmatched callee of 00409670=GxRsPush
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
+00408c30	callorder	GxRsSetAlphaRef	same slot between linked calls in 007e4480=ShadowProjectBlob
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
 00409550	annotated	LoadingScreenFinish	tag in src/gx/LoadingScreen.cpp
 00409670	override	GxRsPush	
@@ -73,6 +74,7 @@ addr	how	frozen	evidence
 0040ab70	annotated	LoadingScreenStart	tag in src/gx/LoadingScreen.cpp
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
+004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421800	callgraph	sprintf	only unmatched callee of 0053c430=CM2Shared::LoadSkinProfile
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 00876d90=CShaderEffectManager::LoadEffectFile
@@ -1452,9 +1454,9 @@ addr	how	frozen	evidence
 0054ed80	annotated	Script_SetupFullscreenScale	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ee60	annotated	Script_GetVideoCaps	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054efe0	sticky	TSGrowableArray<C2iVector>::Reserve	held from the previous run, where it was sticky
+0054efe0	callgraph	ConsoleDetectGetResolutions	only unmatched callee of 0054f050=SetupResolutions
 0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f690=Script_GetRefreshRates
-0054f1b0	callorder	SetupFormats	same slot between linked calls in 0054f8b0=Script_GetCurrentMultisampleFormat, 0054f980=Script_SetMultisampleFormat
+0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f8b0=Script_GetCurrentMultisampleFormat, 0054f980=Script_SetMultisampleFormat
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f4a0	table	Script_GetCurrentResolution	binding "GetCurrentResolution" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
 0054f570	table	Script_SetScreenResolution	binding "SetScreenResolution" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -2959,7 +2961,6 @@ addr	how	frozen	evidence
 007bb3e0	annotated	MapShadowFocus	tag in src/world/MapShadow.cpp
 007bb570	annotated	MapShadowRender	tag in src/world/MapShadow.cpp
 007bb670	annotated	MapShadowSetupPlane	tag in src/world/MapShadow.cpp
-007bd3a0	callorder	CVar::GetInt	same slot between linked calls in 00780f50=CWorld::Initialize
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
@@ -3178,6 +3179,8 @@ addr	how	frozen	evidence
 007e3820	annotated	ShadowModCallback	tag in src/world/Shadow.cpp
 007e3980	annotated	ShadowSetLOD	tag in src/world/Shadow.cpp
 007e3a20	annotated	ShadowLODCallback	tag in src/world/Shadow.cpp
+007e4370	annotated	DecalDrawProjected	tag in src/world/Shadow.cpp
+007e4480	annotated	ShadowProjectBlob	tag in src/world/Shadow.cpp
 007e49e0	annotated	ShadowDrawBlob	tag in src/world/Shadow.cpp
 007e6480	callorder	PlayerNameUpdateWorldText	same slot between linked calls in 004faf90=CGWorldFrame::RenderWorld
 007e7c70	annotated	CoinSplit	tag in src/ui/game/GameScript.cpp
@@ -3824,7 +3827,7 @@ addr	how	frozen	evidence
 0087a6f0	callgraph	SESound::GetChannelGroup	only unmatched callee of 0087a850=SESound::SetChannelGroupVolume
 0087a7e0	callorder	SESound::SetChannelGroup	same slot between linked calls in 004c6a40=SI2::PlaySoundKit
 0087a850	callgraph	SESound::SetChannelGroupVolume	only unmatched callee of 004d0e80=SFXVolume_CVarCallback, 004d0eb0=MusicVolume_CVarCallback, 004d0ef0=AmbienceVolume_CVarCallback
-0087a8e0	sticky	SESound::MuteChannelGroup	held from the previous run, where it was sticky
+0087a8e0	callgraph	SESound::MuteChannelGroup	only unmatched callee of 004d13e0=EnableAllSound_CVarCallback, 004d14e0=EnableSFX_CVarCallback
 0087a9b0	annotated	s_SystemCallback	tag in src/sound/SESound.cpp
 0087acc0	annotated	SESound::SetDeviceListChangedCallback	tag in src/sound/SESound.cpp
 0087ad40	callorder	SoundCacheNode::SoundCacheNode	same slot between linked calls in 0087ee60=SESound::LoadDiskSound

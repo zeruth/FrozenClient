@@ -1,4 +1,9 @@
 #include "world/Shadow.hpp"
+#include <tempest/Intersect.hpp>
+#include "gx/Device.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Transform.hpp"
+#include "gx/RenderState.hpp"
 #include <tempest/Vector.hpp>
 #include <tempest/Matrix.hpp>
 #include "world/CWorld.hpp"
@@ -35,6 +40,27 @@ const uint32_t RAMP_HEIGHT = 8;
 // serves both ramps because only one of them is ever being latched at a time.
 uint32_t s_rampPixels[RAMP_WIDTH * RAMP_HEIGHT];
 uint32_t s_rampCount = 0;
+
+// DAT_009f98d8: the strength the blob gate hands the projector. It is a constant at the call site,
+// and because it is NOT zero the blob path never takes the projector's depth-EQUAL branch.
+const float BLOB_STRENGTH = 0.4f;
+
+// DAT_009ea27c: the projector's own degenerate test, a far tighter one than DecalBuildTransforms's.
+const float PROJECTOR_EPSILON = 2.384185791015625e-07f;
+
+// DAT_009ebf34 and DAT_009f267c: the footprint is clamped into this cube, so a huge caster still
+// gets a bounded blob.
+const float PROJECTOR_CLAMP = 5.0f;
+
+// DAT_00af3e14 and DAT_00af3e18: how far the projection volume reaches below and above the model's
+// own z. It hangs five thirds of the caster's half-height downward and one half-height up.
+const float PROJECTOR_BELOW = 1.6666666269302368f;
+const float PROJECTOR_ABOVE = 1.0f;
+
+// The bias DecalBuildTransforms is handed, and the mask the receiver walk is handed. The mask is a
+// literal at the call site; what its bits select is inside FUN_007e3e80 and not yet read.
+const float PROJECTOR_BIAS = 0.5f;
+const uint32_t PROJECTOR_RECEIVER_MASK = 0x220122;
 
 // DAT_009e1134: a decal whose box is thinner than a millimetre in x or y gets no transforms at all.
 const float DECAL_MIN_EXTENT = 0.001f;
@@ -324,12 +350,205 @@ void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& bo
     stage1 = translate * ramp;
 }
 
+// ref: FUN_007e4370
+// The wrapper eight reference decal kinds share: build the two texture transforms, push them as the
+// stage 0 and stage 1 texture matrices, walk the receivers, pop.
+//
+// The identity world and view are the point. With both set to identity the receiver's vertices go
+// down untransformed and the decal's whole contribution is the two texture matrices, so it never has
+// to reproduce the receiver's depth -- which is exactly what frozen's deleted pass could not do.
+//
+// The reference pops by decrementing the device's own two push counters by hand rather than calling
+// XformPop. frozen calls XformPop, which is the same thing said properly.
+void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44Matrix& texMatrix, float bias, uint32_t receiverMask, int32_t flag, float strength) {
+    C44Matrix stage0;
+    stage0.Identity();
+
+    C44Matrix stage1;
+    stage1.Identity();
+
+    DecalBuildTransforms(stage0, stage1, bounds, &texMatrix, bias, 0);
+
+    g_theGxDevicePtr->XformPush(GxXform_Tex0, stage0);
+    g_theGxDevicePtr->XformPush(GxXform_Tex1, stage1);
+
+    // TODO FUN_007e3e80(bounds, color, receiverMask, flag, strength), 1264 bytes: the receiver walk.
+    // It gathers the receivers' triangles through FUN_007e2fd0, FUN_007e32f0, FUN_007e3580 and
+    // FUN_007e35f0 and draws them with the blob on stage 0 and one of the two ramps on stage 1.
+    // FUN_007e3aa0 is the same walk through CShaderEffect. Nothing here stands in for it, so this
+    // pushes the transforms and draws nothing.
+    (void)color;
+    (void)receiverMask;
+    (void)flag;
+    (void)strength;
+
+    g_theGxDevicePtr->XformPop(GxXform_Tex1);
+    g_theGxDevicePtr->XformPop(GxXform_Tex0);
+}
+
+// ref: FUN_007e4480
+// The projector: everything between "here is a caster's box" and "walk the receivers".
+//
+// The footprint is an ORIENTED rectangle, which is what the older notes in parity-shadows.md kept
+// asking for. The caster's two half extents make a rectangle, the model's own rotation turns it, and
+// the axis-aligned bounds of those four turned corners become the projection volume -- so a model
+// standing at an angle gets a shadow at that angle rather than a circle.
+//
+// The scale comes from the length of the model matrix's FIRST ROW, so a scaled model gets a scaled
+// footprint; the rotation is that matrix's 3x3 with the scale divided back out.
+//
+// The texture matrix that goes with it maps the axis-aligned volume back onto the turned rectangle:
+// diag(boundsHeight, boundsWidth, 1) * transpose(rotation) * diag(1/xExtent, 1/yExtent, 1). The
+// transpose is read off the argument order of the reference's 3x3 constructor, which picks the nine
+// elements as 0 3 6 1 4 7 2 5 8. The two divisors are read as the footprint box's final extents;
+// Ghidra reuses one local's name across the frame there, so that half is a reading rather than a
+// measurement.
+void ShadowProjectBlob(const CAaBox& casterBox, CM2Model* model, float strength) {
+    float halfX = (casterBox.t.x - casterBox.b.x) * 0.5f;
+    float halfY = (casterBox.t.y - casterBox.b.y) * 0.5f;
+
+    if (fabsf(halfX) < PROJECTOR_EPSILON || fabsf(halfY) < PROJECTOR_EPSILON) {
+        return;
+    }
+
+    if (fabsf(casterBox.t.z - casterBox.b.z) < PROJECTOR_EPSILON) {
+        return;
+    }
+
+    // The axes swap because the footprint square is built through a quarter turn.
+    CAaBox footprint;
+    footprint.b.x = -halfY;
+    footprint.b.y = -halfX;
+    footprint.b.z = casterBox.b.z;
+    footprint.t.x = halfY;
+    footprint.t.y = halfX;
+    footprint.t.z = casterBox.t.z;
+
+    const C44Matrix& modelMatrix = model->matrixB4;
+
+    float scale = sqrtf(
+        modelMatrix.a0 * modelMatrix.a0 + modelMatrix.a1 * modelMatrix.a1 + modelMatrix.a2 * modelMatrix.a2);
+
+    footprint.Scale(scale);
+
+    // Both corners into the clamp cube, min then max, exactly as the reference does it.
+    footprint.b.x = fminf(footprint.b.x, PROJECTOR_CLAMP);
+    footprint.b.y = fminf(footprint.b.y, PROJECTOR_CLAMP);
+    footprint.b.z = fminf(footprint.b.z, PROJECTOR_CLAMP);
+    footprint.b.x = fmaxf(footprint.b.x, -PROJECTOR_CLAMP);
+    footprint.b.y = fmaxf(footprint.b.y, -PROJECTOR_CLAMP);
+    footprint.b.z = fmaxf(footprint.b.z, -PROJECTOR_CLAMP);
+
+    footprint.t.x = fminf(footprint.t.x, PROJECTOR_CLAMP);
+    footprint.t.y = fminf(footprint.t.y, PROJECTOR_CLAMP);
+    footprint.t.z = fminf(footprint.t.z, PROJECTOR_CLAMP);
+    footprint.t.x = fmaxf(footprint.t.x, -PROJECTOR_CLAMP);
+    footprint.t.y = fmaxf(footprint.t.y, -PROJECTOR_CLAMP);
+    footprint.t.z = fmaxf(footprint.t.z, -PROJECTOR_CLAMP);
+
+    float halfHeight = (footprint.t.z - footprint.b.z) * 0.5f;
+
+    C33Matrix rotation(modelMatrix);
+
+    if (scale != 1.0f) {
+        rotation *= 1.0f / scale;
+    }
+
+    C3Vector corners[4] = {
+        { halfX, halfY, 0.0f },
+        { halfX, -halfY, 0.0f },
+        { -halfX, -halfY, 0.0f },
+        { -halfX, halfY, 0.0f }
+    };
+
+    for (int32_t i = 0; i < 4; i++) {
+        C3Vector p = corners[i];
+        corners[i].x = p.x * rotation.a0 + p.y * rotation.b0 + p.z * rotation.c0;
+        corners[i].y = p.x * rotation.a1 + p.y * rotation.b1 + p.z * rotation.c1;
+        corners[i].z = p.x * rotation.a2 + p.y * rotation.b2 + p.z * rotation.c2;
+    }
+
+    CAaBox bounds;
+    BoundsFromPoints(bounds, corners, 4);
+
+    bounds.b.x += modelMatrix.d0;
+    bounds.b.y += modelMatrix.d1;
+    bounds.t.x += modelMatrix.d0;
+    bounds.t.y += modelMatrix.d1;
+    bounds.b.z = modelMatrix.d2 - PROJECTOR_BELOW * halfHeight;
+    bounds.t.z = modelMatrix.d2 + PROJECTOR_ABOVE * halfHeight;
+
+    float xExtent = footprint.t.x - footprint.b.x;
+    float yExtent = footprint.t.y - footprint.b.y;
+
+    if (fabsf(xExtent) < PROJECTOR_EPSILON || fabsf(yExtent) < PROJECTOR_EPSILON) {
+        return;
+    }
+
+    C33Matrix boundsScale(
+        bounds.t.y - bounds.b.y, 0.0f, 0.0f,
+        0.0f, bounds.t.x - bounds.b.x, 0.0f,
+        0.0f, 0.0f, 1.0f);
+
+    C33Matrix footprintScale(
+        1.0f / fabsf(xExtent), 0.0f, 0.0f,
+        0.0f, 1.0f / fabsf(yExtent), 0.0f,
+        0.0f, 0.0f, 1.0f);
+
+    C44Matrix texMatrix(boundsScale * rotation.Transpose() * footprintScale);
+
+    GxRsPush();
+    GxRsSet(GxRs_BlendingMode, 4);
+
+    // The reference names the state here rather than calling a no-argument helper; frozen's
+    // GxRsSetAlphaRef is the same store.
+    GxRsSetAlphaRef();
+
+    GxRsSet(GxRs_Lighting, 0);
+    GxRsSet(GxRs_Fog, 0);
+    GxRsSet(GxRs_DepthWrite, 0);
+
+    auto blob = TextureGetGxTex(s_blobTexture, 1, nullptr);
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, blob);
+
+    GxRsSet(GxRs_FogColor, 0xffffffffu);
+    GxRsSet(GxRs_ColorOp0, 5);
+    GxRsSet(GxRs_AlphaOp0, 3);
+
+    // The depth-EQUAL test is on ONE branch only: the reference takes it when the strength argument
+    // is zero. At the blob call site the strength is 0.4, so the blob shadow does NOT use it.
+    if (strength == 0.0f) {
+        GxRsSet(GxRs_DepthFunc, 1);
+    }
+
+    // The per-model strength, clamped, as the alpha of a white colour. The reference reads it from
+    // model+0x178, which is m_baseAlpha here -- the comment on that member already says the
+    // reference keeps the base tint block at 0x178..0x194, so this is the same field.
+    float modelStrength = model->m_baseAlpha;
+
+    if (modelStrength < 0.0f) {
+        modelStrength = 0.0f;
+    } else if (modelStrength > 1.0f) {
+        modelStrength = 1.0f;
+    }
+
+    CImVector color;
+    color.b = 0xff;
+    color.g = 0xff;
+    color.r = 0xff;
+    color.a = static_cast<uint8_t>(static_cast<int32_t>(modelStrength * 255.0f + 0.5f));
+
+    DecalDrawProjected(bounds, color, texMatrix, PROJECTOR_BIAS, PROJECTOR_RECEIVER_MASK, 0, strength);
+
+    GxRsPop();
+}
+
 // ref: FUN_007e49e0
 // The per-caster gate, and the five conditions are all the reference's:
 //
 //   the model exists and is drawable,
 //   its per-frame flag 0x4000 is clear,
-//   its bounding box is not degenerate,
+//   the caster's box is not degenerate,
 //   the extShadowQuality CVar reads BELOW 1, and
 //   the shadow LOD is exactly 1.
 //
@@ -337,7 +556,11 @@ void DecalBuildTransforms(C44Matrix& stage0, C44Matrix& stage1, const CAaBox& bo
 // sees: BLOB SHADOWS AND THE SHADOW MAP ARE MUTUALLY EXCLUSIVE. Raising extShadowQuality turns
 // every blob off, because the map shadow is then drawing the same shadows properly. Frozen's
 // shadow quality gate landed in the same cycle as this, so the two now agree.
-void ShadowDrawBlob(CM2Model* model) {
+//
+// The box comes from the CALLER, not from the model: a unit's caster box is the one its animation
+// authored (CGUnit_C::GetShadowBox) and a doodad's is its current sequence's extent. The reference
+// passes it in as the implicit argument, which is why this takes it first.
+void ShadowDrawBlob(const CAaBox& casterBox, CM2Model* model) {
     if (!model || !model->IsDrawable(0, 0)) {
         return;
     }
@@ -348,10 +571,7 @@ void ShadowDrawBlob(CM2Model* model) {
         return;
     }
 
-    CAaBox bounds;
-    model->GetBoundingBox(bounds);
-
-    if (AaBoxIsDegenerate(bounds)) {
+    if (AaBoxIsDegenerate(casterBox)) {
         return;
     }
 
@@ -363,22 +583,6 @@ void ShadowDrawBlob(CM2Model* model) {
         return;
     }
 
-    // TODO FUN_007e4480, 1370 bytes: the projector. It turns the caster's box into a texture
-    // projection matrix (seeding the accumulator at +-5, scaling the box by the model matrix's
-    // first-row length, and pushing the near and far planes out by 5/3 and 1 of the half-height),
-    // sets the decal state -- blend 4, no lighting, no fog, no depth write, the blob on stage 0,
-    // ColorOp0 5, AlphaOp0 3, and DepthFunc EQUAL when its third argument is zero -- takes the
-    // strength from the model's own field at +0x178 clamped to [0, 1], and hands off to
-    // FUN_007e4370. The strength at the call site is the constant 0.4 at 0x009f98d8.
-    //
-    // FUN_007e4370, 268 bytes, then sets world and view to IDENTITY and calls FUN_007e3e80 (the
-    // fixed-function receiver walk) or FUN_007e3aa0 (the same walk through CShaderEffect), which
-    // between them gather the receiver's triangles through FUN_007e2fd0, FUN_007e32f0,
-    // FUN_007e3580 and FUN_007e35f0 and draw them with the blob on one stage and one of these two
-    // ramps on the next.
-    //
-    // That chain is 6.8 KB and none of it is ported. frozen's own blob pass was deleted in
-    // f4e53209 and cf7768ff because it re-drew receiver triangles and selected with a depth-EQUAL
-    // test, which stopped working the moment the receiver's base pass moved to CMapRenderChunk's
-    // own vertex program; re-porting it means doing it this way instead.
+    // BLOB_STRENGTH is the constant at the reference's own call site, not a choice.
+    ShadowProjectBlob(casterBox, model, BLOB_STRENGTH);
 }
