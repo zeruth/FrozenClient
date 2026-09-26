@@ -1107,6 +1107,33 @@ void CGxDevice::LightSet(uint32_t index, const CGxLight& light, const C3Vector& 
 }
 
 // ref: FUN_00683080
+// ref: FUN_00682fd0
+void CGxDevice::LightGet(uint32_t index, CGxLight& light) {
+    const CGxLightState& state = this->m_lights[index];
+
+    // The enabled bit first, and it gates everything else.
+    light.m_flags = (light.m_flags & ~1u) | (static_cast<uint32_t>(state.m_enabled) & 1u);
+
+    if (!(light.m_flags & 1u)) {
+        return;
+    }
+
+    // A non-zero w is a point light; that is the only place the distinction is kept.
+    if (state.m_posOrDir.w != 0.0f) {
+        light.m_flags |= 2u;
+    } else {
+        light.m_flags &= ~2u;
+    }
+
+    light.m_posOrDir.x = state.m_posOrDir.x;
+    light.m_posOrDir.y = state.m_posOrDir.y;
+    light.m_posOrDir.z = state.m_posOrDir.z;
+    light.m_ambient = state.m_ambient;
+    light.m_diffuse = state.m_diffuse;
+    light.m_specular = state.m_specular;
+    light.m_attenuation = state.m_attenuation;
+}
+
 void CGxDevice::LightEnable(uint32_t index, int32_t enable) {
     CGxLightState& state = this->m_lights[index];
 

@@ -167,11 +167,11 @@
   },
   "007be520": {
     "status": "excluded",
-    "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::Initialize instantiation; squall template"
+    "note": "TSHashTable<CMapObjDef> initial table (squall template instantiation)"
   },
   "007be9d0": {
     "status": "excluded",
-    "note": "TSHashTable<CMapObjDef, HASHKEY_NONE>::MonitorFullness instantiation; squall template"
+    "note": "TSHashTable<CMapObjDef> grow check (squall template instantiation)"
   },
   "007b4f10": {
     "status": "excluded",
@@ -228,7 +228,7 @@
   },
   "00790020": {
     "status": "excluded",
-    "note": "a 0xf4-byte struct copy of one CWFrustum onto another, which the compiler emitted out of line. frozen writes the assignment at each call site"
+    "note": "60-dword copy: the traversal frustum's assignment operator (CWorldScene::Frustum, 0xfc bytes with the tail left alone), 12 callers; frozen assigns the struct"
   },
   "00791f80": {
     "status": "excluded",
@@ -269,10 +269,6 @@
   "007ba250": {
     "status": "excluded",
     "note": "TSGrowableArray<CMapChunkBufBlock>::SetCount instantiation (constructs each new block through FUN_007b9cb0); squall template"
-  },
-  "00790020": {
-    "status": "excluded",
-    "note": "60-dword copy: the traversal frustum's assignment operator (CWorldScene::Frustum, 0xfc bytes with the tail left alone), 12 callers; frozen assigns the struct"
   },
   "007b0f10": {
     "status": "excluded",
@@ -315,8 +311,9 @@
     "note": "world-space single-chunk draw for a layer count without a pixel shader; not ported (see 007d13f0)"
   },
   "005eeb70": {
+    "frozen": "",
     "status": "excluded",
-    "note": "nullsub (1692 callers), the draw of the hidden chunk list among them"
+    "note": "a bare `retl`. Its call site in CM2SceneRender::DrawParticle passes the format string \"Particle: model=%s\", so it is a debug label compiled out of the retail build -- no behaviour to port. Read 2026-09-24"
   },
   "_": "Hand-confirmed reference -> frozen links. Keys are reference addresses; frozen is the qualified function name as the PDB spells it. status: verified (seen behaving like the reference in a run), ported, stub, diverged (known to differ; say how in note), excluded (not part of the port: CRT, nullsub, compiler helper -- no frozen name). recomp.py trusts this file over every automatic match. One frozen name may serve several addresses (overload sets, COMDAT copies).",
   "004fb080": {
@@ -331,53 +328,137 @@
   },
   "006ded60": {
     "status": "excluded",
-    "note": "Storm TSList::LinkToTail, one body for every instantiation (COMDAT folded, 251 callers); squall instantiates the template per type"
+    "note": "TSList<>::LinkToTail, folded template"
   },
   "007b5020": {
     "status": "excluded",
-    "note": "Storm TSList::LinkToHead, folded across instantiations (120 callers); squall template"
+    "note": "TSList<>::LinkToTail variant, folded template"
   },
   "007cecd0": {
     "status": "excluded",
-    "note": "Storm TSList::UnlinkAll (1883 callers): Head() via 006d7ba0 then Unlink until empty; squall template"
+    "note": "TSList<>::UnlinkAll instantiation, COMDAT-folded across every element type (1883 callers); frozen has it as the storm template, not a linkable function"
   },
   "006d7ba0": {
     "status": "excluded",
-    "note": "Storm TSList::Head, folded across instantiations; squall template"
+    "note": "TSList<> head/next helper (link & 1 -> null), folded template"
   },
   "006bb6d0": {
     "status": "excluded",
     "note": "compiler-generated CMapBaseObjLink::~CMapBaseObjLink (unlinks ownerLink and refLink); frozen gets it implicitly from TSLink's destructor"
   },
-  "007c0b40": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> clear helper (squall template instantiation)"},
-  "007c0bd0": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> clear helper (squall template instantiation)"},
-  "007c0c80": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> constructor (squall template instantiation)"},
-  "007c0d70": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> constructor (squall template instantiation)"},
-  "007c0e60": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> destructor (squall template instantiation)"},
-  "007c0f00": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> destructor variant (squall template instantiation)"},
-  "007c0f60": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> destructor (squall template instantiation)"},
-  "007c1000": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> destructor variant (squall template instantiation)"},
-  "007c1060": {"status": "excluded", "note": "TSExplicitList<CMapDoodadDef> deleting destructor (squall template instantiation)"},
-  "007c1090": {"status": "excluded", "note": "TSExplicitList<CMapObjDef> deleting destructor (squall template instantiation)"},
-  "004b9de0": {"frozen": "AsyncFileReadDestroyObject", "status": "ported", "note": "by call shape (one arg, the tile's async object, after its read completes or is cancelled) next to the linked AsyncFileReadAllocObject"},
-  "004b9ea0": {"frozen": "AsyncFileReadCancel", "status": "ported", "note": "by call shape: (object, cleanup callback) from CMapArea::Destroy, returns whether the read was still queued"},
-  "004bab50": {"frozen": "AsyncFileReadObject", "status": "ported", "note": "by call shape: (object, 0) right after the tile fills in its async object"},
-  "007d7260": {"frozen": "CMapBaseObj::CMapBaseObj", "status": "ported", "note": "vtable, zero links, parent-link list with ownerLink offset, type 1, link count 0, flags 0; frozen's default member initializers do the same"},
-  "007d71d0": {"frozen": "CMapBaseObj::~CMapBaseObj", "status": "ported", "note": "empties the parent-link list and drops the lameAss link; frozen's members do it on destruction"},
-  "007be2a0": {"status": "excluded", "note": "TSHashTable<CMapDoodadDef> internals (squall template instantiation)"},
-  "007be3b0": {"status": "excluded", "note": "TSHashTable<CMapObjDef> internals (squall template instantiation)"},
-  "007be4c0": {"status": "excluded", "note": "TSHashTable<CMapDoodadDef> initial table (squall template instantiation)"},
-  "007be520": {"status": "excluded", "note": "TSHashTable<CMapObjDef> initial table (squall template instantiation)"},
-  "007be580": {"status": "excluded", "note": "TSHashTable<CMapDoodadDef> rehash (squall template instantiation)"},
-  "007be760": {"status": "excluded", "note": "TSHashTable<CMapObjDef> rehash (squall template instantiation)"},
-  "007be930": {"status": "excluded", "note": "TSHashTable<CMapDoodadDef> grow check (squall template instantiation)"},
-  "007be9d0": {"status": "excluded", "note": "TSHashTable<CMapObjDef> grow check (squall template instantiation)"},
-  "007bdfe0": {"status": "excluded", "note": "TSHashTable<CMapDoodadDef> bucket array realloc (squall template instantiation)"},
-  "007be140": {"status": "excluded", "note": "TSHashTable<CMapObjDef> bucket array realloc (squall template instantiation)"},
-  "007c0ce0": {"status": "excluded", "note": "CMapDoodadDef scalar delete helper: no callers in the reference"},
-  "007c0dd0": {"status": "excluded", "note": "CMapObjDef scalar delete helper: no callers in the reference"},
-  "007c0d10": {"status": "excluded", "note": "CMapDoodadDef new helper (SMemAlloc + constructor): no callers in the reference"},
-  "007c0e00": {"status": "excluded", "note": "CMapObjDef new helper (SMemAlloc + constructor): no callers in the reference"},
+  "007c0b40": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapDoodadDef> clear helper (squall template instantiation)"
+  },
+  "007c0bd0": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapObjDef> clear helper (squall template instantiation)"
+  },
+  "007c0c80": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapDoodadDef> constructor (squall template instantiation)"
+  },
+  "007c0d70": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapObjDef> constructor (squall template instantiation)"
+  },
+  "007c0e60": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapDoodadDef> destructor (squall template instantiation)"
+  },
+  "007c0f00": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapDoodadDef> destructor variant (squall template instantiation)"
+  },
+  "007c0f60": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapObjDef> destructor (squall template instantiation)"
+  },
+  "007c1000": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapObjDef> destructor variant (squall template instantiation)"
+  },
+  "007c1060": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapDoodadDef> deleting destructor (squall template instantiation)"
+  },
+  "007c1090": {
+    "status": "excluded",
+    "note": "TSExplicitList<CMapObjDef> deleting destructor (squall template instantiation)"
+  },
+  "004b9de0": {
+    "frozen": "AsyncFileReadDestroyObject",
+    "status": "ported",
+    "note": "by call shape (one arg, the tile's async object, after its read completes or is cancelled) next to the linked AsyncFileReadAllocObject"
+  },
+  "004b9ea0": {
+    "frozen": "AsyncFileReadCancel",
+    "status": "ported",
+    "note": "by call shape: (object, cleanup callback) from CMapArea::Destroy, returns whether the read was still queued"
+  },
+  "004bab50": {
+    "frozen": "AsyncFileReadObject",
+    "status": "ported",
+    "note": "by call shape: (object, 0) right after the tile fills in its async object"
+  },
+  "007d7260": {
+    "frozen": "CMapBaseObj::CMapBaseObj",
+    "status": "ported",
+    "note": "vtable, zero links, parent-link list with ownerLink offset, type 1, link count 0, flags 0; frozen's default member initializers do the same"
+  },
+  "007d71d0": {
+    "frozen": "CMapBaseObj::~CMapBaseObj",
+    "status": "ported",
+    "note": "empties the parent-link list and drops the lameAss link; frozen's members do it on destruction"
+  },
+  "007be2a0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef> internals (squall template instantiation)"
+  },
+  "007be3b0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef> internals (squall template instantiation)"
+  },
+  "007be4c0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef> initial table (squall template instantiation)"
+  },
+  "007be580": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef> rehash (squall template instantiation)"
+  },
+  "007be760": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef> rehash (squall template instantiation)"
+  },
+  "007be930": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef> grow check (squall template instantiation)"
+  },
+  "007bdfe0": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef> bucket array realloc (squall template instantiation)"
+  },
+  "007be140": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapObjDef> bucket array realloc (squall template instantiation)"
+  },
+  "007c0ce0": {
+    "status": "excluded",
+    "note": "CMapDoodadDef scalar delete helper: no callers in the reference"
+  },
+  "007c0dd0": {
+    "status": "excluded",
+    "note": "CMapObjDef scalar delete helper: no callers in the reference"
+  },
+  "007c0d10": {
+    "status": "excluded",
+    "note": "CMapDoodadDef new helper (SMemAlloc + constructor): no callers in the reference"
+  },
+  "007c0e00": {
+    "status": "excluded",
+    "note": "CMapObjDef new helper (SMemAlloc + constructor): no callers in the reference"
+  },
   "004faf90": {
     "frozen": "CGWorldFrame::RenderWorld",
     "status": "ported",
@@ -411,11 +492,6 @@
   "0088b9c0": {
     "status": "excluded",
     "note": "CRT _ftol2 (float -> int64 with rounding)"
-  },
-  "005eeb70": {
-    "frozen": "",
-    "status": "excluded",
-    "note": "a bare `retl`. Its call site in CM2SceneRender::DrawParticle passes the format string \"Particle: model=%s\", so it is a debug label compiled out of the retail build -- no behaviour to port. Read 2026-09-24"
   },
   "008b7da0": {
     "status": "excluded",
@@ -688,18 +764,6 @@
     "frozen": "lua_error",
     "status": "ported"
   },
-  "007cecd0": {
-    "status": "excluded",
-    "note": "TSList<>::UnlinkAll instantiation, COMDAT-folded across every element type (1883 callers); frozen has it as the storm template, not a linkable function"
-  },
-  "006d7ba0": {
-    "status": "excluded",
-    "note": "TSList<> head/next helper (link & 1 -> null), folded template"
-  },
-  "006ded60": {
-    "status": "excluded",
-    "note": "TSList<>::LinkToTail, folded template"
-  },
   "006714a0": {
     "status": "excluded",
     "note": "TSList<>::LinkNode (unlink + insert before/after), folded template"
@@ -751,10 +815,6 @@
   "007ae270": {
     "status": "excluded",
     "note": "TSHashTable<> slot-count normaliser (max 0x15), folded template"
-  },
-  "007b5020": {
-    "status": "excluded",
-    "note": "TSList<>::LinkToTail variant, folded template"
   },
   "008d2430": {
     "status": "excluded",
@@ -1924,9 +1984,8 @@
     "note": "InterpFloatBand. STATUS faithful BY HAND: it scores 0.00 on call order and that is entirely decomposition. The reference builds a band object on the stack (0x008b7da0), fills it from the LightFloatBand table at 0x00af49e0 (0x007eb210) and evaluates it at a time; frozen looks the record up and interpolates inline, so none of those four calls appears on its side and none ever can. The identification itself is arithmetic rather than position: the reference computes `band + n * 6 - 0x5` where n is the light param read through a pointer, and frozen's (P - 1) * 6 + band + 1 expands to exactly P * 6 + band - 5. The stride is the LightFloatBand band count. The interpolation was checked against the reference at runtime once already -- the wrap past the last key was measured at 18:12 and corrected, and the comment in CWorld.cpp records the colours on both sides -- which is better evidence for this one than a call sequence would be."
   },
   "00683fb0": {
-    "frozen": "",
-    "status": "diverged",
-    "note": "CGxLight::CGxLight. DIVERGED: frozen has no such function. The reference constructor writes the CGxLight defaults -- direction (0, 0, 1), black ambient, white diffuse, black specular and attenuation (0, 0.7, 0.03) -- and frozen expresses every one of those as a default member initializer on the struct instead, so the compiler emits them at the construction site and there is no callee to link. The values are identical and were read out of the binary (0x009e2ec0 = 0.7, 0x009f23c8 = 0.03). One real behavioural difference, recorded rather than hidden: the reference clears only bits 0 and 1 of m_flags (`flags &= 0xfffffffc`) and leaves bits 2..31 holding whatever was on the stack, while frozen zeroes the whole word. Nothing reads those bits, and reading an indeterminate value would be undefined behaviour in C++. The `frozen` field named CGxLight::CGxLight until 2026-09-24, which contradicted this note's own first sentence: the tool tried to bind it every run, failed, and said nothing. Cleared. A `diverged` entry that records the absence of a counterpart must not also claim one."
+    "status": "excluded",
+    "note": "CGxLight's reset to defaults -- clears flag bits 0 and 1, then writes the same starting values frozen's CGxLight carries as default member initialisers (direction 0,0,1; white diffuse; attenuation 0, 0.7, 0.03). The callgraph matcher bound it to CGxDevice::LightEnable when Liquid::Draw started calling the light helpers; that is wrong, LightEnable is FUN_00683080 and is tagged there. Frozen has no function to bind because the initialisers inline at every construction, which is the FUN_008a2240 array case exactly."
   },
   "006a3870": {
     "frozen": "CGxDeviceD3d::IStateSyncClipPlanes",
@@ -2994,5 +3053,9 @@
     "frozen": "SFileCritSectLeave",
     "status": "diverged",
     "note": "Same SCritSect difference as 004283b0 (wave 0, 2026-09-25)"
+  },
+  "007ce520": {
+    "status": "unlinked",
+    "note": "Builds a CChunkLiquid layer's bounding SPHERE, for the occlusion-volume test FUN_007cce00 that gates the row visit at 0x00793715 before UpdateForFrame runs. The callgraph matcher bound it to Liquid::Add once that was wired next door; that is wrong -- Liquid::Add is FUN_008a20c0. Not ported: CWorldScene::TraverseRowLiquids carries the TODO."
   }
 }

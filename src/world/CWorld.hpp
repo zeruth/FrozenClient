@@ -66,7 +66,10 @@ class CWorld {
             Enable_200000 = 0x200000,
             Enable_400000 = 0x400000,
             Enable_800000 = 0x800000,
-            Enable_1000000 = 0x1000000,
+            // Liquid. All four of the reference's tests of this bit are on the liquid path: the
+            // row visit FUN_007935a0, the per-chunk row insertion at 0x00799378, and both of the
+            // two-bucket draws.
+            Enable_Liquid = 0x1000000,
             Enable_Particulates = 0x2000000,
             Enable_LowDetail = 0x4000000,
             Enable_8000000 = 0x8000000,

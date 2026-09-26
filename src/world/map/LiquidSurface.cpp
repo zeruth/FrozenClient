@@ -3,6 +3,7 @@
 #include "world/map/CChunkLiquid.hpp"
 #include <storm/Memory.hpp>
 #include <cmath>
+#include <cstdlib>
 #include <new>
 #include "gx/Buffer.hpp"
 #include "gx/CGxDevice.hpp"
@@ -522,6 +523,135 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
     this->m_dirty = 0;
 
     return 1;
+}
+
+// The two buckets. The reference keeps them inside a manager object it reaches through a global
+// accessor; frozen has no other user for that object, so the buckets are the module's own.
+static TSGrowableArray<CInstance*> s_buckets[BUCKET_COUNT];
+
+// ref: FUN_008a20c0
+void Add(CInstance* instance) {
+    if (!instance || instance->m_queued) {
+        return;
+    }
+
+    // Procedural water is bucket 1, everything else bucket 0.
+    uint32_t bucket = (instance->m_settings && instance->m_settings->m_procedural) ? 1 : 0;
+
+    instance->m_queued = 1;
+
+    s_buckets[bucket].Add(1, &instance);
+}
+
+uint32_t Queued(uint32_t bucket) {
+    return bucket < BUCKET_COUNT ? s_buckets[bucket].Count() : 0;
+}
+
+// Part of ref: FUN_008a2240 -- the comparators at 0x008a1980 and 0x008a19e0.
+// Surfaces are ordered by material, then settings, then geometry, so runs that share device state
+// draw together. There is a fourth key, and it is worth writing down that it does nothing: both
+// comparators finish on the float at the instance's +0x50, which is the placement matrix's last
+// element, and CreateSurface sets that to 1.0 for every surface. The two comparators differ ONLY
+// in the direction of that key, so as the reference builds instances the two buckets sort
+// identically. Reproduced as it is rather than repaired, because a distance sort would be an
+// invention -- but if a transparent bucket ever needs back-to-front, this is where it goes.
+static int SortAscending(const void* a, const void* b) {
+    auto left = *static_cast<CInstance* const*>(a);
+    auto right = *static_cast<CInstance* const*>(b);
+
+    if (left->m_material != right->m_material) {
+        return left->m_material < right->m_material ? -1 : 1;
+    }
+
+    if (left->m_settings != right->m_settings) {
+        return left->m_settings < right->m_settings ? -1 : 1;
+    }
+
+    if (left->m_geometry != right->m_geometry) {
+        return left->m_geometry < right->m_geometry ? -1 : 1;
+    }
+
+    if (left->m_placement.d3 != right->m_placement.d3) {
+        return left->m_placement.d3 < right->m_placement.d3 ? -1 : 1;
+    }
+
+    return 0;
+}
+
+static int SortDescending(const void* a, const void* b) {
+    auto left = *static_cast<CInstance* const*>(a);
+    auto right = *static_cast<CInstance* const*>(b);
+
+    if (left->m_material != right->m_material) {
+        return left->m_material < right->m_material ? -1 : 1;
+    }
+
+    if (left->m_settings != right->m_settings) {
+        return left->m_settings < right->m_settings ? -1 : 1;
+    }
+
+    if (left->m_geometry != right->m_geometry) {
+        return left->m_geometry < right->m_geometry ? -1 : 1;
+    }
+
+    // The only difference from the ascending one.
+    if (left->m_placement.d3 != right->m_placement.d3) {
+        return right->m_placement.d3 < left->m_placement.d3 ? -1 : 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_008a2240
+// One bucket's worth, sorted so shared state draws together, then emptied.
+//
+// The four device lights are SAVED here and put back at the end -- they are not disabled, which is
+// what this comment used to claim. The materials are free to set lights while they draw, and the
+// restore undoes that for the passes after this one. Only the slots that were ENABLED come back,
+// because the getter copies nothing for a slot that was off.
+void Draw(const C3Vector& cameraPos, uint32_t bucket) {
+    if (bucket >= BUCKET_COUNT) {
+        return;
+    }
+
+    CGxLight saved[4];
+
+    for (uint32_t i = 0; i < 4; i++) {
+        g_theGxDevicePtr->LightGet(i, saved[i]);
+    }
+
+    TSGrowableArray<CInstance*>& queue = s_buckets[bucket];
+
+    if (queue.Count()) {
+        // The comparator comes from a two-entry table indexed by the bucket.
+        qsort(&queue[0], queue.Count(), sizeof(CInstance*),
+              bucket ? SortDescending : SortAscending);
+
+        for (uint32_t i = 0; i < queue.Count(); i++) {
+            CInstance* instance = queue[i];
+
+            if (instance->m_material) {
+                instance->m_material->Draw(instance->m_environment, instance->m_geometry,
+                                           instance->m_unk0c, cameraPos, &instance->m_placement,
+                                           &instance->m_sphere, instance->m_settings);
+            }
+
+            instance->m_queued = 0;
+        }
+    }
+
+    // The reference frees the bucket's backing array outright rather than keeping it for next
+    // frame; SetCount(0) keeps the allocation, which is the same behaviour with less churn.
+    queue.SetCount(0);
+
+    for (uint32_t i = 0; i < 4; i++) {
+        if (saved[i].m_flags & 1) {
+            C3Vector zero = { 0.0f, 0.0f, 0.0f };
+
+            g_theGxDevicePtr->LightSet(i, saved[i], zero);
+            g_theGxDevicePtr->LightEnable(i, 1);
+        }
+    }
 }
 
 }

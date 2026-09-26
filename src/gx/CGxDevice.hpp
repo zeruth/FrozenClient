@@ -266,6 +266,12 @@ class CGxDevice {
         // position, which lets a caller keep positions relative to something other than the
         // camera; a directional light ignores it, and so does a zero vector. ref: FUN_006847d0
         void LightSet(uint32_t index, const CGxLight& light, const C3Vector& origin);
+        // Read one light slot back out. Bit 0 of the returned flags says the slot is ENABLED, and
+        // nothing else is copied when it is not -- so a caller that saves the bank and puts it back
+        // only restores the lights that were on, which is the whole point of the getter. Bit 1 is
+        // derived, not stored: it comes from whether the slot's w is non-zero, i.e. positional.
+        // ref: FUN_00682fd0
+        void LightGet(uint32_t index, CGxLight& light);
         void IRsForceUpdate(void);
         void IRsForceUpdate(EGxRenderState);
         void IRsInit(void);

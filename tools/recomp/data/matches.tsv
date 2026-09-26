@@ -2279,7 +2279,8 @@ addr	how	frozen	evidence
 00682eb0	annotated	CGxDevice::PrimVertexMask	tag in src/gx/CGxDevice.cpp
 00682ee0	annotated	CGxDevice::PrimVertexPtr	tag in src/gx/CGxDevice.cpp
 00682f10	annotated	CGxDevice::PrimIndexPtr	tag in src/gx/CGxDevice.cpp
-00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
+00682fd0	annotated	CGxDevice::LightGet	tag in src/gx/CGxDevice.cpp
+00683080	annotated	CGxDevice::LightGet	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00683100	annotated	CGxDevice::MasterEnable	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
@@ -3805,6 +3806,8 @@ addr	how	frozen	evidence
 008a1ac0	annotated	CInstance::Release	tag in src/world/map/LiquidSurface.cpp
 008a1f50	annotated	ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1fa0	annotated	GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
+008a20c0	annotated	Add	tag in lib/squall/storm/big/Ops.cpp
+008a2240	annotated	Draw	tag in src/world/map/DetailDoodad.cpp
 008a2450	annotated	CMaterialSettings::LoadTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a27c0	annotated	CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
 008a28f0	annotated	GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp

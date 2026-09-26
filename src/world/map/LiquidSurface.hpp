@@ -113,6 +113,28 @@ class CInstance {
 // ref: FUN_007cf200
 void CreateSurface(CChunkLiquid* liquid);
 
+// The frame's surfaces, in two buckets, each emptied by its own draw.
+//
+// BUCKET_COUNT is 2 and that is not a guess: the reference picks the bucket's comparator out of a
+// two-entry function-pointer table at 0x00b23f6c, and its two call sites pass 0 and 1. Bucket 0 is
+// drawn from CMap::Render (0x0079acf1, right after the blob shadows) and bucket 1 from the block at
+// 0x00790a80, both gated on bit 24 of the render flags at 0x00cd774c and on the manager existing.
+static const uint32_t BUCKET_COUNT = 2;
+
+// Put a surface in this frame's queue. Nothing is drawn until the bucket is.
+//
+// The bucket is NOT the caller's choice: it is the settings' m_procedural flag, so procedural water
+// goes to bucket 1 and everything else to bucket 0. That is the whole reason there are two -- the
+// procedural bucket is drawn from a later block than CMap::Render. ref: FUN_008a20c0
+void Add(CInstance* instance);
+
+// Draw one bucket and empty it. The camera position goes to every material, which is what makes
+// the wave and specular terms move with the viewer. ref: FUN_008a2240
+void Draw(const C3Vector& cameraPos, uint32_t bucket);
+
+// How many surfaces are waiting in a bucket.
+uint32_t Queued(uint32_t bucket);
+
 }
 
 #endif

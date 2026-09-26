@@ -855,7 +855,7 @@ void CWorld::Initialize() {
         | Enables::Enable_800
         | Enables::Enable_ObjectFade
         | Enables::Enable_DetailDoodads
-        | Enables::Enable_1000000
+        | Enables::Enable_Liquid
         | Enables::Enable_Particulates
         | Enables::Enable_LowDetail;
 

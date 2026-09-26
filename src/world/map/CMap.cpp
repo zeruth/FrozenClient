@@ -1,6 +1,7 @@
 #include "world/map/CMap.hpp"
 #include "world/map/VBBList.hpp"
 #include "world/map/CChunkLiquid.hpp"
+#include "world/map/LiquidSurface.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
 #include "world/map/MapLowDetail.hpp"
@@ -1361,14 +1362,34 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     CWorldScene::RenderMapObjs();
 
-    // TODO FUN_00795f80(): the liquids, sky and the passes after them (see the reference body)
+    // TODO the passes the reference runs between the map objects and the liquid, in its order:
+    // FUN_00795f80 (the map-object groups carrying group flag 0x8, drawn through FUN_007abac0 in
+    // their own viewport), FUN_007968d0, FUN_00796c10 twice, and two calls to FUN_007f31c0.
+    // TODO FUN_008a2f00(): uploads two 64x8 liquid ramp textures, once each.
+    // TODO FUN_00793d20(): queues the MAP OBJECTS' liquid into these same buckets, taking the
+    // surface from the group at +0x68. Without it only terrain liquid is queued, so water inside
+    // buildings will not draw even once the material lands.
+
+    // The liquid. Bucket 0 is plain water and magma, bucket 1 procedural water; which one a
+    // surface went into was decided by its settings back in Liquid::Add.
+    if (CWorld::s_enables & CWorld::Enables::Enable_Liquid) {
+        Liquid::Draw(cameraPos, 0);
+
+        // DIVERGED: the reference draws bucket 1 from the function at 0x00790a80 -- fog states,
+        // this draw, then FUN_0079d5e0 -- which CGWorldFrame calls at 0x004f9170 and 0x004f91b0,
+        // after CMap::Render has returned. That function is not ported, and leaving the bucket
+        // undrawn would let it grow without bound across frames with m_queued stuck at 1 on every
+        // procedural surface. So it is drained here instead. Today the only observable difference
+        // is the order, because the material draw is still a stub; move this to 0x00790a80's
+        // counterpart when that pass lands.
+        Liquid::Draw(cameraPos, 1);
+    }
 
     GxXformPop(GxXform_World);
     GxRsPop();
 
     // TODO FUN_006164b0(), and the decal pass behind CWorld enable 0x200000
     (void)dt;
-    (void)cameraPos;
 }
 
 // ref: FUN_007b5500

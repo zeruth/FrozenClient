@@ -3,9 +3,15 @@
 
 #include "gx/Texture.hpp"
 #include <storm/Array.hpp>
+#include <tempest/Matrix.hpp>
+#include <tempest/Sphere.hpp>
+#include <tempest/Vector.hpp>
 #include <cstdint>
 
 namespace Liquid {
+
+class CChunkGeomFactory;
+class CClientEnvironment;
 
 // Everything one kind of liquid needs to draw, flattened out of LiquidType.dbc and the
 // LiquidMaterial row it names. One of these is built the first time a liquid type is asked for
@@ -62,10 +68,15 @@ class IMaterial {
     public:
         virtual ~IMaterial() {}
 
-        // The reference's vtable slot 2, reached from the two-bucket dispatch. Not ported: it is
-        // FUN_008a48f0, 2173 bytes of device state and constant setup, and nothing calls this
-        // yet because the dispatch is not ported either.
-        virtual void Draw() {}
+        // The reference's vtable slot 2, and the dispatch DOES reach it now. The argument list is
+        // read off the call in FUN_008a2240, which hands over seven values from the instance: the
+        // environment, the geometry, the unknown at +0x0c, the camera position, the placement
+        // matrix, the bounding sphere and the settings -- in that order.
+        //
+        // Still a stub. The body is FUN_008a48f0, 2173 bytes of device state, shader selection and
+        // constant setup, and it is the last thing between this stack and water on screen.
+        virtual void Draw(CClientEnvironment*, CChunkGeomFactory*, void*, const C3Vector&,
+                          const C44Matrix*, const CAaSphere*, CMaterialSettings*) {}
 
         // Load this material's shader pair, once for the whole class.
         virtual void EnsureShaders() {}

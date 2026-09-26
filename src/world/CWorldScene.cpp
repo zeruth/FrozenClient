@@ -1085,10 +1085,15 @@ void CWorldScene::TraverseRowLiquids(Row* row) {
 
         if (AaBoxVsPlanes6(CWorldScene::s_clipFrustum.planes, box)
             && !CWorldScene::BoxOccluded(box, 0)) {
-            // TODO FUN_007ce520 builds the layer's bounding sphere and
-            // CWorldScene::SphereOccludedByVolumes is asked about it first; and when the liquid
-            // sound switch is on, FUN_008a20c0 wakes the surface's sound. Neither is ported.
+            // TODO FUN_007ce520 builds the layer's bounding sphere and FUN_007cce00 is asked
+            // whether the volumes occlude it before any of this runs. Not ported.
             liquid->UpdateForFrame();
+
+            // Then the surface joins this frame's queue. Which bucket it lands in is the
+            // settings' business, not this caller's. ref: the call at 0x00793740
+            if (liquid->m_surface) {
+                Liquid::Add(liquid->m_surface);
+            }
         }
 
         liquid = next;
