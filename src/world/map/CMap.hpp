@@ -269,6 +269,7 @@ class CMap {
         // frame's particle emitters.
         static void CreateMapObjDoodads(CMapObjDef* def, CMapObj* mapObj);
         static void ForEachMapObjDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
+        static void CullMapObjDoodads();
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
         static void FreeLight(CMapLight* light);

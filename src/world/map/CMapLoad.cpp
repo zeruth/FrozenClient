@@ -1,6 +1,9 @@
 #include "model/CM2Lighting.hpp"
 #include "world/map/CMap.hpp"
 #include "model/CM2Model.hpp"
+#include "world/ParticleFx.hpp"
+#include "model/M2Data.hpp"
+#include "model/CM2Shared.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMapObj.hpp"
@@ -376,6 +379,78 @@ void CMap::ForEachMapObjDoodad(void (*fn)(CM2Model* model, void* arg), void* arg
             }
         }
     }
+}
+
+// A doodad's cull radius: the model's own bounding radius when that is larger than the default,
+// so big props (trees) are not culled while their canopy is still on screen.
+static float DoodadCullRadius(CM2Model* m, float scale) {
+    // The reference culls a doodad by its own bounding sphere (model radius x placement scale), like
+    // units; a small floor only guards degenerate/zero bounds. A blanket 40 yd floor here just kept
+    // off-screen props in the draw list.
+    float r = 2.0f;
+
+    if (m && m->m_shared && m->m_shared->m_m2DataLoaded && m->m_shared->m_data) {
+        float sr = m->m_shared->m_data->bounds.radius * scale;
+
+        if (sr > r) {
+            r = sr;
+        }
+    }
+
+    // A prop with emitters reaches past its mesh: a brazier's sphere is its bowl, not its flames.
+    return r + ParticleFxCullExtent(m, scale);
+}
+
+// The world-space centre of a doodad's bounding sphere. The sphere is centred on the mesh (often
+// well above the feet the doodad is placed by), so offset the feet position by the model-space box
+// centre rotated by the placement yaw and scaled -- otherwise a tall prop is culled the moment its
+// base leaves the screen while its body is still in view.
+static C3Vector DoodadCullCenter(CM2Model* m) {
+    if (!m) {
+        return { 0.0f, 0.0f, 0.0f };
+    }
+
+    // Transform the model-space bounding-box centre by the doodad's full placement matrix (rotation,
+    // scale and translation baked in). This is exact for tilted props, not just yaw-rotated ones, and
+    // needs no separately stored feet/yaw. matrixB4 is row-major with the translation in d0..d2.
+    if (m->m_shared && m->m_shared->m_m2DataLoaded && m->m_shared->m_data) {
+        const CAaBox& e = m->m_shared->m_data->bounds.extent;
+        float lx = (e.b.x + e.t.x) * 0.5f;
+        float ly = (e.b.y + e.t.y) * 0.5f;
+        float lz = (e.b.z + e.t.z) * 0.5f;
+        const C44Matrix& M = m->matrixB4;
+        return {
+            lx * M.a0 + ly * M.b0 + lz * M.c0 + M.d0,
+            lx * M.a1 + ly * M.b1 + lz * M.c1 + M.d1,
+            lx * M.a2 + ly * M.b2 + lz * M.c2 + M.d2
+        };
+    }
+
+    return { m->matrixB4.d0, m->matrixB4.d1, m->matrixB4.d2 };
+}
+
+// Frustum-cull the buildings' props: only those in view animate and draw, which spares the scene
+// thousands of out-of-view models. Runs on the scene's own frustum -- item 11's "TerrainSphereVisible
+// to the scene frustum", now that the stand-in's private copy of one is gone.
+void CMap::CullMapObjDoodads() {
+    CMap::ForEachMapObjDoodad([](CM2Model* model, void*) {
+        // DoodadCullRadius scales a MODEL-SPACE radius, so it needs the placement scale, and that
+        // lives in the model's matrix. Recover it as the length of the matrix's first row, which is
+        // exact because the matrix is rotation times a uniform scale.
+        const C44Matrix& m = model->matrixB4;
+        float scale = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
+
+        if (scale <= 0.0f) {
+            scale = 1.0f;
+        }
+
+        C3Vector center = DoodadCullCenter(model);
+        float radius = DoodadCullRadius(model, scale);
+        int32_t visible = CWorldScene::SphereOutsideFrustum(center, radius) ? 0 : 1;
+
+        model->SetVisible(visible);
+        model->SetAnimating(visible);
+    }, nullptr);
 }
 
 void CMap::SetupMapObjDef(CMapObjDef* def, CMapObj* mapObj) {

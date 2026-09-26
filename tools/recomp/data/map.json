@@ -9,7 +9,7 @@
    "lib/squall/storm/memory.cpp"
   ],
   "frozen": "operator new",
-  "frozenSize": 30,
+  "frozenSize": 15,
   "how": "annotated",
   "module": "?",
   "refSize": 23,
@@ -2181,7 +2181,7 @@
    "lib/squall/storm/memory.cpp"
   ],
   "frozen": "operator delete",
-  "frozenSize": 26,
+  "frozenSize": 13,
   "how": "override",
   "module": "Prop.cpp",
   "refSize": 27,

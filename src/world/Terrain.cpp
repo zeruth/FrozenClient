@@ -108,101 +108,6 @@ bool s_fogActive = false;
 int32_t s_cameraLiquidKind = -1;
 int32_t s_cameraLiquidType = -1; // LiquidType id of that surface, for the underwater overlay
 
-// Extract the frustum planes from the world->clip matrix rows (r0..r3), D3D near-plane convention
-void ExtractFrustum(const C44Matrix& viewProjT) {
-    const float* m = reinterpret_cast<const float*>(&viewProjT);
-    const float* r0 = m + 0;
-    const float* r1 = m + 4;
-    const float* r2 = m + 8;
-    const float* r3 = m + 12;
-
-    for (int32_t i = 0; i < 4; i++) {
-        s_frustum[0][i] = r3[i] + r0[i]; // left
-        s_frustum[1][i] = r3[i] - r0[i]; // right
-        s_frustum[2][i] = r3[i] + r1[i]; // bottom
-        s_frustum[3][i] = r3[i] - r1[i]; // top
-        s_frustum[4][i] = r2[i];         // near
-        s_frustum[5][i] = r3[i] - r2[i]; // far
-    }
-
-    // Normalise each plane so the signed distance it yields is in world units. SphereVisible
-    // compares that distance against a radius; with the raw clip-space rows the side planes have
-    // a normal length of ~1.5 and the top/bottom ~2.2 at the world FOV, which culled objects when
-    // only half to two thirds of their radius had left the view.
-    for (int32_t p = 0; p < 6; p++) {
-        float* pl = s_frustum[p];
-        float len = sqrtf(pl[0] * pl[0] + pl[1] * pl[1] + pl[2] * pl[2]);
-
-        if (len > 1e-6f) {
-            pl[0] /= len;
-            pl[1] /= len;
-            pl[2] /= len;
-            pl[3] /= len;
-        }
-    }
-}
-
-// A doodad's cull radius: the model's own bounding radius when that is larger than the default,
-// so big props (trees) are not culled while their canopy is still on screen.
-float DoodadCullRadius(CM2Model* m, float scale) {
-    // The reference culls a doodad by its own bounding sphere (model radius x placement scale), like
-    // units; a small floor only guards degenerate/zero bounds. A blanket 40 yd floor here just kept
-    // off-screen props in the draw list.
-    float r = 2.0f;
-
-    if (m && m->m_shared && m->m_shared->m_m2DataLoaded && m->m_shared->m_data) {
-        float sr = m->m_shared->m_data->bounds.radius * scale;
-
-        if (sr > r) {
-            r = sr;
-        }
-    }
-
-    // A prop with emitters reaches past its mesh: a brazier's sphere is its bowl, not its flames.
-    return r + ParticleFxCullExtent(m, scale);
-}
-
-// The world-space centre of a doodad's bounding sphere. The sphere is centred on the mesh (often
-// well above the feet the doodad is placed by), so offset the feet position by the model-space box
-// centre rotated by the placement yaw and scaled -- otherwise a tall prop is culled the moment its
-// base leaves the screen while its body is still in view.
-C3Vector DoodadCullCenter(CM2Model* m) {
-    if (!m) {
-        return { 0.0f, 0.0f, 0.0f };
-    }
-
-    // Transform the model-space bounding-box centre by the doodad's full placement matrix (rotation,
-    // scale and translation baked in). This is exact for tilted props, not just yaw-rotated ones, and
-    // needs no separately stored feet/yaw. matrixB4 is row-major with the translation in d0..d2.
-    if (m->m_shared && m->m_shared->m_m2DataLoaded && m->m_shared->m_data) {
-        const CAaBox& e = m->m_shared->m_data->bounds.extent;
-        float lx = (e.b.x + e.t.x) * 0.5f;
-        float ly = (e.b.y + e.t.y) * 0.5f;
-        float lz = (e.b.z + e.t.z) * 0.5f;
-        const C44Matrix& M = m->matrixB4;
-        return {
-            lx * M.a0 + ly * M.b0 + lz * M.c0 + M.d0,
-            lx * M.a1 + ly * M.b1 + lz * M.c1 + M.d1,
-            lx * M.a2 + ly * M.b2 + lz * M.c2 + M.d2
-        };
-    }
-
-    return { m->matrixB4.d0, m->matrixB4.d1, m->matrixB4.d2 };
-}
-
-// True if a world-space bounding sphere is at least partly inside the frustum
-bool SphereVisible(const C3Vector& c, float r) {
-    for (int32_t p = 0; p < 6; p++) {
-        const float* pl = s_frustum[p];
-
-        if (pl[0] * c.x + pl[1] * c.y + pl[2] * c.z + pl[3] < -r) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 // Scatter the chunk's detail doodads (the reference's DetailDoodad batch builder): per 8x8 cell the
 // dominant layer's GroundEffectTexture names up to four doodads with weights and an amount; cells
 // flagged in noEffectDoodad and holes get none. Positions are deterministic per chunk so a tile
@@ -242,39 +147,6 @@ void EnsureShaders() {
 // the camera's group inside a building or from the exterior groups outside it).
 // ------------------------------------------------------------------------------------------------
 
-uint32_t s_visFrame = 0;
-
-// The frustum the current portal walk started from: narrowing keeps this one's near/far planes.
-struct PortalFrustum;
-const int32_t PORTAL_MAX_PLANES = 24; // 6 frustum planes + up to 18 portal edge planes
-const int32_t PORTAL_MAX_DEPTH = 8;
-
-struct PortalFrustum {
-    float planes[PORTAL_MAX_PLANES][4];
-    int32_t count;
-};
-
-PortalFrustum s_baseFrustum;
-
-// MH2O per-chunk header (12 bytes) and layer info (24 bytes)
-struct Mh2oHeader {
-    uint32_t ofsInformation;
-    uint32_t layerCount;
-    uint32_t ofsRender;
-};
-
-struct Mh2oInfo {
-    uint16_t liquidType;
-    uint16_t vertexFormat; // 0 height+depth, 1 height+uv, 2 depth only (flat), 3 height+uv+depth
-    float minHeight;
-    float maxHeight;
-    uint8_t xOffset;
-    uint8_t yOffset;
-    uint8_t width;
-    uint8_t height;
-    uint32_t ofsMask;
-    uint32_t ofsHeightMap;
-};
 
 // ------------------------------------------------------------------------------------------------
 // Weather (the reference's MapWeather: FUN_0078ca50 draws three emitters -- rain drops
@@ -358,49 +230,18 @@ void TerrainUpdateView() {
     C44Matrix viewProj = view * proj;
     s_viewProjT = viewProj.Transpose();
 
-    ExtractFrustum(s_viewProjT);
-
     // Data-driven fog: enable it whenever the fog begins within the view distance, so geometry
     // between the fog start and the far plane is hazed even when the fog end lies beyond the far
     // clip (linear fog handles the partial factor). Colours and distances come from Light.dbc.
     float fogEnd = CWorld::GetFogEnd();
     s_fogActive = fogEnd > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
 
-    if (s_fogActive) {
-        const C3Vector& fc = CWorld::GetFogColor();
-        uint32_t packed = (static_cast<uint32_t>(fc.x * 255.0f) << 16)
-            | (static_cast<uint32_t>(fc.y * 255.0f) << 8)
-            | static_cast<uint32_t>(fc.z * 255.0f);
-        float fogStart = CWorld::GetFogStart();
-
-        GxRsSet(GxRs_FogColor, static_cast<int32_t>(packed));
-        GxRsSet(GxRs_FogStart, *reinterpret_cast<int32_t*>(&fogStart));
-        GxRsSet(GxRs_FogEnd, *reinterpret_cast<int32_t*>(&fogEnd));
-    }
-
-    // Frustum-cull the buildings' props: only those in view animate and draw, which spares the
-    // scene thousands of out-of-view models. They hang off the reference defs now, so this walks
-    // those rather than the stand-in's instances.
-    CMap::ForEachMapObjDoodad([](CM2Model* model, void*) {
-        C3Vector c = DoodadCullCenter(model);
-
-        // DoodadCullRadius scales a MODEL-SPACE radius, so it still needs the placement scale --
-        // and that now lives in the model's matrix rather than in a parallel array. Recover it as
-        // the length of the matrix's first row, which is exact because the matrix is built as
-        // rotation times a uniform scale. Passing 1.0f here would under-cull every scaled prop.
-        const C44Matrix& m = model->matrixB4;
-        float scale = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
-
-        if (scale <= 0.0f) {
-            scale = 1.0f;
-        }
-
-        float r = DoodadCullRadius(model, scale);
-        bool vis = SphereVisible(c, r);
-
-        model->SetVisible(vis ? 1 : 0);
-        model->SetAnimating(vis ? 1 : 0);
-    }, nullptr);
+    // The fog RENDER STATES are not set here any more. CMap::Render already calls
+    // CWorld::SetupFogRenderStates, and this block ran afterwards and overwrote its work with a
+    // worse conversion: it truncated each channel instead of CM2Lighting::FogColorByte's clamped
+    // rounding, never clamped above 1.0 -- so an overbright fog colour overflowed its byte and
+    // corrupted the packed value through the shift -- and left alpha at 0 where the reference sets
+    // 0xFF. Only the flag survives, which is all Weather asks for.
 
     s_viewUpdated = true;
 }

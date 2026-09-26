@@ -1472,6 +1472,9 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         Liquid::Draw(cameraPos, 1);
     }
 
+    // The buildings' props, culled against the frustum this pass has just established.
+    CMap::CullMapObjDoodads();
+
     GxXformPop(GxXform_World);
     GxRsPop();
 
