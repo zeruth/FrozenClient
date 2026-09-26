@@ -14,8 +14,57 @@ class CM2Lighting;
 
 namespace Liquid {
 
-// The shared wave animator; see CInstance::m_waveManager.
-class CWaveManager;
+// The shared wave animator. Three waves drift past the camera and their parameters become shader
+// constants, which is what makes a water surface move rather than sit still.
+//
+// A refcounted SINGLETON: the reference makes one for the first CChunkLiquid that needs it, keeps a
+// use count beside the pointer, and every surface holds a reference. 0x00d2dd2c and 0x00d2dd30.
+//
+// The layout matters, because the material draw does not ask for fields -- it asks for a POINTER
+// and a DWORD COUNT and walks them. The reference's vtable slot 3 is `return this + 8` and slot 4 is
+// `return 42`, so the records are 42 contiguous dwords at +0x08: three of six floats and then three
+// of eight. Keep m_wavesA and m_wavesB adjacent or the draw reads the wrong thing.
+class CWaveManager {
+    public:
+        static const uint32_t WAVE_COUNT = 3;
+        // What slot 4 answers. 42 dwords is exactly the 0xa8 bytes the constructor's first memset
+        // clears, which is the independent check on this layout.
+        static const uint32_t RECORD_DWORDS = 42;
+
+        uint32_t m_refCount = 1;
+
+        // The first three records. NOTHING fills these -- the constructor zeroes them and Update
+        // never touches them -- so the draw's first three wave registers take zeroes even with a
+        // manager present. Reproduced rather than repaired: that is what the reference does, and
+        // whatever fed them in an earlier build is gone.
+        float m_wavesA[WAVE_COUNT][6] = {};
+        // The three that move: position, direction, two scalars, the faded amplitude, and a rate.
+        float m_wavesB[WAVE_COUNT][8] = {};
+
+        // Milliseconds since each wave respawned, and how long it lives.
+        uint32_t m_elapsed[WAVE_COUNT] = {};
+        uint32_t m_period[WAVE_COUNT] = {};
+
+        // The unfaded copy Update works on; m_wavesB is this with the amplitude scaled by the fade.
+        float m_working[WAVE_COUNT][8] = {};
+
+        void AddRef();
+        // Vtable slot 2, which is why CInstance releases this through a different slot than the
+        // per-surface objects beside it.
+        void Release();
+
+        // Vtable slot 3 (FUN_008c6c80 is `return this + 8`), inline so it binds nothing.
+        const float* Records() const { return &this->m_wavesA[0][0]; }
+        // Vtable slot 4 (FUN_007d6200 is `return 42`), inline so it binds nothing.
+        uint32_t RecordDwords() const { return RECORD_DWORDS; }
+
+        // Age the three waves and respawn any whose time is up. Guarded to run once a frame however
+        // many layers call it.
+        void Update(const C3Vector& cameraPos);
+};
+
+// The singleton, made on first use.
+CWaveManager* GetWaveManager();
 
 class IMaterial;
 class CMaterialSettings;

@@ -581,8 +581,8 @@ void SetupWaves(CWaveManager* manager, const CMaterialSettings& settings) {
     const float* end = nullptr;
 
     if (manager) {
-        // TODO the manager's vtable slots 3 and 4: a pointer to its records and a DWORD count.
-        // Liquid::CWaveManager is not ported, so there is nothing to ask.
+        records = manager->Records();
+        end = records + manager->RecordDwords();
     }
 
     static const float ZERO_PAIR[2] = { 0.0f, 0.0f };

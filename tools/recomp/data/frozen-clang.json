@@ -193341,6 +193341,34 @@
 "refs": [],
 "line": 785
 },
+"Liquid::CWaveManager::Records": {
+"files": [
+"src/world/map/liquidsurface.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 57
+},
+"Liquid::CWaveManager::RecordDwords": {
+"files": [
+"src/world/map/liquidsurface.hpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 1,
+"refs": [],
+"line": 59
+},
 "DrawChunkUnsupported": {
 "files": [
 "src/world/cworldscene.cpp"
@@ -194908,24 +194936,25 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 20
+"line": 21
 },
 "CChunkLiquid::UpdateForFrame": {
 "files": [
 "src/world/map/cchunkliquid.cpp"
 ],
 "callseq": [
-"Liquid::CreateSurface"
+"Liquid::CreateSurface",
+"Liquid::CWaveManager::Update"
 ],
 "strings": [],
 "consts": [
 "0.0f"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 15,
 "refs": [],
-"line": 44
+"line": 45
 },
 "CChunkLiquid::ReleaseSurface": {
 "files": [
@@ -194940,7 +194969,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 60
+"line": 66
 },
 "CChunkLiquid::GetBounds": {
 "files": [
@@ -194955,7 +194984,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 71
+"line": 77
 },
 "CChunkLiquid::UpdateAnim": {
 "files": [
@@ -194974,7 +195003,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 82
+"line": 88
 },
 "CChunkLiquid::ReadTileFlags": {
 "files": [
@@ -194995,7 +195024,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 102
+"line": 108
 },
 "CChunkLiquid::CoversTile": {
 "files": [
@@ -195011,7 +195040,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 121
+"line": 127
 },
 "CChunkLiquid::GetHeightAt": {
 "files": [
@@ -195032,7 +195061,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 142
+"line": 148
 },
 "CMapBaseObj::~CMapBaseObj": {
 "files": [
@@ -203416,6 +203445,8 @@
 "src/world/map/liquidmaterialsettings.cpp"
 ],
 "callseq": [
+"Liquid::CWaveManager::Records",
+"Liquid::CWaveManager::RecordDwords",
 "Liquid::SetupWaveA",
 "Liquid::SetupWaveA",
 "Liquid::SetupWaveB",
@@ -203768,7 +203799,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 31
+"line": 33
 },
 "Liquid::CChunkGeomFactory::Release": {
 "files": [
@@ -203788,7 +203819,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 35
+"line": 37
 },
 "Liquid::CClientEnvironment::AddRef": {
 "files": [
@@ -203801,7 +203832,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 45
+"line": 47
 },
 "Liquid::CClientEnvironment::Release": {
 "files": [
@@ -203821,7 +203852,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 48
+"line": 50
 },
 "Liquid::CInstance::AddRef": {
 "files": [
@@ -203834,7 +203865,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 55
+"line": 57
 },
 "Liquid::CInstance::Release": {
 "files": [
@@ -203843,6 +203874,7 @@
 "callseq": [
 "Liquid::CChunkGeomFactory::Release",
 "Liquid::CClientEnvironment::Release",
+"Liquid::CWaveManager::Release",
 "Liquid::CInstance::~CInstance",
 "SMemFree"
 ],
@@ -203852,11 +203884,11 @@
 "consts": [
 "0"
 ],
-"branches": 3,
+"branches": 4,
 "stub": false,
-"lines": 21,
+"lines": 22,
 "refs": [],
-"line": 60
+"line": 62
 },
 "Liquid::CreateGeomFactory": {
 "files": [
@@ -203880,7 +203912,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 85
+"line": 88
 },
 "Liquid::CreateEnvironment": {
 "files": [
@@ -203900,7 +203932,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 105
+"line": 108
 },
 "Liquid::CreateSurface": {
 "files": [
@@ -203919,6 +203951,8 @@
 "Liquid::GetMaterial",
 "Liquid::GetMaterialSettings",
 "Liquid::CreateEnvironment",
+"Liquid::GetWaveManager",
+"Liquid::CWaveManager::AddRef",
 "TSBaseArray<CChunkLiquid *>::operator[]",
 "C3Vector::C3Vector",
 "C44Matrix::Translate",
@@ -203937,11 +203971,11 @@
 "0.5f",
 "1"
 ],
-"branches": 12,
+"branches": 13,
 "stub": false,
-"lines": 122,
+"lines": 123,
 "refs": [],
-"line": 124
+"line": 127
 },
 "Liquid::WriteLayerVertices": {
 "files": [
@@ -203963,7 +203997,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 252
+"line": 256
 },
 "Liquid::WriteLayerIndices": {
 "files": [
@@ -203982,7 +204016,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 323
+"line": 327
 },
 "Liquid::CChunkGeomFactory::Build": {
 "files": [
@@ -204028,7 +204062,7 @@
 "stub": false,
 "lines": 152,
 "refs": [],
-"line": 380
+"line": 384
 },
 "Liquid::Add": {
 "files": [
@@ -204046,7 +204080,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 539
+"line": 543
 },
 "Liquid::Queued": {
 "files": [
@@ -204063,7 +204097,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 552
+"line": 556
 },
 "Liquid::SortAscending": {
 "files": [
@@ -204079,7 +204113,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 564
+"line": 568
 },
 "Liquid::SortDescending": {
 "files": [
@@ -204095,7 +204129,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 587
+"line": 591
 },
 "Liquid::Draw": {
 "files": [
@@ -204127,7 +204161,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 618
+"line": 622
 },
 "Liquid::CClientEnvironment::SetupLighting": {
 "files": [
@@ -204158,7 +204192,108 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 667
+"line": 671
+},
+"Liquid::CWaveManager::AddRef": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 736
+},
+"Liquid::CWaveManager::Release": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"Liquid::CWaveManager::~CWaveManager",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 741
+},
+"Liquid::CWaveManager::Update": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"OsGetAsyncTimeMs",
+"rand",
+"sqrtf",
+"rand",
+"rand",
+"rand",
+"sqrtf",
+"rand",
+"C44Matrix::RotationAroundZ",
+"C3Vector::C3Vector",
+"operator*",
+"C3Vector::operator=",
+"rand",
+"rand",
+"rand",
+"rand"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0xffffffff",
+"1",
+"1.0f",
+"100",
+"1000",
+"2",
+"2000",
+"3",
+"4",
+"5",
+"50",
+"6",
+"7",
+"8",
+"9.99999997475243e-07f"
+],
+"branches": 12,
+"stub": false,
+"lines": 123,
+"refs": [],
+"line": 752
+},
+"Liquid::GetWaveManager": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"Liquid::CWaveManager::CWaveManager"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 880
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

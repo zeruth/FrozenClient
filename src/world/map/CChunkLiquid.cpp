@@ -1,5 +1,6 @@
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
+#include "world/CWorldScene.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/LiquidVertexData.hpp"
 
@@ -44,6 +45,11 @@ void CChunkLiquid::BuildVertices() {
 void CChunkLiquid::UpdateForFrame() {
     if (!this->m_surface) {
         Liquid::CreateSurface(this);
+    }
+
+    // The waves age here, once a frame however many layers reach this.
+    if (this->m_surface && this->m_surface->m_waveManager) {
+        this->m_surface->m_waveManager->Update(CWorldScene::s_cameraPos);
     }
 
     // TODO with a surface in hand the reference queues it for the frame's draw

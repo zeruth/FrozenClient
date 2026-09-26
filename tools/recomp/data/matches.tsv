@@ -3103,6 +3103,8 @@ addr	how	frozen	evidence
 007d4f40	annotated	CClientEnvironment::SetupLighting	tag in src/world/map/LiquidSurface.cpp
 007d5120	annotated	CreateEnvironment	tag in src/world/map/LiquidSurface.cpp
 007d59b0	annotated	QuerySegmentMapObjs	tag in src/world/map/CMapObj.cpp
+007d6210	annotated	CWaveManager::Release	tag in src/world/map/LiquidSurface.cpp
+007d62a0	annotated	CWaveManager::Update	tag in src/world/map/LiquidSurface.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
 007d66d0	annotated	CMapChunk::CanPairWith	tag in src/world/map/CMapChunk.cpp
 007d6810	annotated	CMapArea::PairRenderChunks	tag in src/world/map/CMapArea.cpp

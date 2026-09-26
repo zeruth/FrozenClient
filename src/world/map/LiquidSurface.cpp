@@ -8,6 +8,8 @@
 #include "gx/Buffer.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
+#include <common/Time.hpp>
+#include "world/CWorldScene.hpp"
 #include "world/CWorld.hpp"
 #include "model/CM2Scene.hpp"
 #include "model/CM2Lighting.hpp"
@@ -71,8 +73,9 @@ void CInstance::Release() {
         this->m_environment->Release();
     }
 
-    // TODO release m_waveManager. It is a shared refcounted singleton, so this is a Release on
-    // the manager rather than a delete; nothing sets it yet, so there is nothing to release.
+    if (this->m_waveManager) {
+        this->m_waveManager->Release();
+    }
 
     this->~CInstance();
 
@@ -214,10 +217,11 @@ void CreateSurface(CChunkLiquid* liquid) {
     instance->m_geometry = geometry;
     instance->m_environment = CreateEnvironment(0);
 
-    // TODO instance->m_waveManager = the Liquid::CWaveManager singleton at 0x00d2dd2c, plus an
-    // AddRef on it. The singleton is created by the first CChunkLiquid that needs one (inside
-    // FUN_007cee10, which calls FUN_007d6640 and counts uses at 0x00d2dd30); frozen creates none,
-    // so this stays null and the draw writes its zero-fill wave constants.
+    instance->m_waveManager = GetWaveManager();
+
+    if (instance->m_waveManager) {
+        instance->m_waveManager->AddRef();
+    }
 
     // The surface draws at the first layer's chunk corner; everything in it is relative to that.
     C3Vector origin = s_gather[0]->m_origin;
@@ -699,6 +703,197 @@ void CClientEnvironment::SetupLighting(CM2Lighting* lighting) {
     if (scene) {
         scene->SelectLights(lighting);
     }
+}
+
+// ------------------------------------------------------------------------------------------------
+// Liquid::CWaveManager
+
+// How long a wave fades in, and out. Both 5000 ms (DAT_00af1694 and DAT_00af1690).
+static const float WAVE_FADE_IN_MS = 5000.0f;
+static const float WAVE_FADE_OUT_MS = 5000.0f;
+
+// Where a wave is born: this far along the camera's forward, plus up to fifty more, and then jittered
+// by up to fifty in each axis. DAT_009f989c.
+static const float WAVE_SPAWN_DISTANCE = 150.0f;
+
+// The randomised per-wave scalars, each `rand() % 1000 * k + base`.
+static const float WAVE_S0_K = 0.03999999910593033f;      // 10 .. 50
+static const float WAVE_S0_B = 10.0f;
+static const float WAVE_S1_K = 0.20000000298023224f;      // 200 .. 400
+static const float WAVE_S1_B = 200.0f;
+static const float WAVE_AMP_K = 0.0005000000237487257f;   // 0.5 .. 1.0
+static const float WAVE_AMP_B = 0.5f;
+static const float WAVE_RATE_K = 3.000000106112566e-05f;  // 0.02 .. 0.05
+static const float WAVE_RATE_B = 0.019999999552965164f;
+
+// The turn applied to a new wave's direction: rand() % 2000 - 1000, times this, so +/- 45 degrees.
+static const float WAVE_TURN_K = 0.0007853981805965304f;
+static const float WAVE_TURN_B = 1000.0f;
+
+// A wave lives this long, plus up to as much again.
+static const uint32_t WAVE_LIFE_MS = 20000;
+
+void CWaveManager::AddRef() {
+    this->m_refCount++;
+}
+
+// ref: FUN_007d6210
+void CWaveManager::Release() {
+    if (--this->m_refCount) {
+        return;
+    }
+
+    this->~CWaveManager();
+
+    SMemFree(this, __FILE__, __LINE__, 0);
+}
+
+// ref: FUN_007d62a0
+void CWaveManager::Update(const C3Vector& cameraPos) {
+    // Once a frame, however many layers ask. The reference keeps its own stamp beside the manager
+    // rather than on it, because the manager is shared.
+    static uint32_t s_lastFrame = 0xffffffff;
+    static uint32_t s_lastTime = 0;
+    static bool s_seeded = false;
+
+    if (s_lastFrame == CWorldScene::s_frameStamp) {
+        return;
+    }
+
+    s_lastFrame = CWorldScene::s_frameStamp;
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    if (!s_seeded) {
+        s_seeded = true;
+        s_lastTime = now;
+    }
+
+    uint32_t dt = now - s_lastTime;
+
+    s_lastTime = now;
+
+    for (uint32_t i = 0; i < WAVE_COUNT; i++) {
+        this->m_elapsed[i] += dt;
+
+        // Fade in over the first five seconds, and out over the last five.
+        float fadeIn = static_cast<float>(this->m_elapsed[i]) / WAVE_FADE_IN_MS;
+
+        if (fadeIn > 1.0f) {
+            fadeIn = 1.0f;
+        }
+
+        float fadeOut = 0.0f;
+
+        if (this->m_elapsed[i] < this->m_period[i]) {
+            fadeOut = static_cast<float>(this->m_period[i] - this->m_elapsed[i]) / WAVE_FADE_OUT_MS;
+
+            if (fadeOut > 1.0f) {
+                fadeOut = 1.0f;
+            }
+        }
+
+        float fade = fadeIn < fadeOut ? fadeIn : fadeOut;
+
+        if (fade < 0.0f) {
+            fade = 0.0f;
+        }
+
+        // The exposed record is the working one with its amplitude faded. Index 6 is that amplitude.
+        this->m_wavesB[i][6] = fade * this->m_working[i][6];
+
+        if (this->m_elapsed[i] < this->m_period[i]) {
+            continue;
+        }
+
+        // Time is up: respawn it.
+        this->m_elapsed[i] = 0;
+        this->m_period[i] = static_cast<uint32_t>(rand() % WAVE_LIFE_MS) + WAVE_LIFE_MS;
+
+        // Out along the camera's forward -- the direction from the camera to what it is looking at.
+        // 0x00cd8f68, the vector right after the camera position -- what it is looking at.
+        const C3Vector& target = CWorldScene::s_cameraTarget;
+
+        float forwardX = target.x - cameraPos.x;
+        float forwardY = target.y - cameraPos.y;
+        float forwardZ = target.z - cameraPos.z;
+
+        float len2 = forwardX * forwardX + forwardY * forwardY + forwardZ * forwardZ;
+
+        if (len2 > 9.99999997475243e-07f) {
+            float inv = 1.0f / sqrtf(len2);
+
+            forwardX *= inv;
+            forwardY *= inv;
+        }
+
+        float out = static_cast<float>(rand() % 50) + WAVE_SPAWN_DISTANCE;
+
+        float posX = cameraPos.x + out * forwardX + static_cast<float>(rand() % 100 - 50);
+        float posY = cameraPos.y + out * forwardY + static_cast<float>(rand() % 100 - 50);
+
+        this->m_working[i][0] = posX;
+        this->m_working[i][1] = posY;
+
+        // Its direction starts pointing back at the camera, then turns by up to 45 degrees.
+        float dirX = cameraPos.x - posX;
+        float dirY = cameraPos.y - posY;
+
+        float dirLen2 = dirX * dirX + dirY * dirY;
+
+        if (dirLen2 > 9.99999997475243e-07f) {
+            float inv = 1.0f / sqrtf(dirLen2);
+
+            dirX *= inv;
+            dirY *= inv;
+        }
+
+        float turn = (static_cast<float>(rand() % 2000) - WAVE_TURN_B) * WAVE_TURN_K;
+
+        C44Matrix rotation = C44Matrix::RotationAroundZ(turn);
+
+        C3Vector direction = { dirX, dirY, 0.0f };
+
+        direction = direction * rotation;
+
+        this->m_working[i][2] = direction.x;
+        this->m_working[i][3] = direction.y;
+
+        this->m_working[i][4] = static_cast<float>(rand() % 1000) * WAVE_S0_K + WAVE_S0_B;
+        this->m_working[i][5] = static_cast<float>(rand() % 1000) * WAVE_S1_K + WAVE_S1_B;
+        this->m_working[i][6] = static_cast<float>(rand() % 1000) * WAVE_AMP_K + WAVE_AMP_B;
+        this->m_working[i][7] = static_cast<float>(rand() % 1000) * WAVE_RATE_K + WAVE_RATE_B;
+
+        for (uint32_t k = 0; k < 8; k++) {
+            this->m_wavesB[i][k] = this->m_working[i][k];
+        }
+
+        // A fresh wave starts silent and fades in.
+        this->m_wavesB[i][6] = 0.0f;
+    }
+}
+
+// DIVERGED: the reference makes this for the first CChunkLiquid that needs one, inside that
+// constructor, and counts uses there. frozen makes it for the first SURFACE instead. The manager is
+// a singleton that lives as long as any water does, so the only difference is which object's
+// lifetime it is tied to, and nothing observes that.
+CWaveManager* GetWaveManager() {
+    static CWaveManager* s_manager = nullptr;
+
+    if (!s_manager) {
+        auto manager = static_cast<CWaveManager*>(
+            SMemAlloc(sizeof(CWaveManager), __FILE__, __LINE__, 0));
+
+        if (!manager) {
+            return nullptr;
+        }
+
+        new (manager) CWaveManager();
+
+        s_manager = manager;
+    }
+
+    return s_manager;
 }
 
 }

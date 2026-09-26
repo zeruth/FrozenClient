@@ -49154,7 +49154,7 @@
   "status": "diverged"
  },
  "007cf9a0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -49163,7 +49163,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "CChunkLiquid::UpdateForFrame",
-  "frozenSize": 47,
+  "frozenSize": 64,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 50,
@@ -49530,6 +49530,36 @@
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 793,
+  "status": "ported"
+ },
+ "007d6210": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CWaveManager::Release",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
+ "007d62a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.692,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CWaveManager::Update",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 925,
   "status": "ported"
  },
  "007d6690": {
