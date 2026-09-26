@@ -345,10 +345,34 @@ When the current column or row index matches the next entry in its list, the ver
 **twice** -- a seam split. That is what the `+ this->+0x2c` / `+ this->+0x3c` terms in the build's
 vertex count are for, which cross-checks the field map: the two independently agree.
 
-**Still unknown for this piece:** `FUN_007a7b00` (the per-vertex emit), the two remaining writers,
-and **who fills the duplicate lists** -- nothing in the build or `FUN_007d49b0` writes `+0x2c`/`+0x3c`,
-so there is a prepare step elsewhere that has not been found. Do not port the writer until that is
-located, or the mesh will be built with no seams where the reference splits them.
+**The duplicate lists are ALWAYS EMPTY on this path**, resolved 2026-09-26 by walking the object's
+whole lifetime rather than hunting for a writer. `CMeshGeomFactory` is touched in exactly four
+places and none of them writes `+0x2c`/`+0x30`/`+0x3c`/`+0x40`:
+
+1. `FUN_007d4920(0)` allocates it and zeroes `+0x24`..`+0x44`.
+2. `FUN_007d49b0` sets `+0x08` (mapObj) and `+0x0c` (group).
+3. `FUN_00793d20` sets `+0x14`, `+0x1c`, `+0x20` through the three setters.
+4. `FUN_007d43f0` (Build) READS `+0x2c`/`+0x3c` at its very first statement, before any call.
+
+Its vtable holds nothing else that could: slot 0 `FUN_007d4980` is the scalar-deleting destructor,
+slot 1 `FUN_007d43b0` is Release (`--refCount`, then the destructor and `CDataAllocator::PutData`),
+slot 2 is Build. So the seam-splitting branch in the writer is **dead code for WMO liquid** -- the
+mechanism is shared-code generality, and frozen can emit each grid vertex exactly once.
+
+That leaves the vertex count as:
+
+```
+verts = m_liquidXVerts * m_liquidYVerts + LiquidTileCount() * 6
+```
+
+**`FUN_007c8bf0` is `CMapObjGroup::LiquidTileCount()`** (identified 2026-09-26): it walks
+`m_liquidTiles` over `m_liquidXTiles` x `m_liquidYTiles` and counts entries where
+`(flag & 0xf) != 0xf` **and** the high bit `0x80` is set -- the tiles that actually render -- caching
+the result in a field at group `+0x148` that it recomputes only while that field is `< 1`. Frozen's
+`CMapObjGroup` needs that cache field.
+
+**Still unread:** `FUN_007a7b00` (the per-vertex emit), `FUN_007a7920` (462) and `FUN_007a7f60`
+(944), plus `FUN_007cbdc0` (109, the buffer-pair allocation).
 
 **The queue, `FUN_00793d20`** (679 bytes), called from `CMap::Render` at `0x0079acce`. Walks the
 def-group list at `DAT_00cdb08c`/`DAT_00cdb094`, unlinking each through a link at `+0xb8`/`+0xbc`,
