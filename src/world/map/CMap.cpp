@@ -1350,6 +1350,16 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         // So the two land together: FUN_00794250 (608 bytes) and FUN_00799f80 (467), plus the row
         // reset, and the call to UpdateCameraDef in the same change. CMapObj::EnterPortalWalk, the
         // other half, is already ported and faithful.
+        //
+        // What FUN_00794250 does, from a read on 2026-09-26: it is the teardown for "nothing is
+        // visible". It walks all 64 distance rows and, per row, drains a list through FUN_007cecd0,
+        // moves every liquid out of the row's list at +0x30 onto a global list at 0x00adfc34, and
+        // splices the row's entity list at +0x18 into a shared one at rows+0x205c. Frozen's Row
+        // already carries every one of those offsets, so the mapping is not the hard part.
+        //
+        // The hard part is that it is Storm list surgery -- unlink-then-relink with the link offset
+        // read out of the list object -- and a wrong offset corrupts a list rather than drawing
+        // something wrong. It wants a run in the same change, not a build.
     }
 
     // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks
