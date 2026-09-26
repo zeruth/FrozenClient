@@ -3177,5 +3177,13 @@
   "004f2be0": {
     "frozen": "CACHEENTRY::LoadTexture",
     "note": "100% call order once its TODO was filled. The TODO was the alternate-extension retry, and the reference supplies both halves of it: FUN_004b5600 reads the container type off the extension and FUN_004b5670 swaps it for the other one."
+  },
+  "0081f6a0": {
+    "status": "unlinked",
+    "note": "--propose offered GxRsPop for this and it is not that: frozen's GxRsPop is a one-line forward to CGxDevice::RsPop, while this CALLS GxRsPop and then pops a transform through a device vfunc and clears a bit. It is a draw epilogue, and GxRsPop was simply its only linked callee. Recorded so it is not proposed again."
+  },
+  "007ed4c0": {
+    "status": "unlinked",
+    "note": "Identified but not ported: it blends a whole sky-state block toward a target by a factor, nineteen colours through SkyLerp plus about ten floats lerped inline. Fully self-contained -- SkyLerp is its only callee and that is already linked -- and on the render spine, so it is the best-value thing left in FFXEffects.cpp. It needs the disassembly first: the destination block arrives in EDI and SkyLerp's colour arguments are in registers too, so the decompilation has lost both and shows only `unaff_EDI`. frozen has SkyLerp and uses it for the dome rings in DayNight.cpp but has no whole-block blend."
   }
 }
