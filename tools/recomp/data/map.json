@@ -50680,12 +50680,13 @@
   "status": "ported"
  },
  "007ed2d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/DayNight.cpp"
+   "src/world/DayNight.cpp",
+   "src/world/daynight.cpp"
   ],
   "frozen": "SkyLerp",
   "frozenSize": 0,
@@ -50695,12 +50696,13 @@
   "status": "diverged"
  },
  "007ed3b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.529,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/DayNight.cpp"
+   "src/world/DayNight.cpp",
+   "src/world/daynight.cpp"
   ],
   "frozen": "InterpBodyBand",
   "frozenSize": 240,
@@ -50710,30 +50712,32 @@
   "status": "ported"
  },
  "007f0530": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.465,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/DayNight.cpp"
+   "src/world/DayNight.cpp",
+   "src/world/daynight.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3662,
+  "frozenSize": 3678,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 823,
   "status": "diverged"
  },
  "007f09b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.581,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.238,
+  "fidelity": 0.286,
   "files": [
-   "src/world/DayNight.cpp"
+   "src/world/DayNight.cpp",
+   "src/world/daynight.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3662,
+  "frozenSize": 3678,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,

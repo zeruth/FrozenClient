@@ -618,32 +618,8 @@ void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
                         CWaveManager* waveManager, const C3Vector& cameraPos,
                         const C44Matrix* placement, const CAaSphere* sphere,
                         CMaterialSettings* settings) {
-    // LIQCOUNT: one counter per rejection point, so a run says which gate the water dies at rather
-    // than just "no water". Remove with the lighting constants.
-    static uint32_t s_calls = 0;
-    static uint32_t s_noInputs = 0;
-    static uint32_t s_noFrame = 0;
-    static uint32_t s_noGeometry = 0;
-    static uint32_t s_drawn = 0;
-    static uint32_t s_lastIndices = 0;
-    static uint32_t s_lastPerm = 0;
-    static uint32_t s_ticks = 0;
-
-    s_calls++;
-
-    if (++s_ticks >= 120) {
-        s_ticks = 0;
-
-        SysMsgPrintf(SYSMSG_INFO,
-                     "LIQDRAW: calls=%u noInputs=%u noFrame=%u noGeom=%u drawn=%u "
-                     "lastIndices=%u lastPerm=%u",
-                     s_calls, s_noInputs, s_noFrame, s_noGeometry, s_drawn, s_lastIndices,
-                     s_lastPerm);
-    }
 
     if (!geometry || !settings || !environment) {
-        s_noInputs++;
-
         return;
     }
 
@@ -662,8 +638,6 @@ void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
 
     for (uint32_t i = 0; i < CMaterialSettings::TEXTURE_SLOTS; i++) {
         if (!frames[i]) {
-            s_noFrame++;
-
             return;
         }
     }
@@ -692,8 +666,6 @@ void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
     CGxBatch batch;
 
     if (!geometry->Build(GxVBF_PT2, &vertexBuf, &indexBuf, &batch)) {
-        s_noGeometry++;
-
         GxRsPop();
 
         return;
@@ -768,10 +740,6 @@ void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
     g_theGxDevicePtr->RsSet(GxRs_PixelShader, static_cast<void*>(pixelShaders[0]));
 
     g_theGxDevicePtr->Draw(&batch, 1);
-
-    s_drawn++;
-    s_lastIndices = batch.m_count;
-    s_lastPerm = permutation;
 
     GxRsPop();
 }

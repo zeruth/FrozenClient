@@ -2,8 +2,14 @@
 
 Queue item 4. The reader, creation, row insert, visit, camera liquid, `CreateSurface`,
 `UpdateForFrame`, the geometry `Build`, the six materials with their shaders, and the two-bucket
-queue and dispatch are all ported. What is left is the **material draw** — and this file is what it
-needs, so the next cycle is transcription rather than rediscovery.
+queue and dispatch are all ported -- **and so is the material draw**, which this file described as
+the one thing left. `DrawShaderMaterial` is implemented and all four `CMaterial*::Draw` overrides
+call it (checked 2026-09-26, no TODOs in the body), so the terrain liquid stack is complete end to
+end and this file's own "what is left" line was stale. It stays as the reference for the register
+map, the texture stage order and the helper breakdown.
+
+The remaining liquid gap is **map object (WMO) water**, which needs `Liquid::CMeshGeomFactory` --
+see the section near the end of this file.
 
 Everything here was read off the disassembly, not guessed. Where Ghidra's decompilation disagrees
 with the disassembly the disassembly wins, and the four places it does are called out.

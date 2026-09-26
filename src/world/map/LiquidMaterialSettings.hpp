@@ -94,8 +94,9 @@ class IMaterial {
         // environment, the geometry, the unknown at +0x0c, the camera position, the placement
         // matrix, the bounding sphere and the settings -- in that order.
         //
-        // Still a stub. The body is FUN_008a48f0, 2173 bytes of device state, shader selection and
-        // constant setup, and it is the last thing between this stack and water on screen.
+        // ref: FUN_008a48f0, 2173 bytes of device state, shader selection and constant setup.
+        // Implemented -- every override forwards to DrawShaderMaterial. This comment said "still a
+        // stub ... the last thing between this stack and water on screen" long after it had landed.
         virtual void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                           const C44Matrix*, const CAaSphere*, CMaterialSettings*) {}
 

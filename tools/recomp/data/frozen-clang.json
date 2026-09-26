@@ -194925,6 +194925,459 @@
 "refs": [],
 "line": 2262
 },
+"EnsureShaders": {
+"files": [
+"src/world/daynight.cpp",
+"src/world/terrain.cpp"
+],
+"callseq": [
+"TerrainUiShaders",
+"CGxDevice::ShaderCreate",
+"CGxDevice::ShaderCreate",
+"MakeRawShader",
+"MakeRawShader",
+"MakeRawShader",
+"MakeRawShader",
+"MakeArbShader",
+"MakeArbShader",
+"MakeArbShader",
+"MakeArbShader",
+"SysMsgPrintf"
+],
+"strings": [
+"MISSING",
+"Shaders\\Pixel",
+"Shaders\\Vertex",
+"Terrain: api %d shaders vs %s ps %s blob %s detail %s -> %s",
+"UI",
+"fallback",
+"ok",
+"shaded"
+],
+"consts": [
+"0",
+"1",
+"2"
+],
+"branches": 9,
+"stub": false,
+"lines": 48,
+"refs": [],
+"line": 49
+},
+"SkyWhiteCallback": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"4"
+],
+"branches": 1,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 105
+},
+"BuildSkyDome": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"cosf",
+"sinf",
+"cosf",
+"sinf"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"2.0f",
+"3.14159265f"
+],
+"branches": 4,
+"stub": false,
+"lines": 37,
+"refs": [],
+"line": 138
+},
+"SkyboxLightingCallback": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"CM2Lighting::AddAmbient"
+],
+"strings": [],
+"consts": [
+"1.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 178
+},
+"SkyRelease": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"CloudsRelease",
+"CM2Model::DetachFromScene",
+"CM2Model::Release",
+"CM2Model::DetachFromScene",
+"CM2Model::Release"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 192
+},
+"InterpBodyBand": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0.001f",
+"0.0f",
+"1",
+"1.0f"
+],
+"branches": 9,
+"stub": false,
+"lines": 43,
+"refs": [],
+"line": 232
+},
+"DrawSkyBody": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"InterpBodyBand",
+"InterpBodyBand",
+"InterpBodyBand",
+"sinf",
+"cosf",
+"sinf",
+"cosf",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"CWorld::GetBodyTint",
+"CImVector::CImVector",
+"TextureGetGxTex",
+"GxRsSet",
+"GxPrimLockVertexPtrs",
+"GxDrawLockedElements",
+"GxPrimUnlockVertexPtrs"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.5f",
+"0xFF",
+"1",
+"1.0f",
+"2",
+"255.0f",
+"3",
+"4",
+"5",
+"6"
+],
+"branches": 6,
+"stub": false,
+"lines": 50,
+"refs": [],
+"line": 300
+},
+"DrawGlare": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"InterpBodyBand",
+"InterpBodyBand",
+"InterpBodyBand",
+"sinf",
+"cosf",
+"sinf",
+"cosf",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"CWorld::GetBodyTint",
+"CImVector::CImVector",
+"TextureGetGxTex",
+"GxRsSet",
+"GxPrimLockVertexPtrs",
+"GxDrawLockedElements",
+"GxPrimUnlockVertexPtrs"
+],
+"strings": [],
+"consts": [
+"0",
+"0.01f",
+"0.0f",
+"0.5f",
+"0xFF",
+"1",
+"1.0f",
+"2",
+"255.0f",
+"3",
+"4",
+"5",
+"6"
+],
+"branches": 8,
+"stub": false,
+"lines": 63,
+"refs": [],
+"line": 360
+},
+"SkyBodiesRender": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"CStatus::CStatus",
+"CGxTexFlags::CGxTexFlags",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"__acrt_iob_func",
+"fprintf",
+"CWorld::GetDayProgress",
+"CWorld::GetCameraDir",
+"C3Vector::C3Vector",
+"sqrtf",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"GxRsSet",
+"DrawSkyBody",
+"DrawSkyBody",
+"DrawSkyBody",
+"DrawGlare",
+"DrawGlare"
+],
+"strings": [
+"MISSING",
+"SkyBodies: sun %s moon %s moon02 %s sunGlare %s moonGlare %s\n",
+"Textures\\moon.blp",
+"Textures\\moon02.blp",
+"Textures\\moonGlare.blp",
+"Textures\\sunCenter.blp",
+"Textures\\sunGlare.blp",
+"ok"
+],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"1.75f",
+"1.7f",
+"1e-4f",
+"2",
+"2.0f",
+"3"
+],
+"branches": 8,
+"stub": false,
+"lines": 56,
+"refs": [],
+"line": 426
+},
+"SkyLerp": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 525
+},
+"SkyRender": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"EnsureShaders",
+"CGxShader::Valid",
+"CGxShader::Valid",
+"BuildSkyDome",
+"CImVector::operator=",
+"CGxTexFlags::CGxTexFlags",
+"TextureCreate",
+"C3Vector::C3Vector",
+"CWorld::GetSkyColor",
+"C3Vector::operator=",
+"CWorld::GetDayProgress",
+"InterpBodyBand",
+"CWorld::GetSkyHighlight",
+"CWorld::GetCameraDir",
+"atan2f",
+"SkyLerp",
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"InterpBodyBand",
+"SkyLerp",
+"C3Vector::operator=",
+"SkyLerp",
+"SkyLerp",
+"C3Vector::operator=",
+"C44Matrix::C44Matrix",
+"GxXformView",
+"C44Matrix::C44Matrix",
+"GxXformProjNative",
+"operator*",
+"C44Matrix::Transpose",
+"GxXformViewport",
+"GxXformSetViewport",
+"GxRsPush",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxShaderConstantsSet",
+"SkyBodiesRender",
+"GxRsSet",
+"TextureGetGxTex",
+"GxRsSet",
+"CWorld::GetSkyboxPath",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
+"GxPrimLockVertexPtrs",
+"GxDrawLockedElements",
+"GxPrimUnlockVertexPtrs",
+"GxRsPop",
+"CWorld::GetM2Scene",
+"CWorld::GetM2Scene",
+"CloudsUpdate",
+"CloudsRender",
+"M2CreateScene",
+"CM2Scene::CreateModel",
+"CM2Model::SetLightingCallback",
+"CM2Model::SetBoneSequence",
+"CM2Model::SetAnimating",
+"CM2Model::SetVisible",
+"CM2Model::SetWorldTransform",
+"M2Array<M2Sequence>::Count",
+"M2Array<M2Sequence>::operator[]",
+"CWorld::GetDayProgress",
+"CM2Scene::AdvanceTime",
+"CM2Scene::Animate",
+"CM2Scene::Draw",
+"CM2Scene::Draw",
+"M2CreateScene",
+"SStrCmpI",
+"CM2Model::DetachFromScene",
+"CM2Model::Release",
+"CM2Scene::CreateModel",
+"CM2Model::SetLightingCallback",
+"CM2Model::SetBoneSequence",
+"CM2Model::SetAnimating",
+"CM2Model::SetVisible",
+"SStrCopy",
+"CM2Model::SetVisible",
+"CM2Model::SetAnimating",
+"CM2Model::SetWorldTransform",
+"CWorld::GetM2Scene",
+"CWorld::GetM2Scene",
+"CM2Scene::AdvanceTime",
+"CM2Scene::Animate",
+"CM2Scene::Draw",
+"CM2Scene::Draw",
+"GxXformSetViewport"
+],
+"strings": [
+"Environments\\Stars\\stars.mdl",
+"c:\\users\\tyler\\runicworld-client\\src\\world\\daynight.cpp"
+],
+"consts": [
+"0",
+"0.001f",
+"0.0f",
+"0.159155f",
+"0.25f",
+"0.7f",
+"0x7FFFFFFF",
+"0xFF",
+"1",
+"1.0f",
+"250",
+"255.0f",
+"4",
+"5",
+"6",
+"6.2831855f"
+],
+"branches": 43,
+"stub": false,
+"lines": 309,
+"refs": [],
+"line": 529
+},
+"SkyWhiteTexture": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 842
+},
+"SkySetCameraState": {
+"files": [
+"src/world/daynight.cpp"
+],
+"callseq": [
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 846
+},
 "Liquid::CVertexData::~CVertexData": {
 "files": [
 "src/world/map/liquidvertexdata.hpp"
@@ -203081,8 +203534,10 @@
 "branches": 0,
 "stub": false,
 "lines": 1,
-"refs": [],
-"line": 99
+"refs": [
+"008a48f0"
+],
+"line": 100
 },
 "Liquid::IMaterial::EnsureShaders": {
 "files": [
@@ -203095,7 +203550,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 103
+"line": 104
 },
 "Liquid::CMaterialSettings::LoadFromDbc": {
 "files": [
@@ -203507,7 +203962,6 @@
 "src/world/map/liquidmaterialsettings.cpp"
 ],
 "callseq": [
-"SysMsgPrintf",
 "Liquid::CMaterialSettings::GetFrame",
 "Liquid::CMaterialSettings::GetFrame",
 "Liquid::CMaterialSettings::GetInt",
@@ -203558,15 +204012,12 @@
 "CGxDevice::Draw",
 "GxRsPop"
 ],
-"strings": [
-"LIQDRAW: calls=%u noInputs=%u noFrame=%u noGeom=%u drawn=%u lastIndices=%u lastPerm=%u"
-],
+"strings": [],
 "consts": [
 "0",
 "1",
 "1.0f",
 "10",
-"120",
 "1250",
 "2",
 "3",
@@ -203576,9 +204027,9 @@
 "8",
 "9"
 ],
-"branches": 8,
+"branches": 7,
 "stub": false,
-"lines": 158,
+"lines": 126,
 "refs": [],
 "line": 616
 },
@@ -203601,7 +204052,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 782
+"line": 750
 },
 "Liquid::CMaterialWaterNoSpec::EnsureShaders": {
 "files": [
@@ -203622,7 +204073,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 795
+"line": 763
 },
 "Liquid::CMaterialMagma::EnsureShaders": {
 "files": [
@@ -203642,7 +204093,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 810
+"line": 778
 },
 "Liquid::CMaterialProcWater::EnsureShaders": {
 "files": [
@@ -203668,7 +204119,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 823
+"line": 791
 },
 "Liquid::CMaterialWater::Draw": {
 "files": [
@@ -203683,7 +204134,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 841
+"line": 809
 },
 "Liquid::CMaterialWaterNoSpec::Draw": {
 "files": [
@@ -203698,7 +204149,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 849
+"line": 817
 },
 "Liquid::CMaterialMagma::Draw": {
 "files": [
@@ -203716,7 +204167,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 857
+"line": 825
 },
 "Liquid::CMaterialProcWater::Draw": {
 "files": [
@@ -203731,7 +204182,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 870
+"line": 838
 },
 "Liquid::GetMaterial": {
 "files": [
@@ -203766,7 +204217,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 884
+"line": 852
 },
 "Liquid::ReleaseMaterials": {
 "files": [
@@ -203785,7 +204236,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 951
+"line": 919
 },
 "Liquid::ReleaseMaterialSettings": {
 "files": [
@@ -203817,7 +204268,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 962
+"line": 930
 },
 "Liquid::IGeomFactory::~IGeomFactory": {
 "files": [
@@ -206514,43 +206965,6 @@
 "lines": 25,
 "refs": [],
 "line": 2099
-},
-"EnsureShaders": {
-"files": [
-"src/world/terrain.cpp"
-],
-"callseq": [
-"CGxDevice::ShaderCreate",
-"CGxDevice::ShaderCreate",
-"MakeRawShader",
-"MakeRawShader",
-"MakeRawShader",
-"MakeRawShader",
-"MakeArbShader",
-"MakeArbShader",
-"MakeArbShader",
-"MakeArbShader",
-"SysMsgPrintf"
-],
-"strings": [
-"MISSING",
-"Shaders\\Pixel",
-"Shaders\\Vertex",
-"Terrain: api %d shaders vs %s ps %s blob %s detail %s -> %s",
-"UI",
-"fallback",
-"ok",
-"shaded"
-],
-"consts": [
-"1",
-"2"
-],
-"branches": 9,
-"stub": false,
-"lines": 45,
-"refs": [],
-"line": 2125
 },
 "BoxInPlanes": {
 "files": [
