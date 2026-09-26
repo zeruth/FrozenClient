@@ -1,29 +1,29 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 03:02 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-26 03:12 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
 
 | | functions | code bytes |
 |---|---:|---:|
-| reference (non-thunk) | 26958 | 5.35M |
-| mapped to a frozen function | 4354 (=) (16.2%) | 915.3k (16.7%) |
-| &nbsp;&nbsp;ported | 3673 (=) | 736.5k |
+| reference (non-thunk) | 26956 | 5.35M |
+| mapped to a frozen function | 4356 (=) (16.2%) | 916.6k (16.7%) |
+| &nbsp;&nbsp;ported | 3675 (=) | 737.7k |
 | &nbsp;&nbsp;stub (unimplemented body) | 578 (=) | 125.0k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2225 (=) (8.3%)** | **288.4k (5.3%)** |
-| unmapped | 22604 | 4.46M |
-| world spine (reachable from OnFrameRender) | 5384, mapped 1415 (=) (26.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5651, mapped 1433 (=) (25.4%) | |
-| **render surface** (the modules that draw the world) | **4523, mapped 848 (=) (18.7%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **2227 (=) (8.3%)** | **289.3k (5.3%)** |
+| unmapped | 22600 | 4.46M |
+| world spine (reachable from OnFrameRender) | 5382, mapped 1417 (=) (26.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5649, mapped 1435 (=) (25.4%) | |
+| **render surface** (the modules that draw the world) | **4521, mapped 849 (=) (18.8%)** | |
 | frozen functions (src/, from PDB + source) | 13798, stubs 1700 | |
 
-Match evidence: annotated 2153, callgraph 239, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2155, callgraph 239, callorder 111, cvar 32, handler 29, order 140, override 307, sticky 17, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 02:55 -- mapped 4354, ported 3673, stub 578, spine mapped 1415.
+Previous run: 2026-09-26 03:11 -- mapped 4356, ported 3675, stub 578, spine mapped 1417.
 
 ## Lua API coverage (binding tables)
 
@@ -148,7 +148,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 179 | 63.0k | 63 (35.2%) | 39.1% | 3 | 4 | 110 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
-| InputControl.cpp | 284 | 61.3k | 41 (14.4%) | 19.4% | 11 | 0 | 113 |
+| InputControl.cpp | 284 | 61.3k | 42 (14.8%) | 20.0% | 11 | 0 | 113 |
 | SoundEngine.cpp | 406 | 59.7k | 33 (8.1%) | 18.7% | 0 | 0 | 58 |
 | SEvt.cpp | 242 | 59.1k | 40 (16.5%) | 11.2% | 8 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -173,7 +173,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | TextureCache.cpp | 250 | 38.4k | 36 (14.4%) | 15.0% | 2 | 0 | 77 |
 | GameObject_C.cpp | 285 | 38.0k | 16 (5.6%) | 3.0% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 155 | 37.1k | 13 (8.4%) | 11.1% | 0 | 0 | 85 |
-| MapChunk.cpp | 128 | 37.0k | 57 (44.5%) | 51.1% | 0 | 1 | 84 |
+| MapChunk.cpp | 126 | 36.5k | 58 (46.0%) | 54.1% | 0 | 1 | 82 |
 | ConsoleVar.cpp | 242 | 36.1k | 96 (39.7%) | 35.0% | 2 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 9 | 1 | 4 |
 | TextureBlob.cpp | 212 | 34.4k | 53 (25.0%) | 33.0% | 0 | 0 | 83 |
@@ -726,9 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-25 23:55 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
-| 2026-09-25 23:56 | 4332 (16.1%) | 2210 (8.2%) | 578 | 1397/5385 | 2924/2964 | 1380 |
-| 2026-09-25 23:59 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-25 23:59 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-26 00:00 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
 | 2026-09-26 00:12 | 4333 (16.1%) | 2210 (8.2%) | 578 | 1398/5385 | 2924/2964 | 1380 |
@@ -751,6 +748,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 02:54 | 4354 (16.2%) | 2225 (8.3%) | 578 | 1415/5384 | 2924/2964 | 1380 |
 | 2026-09-26 02:55 | 4354 (16.2%) | 2225 (8.3%) | 578 | 1415/5384 | 2924/2964 | 1380 |
 | 2026-09-26 03:02 | 4354 (16.2%) | 2225 (8.3%) | 578 | 1415/5384 | 2924/2964 | 1380 |
+| 2026-09-26 03:04 | 4354 (16.2%) | 2225 (8.3%) | 578 | 1415/5384 | 2924/2964 | 1380 |
+| 2026-09-26 03:11 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
+| 2026-09-26 03:12 | 4356 (16.2%) | 2227 (8.3%) | 578 | 1417/5382 | 2924/2964 | 1380 |
 
 ## How to move a row
 

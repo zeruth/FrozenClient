@@ -38,7 +38,13 @@ class CWFrustum {
         TSLink<CWFrustum> link;             // +0xf4
 
         // Member functions
-        CWFrustum() = default;
+        // The reference has a real constructor for this and calls it at all ten of its
+        // construction sites: six planes set to a (0, 0, 1) normal with d 0, and every other byte
+        // zeroed. Alloc() hands out recycled records from a free list, so without it a fresh
+        // frustum carries whatever the last user left. Nothing today depends on that -- the one
+        // Alloc() site assigns the whole object immediately -- so this is the reference's behaviour
+        // and a closed hole rather than a fix. ref: FUN_00601650
+        CWFrustum();
         explicit CWFrustum(const C3Vector* corners);
         void SetCorners(const C3Vector* corners);
         void ComputePlanes();

@@ -1973,6 +1973,7 @@ addr	how	frozen	evidence
 005fe940	annotated	CGCamera::ClearOverride2D0	tag in src/ui/game/CGCamera.cpp
 005fecb0	annotated	CAaBox::Scale	tag in lib/typhoon/tempest/box/CAaBox.cpp
 005fed20	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+00601650	annotated	CWFrustum::CWFrustum	tag in src/world/CWFrustum.cpp
 006018a0	order	Script_Stub_VehicleCameraZoomIn	binding table name Script_Stub_VehicleCameraZoomIn, in definition order in src/ui/game/miscscriptstubs.cpp
 006018b0	order	Script_Stub_VehicleCameraZoomOut	binding table name Script_Stub_VehicleCameraZoomOut, in definition order in src/ui/game/miscscriptstubs.cpp
 006081f0	table	Script_GetTime	binding "GetTime" in s_SystemFunctions ~ table 00ad2184
@@ -3063,6 +3064,7 @@ addr	how	frozen	evidence
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
+007cd4e0	annotated	AddVolume	tag in src/world/map/MapOcclusion.cpp
 007cd850	annotated	BuildVolumes	tag in src/world/map/MapOcclusion.cpp
 007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
@@ -4295,7 +4297,7 @@ addr	how	frozen	evidence
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983e70	annotated	CWFrustum::ComputePlanes	tag in src/world/CWorldScene.cpp
 00983f40	annotated	CWFrustum::Transform	tag in src/world/CWFrustum.cpp
-00983fe0	annotated	CWFrustum::CWFrustum	tag in src/world/CWorldScene.cpp
+00983fe0	annotated	CWFrustum::CWFrustum	tag in src/world/CWFrustum.cpp
 00984240	annotated	CWFrustum::SetCorners	tag in src/world/CWorldScene.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp

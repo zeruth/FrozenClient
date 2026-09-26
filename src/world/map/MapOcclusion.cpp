@@ -52,6 +52,7 @@ static void BuildBoxes() {
 // The table's polygons do NOT share a winding -- fifteen wind one way, fifteen the other and
 // thirty-two are vertical -- so the sign of a plane depends on the volume it came from. The
 // order below is the reference's own, taken off the call site's instructions.
+// ref: FUN_007cd4e0
 static void AddVolume(const C3Vector& camera, const float* vertices, uint32_t count) {
     CWorldScene::OcclusionVolume volume;
 

@@ -191414,16 +191414,32 @@
 },
 "CWFrustum::CWFrustum": {
 "files": [
-"src/world/cwfrustum.hpp"
+"src/world/cwfrustum.cpp",
+"src/world/cworldscene.cpp"
 ],
-"callseq": [],
+"callseq": [
+"memset",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"CWFrustum::ComputePlanes"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
+"consts": [
+"0",
+"0.0f",
+"1.0f",
+"6",
+"8",
+"9"
+],
+"branches": 6,
 "stub": false,
-"lines": 1,
+"lines": 38,
 "refs": [],
-"line": 41
+"line": 13
 },
 "CWFrustum::Alloc": {
 "files": [
@@ -191443,7 +191459,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 11
+"line": 32
 },
 "CWFrustum::Free": {
 "files": [
@@ -191458,7 +191474,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 29
+"line": 50
 },
 "CWFrustum::Transform": {
 "files": [
@@ -191482,7 +191498,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 38
+"line": 59
 },
 "InterpBandColor": {
 "files": [
@@ -203968,7 +203984,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 55
+"line": 56
 },
 "MapOcclusion::BuildVolumes": {
 "files": [
@@ -203992,7 +204008,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 78
+"line": 79
 },
 "VBBList::InitializeLists": {
 "files": [

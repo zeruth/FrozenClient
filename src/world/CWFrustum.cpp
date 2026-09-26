@@ -1,4 +1,5 @@
 #include "world/CWFrustum.hpp"
+#include <cstring>
 
 #include <storm/Memory.hpp>
 #include <tempest/Vector.hpp>
@@ -8,6 +9,26 @@
 static STORM_EXPLICIT_LIST(CWFrustum, link) s_freeFrustums;
 
 // ref: FUN_007983b0
+// ref: FUN_00601650
+CWFrustum::CWFrustum() {
+    // A (0, 0, 1) normal with distance 0 -- the reference writes 1.0 into the third float of each
+    // plane and leaves the rest zero, which is this.
+    for (int32_t i = 0; i < 6; i++) {
+        this->planes[i].n.x = 0.0f;
+        this->planes[i].n.y = 0.0f;
+        this->planes[i].n.z = 1.0f;
+        this->planes[i].d = 0.0f;
+    }
+
+    for (int32_t i = 0; i < 8; i++) {
+        this->corners[i].x = 0.0f;
+        this->corners[i].y = 0.0f;
+        this->corners[i].z = 0.0f;
+    }
+
+    memset(this->unknownC0, 0, sizeof(this->unknownC0));
+}
+
 CWFrustum* CWFrustum::Alloc() {
     auto frustum = s_freeFrustums.Head();
 

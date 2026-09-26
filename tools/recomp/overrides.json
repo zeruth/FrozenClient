@@ -3081,5 +3081,17 @@
   "008a2240": {
     "status": "ported",
     "note": "Liquid::Draw, the two-bucket dispatch. MEASUREMENT CAVEAT, not a port problem. This address and 0x007b36b0 both bind to a frozen function the tool records as plain `Draw`, because each is written bare inside its own namespace (namespace Liquid and namespace DetailDoodad) and several of recomp.py's matchers key on the last name component. The PDB itself distinguishes them correctly -- `Liquid::Draw` and `DetailDoodad::Draw` are separate S_GPROC32 entries -- so both LINKS are right; what is unreliable is which body the fidelity and call-sequence comparison used for each, and the \"carries 2 tags\" warning --diff prints for them. Fixing it means qualifying the name the tag resolver produces, which touches matching everywhere and wants its own change."
+  },
+  "007cd250": {
+    "status": "excluded",
+    "note": "TSGrowableArray<...>::SetCount for the 16-byte occlusion PLANE records -- it grows the buffer if needed and initialises each new element to {0, 0, 1.0f, 0}, which is a C4Plane with a (0,0,1) normal. BuildVolumes calls it with 0, so only the truncation path runs. frozen reaches it as CWorldScene::s_occlusionPlanes.SetCount(0), a template member that inlines, so there is no function in the PDB to bind."
+  },
+  "007cd470": {
+    "status": "excluded",
+    "note": "The same SetCount for the 8-byte occlusion VOLUME records (two dwords each, zeroed), reached in frozen as CWorldScene::s_occlusionVolumes.SetCount(0). Same reason: the template member inlines and leaves nothing to bind. The pair of them is all FUN_007cd910 does."
+  },
+  "007ccd20": {
+    "status": "diverged",
+    "note": "Builds the bounding box of each of the 62 occlusion volumes by sweeping its vertices, once, behind a done flag -- the boxes live zeroed in the reference's own image at 0x00af0048 with a 10-float stride, so it fills the table in place. frozen keeps them in a separate s_boxes array beside the generated table, because MapOcclusionTable.hpp is const data, and its BuildBoxes is deliberately marked `Part of ref:` rather than tagged. Left that way: the reference body continues past the box sweep and what follows is not established."
   }
 }

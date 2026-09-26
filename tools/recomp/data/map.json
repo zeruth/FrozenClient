@@ -31464,6 +31464,24 @@
   "refSize": 84,
   "status": "ported"
  },
+ "00601650": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWFrustum.cpp",
+   "src/world/CWorldScene.cpp",
+   "src/world/cwfrustum.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWFrustum::CWFrustum",
+  "frozenSize": 290,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 389,
+  "status": "ported"
+ },
  "006018a0": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -44287,7 +44305,7 @@
    "src/world/map/mapocclusion.cpp"
   ],
   "frozen": "MapOcclusion::BuildVolumes",
-  "frozenSize": 376,
+  "frozenSize": 320,
   "how": "callgraph",
   "module": "WorldParam.cpp",
   "refSize": 806,
@@ -44585,13 +44603,13 @@
   "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 1.0,
   "files": [
    "src/world/CWFrustum.cpp",
    "src/world/cwfrustum.cpp"
   ],
   "frozen": "CWFrustum::Alloc",
-  "frozenSize": 259,
+  "frozenSize": 153,
   "how": "override",
   "module": "WorldParam.cpp",
   "refSize": 230,
@@ -48903,11 +48921,26 @@
   "refSize": 403,
   "status": "ported"
  },
+ "007cd4e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.125,
+  "files": [
+   "src/world/map/MapOcclusion.cpp"
+  ],
+  "frozen": "AddVolume",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 857,
+  "status": "ported"
+ },
  "007cd850": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.4,
   "files": [
    "src/world/map/MapOcclusion.cpp"
   ],
@@ -68310,16 +68343,18 @@
   "status": "ported"
  },
  "00983fe0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
+   "src/world/CWFrustum.cpp",
    "src/world/CWorldScene.cpp",
-   "src/world/cwfrustum.hpp"
+   "src/world/cwfrustum.cpp",
+   "src/world/cworldscene.cpp"
   ],
   "frozen": "CWFrustum::CWFrustum",
-  "frozenSize": 133,
+  "frozenSize": 290,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 599,
