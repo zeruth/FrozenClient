@@ -9,6 +9,7 @@
 #include <storm/Hash.hpp>
 #include <storm/List.hpp>
 
+class CEffect;
 class CM2Model;
 
 class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID> {
@@ -18,6 +19,11 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         uint32_t m_disableTimeMs;
         // TODO
         CM2Model* m_model;
+        // Head of the object's effect list (reference +0xa8), linked through CEffect::m_linkNext.
+        // Every spell visual playing on the object hangs here; several of them can ask the object to
+        // hold a particular animation while they run. Nothing links one on yet, so this is always
+        // null and each walk over it finds nothing.
+        CEffect* m_effects = nullptr;
         // TODO
         HWORLDOBJECT m_worldObject;
         uint32_t m_lockCount        : 16;

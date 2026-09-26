@@ -20,7 +20,10 @@ class CreatureSoundDataRec;
 class UnitBloodLevelsRec;
 
 class FactionTemplateRec;
+class CVehicle_C;
 class CVehiclePassenger_C;
+class VehicleRec;
+class VehicleSeatRec;
 struct M2BoneSequenceState;
 
 class CGUnit_C : public CGObject_C, public CGUnit {
@@ -189,6 +192,54 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void SetBoneSequenceSpeed(CM2Model* model, uint32_t boneId, float speed,
                                   int32_t fromPassenger);
 
+        // The vehicle layer, as far as the animation code needs it.
+
+        // ref: FUN_004f6210
+        // The Vehicle.dbc row of the vehicle this unit IS, or null when it is not one (or is one
+        // whose row never arrived).
+        const VehicleRec* GetVehicleRec() const;
+
+        // ref: FUN_004f6250
+        // The unit is aboard a vehicle, past entering and not yet leaving.
+        bool IsRidingVehicle() const;
+
+        // ref: FUN_005140c0
+        // The seat this unit is riding in, or null when it is not riding.
+        const VehicleSeatRec* GetVehicleSeatRec() const;
+
+        // ref: FUN_0074bb60
+        // Called on the VEHICLE: which of the seat's two "animate the rider while leaving" bits
+        // applies, chosen by the vehicle's own move-flags-2 bit 0x40. Zero when neither is set.
+        uint32_t SeatAllowsExitAnimation(const VehicleSeatRec* seat) const;
+
+        // ref: FUN_0071af90
+        // The unit is swinging at something.
+        bool IsAttacking() const;
+
+        // ref: FUN_0071afb0
+        // IsAttacking, or the unit's pet is in combat (UNIT_FIELD_FLAGS 0x800).
+        bool IsAttackingOrPetInCombat() const;
+
+        // ref: FUN_0071afe0
+        // Clears bit 0x4000 on every effect playing on the unit.
+        void ClearEffectFlag4000();
+
+        // ref: FUN_0071f560
+        // The unit is dead, feigning, in the dead pose, or running an effect whose visual kit plays
+        // a death animation. The animation selector refuses anything but a death animation for a
+        // unit in this state.
+        bool IsDeadOrFeigning() const;
+
+        // ref: FUN_0071e400
+        // Lets a spell visual override the sequences the selector just worked out: the first effect
+        // still running that asks to drive the animation replaces each of the three with its visual
+        // kit's, resolved against the model it plays on. False when no effect wants to.
+        bool ApplyEffectAnimation(const M2BoneSequenceState* mount, const M2BoneSequenceState* body,
+                                  const M2BoneSequenceState* upper, int32_t hasUpper,
+                                  M2BoneSequenceState* mountOut, M2BoneSequenceState* bodyOut,
+                                  M2BoneSequenceState* upperOut, int32_t* bodyKeepVariation,
+                                  int32_t* upperKeepVariation);
+
         // ref: FUN_00737ef0
         // Put one of the three bone sequences a unit animates through onto its model: fix up the
         // variation the state carries, note what class of animation is now playing in m_animFlags,
@@ -262,6 +313,9 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // caller asked for. The rest are written from a dozen places in Unit_C.cpp and are not
         // identified yet.
         uint32_t m_stateFlags = 0;
+        // The vehicle this unit IS, when it is one (reference +0xf5c). Null for everything else --
+        // and always, for now, since nothing creates one.
+        CVehicle_C* m_vehicle = nullptr;
         // The unit's ride, while it is aboard a vehicle (reference +0xf60). Null means not riding,
         // which is always, until something creates one.
         CVehiclePassenger_C* m_vehiclePassenger = nullptr;

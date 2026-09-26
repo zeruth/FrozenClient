@@ -4,6 +4,10 @@
 #include "util/GUID.hpp"
 #include <cstdint>
 
+// Vehicle.dbc. Not loaded yet -- the reference keeps the row on every CVehicle_C and reads its flags
+// and its eight seat ids out of it, and nothing ported does either, so the type stays a name.
+class VehicleRec;
+
 // The reference's Vehicle_C.cpp object. Only the state its ported functions touch is declared;
 // nothing creates one yet.
 class CVehicle_C {
@@ -16,6 +20,9 @@ class CVehicle_C {
         };
 
         // Public member variables
+        // ref +0x0c, the Vehicle.dbc row. Several checks gate on it being present at all, which is
+        // what the accessors on CGUnit_C return.
+        const VehicleRec* m_rec = nullptr;
         uint32_t m_flags[2] = {};   // ref +0x58, bits 0..0x22
         Slot m_slots[16] = {};      // ref +0x60, free when guid is 0
         uint8_t m_stateBits = 0;    // ref +0x16c

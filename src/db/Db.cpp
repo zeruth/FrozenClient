@@ -27,6 +27,7 @@ WowClientDB<SkillLineAbilityRec> g_skillLineAbilityDB;
 WowClientDB<SpellVisualRec> g_spellVisualDB;
 WowClientDB<SpellVisualKitRec> g_spellVisualKitDB;
 WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
+WowClientDB<VehicleSeatRec> g_vehicleSeatDB;
 WowClientDB<LightRec> g_lightDB;
 WowClientDB<LightParamsRec> g_lightParamsDB;
 WowClientDB<LightSkyboxRec> g_lightSkyboxDB;
@@ -93,6 +94,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_spellVisualDB, __FILE__, __LINE__);
     loadFn(&g_spellVisualKitDB, __FILE__, __LINE__);
     loadFn(&g_spellVisualEffectNameDB, __FILE__, __LINE__);
+    loadFn(&g_vehicleSeatDB, __FILE__, __LINE__);
     loadFn(&g_lightDB, __FILE__, __LINE__);
     loadFn(&g_lightParamsDB, __FILE__, __LINE__);
     loadFn(&g_lightSkyboxDB, __FILE__, __LINE__);

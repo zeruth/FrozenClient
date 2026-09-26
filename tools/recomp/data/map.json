@@ -15246,6 +15246,38 @@
   "refSize": 34,
   "status": "ported"
  },
+ "004f6210": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetVehicleRec",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 17,
+  "status": "ported"
+ },
+ "004f6250": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::IsRidingVehicle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
  "004f6650": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -17290,6 +17322,22 @@
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 33,
+  "status": "ported"
+ },
+ "005140c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetVehicleSeatRec",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameUI.cpp",
+  "refSize": 17,
   "status": "ported"
  },
  "00514410": {
@@ -40131,6 +40179,54 @@
   "refSize": 26,
   "status": "ported"
  },
+ "0071af90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::IsAttacking",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 23,
+  "status": "ported"
+ },
+ "0071afb0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::IsAttackingOrPetInCombat",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "0071afe0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::ClearEffectFlag4000",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "0071b770": {
   "branchRatio": 0.143,
   "constOverlap": 0.4,
@@ -40723,6 +40819,22 @@
   "refSize": 138,
   "status": "ported"
  },
+ "0071e400": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.071,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::ApplyEffectAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 414,
+  "status": "ported"
+ },
  "0071ed80": {
   "branchRatio": 0.556,
   "constOverlap": 0.0,
@@ -40753,6 +40865,22 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 133,
+  "status": "ported"
+ },
+ "0071f560": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::IsDeadOrFeigning",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 93,
   "status": "ported"
  },
  "0071f770": {
@@ -40883,11 +41011,27 @@
   "refSize": 648,
   "status": "ported"
  },
+ "007385c0": {
+  "branchRatio": 0.016,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::GetSequenceDuration",
+  "frozenSize": 100,
+  "how": "callgraph",
+  "module": "Unit_C.cpp",
+  "refSize": 4083,
+  "status": "ported"
+ },
  "0073ab90": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/object/client/CGUnit_C.cpp",
    "src/object/client/cgunit_c.cpp"
@@ -40913,6 +41057,36 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 11,
+  "status": "ported"
+ },
+ "00747b20": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CVehiclePassenger_C.cpp"
+  ],
+  "frozen": "CVehiclePassenger_C::GetSeatAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "UnitSound_C.cpp",
+  "refSize": 146,
+  "status": "ported"
+ },
+ "00747bd0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CVehiclePassenger_C.cpp"
+  ],
+  "frozen": "CVehiclePassenger_C::GetSeatUpperAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "UnitSound_C.cpp",
+  "refSize": 53,
   "status": "ported"
  },
  "007487e0": {
@@ -40944,6 +41118,22 @@
   "how": "annotated",
   "module": "UnitVehicle_C.cpp",
   "refSize": 11,
+  "status": "ported"
+ },
+ "0074bb60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::SeatAllowsExitAnimation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "UnitVehicle_C.cpp",
+  "refSize": 35,
   "status": "ported"
  },
  "0074d0d0": {
@@ -62878,6 +63068,21 @@
    "src/db/rec/unitbloodlevelsrec.cpp"
   ],
   "frozen": "UnitBloodLevelsRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008bad50": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/VehicleSeatRec.cpp"
+  ],
+  "frozen": "VehicleSeatRec::GetFilename",
   "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",

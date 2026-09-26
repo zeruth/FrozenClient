@@ -5,6 +5,8 @@
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
 #include "object/client/NameCache.hpp"
+#include "object/client/CEffect.hpp"
+#include "object/client/CVehicle_C.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
@@ -2440,4 +2442,155 @@ void CGUnit_C::ApplySequence(M2BoneSequenceState* state, uint32_t currentAnimID,
 
         this->m_animFlags = flags | 0x2000;
     }
+}
+
+// ref: FUN_0071af90
+bool CGUnit_C::IsAttacking() const {
+    return this->m_attackTarget != 0;
+}
+
+// ref: FUN_0071afb0
+bool CGUnit_C::IsAttackingOrPetInCombat() const {
+    if (!(this->m_unit->flags & 0x800) && this->m_attackTarget == 0) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_0071afe0
+void CGUnit_C::ClearEffectFlag4000() {
+    for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+        effect->m_flags &= ~0x4000;
+    }
+}
+
+// ref: FUN_0071f560
+bool CGUnit_C::IsDeadOrFeigning() const {
+    // The reference reaches the stand state through a virtual (vtable +0x138), which CGPlayer_C
+    // overrides at FUN_006d64e0 to prefer the locally predicted state for the active player. frozen
+    // has no such accessor yet, so this reads the descriptor byte the base version returns.
+    int32_t standState = this->m_unit->bytes1 & 0xFF;
+
+    if (this->m_unit->health > 0 && !(this->m_unit->flags2 & 0x1) && standState != 7) {
+        // Alive, not feigning, not in the dead pose -- unless one of its effects is playing a death
+        // animation, in which case treat it as dead so nothing overrides that.
+        for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+            if (effect->m_kit && IsDeathAnimation(effect->m_kit->m_animID)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_0071e400
+bool CGUnit_C::ApplyEffectAnimation(const M2BoneSequenceState* mount, const M2BoneSequenceState* body,
+                                    const M2BoneSequenceState* upper, int32_t hasUpper,
+                                    M2BoneSequenceState* mountOut, M2BoneSequenceState* bodyOut,
+                                    M2BoneSequenceState* upperOut, int32_t* bodyKeepVariation,
+                                    int32_t* upperKeepVariation) {
+    // The first effect still running that wants to drive the animation wins.
+    CEffect* effect = this->m_effects;
+
+    while (true) {
+        if (!effect) {
+            return false;
+        }
+
+        CEffect* next = effect->m_linkNext;
+
+        if (!(effect->m_flags & 0x800000) && effect->m_kit && effect->m_kit->m_animID >= 1
+            && (effect->m_flags & 0x1000)) {
+            break;
+        }
+
+        effect = next;
+    }
+
+    int32_t animID = effect->m_kit->m_animID;
+    // An effect whose animation is already model-ready skips the fallback walk.
+    bool resolved = (effect->m_flags & 0x1000000) != 0;
+
+    if (mount && mountOut) {
+        *mountOut = *mount;
+
+        if (static_cast<int32_t>(mountOut->uint90) != animID) {
+            mountOut->currentTime = 0;
+        }
+
+        mountOut->uint90 = resolved
+            ? static_cast<uint32_t>(animID)
+            : this->ResolveAnimation(static_cast<uint32_t>(animID), this->m_mountModel);
+        mountOut->uint94 = 0xFFFFFFFF;
+    }
+
+    if (body && bodyOut) {
+        *bodyOut = *body;
+
+        if (static_cast<int32_t>(bodyOut->uint90) != animID) {
+            bodyOut->currentTime = 0;
+        }
+
+        bodyOut->uint90 = resolved
+            ? static_cast<uint32_t>(animID)
+            : this->ResolveAnimation(static_cast<uint32_t>(animID), this->m_model);
+        bodyOut->uint94 = 0xFFFFFFFF;
+
+        if (bodyKeepVariation) {
+            *bodyKeepVariation = 0;
+        }
+    }
+
+    if (hasUpper && upper && upperOut) {
+        *upperOut = *upper;
+
+        if (static_cast<int32_t>(upperOut->uint90) != animID) {
+            upperOut->currentTime = 0;
+        }
+
+        upperOut->uint90 = resolved
+            ? static_cast<uint32_t>(animID)
+            : this->ResolveAnimation(static_cast<uint32_t>(animID), this->m_model);
+        upperOut->uint94 = 0xFFFFFFFF;
+
+        if (upperKeepVariation) {
+            *upperKeepVariation = 0;
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_004f6210
+const VehicleRec* CGUnit_C::GetVehicleRec() const {
+    if (this->m_vehicle) {
+        return this->m_vehicle->m_rec;
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_004f6250
+bool CGUnit_C::IsRidingVehicle() const {
+    return this->m_vehiclePassenger && this->m_vehiclePassenger->m_state == 3;
+}
+
+// ref: FUN_005140c0
+const VehicleSeatRec* CGUnit_C::GetVehicleSeatRec() const {
+    if (this->m_vehiclePassenger) {
+        return this->m_vehiclePassenger->m_seat;
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0074bb60
+uint32_t CGUnit_C::SeatAllowsExitAnimation(const VehicleSeatRec* seat) const {
+    uint32_t mask = (this->m_localMove.GetMoveFlags2() & 0x40) ? 0x8 : 0x8000;
+
+    return static_cast<uint32_t>(seat->m_flags) & mask;
 }

@@ -950,6 +950,8 @@ addr	how	frozen	evidence
 004f5f00	annotated	CGUnit::HasCharmer	tag in src/object/client/CGUnit.cpp
 004f5f20	annotated	CGUnit::GetCharmerOrCreator	tag in src/object/client/CGUnit.cpp
 004f5f80	annotated	CGUnit::IsPetitionerAndTabardDesigner	tag in src/object/client/CGUnit.cpp
+004f6210	annotated	CGUnit_C::GetVehicleRec	tag in src/object/client/CGUnit_C.cpp
+004f6250	annotated	CGUnit_C::IsRidingVehicle	tag in src/object/client/CGUnit_C.cpp
 004f6650	callgraph	CWorld::GetCameraPos	only unmatched callee of 007e2d60=DecalBuildTransforms
 004f7250	annotated	CGUnit::IsControlledBy	tag in src/object/client/CGUnit.cpp
 004f7310	annotated	CGPlayer_C::GetFarsightObject	tag in src/object/client/CGPlayer_C.cpp
@@ -1077,6 +1079,7 @@ addr	how	frozen	evidence
 00513df0	annotated	CGGameUI::GetLastError	tag in src/ui/game/CGGameUI.cpp
 00513e40	annotated	MirrorTimerIndexFromName	tag in src/ui/game/GameScript.cpp
 00513f20	annotated	GetMirrorTimer	tag in src/ui/game/GameScript.cpp
+005140c0	annotated	CGUnit_C::GetVehicleSeatRec	tag in src/object/client/CGUnit_C.cpp
 00514410	annotated	CGTooltip::GetObjectType	tag in src/ui/game/CGTooltip.cpp
 00514430	table	Script_IsModifierKeyDown	binding "IsModifierKeyDown" in s_ScriptFunctions ~ table 00ac80b0
 005144c0	table	Script_IsLeftShiftKeyDown	binding "IsLeftShiftKeyDown" in s_ScriptFunctions ~ table 00ac80b0
@@ -2516,6 +2519,9 @@ addr	how	frozen	evidence
 00718b70	annotated	CGUnit_C::GetControllingPlayer	tag in src/object/client/CGUnit_C.cpp
 00719950	annotated	CGUnit_C::GetSubName	tag in src/object/client/CGUnit_C.cpp
 0071af70	annotated	CGUnit_C::GetShapeshiftForm	tag in src/object/client/CGUnit_C.cpp
+0071af90	annotated	CGUnit_C::IsAttacking	tag in src/object/client/CGUnit_C.cpp
+0071afb0	annotated	CGUnit_C::IsAttackingOrPetInCombat	tag in src/object/client/CGUnit_C.cpp
+0071afe0	annotated	CGUnit_C::ClearEffectFlag4000	tag in src/object/client/CGUnit_C.cpp
 0071b770	annotated	CGUnit_C::GetBasePower	tag in src/object/client/CGUnit_C.cpp
 0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
 0071b810	annotated	CGUnit_C::CanFly	tag in src/object/client/CGUnit_C.cpp
@@ -2553,8 +2559,10 @@ addr	how	frozen	evidence
 0071dde0	annotated	IsDeathAnimation	tag in src/object/client/CGUnit_C.cpp
 0071de50	annotated	IsAnimationBehavior133To134	tag in src/object/client/CGUnit_C.cpp
 0071df30	annotated	CGUnit_C::ReplaceIdleWithHover	tag in src/object/client/CGUnit_C.cpp
+0071e400	annotated	CGUnit_C::ApplyEffectAnimation	tag in src/object/client/CGUnit_C.cpp
 0071ed80	annotated	CGUnit_C::GetShadowBox	tag in src/object/client/CGUnit_C.cpp
 0071f300	annotated	CGUnit_C::GetCreatureType	tag in src/object/client/CGUnit_C.cpp
+0071f560	annotated	CGUnit_C::IsDeadOrFeigning	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 00721ca0	override	CGUnit_C::IsInNonStanceForm	
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
@@ -2563,10 +2571,14 @@ addr	how	frozen	evidence
 00735a60	override	CGUnit_C::UnsetBoneSequence	
 00735cc0	override	CGUnit_C::SetBoneSequenceSpeed	
 00737ef0	annotated	CGUnit_C::ApplySequence	tag in src/object/client/CGUnit_C.cpp
+007385c0	callgraph	CGUnit_C::GetSequenceDuration	only unmatched callee of 0073ab90=CGUnit_C::PlayEmote
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
 00743320	annotated	CGUnit_C::SetFlag21	tag in src/object/client/CGUnit_C.cpp
+00747b20	annotated	CVehiclePassenger_C::GetSeatAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
+00747bd0	annotated	CVehiclePassenger_C::GetSeatUpperAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
 007487e0	annotated	CVehiclePassenger_C::IsRidingLiveVehicle	tag in src/object/client/CVehiclePassenger_C.cpp
 0074b9a0	annotated	CGUnit_C::HasMoveFlags2Bit0	tag in src/object/client/CGUnit_C.cpp
+0074bb60	annotated	CGUnit_C::SeatAllowsExitAnimation	tag in src/object/client/CGUnit_C.cpp
 0074d0d0	annotated	GUIDToHexString	tag in src/util/guid/GUIDString.cpp
 0074d1a0	annotated	CombatLogObjectFlagsMatch	tag in src/object/client/UnitCombatLog_C.cpp
 0074d280	annotated	CombatLogAppendHex	tag in src/object/client/UnitCombatLog_C.cpp
@@ -3957,6 +3969,7 @@ addr	how	frozen	evidence
 008b9110	string	SpellVisualKitRec::GetFilename	unique "DBFilesClient\SpellVisualKit.dbc"
 008b93e0	string	SpellVisualRec::GetFilename	unique "DBFilesClient\SpellVisual.dbc"
 008ba740	string	UnitBloodLevelsRec::GetFilename	unique "DBFilesClient\UnitBloodLevels.dbc"
+008bad50	string	VehicleSeatRec::GetFilename	unique "DBFilesClient\VehicleSeat.dbc"
 008bb6f0	string	WeatherRec::GetFilename	unique "DBFilesClient\Weather.dbc"
 008bcb50	string	NamesProfanityRec::GetFilename	unique "DBFilesClient\NamesProfanity.dbc"
 008bcc00	string	NamesReservedRec::GetFilename	unique "DBFilesClient\NamesReserved.dbc"
