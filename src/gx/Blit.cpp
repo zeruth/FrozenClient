@@ -1,4 +1,5 @@
 #include "gx/Blit.hpp"
+#include "util/Log.hpp"
 #include "util/Unimplemented.hpp"
 #include <algorithm>
 #include <cstring>
@@ -236,9 +237,152 @@ void Blit_Argb4444_Abgr8888(const C2iVector& size, const void* in, uint32_t inSt
 // Implementing Dxt1 to Argb8888 first is worth the most: DXT1 is the commonest encoding in the
 // archives, and Argb8888 is what GetTextureFormats falls back to when the device cannot sample
 // compressed textures -- which is the case the GLES backend cares about.
+// ------------------------------------------------------------------------------------------------
+// DXT1 decoding. The colour maths below is transcribed from the reference; the loop that walks the
+// blocks is not, and the difference is called out where it happens.
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_006ae820
+// The 1/3 and 2/3 blend weights, precomputed so the interpolated endpoints cost two table reads
+// and an add. The reference keeps FOUR tables -- a 32-entry and a 64-entry copy of each weight,
+// for 5-bit and 6-bit channels -- built by one function over the same two formulas. frozen keeps
+// two 64-entry tables instead, because the formulas do not depend on the channel width and a
+// 6-bit table answers every 5-bit question. Same values, half the tables.
+//
+// The +1 is the reference's and is not rounding: it biases the sum so that two endpoints that are
+// equal reproduce themselves exactly after the >> 8.
+static uint16_t s_dxtWeight1_3[64];
+static uint16_t s_dxtWeight2_3[64];
+static int32_t s_dxtWeightsBuilt = 0;
+
+static void BuildDxtWeights() {
+    for (uint32_t i = 0; i < 64; i++) {
+        s_dxtWeight1_3[i] = static_cast<uint16_t>(((i << 8) / 3) + 1);
+        s_dxtWeight2_3[i] = static_cast<uint16_t>(((i << 9) / 3) + 1);
+    }
+
+    s_dxtWeightsBuilt = 1;
+}
+
+// A 5/6/5 colour as ARGB8888, opaque. The reference does this with one expression per endpoint --
+// `(((r | 0xFFFFFFE0) << 9 | g) << 7 | b) * 8` -- where the 0xFFFFFFE0 is not a mask on r but the
+// alpha: shifted left 19 in total it becomes 0xFF000000. Checked against the reference by
+// evaluating it: r=31, g=63, b=31 gives 0xFFF8FCF8, which is what this returns.
+static inline uint32_t Dxt565ToArgb8888(uint32_t r5, uint32_t g6, uint32_t b5) {
+    return 0xFF000000u | (r5 << 19) | (g6 << 10) | (b5 << 3);
+}
+
+// ref: FUN_006aca10
+// A DXT1 block's four colours. The two stored endpoints come first; what follows them depends on
+// their ORDER, which is how DXT1 encodes one bit of "this block has transparency" without a bit:
+// c0 > c1 means four opaque colours, two of them interpolated at thirds, and c0 <= c1 means three
+// colours plus fully transparent black.
+//
+// Note the two arms do not agree on how they blend, and that is the reference's: the four-colour
+// arm goes through the weight tables, while the three-colour arm takes a plain integer average in
+// 5/6/5 space.
+static void Dxt1ExpandColors(const unsigned char* block, uint32_t colors[4]) {
+    uint32_t c0 = static_cast<uint32_t>(block[0]) | (static_cast<uint32_t>(block[1]) << 8);
+    uint32_t c1 = static_cast<uint32_t>(block[2]) | (static_cast<uint32_t>(block[3]) << 8);
+
+    uint32_t r0 = c0 >> 11;
+    uint32_t g0 = (c0 >> 5) & 0x3F;
+    uint32_t b0 = c0 & 0x1F;
+
+    uint32_t r1 = c1 >> 11;
+    uint32_t g1 = (c1 >> 5) & 0x3F;
+    uint32_t b1 = c1 & 0x1F;
+
+    colors[0] = Dxt565ToArgb8888(r0, g0, b0);
+    colors[1] = Dxt565ToArgb8888(r1, g1, b1);
+
+    if (c1 < c0) {
+        colors[2] = Dxt565ToArgb8888(
+            (s_dxtWeight2_3[r0] + s_dxtWeight1_3[r1]) >> 8,
+            (s_dxtWeight2_3[g0] + s_dxtWeight1_3[g1]) >> 8,
+            (s_dxtWeight2_3[b0] + s_dxtWeight1_3[b1]) >> 8
+        );
+
+        colors[3] = Dxt565ToArgb8888(
+            (s_dxtWeight1_3[r0] + s_dxtWeight2_3[r1]) >> 8,
+            (s_dxtWeight1_3[g0] + s_dxtWeight2_3[g1]) >> 8,
+            (s_dxtWeight1_3[b0] + s_dxtWeight2_3[b1]) >> 8
+        );
+    } else {
+        colors[2] = Dxt565ToArgb8888((r0 + r1) / 2, (g0 + g1) / 2, (b0 + b1) / 2);
+        colors[3] = 0;
+    }
+}
+
+// ref: FUN_006ad380
+// One 4x4 block into ARGB8888, clipped to `cols` by `rows` for a block that hangs off the right or
+// bottom edge. Bytes 0..3 of a DXT1 block are the two endpoints and bytes 4..7 are one byte of
+// 2-bit indices per row, low bits leftmost.
+//
+// DIVERGENCE, and it is bookkeeping rather than behaviour: the reference passes an array of four
+// row pointers and a six-field rectangle, and the block decoder ADVANCES those pointers as it
+// goes, so its callers reset them per block row. This takes a destination and a stride and
+// addresses each texel directly. Same bytes written; Ghidra's rendering of the reference's
+// pointer arithmetic is where its two loop variants become hard to read, and there is nothing to
+// be gained by reproducing that.
+static void Dxt1DecodeBlock(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
+                            uint32_t cols, uint32_t rows) {
+    uint32_t colors[4];
+
+    Dxt1ExpandColors(block, colors);
+
+    for (uint32_t y = 0; y < rows; y++) {
+        uint32_t bits = block[4 + y];
+        auto out = reinterpret_cast<uint32_t*>(dst + y * dstStride);
+
+        for (uint32_t x = 0; x < cols; x++) {
+            out[x] = colors[bits & 3];
+            bits >>= 2;
+        }
+    }
+}
 // ref: FUN_006ae500
+// The reference splits this in two -- FUN_006ada10 when the image is whole 4x4 blocks and
+// FUN_006ad880 when it is not -- and the wrapper picks between them on
+// `w > 3 && h > 3 && (w & 3) == 0 && (h & 3) == 0`. frozen keeps one loop, because the aligned
+// case is the general one with the clamps never binding, and a second copy of it would be a
+// second place for an edge bug to hide.
+//
+// The reference's general arm also walks a cube map as six faces, dividing the width by six and
+// advancing per face. That is not reproduced and does not need to be: a cube map arrives here as
+// six faces side by side, its blocks tile the full width row by row, and decoding it as one wide
+// image writes the same bytes to the same places.
 void Blit_Dxt1_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (!s_dxtWeightsBuilt) {
+        BuildDxtWeights();
+    }
+
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto width = static_cast<uint32_t>(size.x);
+    auto height = static_cast<uint32_t>(size.y);
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (uint32_t y = 0; y < height; y += 4) {
+        const unsigned char* block = src;
+        uint32_t rows = height - y < 4 ? height - y : 4;
+
+        for (uint32_t x = 0; x < width; x += 4) {
+            uint32_t cols = width - x < 4 ? width - x : 4;
+
+            Dxt1DecodeBlock(block, dst + x * 4, outStride, cols, rows);
+
+            block += 8;
+        }
+
+        // One row of BLOCKS in the source, four rows of texels in the destination.
+        src += inStride;
+        dst += outStride * 4;
+    }
 }
 
 // ref: FUN_006ae4a0

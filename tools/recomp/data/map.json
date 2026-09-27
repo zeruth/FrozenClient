@@ -37697,10 +37697,26 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::TexFormatStride",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 96,
+  "status": "ported"
+ },
+ "006aca10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt1ExpandColors",
+  "frozenSize": 427,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 572,
   "status": "ported"
  },
  "006acc50": {
@@ -37717,6 +37733,22 @@
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 134,
+  "status": "ported"
+ },
+ "006ad380": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt1DecodeBlock",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 177,
   "status": "ported"
  },
  "006ae440": {
@@ -37752,7 +37784,7 @@
   "status": "stub"
  },
  "006ae500": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -37761,11 +37793,11 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt1_Argb8888",
-  "frozenSize": 77,
+  "frozenSize": 384,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "006ae560": {
   "branchRatio": 0.5,

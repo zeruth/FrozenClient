@@ -603,30 +603,64 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                 case PIXEL_ARGB8888:
                 case PIXEL_ARGB1555:
                 case PIXEL_ARGB4444:
-                case PIXEL_RGB565:
-                    // The conversion is WORKED OUT but deliberately not wired, and the reason is
-                    // specific: it would report success on a buffer nothing had written.
-                    //
+                case PIXEL_RGB565: {
                     // The reference converts a compressed mip through Blit (FUN_006af990) rather
-                    // than through a decoder of its own, and everything that needs is now here --
-                    // s_pixelToBlitFormat gives both sides' BlitFormat, GetMipSize gives the
-                    // destination stride, and CGxDevice::TexFormatStride gives the source's row
-                    // of blocks. The call is one line:
+                    // than a decoder of its own, and this is that call.
                     //
-                    //     return Blit(extent, BlitAlpha_0, mipData, srcStride, srcFmt,
-                    //                 data, dstStride, dstFmt);
-                    //
-                    // What stops it is that EVERY DXT-to-uncompressed blitter in Blit.cpp is a
-                    // WHOA_UNIMPLEMENTED stub -- Dxt1/Dxt3/Dxt5 to Argb8888, Rgb565, Argb1555 and
-                    // Argb4444, all seven. InitBlit registers them, so the table entry is not
-                    // null, so Blit would call the stub, get nothing done, and answer 1. Lock2
-                    // would then report a decoded mip and the caller would upload whatever was
-                    // in the buffer. Answering 0 here is a clean failure and is what the caller
-                    // already handles.
-                    //
-                    // So the blocker is the blitters, not this dispatch. Implement
-                    // Blit_Dxt1_Argb8888 and friends and this becomes the one line above.
-                    return 0;
+                    // THE ALLOW-LIST IS NOT CAUTION, it is a correctness requirement. Blit's DXT
+                    // converters are mostly still WHOA_UNIMPLEMENTED stubs, and InitBlit registers
+                    // them, so the table entry is not null and Blit would call the stub, do
+                    // nothing, and answer 1 -- leaving Lock2 to report a decoded mip and the
+                    // caller to upload an unwritten buffer. Answering 0 for a pair with no real
+                    // converter is a clean failure the caller already handles, so the pairs that
+                    // work are named explicitly and the rest still answer 0. Add to the list as
+                    // each blitter lands; the seven addresses are recorded in Blit.cpp.
+                    uint32_t size;
+                    uint32_t dstStride;
+
+                    if (!this->GetMipSize(format, mipLevel, &size, &dstStride)) {
+                        return 0;
+                    }
+
+                    auto preferred = static_cast<uint32_t>(this->m_header.preferredFormat);
+
+                    if (preferred >= NUM_PIXEL_FORMATS) {
+                        return 0;
+                    }
+
+                    BlitFormat srcFmt = s_pixelToBlitFormat[preferred];
+                    BlitFormat dstFmt = s_pixelToBlitFormat[format];
+
+                    bool haveConverter = srcFmt == BlitFormat_Dxt1
+                                      && dstFmt == BlitFormat_Argb8888;
+
+                    if (!haveConverter) {
+                        return 0;
+                    }
+
+                    uint32_t width = this->m_header.width >> mipLevel;
+                    uint32_t height = this->m_header.height >> mipLevel;
+
+                    if (width < 1) {
+                        width = 1;
+                    }
+
+                    if (height < 1) {
+                        height = 1;
+                    }
+
+                    // A row of BLOCKS, which is why it goes through the format-aware helper.
+                    uint32_t srcStride = CGxDevice::TexFormatStride(
+                        static_cast<EGxTexFormat>(srcFmt), width, height);
+
+                    C2iVector extent = {
+                        static_cast<int32_t>(width),
+                        static_cast<int32_t>(height)
+                    };
+
+                    return Blit(extent, BlitAlpha_0, mipData, srcStride, srcFmt,
+                                data, dstStride, dstFmt);
+                }
 
                 case PIXEL_ARGB2565:
                     return 0;
