@@ -209585,6 +209585,23 @@
 "refs": [],
 "line": 1305
 },
+"Liquid::MapObjPolyEval": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"Liquid::MapObjPolyEval",
+"Liquid::MapObjPolyEval",
+"?fold"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 1336
+},
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [
 "src/world/map/liquidvertexdata.cpp"

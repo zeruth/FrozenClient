@@ -3287,6 +3287,7 @@ addr	how	frozen	evidence
 007d82e0	annotated	CMapObjGroup::ReadComplete	tag in src/world/map/CMapObjGroupLoad.cpp
 007d8570	annotated	CMapObjGroup::ReadCallback	tag in src/world/map/CMapObjGroupLoad.cpp
 007d85e0	annotated	CMapObjGroup::Read	tag in src/world/map/CMapObjGroupLoad.cpp
+007d91f0	annotated	MapObjPolyEval	tag in src/world/map/LiquidSurface.cpp
 007d9230	annotated	MapObjPolyAddPoint	tag in src/world/map/LiquidSurface.cpp
 007d9270	annotated	MapObjPolyCloseOutline	tag in src/world/map/LiquidSurface.cpp
 007d92f0	annotated	MapObjPolySeekUnflaggedEdge	tag in src/world/map/LiquidSurface.cpp

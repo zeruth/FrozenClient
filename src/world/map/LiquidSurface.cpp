@@ -1315,4 +1315,36 @@ void MapObjPolyReset(MapObjPolySet* set) {
     set->cursor = 0;
 }
 
+
+// ref: FUN_007d91f0
+// Evaluate one node and memoise the answer into it. A stored value of zero means unevaluated, so a
+// subtree that genuinely folds to zero is recomputed every time -- the reference's own cost and not
+// worth diverging over.
+//
+// THE ARGUMENT ORDER IS FROM THE DISASSEMBLY, because the decompilation cannot express it. Ghidra
+// drops both recursive receivers and renders the fold as `(uVar2, uVar1, operand)` with uVar1
+// evaluated first, which reads as though the two children are swapped. The pushes settle it: at
+// 0x7d9203 the receiver is +0x08 and at 0x7d920f it is +0x04, and cdecl's last push is the first
+// argument -- so the child at +0x04 is argument one and the child at +0x08 is argument two. The
+// EVALUATION order is the opposite of the argument order, which is what made the decompilation look
+// inconsistent, and it matters only if the fold has side effects.
+//
+// The operand is a FLOAT. The reference loads it with flds and stores it to the argument slot with
+// fstps (0x7d91fb, 0x7d9206); Ghidra shows an integer read of the same slot, which is the x87 trap
+// this project's notes warn about. A fold reading it as an int would get a denormal-looking integer
+// rather than the number.
+int32_t MapObjPolyEval(MapObjPolyNode* node, MapObjPolyFold fold) {
+    if (node->value) {
+        return node->value;
+    }
+
+    // Evaluated second-child-first, as the reference does, then folded first-child-first.
+    int32_t b = MapObjPolyEval(node->childB, fold);
+    int32_t a = MapObjPolyEval(node->childA, fold);
+
+    node->value = fold(a, b, node->operand);
+
+    return node->value;
+}
+
 } // namespace Liquid

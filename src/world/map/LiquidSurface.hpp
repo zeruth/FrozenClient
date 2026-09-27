@@ -139,6 +139,29 @@ class IGeomFactory {
                               CGxBatch* batch) = 0;
 };
 
+// One node of the memoised tree the outline's values are computed from. The reference evaluates
+// exactly this shape recursively and caches into the first slot, so a zero value means unevaluated.
+//
+// The children are real pointers here where the reference's are 32-bit, which widens the struct past
+// its 0x10 bytes. That costs nothing: every access is by name, nothing copies one of these out of
+// file data, and the reference's own byte offsets are only needed where its hand-computed strides
+// are reproduced -- which is the point array, not this.
+struct MapObjPolyNode {
+    int32_t value;              // +0x00, memoised; zero means unevaluated
+    MapObjPolyNode* childA;     // +0x04 in the reference
+    MapObjPolyNode* childB;     // +0x08
+    float operand;              // +0x0c
+};
+
+// What the evaluator folds two child values and an operand through. Note the mixed signature: two
+// integers and a float, which is what the reference pushes.
+typedef int32_t (*MapObjPolyFold)(int32_t a, int32_t b, float operand);
+
+// ref: FUN_007d91f0
+// Evaluate a node, memoising into it. See the definition for the argument order, which the
+// decompilation gets wrong.
+int32_t MapObjPolyEval(MapObjPolyNode* node, MapObjPolyFold fold);
+
 // The point-and-edge accumulator the map-object liquid geometry emitter builds its outline in, and
 // the walker that reads it back. The reference keeps both in MapObjRead.cpp; their purpose was only
 // established once FUN_007a7f60 -- the emitter -- was read, because nine functions operate on this
@@ -166,7 +189,10 @@ struct MapObjPolyPoint {
     int32_t value;          // +0x0c, memoized; zero means unevaluated
     uint32_t childA;        // +0x10, a 32-bit pointer in the reference
     uint32_t childB;        // +0x14, likewise
-    int32_t operand;        // +0x18, the evaluator's third argument
+    // +0x18: the evaluator's third argument, and a FLOAT. Ghidra shows it as an int because it
+    // reads the slot with an integer load; the reference uses flds and fstps on it (0x7d91fb and
+    // 0x7d9206), so it goes to the callback as a float.
+    float operand;          // +0x18
     int32_t inEdge;         // +0x1c: the edge arriving at this point
     int32_t outEdge;        // +0x20: the edge leaving it
     // +0x24 and +0x28 are a one-entry memo of this point's distance to a plane. FUN_007d9470
