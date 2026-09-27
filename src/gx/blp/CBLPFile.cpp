@@ -351,6 +351,13 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                 return 0;
             }
 
+            // The alpha plane's polarity was CHECKED against the reference rather than assumed:
+            // its 1-bit path indexes a two-byte table at 0x00ad90c0 holding { 0x00, 0xFF }, so a
+            // clear bit is transparent and a set bit opaque, which is what the ternary below
+            // says. Getting that backwards would invert every 1-bit-alpha texture in the game
+            // and still look plausible in a screenshot, so it is worth not re-deriving.
+            //
+            // Bit order is LSB-first within each byte, also the reference's.
             for (uint32_t i = 0; i < texelCount; i++) {
                 const BlpPalPixel& color = palette[indices[i]];
 
@@ -481,6 +488,9 @@ int32_t CBLPFile::LockChain2(const char* fileName, PIXEL_FORMAT format, MipBits*
     return 1;
 }
 
+// ref: FUN_006aff10
+// Read a .blp whole into the shared load buffer and hand that buffer to Source. The buffer is
+// static and reused, which is why Source takes the pointer without taking ownership.
 int32_t CBLPFile::Open(const char* filename, int32_t a3) {
     STORM_VALIDATE_BEGIN;
     STORM_VALIDATE(filename);
@@ -521,6 +531,14 @@ int32_t CBLPFile::Open(const char* filename, int32_t a3) {
     return this->Source(CBLPFile::s_blpFileLoadBuffer.m_data);
 }
 
+// ref: FUN_006ae900
+// Adopt a BLP that is already in memory: drop whatever was held, take the pointer WITHOUT
+// taking ownership (m_inMemoryNeedsFree stays 0), copy the header out of it and work out how
+// many mip levels it has.
+//
+// Pins the tail of the object: m_images at +0x00, and m_inMemoryImage, m_inMemoryNeedsFree and
+// m_numLevels at +0x498, +0x49c and +0x4a0 -- the header copy is 0x125 dwords, which is what
+// puts them there.
 int32_t CBLPFile::Source(void* fileBits) {
     this->m_inMemoryImage = nullptr;
 

@@ -10265,7 +10265,7 @@
   "branchRatio": 0.857,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -10275,22 +10275,6 @@
   "how": "string",
   "module": "Texture.cpp",
   "refSize": 684,
-  "status": "ported"
- },
- "004b81d0": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.167,
-  "files": [
-   "src/gx/blp/CBLPFile.cpp",
-   "src/gx/blp/cblpfile.cpp"
-  ],
-  "frozen": "CBLPFile::Open",
-  "frozenSize": 0,
-  "how": "string",
-  "module": "Texture.cpp",
-  "refSize": 437,
   "status": "ported"
  },
  "004b8770": {
@@ -37039,6 +37023,19 @@
   "refSize": 127,
   "status": "ported"
  },
+ "00685e40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "TSGrowableArray<unsigned char>::SetCount",
+  "frozenSize": 420,
+  "how": "callgraph",
+  "module": "CGxDevice.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
  "00685eb0": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
@@ -37754,6 +37751,22 @@
   "refSize": 42,
   "status": "ported"
  },
+ "006ae900": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::Source",
+  "frozenSize": 280,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 144,
+  "status": "ported"
+ },
  "006ae990": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -37848,6 +37861,22 @@
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 185,
+  "status": "ported"
+ },
+ "006aff10": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::Open",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 191,
   "status": "ported"
  },
  "006b0850": {

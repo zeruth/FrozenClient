@@ -65899,7 +65899,7 @@
 ],
 "branches": 21,
 "stub": false,
-"lines": 101,
+"lines": 108,
 "refs": [],
 "line": 315
 },
@@ -65924,7 +65924,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 417
+"line": 424
 },
 "CBLPFile::Open": {
 "files": [
@@ -65953,7 +65953,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 484
+"line": 494
 },
 "CBLPFile::Source": {
 "files": [
@@ -65977,7 +65977,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 524
+"line": 542
 },
 "CBLPFile::Unlock": {
 "files": [
@@ -65998,7 +65998,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 551
+"line": 569
 },
 "GxVertexAttribOffset": {
 "files": [

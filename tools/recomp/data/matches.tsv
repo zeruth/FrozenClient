@@ -642,7 +642,6 @@ addr	how	frozen	evidence
 004b6fa0	override	TextureCacheGetTexture	
 004b7020	override	TextureCacheGetTexture	
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
-004b81d0	string	CBLPFile::Open	score 0.50 shared filename
 004b8770	override	CTexture::CTexture	
 004b8910	override	CreateBlpSync	
 004b8a50	override	CreateBlpAsync	
@@ -2322,6 +2321,7 @@ addr	how	frozen	evidence
 00685a70	override	CGxDevice::IRsForceUpdate	
 00685b50	override	CGxDevice::IRsSync	
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
+00685e40	callgraph	TSGrowableArray<unsigned char>::SetCount	only unmatched callee of 006aff10=CBLPFile::Open
 00685eb0	annotated	CGxDevice::MasterEnableSet	tag in src/gx/CGxDevice.cpp
 00685f50	override	CGxDevice::RsSet	
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
@@ -2367,12 +2367,14 @@ addr	how	frozen	evidence
 006ae6e0	annotated	InitBlit	tag in src/gx/Blit.cpp
 006ae7c0	annotated	Blit	tag in src/gx/Blit.cpp
 006ae8b0	annotated	CBLPFile::Close	tag in src/gx/blp/CBLPFile.cpp
+006ae900	annotated	CBLPFile::Source	tag in src/gx/blp/CBLPFile.cpp
 006ae990	annotated	CBLPFile::DecompPalARGB8888Alpha8	tag in src/gx/blp/CBLPFile.cpp
 006aee70	annotated	CBLPFile::DecompPalARGB1555DitherFS	tag in src/gx/blp/CBLPFile.cpp
 006af140	annotated	CBLPFile::DecompPalRGB565DitherFS	tag in src/gx/blp/CBLPFile.cpp
 006af6a0	annotated	CBLPFile::GetMipPixelCount	tag in src/gx/blp/CBLPFile.cpp
 006af6e0	annotated	CBLPFile::Unlock	tag in src/gx/blp/CBLPFile.cpp
 006af730	annotated	CBLPFile::GetMipSize	tag in src/gx/blp/CBLPFile.cpp
+006aff10	annotated	CBLPFile::Open	tag in src/gx/blp/CBLPFile.cpp
 006b0850	callorder	ClientConnection::Cleanup	same slot between linked calls in 004d98d0=CGlueMgr::StatusDialogClick
 006b0970	override	ClientServices::Connection	
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=Script_IsBNLogin
