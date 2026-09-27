@@ -1595,7 +1595,22 @@ void CM2Shared::FixUpTextureCombos() {
 // this function stays empty. The fixup searches for its pair rather than computing it, which is what
 // makes the round trip lossless even when the analysis in between changed a batch's selection.
 //
-// WHAT IS LEFT: this function and FUN_00837250 (583 b, unread). This one walks the batches keeping
+// WHAT IS LEFT, and DO NOT PORT IT FROM THE DECOMPILATION -- two of the three have C that Ghidra
+// itself flags as unreliable, so this part wants the objdump text dump instead:
+//
+//   FUN_00837250 (583 b) builds two variable-length stack arrays with ALLOCA, sized by the batch
+//     count, and Ghidra prints "Unable to track spacebase fully for stack" on it -- every local it
+//     shows is suspect. It fills the two arrays for batches with textureCount > 1, walks again for
+//     batches with textureCount < 2, and finishes with an SMemAlloc, so it hands something
+//     persistent back.
+//
+//   FUN_00835f90 (251 b) is called only from there, twice, and its decompilation reads an
+//     UNINITIALISED EAX -- which means the calling convention Ghidra assumed is wrong and the real
+//     one passes a packed pair in a register. What it does is clear enough: it splits a byte pair
+//     and undoes the plus-one bias, the same convention FixUpTextureCombos uses. It has one
+//     unlinked callee of its own, FUN_00414760.
+//
+// This function itself decompiles cleanly and walks the batches keeping
 // two small state machines -- the locals the decompilation calls local_c and cStack_b, each stepping
 // through 0, 1 and 3 -- and on a match writes batch->shader to 0x8000 on one batch and 0x8001 on the
 // batch it remembered, which is how a pair of batches becomes one specialized two-stage draw. It
