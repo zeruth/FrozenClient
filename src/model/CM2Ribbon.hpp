@@ -22,10 +22,12 @@
 // the idiom CM2Model already uses for uint74, float88 and friends; inventing a plausible name for
 // a field nobody has read is how a later reader ends up trusting a guess.
 //
-// `Initialize` landed 2026-09-26. Still missing: the per-frame segment update and `Draw`, and
-// nothing constructs one of these outside a test yet -- CM2Model has no ribbon emitter array, so
-// CM2Model::InitializeLoaded's ribbon block is the next piece. The update is the part with real
-// behaviour and has not been read at all.
+// `Initialize` landed 2026-09-26 and the per-frame update on 2026-09-27. Still missing: `Draw`
+// (FUN_00980b70, fully mapped in docs/ref/parity-ribbons.md) and the six small setters
+// CM2Model::AnimateST feeds a ribbon each frame -- FUN_0097f5f0, FUN_0097f610, FUN_0097f620,
+// FUN_0097f940, FUN_0097fb60 and FUN_0097fba0 -- which are what move vec20, vec164 and the four
+// directions. Until those land, Update runs on a ribbon whose points never change, so the ring
+// still does not fill and CM2Scene's gather still emits nothing.
 class CM2Ribbon {
     public:
         // One material pass over the ribbon's geometry -- the reference's `CRibbonMat`, 8 bytes.
@@ -77,7 +79,12 @@ class CM2Ribbon {
         // from tail forward to head and wraps. Equal means empty; see IsEmpty.
         uint32_t m_head = 0;
         uint32_t m_tail = 0;
-        uint32_t uint1C = 0;
+        // +0x1c: the FRACTIONAL edge carried from one update to the next, so emission runs at the
+        // ribbon's own edge rate instead of the frame rate. A FLOAT, which is how the reference
+        // reads it (`*(float *)(this + 0x1c)`) -- it was declared uint32_t here until 2026-09-27,
+        // and Update silently truncated the carry to zero every frame, losing the sub-edge
+        // remainder. A self-test caught it: the field read 0.00000 where 0.001 was due.
+        float m_edgeAccum = 0.0f;
         // +0x20: a point, moved with the rest of the ribbon by Transform. Not read elsewhere yet.
         C3Vector vec20 = {};
         // +0x2c: where the ribbon is. The draw subtracts this from the world matrix's
@@ -116,12 +123,36 @@ class CM2Ribbon {
         float m_cellU1 = 0.0f;
         float m_cellV1 = 0.0f;
         // +0x7c, +0x88, +0x94, +0xa0: four directions, turned with the ribbon by Transform (as
-        // directions: no translation). Not read elsewhere yet.
+        // directions: no translation).
+        //
+        // What they ARE was established 2026-09-27 from BuildControlPoints, which is the only
+        // reader: +0x7c and +0x88 are the EDGE direction at the current and the previous point --
+        // the axis the trail is widened along -- and +0x94 and +0xa0 are the TANGENT at those two
+        // points. Kept under their offset names because Transform is written against them and a
+        // rename there is churn for no gain; the meaning is here.
         C3Vector vec7C = {};
         C3Vector vec88 = {};
         C3Vector vec94 = {};
         C3Vector vecA0 = {};
-        uint32_t uintAC[18] = {};
+
+        // +0xac through +0xf0: the six control vectors of ONE segment's pair of edges, rebuilt
+        // every update by BuildControlPoints and consumed by EmitSegment. This was `uintAC[18]`,
+        // opaque storage, until those two functions were read -- 18 dwords is exactly six vectors.
+        //
+        // EmitSegment evaluates, for each edge,
+        //
+        //     p(t) = (A*t + B) * (1 - t) + (C - D * (1 - t)) * t
+        //          = B*(1-t) + C*t + (A - D)*t*(1-t)
+        //
+        // which is a cubic Hermite: a straight line from B to C plus a bulge along (A - D). `t`
+        // runs from the CURRENT point at 0 to the PREVIOUS point at 1, so B is the current end.
+        // A and D are shared by both edges; B and C are per edge.
+        C3Vector m_hermiteTangentCur = {};   // +0xac, A: vec94 scaled by the segment length
+        C3Vector m_hermiteTangentPrev = {};  // +0xb8, D: vecA0 scaled by the same
+        C3Vector m_lowerCur = {};            // +0xc4, B for the below edge
+        C3Vector m_lowerPrev = {};           // +0xd0, C for the below edge
+        C3Vector m_upperCur = {};            // +0xdc, B for the above edge
+        C3Vector m_upperPrev = {};           // +0xe8, C for the above edge
         // +0xf4 and +0x100: the bounds, born INVERTED -- min at +FLT_MAX and max at -FLT_MAX, the
         // same empty-box convention and the same two constants (0x009ea8fc, 0x00a37f1c) the
         // particle emitter uses.
@@ -160,9 +191,15 @@ class CM2Ribbon {
         // +0x164: a point, moved with the rest of the ribbon by Transform.
         C3Vector vec164 = {};
         uint32_t uint170 = 0;
-        // +0x174 and +0x178: both born 10.0 (0x009e30cc) in Initialize, not in the constructor.
-        float float174 = 0.0f;
-        float float178 = 0.0f;
+        // +0x174 and +0x178: how far the trail extends either side of its centre line. Both born
+        // 10.0 (0x009e30cc) in Initialize, not in the constructor.
+        //
+        // NAMED 2026-09-27 from BuildControlPoints, which offsets the two edges by exactly these:
+        // the above edge at `point + dir * m_heightAbove` and the below edge at
+        // `point - dir * m_heightBelow`. They are the runtime side of M2Ribbon's own
+        // heightAboveTrack and heightBelowTrack, which is the independent confirmation.
+        float m_heightAbove = 0.0f;
+        float m_heightBelow = 0.0f;
         // +0x17c: the gravity from the M2Ribbon record, through SetGravity.
         float m_gravity = 0.0f;
 
@@ -180,6 +217,23 @@ class CM2Ribbon {
                         const TSGrowableArray<Material>& materials,
                         const TSGrowableArray<M2Texture*>& textureRecords,
                         const float textureRect[4], uint32_t textureRows, uint32_t textureCols);
+
+        // Rebuild the six control vectors above from the ribbon's current and previous point, its
+        // two edge directions and its two tangents. Called once per update, before any segment is
+        // emitted.
+        void BuildControlPoints();
+
+        // Write the vertex PAIR at m_head by evaluating both edges at `t`, stamp the slot's age,
+        // and advance the head by `advance` (0 leaves it, which is how the live leading edge is
+        // written without committing a slot).
+        void EmitSegment(float age, float t, uint32_t advance);
+
+        // One frame. Retires expired slots from the tail, emits whatever whole edges the elapsed
+        // time has earned, then ages every live slot, applies gravity to it and rebuilds its
+        // texture coordinates and the trail's bounds.
+        //
+        // `suppressEmit` non-zero skips the emission and only ages what is already there.
+        void Update(float delta, int32_t suppressEmit);
 
         void SetGravity(float gravity);
 

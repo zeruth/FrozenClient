@@ -1,4 +1,6 @@
 #include "model/CM2Ribbon.hpp"
+#include "gx/Device.hpp"
+#include "gx/CGxDevice.hpp"
 #include <cmath>
 #include <cstring>
 
@@ -48,7 +50,7 @@ void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector c
 
     this->m_flags &= ~1u;
 
-    this->uint1C = 0;
+    this->m_edgeAccum = 0;
     this->m_tail = 0;
     this->m_head = 0;
 
@@ -140,10 +142,248 @@ void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector c
     this->m_flags |= 0xEu;
 
     // Both 10.0 (0x009e30cc), and both left alone by the constructor.
-    this->float174 = 10.0f;
-    this->float178 = 10.0f;
+    this->m_heightAbove = 10.0f;
+    this->m_heightBelow = 10.0f;
 
     this->m_gravity = 0.0f;
+}
+
+// The vertex colour as the DEVICE wants its bytes. ref: FUN_00482a60
+//
+// A CImVector is ARGB; a device reporting GxCF_rgba wants red and blue the other way round, so
+// bytes 0 and 2 trade and 1 and 3 stay. The reference reads the same capability (caps + 0x14 is
+// m_colorFormat) and does the same four byte moves.
+static uint32_t RibbonVertexColor(const CImVector& color) {
+    if (g_theGxDevicePtr->Caps().m_colorFormat != GxCF_rgba) {
+        return color.value;
+    }
+
+    CImVector out;
+
+    out.b = color.r;
+    out.g = color.g;
+    out.r = color.b;
+    out.a = color.a;
+
+    return out.value;
+}
+
+// ref: FUN_0097f700
+// The two edges run from the current point to the previous one, offset either side of the centre
+// line along the edge direction at each end. The Hermite tangents are the stored tangents scaled
+// by the DISTANCE between the two points, which is what keeps the bulge proportional to how far
+// the ribbon moved this frame -- a ribbon that barely moved gets an almost straight segment.
+void CM2Ribbon::BuildControlPoints() {
+    float dx = this->vec20.x - this->vec164.x;
+    float dy = this->vec20.y - this->vec164.y;
+    float dz = this->vec20.z - this->vec164.z;
+
+    float length = std::sqrt(dx * dx + dy * dy + dz * dz);
+
+    // Note which height goes with which sign: BELOW subtracts, ABOVE adds.
+    this->m_lowerCur.x = this->vec20.x - this->vec7C.x * this->m_heightBelow;
+    this->m_lowerCur.y = this->vec20.y - this->vec7C.y * this->m_heightBelow;
+    this->m_lowerCur.z = this->vec20.z - this->vec7C.z * this->m_heightBelow;
+
+    this->m_lowerPrev.x = this->vec164.x - this->vec88.x * this->m_heightBelow;
+    this->m_lowerPrev.y = this->vec164.y - this->vec88.y * this->m_heightBelow;
+    this->m_lowerPrev.z = this->vec164.z - this->vec88.z * this->m_heightBelow;
+
+    this->m_upperCur.x = this->vec20.x + this->vec7C.x * this->m_heightAbove;
+    this->m_upperCur.y = this->vec20.y + this->vec7C.y * this->m_heightAbove;
+    this->m_upperCur.z = this->vec20.z + this->vec7C.z * this->m_heightAbove;
+
+    this->m_upperPrev.x = this->vec164.x + this->vec88.x * this->m_heightAbove;
+    this->m_upperPrev.y = this->vec164.y + this->vec88.y * this->m_heightAbove;
+    this->m_upperPrev.z = this->vec164.z + this->vec88.z * this->m_heightAbove;
+
+    this->m_hermiteTangentCur.x = this->vec94.x * length;
+    this->m_hermiteTangentCur.y = this->vec94.y * length;
+    this->m_hermiteTangentCur.z = this->vec94.z * length;
+
+    this->m_hermiteTangentPrev.x = this->vecA0.x * length;
+    this->m_hermiteTangentPrev.y = this->vecA0.y * length;
+    this->m_hermiteTangentPrev.z = this->vecA0.z * length;
+}
+
+// ref: FUN_0097fef0
+// One ring slot: both edge positions at parameter `t`, the slot's age, and optionally the head.
+//
+// The age is stamped rather than zeroed because the caller back-dates it -- a segment emitted
+// part-way through the frame is already that fraction of a frame old, and the emission loop passes
+// a NEGATIVE value for exactly that.
+void CM2Ribbon::EmitSegment(float age, float t, uint32_t advance) {
+    float inv = 1.0f - t;
+
+    Vertex* pair = &this->m_vertices[this->m_head * 2];
+
+    // p(t) = (A*t + B) * (1 - t) + (C - D * (1 - t)) * t, transcribed in the reference's own
+    // grouping rather than the expanded form, so the float rounding matches.
+    pair[0].m_position.x = (this->m_hermiteTangentCur.x * t + this->m_lowerCur.x) * inv
+                        + (this->m_lowerPrev.x - inv * this->m_hermiteTangentPrev.x) * t;
+    pair[0].m_position.y = (this->m_hermiteTangentCur.y * t + this->m_lowerCur.y) * inv
+                        + (this->m_lowerPrev.y - inv * this->m_hermiteTangentPrev.y) * t;
+    pair[0].m_position.z = (this->m_hermiteTangentCur.z * t + this->m_lowerCur.z) * inv
+                        + (this->m_lowerPrev.z - inv * this->m_hermiteTangentPrev.z) * t;
+
+    pair[1].m_position.x = (this->m_hermiteTangentCur.x * t + this->m_upperCur.x) * inv
+                        + (this->m_upperPrev.x - inv * this->m_hermiteTangentPrev.x) * t;
+    pair[1].m_position.y = (this->m_hermiteTangentCur.y * t + this->m_upperCur.y) * inv
+                        + (this->m_upperPrev.y - inv * this->m_hermiteTangentPrev.y) * t;
+    pair[1].m_position.z = (this->m_hermiteTangentCur.z * t + this->m_upperCur.z) * inv
+                        + (this->m_upperPrev.z - inv * this->m_hermiteTangentPrev.z) * t;
+
+    this->m_segmentAges[this->m_head] = age;
+
+    this->m_head += advance;
+
+    if (this->m_head >= this->m_segmentAges.Count()) {
+        this->m_head -= this->m_segmentAges.Count();
+    }
+}
+
+// ref: FUN_00980090
+// One frame of trail.
+//
+// The delta is REPLACED rather than used when flag 0x10 is clear and the edge rate is positive:
+// the ribbon then advances by exactly one edge's worth of time plus 1e-4 (0x009e8cd0), which makes
+// the first update after Initialize lay down a full edge instead of a sliver. Flag 0x10 is set at
+// the end of this function, so that substitution happens ONCE per ribbon.
+void CM2Ribbon::Update(float delta, int32_t suppressEmit) {
+    if (!(this->m_flags & 0x10) && this->m_edgesPerSecond > 0.0f) {
+        delta = 1.0f / this->m_edgesPerSecond + 0.000099999997f;
+    }
+
+    // Clamped to [0, edgeLifetime]. A negative delta becomes zero rather than running backwards.
+    float dt = 0.0f;
+
+    if (delta >= 0.0f) {
+        dt = delta;
+
+        if (delta >= this->m_edgeLifetime) {
+            dt = this->m_edgeLifetime;
+        }
+    }
+
+    uint32_t capacity = this->m_segmentAges.Count();
+
+    // Retire from the tail while the oldest slot would age past its lifetime this frame. Stops at
+    // the head, so the ring never empties past it.
+    while (this->m_tail != this->m_head) {
+        if (this->m_segmentAges[this->m_tail] + dt <= this->m_edgeLifetime) {
+            break;
+        }
+
+        this->m_tail++;
+
+        if (this->m_tail >= capacity) {
+            this->m_tail -= capacity;
+        }
+    }
+
+    // Emission needs all three of flags 0x1, 0x4 and 0x8 -- Initialize sets 0x4 and 0x8 and clears
+    // 0x1, so a ribbon does not start emitting until something sets 0x1.
+    if (!suppressEmit && (this->m_flags & 0x4) && (this->m_flags & 0x8) && (this->m_flags & 0x1)) {
+        // m_edgeAccum is the FRACTIONAL edge carried over from last frame, so emission stays on the
+        // ribbon's own rate instead of the frame rate.
+        float earned = dt * this->m_edgesPerSecond + this->m_edgeAccum;
+
+        uint32_t color = RibbonVertexColor(this->m_color);
+
+        this->BuildControlPoints();
+
+        if (earned >= 1.0f) {
+            float carried = this->m_edgeAccum;
+            auto whole = static_cast<int32_t>(std::floor(earned - 1.0f)) + 1;
+            float n = 1.0f;
+
+            for (; whole != 0; whole--) {
+                // Where this edge falls between last frame's position and this one. Evenly spaced
+                // in EARNED edges, not in time.
+                float t = (n - this->m_edgeAccum) * (1.0f / (earned - carried));
+
+                Vertex* pair = &this->m_vertices[this->m_head * 2];
+                pair[0].m_color.value = color;
+                pair[1].m_color.value = color;
+
+                // Back-dated by the fraction of the frame that has already passed for it.
+                this->EmitSegment(-(t * dt), t, 1);
+
+                n += 1.0f;
+            }
+        }
+
+        this->m_edgeAccum = earned - std::floor(earned);
+
+        // The live leading edge, at t = 1 and WITHOUT advancing: it is rewritten every frame from
+        // the ribbon's current position rather than committed to the ring.
+        this->EmitSegment(0.0f, 1.0f, 0);
+
+        Vertex* pair = &this->m_vertices[this->m_head * 2];
+
+        // Age zero, so the leading edge sits at the near end of the texture cell. The crossed
+        // naming is real -- see the note on m_cellHeight: the V family drives texcoord.x.
+        pair[0].m_texCoord.x = this->m_cellV0;
+        pair[0].m_texCoord.y = this->m_cellU0;
+        pair[1].m_texCoord.x = this->m_cellV0;
+        pair[1].m_texCoord.y = this->m_cellU1;
+
+        pair[0].m_color.value = color;
+        pair[1].m_color.value = color;
+    }
+
+    // Bounds are rebuilt from scratch every frame, born INVERTED so the first slot sets both
+    // corners -- the same empty-box convention the constructor uses.
+    this->m_boundsMin = { 3.4028234663852886e+38f, 3.4028234663852886e+38f,
+                          3.4028234663852886e+38f };
+    this->m_boundsMax = { -3.4028234663852886e+38f, -3.4028234663852886e+38f,
+                          -3.4028234663852886e+38f };
+
+    uint32_t slot = this->m_tail;
+
+    while (slot != this->m_head) {
+        Vertex* pair = &this->m_vertices[slot * 2];
+
+        // Gravity over the slot's whole life, integrated with the age BEFORE this frame's
+        // increment: (age * 2 + dt) * gravity * dt. Applied to Z on both edges.
+        float fall = (this->m_segmentAges[slot] * 2.0f + dt) * this->m_gravity * dt;
+
+        pair[0].m_position.z += fall;
+        pair[1].m_position.z += fall;
+
+        for (uint32_t e = 0; e < 2; e++) {
+            const C3Vector& p = pair[e].m_position;
+
+            if (p.x < this->m_boundsMin.x) { this->m_boundsMin.x = p.x; }
+            if (p.y < this->m_boundsMin.y) { this->m_boundsMin.y = p.y; }
+            if (p.z < this->m_boundsMin.z) { this->m_boundsMin.z = p.z; }
+            if (p.x > this->m_boundsMax.x) { this->m_boundsMax.x = p.x; }
+            if (p.y > this->m_boundsMax.y) { this->m_boundsMax.y = p.y; }
+            if (p.z > this->m_boundsMax.z) { this->m_boundsMax.z = p.z; }
+        }
+
+        this->m_segmentAges[slot] += dt;
+
+        // The texture walks along the trail with age, which is what makes it look like it is
+        // flowing. Uses the age AFTER the increment.
+        float coord = this->m_segmentAges[slot] * this->m_cellHeight * this->m_invEdgeLifetime
+                    + this->m_cellV0;
+
+        pair[0].m_texCoord.x = coord;
+        pair[0].m_texCoord.y = this->m_cellU0;
+        pair[1].m_texCoord.x = coord;
+        pair[1].m_texCoord.y = this->m_cellU1;
+
+        slot++;
+
+        if (slot >= capacity) {
+            slot -= capacity;
+        }
+    }
+
+    // Drop 0x20 and set 0x10. Setting 0x10 is what stops the one-edge delta substitution above
+    // from happening again.
+    this->m_flags = (this->m_flags & ~0x20u) | 0x10u;
 }
 // Head and tail meeting means the ring is empty.
 //
