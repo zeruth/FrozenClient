@@ -454,9 +454,32 @@ int32_t CM2Ribbon::Draw(const C44Matrix* relativeTo) {
 
     uint32_t drawIndices = span * 2 + 2;
 
-    // The index run STARTS at the tail, four indices per slot, so the strip begins at the oldest
-    // live segment rather than at the front of the array.
-    GxBufData(ibuf, reinterpret_cast<char*>(this->m_indices.Ptr() + tail * 4),
+    // The index run STARTS at the tail, so the strip begins at the oldest live segment rather
+    // than at the front of the array. TWO entries per slot, not four.
+    //
+    // THE SCALE HERE WAS WRONG AND IT PUT GARBAGE GEOMETRY ON SCREEN. The reference computes
+    // `indices + tail * 4` at 0x980c79 -- but that is a BYTE offset on a byte pointer, and an
+    // index is a uint16, so it advances TWO ENTRIES per slot. Transcribing the 4 onto a
+    // uint16_t* made C scale it a second time: tail * 8 bytes, double the reference.
+    //
+    // Two indices per slot is also the only layout the array Initialize builds can support. It
+    // holds segmentCount * 4 entries filled with `i % (segmentCount * 2)` -- two back-to-back
+    // copies of the strip sequence -- precisely so a run starting anywhere in the first copy can
+    // continue into the second instead of wrapping. At the correct stride the longest possible
+    // run ends exactly at the end of the array: 2 * tail + (2 * segmentCount + 2) fits inside
+    // 4 * segmentCount for every tail <= segmentCount. At the doubled stride it ran off the end
+    // and read adjacent heap as indices, so triangles pointed at arbitrary vertices -- and
+    // m_maxIndex below then understates the real range, letting the device fetch outside the
+    // vertex buffer too.
+    //
+    // It also drew the WRONG SEGMENTS long before it read out of bounds, starting the strip two
+    // slots along for every one it should have.
+    //
+    // Worth recording why this survived a probe: at tail == 0 both scales agree, and a ribbon's
+    // tail only leaves 0 once the ring has filled and started recycling. A probe that sampled
+    // the first frames of a trail saw sane numbers and cleared the expression. The damage
+    // appears later in a trail's life, which is what made it look intermittent on screen.
+    GxBufData(ibuf, reinterpret_cast<char*>(this->m_indices.Ptr() + tail * 2),
               drawIndices * sizeof(uint16_t), 0);
     g_theGxDevicePtr->PrimIndexPtr(ibuf);
 
