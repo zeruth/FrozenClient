@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 00:41 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 00:51 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -12,18 +12,18 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | &nbsp;&nbsp;ported | 3908 (=) | 813.5k |
 | &nbsp;&nbsp;stub (unimplemented body) | 575 (=) | 124.3k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2357 (=) (8.7%)** | **327.0k (6.0%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **2358 (=) (8.7%)** | **328.3k (6.0%)** |
 | unmapped | 22369 | 4.39M |
 | world spine (reachable from OnFrameRender) | 5381, mapped 1565 (=) (29.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1587 (=) (28.1%) | |
 | **render surface** (the modules that draw the world) | **4782, mapped 1060 (=) (22.2%)** | |
-| frozen functions (src/, from PDB + source) | 13973, stubs 1687 | |
+| frozen functions (src/, from PDB + source) | 13975, stubs 1687 | |
 
 Match evidence: annotated 2331, callgraph 245, callorder 111, cvar 31, handler 29, order 141, override 353, sticky 20, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-27 00:41 -- mapped 4586, ported 3908, stub 575, spine mapped 1565.
+Previous run: 2026-09-27 00:51 -- mapped 4586, ported 3908, stub 575, spine mapped 1565.
 
 ## Lua API coverage (binding tables)
 
@@ -635,7 +635,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 007ac9f0 | `CMapObjGroup::DrawBatchesSplit` | 76% | 41 | 45 | 37 | 26 | 6% | 1566 |
 | 004fa5f0 | `CGWorldFrame::OnWorldUpdate` | 16% | 52 | 37 | 27 | 7 | 0% | 1493 |
 | 007e18c0 | `ValidateNameInitialize` | 0% | 10 | 4 | 90 | 4 | 0% | 1475 |
-| 00828a00 | `CM2Model::AnimateST` | 58% | 24 | 8 | 40 | 17 | 0% | 1415 |
 | 0087b5f0 | `SEDiskSound::CompleteNonBlockingLoad` | 12% | 33 | 9 | 37 | 5 | 0% | 1395 |
 | 0062dae0 | `CGTooltip_SetHyperlink` | 31% | 66 | 26 | 41 | 12 | 0% | 1382 |
 | 00798da0 | `CWorldScene::RenderTerrain` | 83% | 31 | 50 | 38 | 10 | 0% | 1379 |
@@ -646,6 +645,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00839ef0 | `M2Init` | 100% | 6 | 89 | 63 | 129 | 0% | 1368 |
 | 0079a870 | `CMap::Render` | 34% | 54 | 37 | 24 | 13 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
+| 0082c970 | `CM2Model::OptimizeVisibleGeometry` | 89% | 9 | 15 | 46 | 19 | 2% | 1353 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -726,8 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 23:32 | 4571 (17.0%) | 2345 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:33 | 4571 (17.0%) | 2345 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:41 | 4573 (17.0%) | 2346 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:41 | 4573 (17.0%) | 2346 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:41 | 4573 (17.0%) | 2346 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
@@ -751,6 +749,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 00:39 | 4586 (17.0%) | 2357 (8.7%) | 575 | 1565/5381 | 2924/2964 | 1380 |
 | 2026-09-27 00:41 | 4586 (17.0%) | 2357 (8.7%) | 575 | 1565/5381 | 2924/2964 | 1380 |
 | 2026-09-27 00:41 | 4586 (17.0%) | 2357 (8.7%) | 575 | 1565/5381 | 2924/2964 | 1380 |
+| 2026-09-27 00:51 | 4586 (17.0%) | 2358 (8.7%) | 575 | 1565/5381 | 2924/2964 | 1380 |
+| 2026-09-27 00:51 | 4586 (17.0%) | 2358 (8.7%) | 575 | 1565/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

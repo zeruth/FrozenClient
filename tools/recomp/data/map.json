@@ -56589,16 +56589,16 @@
   "status": "faithful"
  },
  "00828a00": {
-  "branchRatio": 0.425,
+  "branchRatio": 0.625,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.583,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateST",
-  "frozenSize": 1283,
+  "frozenSize": 1828,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 1415,
@@ -71303,7 +71303,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::SetTextureSlot",
-  "frozenSize": 0,
+  "frozenSize": 147,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 29,
@@ -71319,7 +71319,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::SetHeightAbove",
-  "frozenSize": 0,
+  "frozenSize": 9,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 16,
@@ -71335,7 +71335,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::SetHeightBelow",
-  "frozenSize": 0,
+  "frozenSize": 9,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 16,
@@ -71399,7 +71399,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::SetPosition",
-  "frozenSize": 0,
+  "frozenSize": 538,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 392,
@@ -71415,7 +71415,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::SetColor",
-  "frozenSize": 0,
+  "frozenSize": 71,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 64,
@@ -71431,7 +71431,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::SetAlpha",
-  "frozenSize": 0,
+  "frozenSize": 27,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 58,
@@ -71495,7 +71495,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::EmitSegment",
-  "frozenSize": 0,
+  "frozenSize": 477,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 405,
@@ -71511,7 +71511,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::Update",
-  "frozenSize": 0,
+  "frozenSize": 1937,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 1149,

@@ -1661,33 +1661,111 @@ void CM2Model::AnimateST() {
     // placement pass, which reads a matrix array off the global at 0x00c5df88. Emitters that do
     // not spawn models do not need it.
     //
-    // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this. The
-    // PARTICLE half is wired below; the ribbon half still has no runtime state array.
+    // src/world/ParticleFx.cpp is still a separate stand-in simulation, not this. BOTH halves are
+    // wired below as of 2026-09-27; the line that used to stand here saying the ribbon half had no
+    // runtime state array was true when written and is not any more -- m_ribbons and
+    // m_ribbonEmitters are built by InitializeLoaded.
+
+    // The emitters' own delta, which nothing else in frozen computes. HOISTED out of the particle
+    // block 2026-09-27 because the ribbons need the same value and the reference computes it once
+    // before both of them, storing the new timestamp immediately -- so a model with ribbons and
+    // particles must not advance it twice.
+    //
+    // The subtraction is done in unsigned ticks and then fixed up, which only matters across a wrap
+    // of the millisecond clock -- but without it a wrap gives a hugely negative dt that Update's
+    // guard would swallow silently, so the branch is kept.
+    uint32_t now = this->m_scene->m_time;
+    int32_t ticks = static_cast<int32_t>(now - this->uint8c);
+
+    float dt = static_cast<float>(ticks);
+
+    if (ticks < 0) {
+        dt += 4294967296.0f;
+    }
+
+    dt *= 0.001f;
+
+    this->uint8c = now;
+
+    // THE RIBBONS, and they come before the particles because that is the reference's order.
+    //
+    // Every value pushed at the emitter here is ALREADY animated -- the track pass earlier in this
+    // function put it in M2ModelRibbon. This block only decides what to forward and then places and
+    // steps the emitter, which is why it calls no M2AnimateTrack of its own.
+    if (this->m_ribbonEmitters && this->m_shared->m_data->ribbons.Count()) {
+        for (int32_t i = 0; i < this->m_shared->m_data->ribbons.Count(); i++) {
+            const M2Ribbon& file = this->m_shared->m_data->ribbons[i];
+            M2ModelRibbon& state = this->m_ribbons[i];
+            CM2Ribbon* emitter = this->m_ribbonEmitters[i];
+
+            // The same "does this track carry anything for us" gate the attachment, bone and colour
+            // passes above already use, five times over. Alpha is the exception: it is pushed
+            // unconditionally, scaled by the model's own alpha.
+            if (file.colorTrack.sequenceTimes.Count() > 1
+                    || (file.colorTrack.sequenceTimes.Count() == 1
+                        && file.colorTrack.sequenceTimes[0].times.Count() > this->uint90)) {
+                emitter->SetColor(state.colorTrack.currentValue.x, state.colorTrack.currentValue.y,
+                                  state.colorTrack.currentValue.z);
+            }
+
+            emitter->SetAlpha(state.alphaTrack.currentValue * this->float198);
+
+            if (file.heightAboveTrack.sequenceTimes.Count() > 1
+                    || (file.heightAboveTrack.sequenceTimes.Count() == 1
+                        && file.heightAboveTrack.sequenceTimes[0].times.Count() > this->uint90)) {
+                emitter->SetHeightAbove(state.heightAboveTrack.currentValue);
+            }
+
+            if (file.heightBelowTrack.sequenceTimes.Count() > 1
+                    || (file.heightBelowTrack.sequenceTimes.Count() == 1
+                        && file.heightBelowTrack.sequenceTimes[0].times.Count() > this->uint90)) {
+                emitter->SetHeightBelow(state.heightBelowTrack.currentValue);
+            }
+
+            if (file.textureSlotTrack.sequenceTimes.Count() > 1
+                    || (file.textureSlotTrack.sequenceTimes.Count() == 1
+                        && file.textureSlotTrack.sequenceTimes[0].times.Count() > this->uint90)) {
+                emitter->SetTextureSlot(state.textureSlotTrack.currentValue);
+            }
+
+            // FROZEN-ONLY GUARD, the same one the particle driver carries and for the same reason:
+            // the reference indexes m_boneMatrices with no check because its loader guarantees both
+            // the array and the index, and frozen's allocates the array inside a `bones.Count()`
+            // branch and never validates boneIndex. Skipping leaves the ribbon unplaced for the
+            // frame, which is the same thing the visibility gate below already does.
+            if (!this->m_boneMatrices
+                    || file.boneIndex >= this->m_shared->m_data->bones.Count()) {
+                continue;
+            }
+
+            // The placement: the ribbon's bone, moved to the ribbon's own position on that bone,
+            // then back out of view space. frozen bakes the view into its bone matrices exactly as
+            // the reference does, so the same m_viewInv undoes it -- the trail's geometry is kept in
+            // world space.
+            C44Matrix placement = this->m_boneMatrices[file.boneIndex];
+
+            placement.Translate(file.position);
+            placement *= this->m_scene->m_viewInv;
+
+            // Visibility drives BOTH of these, in opposite senses: the trail is raised while it is
+            // visible, and emission is suppressed while it is not. Stepping an invisible ribbon
+            // rather than skipping it is what keeps its trail ageing out instead of freezing.
+            emitter->SetAbove(state.visibilityTrack.currentValue != 0);
+
+            if (this->m_flag8000) {
+                C3Vector offset = { 0.0f, 0.0f, 0.0f };
+
+                emitter->SetPosition(placement, offset, this->m_particleRelative);
+                emitter->Update(dt, state.visibilityTrack.currentValue == 0);
+            }
+        }
+    }
 
     if (this->m_particleEmitters && this->m_shared->m_data->particles.Count()) {
-        // The emitters' own delta, which nothing else in frozen computes. The subtraction is done
-        // in unsigned ticks and then fixed up, which only matters across a wrap of the
-        // millisecond clock -- but without it a wrap gives a hugely negative dt that Update's
-        // guard would swallow silently, so the branch is kept.
-        uint32_t now = this->m_scene->m_time;
-        int32_t ticks = static_cast<int32_t>(now - this->uint8c);
-
-        float dt = static_cast<float>(ticks);
-
-        if (ticks < 0) {
-            dt += 4294967296.0f;
-        }
-
-        dt *= 0.001f;
-
-        this->uint8c = now;
-
         for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
             this->AnimateParticleEmitter(dt, i);
         }
     }
-    // CLAUDE.md already records that ribbons cannot be evaluated yet because unit movement is not
-    // ported; this is the other half of why.
 
     if (this->m_flag8) {
         this->m_drawPrev = &this->m_scene->m_drawList;
