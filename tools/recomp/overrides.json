@@ -3352,5 +3352,29 @@
   "00824230": {
     "status": "faithful",
     "note": "CM2Model::SetRibbonFlag8. Recall 50%, which on a TWO-call function means one of two matched, and the granularity is the whole story. The reference calls SMemAlloc then CM2Ribbon::SetFlag8 from opposite branches of the same if; frozen reaches SMemAlloc through STORM_NEW and the matcher lines up only the second. Its twin CM2Model::SetParticleEmission (FUN_008279f0) is the same function shape with the same STORM_NEW and scores 100% -- it just has more calls after the branch for the in-order match to anchor on. Structure, argument, queued type and replay all agree; this is the ENQUEUE half of model call type 13, whose dispatch handler was already written."
+  },
+  "00832500": {
+    "status": "excluded",
+    "note": "std::sort _Sort. The entry. Insertion-sorts a range under 32 elements (the `< 0x21` test), recurses with a halving depth budget, and falls back to make_heap plus sort_heap when that budget runs out -- which is introsort, and the shape is unmistakable. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+  },
+  "0082e840": {
+    "status": "excluded",
+    "note": "std::sort _Partition_by_median_guess. Takes (&out, first, last, pred) and returns a pair of bounds through the out parameter, which is what _Sort splits on. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+  },
+  "0082eb10": {
+    "status": "excluded",
+    "note": "std::sort _Insertion_sort. The small-range case _Sort calls when the span is under 32 elements. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+  },
+  "0082ebc0": {
+    "status": "excluded",
+    "note": "std::sort _Make_heap. Called as (first, last, pred, 0, 0) immediately before the heap sort, on the depth-exhausted path. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+  },
+  "008312a0": {
+    "status": "excluded",
+    "note": "std::sort _Sort_heap. Swaps the root with the last element and sifts down, shrinking the range each pass -- textbook sort_heap. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+  },
+  "0082dcc0": {
+    "status": "excluded",
+    "note": "std::sort _Adjust_heap. The sift-down _Sort_heap and _Make_heap both drive. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
   }
 }

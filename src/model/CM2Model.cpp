@@ -3501,6 +3501,35 @@ int32_t CM2Model::InitializeLoaded() {
     return 1;
 }
 
+// THE MERGE PREPARATION PASS, mapped 2026-09-27 and not yet ported. Recorded here because this is
+// where anyone enabling the doodad path will come looking, and because the call graph took a while
+// to untangle:
+//
+//   FUN_00832dd0 (187 bytes, 2 callers) holds a {data, count} pair of 12-byte elements and does
+//   two things: std::sort them, then walk the sorted run grouping neighbours that can merge.
+//
+//   The element is {CM2Model* model, uint32_t batchIndex, uint32_t <unidentified>}. The third
+//   field is read by neither predicate below, so it is deliberately left unnamed here rather than
+//   guessed at.
+//
+//   FUN_00824b70 (237 bytes) is its `operator<`, ordering by the batch's skin section
+//   boneInfluences, then ptr2D0, then m_shared, then batchIndex. Sorting on boneInfluences first
+//   is the point: that is what picks the vertex shader permutation, so equal-influence batches end
+//   up adjacent and one shader serves the whole run.
+//
+//   FUN_00824c60 (195 bytes) is the grouping test, and what it accepts says what a merge IS: the
+//   same m_shared, the same batchIndex, the same ptr2D0, and skin sections with equal
+//   boneInfluences. Same batch of the same model on DIFFERENT instances -- which is instanced
+//   doodad batching, and is why M2BatchesCanMerge deliberately leaves skinSectionIndex out of its
+//   own comparison.
+//
+// The six std::sort internals underneath FUN_00832dd0 are STL and are marked `excluded` in
+// overrides.json, named for the standard function each one is; they are not work.
+//
+// NOT PORTED, deliberately: FUN_00832dd0's own two callers are unported, so the predicates would
+// be two functions nothing calls, with one invented field name between them. They go in with their
+// consumer.
+//
 // Returns 0, which is the safe answer rather than a placeholder: it means "this batch cannot be
 // merged into a doodad batch", so CM2Scene::Animate gives every element type 0 and the doodad path
 // is uniformly off. That agrees with the rest of frozen -- the M2BatchDoodads CVar reaches
