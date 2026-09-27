@@ -158,8 +158,15 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             // CM2Scene::SetProjectionCallback yet, so it stays null and the gate stays shut; see
             // docs/ref/parity-shadows.md for the whole chain.
             //
-            // Types 3 and 5 need ribbon and draw-callback elements the gather does not build, so
-            // porting either of those draws still means porting its gate first.
+            // Type 5 needs draw-callback elements the gather does not build, so porting
+            // DrawCallback still means porting its gate first.
+            //
+            // Type 3 is no longer in that position as of 2026-09-27: CM2Scene::Animate now has
+            // the ribbon gather, transcribed from the reference. It still emits nothing, because
+            // CM2Ribbon::IsEmpty is permanently true while no per-frame segment update advances
+            // the ring -- so DrawRibbon below is reached zero times today, and the ORDER to port
+            // in is the segment update first, then this draw. Filling DrawRibbon before the
+            // update would leave it looking correct and never running.
             switch (this->m_curElement->type) {
                 case 0: {
                     this->DrawBatch();

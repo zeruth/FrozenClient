@@ -55632,7 +55632,7 @@
   "status": "ported"
  },
  "00821a20": {
-  "branchRatio": 0.251,
+  "branchRatio": 0.283,
   "constOverlap": 0.083,
   "faithful": false,
   "fidelity": 0.615,
@@ -55641,7 +55641,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 4866,
+  "frozenSize": 5093,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -71255,7 +71255,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::IsEmpty",
-  "frozenSize": 0,
+  "frozenSize": 10,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 14,

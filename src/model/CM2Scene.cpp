@@ -11,6 +11,7 @@
 #include "model/CM2Model.hpp"
 #include "model/CM2SceneRender.hpp"
 #include "model/CM2ParticleEmitter.hpp"
+#include "model/CM2Ribbon.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Sort.hpp"
@@ -827,8 +828,100 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             }
         }
 
-        // TODO
-        // - ribbons
+        // Ribbon elements, type 3: one per emitter that has any trail to draw.
+        //
+        // WHY THIS DOES NOT LIFT Animate's RECALL, so the next reader does not go looking for a
+        // mistake here: the reference makes TWO passes over the models and frozen makes one. Its
+        // first pass does IsDrawable then the particles (AddParticleElement at 0x821a20+0x226 in
+        // the corpus rendering); its second does IsDrawable again, then the batch elements,
+        // IsBatchDoodadCompatible, ComputeElementShaders, then THESE ribbons, then the draw
+        // callbacks. So the reference emits particle elements BEFORE batch elements, and frozen
+        // emits them after.
+        //
+        // This block is in the right place relative to its own neighbours -- batches before it,
+        // draw callbacks after -- which is the reference's pass-2 order. The call-sequence
+        // matcher still cannot align it, because the merged pass reorders everything around it.
+        // Splitting Animate back into two passes is what would move that number, and it would also
+        // change which elements get the low indices: the lists are heap-sorted by type first, so
+        // the index order only decides ties, but it is a real difference and not just cosmetic.
+        //
+        // THIS EMITS NOTHING TODAY, for two independent reasons, and both were measured on
+        // 2026-09-27 rather than assumed:
+        //
+        //   1. Almost no model carries ribbons. A counter in InitializeLoaded saw 5 of 6400
+        //      loaded models with any, and none of those 5 was ever in this scene's animate list
+        //      during a 45-second run on map 0 -- a probe on the loop below never iterated once.
+        //   2. Even for a model that does, IsEmpty is permanently TRUE. It compares head against
+        //      tail, and the ONLY writes to m_head in the whole tree are its default initialiser
+        //      and Initialize's reset to zero. Nothing advances the ring, because the per-frame
+        //      segment update is not ported.
+        //
+        // So this is the correct gate in place ahead of its producer, not working code. Reason 2
+        // is what has to go first: port the segment update, and this starts emitting. Until then
+        // CM2SceneRender::DrawRibbon stays empty and nothing would draw the elements anyway --
+        // which is safe here in a way it would NOT be for doodads, because ribbons displace
+        // nothing. See the note at CM2Model::IsBatchDoodadCompatible for the contrast.
+        if (model->m_ribbonEmitters) {
+            for (int32_t i = 0; i < data->ribbons.Count(); i++) {
+                CM2Ribbon* emitter = model->m_ribbonEmitters[i];
+
+                // An empty ring is not worth an element, and IsEmpty is the reference's own gate.
+                if (emitter->IsEmpty()) {
+                    continue;
+                }
+
+                const M2Ribbon& file = data->ribbons[i];
+
+                // The model's alpha, scaled by the ribbon's own animated alpha ONLY when that
+                // track has keys. The reference tests the track's sequenceTimes count (+0x3c on
+                // the file record), not its key count.
+                float alpha = model->float198;
+
+                if (file.alphaTrack.sequenceTimes.Count()) {
+                    alpha *= model->m_ribbons[i].alphaTrack.currentValue;
+                }
+
+                // The pass is chosen from the FIRST material only, however many the ribbon has.
+                const M2Material& material = data->materials[file.materialIndices[0]];
+
+                M2Element* element = this->m_elements.New();
+
+                if (!element) {
+                    continue;
+                }
+
+                element->type = 3;
+                element->model = model;
+                element->flags = 0x0;
+                element->alpha = alpha;
+                // BOTH of these take model->float88. The particle element puts a distance in the
+                // second one; the ribbon element does not, and this is the reference's own
+                // duplication rather than a transcription slip.
+                element->float10 = model->float88;
+                element->float14 = model->float88;
+                // Which ribbon this element is for -- the draw has no other way back to it.
+                element->index = i;
+                element->priorityPlane = file.priorityPlane;
+                element->pixelPermute = 0;
+                element->dword34 = 0xFFFFFFFF;
+                element->dword38 = 0xFFFFFFFF;
+                element->dword3c = 0;
+
+                // The same pass split AddParticleElement uses, and the same 0.99999 (0x00a45528)
+                // effectively-opaque threshold. The difference is that a ribbon has no equivalent
+                // of the particle emitter's 0x40000 flag, so the choice between the two
+                // transparent passes rests on the water side alone.
+                if (material.blendMode <= 1 && alpha >= 0.9999899864196777f) {
+                    *this->array54[0].New() = elementIndex;
+                } else if (!v21) {
+                    *this->array54[2].New() = elementIndex;
+                } else {
+                    *this->array54[1].New() = elementIndex;
+                }
+
+                elementIndex++;
+            }
+        }
 
         // TODO
         // - draw callbacks

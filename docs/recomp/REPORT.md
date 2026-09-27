@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-26 23:54 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 00:06 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -23,7 +23,7 @@ Match evidence: annotated 2320, callgraph 243, callorder 111, cvar 31, handler 2
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-26 23:54 -- mapped 4573, ported 3895, stub 575, spine mapped 1552.
+Previous run: 2026-09-27 00:05 -- mapped 4573, ported 3895, stub 575, spine mapped 1552.
 
 ## Lua API coverage (binding tables)
 
@@ -611,7 +611,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 0082f0f0 | `CM2Model::AnimateMT` | 16% | 47 | 63 | 152 | 58 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00832ea0 | `CM2Model::InitializeLoaded` | 48% | 71 | 72 | 170 | 103 | 8% | 5663 |
-| 00821a20 | `CM2Scene::Animate` | 62% | 54 | 39 | 219 | 55 | 8% | 5621 |
+| 00821a20 | `CM2Scene::Animate` | 62% | 54 | 44 | 219 | 62 | 8% | 5621 |
 | 0097be80 | `CM2ParticleEmitter::WriteParticleVertices` | 90% | 10 | 25 | 107 | 23 | 6% | 5350 |
 | 00857ca0 | `luaV_execute` | 47% | 50 | 48 | 163 | 115 | 2% | 5138 |
 | 00621070 | `TooltipUnitLevelLine` | 20% | 137 | 33 | 172 | 19 | 2% | 5010 |
@@ -726,15 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 22:50 | 4566 (16.9%) | 2341 (8.7%) | 575 | 1547/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:11 | 4568 (16.9%) | 2342 (8.7%) | 575 | 1547/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:11 | 4568 (16.9%) | 2342 (8.7%) | 575 | 1547/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:11 | 4568 (16.9%) | 2342 (8.7%) | 575 | 1547/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:12 | 4568 (16.9%) | 2342 (8.7%) | 575 | 1547/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:12 | 4568 (16.9%) | 2342 (8.7%) | 575 | 1547/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:27 | 4571 (17.0%) | 2344 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:27 | 4571 (17.0%) | 2344 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:27 | 4571 (17.0%) | 2344 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:27 | 4571 (17.0%) | 2344 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:28 | 4571 (17.0%) | 2345 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:32 | 4571 (17.0%) | 2345 (8.7%) | 575 | 1550/5381 | 2924/2964 | 1380 |
@@ -751,6 +742,15 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-26 23:42 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:54 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:54 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-26 23:58 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-26 23:58 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-27 00:05 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-27 00:05 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
+| 2026-09-27 00:06 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 
