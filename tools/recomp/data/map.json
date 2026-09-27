@@ -47403,6 +47403,36 @@
   "refSize": 445,
   "status": "ported"
  },
+ "007a7e50": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyFoldShortPair",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
+ "007a7f00": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyFoldByte",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
  "007a8320": {
   "branchRatio": 1.0,
   "constOverlap": 0.042,

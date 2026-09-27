@@ -141,9 +141,21 @@ class IGeomFactory {
                               CGxBatch* batch) = 0;
 };
 
-// What the outline's values are folded through. Note the mixed signature -- two integers and a
-// float -- which is what the reference pushes.
-typedef int32_t (*MapObjPolyFold)(int32_t a, int32_t b, float operand);
+// What the outline's values are folded through. Both ends and the result are POINTERS to a vertex's
+// attribute bytes -- the two folds below interpolate between two attribute blocks into a scratch
+// slot and hand back its address. The float is the interpolation factor.
+typedef void* (*MapObjPolyFold)(const void* a, const void* b, float t);
+
+// ref: FUN_007a7f00
+// Interpolate ONE byte. The fold for the vertex layout that carries a colour cursor.
+void* MapObjPolyFoldByte(const void* a, const void* b, float t);
+
+// ref: FUN_007a7e50
+// Interpolate TWO uint16s. The fold for the layout without one.
+void* MapObjPolyFoldShortPair(const void* a, const void* b, float t);
+
+// Frozen-only: empty the fold scratch. The reference does this inline in the emitter (0x7a81e6).
+void MapObjPolyFoldReset();
 // The point-and-edge accumulator the map-object liquid geometry emitter builds its outline in, and
 // the walker that reads it back. The reference keeps both in MapObjRead.cpp; their purpose was only
 // established once FUN_007a7f60 -- the emitter -- was read, because nine functions operate on this
@@ -168,7 +180,10 @@ struct MapObjPolyPoint {
     // 0x2c to 0x40, which breaks the stride the append and the walk both compute by hand and which
     // the static_asserts below pin. So they stay 32-bit and opaque, and whoever ports the evaluator
     // has to decide between an index-based node and a side table. Recorded rather than guessed at.
-    int32_t value;          // +0x0c, memoised; zero means unevaluated
+    // +0x0c: a POINTER to this point's attribute bytes, memoised. Null means unevaluated. For a
+    // point the emitter appended it aims into the group's m_liquidVerts; for one the clipper
+    // interpolated it aims at a fold scratch slot.
+    void* value;            // +0x0c
     // +0x10 and +0x14: the two points this one's value interpolates between, as INDICES.
     //
     // DIVERGENCE, and the reason the earlier note here about pointer width is now moot. The
@@ -219,19 +234,16 @@ struct MapObjPolySet {
     int32_t cursor;               // +0x64c: which edge a walk starts from
 };
 
-// The layout claims above are checked rather than asserted in prose. Both of these structs are
-// pointer-free, so their 32-bit offsets carry over to frozen's 64-bit build unchanged and every
-// number the reference reads can be pinned here. MapObjPolyWalk below is deliberately NOT checked:
-// it holds two pointers, so its offsets are 8-byte-wider here and cannot match the reference's.
-static_assert(sizeof(MapObjPolyPoint) == 0x2c, "the append strides by 0x2c");
-static_assert(offsetof(MapObjPolyPoint, inEdge) == 0x1c, "the walk reads the in edge at +0x1c");
-static_assert(offsetof(MapObjPolyPoint, outEdge) == 0x20, "the walk reads the out edge at +0x20");
+// THE POINT'S LAYOUT DELIBERATELY DIVERGES NOW, and the asserts that pinned it are gone with a
+// reason. Its +0x0c holds a POINTER -- the fold returns the address of an interpolated attribute
+// block -- which is four bytes in the reference and eight here, so the struct cannot be 0x2c and
+// everything after that field shifts. Nothing breaks: frozen reaches these by named field and array
+// index throughout, nothing copies one out of file data, and the reference's own offsets are kept in
+// the comments above for reading the disassembly against.
+//
+// The edge is still pointer-free, so its stride is still worth pinning -- it is the one number the
+// reference's hand-written edge arithmetic depends on.
 static_assert(sizeof(MapObjPolyEdge) == 0xc, "the edge array strides by 0xc");
-static_assert(offsetof(MapObjPolySet, edges) == 0x580, "32 points exactly fill the space before it");
-static_assert(offsetof(MapObjPolySet, pointCount) == 0x640, "the append bumps the count at +0x640");
-static_assert(offsetof(MapObjPolySet, edgeCount) == 0x644, "the walk bounds the cursor against +0x644");
-static_assert(offsetof(MapObjPolySet, cursor) == 0x64c, "the walk seeds from the cursor at +0x64c");
-
 // A walk outward from one edge. Both ends are POINT indices, seeded from that edge's two ends.
 struct MapObjPolyWalk {
     MapObjPolySet* set;     // +0x00
@@ -268,14 +280,14 @@ void MapObjPolyClipToPlane(MapObjPolySet* set, const C4Plane& plane, int32_t sid
 
 // ref: FUN_007d91f0
 // Evaluate one point's value, memoising into it and recursing through the two it interpolates.
-int32_t MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold);
+void* MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold);
 
 // ref: FUN_007d9390
 // Read the walk's current point: its position, and its value evaluated on demand.
-void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, int32_t* value);
+void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, void** value);
 
 // ref: FUN_007d9230
-void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, uint32_t value);
+void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, const void* value);
 
 // ref: FUN_007d9330
 void MapObjPolyBeginWalk(MapObjPolyWalk* walk, MapObjPolySet* set, void* callback);

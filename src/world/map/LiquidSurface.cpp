@@ -1159,11 +1159,11 @@ const uint32_t* LiquidTypeBlock(int32_t liquidType) {
 // ref: FUN_007d9230
 // Append one point. No bounds check, which is the reference's own shape -- the emitter that fills
 // this knows the grid it is walking cannot produce more than the 32 the array holds.
-void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, uint32_t value) {
+void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, const void* value) {
     MapObjPolyPoint* point = &set->points[set->pointCount];
 
     point->position = position;
-    point->value = value;
+    point->value = const_cast<void*>(value);
 
     set->pointCount++;
 }
@@ -1335,7 +1335,7 @@ void MapObjPolyReset(MapObjPolySet* set) {
 //
 // Recurses on INDICES rather than the reference's pointers, for the reason recorded at the point's
 // childA -- the reference's addresses always aim inside this same array.
-int32_t MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold) {
+void* MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold) {
     MapObjPolyPoint* p = &set->points[point];
 
     if (p->value) {
@@ -1343,8 +1343,8 @@ int32_t MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold) {
     }
 
     // Evaluated child-B-first, as the reference does, then folded child-A-first.
-    int32_t b = MapObjPolyEval(set, p->childB, fold);
-    int32_t a = MapObjPolyEval(set, p->childA, fold);
+    void* b = MapObjPolyEval(set, p->childB, fold);
+    void* a = MapObjPolyEval(set, p->childA, fold);
 
     p->value = fold(a, b, p->operand);
 
@@ -1360,7 +1360,7 @@ int32_t MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold) {
 // child order and the same float operand -- confirmed instruction for instruction at 0x7d93c4
 // through 0x7d93df. frozen calls it instead. That trades one call against duplicating a memoising
 // recursion, and the computation is identical; the only cost is a call the reference does not make.
-void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, int32_t* value) {
+void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, void** value) {
     int32_t index = (walk->steps & 1) ? walk->forward : walk->back;
 
     MapObjPolySet* set = walk->set;
@@ -1488,7 +1488,7 @@ void MapObjPolyClipToPlane(MapObjPolySet* set, const C4Plane& plane, int32_t sid
         np->position.z = a->position.z + (b->position.z - a->position.z) * t;
 
         // Its value interpolates the two endpoints, computed on first read rather than now.
-        np->value = 0;
+        np->value = nullptr;
         np->childA = edge->from;
         np->childB = edge->to;
         np->operand = t;
@@ -1649,6 +1649,73 @@ void WriteLiquidVertex(CMapObjGroup* group, const C44Matrix& matrix, const C3Vec
     }
 
     (void)uv2First;
+}
+
+
+// The fold scratch. Both folds take EIGHT BYTES per call from here and return the slot's address,
+// which is what the outline's memoised values point at.
+//
+// The reference keeps this at 0x00d1bf00 with its cursor at 0x00d1bee0 and neither fold bounds the
+// cursor -- the emitter resets it inline instead (0x7a81e6), once per tile. That is what makes an
+// unbounded-looking allocator safe: a tile's outline holds at most 32 points, so at most 28 of them
+// can be interpolated, and each is folded once thanks to the memo. Sixty-four slots is frozen's own
+// number and is double what that bound needs.
+static uint8_t s_foldScratch[64][8];
+static int32_t s_foldCursor = 0;
+
+void MapObjPolyFoldReset() {
+    s_foldCursor = 0;
+}
+
+// ref: FUN_007a7f00
+// Interpolate one byte between two attribute blocks. Used for the liquid vertex layout that carries
+// a colour cursor, where the byte is the only thing needing interpolation.
+//
+// ROUNDED, not truncated -- the reference converts the float with a round-to-nearest conversion, so
+// a truncating cast here would drift the result down by up to one unit on every interpolated vertex.
+void* MapObjPolyFoldByte(const void* a, const void* b, float t) {
+    auto pa = static_cast<const uint8_t*>(a);
+    auto pb = static_cast<const uint8_t*>(b);
+
+    uint8_t* slot = s_foldScratch[s_foldCursor % 64];
+
+    s_foldCursor++;
+
+    float value = (static_cast<float>(pb[0]) - static_cast<float>(pa[0])) * t
+                + static_cast<float>(pa[0]);
+
+    slot[0] = static_cast<uint8_t>(std::lrint(value));
+
+    return slot;
+}
+
+// ref: FUN_007a7e50
+// Interpolate two uint16s. Used for the layout without a colour cursor, where the pair is what the
+// first texcoord is built from.
+//
+// The reference writes the two halves through DIFFERENT address expressions -- the first scaled by
+// the cursor as a dword index and the second as a raw byte offset -- which look inconsistent and are
+// not: both land in the same eight-byte slot, at +0 and +2. Working that out is the only subtle part
+// of this function.
+void* MapObjPolyFoldShortPair(const void* a, const void* b, float t) {
+    auto pa = static_cast<const uint16_t*>(a);
+    auto pb = static_cast<const uint16_t*>(b);
+
+    uint8_t* slot = s_foldScratch[s_foldCursor % 64];
+
+    s_foldCursor++;
+
+    float first = (static_cast<float>(pb[0]) - static_cast<float>(pa[0])) * t
+                + static_cast<float>(pa[0]);
+    float second = static_cast<float>(pa[1])
+                 + (static_cast<float>(pb[1]) - static_cast<float>(pa[1])) * t;
+
+    auto out = reinterpret_cast<uint16_t*>(slot);
+
+    out[0] = static_cast<uint16_t>(std::lrint(first));
+    out[1] = static_cast<uint16_t>(std::lrint(second));
+
+    return slot;
 }
 
 } // namespace Liquid

@@ -209903,6 +209903,59 @@
 "refs": [],
 "line": 1562
 },
+"Liquid::MapObjPolyFoldReset": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1666
+},
+"Liquid::MapObjPolyFoldByte": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"lrint"
+],
+"strings": [],
+"consts": [
+"0",
+"64"
+],
+"branches": 0,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 1676
+},
+"Liquid::MapObjPolyFoldShortPair": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"lrint",
+"lrint"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"64"
+],
+"branches": 0,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 1700
+},
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [
 "src/world/map/liquidvertexdata.cpp"
