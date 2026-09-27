@@ -169,8 +169,13 @@ struct MapObjPolyPoint {
     int32_t operand;        // +0x18, the evaluator's third argument
     int32_t inEdge;         // +0x1c: the edge arriving at this point
     int32_t outEdge;        // +0x20: the edge leaving it
-    int32_t unknown24;      // +0x24, set to -1 by the link pass and read nowhere
-    uint32_t unknown28;     // +0x28
+    // +0x24 and +0x28 are a one-entry memo of this point's distance to a plane. FUN_007d9470
+    // classifies every point of every unflagged edge against a plane, and rather than recompute a
+    // point shared by two edges it stamps the generation it last did the work in. So the pair is
+    // "the distance, and which pass it belongs to" -- and CloseOutline writing -1 into the stamp is
+    // initialising it to a generation that can never match, not filling an unused slot.
+    int32_t stamp;          // +0x24
+    float planeDistance;    // +0x28
 };
 
 struct MapObjPolyEdge {
@@ -179,12 +184,18 @@ struct MapObjPolyEdge {
     uint8_t flag;           // +0x08
 };
 
+// IT IS A POLYGON CLIPPER. That only became clear from FUN_007d9470, which walks the unflagged edges
+// classifying both of each edge's points against a plane and counting the crossings -- points,
+// edges, cached signed distances and a boundary walk are the pieces of exactly that. For map-object
+// water it is the liquid outline being clipped, which is why the emitter builds one per surface.
 struct MapObjPolySet {
     MapObjPolyPoint points[32];   // +0x000
     MapObjPolyEdge edges[16];     // +0x580
     int32_t pointCount;           // +0x640
     int32_t edgeCount;            // +0x644
-    uint32_t unknown648;          // +0x648
+    // +0x648: the GENERATION counter. FUN_007d9470 bumps it on entry and stamps every point it
+    // classifies with it, so a point touched twice in one pass is computed once.
+    int32_t generation;           // +0x648
     int32_t cursor;               // +0x64c: which edge a walk starts from
 };
 
@@ -210,6 +221,10 @@ struct MapObjPolyWalk {
     uint32_t steps;         // +0x10: its low bit alternates which end moves
     uint8_t done;           // +0x14
 };
+
+// ref: FUN_007d9740
+// Empty the set: zero every point's position and reset the counts, the generation and the cursor.
+void MapObjPolyReset(MapObjPolySet* set);
 
 // ref: FUN_007d9270
 // Turn the appended points into a CLOSED outline and return how many times the last edge wrapped.

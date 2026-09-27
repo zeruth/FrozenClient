@@ -3385,5 +3385,10 @@
     "frozen": "Liquid::LiquidTypeBlock",
     "status": "diverged",
     "note": "Resolves a liquid type through LiquidType.dbc and LiquidMaterial.dbc and gates on the material's m_LVF being 0 or 2. Both lookups and the gate are faithful; the FINAL RETURN is not. The reference indexes a table at 0x00adfbb4 by LiquidTypeRec::m_int[0] -- exactly two pointer entries, 0x00cdf7d0 and 0x00cdfbd0, 0x400 bytes apart -- and what those two 1024-byte blocks hold is not established, so frozen returns null instead of inventing a type for them. Null is also what an undrawable liquid type returns, so no caller can yet tell the difference. Naming the blocks wants FUN_007a7b00's use of the value, which is the per-vertex emit and is not ported. Offsets confirmed against frozen's own records: LiquidTypeRec +0x38 is m_materialID, +0xa4 is m_int[0]; LiquidMaterialRec +0x04 is m_LVF."
+  },
+  "007d9720": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "Twenty-six bytes that call FUN_007d9330 and return their second argument: MSVC's return-by-value constructor wrapper, emitted for `return Walk(set, callback);`. The behaviour is entirely in FUN_007d9330, which is ported as Liquid::MapObjPolyBeginWalk, so there is nothing here to port -- excluded as compiler glue rather than left looking like a gap. Read 2026-09-27 with the rest of the map-object liquid outline accumulator."
   }
 }

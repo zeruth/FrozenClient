@@ -209568,6 +209568,23 @@
 "refs": [],
 "line": 1283
 },
+"Liquid::MapObjPolyReset": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"32"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 1305
+},
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [
 "src/world/map/liquidvertexdata.cpp"

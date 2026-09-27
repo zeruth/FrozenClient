@@ -1247,7 +1247,7 @@ int32_t MapObjPolyCloseOutline(MapObjPolySet* set) {
         MapObjPolyPoint* point = &set->points[i];
 
         point->outEdge = i;
-        point->unknown24 = -1;
+        point->stamp = -1;          // a generation that can never match, so the memo is cold
         point->inEdge = i - 1;
 
         MapObjPolyEdge* edge = &set->edges[set->edgeCount];
@@ -1290,6 +1290,29 @@ void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set) {
 
         set->cursor++;
     }
+}
+
+
+// ref: FUN_007d9740
+// Empty the set. It clears only each point's POSITION -- not the value, the edge links, or the
+// distance memo -- and then the four trailing fields. That is enough because nothing reads a point
+// above pointCount, and the two fields that would matter if it did are both self-guarding: the
+// memo's stamp cannot match a generation that restarts at 0 without first being written, and the
+// edge links are rewritten wholesale by CloseOutline.
+//
+// Its loop runs 32 times, counting 31 down THROUGH zero, and that is a third independent
+// confirmation of the point capacity -- after the append's stride and the edge array's position.
+void MapObjPolyReset(MapObjPolySet* set) {
+    for (int32_t i = 0; i < 32; i++) {
+        set->points[i].position.x = 0.0f;
+        set->points[i].position.y = 0.0f;
+        set->points[i].position.z = 0.0f;
+    }
+
+    set->pointCount = 0;
+    set->edgeCount = 0;
+    set->generation = 0;
+    set->cursor = 0;
 }
 
 } // namespace Liquid

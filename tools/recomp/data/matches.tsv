@@ -3293,6 +3293,7 @@ addr	how	frozen	evidence
 007d9330	annotated	MapObjPolyBeginWalk	tag in src/world/map/LiquidSurface.cpp
 007d9400	annotated	MapObjPolyAdvance	tag in src/world/map/LiquidSurface.cpp
 007d9460	annotated	MapObjPolyAtEnd	tag in src/world/map/LiquidSurface.cpp
+007d9740	annotated	MapObjPolyReset	tag in src/world/map/LiquidSurface.cpp
 007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp
