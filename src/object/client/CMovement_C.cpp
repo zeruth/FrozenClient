@@ -2,11 +2,63 @@
 #include "client/ClientServices.hpp"
 #include "net/Types.hpp"
 #include <common/DataStore.hpp>
+#include <storm/Memory.hpp>
 
-// Spent move events, reused by the allocator (FUN_006ebc70, not ported: Ghidra drops the event it
-// returns). The reference keeps this as a statically initialised empty list.
+// Spent move events, reused by the allocator. The reference keeps this as a statically
+// initialised empty list.
 // ref: DAT_00ada370
 static CPlayerMoveEventList s_moveEventFreeList;
+
+// ref: FUN_006ebc70
+// Take an event off the free list, or make one, and stamp it with a time and a type.
+//
+// THIS WAS PREVIOUSLY MARKED NOT PORTABLE because the decompilation drops the event it returns --
+// Ghidra types the whole function void and the allocated block simply vanishes. It reads straight
+// off the disassembly: eax carries the event down all three paths and is the return value, which
+// is the case CLAUDE.md means about reading the instructions rather than the decompilation.
+//
+// The reference open-codes the unlink, doing the tagged-pointer arithmetic that Storm's own list
+// already does. frozen calls the list instead. That is a DIVERGENCE in form only -- the same two
+// pointers get the same two values -- and it avoids a second copy of logic that is easy to get
+// subtly wrong and impossible to test in isolation.
+//
+// Two reference behaviours deliberately NOT reproduced, both on paths that should not arise:
+//
+//   * a free-list node whose `next` is null skips the unlink entirely (0x006ebd0e) and is handed
+//     out while the list still points at it. A correctly linked node never has a null next, so
+//     this is the reference coping with corruption by spreading it.
+//
+//   * when the allocation FAILS the reference zeroes eax and then writes the time, the type and
+//     the byte through it -- a store to address 8. Returning null is what the callers can
+//     actually cope with.
+CPlayerMoveEvent* MoveEventAllocate(int32_t time, int32_t type) {
+    CPlayerMoveEvent* event = s_moveEventFreeList.Head();
+
+    if (event) {
+        s_moveEventFreeList.UnlinkNode(event);
+    } else {
+        event = static_cast<CPlayerMoveEvent*>(
+            SMemAlloc(sizeof(CPlayerMoveEvent), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
+
+        if (!event) {
+            return nullptr;
+        }
+
+        // Already zero from the allocation flag; the reference stores them anyway and so does
+        // this, because the flag is the thing most likely to be changed by a later reader.
+        event->float10 = 0.0f;
+        event->float14 = 0.0f;
+        event->float18 = 0.0f;
+
+        new (&event->link) TSLink<CPlayerMoveEvent>();
+    }
+
+    event->time = time;
+    event->type = type;
+    event->byte50 = 0;
+
+    return event;
+}
 
 // ref: FUN_006e9290
 void MovementWrapAngle(float* angle, float lo, float hi) {

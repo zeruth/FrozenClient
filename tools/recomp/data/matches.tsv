@@ -2529,6 +2529,7 @@ addr	how	frozen	evidence
 006e9bb0	annotated	MovementSendTimeSyncResponse	tag in src/object/client/CMovement_C.cpp
 006eaba0	annotated	CMovementShared::IsOffGround	tag in src/object/movement/CMovementShared.cpp
 006eb590	annotated	MoveEventQueueRemoveType	tag in src/object/client/CMovement_C.cpp
+006ebc70	annotated	MoveEventAllocate	tag in src/object/client/CMovement_C.cpp
 006ec090	annotated	MoveEventQueueInsert	tag in src/object/client/CMovement_C.cpp
 006f1d20	annotated	CM2Model::AnimateAndGetWorldMatrix	tag in src/model/CM2Model.cpp
 006f74b0	annotated	CEffect::Unlink	tag in src/object/client/CEffect.cpp
