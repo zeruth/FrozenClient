@@ -907,10 +907,13 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
                 // and frozen's field simply sits two slots earlier. See the layout note in
                 // M2Types.hpp. The field written is the right one either way.
                 element->priorityPlane = file.priorityPlane;
-                element->pixelPermute = 0;
-                element->dword34 = 0xFFFFFFFF;
-                element->dword38 = 0xFFFFFFFF;
-                element->dword3c = 0;
+                // Same correction as AddParticleElement's -- these had been copied from it while
+                // it was still transcribing by slot. By MEANING: the effect is nulled, both
+                // permutes go to -1, and the reference's +0x3c takes 0.
+                element->effect = nullptr;
+                element->vertexPermute = 0xFFFFFFFF;
+                element->pixelPermute = 0xFFFFFFFF;
+                element->dword34 = 0;
 
                 // The same pass split AddParticleElement uses, and the same 0.99999 (0x00a45528)
                 // effectively-opaque threshold. The difference is that a ribbon has no equivalent
@@ -977,10 +980,20 @@ void CM2Scene::AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, 
     element->emitter = emitter;
     element->float10 = model->float88;
     element->float14 = distance;
-    element->pixelPermute = 0;
-    element->dword34 = 0xFFFFFFFF;
-    element->dword38 = 0xFFFFFFFF;
-    element->dword3c = 0;
+
+    // CORRECTED 2026-09-27. These four were transcribed from the reference SLOT BY SLOT, and this
+    // struct's fields sit two positions earlier than the reference's meanings (see M2Types.hpp), so
+    // every one of them landed on the wrong field. The reference writes 0 to EFFECT here, not to
+    // pixelPermute, and -1 to the two permutes.
+    //
+    // Nulling the effect is the part that matters: SortOpaqueGeoBatches and SortTransparent both
+    // test `elementA->effect && elementB->effect` before indexing a shader array with the permute,
+    // and the element allocator does not zero -- so a particle element was carrying whatever effect
+    // pointer the slot last held, and the guard let it through.
+    element->effect = nullptr;
+    element->vertexPermute = 0xFFFFFFFF;
+    element->pixelPermute = 0xFFFFFFFF;
+    element->dword34 = 0;
 
     // Counted for the additive sort the tail of Animate still owes.
     if (emitter->m_blendMode == 10 || emitter->m_blendMode == 3) {

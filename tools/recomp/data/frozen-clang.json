@@ -85128,7 +85128,7 @@
 ],
 "branches": 62,
 "stub": false,
-"lines": 548,
+"lines": 551,
 "refs": [],
 "line": 393
 },
@@ -85158,9 +85158,9 @@
 ],
 "branches": 6,
 "stub": false,
-"lines": 47,
+"lines": 57,
 "refs": [],
-"line": 954
+"line": 957
 },
 "CM2Scene::SetProjectionCallback": {
 "files": [
@@ -85173,7 +85173,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1011
+"line": 1024
 },
 "DestroyModel": {
 "files": [
@@ -85189,7 +85189,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1020
+"line": 1033
 },
 "CM2Scene::CreateModelFrom": {
 "files": [
@@ -85206,7 +85206,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1034
+"line": 1047
 },
 "CM2Scene::CreateModel": {
 "files": [
@@ -85230,7 +85230,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1052
+"line": 1065
 },
 "CM2Scene::Draw": {
 "files": [
@@ -85252,7 +85252,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 1083
+"line": 1096
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -85288,7 +85288,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1124
+"line": 1137
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -85312,7 +85312,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1206
+"line": 1219
 },
 "CM2Scene::BeginRayQuery": {
 "files": [
@@ -85327,7 +85327,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1266
+"line": 1279
 },
 "CM2Scene::ReserveRayCandidates": {
 "files": [
@@ -85353,7 +85353,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1273
+"line": 1286
 },
 "CM2Scene::RaySetup": {
 "files": [
@@ -85374,7 +85374,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1306
+"line": 1319
 },
 "CM2Scene::BlendBoneMatrices": {
 "files": [
@@ -85399,7 +85399,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1339
+"line": 1352
 },
 "CM2Scene::BlendBoneMatrices3x4": {
 "files": [
@@ -85426,7 +85426,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1378
+"line": 1391
 },
 "CM2Scene::RayTestTriangles": {
 "files": [
@@ -85449,7 +85449,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 1409
+"line": 1422
 },
 "CM2Scene::ProjectSectionVertices": {
 "files": [
@@ -85468,7 +85468,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1451
+"line": 1464
 },
 "CM2SceneRender::Draw": {
 "files": [

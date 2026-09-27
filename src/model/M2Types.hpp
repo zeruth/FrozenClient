@@ -61,38 +61,36 @@ class CM2ParticleEmitter;
 // pointer whose +8 is a colour index it bounds against m_data->colors.Count(). Both of those want
 // batch at +0x28, two slots later than this.
 //
-// SETTLED, by reading what the reference's own batch-element gather writes field by field inside
-// CM2Scene::Animate. Those writes are the authority, and they give:
+// SETTLED 2026-09-27, and the answer is not what the first reading of it suggested. Three
+// reference functions agree on the offsets -- the batch-element gather inside CM2Scene::Animate,
+// CM2SceneRender::DrawBatchDoodad, and CM2Scene::ComputeElementShaders -- and they give:
 //
-//     +0x00 type        [0], assigned 0, 1 or 2
-//     +0x04 model       [1]
-//     +0x08 flags       [2], zeroed then OR'd with 2 and 4
-//     +0x0c alpha       [3]
-//     +0x10, +0x14      the two floats -- confirmed by the particle and ribbon writes
-//     +0x18 index       [6]
-//     +0x1c, +0x20      TWO SLOTS THIS STRUCT DOES NOT HAVE
-//     +0x24 priorityPlane  [9], taken off the batch record
-//     +0x28 batch          [10]
-//     +0x2c skinSection    [0xb]
-//     +0x30 effect         [0xc]
-//     +0x34 .. +0x40    four more, the three the particle builder sets among them
+//     +0x00 type    +0x04 model   +0x08 flags   +0x0c alpha   +0x10/+0x14 the two floats
+//     +0x18 index   +0x1c ?       +0x20 ?       +0x24 priorityPlane
+//     +0x28 batch   +0x2c skinSection           +0x30 effect
+//     +0x34 vertexPermute         +0x38 pixelPermute          +0x3c ?   +0x40 ?
 //
-// Seventeen slots, 0x44, which is the element stride -- so the SIZE was never wrong. The ORDER is:
-// everything from priorityPlane down sits TWO SLOTS EARLIER here than in the reference, and the
-// two fields at +0x1c and +0x20 are absent. vertexPermute and pixelPermute are parked where the
-// reference keeps skinSection and effect, so they are not at the reference's offsets either.
+// Seventeen slots, 0x44, the element stride. This struct has EIGHTEEN fields -- the extra is the
+// deliberate `emitter` divergence at the end -- and its named fields sit TWO POSITIONS EARLIER
+// than the reference's meanings: what is called priorityPlane here occupies the slot the reference
+// leaves unidentified at +0x1c, `batch` sits at the reference's +0x20, `skinSection` where the
+// reference keeps priorityPlane, `effect` where it keeps batch, and so on down to dword34 and
+// dword38, which are the reference's vertexPermute and pixelPermute.
 //
-// This also CORRECTS a note in CM2Scene.cpp's ribbon gather. That gather stores the ribbon's
-// priority plane at dword 9 and the note called it an overload of the skinSection slot. It is not
-// an overload -- +0x24 IS priorityPlane in the reference. The "overload" was this discrepancy
-// showing through, and the ribbon code writes the semantically right field either way.
+// THIS IS NOT A BUG ON ITS OWN. frozen is self-consistent: every producer and every consumer here
+// refers to these fields BY NAME, so the batch gather and DrawBatch agree, ComputeElementShaders
+// and the sort comparators agree, and nothing indexes an element by dword offset. Renaming or
+// reordering would be churn with no behavioural gain and would break that agreement mid-flight.
 //
-// NOTHING IS BROKEN TODAY: frozen allocates and indexes its own struct consistently, so every
-// ported consumer agrees with every ported producer. What it blocks is transcribing a NEW draw
-// against reference offsets -- DrawBatchDoodad caches element+0x28 and +0x2c expecting batch and
-// skinSection, which land on effect and vertexPermute here. Fix the struct before porting that,
-// and the fix needs what +0x1c and +0x20 hold, which the reference's ComputeElementShaders is the
-// place to read.
+// WHAT IT DOES CAUSE is one specific failure, and it has already happened twice: a port that
+// transcribes a reference builder SLOT BY SLOT lands each value two fields off. AddParticleElement
+// did exactly that -- it wrote 0 to pixelPermute where the reference writes 0 to EFFECT -- and the
+// ribbon gather copied the same mistake from it. Both are fixed now. The sort comparators guard on
+// `effect` being non-null before indexing a shader array with a permute, so leaving effect as
+// whatever a recycled slot held was a live hazard rather than a cosmetic one.
+//
+// So: port element builders BY MEANING, never by dword index. The two unidentified slots at +0x1c
+// and +0x20 have no writer in anything read so far, which is why they stay unnamed.
 struct M2Element {
     int32_t type;
     CM2Model* model;
