@@ -12,6 +12,11 @@ class CChunkLiquid;
 class CGxBuf;
 class CM2Lighting;
 
+// At GLOBAL scope on purpose: these live outside the Liquid namespace, and declaring them inside it
+// invents Liquid::CMapObjGroup, which is not the class anything else means.
+class CMapObj;
+class CMapObjGroup;
+
 namespace Liquid {
 
 // The shared wave animator. Three waves drift past the camera and their parameters become shader
@@ -99,10 +104,13 @@ class CMaterialSettings;
 // The holder comes from a pool keyed on the EXACT byte sizes (FUN_007cf140 walks a free list
 // looking for stride*vertices and indices*2, and FUN_007cefd0 makes one when nothing matches).
 //
-// The batch it fills says primType 4, start 0, minIndex 0 and maxIndex vertices - 1. Note that 4
-// is a triangle STRIP while the index count is six per quad, which is a list -- one of the two
-// readings is wrong and it has not been resolved yet, so check it against a run before trusting
-// either.
+// The batch it fills says primType 4, start 0, minIndex 0 and maxIndex vertices - 1. RESOLVED
+// 2026-09-27: it IS a strip, and this note used to say the two readings could not both be right and
+// to check against a run. No run was needed. WriteLiquidIndices below (FUN_007a7920) starts each run
+// with v0, v0, v1 -- a degenerate restart triangle -- adds only two indices per rendering tile, and
+// repeats the last index to close a run. So three-per-vertex is an upper bound covering the
+// restarts rather than six-per-quad, and a list could not fit the buffer at all: a 16x16 tile grid
+// would want 6 * 256 = 1536 indices against a budget of 3 * 17 * 17 = 867.
 // A liquid surface's geometry, whichever kind it is. The reference gives BOTH of its factories a
 // four-slot vtable and stores either one in Liquid::CInstance's +0x08, so the pair is polymorphic
 // there rather than two unrelated classes:
@@ -113,10 +121,6 @@ class CMaterialSettings;
 // Slot 1 is the release and slot 2 the build, which are the two the instance and the material
 // actually call through, so those are the two this base makes virtual. The refcount sits at +0x04
 // in both, right after the vtable, which is where the reference keeps it too.
-class CMapObj;
-
-class CMapObjGroup;
-
 class IGeomFactory {
     public:
         uint32_t m_refCount = 1;
@@ -133,6 +137,26 @@ class IGeomFactory {
         virtual int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
                               CGxBatch* batch) = 0;
 };
+
+// The duplicated-edge lists the liquid index writer is handed: which tile columns and which tile
+// rows get emitted TWICE, so a seam can carry two sets of vertices. Two TSGrowableArrays back to
+// back, which is how the reference lays it out -- the counts it reads at +0x04 and +0x14 and the
+// data at +0x08 and +0x18 are those arrays' own count and data slots.
+//
+// BOTH ARE EMPTY FOR MAP-OBJECT WATER. The seam mechanism is shared-code generality; a WMO group
+// emits each grid vertex exactly once, so every repeat count below collapses to one. The lists are
+// still honoured rather than assumed away, because the writer is the reference's and the caller is
+// what decides.
+struct LiquidSeams {
+    TSGrowableArray<uint8_t> dupColumns;
+    TSGrowableArray<uint8_t> dupRows;
+};
+
+// ref: FUN_007a7920
+// Write the liquid grid's indices as a TRIANGLE STRIP. See the definition -- this is what settles
+// the strip-versus-list question this file's own notes left open.
+void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t** cursor,
+                        uint32_t baseVertex);
 
 // The map-object (WMO) half of the factory pair, vtable 0x00a404d4. Its sibling above covers
 // terrain chunks; Liquid::CInstance holds either one polymorphically.

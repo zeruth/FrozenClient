@@ -1,4 +1,5 @@
 #include "world/map/LiquidSurface.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include <storm/Memory.hpp>
@@ -988,6 +989,117 @@ int32_t CMeshGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf
     (void)batch;
 
     return 0;
+}
+
+
+// ref: FUN_007a7920
+// The liquid grid's INDEX writer, and it is a TRIANGLE STRIP -- which resolves the contradiction
+// this file's notes flagged and could not settle. They observed the batch asks for primType 4, a
+// strip, while the index budget of three per vertex looked like a list, and said to check it against
+// a run before trusting either. No run needed: the emit pattern is unmistakably a strip.
+//
+//   starting a run writes v0, v0, v1 -- a repeated vertex, which is the standard degenerate
+//   triangle used to restart a strip without breaking the draw;
+//   each rendering tile then adds just TWO indices, v0+1 and v1+1, because a strip reuses the
+//   previous two;
+//   a gap, or the end of a row, repeats the last index once to close the run.
+//
+// So three-per-vertex is an upper bound that covers the restarts, not six-per-quad. A list reading
+// would have produced twice the triangles and every other one facing the wrong way.
+//
+// THE TILE TEST IS THE COMPLEMENT of the one in CMapObjGroup::LiquidTileCount, and the pair is not a
+// contradiction. That one counts tiles with bit 0x80 SET, and those are what the vertex count adds
+// six vertices each for -- tiles carrying their own geometry. This one emits grid quads for tiles
+// with 0x80 CLEAR, which share the grid's vertices. Both also skip a low nibble of 0xF, which means
+// no liquid in that tile at all.
+//
+// The row stride includes the duplicated columns, so it is m_liquidXVerts plus that list's length
+// rather than the grid width -- which is why the stride is computed once outside the walk.
+//
+// ONE TRANSCRIBED ODDITY: the reference computes the lower row as baseVertex + stride + v0, and v0
+// already contains baseVertex, so a non-zero baseVertex is counted twice. Kept as written because
+// every caller passes zero -- the liquid grid starts at the front of its own buffer -- so the
+// expression is only reachable in its correct form. Worth knowing before anyone reuses this with a
+// real offset.
+void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t** cursor,
+                        uint32_t baseVertex) {
+    auto emit = [cursor](uint32_t index) {
+        **cursor = static_cast<uint16_t>(index);
+        *cursor += 1;
+    };
+
+    uint32_t rowStride = group->m_liquidXVerts + seams.dupColumns.Count();
+
+    uint32_t lastIndex = 0;
+    bool inStrip = false;
+    uint32_t emittedRow = 0;
+    uint32_t dupRowCursor = 0;
+
+    for (uint32_t tileY = 0; tileY < group->m_liquidYTiles; tileY++) {
+        uint32_t rowRepeat = 1;
+
+        if (dupRowCursor < seams.dupRows.Count()
+                && seams.dupRows[dupRowCursor] == tileY) {
+            rowRepeat = 2;
+            dupRowCursor++;
+        }
+
+        while (rowRepeat--) {
+            uint32_t v0 = (emittedRow * rowStride + baseVertex) & 0xFFFF;
+            uint32_t v1 = (baseVertex + rowStride + v0) & 0xFFFF;
+
+            uint32_t dupColumnCursor = 0;
+
+            for (uint32_t tileX = 0; tileX < group->m_liquidXTiles; tileX++) {
+                uint8_t flag = group->m_liquidTiles[group->m_liquidXTiles * tileY + tileX];
+
+                bool renders = (flag & 0xF) != 0xF && !(flag & 0x80);
+
+                uint32_t columnRepeat = 1;
+
+                if (dupColumnCursor < seams.dupColumns.Count()
+                        && seams.dupColumns[dupColumnCursor] == tileX) {
+                    columnRepeat = 2;
+                    dupColumnCursor++;
+                }
+
+                uint32_t v2 = (v1 + 1) & 0xFFFF;
+
+                while (columnRepeat--) {
+                    if (renders) {
+                        if (!inStrip) {
+                            inStrip = true;
+
+                            emit(v0);
+                            emit(v0);
+                            emit(v1);
+                        }
+
+                        emit(v0 + 1);
+                        emit(v2);
+
+                        lastIndex = v2;
+                    } else if (inStrip) {
+                        emit(lastIndex);
+
+                        inStrip = false;
+                    }
+
+                    v0++;
+                    v1++;
+                    v2++;
+                }
+            }
+
+            if (inStrip) {
+                emit(lastIndex);
+
+                inStrip = false;
+            }
+
+            emittedRow++;
+        }
+    }
 }
 
 } // namespace Liquid
