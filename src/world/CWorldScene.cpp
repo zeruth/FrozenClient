@@ -1,4 +1,5 @@
 #include "world/CWorldScene.hpp"
+#include "world/map/LiquidMaterialSettings.hpp"
 #include "world/Shadow.hpp"
 #include "gx/Shader.hpp"
 #include "world/Weather.hpp"
@@ -148,7 +149,13 @@ static CImVector FogColorImVector() {
 // registration (FUN_008a1770) and the two 16-byte records at DAT_00cd8610 are not ported yet.
 void CWorldScene::Initialize() {
     // TODO FUN_00799730(), the DAT_00cd877c / DAT_00cd87b0 / DAT_00cd87a8 / s_cameraLiquidType
-    // resets, FUN_008a1770(1, 1.0f, 0, ...), the two records at DAT_00cd8610
+    // resets, the two records at DAT_00cd8610
+
+    // The liquid module's configuration, with the arguments the reference's own call site passes
+    // at 0x0079980e: a 1, a texture scale of 1.0, a 0, and an EMPTY procedural shader suffix --
+    // the string at 0x009e14ff, which is a single NUL. This also takes the hold on the settings
+    // bank that ReleaseMaterialSettings gives back.
+    Liquid::Initialize(1, 1.0f, 0, "");
 
     CImVector grey = { 0x80, 0x80, 0x80, 0xFF };
     CWorldScene::s_solidTexture = TextureCreateSolid(grey);

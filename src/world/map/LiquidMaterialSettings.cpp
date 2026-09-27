@@ -622,8 +622,29 @@ namespace {
 // (a setter at 0x008a1770 copies it into 0x00d439f0 along with a float and four counters); nothing
 // in frozen calls that, so the names come out unsuffixed.
 // TODO identify the caller and what it passes.
+// THE MODULE STATE Liquid::Initialize writes. The reference keeps these as loose globals; they
+// are gathered here because they are one thing -- what the client was configured with -- and two
+// of them were standing in as hardcoded returns until now.
+//
+// The defaults are the post-Initialize values rather than the reference's zero-init. That is a
+// deliberate, narrow divergence: the reference's globals start at zero and Initialize sets them
+// before any liquid can draw, so the only window where the two differ is one in which nothing
+// reads them. Starting at the settled values means a liquid drawn through some path that has not
+// run Initialize gets the right answer instead of a scale of zero and a no-specular material.
+char s_procWaterSuffix[256] = { 0 };
+float s_textureScaleMultiplier = 1.0f;
+int32_t s_specularWater = 1;
+// Two counts, both taken by Initialize. The reference keeps them at 0x00d43af8 and 0x00d43afc and
+// spends the first of them in the settings-bank teardown.
+int32_t s_settingsRefs = 0;
+int32_t s_moduleRefs = 0;
+// Initialize's first and third arguments, 0x00d43af4 and 0x00d43af0. Both are read back nowhere
+// this port has found, so they are stored and named by origin rather than by meaning.
+int32_t s_initArg0 = 0;
+int32_t s_initArg2 = 0;
+
 const char* ProcWaterSuffix() {
-    return "";
+    return s_procWaterSuffix;
 }
 
 void LoadPair(CGxShader** vertex, int32_t vertexCount, const char* vertexName,
@@ -1162,12 +1183,13 @@ void DrawWaterMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
     GxRsPop();
 }
 
+
 // ref: FUN_008a1750
 // The global multiplier on a liquid texture matrix's scale. Liquid::Initialize writes it from its
 // own argument and it rests at 1.0 (0x00b23f64), which is why every scale in this file has looked
 // like it had no multiplier at all.
 float TextureScaleMultiplier() {
-    return 1.0f;
+    return s_textureScaleMultiplier;
 }
 
 // ref: FUN_008a34b0
@@ -1203,6 +1225,7 @@ C44Matrix MagmaScrollMatrix(float rateX, float rateY) {
 
     return m;
 }
+
 
 // ref: FUN_008a48f0 -- CMaterialProcWater::Draw, and NOT the shared body behind all four shader
 // materials, which is what this comment used to claim and what routed every material through it.
@@ -1651,6 +1674,9 @@ IMaterial* GetMaterial(int32_t liquidType) {
     // Material 1 is water, 2 magma and slime, 3 procedural water. Each has a shader flavour and
     // a fixed-function one, and the caps decide which.
     //
+    // The specular choice is SETTLED and now READ rather than assumed: Liquid::Initialize writes
+    // the flag this consults, so the branch below is the reference's own rather than a comment
+    // explaining why the hardcoded answer happens to be right.
     // The specular choice is SETTLED, and frozen's guess was right. The reference reads a global at
     // 0x00b23f68: zero picks CMaterialWaterNoSpec, anything else CMaterialWater. Liquid::Initialize
     // writes 1 there and the only other writer is a one-line setter, so specular water is the
@@ -1698,6 +1724,31 @@ void ReleaseMaterials() {
     s_materialBank.SetCount(0);
 }
 
+// ref: FUN_008a2100
+// Clear the record. The reference writes zero over every dword from +0x300 to +0x438, which is
+// everything this class holds after the six texture-name buffers -- the two colours, the four
+// ints, the eighteen stage floats, the procedural flag, the six resident flags and both arrays of
+// six frame lists.
+//
+// IT ALSO CLEARS THE NAMES, which the reference does not, and that is deliberate. The reference
+// starts at +0x300 and leaves the 0x300 bytes of name buffers to whatever the allocator handed
+// over, on the understanding that LoadFromDbc fills them. A record whose DBC row is missing a slot
+// therefore reads a name out of allocator garbage -- the bug class CLAUDE.md names, where a table
+// built from sparse DBC data keeps garbage in the gaps and it passes every null check. Clearing
+// them costs 0x300 bytes of memset once per liquid type.
+//
+// The two frame arrays are left to TSGrowableArray's own constructor rather than being memset,
+// which is the same zeros by a route that stays correct if that class ever grows a field.
+CMaterialSettings::CMaterialSettings() {
+    memset(this->m_textureName, 0, sizeof(this->m_textureName));
+    memset(this->m_color, 0, sizeof(this->m_color));
+    memset(this->m_int, 0, sizeof(this->m_int));
+    memset(this->m_stage, 0, sizeof(this->m_stage));
+    memset(this->m_resident, 0, sizeof(this->m_resident));
+
+    this->m_procedural = 0;
+}
+
 // ref: FUN_008a1d00
 // Close every frame handle this record holds and empty both arrays.
 //
@@ -1725,8 +1776,26 @@ void CMaterialSettings::ReleaseFrames() {
     }
 }
 
-// ref: part of FUN_008a2380
+// ref: FUN_008a2380
+// Give back one hold on the settings bank, and tear it down when the last one goes.
+//
+// THE COUNT is what this was missing while it was tagged `part of`: the reference does not empty
+// the bank every time it is asked, it decrements the count Initialize took and only walks the
+// records when that reaches zero. Without the count a second caller would pull the bank out from
+// under the first.
+//
+// FROZEN-ONLY clamp on the decrement. The reference subtracts unconditionally, so a release with
+// no matching Initialize takes the count negative and the teardown then never runs again -- a leak
+// that hides itself. Refusing to go below zero costs a compare.
 void ReleaseMaterialSettings() {
+    if (s_settingsRefs > 0) {
+        s_settingsRefs--;
+    }
+
+    if (s_settingsRefs) {
+        return;
+    }
+
     for (uint32_t i = 0; i < s_settingsBank.Count(); i++) {
         if (s_settingsBank[i]) {
             auto settings = s_settingsBank[i];
@@ -1740,6 +1809,37 @@ void ReleaseMaterialSettings() {
     }
 
     s_settingsBank.SetCount(0);
+}
+
+
+// ref: FUN_008a1770
+// Configure the liquid module. One caller, CWorldScene::Initialize, which passes (1, 1.0f, 0, "").
+//
+// This is where two of this file's hardcoded stand-ins come from. TextureScaleMultiplier returned
+// a literal 1.0 and ProcWaterSuffix an empty string, both correct and both unexplained; they are
+// the second and fourth arguments, and now they are stored rather than assumed.
+//
+// The specular flag is NOT an argument -- the reference writes a literal 1 into 0x00b23f68 here,
+// which is what settles the CMaterialWater / CMaterialWaterNoSpec choice in the bank below and
+// confirms the note that has been sitting there.
+//
+// The reference also stores two objects from its fifth and sixth arguments (0x00ad407c and
+// 0x00ad40a0 at the call site, each a vtable pointer followed by two empty slots). What they are
+// is not established and nothing this port has found reads them back, so they are not plumbed
+// through rather than being given a made-up type.
+void Initialize(int32_t a1, float textureScale, int32_t a3, const char* procWaterSuffix) {
+    SStrCopy(s_procWaterSuffix, procWaterSuffix ? procWaterSuffix : "",
+             sizeof(s_procWaterSuffix));
+
+    s_textureScaleMultiplier = textureScale;
+
+    s_settingsRefs++;
+    s_moduleRefs++;
+
+    s_initArg0 = a1;
+    s_initArg2 = a3;
+
+    s_specularWater = 1;
 }
 
 }

@@ -53,6 +53,9 @@ class CMaterialSettings {
         TSGrowableArray<HTEXTURE> m_framesAlt[TEXTURE_SLOTS];  // +0x3dc
 
         // Member functions
+        // ref: FUN_008a2100
+        CMaterialSettings();
+
         // Fill the record from one LiquidType row and the material it names. False when the DBC
         // carries neither, which is what sends the bank to its fallback. ref: FUN_008a27c0
         bool LoadFromDbc(int32_t liquidType);
@@ -176,6 +179,10 @@ CMaterialSettings* GetMaterialSettings(int32_t liquidType);
 IMaterial* GetMaterial(int32_t liquidType);
 
 // Drop every material the bank holds. ref: FUN_008a1f50
+// Configure the module: the liquid texture scale, the procedural shader suffix, and a hold on
+// the settings bank. ref: FUN_008a1770
+void Initialize(int32_t a1, float textureScale, int32_t a3, const char* procWaterSuffix);
+
 void ReleaseMaterials();
 
 // Drop every settings record's texture frames and open them again. ref: FUN_008a2780

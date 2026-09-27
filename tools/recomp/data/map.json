@@ -46988,7 +46988,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Initialize",
-  "frozenSize": 59,
+  "frozenSize": 87,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 193,
@@ -65507,6 +65507,21 @@
   "refSize": 6,
   "status": "ported"
  },
+ "008a1770": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::Initialize",
+  "frozenSize": 113,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
  "008a1a40": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -65634,6 +65649,21 @@
   "refSize": 53,
   "status": "ported"
  },
+ "008a2100": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialSettings::CMaterialSettings",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 305,
+  "status": "ported"
+ },
  "008a2240": {
   "branchRatio": 0.875,
   "constOverlap": 0.0,
@@ -65648,6 +65678,22 @@
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 313,
+  "status": "ported"
+ },
+ "008a2380": {
+  "branchRatio": 0.8,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::ReleaseMaterialSettings",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 124,
   "status": "ported"
  },
  "008a2450": {
@@ -65701,13 +65747,13 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.6,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::GetMaterialSettings",
-  "frozenSize": 1097,
+  "frozenSize": 1161,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 132,

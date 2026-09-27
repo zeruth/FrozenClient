@@ -4116,6 +4116,7 @@ addr	how	frozen	evidence
 008a1700	annotated	Liquid::CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
 008a1750	override	Liquid::TextureScaleMultiplier	
 008a1760	callorder	Liquid::ProcWaterSuffix	same slot between linked calls in 008a3e00=Liquid::CMaterialProcWater::EnsureShaders
+008a1770	annotated	Liquid::Initialize	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1a40	annotated	Liquid::CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
 008a1ac0	annotated	Liquid::CInstance::Release	tag in src/world/map/LiquidSurface.cpp
 008a1b00	annotated	Liquid::CInstance::Create	tag in src/world/map/LiquidSurface.cpp
@@ -4124,7 +4125,9 @@ addr	how	frozen	evidence
 008a1f50	annotated	Liquid::ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1fa0	annotated	Liquid::GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
 008a20c0	annotated	Liquid::Add	tag in src/world/map/LiquidSurface.cpp
+008a2100	annotated	Liquid::CMaterialSettings::CMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2240	annotated	Liquid::Draw	tag in src/world/map/LiquidSurface.cpp
+008a2380	annotated	Liquid::ReleaseMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2450	string	Liquid::CMaterialSettings::LoadTextures	unique "procedural"
 008a2780	annotated	Liquid::ReloadAllLiquidTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a27c0	annotated	Liquid::CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
