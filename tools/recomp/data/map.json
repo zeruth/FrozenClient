@@ -71326,7 +71326,7 @@
   "status": "ported"
  },
  "009808a0": {
-  "branchRatio": 0.353,
+  "branchRatio": 0.294,
   "constOverlap": 0.024,
   "faithful": false,
   "fidelity": 0.0,
@@ -71335,7 +71335,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::Initialize",
-  "frozenSize": 956,
+  "frozenSize": 954,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 682,

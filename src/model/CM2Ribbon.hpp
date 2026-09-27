@@ -40,13 +40,6 @@ class CM2Ribbon {
             uint32_t m_blend;
         };
 
-        // One segment of the trail. SIZE IS 0x18 and that is measured: the SetCount the ring
-        // goes through (FUN_00980810) strides by 0x18 and zeroes six dwords per element.
-        // WHAT IS IN IT is not known -- the per-frame update that fills it has not been read --
-        // so this is deliberately opaque rather than six invented field names.
-        struct Segment {
-            uint32_t raw[6];
-        };
 
         // One trail vertex. Also 0x18, and the draw is the check: it asks BufStream for a 0x18
         // stride and binds GxVBF_PCT, which is 12 + 4 + 8 = 24 bytes exactly.
@@ -65,9 +58,20 @@ class CM2Ribbon {
 
         // +0x00. Born 1, and nothing read so far changes it.
         uint32_t uint0 = 1;
-        // +0x04: the segment ring. Initialize sizes it to
-        // `ceil(edgeLifetime * ceil(edgesPerSecond)) + 2`.
-        TSGrowableArray<Segment> m_segments;
+        // +0x04: the segment ring, one float per slot, sized to
+        // `ceil(edgeLifetime * ceil(edgesPerSecond)) + 2`. m_head and m_tail index THIS array,
+        // and its count is the ring capacity the two of them wrap against.
+        //
+        // CORRECTED 2026-09-27. This was declared as `TSGrowableArray<Segment>` with an opaque
+        // 0x18-byte Segment, on the reasoning that FUN_00980810's SetCount strides by 0x18. That
+        // was the wrong array: 0x98095d shows FUN_00980810 being called on `this + 0x38`, which is
+        // m_vertices, with `2 * segmentCount`. The ring itself is grown separately at 0x98093d and
+        // the per-frame update indexes it as `data + i * 4` floats.
+        //
+        // Each float is the slot's AGE in seconds: the update adds the frame delta to it, retires
+        // the tail once `age + delta` passes m_edgeLifetime, and integrates gravity with
+        // `(age * 2 + delta) * m_gravity * delta`.
+        TSGrowableArray<float> m_segmentAges;
         // +0x14 and +0x18: the ring's ends, and the DRAW is what pins which is which -- it
         // computes `tail < head ? head - tail : head + capacity - tail`, so the live span runs
         // from tail forward to head and wraps. Equal means empty; see IsEmpty.
@@ -79,7 +83,10 @@ class CM2Ribbon {
         // +0x2c: where the ribbon is. The draw subtracts this from the world matrix's
         // translation row, so the geometry is stored relative to it.
         C3Vector m_origin = {};
-        // +0x38: the trail geometry, built on the CPU and uploaded whole each draw.
+        // +0x38: the trail geometry, built on the CPU and uploaded whole each draw. TWO vertices
+        // per ring slot -- the two edges of the strip -- so Initialize sizes it to twice the
+        // segment count and the update walks it 0x30 bytes at a time. CountVertices doubles for
+        // the same reason.
         TSGrowableArray<Vertex> m_vertices;
         // +0x48: its indices. Initialize fills them with `i % (segments * 2)` and the draw takes
         // a triangle STRIP out of them.
@@ -89,6 +96,16 @@ class CM2Ribbon {
         // +0x5c and +0x60: one texture cell's size in UV, from the grid and the texture rect.
         // +0x64 and +0x68 are their reciprocals, which Initialize computes by dividing rather
         // than by keeping the numerator -- transcribed that way.
+        //
+        // THE U AND V NAMES HERE ARE CROSSED relative to the texcoord components they end up in,
+        // and that is now confirmed from two independent places rather than suspected from one.
+        // Initialize divides the rect's V extent by the COLUMN count to get m_cellHeight and its U
+        // extent by the ROW count to get m_cellWidth; and the per-frame update writes the
+        // cellHeight/m_cellV0 family into each vertex's texcoord.X and the m_cellU0/m_cellU1 pair
+        // into its texcoord.Y. So whichever way round the original names were, `cellHeight` and
+        // the `V` fields drive X here. The offsets are right; only the letters mislead. Left as
+        // they are rather than renamed, because a rename would have to be checked against a ribbon
+        // on screen and nothing draws one yet.
         float m_cellHeight = 0.0f;
         float m_cellWidth = 0.0f;
         float m_invCellHeight = 0.0f;

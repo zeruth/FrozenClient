@@ -44,7 +44,7 @@ void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector c
     // SetCount IS the reference's grow: it compares against both the count and the allocation,
     // asks for a chunk size when there is none, and rounds the reallocation to it -- the same
     // four steps the reference inlines here.
-    this->m_segments.SetCount(segmentCount);
+    this->m_segmentAges.SetCount(segmentCount);
 
     this->m_flags &= ~1u;
 
@@ -52,11 +52,17 @@ void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector c
     this->m_tail = 0;
     this->m_head = 0;
 
-    // Every segment, not just the ones SetCount just made: Initialize can be called on a ribbon
-    // that already has a ring, and the reference clears the whole thing.
-    for (uint32_t i = 0; i < segmentCount; i++) {
-        memset(&this->m_segments[i], 0, sizeof(Segment));
-    }
+    // The GEOMETRY, two vertices per ring slot. This call was MISSING until 2026-09-27, and its
+    // absence was a latent heap overrun rather than a cosmetic gap: the per-frame update writes
+    // through `m_vertices.data + slot * 0x30`, so an unsized array would have been written past
+    // its allocation the moment that update landed. Recovered from 0x98095d, where FUN_00980810 is
+    // called on `this + 0x38` with `2 * segmentCount`.
+    //
+    // SetCount zeroes the elements it adds, which is what FUN_00980810 does too -- it clears six
+    // dwords per new element, and a Vertex is exactly six dwords. Only the NEW ones, in both: the
+    // reference does not re-clear geometry it already had, and an earlier version of this function
+    // wrongly memset the whole ring on the strength of misreading that loop.
+    this->m_vertices.SetCount(segmentCount * 2);
 
     // Two vertices per segment, and four indices per segment so the strip can close each quad.
     // The modulo is what makes the ring wrap: the indices run past the end of the vertex span and
@@ -235,5 +241,5 @@ uint32_t CM2Ribbon::CountVertices() const {
         return (head - tail) * 2;
     }
 
-    return (this->m_segments.Count() - tail + head) * 2;
+    return (this->m_segmentAges.Count() - tail + head) * 2;
 }

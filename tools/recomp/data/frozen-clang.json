@@ -84208,9 +84208,8 @@
 "callseq": [
 "ceil",
 "ceil",
-"TSGrowableArray<CM2Ribbon::Segment>::SetCount",
-"TSBaseArray<CM2Ribbon::Segment>::operator[]",
-"memset",
+"TSGrowableArray<float>::SetCount",
+"TSGrowableArray<CM2Ribbon::Vertex>::SetCount",
 "TSGrowableArray<unsigned short>::SetCount",
 "TSBaseArray<unsigned short>::operator[]",
 "CImVector::operator=",
@@ -84246,9 +84245,9 @@
 "3",
 "4"
 ],
-"branches": 6,
+"branches": 5,
 "stub": false,
-"lines": 107,
+"lines": 113,
 "refs": [],
 "line": 30
 },
@@ -84263,7 +84262,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 145
+"line": 151
 },
 "CM2Ribbon::SetGravity": {
 "files": [
@@ -84276,7 +84275,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 150
+"line": 156
 },
 "CM2Ribbon::SetAbove": {
 "files": [
@@ -84294,7 +84293,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 160
+"line": 166
 },
 "CM2Ribbon::SetFlag8": {
 "files": [
@@ -84311,7 +84310,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 171
+"line": 177
 },
 "CM2Ribbon::Transform": {
 "files": [
@@ -84333,7 +84332,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 183
+"line": 189
 },
 "CM2Ribbon::GetMaterialCount": {
 "files": [
@@ -84348,14 +84347,14 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 223
+"line": 229
 },
 "CM2Ribbon::CountVertices": {
 "files": [
 "src/model/cm2ribbon.cpp"
 ],
 "callseq": [
-"TSBaseArray<CM2Ribbon::Segment>::Count"
+"TSBaseArray<float>::Count"
 ],
 "strings": [],
 "consts": [
@@ -84365,7 +84364,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 230
+"line": 236
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
@@ -84654,7 +84653,7 @@
 ],
 "branches": 62,
 "stub": false,
-"lines": 529,
+"lines": 544,
 "refs": [],
 "line": 392
 },
@@ -84686,7 +84685,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 934
+"line": 949
 },
 "CM2Scene::SetProjectionCallback": {
 "files": [
@@ -84699,7 +84698,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 991
+"line": 1006
 },
 "CM2Scene::CreateModel": {
 "files": [
@@ -84722,7 +84721,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 997
+"line": 1012
 },
 "CM2Scene::Draw": {
 "files": [
@@ -84744,7 +84743,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 1024
+"line": 1039
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -84780,7 +84779,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1065
+"line": 1080
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -84804,7 +84803,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1147
+"line": 1162
 },
 "CM2Scene::BeginRayQuery": {
 "files": [
@@ -84819,7 +84818,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1207
+"line": 1222
 },
 "CM2Scene::ReserveRayCandidates": {
 "files": [
@@ -84845,7 +84844,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1214
+"line": 1229
 },
 "CM2Scene::RaySetup": {
 "files": [
@@ -84866,7 +84865,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1247
+"line": 1262
 },
 "CM2Scene::BlendBoneMatrices": {
 "files": [
@@ -84891,7 +84890,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1280
+"line": 1295
 },
 "CM2Scene::BlendBoneMatrices3x4": {
 "files": [
@@ -84918,7 +84917,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1319
+"line": 1334
 },
 "CM2Scene::RayTestTriangles": {
 "files": [
@@ -84941,7 +84940,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 1350
+"line": 1365
 },
 "CM2Scene::ProjectSectionVertices": {
 "files": [
@@ -84960,7 +84959,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1392
+"line": 1407
 },
 "CM2SceneRender::Draw": {
 "files": [
