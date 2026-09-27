@@ -355,6 +355,17 @@ int32_t M2Init(uint8_t* base, uint32_t size, const M2Data& data, M2Particle& par
         return 0;
     }
 
+    // THE SPLINE WAS BEING SKIPPED. Every other array in this record was patched and this one
+    // was not, which left its offset as the raw on-disk value -- so resolving spline[0] added a
+    // file offset to the address of the M2Array itself and landed far outside the model. It went
+    // unnoticed because nothing ever dereferenced it: type 3 emitters were unported, so the only
+    // array in M2Particle nobody read was also the only one nobody had patched. The first code to
+    // read it, CM2Model::InitializeLoaded handing the curve to CM2ParticleEmitterSpline, crashed
+    // on the first model in the world that had one.
+    if (!M2Init<C3Vector>(base, size, data, particle.spline)) {
+        return 0;
+    }
+
     if (!M2Init<uint8_t>(base, size, data, particle.visibilityTrack)) {
         return 0;
     }
