@@ -57001,6 +57001,22 @@
   "refSize": 219,
   "status": "ported"
  },
+ "0082c8a0": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetGeometryVisibleByIndex",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 206,
+  "status": "faithful"
+ },
  "0082c970": {
   "branchRatio": 0.413,
   "constOverlap": 0.024,
@@ -57341,13 +57357,13 @@
   "branchRatio": 0.606,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.522,
+  "fidelity": 0.537,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 8148,
+  "frozenSize": 8356,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,

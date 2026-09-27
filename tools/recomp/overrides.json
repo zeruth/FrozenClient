@@ -3376,5 +3376,9 @@
   "0082dcc0": {
     "status": "excluded",
     "note": "std::sort _Adjust_heap. The sift-down _Sort_heap and _Make_heap both drive. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+  },
+  "0082c8a0": {
+    "status": "faithful",
+    "note": "CM2Model::SetGeometryVisibleByIndex. Recall 50% on a TWO-call function, and the evidence that it is an artifact rather than a gap is that its already-tagged near-twin CM2Model::SetGeometryVisible (FUN_0082c7c0) scores exactly the same 50% with exactly the same missing SMemAlloc. Both reach SMemAlloc through STORM_NEW, and in both the reference's two calls -- SMemAlloc and UnoptimizeVisibleGeometry -- sit in OPPOSITE branches of the loaded test, so an in-order match can only anchor one of them. Same failure as 00824230. The pair differ only in their selector, which is the thing worth knowing: FUN_0082c7c0 compares each section's authored skinSectionId against the range, this one compares the section's POSITION in the skin profile."
   }
 }

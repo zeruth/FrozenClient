@@ -3370,11 +3370,12 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 2: {
-                // FUN_0082c8a0, decoded 2026-09-27 and not yet ported. A skin-section RANGE
-                // visibility setter, distinct from case 1's: it walks skinProfile->skinSections,
-                // sets m_skinSections[i] for every i in [args[0], args[1]] whose on/off state
-                // actually changes, and calls UnoptimizeVisibleGeometry when any of them did --
-                // so the optimized-geometry cache is invalidated only on a real change.
+                this->SetGeometryVisibleByIndex(
+                    modelCall->args[0],
+                    modelCall->args[1],
+                    static_cast<int32_t>(modelCall->args[2])
+                );
+
                 break;
             }
 
@@ -5813,6 +5814,65 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_0082c8a0
+// Show or hide a run of skin sections, selected BY INDEX.
+//
+// This and SetGeometryVisible (FUN_0082c7c0, model call 1) are near-twins and the difference is
+// the selector, which is the only thing worth knowing about either: that one compares each
+// section's authored skinSectionId against the range -- so a caller can say "hide geoset 1301"
+// without knowing where it sits -- and this one compares the section's POSITION in the profile.
+// Two different questions, and mixing them up would hide the wrong geometry on any model whose
+// ids are not its indices, which is most of them.
+//
+// The no-change test is the reference's, and it is a BOOLEAN comparison: `(*slot == 0) !=
+// (visible == 0)`, so any non-zero value counts as shown and writing 2 over 1 is not a change.
+// SetGeometryVisible spells its own test out as two equality pairs instead, which differs for
+// values outside {0, 1}; left alone rather than harmonised, because that one is tagged against its
+// own reference function and this is not the commit to change its behaviour in.
+//
+// UnoptimizeVisibleGeometry runs ONLY if something actually changed. That is the point of tracking
+// it: the optimized-geometry cache is rebuilt from scratch when dropped, so dropping it on a
+// no-op call would be pure waste every frame a caller reasserted the same visibility.
+void CM2Model::SetGeometryVisibleByIndex(uint32_t first, uint32_t last, int32_t visible) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 2;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = first;
+        modelCall->args[1] = last;
+        modelCall->args[2] = static_cast<uint32_t>(visible);
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    auto count = static_cast<uint32_t>(this->m_shared->skinProfile->skinSections.Count());
+
+    bool visibilityChanged = false;
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (i < first || i > last) {
+            continue;
+        }
+
+        uint32_t* modelSkinSection = &this->m_skinSections[i];
+
+        if ((*modelSkinSection == 0) == (visible == 0)) {
+            continue;
+        }
+
+        *modelSkinSection = static_cast<uint32_t>(visible);
+        visibilityChanged = true;
+    }
+
+    if (visibilityChanged) {
+        this->UnoptimizeVisibleGeometry();
+    }
+}
 // ref: FUN_00827190
 // Preload an animation: resolve the id, then walk its VARIATION CHAIN asking the shared data for
 // each variation whose keyframes live outside the .m2.

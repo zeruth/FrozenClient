@@ -3573,6 +3573,7 @@ addr	how	frozen	evidence
 0082be60	annotated	CM2Model::CM2Model	tag in src/model/CM2Model.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
+0082c8a0	annotated	CM2Model::SetGeometryVisibleByIndex	tag in src/model/CM2Model.cpp
 0082c970	annotated	CM2Model::OptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
 0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp

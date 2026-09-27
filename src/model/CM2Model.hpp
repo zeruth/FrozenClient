@@ -518,6 +518,11 @@ class CM2Model {
         // Ask the shared data to load every VARIATION of one animation. Deferred as model call 14
         // when the model has not loaded.
         void LoadSequence(uint32_t sequenceId);
+
+        // Show or hide a run of skin sections selected by their INDEX in the skin profile. The
+        // sibling SetGeometryVisible selects by skinSectionId instead -- see the note at the
+        // definition. Deferred as model call 2 when the model has not loaded.
+        void SetGeometryVisibleByIndex(uint32_t first, uint32_t last, int32_t visible);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };
