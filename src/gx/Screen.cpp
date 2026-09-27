@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "gx/Screen.hpp"
 #include "event/Event.hpp"
 #include "gx/Coordinate.hpp"
@@ -26,7 +27,72 @@ int32_t OnIdle(const EVENT_DATA_IDLE* data, void* a2) {
     return 1;
 }
 
+// FROZEN_AUTO_SCREENSHOT=<seconds>[,<seconds>...] captures the back buffer at each of those
+// elapsed times and writes the usual Screenshots\\WoWScrnShot_*.tga.
+//
+// This exists because rendering bugs in this project are reported by eye and fixed blind. Capturing
+// the SCREEN rectangle is not a substitute and has actively misled this work before -- it returns
+// whatever window is in front, which one time was a different game entirely. This goes through
+// ScreenshotRequest, so it captures THIS client's back buffer just before present, which is the
+// only sound way to see what Frozen actually drew.
+//
+// Unset, it costs one getenv on the first frame and nothing after.
+static void AutoScreenshotCheck() {
+    static bool s_parsed = false;
+    static float s_at[8];
+    static uint32_t s_count = 0;
+    static uint32_t s_fired = 0;
+
+    if (!s_parsed) {
+        s_parsed = true;
+
+        const char* spec = getenv("FROZEN_AUTO_SCREENSHOT");
+
+        if (spec) {
+            while (*spec && s_count < 8) {
+                s_at[s_count++] = static_cast<float>(atof(spec));
+
+                while (*spec && *spec != ',') {
+                    spec++;
+                }
+
+                if (*spec == ',') {
+                    spec++;
+                }
+            }
+        }
+    }
+
+    if (s_fired >= s_count) {
+        return;
+    }
+
+    // Screen::s_elapsedSec is a PER-FRAME delta, not a running total: OnPaint zeroes it on the way
+    // out and OnIdle accumulates into it between paints. So keep our own clock.
+    static float s_total = 0.0f;
+
+    s_total += Screen::s_elapsedSec;
+
+    if (s_total >= s_at[s_fired]) {
+        // Set the capture up DIRECTLY rather than going through ScreenshotRequest. That one also
+        // signals script event 171, and reaching into the script layer from the paint callback is
+        // what made the first version of this hook segfault at the glue screen.
+        if (!OsDirectoryExists("Screenshots")) {
+            OsCreateDirectory("Screenshots", 0);
+        }
+
+        SStrPrintf(Screen::s_capturePath, sizeof(Screen::s_capturePath),
+                   "Screenshots/auto_%u.tga", s_fired);
+
+        Screen::s_captureScreen = 1;
+
+        s_fired++;
+    }
+}
+
 int32_t OnPaint(const void* a1, void* a2) {
+    AutoScreenshotCheck();
+
     // TODO
     // if (!g_theGxDevicePtr || !g_theGxDevicePtr->CapsHasContext(-1) || !g_theGxDevicePtr->CapsIsWindowVisible(-1)) {
     //     // TODO
