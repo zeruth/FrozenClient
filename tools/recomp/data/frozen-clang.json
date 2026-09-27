@@ -65829,25 +65829,128 @@
 "refs": [],
 "line": 635
 },
+"Dxt565ToArgb4444": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0xF000",
+"1",
+"2",
+"4",
+"8"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 678
+},
+"DxtExpandColorsArgb4444": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [
+"Dxt565ToArgb4444",
+"Dxt565ToArgb4444",
+"DxtBlend565",
+"Dxt565ToArgb4444",
+"DxtBlend565",
+"Dxt565ToArgb4444"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1F",
+"0x3F",
+"1",
+"11",
+"2",
+"3",
+"5",
+"8"
+],
+"branches": 0,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 686
+},
+"Dxt3DecodeBlock4444": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [
+"DxtExpandColorsArgb4444"
+],
+"strings": [],
+"consts": [
+"0",
+"0x0C",
+"0x0FFF",
+"0xF",
+"1",
+"12",
+"2",
+"3",
+"4",
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 710
+},
+"Dxt5DecodeBlock4444": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [
+"DxtExpandColorsArgb4444",
+"Dxt5ExpandAlpha"
+],
+"strings": [],
+"consts": [
+"0",
+"0x0C",
+"0x0FFF",
+"1",
+"12",
+"2",
+"3",
+"4",
+"7",
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 31,
+"refs": [],
+"line": 737
+},
 "Blit_Dxt3_Argb4444": {
 "files": [
 "src/gx/blit.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"BuildDxtWeights",
+"Dxt3DecodeBlock4444"
 ],
-"strings": [
-"Blit_Dxt3_Argb4444",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\gx\\blit.cpp"
+"strings": [],
+"consts": [
+"0",
+"16",
+"2",
+"4"
 ],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 6,
+"stub": false,
+"lines": 31,
 "refs": [],
-"line": 668
+"line": 772
 },
 "Blit_Dxt35_Dxt35": {
 "files": [
@@ -65869,7 +65972,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 672
+"line": 804
 },
 "Dxt5ExpandAlpha": {
 "files": [
@@ -65892,7 +65995,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 698
+"line": 830
 },
 "Dxt5DecodeBlock": {
 "files": [
@@ -65919,7 +66022,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 732
+"line": 864
 },
 "Blit_Dxt5_Argb8888": {
 "files": [
@@ -65939,27 +66042,28 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 768
+"line": 900
 },
 "Blit_Dxt5_Argb4444": {
 "files": [
 "src/gx/blit.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"BuildDxtWeights",
+"Dxt5DecodeBlock4444"
 ],
-"strings": [
-"Blit_Dxt5_Argb4444",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\gx\\blit.cpp"
+"strings": [],
+"consts": [
+"0",
+"16",
+"2",
+"4"
 ],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 6,
+"stub": false,
+"lines": 31,
 "refs": [],
-"line": 801
+"line": 935
 },
 "InitBlit": {
 "files": [
@@ -65972,7 +66076,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 808
+"line": 970
 },
 "Blit": {
 "files": [
@@ -65991,7 +66095,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 844
+"line": 1006
 },
 "CBLPFile::CBLPFile": {
 "files": [
@@ -66224,7 +66328,7 @@
 ],
 "branches": 30,
 "stub": true,
-"lines": 210,
+"lines": 205,
 "refs": [],
 "line": 479
 },
@@ -66249,7 +66353,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 690
+"line": 685
 },
 "CBLPFile::Open": {
 "files": [
@@ -66278,7 +66382,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 760
+"line": 755
 },
 "CBLPFile::Source": {
 "files": [
@@ -66302,7 +66406,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 808
+"line": 803
 },
 "CBLPFile::DecompPalARGB2565DitherFS": {
 "files": [
@@ -66337,7 +66441,7 @@
 "stub": false,
 "lines": 119,
 "refs": [],
-"line": 843
+"line": 838
 },
 "CBLPFile::Unlock": {
 "files": [
@@ -66358,7 +66462,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 964
+"line": 959
 },
 "GxVertexAttribOffset": {
 "files": [

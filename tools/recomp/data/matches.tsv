@@ -2366,12 +2366,15 @@ addr	how	frozen	evidence
 006abac0	annotated	Dxt5ExpandAlpha	tag in src/gx/Blit.cpp
 006ac130	annotated	CGxDevice::TexFormatStride	tag in src/gx/CGxDevice.cpp
 006ac270	annotated	DxtExpandColorsNoAlphaMode	tag in src/gx/Blit.cpp
+006ac3f0	annotated	DxtExpandColorsArgb4444	tag in src/gx/Blit.cpp
 006ac5d0	annotated	Dxt1ExpandColorsRgb565	tag in src/gx/Blit.cpp
 006ac780	annotated	Dxt1ExpandColorsArgb1555	tag in src/gx/Blit.cpp
 006aca10	annotated	Dxt1ExpandColors	tag in src/gx/Blit.cpp
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006acd80	annotated	Dxt3DecodeBlock	tag in src/gx/Blit.cpp
+006acea0	annotated	Dxt3DecodeBlock4444	tag in src/gx/Blit.cpp
 006acf90	annotated	Dxt5DecodeBlock	tag in src/gx/Blit.cpp
+006ad0e0	annotated	Dxt5DecodeBlock4444	tag in src/gx/Blit.cpp
 006ad220	annotated	Dxt1DecodeBlock16	tag in src/gx/Blit.cpp
 006ad380	annotated	Dxt1DecodeBlock	tag in src/gx/Blit.cpp
 006ae440	annotated	Blit_Dxt1_Rgb565	tag in src/gx/Blit.cpp

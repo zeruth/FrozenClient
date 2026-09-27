@@ -37735,6 +37735,22 @@
   "refSize": 381,
   "status": "ported"
  },
+ "006ac3f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "DxtExpandColorsArgb4444",
+  "frozenSize": 390,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 467,
+  "status": "ported"
+ },
  "006ac5d0": {
   "branchRatio": 1.0,
   "constOverlap": 0.75,
@@ -37815,6 +37831,22 @@
   "refSize": 270,
   "status": "ported"
  },
+ "006acea0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.429,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt3DecodeBlock4444",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 239,
+  "status": "ported"
+ },
  "006acf90": {
   "branchRatio": 0.4,
   "constOverlap": 0.111,
@@ -37829,6 +37861,22 @@
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 327,
+  "status": "ported"
+ },
+ "006ad0e0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.2,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt5DecodeBlock4444",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 308,
   "status": "ported"
  },
  "006ad220": {
@@ -37912,8 +37960,8 @@
   "status": "ported"
  },
  "006ae560": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.25,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
@@ -37921,11 +37969,11 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt3_Argb4444",
-  "frozenSize": 77,
+  "frozenSize": 477,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "006ae5c0": {
   "branchRatio": 0.667,
@@ -37944,8 +37992,8 @@
   "status": "ported"
  },
  "006ae620": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.25,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
@@ -37953,11 +38001,11 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt5_Argb4444",
-  "frozenSize": 77,
+  "frozenSize": 640,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "006ae680": {
   "branchRatio": 0.667,
