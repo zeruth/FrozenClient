@@ -40943,7 +40943,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 129
+"line": 130
 },
 "CM2Scene::CM2Scene": {
 "files": [
@@ -40956,7 +40956,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 133
+"line": 134
 },
 "ClntObjMgr::ClntObjMgr": {
 "files": [
@@ -84102,7 +84102,7 @@
 ],
 "branches": 2,
 "stub": false,
-"lines": 34,
+"lines": 40,
 "refs": [],
 "line": 946
 },
@@ -84140,7 +84140,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 981
+"line": 987
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -84164,7 +84164,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1063
+"line": 1069
 },
 "CM2Scene::BeginRayQuery": {
 "files": [
@@ -84179,7 +84179,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1123
+"line": 1129
 },
 "CM2Scene::ReserveRayCandidates": {
 "files": [
@@ -84205,7 +84205,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1130
+"line": 1136
 },
 "CM2Scene::RaySetup": {
 "files": [
@@ -84226,7 +84226,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1163
+"line": 1169
 },
 "CM2Scene::BlendBoneMatrices": {
 "files": [
@@ -84251,7 +84251,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1196
+"line": 1202
 },
 "CM2Scene::BlendBoneMatrices3x4": {
 "files": [
@@ -84278,7 +84278,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1235
+"line": 1241
 },
 "CM2Scene::RayTestTriangles": {
 "files": [
@@ -84301,7 +84301,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 1266
+"line": 1272
 },
 "CM2Scene::ProjectSectionVertices": {
 "files": [
@@ -84320,7 +84320,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1308
+"line": 1314
 },
 "CM2SceneRender::Draw": {
 "files": [

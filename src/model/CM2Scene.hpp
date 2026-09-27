@@ -94,10 +94,11 @@ class CM2Scene {
         // +0x144: which draw passes this scene will run, one bit per M2PASS. Draw tests
         // `m_passMask & (1 << pass)` and does nothing when the bit is clear.
         //
-        // Born ZERO, which is the reference's own default (its constructor clears this field at
-        // 0x0081bf50) and means "draw nothing". What actually turns the passes on is the frame
-        // copying CWorld::s_m2PassMask in just before calling Draw. Defaulting this to all-ones
-        // instead would have hidden a missing copy rather than exposed it.
+        // It is the LAST field of the object: M2CreateScene allocates exactly 0x148 bytes.
+        //
+        // Born zero here, which is MORE defined than the reference, whose constructor never
+        // writes this field at all -- see the long note at CM2Scene::Draw for why that makes the
+        // reference's own gate unportable and why frozen does not have it.
         uint32_t m_passMask = 0;
 
         // Static functions

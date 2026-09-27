@@ -1336,8 +1336,8 @@
   },
   "00823cb0": {
     "frozen": "CM2Scene::Draw",
-    "status": "ported",
-    "note": "name recovered in docs/world-render-inventory.md; Frozen has the same name in model/CM2Scene.cpp; the per-pass entry logging 'Model2 Pass %d'"
+    "status": "diverged",
+    "note": "DIVERGED on purpose, 2026-09-26: frozen does not reproduce the per-pass gate this function opens with. The reference tests `scene->+0x144 & (1 << pass)` and draws nothing when the bit is clear, and +0x144 is the last field of the object (M2CreateScene allocates exactly 0x148 bytes). Only ONE of this function's five reference callers ever assigns that field -- CGWorldFrame::OnWorldRender, at 0x004f9117, from the world enables word at 0x00cd7754 -- and the constructor (FUN_008216c0) never writes it. M2CreateScene has nine callers, so most scenes reach this test with uninitialised heap memory in the field.  Porting the gate was tried and measured: it suppressed 232 of 301 draws, the first carrying 47 elements. frozen keeps the field and the world-side assignment, which are well defined, and leaves the test out. It becomes portable the day every scene gets a defined mask at construction."
   },
   "00872c10": {
     "frozen": "CShaderEffect::UpdateProjMatrix",

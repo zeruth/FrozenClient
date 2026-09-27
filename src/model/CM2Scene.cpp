@@ -944,23 +944,29 @@ CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
 }
 
 int32_t CM2Scene::Draw(M2PASS pass) {
-    // NOT GATED ON m_passMask YET, and this is a measured decision rather than a missing line.
-    // The reference tests `m_passMask & (1 << pass)` here and returns without drawing when the
-    // bit is clear (FUN_00823cb0). Adding that test was tried on 2026-09-26 and SUPPRESSED MOST
-    // OF THE DRAWING: an instrumented run counted 301 calls through here, of which only 69 had a
-    // non-zero mask and 232 did not -- the first of them carrying 47 elements. So frozen reaches
-    // this function through paths that never assign the mask, where the reference evidently does
-    // not, and the ordering is the clue: the mask comes from CWorld::s_m2PassMask, which is only
-    // raised by CWorld::Initialize, so everything drawn before the world exists -- the glue and
-    // character-selection model frames -- sees zero.
+    // DELIBERATELY NOT GATED ON m_passMask. The reference tests `m_passMask & (1 << pass)` here
+    // and returns without drawing when the bit is clear; frozen does not, and this is a recorded
+    // divergence from a reference BUG rather than an unfinished port. The chase, in order:
     //
-    // Defaulting the field to all-passes instead would make the gate harmless, and would also
-    // make it pointless and hide the real difference. What has to happen first is finding what
-    // sets the mask for a scene that is not the world's; in the reference only the constructor
-    // (which clears it) and the world frame (0x004f9117) write it, so either those frames do not
-    // come through CM2Scene::Draw there, or there is a writer the text dump has not been asked
-    // for yet. Until then the field is carried and honoured by nobody, which draws exactly what
-    // frozen drew before it existed.
+    //   1. Adding the test suppressed most of the drawing. An instrumented run counted 301 calls
+    //      through here, 69 with a non-zero mask and 232 without, the first carrying 47 elements.
+    //   2. The reference has FIVE callers of this function -- CGWorldFrame::OnWorldRender plus
+    //      00619580, 007f08c0, 0095fc30 and 009abd50 -- and only OnWorldRender assigns the mask
+    //      (at 0x004f9117, from the world enables word at 0x00cd7754).
+    //   3. M2CreateScene (FUN_0081c080) allocates 0x148 bytes, so +0x144 is the LAST field of a
+    //      CM2Scene, and it has nine callers -- there are many scenes, not one.
+    //   4. The constructor (FUN_008216c0) never writes +0x144. It clears +0x4c and stops well
+    //      short of the end of the object.
+    //
+    // So in the reference every scene that is not the world's tests UNINITIALISED HEAP MEMORY
+    // against `1 << pass`. Whether such a scene draws is whatever the allocator happened to
+    // leave there -- with Storm's uninitialised fill it would be 0xBAADF00D, whose low bits are
+    // 0b101, so passes 0 and 2 would draw and pass 1 would not. That is not behaviour to
+    // reproduce.
+    //
+    // The half that IS well defined is kept: m_passMask exists, CWorld::s_m2PassMask exists, and
+    // CGWorldFrame assigns it where the reference does. If a future change gives every scene a
+    // defined mask at construction, the gate becomes portable -- and then it belongs here.
 
     if (CM2Scene::s_optFlags != (this->m_cache->m_flags & 0xE000)) {
         CM2Scene::s_optFlags = this->m_cache->m_flags & 0xE000;
