@@ -152,8 +152,21 @@ class IGeomFactory {
 // (32 * 0x2c = 0x580) and 16 edges fill 0x580..0x63f (16 * 0xc = 0xc0).
 struct MapObjPolyPoint {
     C3Vector position;      // +0x00
-    uint32_t value;         // +0x0c, whatever the append's fourth argument carries
-    uint32_t unknown10[3];  // +0x10 .. +0x18, untouched by anything read so far
+    // +0x0c .. +0x18 is a LAZILY EVALUATED NODE, not four loose fields. FUN_007d91f0 evaluates
+    // exactly this shape -- value at +0x00, two children at +0x04 and +0x08, an operand at +0x0c --
+    // recursively and memoizes into the first slot, and MapObjPolyDeref does the same arithmetic one
+    // level up at the point's +0x0c. A value of zero means "not computed yet".
+    //
+    // A 64-BIT PROBLEM LIVES HERE and it is why the two children are not pointers below. The
+    // reference uses them as the receivers of its recursive calls, so they ARE pointers -- 32-bit
+    // ones. Making them pointers here would take the node from 0x10 to 0x20 bytes and the point from
+    // 0x2c to 0x40, which breaks the stride the append and the walk both compute by hand and which
+    // the static_asserts below pin. So they stay 32-bit and opaque, and whoever ports the evaluator
+    // has to decide between an index-based node and a side table. Recorded rather than guessed at.
+    int32_t value;          // +0x0c, memoized; zero means unevaluated
+    uint32_t childA;        // +0x10, a 32-bit pointer in the reference
+    uint32_t childB;        // +0x14, likewise
+    int32_t operand;        // +0x18, the evaluator's third argument
     int32_t inEdge;         // +0x1c: the edge arriving at this point
     int32_t outEdge;        // +0x20: the edge leaving it
     int32_t unknown24;      // +0x24, set to -1 by the link pass and read nowhere
@@ -197,6 +210,14 @@ struct MapObjPolyWalk {
     uint32_t steps;         // +0x10: its low bit alternates which end moves
     uint8_t done;           // +0x14
 };
+
+// ref: FUN_007d9270
+// Turn the appended points into a CLOSED outline and return how many times the last edge wrapped.
+int32_t MapObjPolyCloseOutline(MapObjPolySet* set);
+
+// ref: FUN_007d92f0
+// Park the cursor on the first edge whose flag is still zero.
+void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set);
 
 // ref: FUN_007d9230
 void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, uint32_t value);

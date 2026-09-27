@@ -1227,4 +1227,69 @@ uint8_t MapObjPolyAtEnd(const MapObjPolyWalk* walk) {
     return walk->done;
 }
 
+
+// ref: FUN_007d9270
+// Link the appended points into a closed ring and hand back the wrap count.
+//
+// The first pass gives point i the outgoing edge i and the incoming edge i - 1, and emits edge i as
+// {i, i + 1}. That leaves two deliberate dangling ends: point 0's incoming edge is -1, and the last
+// edge points at pointCount, one past the array.
+//
+// The second pass closes both, and it is the whole reason this function exists. Point 0's incoming
+// edge becomes the last edge, and the last edge's `to` is taken MODULO the point count -- which turns
+// that one-past-the-end index into 0. The quotient of the same division is what it returns, so a
+// well-formed ring returns 1.
+//
+// Writing the ring open and then closing it, rather than special-casing the last point in the loop,
+// is the reference's shape and is kept: the loop stays branch-free and the wrap is arithmetic.
+int32_t MapObjPolyCloseOutline(MapObjPolySet* set) {
+    for (int32_t i = 0; i < set->pointCount; i++) {
+        MapObjPolyPoint* point = &set->points[i];
+
+        point->outEdge = i;
+        point->unknown24 = -1;
+        point->inEdge = i - 1;
+
+        MapObjPolyEdge* edge = &set->edges[set->edgeCount];
+
+        edge->from = i;
+        edge->to = i + 1;
+        edge->flag = 0;
+
+        set->edgeCount++;
+    }
+
+    if (!set->edgeCount) {
+        return 0;
+    }
+
+    set->points[0].inEdge = set->edgeCount - 1;
+
+    MapObjPolyEdge* last = &set->edges[set->edgeCount - 1];
+
+    auto to = static_cast<uint32_t>(last->to);
+    auto count = static_cast<uint32_t>(set->pointCount);
+
+    last->to = static_cast<int32_t>(to % count);
+
+    return static_cast<int32_t>(to / count);
+}
+
+// ref: FUN_007d92f0
+// Move the cursor to the first edge still carrying a zero flag, which is where the next walk starts.
+// It STOPS on that edge rather than past it, and runs off the end when every edge is flagged -- at
+// which case the cursor equals edgeCount and MapObjPolyBeginWalk's bounds test finishes a walk
+// immediately. The two functions are written to fit together that way.
+void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set) {
+    set->cursor = 0;
+
+    while (set->cursor < set->edgeCount) {
+        if (!set->edges[set->cursor].flag) {
+            return;
+        }
+
+        set->cursor++;
+    }
+}
+
 } // namespace Liquid

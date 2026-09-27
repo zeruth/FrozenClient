@@ -209537,6 +209537,37 @@
 "refs": [],
 "line": 1226
 },
+"Liquid::MapObjPolyCloseOutline": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 32,
+"refs": [],
+"line": 1245
+},
+"Liquid::MapObjPolySeekUnflaggedEdge": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1283
+},
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [
 "src/world/map/liquidvertexdata.cpp"
