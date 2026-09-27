@@ -127,7 +127,7 @@ void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector c
     this->m_textureRows = textureRows;
     this->m_textureCols = textureCols;
 
-    this->uint170 = 0;
+    this->m_textureSlot = 0;
 
     // The starting cell is cell 0, the rectangle's own corner. The reference reaches it through
     // `0 % textureCols` and a multiply by zero -- a general cell-index expression evaluated at
@@ -181,29 +181,29 @@ void CM2Ribbon::BuildControlPoints() {
     float length = std::sqrt(dx * dx + dy * dy + dz * dz);
 
     // Note which height goes with which sign: BELOW subtracts, ABOVE adds.
-    this->m_lowerCur.x = this->vec20.x - this->vec7C.x * this->m_heightBelow;
-    this->m_lowerCur.y = this->vec20.y - this->vec7C.y * this->m_heightBelow;
-    this->m_lowerCur.z = this->vec20.z - this->vec7C.z * this->m_heightBelow;
+    this->m_lowerPrev.x = this->vec20.x - this->vec7C.x * this->m_heightBelow;
+    this->m_lowerPrev.y = this->vec20.y - this->vec7C.y * this->m_heightBelow;
+    this->m_lowerPrev.z = this->vec20.z - this->vec7C.z * this->m_heightBelow;
 
-    this->m_lowerPrev.x = this->vec164.x - this->vec88.x * this->m_heightBelow;
-    this->m_lowerPrev.y = this->vec164.y - this->vec88.y * this->m_heightBelow;
-    this->m_lowerPrev.z = this->vec164.z - this->vec88.z * this->m_heightBelow;
+    this->m_lowerCur.x = this->vec164.x - this->vec88.x * this->m_heightBelow;
+    this->m_lowerCur.y = this->vec164.y - this->vec88.y * this->m_heightBelow;
+    this->m_lowerCur.z = this->vec164.z - this->vec88.z * this->m_heightBelow;
 
-    this->m_upperCur.x = this->vec20.x + this->vec7C.x * this->m_heightAbove;
-    this->m_upperCur.y = this->vec20.y + this->vec7C.y * this->m_heightAbove;
-    this->m_upperCur.z = this->vec20.z + this->vec7C.z * this->m_heightAbove;
+    this->m_upperPrev.x = this->vec20.x + this->vec7C.x * this->m_heightAbove;
+    this->m_upperPrev.y = this->vec20.y + this->vec7C.y * this->m_heightAbove;
+    this->m_upperPrev.z = this->vec20.z + this->vec7C.z * this->m_heightAbove;
 
-    this->m_upperPrev.x = this->vec164.x + this->vec88.x * this->m_heightAbove;
-    this->m_upperPrev.y = this->vec164.y + this->vec88.y * this->m_heightAbove;
-    this->m_upperPrev.z = this->vec164.z + this->vec88.z * this->m_heightAbove;
+    this->m_upperCur.x = this->vec164.x + this->vec88.x * this->m_heightAbove;
+    this->m_upperCur.y = this->vec164.y + this->vec88.y * this->m_heightAbove;
+    this->m_upperCur.z = this->vec164.z + this->vec88.z * this->m_heightAbove;
 
-    this->m_hermiteTangentCur.x = this->vec94.x * length;
-    this->m_hermiteTangentCur.y = this->vec94.y * length;
-    this->m_hermiteTangentCur.z = this->vec94.z * length;
+    this->m_hermiteTangentPrev.x = this->vec94.x * length;
+    this->m_hermiteTangentPrev.y = this->vec94.y * length;
+    this->m_hermiteTangentPrev.z = this->vec94.z * length;
 
-    this->m_hermiteTangentPrev.x = this->vecA0.x * length;
-    this->m_hermiteTangentPrev.y = this->vecA0.y * length;
-    this->m_hermiteTangentPrev.z = this->vecA0.z * length;
+    this->m_hermiteTangentCur.x = this->vecA0.x * length;
+    this->m_hermiteTangentCur.y = this->vecA0.y * length;
+    this->m_hermiteTangentCur.z = this->vecA0.z * length;
 }
 
 // ref: FUN_0097fef0
@@ -219,19 +219,19 @@ void CM2Ribbon::EmitSegment(float age, float t, uint32_t advance) {
 
     // p(t) = (A*t + B) * (1 - t) + (C - D * (1 - t)) * t, transcribed in the reference's own
     // grouping rather than the expanded form, so the float rounding matches.
-    pair[0].m_position.x = (this->m_hermiteTangentCur.x * t + this->m_lowerCur.x) * inv
-                        + (this->m_lowerPrev.x - inv * this->m_hermiteTangentPrev.x) * t;
-    pair[0].m_position.y = (this->m_hermiteTangentCur.y * t + this->m_lowerCur.y) * inv
-                        + (this->m_lowerPrev.y - inv * this->m_hermiteTangentPrev.y) * t;
-    pair[0].m_position.z = (this->m_hermiteTangentCur.z * t + this->m_lowerCur.z) * inv
-                        + (this->m_lowerPrev.z - inv * this->m_hermiteTangentPrev.z) * t;
+    pair[0].m_position.x = (this->m_hermiteTangentPrev.x * t + this->m_lowerPrev.x) * inv
+                        + (this->m_lowerCur.x - inv * this->m_hermiteTangentCur.x) * t;
+    pair[0].m_position.y = (this->m_hermiteTangentPrev.y * t + this->m_lowerPrev.y) * inv
+                        + (this->m_lowerCur.y - inv * this->m_hermiteTangentCur.y) * t;
+    pair[0].m_position.z = (this->m_hermiteTangentPrev.z * t + this->m_lowerPrev.z) * inv
+                        + (this->m_lowerCur.z - inv * this->m_hermiteTangentCur.z) * t;
 
-    pair[1].m_position.x = (this->m_hermiteTangentCur.x * t + this->m_upperCur.x) * inv
-                        + (this->m_upperPrev.x - inv * this->m_hermiteTangentPrev.x) * t;
-    pair[1].m_position.y = (this->m_hermiteTangentCur.y * t + this->m_upperCur.y) * inv
-                        + (this->m_upperPrev.y - inv * this->m_hermiteTangentPrev.y) * t;
-    pair[1].m_position.z = (this->m_hermiteTangentCur.z * t + this->m_upperCur.z) * inv
-                        + (this->m_upperPrev.z - inv * this->m_hermiteTangentPrev.z) * t;
+    pair[1].m_position.x = (this->m_hermiteTangentPrev.x * t + this->m_upperPrev.x) * inv
+                        + (this->m_upperCur.x - inv * this->m_hermiteTangentCur.x) * t;
+    pair[1].m_position.y = (this->m_hermiteTangentPrev.y * t + this->m_upperPrev.y) * inv
+                        + (this->m_upperCur.y - inv * this->m_hermiteTangentCur.y) * t;
+    pair[1].m_position.z = (this->m_hermiteTangentPrev.z * t + this->m_upperPrev.z) * inv
+                        + (this->m_upperCur.z - inv * this->m_hermiteTangentCur.z) * t;
 
     this->m_segmentAges[this->m_head] = age;
 
@@ -384,6 +384,77 @@ void CM2Ribbon::Update(float delta, int32_t suppressEmit) {
     // Drop 0x20 and set 0x10. Setting 0x10 is what stops the one-edge delta substitution above
     // from happening again.
     this->m_flags = (this->m_flags & ~0x20u) | 0x10u;
+}
+// ref: FUN_0097f510
+// The slot walks the grid: the remainder picks the position along one axis and the quotient the
+// other, both from the COLUMN count. That is the same crossed pairing m_cellHeight already
+// carries -- the remainder goes with cellHeight and the quotient with cellWidth.
+//
+// Initialize's tail is this function evaluated at slot 0, where both scaled terms vanish; that is
+// why it looks like it has two redundant additions.
+void CM2Ribbon::UpdateCellRect() {
+    // The reference divides by m_textureCols without checking it. The only writer of the grid is
+    // Initialize, straight from the file record, so this guards what the reference leaves to the
+    // .m2 being sane.
+    if (!this->m_textureCols) {
+        return;
+    }
+
+    uint32_t quotient = this->m_textureSlot / this->m_textureCols;
+    uint32_t remainder = this->m_textureSlot % this->m_textureCols;
+
+    this->m_cellV0 = static_cast<float>(remainder) * this->m_cellHeight + this->m_textureRect[1];
+    this->m_cellU0 = static_cast<float>(quotient) * this->m_cellWidth + this->m_textureRect[0];
+
+    this->m_cellV1 = this->m_cellV0 + this->m_cellHeight;
+    this->m_cellU1 = this->m_cellU0 + this->m_cellWidth;
+}
+
+// ref: FUN_0097f5f0
+// Guarded on the slot actually changing, so the animated track can call this every frame without
+// redoing the cell arithmetic.
+void CM2Ribbon::SetTextureSlot(uint32_t slot) {
+    if (this->m_textureSlot == slot) {
+        return;
+    }
+
+    this->m_textureSlot = slot;
+
+    this->UpdateCellRect();
+}
+
+// ref: FUN_0097f610
+void CM2Ribbon::SetHeightAbove(float height) {
+    this->m_heightAbove = height;
+}
+
+// ref: FUN_0097f620
+void CM2Ribbon::SetHeightBelow(float height) {
+    this->m_heightBelow = height;
+}
+
+// ref: FUN_0097fba0
+// Alpha alone, into the top byte of m_color.
+void CM2Ribbon::SetAlpha(float alpha) {
+    this->m_color.a = static_cast<uint8_t>(static_cast<int32_t>(alpha * 255.0f + 0.5f));
+}
+
+// ref: FUN_0097fb60
+// The three colour channels, KEEPING the alpha that is already there.
+//
+// The reference reaches that by round-tripping the stored alpha byte back out through
+// CImVector::Set: it passes `alphaByte * 255.0` as Set's alpha, and Set multiplies by 255 again
+// before truncating to a byte. The double scaling is harmless, and not by a luck that would need
+// re-checking -- 255 * 255 is 65025, and 65025 mod 256 is 1, so the truncating cast recovers the
+// original byte exactly. Written as "keep the alpha" here, which is what it comes to.
+void CM2Ribbon::SetColor(float r, float g, float b) {
+    uint8_t alpha = this->m_color.a;
+
+    this->m_color.r = static_cast<uint8_t>(static_cast<int32_t>(r * 255.0f + 0.5f));
+    this->m_color.g = static_cast<uint8_t>(static_cast<int32_t>(g * 255.0f + 0.5f));
+    this->m_color.b = static_cast<uint8_t>(static_cast<int32_t>(b * 255.0f + 0.5f));
+
+    this->m_color.a = alpha;
 }
 // Head and tail meeting means the ring is empty.
 //

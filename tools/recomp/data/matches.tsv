@@ -4479,11 +4479,17 @@ addr	how	frozen	evidence
 0097ea60	annotated	CM2ParticleEmitter::Draw	tag in src/model/CM2ParticleEmitter.cpp
 0097eb10	annotated	CM2ParticleEmitter::Update	tag in src/model/CM2ParticleEmitter.cpp
 0097edf0	annotated	CM2ParticleEmitter::PrepareStep	tag in src/model/CM2ParticleEmitter.cpp
+0097f510	annotated	CM2Ribbon::UpdateCellRect	tag in src/model/CM2Ribbon.cpp
 0097f570	annotated	CM2Ribbon::SetAbove	tag in src/model/CM2Ribbon.cpp
 0097f5b0	annotated	CM2Ribbon::SetFlag8	tag in src/model/CM2Ribbon.cpp
+0097f5f0	annotated	CM2Ribbon::SetTextureSlot	tag in src/model/CM2Ribbon.cpp
+0097f610	annotated	CM2Ribbon::SetHeightAbove	tag in src/model/CM2Ribbon.cpp
+0097f620	annotated	CM2Ribbon::SetHeightBelow	tag in src/model/CM2Ribbon.cpp
 0097f630	annotated	CM2Ribbon::SetGravity	tag in src/model/CM2Ribbon.cpp
 0097f640	annotated	CM2Ribbon::IsEmpty	tag in src/model/CM2Ribbon.cpp
 0097f700	annotated	CM2Ribbon::BuildControlPoints	tag in src/model/CM2Ribbon.cpp
+0097fb60	annotated	CM2Ribbon::SetColor	tag in src/model/CM2Ribbon.cpp
+0097fba0	annotated	CM2Ribbon::SetAlpha	tag in src/model/CM2Ribbon.cpp
 0097fbe0	annotated	CM2Ribbon::Transform	tag in src/model/CM2Ribbon.cpp
 0097fe40	annotated	CM2Ribbon::GetMaterialCount	tag in src/model/CM2Ribbon.cpp
 0097fe50	annotated	CM2Ribbon::CountVertices	tag in src/model/CM2Ribbon.cpp

@@ -71213,6 +71213,22 @@
   "refSize": 199,
   "status": "ported"
  },
+ "0097f510": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::UpdateCellRect",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
  "0097f570": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -71243,6 +71259,54 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 51,
+  "status": "ported"
+ },
+ "0097f5f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetTextureSlot",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
+ "0097f610": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetHeightAbove",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "0097f620": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetHeightBelow",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 16,
   "status": "ported"
  },
  "0097f630": {
@@ -71291,6 +71355,38 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 499,
+  "status": "ported"
+ },
+ "0097fb60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetColor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "0097fba0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::SetAlpha",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 58,
   "status": "ported"
  },
  "0097fbe0": {

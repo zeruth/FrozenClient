@@ -85,7 +85,9 @@ class CM2Ribbon {
         // and Update silently truncated the carry to zero every frame, losing the sub-edge
         // remainder. A self-test caught it: the field read 0.00000 where 0.001 was due.
         float m_edgeAccum = 0.0f;
-        // +0x20: a point, moved with the rest of the ribbon by Transform. Not read elsewhere yet.
+        // +0x20: the PREVIOUS point -- where the ribbon was one placement ago. FUN_0097f940 shifts
+        // FUN_0097f940 shifts this down from vec164 before overwriting that, so the pair always
+        // straddles one frame's movement. Moved with the rest of the ribbon by Transform.
         C3Vector vec20 = {};
         // +0x2c: where the ribbon is. The draw subtracts this from the world matrix's
         // translation row, so the geometry is stored relative to it.
@@ -126,10 +128,13 @@ class CM2Ribbon {
         // directions: no translation).
         //
         // What they ARE was established 2026-09-27 from BuildControlPoints, which is the only
-        // reader: +0x7c and +0x88 are the EDGE direction at the current and the previous point --
-        // the axis the trail is widened along -- and +0x94 and +0xa0 are the TANGENT at those two
-        // points. Kept under their offset names because Transform is written against them and a
-        // rename there is churn for no gain; the meaning is here.
+        // reader: +0x7c and +0x88 are the EDGE direction -- the axis the trail is widened along --
+        // and +0x94 and +0xa0 are the TANGENT. Each pair follows vec20/vec164: +0x7c and +0x94
+        // belong to the PREVIOUS point and +0x88 and +0xa0 to the CURRENT one, and FUN_0097f940
+        // shifts them down in step. That function also says where they come from -- the placement
+        // matrix's row 1 is the edge direction and its row 2 the tangent, so for a weapon trail
+        // they are the bone's own Y and Z axes. Kept under their offset names because Transform is
+        // written against them; the meaning is here.
         C3Vector vec7C = {};
         C3Vector vec88 = {};
         C3Vector vec94 = {};
@@ -144,15 +149,21 @@ class CM2Ribbon {
         //     p(t) = (A*t + B) * (1 - t) + (C - D * (1 - t)) * t
         //          = B*(1-t) + C*t + (A - D)*t*(1-t)
         //
-        // which is a cubic Hermite: a straight line from B to C plus a bulge along (A - D). `t`
-        // runs from the CURRENT point at 0 to the PREVIOUS point at 1, so B is the current end.
-        // A and D are shared by both edges; B and C are per edge.
-        C3Vector m_hermiteTangentCur = {};   // +0xac, A: vec94 scaled by the segment length
-        C3Vector m_hermiteTangentPrev = {};  // +0xb8, D: vecA0 scaled by the same
-        C3Vector m_lowerCur = {};            // +0xc4, B for the below edge
-        C3Vector m_lowerPrev = {};           // +0xd0, C for the below edge
-        C3Vector m_upperCur = {};            // +0xdc, B for the above edge
-        C3Vector m_upperPrev = {};           // +0xe8, C for the above edge
+        // which is a cubic Hermite: a straight line from B to C plus a bulge along (A - D). A and
+        // D are shared by both edges; B and C are per edge.
+        //
+        // `t` runs from the PREVIOUS point at 0 to the CURRENT point at 1. CORRECTED 2026-09-27:
+        // the first version of this note had it the other way round, and the six names below were
+        // swapped to match it. The reference's placement function FUN_0097f940 -- NOT ported yet --
+        // settles the direction: it does `vec20 = vec164` and then `vec164 = <new position>`,
+        // so vec164 is always the NEWEST point and vec20 is one frame behind. The update agrees:
+        // it writes the live leading edge at t = 1, and that edge is where the ribbon is now.
+        C3Vector m_hermiteTangentPrev = {};   // +0xac, A: vec94 scaled by the segment length
+        C3Vector m_hermiteTangentCur = {};  // +0xb8, D: vecA0 scaled by the same
+        C3Vector m_lowerPrev = {};            // +0xc4, B for the below edge
+        C3Vector m_lowerCur = {};           // +0xd0, C for the below edge
+        C3Vector m_upperPrev = {};            // +0xdc, B for the above edge
+        C3Vector m_upperCur = {};           // +0xe8, C for the above edge
         // +0xf4 and +0x100: the bounds, born INVERTED -- min at +FLT_MAX and max at -FLT_MAX, the
         // same empty-box convention and the same two constants (0x009ea8fc, 0x00a37f1c) the
         // particle emitter uses.
@@ -188,9 +199,12 @@ class CM2Ribbon {
         // +0x160. Bit 0 is cleared by Initialize and set alongside bits 1..3; bit 2 is what
         // SetAbove drives. The rest is unread.
         uint32_t m_flags = 0;
-        // +0x164: a point, moved with the rest of the ribbon by Transform.
+        // +0x164: the CURRENT point -- where the ribbon is now. The newest of the pair; see vec20.
         C3Vector vec164 = {};
-        uint32_t uint170 = 0;
+        // +0x170: which cell of the texture grid the trail is currently sampling. SetTextureSlot
+        // writes it and recomputes the cell rectangle through UpdateCellRect; M2Ribbon's animated
+        // textureSlotTrack is what drives it.
+        uint32_t m_textureSlot = 0;
         // +0x174 and +0x178: how far the trail extends either side of its centre line. Both born
         // 10.0 (0x009e30cc) in Initialize, not in the constructor.
         //
@@ -234,6 +248,23 @@ class CM2Ribbon {
         //
         // `suppressEmit` non-zero skips the emission and only ages what is already there.
         void Update(float delta, int32_t suppressEmit);
+
+        // Recompute the current cell's UV rectangle from m_textureSlot and the grid. Initialize's
+        // tail is this same arithmetic evaluated at slot 0.
+        void UpdateCellRect();
+
+        // Point the trail at a different cell of the texture grid. A no-op when the slot has not
+        // changed, which is why it can be called every frame from the track.
+        void SetTextureSlot(uint32_t slot);
+
+        void SetHeightAbove(float height);
+        void SetHeightBelow(float height);
+
+        // Set the trail's tint, KEEPING its current alpha.
+        void SetColor(float r, float g, float b);
+
+        // Set the trail's alpha alone.
+        void SetAlpha(float alpha);
 
         void SetGravity(float gravity);
 
