@@ -616,9 +616,13 @@ void StoreVector(C4Vector* dst, const C3Vector& v, float w) {
 // frozen's CCamera builds its view matrix with the camera at the origin, which is the same
 // rotation-only convention the reference uses.
 //
-// DIVERGED: the reference negates the projection's third row when the device's flag at +0x1b4 is
-// clear -- a depth-range convention -- and frozen's CGxDevice has no such flag. The negation is
-// skipped. If water ends up at the wrong depth or fighting the terrain, this is the one knob.
+// DIVERGED, and SETTLED 2026-09-27: the reference negates the projection's third row when the
+// device's flag at +0x1b4 is clear -- a depth-range convention -- and frozen's CGxDevice has no such
+// flag, so the negation is skipped. That is CORRECT, and this note used to offer it as "the one
+// knob" to turn if water sat at the wrong depth. It is not. vsLiquidWater, disassembled out of
+// patch.MPQ, computes oPos.z = z*c2.z + c3.z and oPos.w = z*c2.w from c0..c3 as ROWS; with frozen's
+// projection that is the standard D3D mapping for near 0.4 / far 4000, and negating the third row
+// would make oPos.z negative for everything in front of the camera. See docs/ref/parity-liquid-shaders.md.
 void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
     C44Matrix view;
     g_theGxDevicePtr->XformView(view);
