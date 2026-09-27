@@ -6,6 +6,7 @@
 #include "gx/CGxBatch.hpp"
 #include "gx/buffer/Types.hpp"
 #include <tempest/Sphere.hpp>
+#include <cstddef>
 #include <cstdint>
 
 class CChunkLiquid;
@@ -137,6 +138,77 @@ class IGeomFactory {
         virtual int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
                               CGxBatch* batch) = 0;
 };
+
+// The point-and-edge accumulator the map-object liquid geometry emitter builds its outline in, and
+// the walker that reads it back. The reference keeps both in MapObjRead.cpp; their purpose was only
+// established once FUN_007a7f60 -- the emitter -- was read, because nine functions operate on this
+// and none of them says what it is for.
+//
+// Every offset below is confirmed against the reference, not inferred from spacing: the append
+// writes a point at `base + count * 0x2c` with the count at +0x640, the link pass writes each
+// point's +0x1c/+0x20/+0x24 and each edge's three fields at +0x580 + i * 0xc with that count at
+// +0x644, and the walker seeds itself from +0x580/+0x584 indexed by the cursor at +0x64c. The two
+// capacities fall out of those and are exact rather than guessed: 32 points fill 0x000..0x57f
+// (32 * 0x2c = 0x580) and 16 edges fill 0x580..0x63f (16 * 0xc = 0xc0).
+struct MapObjPolyPoint {
+    C3Vector position;      // +0x00
+    uint32_t value;         // +0x0c, whatever the append's fourth argument carries
+    uint32_t unknown10[3];  // +0x10 .. +0x18, untouched by anything read so far
+    int32_t inEdge;         // +0x1c: the edge arriving at this point
+    int32_t outEdge;        // +0x20: the edge leaving it
+    int32_t unknown24;      // +0x24, set to -1 by the link pass and read nowhere
+    uint32_t unknown28;     // +0x28
+};
+
+struct MapObjPolyEdge {
+    int32_t from;           // +0x00, a POINT index
+    int32_t to;             // +0x04, a point index
+    uint8_t flag;           // +0x08
+};
+
+struct MapObjPolySet {
+    MapObjPolyPoint points[32];   // +0x000
+    MapObjPolyEdge edges[16];     // +0x580
+    int32_t pointCount;           // +0x640
+    int32_t edgeCount;            // +0x644
+    uint32_t unknown648;          // +0x648
+    int32_t cursor;               // +0x64c: which edge a walk starts from
+};
+
+// The layout claims above are checked rather than asserted in prose. Both of these structs are
+// pointer-free, so their 32-bit offsets carry over to frozen's 64-bit build unchanged and every
+// number the reference reads can be pinned here. MapObjPolyWalk below is deliberately NOT checked:
+// it holds two pointers, so its offsets are 8-byte-wider here and cannot match the reference's.
+static_assert(sizeof(MapObjPolyPoint) == 0x2c, "the append strides by 0x2c");
+static_assert(offsetof(MapObjPolyPoint, inEdge) == 0x1c, "the walk reads the in edge at +0x1c");
+static_assert(offsetof(MapObjPolyPoint, outEdge) == 0x20, "the walk reads the out edge at +0x20");
+static_assert(sizeof(MapObjPolyEdge) == 0xc, "the edge array strides by 0xc");
+static_assert(offsetof(MapObjPolySet, edges) == 0x580, "32 points exactly fill the space before it");
+static_assert(offsetof(MapObjPolySet, pointCount) == 0x640, "the append bumps the count at +0x640");
+static_assert(offsetof(MapObjPolySet, edgeCount) == 0x644, "the walk bounds the cursor against +0x644");
+static_assert(offsetof(MapObjPolySet, cursor) == 0x64c, "the walk seeds from the cursor at +0x64c");
+
+// A walk outward from one edge. Both ends are POINT indices, seeded from that edge's two ends.
+struct MapObjPolyWalk {
+    MapObjPolySet* set;     // +0x00
+    void* callback;         // +0x04, invoked by the dereference to fill a value lazily
+    int32_t back;           // +0x08: the end stepping backwards
+    int32_t forward;        // +0x0c: the end stepping forwards
+    uint32_t steps;         // +0x10: its low bit alternates which end moves
+    uint8_t done;           // +0x14
+};
+
+// ref: FUN_007d9230
+void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, uint32_t value);
+
+// ref: FUN_007d9330
+void MapObjPolyBeginWalk(MapObjPolyWalk* walk, MapObjPolySet* set, void* callback);
+
+// ref: FUN_007d9400
+void MapObjPolyAdvance(MapObjPolyWalk* walk);
+
+// ref: FUN_007d9460
+uint8_t MapObjPolyAtEnd(const MapObjPolyWalk* walk);
 
 // ref: FUN_0079b870
 // Resolve a liquid type id to the shared block the vertex writer samples, or null when the type

@@ -197281,7 +197281,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 62
+"line": 63
 },
 "Liquid::CWaveManager::RecordDwords": {
 "files": [
@@ -197294,7 +197294,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 64
+"line": 65
 },
 "DrawChunkUnsupported": {
 "files": [
@@ -208823,7 +208823,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 128
+"line": 129
 },
 "Liquid::IGeomFactory::AddRef": {
 "files": [
@@ -209477,6 +209477,65 @@
 "lines": 26,
 "refs": [],
 "line": 1129
+},
+"Liquid::MapObjPolyAddPoint": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 1160
+},
+"Liquid::MapObjPolyBeginWalk": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 14,
+"refs": [],
+"line": 1176
+},
+"Liquid::MapObjPolyAdvance": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 2,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 1200
+},
+"Liquid::MapObjPolyAtEnd": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1226
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

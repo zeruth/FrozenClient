@@ -1153,4 +1153,78 @@ void* LiquidTypeBlock(int32_t liquidType) {
     return nullptr;
 }
 
+
+// ref: FUN_007d9230
+// Append one point. No bounds check, which is the reference's own shape -- the emitter that fills
+// this knows the grid it is walking cannot produce more than the 32 the array holds.
+void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, uint32_t value) {
+    MapObjPolyPoint* point = &set->points[set->pointCount];
+
+    point->position = position;
+    point->value = value;
+
+    set->pointCount++;
+}
+
+// ref: FUN_007d9330
+// Start a walk at the set's current cursor edge. Both ends begin at that edge's two points, so the
+// first step already has somewhere to go in each direction.
+//
+// THE DONE FLAG IS SET FIRST and only cleared when the cursor actually names an edge, so a walk over
+// a set with no edges -- or one whose cursor has run past them -- is immediately finished rather than
+// reading a garbage edge. That ordering is the reference's and is the whole guard.
+void MapObjPolyBeginWalk(MapObjPolyWalk* walk, MapObjPolySet* set, void* callback) {
+    walk->callback = callback;
+    walk->set = set;
+    walk->back = -1;
+    walk->forward = -1;
+    walk->steps = 0;
+    walk->done = 1;
+
+    if (set->cursor < set->edgeCount) {
+        walk->back = set->edges[set->cursor].from;
+        walk->forward = set->edges[set->cursor].to;
+        walk->done = 0;
+    }
+}
+
+// ref: FUN_007d9400
+// One step, and only ONE END moves per call -- the low bit of the step counter alternates which.
+// The back end follows its point's incoming edge to that edge's `from`, and the forward end follows
+// its point's outgoing edge to that edge's `to`, so the pair spreads outward from the seed edge in
+// both directions at once.
+//
+// It finishes when the two ends land on the same point, which is the outline closing. The test is at
+// the TOP, so the closing step is observed before it is taken rather than after -- which matters
+// because a caller reads the ends between calls.
+void MapObjPolyAdvance(MapObjPolyWalk* walk) {
+    if (walk->forward == walk->back) {
+        walk->done = 1;
+
+        return;
+    }
+
+    MapObjPolySet* set = walk->set;
+
+    if (!(walk->steps & 1)) {
+        int32_t next = set->edges[set->points[walk->back].inEdge].from;
+
+        walk->steps++;
+        walk->back = next;
+
+        return;
+    }
+
+    int32_t next = set->edges[set->points[walk->forward].outEdge].to;
+
+    walk->steps++;
+    walk->forward = next;
+}
+
+// ref: FUN_007d9460
+// Four bytes in the reference: the done flag, returned raw rather than as a bool.
+uint8_t MapObjPolyAtEnd(const MapObjPolyWalk* walk) {
+    return walk->done;
+}
+
 } // namespace Liquid

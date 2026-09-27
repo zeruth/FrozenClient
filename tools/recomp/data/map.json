@@ -52449,6 +52449,66 @@
   "refSize": 331,
   "status": "ported"
  },
+ "007d9230": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyAddPoint",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
+ "007d9330": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyBeginWalk",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
+ "007d9400": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyAdvance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 88,
+  "status": "ported"
+ },
+ "007d9460": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyAtEnd",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 4,
+  "status": "ported"
+ },
  "007d9990": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
