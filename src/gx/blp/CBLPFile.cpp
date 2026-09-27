@@ -324,13 +324,8 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
 
     switch (this->m_header.colorEncoding) {
         case COLOR_PAL: {
-            // Palettized images are expanded to ARGB8888: one palette index per texel followed
-            // by an alpha plane of 0, 1, 4, or 8 bits per texel.
-            if (format != PIXEL_ARGB8888) {
-                // TODO conversion to 16 bit formats
-                return 0;
-            }
-
+            // A palettized image is one palette index per texel, followed by an alpha plane of
+            // 0, 1, 4 or 8 bits per texel. Which decoder runs depends on the format asked for.
             uint32_t width = this->m_header.width >> mipLevel;
             uint32_t height = this->m_header.height >> mipLevel;
 
@@ -340,6 +335,38 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
 
             if (height < 1) {
                 height = 1;
+            }
+
+            // The reference's dispatch (FUN_006af810), which frozen was answering 0 to for every
+            // format but ARGB8888 -- even though the two dither decoders it wants were already
+            // here, ported and tagged, with nothing calling them. They are reached now.
+            //
+            // Both dither rather than truncate, which is why they take width and height instead
+            // of a texel count: Floyd-Steinberg carries its error along the row and into the
+            // next, so the decoder has to know where the rows end.
+            switch (format) {
+                case PIXEL_ARGB1555:
+                    this->DecompPalARGB1555DitherFS(
+                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+                    return 1;
+
+                case PIXEL_RGB565:
+                    this->DecompPalRGB565DitherFS(
+                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+                    return 1;
+
+                case PIXEL_ARGB8888:
+                    // Handled below, because it is the one case that needs the alpha plane.
+                    break;
+
+                default:
+                    // STILL MISSING, and now named rather than lumped in with "16 bit":
+                    // ARGB4444 goes through FUN_006aeba0 and ARGB2565 through FUN_006af340,
+                    // the reference's other two palette decoders. Neither is ported, so those
+                    // two formats keep answering 0 -- which is what the caller already handles.
+                    return 0;
             }
 
             uint32_t texelCount = width * height;

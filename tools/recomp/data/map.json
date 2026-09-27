@@ -37793,7 +37793,7 @@
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::DecompPalARGB1555DitherFS",
-  "frozenSize": 0,
+  "frozenSize": 965,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 707,
@@ -37809,7 +37809,7 @@
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::DecompPalRGB565DitherFS",
-  "frozenSize": 0,
+  "frozenSize": 667,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 511,

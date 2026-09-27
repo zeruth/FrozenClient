@@ -65880,6 +65880,8 @@
 "src/gx/blp/cblpfile.cpp"
 ],
 "callseq": [
+"CBLPFile::DecompPalARGB1555DitherFS",
+"CBLPFile::DecompPalRGB565DitherFS",
 "memcpy",
 "memcpy"
 ],
@@ -65897,9 +65899,9 @@
 "7",
 "8"
 ],
-"branches": 21,
+"branches": 23,
 "stub": false,
-"lines": 108,
+"lines": 135,
 "refs": [],
 "line": 315
 },
@@ -65924,7 +65926,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 424
+"line": 451
 },
 "CBLPFile::Open": {
 "files": [
@@ -65953,7 +65955,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 494
+"line": 521
 },
 "CBLPFile::Source": {
 "files": [
@@ -65977,7 +65979,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 542
+"line": 569
 },
 "CBLPFile::Unlock": {
 "files": [
@@ -65998,7 +66000,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 569
+"line": 596
 },
 "GxVertexAttribOffset": {
 "files": [
