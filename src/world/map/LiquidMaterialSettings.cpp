@@ -1351,7 +1351,93 @@ void DrawProcWaterMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
 }
 
 // ref: FUN_008a3f70
+// THE SHADER PAIRS ARE RELEASED HERE, which nothing did before: each class loads its pair on
+// first use into statics and, until CGxDevice::ShaderDestroy existed, there was no call to give
+// them back with. The reference does exactly this in each material's destructor -- drop a
+// per-class count, and on the last one walk the permutation array handing each SLOT's address to
+// the device so it comes back null, then the pixel shader the same way.
+//
+// The count is per CLASS, not per material bank entry: the reference keeps one at 0x00d44c38 for
+// water, 0x00d44c3c for the no-specular variant, and the constructor increments the same word it
+// tests. A static here is the same thing with the name attached.
+
+namespace {
+
+// One reference count a shader-loading material class.
+int32_t s_waterRefs = 0;
+int32_t s_waterNoSpecRefs = 0;
+int32_t s_magmaRefs = 0;
+int32_t s_procWaterRefs = 0;
+
+// Hand every slot of a permutation array back to the device, which nulls each as it goes.
+void ReleasePair(CGxShader** vertex, int32_t vertexCount, CGxShader** pixel, int32_t pixelCount) {
+    for (int32_t i = 0; i < vertexCount; i++) {
+        g_theGxDevicePtr->ShaderDestroy(&vertex[i]);
+    }
+
+    for (int32_t i = 0; i < pixelCount; i++) {
+        g_theGxDevicePtr->ShaderDestroy(&pixel[i]);
+    }
+}
+
+}
+
+// ref: FUN_008a3fe0
+CMaterialWater::~CMaterialWater() {
+    if (s_waterRefs > 0) {
+        s_waterRefs--;
+    }
+
+    if (s_waterRefs) {
+        return;
+    }
+
+    ReleasePair(s_vsWater, 4, s_psWater, 1);
+}
+
+// ref: FUN_008a40e0
+CMaterialWaterNoSpec::~CMaterialWaterNoSpec() {
+    if (s_waterNoSpecRefs > 0) {
+        s_waterNoSpecRefs--;
+    }
+
+    if (s_waterNoSpecRefs) {
+        return;
+    }
+
+    ReleasePair(s_vsWaterNoSpec, 4, s_psWaterNoSpec, 1);
+}
+
+// The same shape as CMaterialWater's, which is ref FUN_008a3fe0; this class's own
+// destructor address is not pinned, so it carries no tag rather than a guessed one.
+CMaterialMagma::~CMaterialMagma() {
+    if (s_magmaRefs > 0) {
+        s_magmaRefs--;
+    }
+
+    if (s_magmaRefs) {
+        return;
+    }
+
+    ReleasePair(s_vsMagma, 1, s_psMagma, 1);
+}
+
+// The same shape as CMaterialWater's, which is ref FUN_008a3fe0; this class's own
+// destructor address is not pinned, so it carries no tag rather than a guessed one.
+CMaterialProcWater::~CMaterialProcWater() {
+    if (s_procWaterRefs > 0) {
+        s_procWaterRefs--;
+    }
+
+    if (s_procWaterRefs) {
+        return;
+    }
+
+    ReleasePair(s_vsProcWater, 4, s_psProcWater, 1);
+}
 void CMaterialWater::EnsureShaders() {
+    s_waterRefs++;
+
     static bool s_loaded = false;
 
     if (s_loaded) {
@@ -1365,6 +1451,8 @@ void CMaterialWater::EnsureShaders() {
 
 // ref: FUN_008a4070
 void CMaterialWaterNoSpec::EnsureShaders() {
+    s_waterNoSpecRefs++;
+
     static bool s_loaded = false;
 
     if (s_loaded) {
@@ -1380,6 +1468,8 @@ void CMaterialWaterNoSpec::EnsureShaders() {
 // ref: FUN_008a4190
 // The only one of the four with a single vertex permutation rather than four.
 void CMaterialMagma::EnsureShaders() {
+    s_magmaRefs++;
+
     static bool s_loaded = false;
 
     if (s_loaded) {
@@ -1393,6 +1483,8 @@ void CMaterialMagma::EnsureShaders() {
 
 // ref: FUN_008a3e00
 void CMaterialProcWater::EnsureShaders() {
+    s_procWaterRefs++;
+
     static bool s_loaded = false;
 
     if (s_loaded) {

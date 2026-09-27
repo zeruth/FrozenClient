@@ -263,6 +263,11 @@ class CGxDevice {
         virtual int32_t TexCreate(EGxTexTarget, uint32_t, uint32_t, uint32_t, EGxTexFormat, EGxTexFormat, CGxTexFlags, void*, void (*)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char*, CGxTex*&);
         virtual void TexDestroy(CGxTex* texId);
         virtual void ShaderCreate(CGxShader*[], EGxShTarget, const char*, const char*, int32_t);
+        // Release one shader slot and null it. The reference keeps this in the device vtable one
+        // entry after ShaderCreate (+0x114 against ShaderCreate's +0x110), which is how the liquid
+        // material destructors reach it: they walk their permutation array and hand over each
+        // slot's ADDRESS so it comes back cleared.
+        virtual void ShaderDestroy(CGxShader** shader);
         virtual void ShaderConstantsSet(EGxShTarget, uint32_t, const float*, uint32_t);
         virtual void IShaderCreate(CGxShader*) = 0;
         virtual int32_t StereoEnabled(void) = 0;

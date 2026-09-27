@@ -121,6 +121,9 @@ class IMaterial {
 // LiquidMaterial 1, the shader path with specular. ref: FUN_008a3f70 / FUN_008a4790
 class CMaterialWater : public IMaterial {
     public:
+        // Drop this class's shader pair when the last instance goes.
+        // ref: FUN_008a3fe0
+        ~CMaterialWater() override;
         void EnsureShaders() override;
         void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
@@ -129,6 +132,9 @@ class CMaterialWater : public IMaterial {
 // LiquidMaterial 1 without specular. ref: FUN_008a4070 / FUN_008a47f0
 class CMaterialWaterNoSpec : public IMaterial {
     public:
+        // Drop this class's shader pair when the last instance goes.
+        // ref: FUN_008a40e0
+        ~CMaterialWaterNoSpec() override;
         void EnsureShaders() override;
         void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
@@ -137,6 +143,8 @@ class CMaterialWaterNoSpec : public IMaterial {
 // LiquidMaterial 2, magma and slime. ref: FUN_008a4190 / FUN_008a4870
 class CMaterialMagma : public IMaterial {
     public:
+        // Drop this class's shader pair when the last instance goes.
+        ~CMaterialMagma() override;
         void EnsureShaders() override;
         void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;
@@ -146,6 +154,8 @@ class CMaterialMagma : public IMaterial {
 // from outside the module. ref: FUN_008a3e00 / FUN_008a4710
 class CMaterialProcWater : public IMaterial {
     public:
+        // Drop this class's shader pair when the last instance goes.
+        ~CMaterialProcWater() override;
         void EnsureShaders() override;
         void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                   const C44Matrix*, const CAaSphere*, CMaterialSettings*) override;

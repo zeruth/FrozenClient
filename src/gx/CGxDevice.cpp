@@ -1569,6 +1569,38 @@ void CGxDevice::ShaderConstantsUnlock(EGxShTarget target, uint32_t index, uint32
     }
 }
 
+// The other half of ShaderCreate, which until now had none: shaders were created, reference
+// counted and never released by anything. Every liquid material loads a pair on first use and the
+// reference drops that pair in the material's destructor -- there was simply no call to port it
+// to, so the materials could not have destructors and the shaders leaked for the life of the
+// process.
+//
+// Refcounted like the creation side: ShaderCreate bumps the count on every request, whether it
+// made the shader or found it already in the list, so a matching drop has to reach zero before the
+// entry goes. The slot is cleared either way -- the caller has given up its reference, and leaving
+// a pointer behind that the next load would skip over is how a freed shader gets bound.
+void CGxDevice::ShaderDestroy(CGxShader** shader) {
+    if (!shader || !*shader) {
+        return;
+    }
+
+    CGxShader* s = *shader;
+
+    *shader = nullptr;
+
+    if (s->refCount) {
+        s->refCount--;
+    }
+
+    if (s->refCount) {
+        return;
+    }
+
+    if (s->target >= 0 && s->target < GxShTargets_Last) {
+        this->m_shaderList[s->target].Delete(s);
+    }
+}
+
 void CGxDevice::ShaderCreate(CGxShader* shaders[], EGxShTarget target, const char* a4, const char* a5, int32_t permutations) {
     auto shaderList = &this->m_shaderList[target];
 

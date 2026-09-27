@@ -66184,7 +66184,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialProcWater::EnsureShaders",
-  "frozenSize": 238,
+  "frozenSize": 244,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 184,
@@ -66200,7 +66200,22 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialWater::EnsureShaders",
-  "frozenSize": 134,
+  "frozenSize": 140,
+  "how": "string",
+  "module": "Liquid.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "008a3fe0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialWater::~CMaterialWater",
+  "frozenSize": 0,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 102,
@@ -66222,6 +66237,21 @@
   "refSize": 102,
   "status": "ported"
  },
+ "008a40e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialWaterNoSpec::~CMaterialWaterNoSpec",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
  "008a4190": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -66232,7 +66262,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialMagma::EnsureShaders",
-  "frozenSize": 134,
+  "frozenSize": 140,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 102,
