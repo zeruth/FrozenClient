@@ -188,6 +188,15 @@ uint32_t GxVertexAttribOffset(EGxVertexBufferFormat format, EGxVertexAttrib attr
     return Buffer::s_vertexBufOffset[format][attrib];
 }
 
+// ref: FUN_00681260
+// Whether a format carries an attribute. Reads the same table GxVertexAttribOffset does, where -1
+// marks an attribute the format does not have -- which is why every caller gates an offset lookup on
+// this rather than checking the offset for a sentinel itself. Sits immediately after
+// GxVertexBufferFormatSize in the reference too.
+bool GxVertexBufferFormatHasAttrib(EGxVertexBufferFormat format, EGxVertexAttrib attrib) {
+    return Buffer::s_vertexBufOffset[format][attrib] != 0xFFFFFFFF;
+}
+
 // ref: FUN_00681230
 uint32_t GxVertexBufferFormatSize(EGxVertexBufferFormat format) {
     return Buffer::s_vertexBufDesc[format].size;

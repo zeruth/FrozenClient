@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 #define WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 
+#include "gx/CGxBatch.hpp"
 #include "gx/Types.hpp"
 #include "world/map/VBBList.hpp"
 #include <storm/Array.hpp>
@@ -223,6 +224,10 @@ class CMapObjGroup {
         // the block's buf at +0x18 -- an offset frozen's VBBList::Block already carries.
         VBBList::Block* m_liquidVertexBuf = nullptr;
         VBBList::Block* m_liquidIndexBuf = nullptr;
+        // +0x20: the batch the liquid surface was last built into. CMeshGeomFactory::Build copies it
+        // out on a cache hit and fills it on a rebuild, reaching it through the holder
+        // AcquireLiquidBuffers hands back -- which is what that holder actually points at.
+        CGxBatch m_liquidBatch = {};
         float m_bufferIdleTime = 0.0f;           // +0x18
 
         // The liquid surface's vertex positions, built from MLIQ. The reference keeps these in a

@@ -2282,6 +2282,7 @@ addr	how	frozen	evidence
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
 00681230	annotated	GxVertexBufferFormatSize	tag in src/gx/Buffer.cpp
 00681240	callgraph	GxVertexAttribOffset	only unmatched callee of 0097a2e0=CM2ParticleEmitter::SetupVertexCursor
+00681260	annotated	GxVertexBufferFormatHasAttrib	tag in src/gx/Buffer.cpp
 006813b0	override	GxSceneClear	
 00681450	override	GxTexSetWrap	
 00681470	annotated	GxTexDestroy	tag in src/gx/Texture.cpp
@@ -3255,6 +3256,7 @@ addr	how	frozen	evidence
 007d4370	annotated	CMeshGeomFactory::SetFixedLight	tag in src/world/map/LiquidSurface.cpp
 007d43b0	annotated	CMeshGeomFactory::Release	tag in src/world/map/LiquidSurface.cpp
 007d43e0	annotated	CMeshGeomFactory::SetTextureId	tag in src/world/map/LiquidSurface.cpp
+007d43f0	override	Liquid::CMeshGeomFactory::Build	
 007d49b0	annotated	CMeshGeomFactory::Create	tag in src/world/map/LiquidSurface.cpp
 007d49d0	annotated	CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
 007d4ab0	annotated	CChunkGeomFactory::Build	tag in src/world/map/LiquidSurface.cpp

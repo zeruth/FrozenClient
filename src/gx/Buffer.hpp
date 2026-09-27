@@ -25,6 +25,10 @@ namespace Buffer {
 
 uint32_t GxVertexAttribOffset(EGxVertexBufferFormat, EGxVertexAttrib);
 
+// ref: FUN_00681260
+// Whether a vertex format carries an attribute at all. The offset table stores -1 where it does not.
+bool GxVertexBufferFormatHasAttrib(EGxVertexBufferFormat, EGxVertexAttrib);
+
 // One vertex's size in bytes, for a format. The sibling of the offset lookup above: the reference
 // indexes a flat table at 0x00ad8ac0, frozen keeps the same numbers in the format descriptors.
 uint32_t GxVertexBufferFormatSize(EGxVertexBufferFormat);

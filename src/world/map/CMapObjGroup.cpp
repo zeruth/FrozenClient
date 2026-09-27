@@ -1407,11 +1407,11 @@ void CMapObjGroup::LiquidTileCount() {
 // run. Frozen leaves the two flags as CGxBuf's unk1C and unk1D rather than renaming them, because
 // what sets them is not yet ported and a name would be a guess.
 //
-// DIVERGENCE on the holder. The reference hands back an interior pointer, group + 0x20, and frozen's
-// layout already diverges in exactly that region -- the reference keeps the liquid vertex positions
-// in a pooled VertArray behind a pointer at +0x1c where frozen owns a TSGrowableArray. So an
-// interior offset there would name nothing. The group pointer carries the same information for every
-// use ported so far, which is as a cache key the factory compares and passes back.
+// THE HOLDER IS THE CACHED BATCH, settled by reading Build: it dereferences the holder and copies
+// four dwords out of it into its batch output, and a CGxBatch is exactly four dwords. So group + 0x20
+// is where the liquid surface's last batch lives, and this hands back its address. An earlier note
+// here guessed the holder was an opaque cache key and returned the group pointer; that was close
+// enough to work and wrong about what it pointed at.
 void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t vertexCount,
                                         uint32_t indexCount, void** holderOut) {
     if (!this->m_liquidVertexBuf) {
@@ -1432,7 +1432,7 @@ void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t v
         }
     }
 
-    *holderOut = this;
+    *holderOut = &this->m_liquidBatch;
 
     this->m_liquidBufferUsers++;
 }

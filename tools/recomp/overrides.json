@@ -3390,5 +3390,10 @@
     "frozen": "",
     "status": "excluded",
     "note": "Twenty-six bytes that call FUN_007d9330 and return their second argument: MSVC's return-by-value constructor wrapper, emitted for `return Walk(set, callback);`. The behaviour is entirely in FUN_007d9330, which is ported as Liquid::MapObjPolyBeginWalk, so there is nothing here to port -- excluded as compiler glue rather than left looking like a gap. Read 2026-09-27 with the rest of the map-object liquid outline accumulator."
+  },
+  "007d43f0": {
+    "frozen": "Liquid::CMeshGeomFactory::Build",
+    "status": "ported",
+    "note": "The map-object water build, vtable slot 2. PORTED 2026-09-27 with the whole chain under it. Its decompilation actively misleads on one point and the disassembly was needed: Ghidra's brace structure puts the batch fill before the buffer unlocks with a goto past them, which would leave both buffers locked and nothing drawable. The unlock at 0x7d4685 in fact follows the EmitLiquidTiles call at 0x7d466f directly, with the batch fill after."
   }
 }

@@ -5,6 +5,7 @@
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include <storm/Memory.hpp>
+#include <storm/Error.hpp>
 #include <cmath>
 #include <cstdlib>
 #include <new>
@@ -958,39 +959,135 @@ void CMeshGeomFactory::SetFixedLight(float fixedLight) {
     this->m_fixedLight = fixedLight;
 }
 
-// FUN_007d43f0, the vtable's slot 2. NOT PORTED, and deliberately left untagged so the measurement
-// does not count it -- returning 0 here means "no geometry", which is the safe answer while nothing
-// constructs this class anyway (its creator, the map-object liquid queue FUN_00793d20, is unported).
+// ref: FUN_007d43f0
+// Build the map-object water surface, or hand back what was built last time. This is where the whole
+// liquid chain comes together: the tile count, the buffer pair, the two grid writers and the tile
+// emitter.
 //
-// Everything about it that IS known, so the next pass starts here rather than at the disassembly:
+// THE VERTEX COUNT is the grid plus six per tile that carries its own geometry -- the grid extents
+// taking the factory's two extra-extent fields, which nothing ever writes, so in practice it is the
+// group's own grid. Indices are budgeted at three per vertex, which the strip never exceeds.
 //
-//   it fatals with "Water in chunk \"%s\" of object \"%s\" has no materialId." when
-//   group->m_liquidMaterial is not less than the map object's material count;
-//   the vertex count is (m_liquidYVerts + m_extraYVerts) * (m_liquidXVerts + m_extraXVerts) +
-//   LiquidTileCount() * 6, and the index count is three times that -- CMapObjGroup::LiquidTileCount
-//   is ported and caches into m_liquidTileCount;
-//   the buffer pair comes off the GROUP through FUN_007cbdc0, not off this factory, and it
-//   early-returns the cached batch when both buffers still report ready;
-//   attribute offsets come from GxVertexAttribOffset for attributes 0, 3, 4, 6 and 7, each gated on
-//   FUN_00681260(format, n).
+// THE CACHE HIT is both buffers reporting their two ready flags. On a hit it copies the batch out of
+// the holder and returns without locking anything -- the holder points at the group's stored batch,
+// which is what makes that copy meaningful.
 //
-// WHAT BLOCKS IT is two unread writers and one layout question, neither of them guessable:
+// THE UNLOCKS RUN ON THE SUCCESS PATH, and this is the one place the decompilation actively misleads:
+// its brace structure puts the batch fill before the unlocks with a goto past them, which would leave
+// both buffers locked and nothing drawable. The disassembly settles it -- the unlock at 0x7d4685
+// follows the EmitLiquidTiles call at 0x7d466f directly, and the batch fill comes after. Porting the
+// decompilation's shape would have produced a client that built water once and then drew nothing.
 //
-//   FUN_007a7920 (462 bytes) and FUN_007a7f60 (944) are the second and third vertex writers; only
-//   the first, FUN_007a7cc0, has been decoded (its walk is written out in parity-liquid.md).
-//   FUN_007cbdc0 is a CMapObjGroup method and needs fields frozen's group does not declare: a
-//   SECOND VBB pair at +0x10/+0x14 -- distinct from m_vertexBuf/m_colorBuf/m_indexBuf at
-//   +0x04/+0x08/+0x0c, which are the group's own geometry -- a counter at +0x110, and a
-//   sub-object at +0x20 whose address is what gets cached in m_bufferHolder. Adding those to
-//   CMapObjGroup on a guess would be the wrong kind of change to make blind.
+// The identity matrix is built twice, once before each writer, which is the reference's own shape --
+// so for map-object water the vertex positions and the computed texcoord path both pass through
+// untransformed, and the group's placement is applied somewhere else.
+//
+// The reference returns void where frozen's IGeomFactory::Build returns int32_t, so this answers 1
+// when the batch is usable and 0 when a lock failed -- which is what its sibling CChunkGeomFactory
+// does.
 int32_t CMeshGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf,
                                CGxBuf** indexBuf, CGxBatch* batch) {
-    (void)format;
-    (void)vertexBuf;
-    (void)indexBuf;
-    (void)batch;
+    CMapObjGroup* group = this->m_group;
 
-    return 0;
+    if (group->m_liquidMaterial >= this->m_mapObj->m_materialCount) {
+        SErrDisplayAppFatal("Water in chunk \"%s\" of object \"%s\" has no materialId.",
+                            group->m_name, this->m_mapObj->m_name);
+    }
+
+    group->LiquidTileCount();
+
+    uint32_t vertexCount =
+        (group->m_liquidYVerts + static_cast<uint32_t>(this->m_extraYVerts))
+        * (group->m_liquidXVerts + static_cast<uint32_t>(this->m_extraXVerts))
+        + static_cast<uint32_t>(group->m_liquidTileCount) * 6;
+
+    group->AcquireLiquidBuffers(format, vertexCount, vertexCount * 3, &this->m_bufferHolder);
+
+    *vertexBuf = group->m_liquidVertexBuf->buf;
+    *indexBuf = group->m_liquidIndexBuf->buf;
+
+    auto cached = static_cast<CGxBatch*>(this->m_bufferHolder);
+
+    if ((*vertexBuf)->unk1C && (*vertexBuf)->unk1D && (*indexBuf)->unk1C && (*indexBuf)->unk1D) {
+        *batch = *cached;
+
+        return 1;
+    }
+
+    char* vertexData = GxBufLock(*vertexBuf);
+    char* indexData = GxBufLock(*indexBuf);
+
+    if (!vertexData || !indexData) {
+        if (vertexData) {
+            GxBufUnlock(*vertexBuf, 0);
+            (*vertexBuf)->unk1C = 1;
+        }
+
+        if (indexData) {
+            GxBufUnlock(*indexBuf, 0);
+            (*indexBuf)->unk1C = 1;
+        }
+
+        return 0;
+    }
+
+    int32_t stride = static_cast<int32_t>(GxVertexBufferFormatSize(format));
+
+    uint8_t* cursor[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
+    static const EGxVertexAttrib kAttribs[5] = {
+        static_cast<EGxVertexAttrib>(0), static_cast<EGxVertexAttrib>(3),
+        static_cast<EGxVertexAttrib>(4), static_cast<EGxVertexAttrib>(6),
+        static_cast<EGxVertexAttrib>(7)
+    };
+
+    // Attribute 0 is unconditional; the other four only exist when the format carries them, and a
+    // null cursor is how the writers are told to skip one.
+    cursor[0] = reinterpret_cast<uint8_t*>(vertexData + GxVertexAttribOffset(format, kAttribs[0]));
+
+    for (int32_t i = 1; i < 5; i++) {
+        if (GxVertexBufferFormatHasAttrib(format, kAttribs[i])) {
+            cursor[i] = reinterpret_cast<uint8_t*>(
+                vertexData + GxVertexAttribOffset(format, kAttribs[i]));
+        }
+    }
+
+    auto indexBase = reinterpret_cast<uint16_t*>(indexData);
+    uint16_t* indexCursor = indexBase;
+
+    C44Matrix identity(1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f);
+
+    int32_t gridVertices = WriteLiquidGridVertices(group, identity, &this->m_textureId, this->m_lvf,
+                                                   static_cast<uint32_t>(this->m_fixedLight),
+                                                   this->m_seams, stride, &cursor[0], &cursor[1],
+                                                   &cursor[2], &cursor[3], &cursor[4]);
+
+    WriteLiquidIndices(group, this->m_seams, &indexCursor, 0);
+
+    int32_t tileVertices = EmitLiquidTiles(this->m_mapObj, group, identity, &this->m_textureId,
+                                          this->m_lvf,
+                                          static_cast<uint32_t>(this->m_fixedLight), stride,
+                                          &cursor[0], &cursor[1], &cursor[2], &cursor[3],
+                                          &cursor[4], &indexCursor, gridVertices);
+
+    GxBufUnlock(*vertexBuf, 0);
+    (*vertexBuf)->unk1C = 1;
+
+    GxBufUnlock(*indexBuf, 0);
+    (*indexBuf)->unk1C = 1;
+
+    cached->m_primType = GxPrim_TriangleStrip;
+    cached->m_start = 0;
+    cached->m_count = static_cast<uint32_t>(indexCursor - indexBase);
+    cached->m_minIndex = 0;
+    cached->m_maxIndex = static_cast<uint16_t>(gridVertices + tileVertices - 1);
+
+    *batch = *cached;
+
+    return 1;
 }
 
 

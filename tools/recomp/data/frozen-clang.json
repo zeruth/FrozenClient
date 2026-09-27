@@ -66605,6 +66605,21 @@
 "refs": [],
 "line": 187
 },
+"GxVertexBufferFormatHasAttrib": {
+"files": [
+"src/gx/buffer.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0xFFFFFFFF"
+],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 196
+},
 "GxVertexBufferFormatSize": {
 "files": [
 "src/gx/buffer.cpp"
@@ -66616,7 +66631,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 192
+"line": 201
 },
 "GxBufCreate": {
 "files": [
@@ -66631,7 +66646,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 196
+"line": 205
 },
 "GxBufData": {
 "files": [
@@ -66649,7 +66664,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 204
+"line": 213
 },
 "GxBufLock": {
 "files": [
@@ -66664,7 +66679,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 213
+"line": 222
 },
 "GxBufUnlock": {
 "files": [
@@ -66681,7 +66696,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 217
+"line": 226
 },
 "GxPoolCreate": {
 "files": [
@@ -66696,7 +66711,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 222
+"line": 231
 },
 "GxPoolDestroy": {
 "files": [
@@ -66711,7 +66726,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 226
+"line": 235
 },
 "GxBufDestroy": {
 "files": [
@@ -66726,7 +66741,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 230
+"line": 239
 },
 "GxPrimIndexPtr": {
 "files": [
@@ -66748,7 +66763,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 234
+"line": 243
 },
 "GxPrimVertexPtr": {
 "files": [
@@ -66787,7 +66802,7 @@
 "stub": false,
 "lines": 127,
 "refs": [],
-"line": 254
+"line": 263
 },
 "GxPrimLockVertexPtrs": {
 "files": [
@@ -66802,7 +66817,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 383
+"line": 392
 },
 "GxPrimUnlockVertexPtrs": {
 "files": [
@@ -66817,7 +66832,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 390
+"line": 399
 },
 "CGxPool::Discard": {
 "files": [
@@ -209084,7 +209099,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 36
+"line": 37
 },
 "Liquid::CChunkGeomFactory::Release": {
 "files": [
@@ -209104,7 +209119,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 40
+"line": 41
 },
 "Liquid::CClientEnvironment::AddRef": {
 "files": [
@@ -209117,7 +209132,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 50
+"line": 51
 },
 "Liquid::CClientEnvironment::Release": {
 "files": [
@@ -209137,7 +209152,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 53
+"line": 54
 },
 "Liquid::CInstance::AddRef": {
 "files": [
@@ -209150,7 +209165,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 60
+"line": 61
 },
 "Liquid::CInstance::Release": {
 "files": [
@@ -209173,7 +209188,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 65
+"line": 66
 },
 "Liquid::CreateGeomFactory": {
 "files": [
@@ -209197,7 +209212,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 91
+"line": 92
 },
 "Liquid::CreateEnvironment": {
 "files": [
@@ -209217,7 +209232,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 111
+"line": 112
 },
 "Liquid::CreateSurface": {
 "files": [
@@ -209260,7 +209275,7 @@
 "stub": false,
 "lines": 123,
 "refs": [],
-"line": 130
+"line": 131
 },
 "Liquid::WriteLayerVertices": {
 "files": [
@@ -209282,7 +209297,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 259
+"line": 260
 },
 "Liquid::WriteLayerIndices": {
 "files": [
@@ -209301,7 +209316,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 330
+"line": 331
 },
 "Liquid::CChunkGeomFactory::Build": {
 "files": [
@@ -209347,7 +209362,7 @@
 "stub": false,
 "lines": 152,
 "refs": [],
-"line": 387
+"line": 388
 },
 "Liquid::Add": {
 "files": [
@@ -209365,7 +209380,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 546
+"line": 547
 },
 "Liquid::Queued": {
 "files": [
@@ -209382,7 +209397,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 559
+"line": 560
 },
 "Liquid::SortAscending": {
 "files": [
@@ -209398,7 +209413,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 571
+"line": 572
 },
 "Liquid::SortDescending": {
 "files": [
@@ -209414,7 +209429,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 594
+"line": 595
 },
 "Liquid::Draw": {
 "files": [
@@ -209446,7 +209461,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 625
+"line": 626
 },
 "Liquid::CClientEnvironment::SetupLighting": {
 "files": [
@@ -209477,7 +209492,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 674
+"line": 675
 },
 "Liquid::CWaveManager::AddRef": {
 "files": [
@@ -209490,7 +209505,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 739
+"line": 740
 },
 "Liquid::CWaveManager::Release": {
 "files": [
@@ -209510,7 +209525,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 744
+"line": 745
 },
 "Liquid::CWaveManager::Update": {
 "files": [
@@ -209558,7 +209573,7 @@
 "stub": false,
 "lines": 123,
 "refs": [],
-"line": 755
+"line": 756
 },
 "Liquid::GetWaveManager": {
 "files": [
@@ -209578,7 +209593,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 883
+"line": 884
 },
 "Liquid::CMeshGeomFactory::Create": {
 "files": [
@@ -209598,7 +209613,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 916
+"line": 917
 },
 "Liquid::CMeshGeomFactory::Release": {
 "files": [
@@ -209618,7 +209633,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 936
+"line": 937
 },
 "Liquid::CMeshGeomFactory::SetTextureId": {
 "files": [
@@ -209631,7 +209646,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 947
+"line": 948
 },
 "Liquid::CMeshGeomFactory::SetLvf": {
 "files": [
@@ -209644,7 +209659,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 952
+"line": 953
 },
 "Liquid::CMeshGeomFactory::SetFixedLight": {
 "files": [
@@ -209657,22 +209672,53 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 957
+"line": 958
 },
 "Liquid::CMeshGeomFactory::Build": {
 "files": [
 "src/world/map/liquidsurface.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [
-"0"
+"callseq": [
+"SErrDisplayAppFatal",
+"CMapObjGroup::LiquidTileCount",
+"CMapObjGroup::AcquireLiquidBuffers",
+"CGxBatch::operator=",
+"GxBufLock",
+"GxBufLock",
+"GxBufUnlock",
+"GxBufUnlock",
+"GxVertexBufferFormatSize",
+"GxVertexAttribOffset",
+"GxVertexBufferFormatHasAttrib",
+"GxVertexAttribOffset",
+"C44Matrix::C44Matrix",
+"Liquid::WriteLiquidGridVertices",
+"Liquid::WriteLiquidIndices",
+"Liquid::EmitLiquidTiles",
+"GxBufUnlock",
+"GxBufUnlock",
+"CGxBatch::operator="
 ],
-"branches": 0,
+"strings": [
+"Water in chunk \"%s\" of object \"%s\" has no materialId."
+],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"2",
+"3",
+"4",
+"5",
+"6",
+"7"
+],
+"branches": 7,
 "stub": false,
-"lines": 8,
+"lines": 103,
 "refs": [],
-"line": 986
+"line": 988
 },
 "Liquid::WriteLiquidIndices": {
 "files": [
@@ -209684,13 +209730,13 @@
 "TSBaseArray<unsigned char>::operator[]",
 "TSBaseArray<unsigned char>::Count",
 "TSBaseArray<unsigned char>::operator[]",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1028:17)::operator()"
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1125:17)::operator()"
 ],
 "strings": [],
 "consts": [
@@ -209705,7 +209751,7 @@
 "stub": false,
 "lines": 79,
 "refs": [],
-"line": 1026
+"line": 1123
 },
 "Liquid::LiquidTypeBlock": {
 "files": [
@@ -209724,7 +209770,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1130
+"line": 1227
 },
 "Liquid::MapObjPolyAddPoint": {
 "files": [
@@ -209739,7 +209785,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1163
+"line": 1260
 },
 "Liquid::MapObjPolyBeginWalk": {
 "files": [
@@ -209755,7 +209801,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1179
+"line": 1276
 },
 "Liquid::MapObjPolyAdvance": {
 "files": [
@@ -209770,7 +209816,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1203
+"line": 1300
 },
 "Liquid::MapObjPolyAtEnd": {
 "files": [
@@ -209783,7 +209829,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1229
+"line": 1326
 },
 "Liquid::MapObjPolyCloseOutline": {
 "files": [
@@ -209799,7 +209845,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1248
+"line": 1345
 },
 "Liquid::MapObjPolySeekUnflaggedEdge": {
 "files": [
@@ -209814,7 +209860,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1286
+"line": 1383
 },
 "Liquid::MapObjPolyReset": {
 "files": [
@@ -209831,7 +209877,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1308
+"line": 1405
 },
 "Liquid::MapObjPolyEval": {
 "files": [
@@ -209848,7 +209894,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1339
+"line": 1436
 },
 "Liquid::MapObjPolyDeref": {
 "files": [
@@ -209866,7 +209912,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1364
+"line": 1461
 },
 "Liquid::MapObjPolyClipToPlane": {
 "files": [
@@ -209889,7 +209935,7 @@
 "stub": false,
 "lines": 130,
 "refs": [],
-"line": 1405
+"line": 1502
 },
 "Liquid::WriteLiquidVertex": {
 "files": [
@@ -209921,7 +209967,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 1563
+"line": 1660
 },
 "Liquid::MapObjPolyFoldReset": {
 "files": [
@@ -209936,7 +209982,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1665
+"line": 1762
 },
 "Liquid::MapObjPolyFoldByte": {
 "files": [
@@ -209954,7 +210000,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1675
+"line": 1772
 },
 "Liquid::MapObjPolyFoldShortPair": {
 "files": [
@@ -209974,7 +210020,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1699
+"line": 1796
 },
 "Liquid::EmitLiquidTiles": {
 "files": [
@@ -210016,7 +210062,7 @@
 "stub": false,
 "lines": 119,
 "refs": [],
-"line": 1751
+"line": 1848
 },
 "Liquid::WriteLiquidGridVertices": {
 "files": [
@@ -210045,7 +210091,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1895
+"line": 1992
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

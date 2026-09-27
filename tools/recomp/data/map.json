@@ -36402,6 +36402,22 @@
   "refSize": 30,
   "status": "ported"
  },
+ "00681260": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxVertexBufferFormatHasAttrib",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 38,
+  "status": "ported"
+ },
  "006813b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -47681,7 +47697,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::WalkPortals",
-  "frozenSize": 1119,
+  "frozenSize": 1122,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 1591,
@@ -48033,7 +48049,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::QuerySegmentPortals",
-  "frozenSize": 1119,
+  "frozenSize": 1137,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 657,
@@ -48577,7 +48593,7 @@
    "src/world/map/cmapload.cpp"
   ],
   "frozen": "CMap::UpdateMapObjDefs",
-  "frozenSize": 1110,
+  "frozenSize": 1116,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 989,
@@ -51198,7 +51214,7 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "CMapObjGroup::CMapObjGroup",
-  "frozenSize": 404,
+  "frozenSize": 417,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 168,
@@ -51943,6 +51959,21 @@
   "refSize": 15,
   "status": "ported"
  },
+ "007d43f0": {
+  "branchRatio": 0.538,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.438,
+  "files": [
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::CMeshGeomFactory::Build",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 865,
+  "status": "ported"
+ },
  "007d49b0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -52408,7 +52439,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::BakePortalLight",
-  "frozenSize": 1134,
+  "frozenSize": 1141,
   "how": "annotated",
   "module": "MapArea.cpp",
   "refSize": 861,
@@ -52520,7 +52551,7 @@
    "src/world/map/cmapobjgroupload.cpp"
   ],
   "frozen": "CMapObjGroup::ReadComplete",
-  "frozenSize": 1464,
+  "frozenSize": 1480,
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 655,
