@@ -56527,6 +56527,22 @@
   "refSize": 106,
   "status": "ported"
  },
+ "00826ed0": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.053,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetBoneSequenceTime",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 296,
+  "status": "ported"
+ },
  "00827000": {
   "branchRatio": 0.75,
   "constOverlap": 0.045,
@@ -57293,13 +57309,13 @@
   "branchRatio": 0.606,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.478,
+  "fidelity": 0.493,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 7552,
+  "frozenSize": 7836,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,

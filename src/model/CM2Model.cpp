@@ -3414,7 +3414,11 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 7: {
-                // TODO
+                this->SetBoneSequenceTime(
+                    modelCall->args[0],
+                    static_cast<int32_t>(modelCall->args[1])
+                );
+
                 break;
             }
 
@@ -5770,6 +5774,73 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_00826ed0
+// Back-date a bone's sequence so that `elapsed` of it has already played -- a seek, expressed by
+// moving the START time earlier rather than by keeping a cursor.
+//
+// The bone id is a LOOKUP id, not an index: it goes through m_data->boneIndicesById, with two
+// special cases the reference spells out -- 0xFFFFFFFF means bone 0, and an id past the end of the
+// lookup yields 0xFFFF, which then fails the bones.Count() test and does nothing.
+//
+// The end time is recomputed rather than shifted: the sequence's authored duration times its repeat
+// count at sequence.uint20, scaled by the same |speed| the start offset used. Both scalings take
+// the ABSOLUTE value, so a negative speed -- a sequence playing backwards -- still produces a
+// forward-running window.
+void CM2Model::SetBoneSequenceTime(uint32_t boneId, int32_t elapsed) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 7;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = boneId;
+        modelCall->args[1] = static_cast<uint32_t>(elapsed);
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    M2Data* data = this->m_shared->m_data;
+
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return;
+    }
+
+    M2ModelBone& bone = this->m_bones[boneIndex];
+
+    // No sequence on this bone, nothing to seek. 0xFFFF is the unset value the bone is born with.
+    if (bone.sequence.uint8 == 0xFFFF) {
+        return;
+    }
+
+    float speed = std::fabs(bone.sequence.float18);
+
+    auto offset = static_cast<int32_t>(static_cast<float>(elapsed) * speed);
+    int32_t start = static_cast<int32_t>(this->m_scene->m_time) - offset;
+
+    bone.sequence.uintC = static_cast<uint32_t>(start);
+
+    // The authored duration times the repeat count. Widened through float the way the reference
+    // does, which is where its unsigned-to-float fixup comes from; the product is small enough here
+    // that the fixup never fires.
+    uint32_t span = data->sequences[bone.sequence.uint8].duration * bone.sequence.uint20;
+
+    auto total = static_cast<int32_t>(static_cast<float>(span) * speed);
+
+    bone.sequence.uint10 = static_cast<uint32_t>(total + start);
+}
 // ref: FUN_00824230
 // The ribbon twin of SetParticleEmission, and the ENQUEUE side of model call type 13 -- the case
 // whose handler in the dispatch walks m_ribbonEmitters calling SetFlag8. Both halves exist now.

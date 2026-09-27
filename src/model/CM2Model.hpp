@@ -506,6 +506,10 @@ class CM2Model {
         // Set or clear flag 8 on every ribbon emitter. Deferred as a model call when the model is
         // not loaded yet, exactly as SetParticleEmission defers its own.
         void SetRibbonFlag8(int32_t enable);
+
+        // Seek a bone's current sequence so that `elapsed` milliseconds of it have already played.
+        // Deferred as model call 7 when the model has not loaded.
+        void SetBoneSequenceTime(uint32_t boneId, int32_t elapsed);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };

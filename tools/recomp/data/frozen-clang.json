@@ -81117,6 +81117,7 @@
 "CM2Model::SetBoneFlags",
 "CM2Model::SetBoneSequence",
 "CM2Model::UnsetBoneSequence",
+"CM2Model::SetBoneSequenceTime",
 "CM2Model::SetBoneSequenceSpeed",
 "CM2Model::SetParticleEmission",
 "M2Array<M2Ribbon>::Count",
@@ -81186,7 +81187,7 @@
 ],
 "branches": 103,
 "stub": false,
-"lines": 808,
+"lines": 812,
 "refs": [],
 "line": 2695
 },
@@ -81203,7 +81204,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 3594
+"line": 3598
 },
 "CM2Model::IsDrawable": {
 "files": [
@@ -81223,7 +81224,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 3601
+"line": 3605
 },
 "CM2Model::IsLoaded": {
 "files": [
@@ -81244,7 +81245,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 3634
+"line": 3638
 },
 "CM2Model::LinkToCallbackListTail": {
 "files": [
@@ -81257,7 +81258,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 3676
+"line": 3680
 },
 "M2BatchesCanMerge": {
 "files": [
@@ -81270,7 +81271,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 3694
+"line": 3698
 },
 "CM2Model::OptimizeVisibleGeometry": {
 "files": [
@@ -81318,7 +81319,7 @@
 "stub": false,
 "lines": 224,
 "refs": [],
-"line": 3722
+"line": 3726
 },
 "CM2Model::ProcessCallbacks": {
 "files": [
@@ -81347,7 +81348,7 @@
 "stub": false,
 "lines": 71,
 "refs": [],
-"line": 3947
+"line": 3951
 },
 "CM2Model::SequenceFinished": {
 "files": [
@@ -81392,7 +81393,7 @@
 "stub": false,
 "lines": 97,
 "refs": [],
-"line": 4032
+"line": 4036
 },
 "CM2Model::ProcessCallbacksRecursive": {
 "files": [
@@ -81409,7 +81410,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 4130
+"line": 4134
 },
 "CM2Model::Release": {
 "files": [
@@ -81427,7 +81428,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 4145
+"line": 4149
 },
 "CM2Model::ReplaceTexture": {
 "files": [
@@ -81454,7 +81455,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 4161
+"line": 4165
 },
 "CM2Model::SetAnimating": {
 "files": [
@@ -81471,7 +81472,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 4212
+"line": 4216
 },
 "CM2Model::SetBoneSequence": {
 "files": [
@@ -81526,7 +81527,7 @@
 "stub": false,
 "lines": 153,
 "refs": [],
-"line": 4244
+"line": 4248
 },
 "CM2Model::ApplySequencePlayBack": {
 "files": [
@@ -81552,7 +81553,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 4401
+"line": 4405
 },
 "CM2Model::SetBoneSequenceDeferred": {
 "files": [
@@ -81584,7 +81585,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 4431
+"line": 4435
 },
 "CM2Model::SetGeometryVisible": {
 "files": [
@@ -81610,7 +81611,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 4484
+"line": 4488
 },
 "CM2Model::SetIndices": {
 "files": [
@@ -81637,7 +81638,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 4557
+"line": 4561
 },
 "CM2Model::SetLightingCallback": {
 "files": [
@@ -81650,7 +81651,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 4616
+"line": 4620
 },
 "CM2Model::SetLoadedCallback": {
 "files": [
@@ -81665,7 +81666,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 4622
+"line": 4626
 },
 "CM2Model::SetPrimaryBoneSequence": {
 "files": [
@@ -81693,7 +81694,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 4629
+"line": 4633
 },
 "CM2Model::SetSecondaryBoneSequence": {
 "files": [
@@ -81713,7 +81714,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 4687
+"line": 4691
 },
 "CM2Model::SetupBoneSequence": {
 "files": [
@@ -81743,7 +81744,7 @@
 "stub": false,
 "lines": 49,
 "refs": [],
-"line": 4698
+"line": 4702
 },
 "CM2Model::SetupLighting": {
 "files": [
@@ -81770,7 +81771,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 4753
+"line": 4757
 },
 "CM2Model::SetVisible": {
 "files": [
@@ -81786,7 +81787,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 4777
+"line": 4781
 },
 "CM2Model::SetWorldTransform": {
 "files": [
@@ -81805,7 +81806,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 4785
+"line": 4789
 },
 "CM2Model::Sub826350": {
 "files": [
@@ -81835,7 +81836,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 4796
+"line": 4800
 },
 "CM2Model::NotifySequenceDone": {
 "files": [
@@ -81858,7 +81859,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 4893
+"line": 4897
 },
 "CM2Model::SetSequenceDoneCallback": {
 "files": [
@@ -81878,7 +81879,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 4925
+"line": 4929
 },
 "CM2Model::SetAnimEventCallback": {
 "files": [
@@ -81898,7 +81899,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 4953
+"line": 4957
 },
 "CM2Model::Sub826E60": {
 "files": [
@@ -81919,7 +81920,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 4978
+"line": 4982
 },
 "CM2Model::UnlinkFromAnimateList": {
 "files": [
@@ -81932,7 +81933,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 5019
+"line": 5023
 },
 "CM2Model::UnlinkFromAttachList": {
 "files": [
@@ -81945,7 +81946,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 5029
+"line": 5033
 },
 "CM2Model::UnlinkFromCallbackList": {
 "files": [
@@ -81958,7 +81959,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 5039
+"line": 5043
 },
 "CM2Model::UnlinkFromDrawList": {
 "files": [
@@ -81971,7 +81972,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 5054
+"line": 5058
 },
 "CM2Model::UnoptimizeVisibleGeometry": {
 "files": [
@@ -81994,7 +81995,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 5077
+"line": 5081
 },
 "CM2Model::UnsetBoneSequence": {
 "files": [
@@ -82032,7 +82033,7 @@
 "stub": false,
 "lines": 110,
 "refs": [],
-"line": 5105
+"line": 5109
 },
 "CM2Model::UpdateLoaded": {
 "files": [
@@ -82051,7 +82052,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 5216
+"line": 5220
 },
 "CM2Model::WaitForLoad": {
 "files": [
@@ -82070,7 +82071,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 5233
+"line": 5237
 },
 "CM2Model::GetSharedUint194": {
 "files": [
@@ -82085,7 +82086,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 5248
+"line": 5252
 },
 "CM2Model::HasSequence": {
 "files": [
@@ -82101,7 +82102,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 5257
+"line": 5261
 },
 "CM2Model::ResolveSequenceFallback": {
 "files": [
@@ -82126,7 +82127,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 5269
+"line": 5273
 },
 "CM2Model::HasSequenceResolved": {
 "files": [
@@ -82145,7 +82146,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 5317
+"line": 5321
 },
 "CM2Model::GetSequenceVariationCount": {
 "files": [
@@ -82175,7 +82176,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 5333
+"line": 5337
 },
 "CM2Model::HasBone": {
 "files": [
@@ -82198,7 +82199,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 5396
+"line": 5400
 },
 "CM2Model::GetBoneSequenceState": {
 "files": [
@@ -82223,7 +82224,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 5416
+"line": 5420
 },
 "CM2Model::GetBoneUint90": {
 "files": [
@@ -82245,7 +82246,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 5465
+"line": 5469
 },
 "CM2Model::GetBoneSequenceId": {
 "files": [
@@ -82270,7 +82271,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 5491
+"line": 5495
 },
 "CM2Model::GetBoneSequenceSpeed": {
 "files": [
@@ -82293,7 +82294,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 5528
+"line": 5532
 },
 "CM2Model::BoneHasParent": {
 "files": [
@@ -82316,7 +82317,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 5553
+"line": 5557
 },
 "CM2Model::SetBoneSequenceSpeed": {
 "files": [
@@ -82353,7 +82354,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 5581
+"line": 5585
 },
 "CM2Model::SetBoneFlags": {
 "files": [
@@ -82381,7 +82382,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 5644
+"line": 5648
 },
 "CM2Model::GetAttachmentPosition": {
 "files": [
@@ -82402,7 +82403,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 5688
+"line": 5692
 },
 "CM2Model::HasEvent": {
 "files": [
@@ -82422,7 +82423,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 5706
+"line": 5710
 },
 "CM2Model::GetEvent": {
 "files": [
@@ -82443,7 +82444,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 5724
+"line": 5728
 },
 "CM2Model::HasCamera": {
 "files": [
@@ -82464,7 +82465,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 5740
+"line": 5744
 },
 "CM2Model::GetCameraById": {
 "files": [
@@ -82483,7 +82484,36 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 5755
+"line": 5759
+},
+"CM2Model::SetBoneSequenceTime": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"CM2ModelCall::CM2ModelCall",
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::operator[]",
+"M2Array<M2CompBone>::Count",
+"fabs",
+"M2Array<M2Sequence>::operator[]"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\model\\cm2model.cpp"
+],
+"consts": [
+"0",
+"0xFFFF",
+"0xFFFFFFFF",
+"1",
+"7"
+],
+"branches": 5,
+"stub": false,
+"lines": 55,
+"refs": [],
+"line": 5789
 },
 "CM2Model::SetRibbonFlag8": {
 "files": [
@@ -82506,7 +82536,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 5784
+"line": 5855
 },
 "CM2Model::SetParticleEmission": {
 "files": [
@@ -82530,7 +82560,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 5818
+"line": 5889
 },
 "CM2Model::GetAttachmentWorldPosition": {
 "files": [
@@ -82555,7 +82585,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 5854
+"line": 5925
 },
 "M2BuildBasisFromAxis": {
 "files": [
@@ -82582,7 +82612,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 5882
+"line": 5953
 },
 "M2ParticleFlushDenormals": {
 "files": [
