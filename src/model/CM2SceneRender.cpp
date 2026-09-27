@@ -332,8 +332,33 @@ void CM2SceneRender::DrawBatch() {
 // The other half of the doodad-batch trap. This draws type 2 elements, and nothing produces them
 // today because CM2Model::IsBatchDoodadCompatible returns 0 -- see the note there. If that changes
 // while this is still empty, the merged batches stop drawing with nothing in the log.
+//
+// ref: FUN_00820ae0, 1109 bytes. Decoded 2026-09-26 and still not ported, but the chain underneath
+// it is now most of the way in. What the reference does, and what is left:
+//
+//   The scene render caches three things off the element before drawing: the M2Batch
+//   (element+0x28) into +0x88, the M2SkinSection (element+0x2c) into +0x90, and a bone lookup
+//   base into +0x98. Then SetCurrent, SetupLighting, SetupMaterial, SetupTextures and SetIndices
+//   -- all five already linked in frozen.
+//
+//   It then draws the instances in CHUNKS, because one vertex buffer holds a bounded number of
+//   them: FUN_00836df0 asks the scene's instance pool to grow to the requested count and returns
+//   what it could manage, and the loop draws that many at a time. Two arms, selected by
+//   DAT_00d43020 -- the fixed-function arm streams transformed vertices through BufStream, and
+//   the shader arm uploads one 3x4 matrix per instance-bone into shader constants instead and
+//   lets the vertex program do the transform.
+//
+// DONE: the fixed-function arm's per-vertex work, which was the part with no specification at all.
+// The inner call `(*(&DAT_00d4118c)[skinSection->boneInfluences])(model, skinSection, dst, 0)` is
+// now CM2Model.cpp's M2GetPackBatchVerticesFn -- see the table there. Both packers are ported and
+// were checked numerically on 2026-09-26.
+//
+// LEFT: FUN_008362b0 (796 bytes, the shared instance-geometry pool -- PoolCreate plus BufCreate
+// at 0x30 stride, filled by walking the skin sections) and FUN_00836df0 (69 bytes, the capacity
+// grow, which calls FUN_008368b0 to reallocate). Neither is linked yet. Plus the three scene
+// render fields above, and IsBatchDoodadCompatible's one unmapped field.
 void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
-    // TODO
+    // TODO -- see the decode above; the per-vertex packers it needs are ported already
 }
 
 void CM2SceneRender::DrawBatchProj() {

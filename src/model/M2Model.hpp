@@ -177,6 +177,19 @@ struct M2ModelLight {
     CM2Light light;
 };
 
+// One vertex as the doodad-batch path streams it: 32 bytes, which is the stride
+// CM2SceneRender::DrawBatchDoodad asks BufStream for (0x20). The skinning is already applied,
+// so there are no weights or indices here -- position and normal arrive in model space with the
+// bone blend folded in, and one of the two authored texture coordinate sets is copied through
+// verbatim.
+//
+// The reference has no struct for this; it writes the eight floats through a raw pointer. Named
+// here because two functions write it and getting the order wrong is silent.
+struct M2BatchDoodadVertex {
+    C3Vector position;
+    C3Vector normal;
+    C2Vector texcoord;
+};
 struct M2ModelTextureTransform {
     M2ModelTrack<C3Vector> translationTrack;
     M2ModelTrack<C4Quaternion> rotationTrack;

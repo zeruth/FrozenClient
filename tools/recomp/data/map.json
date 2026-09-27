@@ -56556,6 +56556,38 @@
   "refSize": 464,
   "status": "ported"
  },
+ "0082a210": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2PackBatchVerticesBlended",
+  "frozenSize": 1712,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 720,
+  "status": "ported"
+ },
+ "0082a4e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2PackBatchVerticesSingleBone",
+  "frozenSize": 449,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 280,
+  "status": "ported"
+ },
  "0082ad50": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

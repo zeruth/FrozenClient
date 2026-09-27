@@ -162,6 +162,145 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
     return 0xFFFF;
 }
 
+// Bone weights are bytes that stand for a fraction of 255. The reference keeps the reciprocal as
+// a constant at 0x00a45564 and multiplies, rather than dividing.
+static const float M2_BONE_WEIGHT_SCALE = 0.0039215689f;
+
+// ref: FUN_0082a4e0
+// Pack a skin section whose vertices each ride exactly ONE bone. Slot 1 of the packer table.
+//
+// With a single influence there is no blend to build: the bone's matrix is used directly, so this
+// skips the weighted accumulation entirely and is why the reference bothers to keep a second
+// function at all. Position transforms with translation, the normal with the 3x3 part only.
+static void M2PackBatchVerticesSingleBone(CM2Model* model, const M2SkinSection* section, void* dst,
+                                          uint32_t texCoordSet) {
+    const C44Matrix* boneMatrices = model->m_boneMatrices;
+    const M2Vertex* vertices = model->m_shared->m_data->vertices.Data();
+
+    const M2Vertex* v = &vertices[section->vertexStart];
+    auto out = static_cast<M2BatchDoodadVertex*>(dst);
+
+    for (uint32_t i = 0; i < section->vertexCount; i++, v++, out++) {
+        const C44Matrix& m = boneMatrices[v->indices.b[0]];
+
+        out->position.x = v->position.x * m.a0 + v->position.y * m.b0 + v->position.z * m.c0 + m.d0;
+        out->position.y = v->position.x * m.a1 + v->position.y * m.b1 + v->position.z * m.c1 + m.d1;
+        out->position.z = v->position.x * m.a2 + v->position.y * m.b2 + v->position.z * m.c2 + m.d2;
+
+        out->normal.x = v->normal.x * m.a0 + v->normal.y * m.b0 + v->normal.z * m.c0;
+        out->normal.y = v->normal.x * m.a1 + v->normal.y * m.b1 + v->normal.z * m.c1;
+        out->normal.z = v->normal.x * m.a2 + v->normal.y * m.b2 + v->normal.z * m.c2;
+
+        out->texcoord = v->texcoord[texCoordSet];
+    }
+}
+
+// ref: FUN_0082a210
+// Pack a skin section with up to FOUR weighted bone influences. Slots 0, 2, 3 and 4 of the packer
+// table -- the reference points all four at this one function, so slot 1 above is the only
+// specialisation and the table is really a pair.
+//
+// The blended matrix is CACHED across the run. The reference remembers the previous vertex's
+// weight word and index word and rebuilds only when either changes, because neighbouring vertices
+// in a skin section overwhelmingly share their skinning. The cache is born holding identity with
+// both remembered words zero, so a vertex whose weight and index words are both bit-zero reuses
+// identity instead of blending -- an all-zero-weight vertex is degenerate and the reference does
+// not special-case it.
+//
+// The reference compares those two words as FLOATS (it reads the vertex's weight and index bytes
+// through a float pointer); this compares them as the 32-bit words they are. The two disagree on
+// exactly two families of bit pattern, and neither changes the output: a NaN pattern never
+// compares equal, so the reference rebuilds a matrix identical to the one it already had, and
+// -0.0 against +0.0 compares equal while the bytes differ, which can only happen when weight byte
+// 0 is zero -- and a zero leading weight scales the whole matrix to zero either way. So this is
+// the same function with the aliasing removed, not a divergence.
+static void M2PackBatchVerticesBlended(CM2Model* model, const M2SkinSection* section, void* dst,
+                                       uint32_t texCoordSet) {
+    const C44Matrix* boneMatrices = model->m_boneMatrices;
+    const M2Vertex* vertices = model->m_shared->m_data->vertices.Data();
+
+    const M2Vertex* v = &vertices[section->vertexStart];
+    auto out = static_cast<M2BatchDoodadVertex*>(dst);
+
+    // The fourth column is never accumulated: the reference sets it to (0, 0, 0, 1) up front and
+    // the blend only ever writes the twelve entries of the first three.
+    C44Matrix blend(1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f);
+
+    uint32_t prevWeights = 0;
+    uint32_t prevIndices = 0;
+
+    for (uint32_t i = 0; i < section->vertexCount; i++, v++, out++) {
+        if (v->weights.u != prevWeights || v->indices.u != prevIndices) {
+            prevWeights = v->weights.u;
+            prevIndices = v->indices.u;
+
+            // Bone 0 ASSIGNS, so the identity the matrix was born with is discarded rather than
+            // added to.
+            float w = static_cast<float>(v->weights.b[0]) * M2_BONE_WEIGHT_SCALE;
+            const C44Matrix& m = boneMatrices[v->indices.b[0]];
+
+            blend.a0 = m.a0 * w; blend.a1 = m.a1 * w; blend.a2 = m.a2 * w;
+            blend.b0 = m.b0 * w; blend.b1 = m.b1 * w; blend.b2 = m.b2 * w;
+            blend.c0 = m.c0 * w; blend.c1 = m.c1 * w; blend.c2 = m.c2 * w;
+            blend.d0 = m.d0 * w; blend.d1 = m.d1 * w; blend.d2 = m.d2 * w;
+
+            // Bones 1..3 add, stopping at the first zero weight -- the weights are authored in
+            // descending order, so a zero means there are no more.
+            for (uint32_t b = 1; b < 4 && v->weights.b[b] != 0; b++) {
+                float bw = static_cast<float>(v->weights.b[b]) * M2_BONE_WEIGHT_SCALE;
+                const C44Matrix& bm = boneMatrices[v->indices.b[b]];
+
+                blend.a0 += bm.a0 * bw; blend.a1 += bm.a1 * bw; blend.a2 += bm.a2 * bw;
+                blend.b0 += bm.b0 * bw; blend.b1 += bm.b1 * bw; blend.b2 += bm.b2 * bw;
+                blend.c0 += bm.c0 * bw; blend.c1 += bm.c1 * bw; blend.c2 += bm.c2 * bw;
+                blend.d0 += bm.d0 * bw; blend.d1 += bm.d1 * bw; blend.d2 += bm.d2 * bw;
+            }
+        }
+
+        // The reference runs the position through the shared C3Vector * C44Matrix operator and
+        // does the normal by hand, because the normal must not pick up the translation row.
+        out->position = v->position * blend;
+
+        out->normal.x = v->normal.x * blend.a0 + v->normal.y * blend.b0 + v->normal.z * blend.c0;
+        out->normal.y = v->normal.x * blend.a1 + v->normal.y * blend.b1 + v->normal.z * blend.c1;
+        out->normal.z = v->normal.x * blend.a2 + v->normal.y * blend.b2 + v->normal.z * blend.c2;
+
+        out->texcoord = v->texcoord[texCoordSet];
+    }
+}
+
+// The packer table the reference installs at 0x00d4118c. Five slots, indexed by the skin section's
+// boneInfluences field, holding two distinct functions: slot 1 is the single-bone specialisation
+// and every other slot is the general weighted blend.
+//
+// Filled at namespace scope rather than lazily. The reference builds it in the CM2Model
+// constructor tail, guarded on slot 0 being null so only the first model pays for it; there is
+// nothing to defer here because neither function needs anything initialised first.
+//
+// NOT PORTED: the reference swaps in SSE variants (FUN_0082a600 and FUN_0082ac10) when
+// 0x00d3fcec has bit 4. They compute the same thing with packed arithmetic, so leaving them out
+// costs throughput and nothing else.
+static const M2PackBatchVerticesFn s_packBatchVertices[5] = {
+    M2PackBatchVerticesBlended,
+    M2PackBatchVerticesSingleBone,
+    M2PackBatchVerticesBlended,
+    M2PackBatchVerticesBlended,
+    M2PackBatchVerticesBlended,
+};
+
+M2PackBatchVerticesFn M2GetPackBatchVerticesFn(uint32_t boneInfluences) {
+    // The reference indexes the table with boneInfluences raw and trusts the .m2 to keep it in
+    // range. Clamping instead of trusting, because a malformed model would otherwise call through
+    // whatever follows the table.
+    if (boneInfluences >= 5) {
+        boneInfluences = 0;
+    }
+
+    return s_packBatchVertices[boneInfluences];
+}
 // ref: FUN_0082be60
 // Out of line ON PURPOSE, the same reasoning as CMapBaseObj's: the reference has a real
 // constructor here -- 855 bytes of it -- and an implicit one is inlined into every creation site
@@ -172,12 +311,16 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
 // builds is `(flags & 0xff800340) | 0x340`, which is exactly m_flag40, m_flag100 and m_flag200
 // set and every other bit below 0x800000 clear -- what this list says.
 //
-// NOT PORTED from it: the tail installs a five-entry table of bone-blend function pointers at
-// 0x00d4118c, once, guarded on the first slot being null, and swaps in SSE variants when
-// 0x00d3fcec has bit 4. Four of the five slots take the same function (FUN_0082a210) and the
-// second takes FUN_0082a4e0. frozen calls CM2Scene::BlendBoneMatrices and BlendBoneMatrices3x4
-// directly instead of dispatching through a table, and has no SSE variants at all, so this is a
-// whole feature rather than a missing line -- what indexes the table has not been established.
+// NOT PORTED from it: the tail installs the five-entry bone-blend packer table at 0x00d4118c,
+// once, guarded on the first slot being null, and swaps in SSE variants when 0x00d3fcec has bit 4.
+//
+// The table itself IS ported -- s_packBatchVertices above -- so what is missing here is only the
+// lazy installation, which frozen does not need because it fills the table at namespace scope.
+// What indexes it was established 2026-09-26 by reading the initialiser at 0x0082c15b against the
+// call site in DrawBatchDoodad: the index is the skin section's `boneInfluences` field, and the
+// five slots hold only TWO functions -- slot 1 is FUN_0082a4e0, the single-bone specialisation,
+// and the rest are FUN_0082a210, the weighted blend. This is unrelated to
+// CM2Scene::BlendBoneMatrices, which an earlier version of this note guessed at.
 CM2Model::CM2Model()
     : m_loaded(0)
     , m_flag2(0)
@@ -3161,7 +3304,7 @@ int32_t CM2Model::InitializeLoaded() {
 //
 //     flags = M2GetCacheFlags();
 //     if (!(flags & 0x20))                     return 0;   // M2BatchDoodads off
-//     if (!(this->[0x10] & 0x10))              return 0;   // a model flag, not yet mapped here
+//     if (!(this->[0x10] & 0x10))              return 0;   // m_flag10, see below
 //     if (m_shared->m_data->bones.count <= 1
 //         && (flags & 0x40))                   return 0;
 //     if (!(batch->flags & 0x10))              return 0;
@@ -3169,8 +3312,19 @@ int32_t CM2Model::InitializeLoaded() {
 //     if (other && other->[0xa4])              return 0;
 //     return 1;
 //
-// Two of those fields (+0x10 and +0x2a8/+0xa4) still need mapping onto frozen's CM2Model, so this
-// is a specification rather than a port.
+// Field mapping, narrowed 2026-09-26 -- ONE field is still open, not two:
+//
+//   +0x10  RESOLVED. This is the per-frame bitfield block, not the m_flags creation word, so the
+//          test is `this->m_flag10`. The header's own note at m_flags spells out why confusing
+//          the two is silent, and it is the same pair of storages that kept doodads off screen.
+//   +0x2a8 STILL OPEN. A pointer whose +0xa4 gates the answer. Do NOT read it off frozen's field
+//          comments: frozen is 64-bit, so its members do not sit at the reference's offsets, and
+//          counting forward from m_particles (+0x2c0) lands +0x2a8 inside CM2Lighting, which
+//          cannot be right because the constructor zeroes +0x2a8 through +0x2e4 as a run of
+//          pointer-sized slots. Settle it from the disassembly, not by counting.
+//
+// So this is still a specification rather than a port, and the blocker is now that one field plus
+// the DrawBatchDoodad half below.
 //
 // **Still not implemented, deliberately, and the reason below has not changed.**
 // ref: FUN_00824550

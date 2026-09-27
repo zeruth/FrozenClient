@@ -35,6 +35,17 @@ struct CM2SequencePlayBack;
 
 class CM2Model;
 
+// The signature of the bone-blend vertex packers the doodad-batch path dispatches through. The
+// model is passed explicitly rather than being a `this`: the reference stores these in a plain
+// function pointer table and calls them with the model in the first argument slot.
+typedef void (*M2PackBatchVerticesFn)(CM2Model* model, const M2SkinSection* section, void* dst,
+                                      uint32_t texCoordSet);
+
+// The packer for a skin section with `boneInfluences` weights per vertex. This is the table the
+// reference keeps at 0x00d4118c, whose index is the skin section's boneInfluences field.
+M2PackBatchVerticesFn M2GetPackBatchVerticesFn(uint32_t boneInfluences);
+
+
 // The two callbacks a model's owner may register on it. The sequence-done one fires when a bone's
 // animation is replaced or runs out; the anim-event one fires on an authored event key. Both carry
 // the owner's GUID rather than a pointer, so a dead owner cannot be called through.
