@@ -75,6 +75,35 @@ void AsyncTextureWait(CTexture* texture) {
     // TODO
 }
 
+// ref: FUN_004b5510
+// Mip levels for an image, halving both axes and flooring each at 1 until both reach 1.
+//
+// NOT a duplicate of CalcLevelCount below, and worth saying so because the two differ by three
+// lines: that one folds a cube-map strip first (`width == 6 * height` means six square faces side
+// by side, so it divides the width) and this one does not. They are separate functions in the
+// reference, in different modules, with three callers each -- a caller that already knows its
+// image is flat uses this one.
+uint32_t CalcLevelCountFlat(uint32_t width, uint32_t height) {
+    uint32_t levels = 1;
+
+    while (width > 1 || height > 1) {
+        width >>= 1;
+        levels++;
+
+        if (!width) {
+            width = 1;
+        }
+
+        height >>= 1;
+
+        if (!height) {
+            height = 1;
+        }
+    }
+
+    return levels;
+}
+
 // ref: FUN_006ab700
 uint32_t CalcLevelCount(uint32_t width, uint32_t height) {
     uint32_t v2 = width;
@@ -967,8 +996,30 @@ HTEXTURE CreateBlpTexture(char* fileExt, char* fileName, int32_t createFlags, CG
 // alternative to fall back to, so this one is a live gap rather than a dormant trap -- it just
 // happens to be narrow, because the game's art is BLP and TGA turns up only in a few places.
 //
-// The reference (FUN_004b95b0) reads the file through 006aaf40/006aafb0, allocates a CTexture,
-// calls TextureAllocGxTex, and falls back to TextureCreateSolid when the upload fails.
+// FULLY DECODED 2026-09-27, and the blocker is NOT where this note used to imply. What the
+// reference function itself does is straightforward and every one of ITS callees is linked now:
+//
+//   TgaFile::Open, then reject anything smaller than 8x8 by logging through the CStatus and
+//   returning TextureCreateSolid(CRAPPY_GREEN) instead;
+//   `header.width == header.height * 6` means a CUBE MAP -- six square faces SIDE BY SIDE, not
+//   stacked -- so the width is divided by six and the target becomes GxTex_CubeMap. The same test
+//   appears in CalcLevelCount above, which is the independent confirmation of the orientation;
+//   allocate 0x170 for a CTexture and construct it, then alphaBits = header.imageDescriptor & 0xf
+//   (its low nibble IS the alpha depth), flags |= 1 when that nibble is zero -- an opaque image --
+//   and flags |= 2 from the caller's flag;
+//   copy the name into filename, call TextureAllocGxTex with GxTex_Argb8888 for both the texture
+//   and the data format, and store gxTex, gxTexTarget, gxWidth = the FACE width and gxHeight = the
+//   RAW header height (equal for a cube map, since the faces are square);
+//   on failure destruct and SMemFree, returning 0; on success HandleCreate.
+//
+// THE BLOCKER IS THE UPLOAD CALLBACK, three levels down. TextureAllocGxTex is handed
+// FUN_004b7aa0, which frozen has no equivalent of; that calls FUN_004b78a0, which DOES use the
+// TgaFile::Open / SetTopDown / GetImage32 / Close set ported earlier today -- but adds six more
+// unlinked helpers of its own (FUN_004b5510 was one and is now CalcLevelCountFlat above;
+// FUN_004b5550, FUN_004b5a00, FUN_004b7220, FUN_006ab4b0 and FUN_006ab810 remain).
+//
+// So porting THIS function now would produce a CTexture whose data never arrives, which is worse
+// than the honest stub. The order is the callback chain first, bottom up.
 HTEXTURE CreateTgaTexture(const char* fileName, const char* fileExt, int32_t a3, CGxTexFlags texFlags, CStatus* status) {
     // TODO
 

@@ -15,6 +15,10 @@ void AsyncTextureWait(CTexture*);
 
 uint32_t CalcLevelCount(uint32_t, uint32_t);
 
+// The same mip count WITHOUT the cube-map strip fold. A separate reference function, not a
+// duplicate -- see the note at the definition.
+uint32_t CalcLevelCountFlat(uint32_t, uint32_t);
+
 uint32_t CalcLevelOffset(uint32_t, uint32_t, uint32_t, uint32_t);
 
 uint32_t CalcLevelSize(uint32_t, uint32_t, uint32_t, uint32_t);
