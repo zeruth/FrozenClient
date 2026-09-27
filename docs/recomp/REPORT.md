@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 19:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 19:32 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,23 +8,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26946 | 5.35M |
-| mapped to a frozen function | 4724 (=) (17.5%) | 1018.9k (18.6%) |
-| &nbsp;&nbsp;ported | 4045 (=) | 842.5k |
+| mapped to a frozen function | 4725 (=) (17.5%) | 1019.4k (18.6%) |
+| &nbsp;&nbsp;ported | 4046 (=) | 843.1k |
 | &nbsp;&nbsp;stub (unimplemented body) | 573 (=) | 123.1k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2471 (=) (9.2%)** | **348.5k (6.4%)** |
-| unmapped | 22222 | 4.36M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1630 (=) (30.3%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1653 (=) (29.3%) | |
-| **render surface** (the modules that draw the world) | **4827, mapped 1217 (=) (25.2%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **2472 (=) (9.2%)** | **349.0k (6.4%)** |
+| unmapped | 22221 | 4.36M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1631 (=) (30.3%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1654 (=) (29.3%) | |
+| **render surface** (the modules that draw the world) | **4827, mapped 1218 (=) (25.2%)** | |
 | of which the module is an anchor GUESS | 3104 (64.3%) | |
-| frozen functions (src/, from PDB + source) | 13996, stubs 1638 | |
+| frozen functions (src/, from PDB + source) | 13997, stubs 1638 | |
 
-Match evidence: annotated 2447, callgraph 253, callorder 111, cvar 31, handler 29, order 144, override 365, sticky 19, string 305, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2447, callgraph 253, callorder 111, cvar 31, handler 29, order 144, override 366, sticky 19, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-27 19:20 -- mapped 4724, ported 4045, stub 573, spine mapped 1630.
+Previous run: 2026-09-27 19:32 -- mapped 4725, ported 4046, stub 573, spine mapped 1631.
 
 ## Lua API coverage (binding tables)
 
@@ -145,7 +145,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
 | lmemPool.cpp | 342 | 80.2k | 78 (22.8%) | 32.1% | 0 | 0 | 107 |
-| Map.cpp | 229 | 76.5k | 77 (33.6%) | 35.7% | 0 | 2 | 135 |
+| Map.cpp | 229 | 76.5k | 78 (34.1%) | 36.4% | 0 | 2 | 135 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | WorldParam.cpp | 179 | 63.0k | 65 (36.3%) | 39.2% | 3 | 4 | 110 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
@@ -728,8 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-27 16:19 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
-| 2026-09-27 16:20 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:25 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:32 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:36 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
@@ -752,7 +750,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 18:45 | 4719 (17.5%) | 2462 (9.1%) | 573 | 1626/5381 | 2924/2964 | 1380 |
 | 2026-09-27 19:07 | 4723 (17.5%) | 2470 (9.2%) | 573 | 1629/5381 | 2924/2964 | 1380 |
 | 2026-09-27 19:20 | 4724 (17.5%) | 2471 (9.2%) | 573 | 1630/5381 | 2924/2964 | 1380 |
-| 2026-09-27 19:20 | 4724 (17.5%) | 2471 (9.2%) | 573 | 1630/5381 | 2924/2964 | 1380 |
+| 2026-09-27 19:31 | 4724 (17.5%) | 2471 (9.2%) | 573 | 1630/5381 | 2924/2964 | 1380 |
+| 2026-09-27 19:32 | 4725 (17.5%) | 2472 (9.2%) | 573 | 1631/5381 | 2924/2964 | 1380 |
+| 2026-09-27 19:32 | 4725 (17.5%) | 2472 (9.2%) | 573 | 1631/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

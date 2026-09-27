@@ -3022,6 +3022,7 @@ addr	how	frozen	evidence
 007aeb10	annotated	CMapObj::GroupInfo	tag in src/world/map/CMapObj.cpp
 007aeb40	override	CMapObj::GroupFaceColor	
 007af280	annotated	CMapObj::QuerySegmentPortals	tag in src/world/map/CMapObj.cpp
+007af520	override	CMapObj::SegmentVsPortals	
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp

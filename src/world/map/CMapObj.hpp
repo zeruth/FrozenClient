@@ -408,6 +408,12 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // 0x50 bytes before the one above, so a separate one here. ref: FUN_007ae920
         bool PointInGroupBox(const C3Vector& point, uint32_t groupIndex);
 
+        // Which of a group's portals a segment passes through, nearest first, and the groups
+        // on either side of it. `t` is a fraction of the segment, in and out. outGroups[0] is
+        // the group the segment is heading INTO. ref: FUN_007af520
+        bool SegmentVsPortals(uint32_t groupIndex, const C3Segment& segment, float* t,
+                              uint32_t* outGroups);
+
         // One group's own name, out of MOGN. Null until the group's file has arrived, same gates as
         // the bounds queries. ref: FUN_007aeae0
         const char* GroupName(uint32_t groupIndex);

@@ -205830,6 +205830,35 @@
 "refs": [],
 "line": 1227
 },
+"CMapObj::SegmentVsPortals": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"C3Ray::C3Ray",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"sqrtf",
+"C3Vector::C3Vector",
+"IntersectRayPlane",
+"DominantAxis",
+"PointInPolygon"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x1",
+"1",
+"1.0f"
+],
+"branches": 11,
+"stub": false,
+"lines": 92,
+"refs": [],
+"line": 1267
+},
 "CMapObj::SetInstanceTransform": {
 "files": [
 "src/world/map/cmapobjdraw.cpp"

@@ -1240,3 +1240,120 @@ bool CMapObj::PointInGroupBox(const C3Vector& point, uint32_t groupIndex) {
 
     return this->m_mogi[groupIndex].bounds.IsPointInside(point) != 0;
 }
+
+// How far off a portal's plane still counts as being on it. DAT_009e3004, and a tenth of a yard
+// rather than a hair: a portal is a doorway, and a segment grazing its plane should still be
+// found crossing it.
+static const float PORTAL_PLANE_EPSILON = 0.1f;
+
+// ref: FUN_007af520
+// Which of a group's portals a segment passes through, and the groups on either side.
+//
+// A WMO's rooms are joined by portals -- MOPT polygons in the root, referenced per group through
+// MOPR -- and this is the test that says a segment leaving one room enters another. It walks the
+// group's own MOPR range, intersects the ray with each portal's plane, keeps the crossing only if
+// the hit lands inside the portal polygon, and narrows to the nearest one as it goes.
+//
+// The ray is NORMALISED and the walk works in ray units, while `t` is a fraction of the segment
+// both coming in and going out -- hence the two scalings by the length. Getting that wrong would
+// silently compare a fraction against a distance in yards.
+//
+// WHICH GROUP COMES FIRST is decided by two signs agreeing: the portal's plane evaluated at the
+// segment's START (not at the hit), and MOPR's own `side` field, which records which side of that
+// plane the referencing group sits on. When they agree the segment is heading away from this
+// group, so the referenced one goes first. The reference writes this as a pair of x87 compares
+// that Ghidra renders as `0.0 < f == (f == 0.0)`, which is `f < 0`; with its NaN term the whole
+// condition is exactly !(f >= 0), so a NaN plane distance counts as behind.
+bool CMapObj::SegmentVsPortals(uint32_t groupIndex, const C3Segment& segment, float* t,
+                               uint32_t* outGroups) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    if (!group || !(group->m_state & 0x1)) {
+        return false;
+    }
+
+    C3Ray ray;
+    ray.origin = segment.start;
+    ray.dir = { segment.end.x - segment.start.x,
+                segment.end.y - segment.start.y,
+                segment.end.z - segment.start.z };
+
+    float length = sqrtf(ray.dir.x * ray.dir.x + ray.dir.y * ray.dir.y + ray.dir.z * ray.dir.z);
+    float invLength = 1.0f / length;
+
+    ray.dir.x *= invLength;
+    ray.dir.y *= invLength;
+    ray.dir.z *= invLength;
+
+    // Into ray units for the walk, back to a fraction at the end.
+    float best = length * *t;
+
+    if (group->m_portalCount == 0) {
+        return false;
+    }
+
+    bool found = false;
+    const SMOPortalRef* ref = &this->m_mopr[group->m_portalStart];
+
+    for (uint32_t i = 0; i < group->m_portalCount; i++, ref++) {
+        const SMOPortal* portal = &this->m_mopt[ref->portalIndex];
+
+        // The reference re-tests the root inside the loop, which cannot have changed since the
+        // gate above; kept so the branch structure matches. The null check on the far group is
+        // frozen's, for the same reason as the one above.
+        if (!this->m_rootLoaded) {
+            continue;
+        }
+
+        CMapObjGroup* farGroup = this->m_groups[ref->groupIndex];
+
+        if (!farGroup || !(farGroup->m_state & 0x1)) {
+            continue;
+        }
+
+        C3Vector hit = { 0.0f, 0.0f, 0.0f };
+        float hitT = 0.0f;
+
+        if (!IntersectRayPlane(ray, portal->plane, &hitT, &hit, PORTAL_PLANE_EPSILON)) {
+            continue;
+        }
+
+        if (hitT < 0.0f || hitT > best) {
+            continue;
+        }
+
+        if (!PointInPolygon(hit, &this->m_mopv[portal->startVertex], portal->count,
+                           DominantAxis(portal->plane.n))) {
+            continue;
+        }
+
+        found = true;
+        best = hitT;
+
+        float side = portal->plane.n.x * segment.start.x
+                   + portal->plane.n.y * segment.start.y
+                   + portal->plane.n.z * segment.start.z
+                   + portal->plane.d;
+
+        // !(side >= 0), so a NaN lands here too.
+        bool startBehind = !(side >= 0.0f);
+
+        if (startBehind == (ref->side > 0)) {
+            outGroups[0] = ref->groupIndex;
+            outGroups[1] = groupIndex;
+        } else {
+            outGroups[0] = groupIndex;
+            outGroups[1] = ref->groupIndex;
+        }
+    }
+
+    if (found) {
+        *t = best * invLength;
+    }
+
+    return found;
+}
