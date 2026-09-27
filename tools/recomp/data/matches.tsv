@@ -652,7 +652,7 @@ addr	how	frozen	evidence
 004b8a50	override	CreateBlpAsync	
 004b8be0	override	CreateBlpTexture	
 004b8c80	override	TextureCreate	
-004b9200	callgraph	GxDevApi	only unmatched callee of 004eff10=CCharacterComponent::CreateBaseTexture
+004b9200	sticky	GxDevApi	held from the previous run, where it was callgraph
 004b9480	override	TextureCacheNewTexture	
 004b94e0	annotated	TextureCacheNewTexture	tag in src/gx/Texture.cpp
 004b9550	override	TextureCreateSolid	
@@ -4126,8 +4126,11 @@ addr	how	frozen	evidence
 008a20c0	annotated	Liquid::Add	tag in src/world/map/LiquidSurface.cpp
 008a2240	annotated	Liquid::Draw	tag in src/world/map/LiquidSurface.cpp
 008a2450	string	Liquid::CMaterialSettings::LoadTextures	unique "procedural"
+008a2780	annotated	Liquid::ReloadAllLiquidTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a27c0	annotated	Liquid::CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
 008a28f0	annotated	Liquid::GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2980	annotated	Liquid::ReleaseProceduralTextures	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2a10	annotated	Liquid::RestoreLiquidTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2ac0	annotated	Liquid::WmoWaterGenerate	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2bf0	override	Liquid::DepthGradientGenerate	
 008a2e20	string	Liquid::ProceduralLiquidTexture	unique "proceduralOceanDepthTex"

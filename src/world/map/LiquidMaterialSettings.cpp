@@ -270,15 +270,63 @@ void WmoWaterGenerate(EGxTexCommand command, uint32_t width, uint32_t height, ui
 static HTEXTURE s_proceduralTextures[3] = { nullptr, nullptr, nullptr };
 static bool s_proceduralUpdated[3] = { false, false, false };
 
-// ref: part of FUN_008a2980
+// ref: FUN_008a2780
+// Drop every settings record's texture frames and open them again.
+//
+// The whole body is a walk of the settings bank calling ReleaseFrames then LoadTextures on each
+// record, which is why it could not be written until ReleaseFrames existed -- it is the pair of
+// them, in that order, and nothing else.
+void ReloadAllLiquidTextures() {
+    for (uint32_t i = 0; i < s_settingsBank.Count(); i++) {
+        CMaterialSettings* settings = s_settingsBank[i];
+
+        if (!settings) {
+            continue;
+        }
+
+        settings->ReleaseFrames();
+        settings->LoadTextures();
+    }
+}
+
+// ref: FUN_008a2a10
+// Put the procedural textures back in the cache and reopen every liquid's frames.
+//
+// This is the DEVICE RESET path: the textures survive as CTexture objects but their cache entries
+// do not, so each one is re-registered under its own name and flags before anything asks for it by
+// name again. The flags are the ones they were made with -- linear, no wrap, one anisotropy --
+// because the cache key carries them and a mismatch would miss.
+//
+// Same two inert arms as UpdateProceduralTextures, for the same reason and with the same evidence:
+// the reference also re-registers the thirty-two handles at 0x00d43b50 and the one at 0x00d43b4c,
+// and nothing in the binary ever puts a handle in either.
+void RestoreLiquidTextures() {
+    for (uint32_t i = 0; i < 3; i++) {
+        if (!s_proceduralTextures[i]) {
+            continue;
+        }
+
+        CTexture* texture = TextureGetTexturePtr(s_proceduralTextures[i]);
+
+        if (texture) {
+            TextureCacheNewTexture(texture, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1));
+        }
+    }
+
+    ReloadAllLiquidTextures();
+}
+
+// ref: FUN_008a2980
 // Close the procedural texture handles and let them be made again.
 //
-// PART, and the rest is named here rather than left as a silent gap: the reference closes three
-// groups in one function -- a single handle at 0x00d43b4c, these three procedural ones, and a
-// block of THIRTY-TWO at 0x00d43b50. frozen keeps only the three. What the other thirty-three are
-// is not established; they are re-registered together with these by FUN_008a2a10, so they are
-// liquid textures of some kind rather than anything unrelated, and the place to pick that up is
-// that function. Tagged `part of` for the same reason ReleaseMaterialSettings is.
+// This was tagged `part of` when it landed, on the assumption that the single handle at 0x00d43b4c
+// and the block of THIRTY-TWO at 0x00d43b50 which the reference also closes were liquid textures
+// frozen had not got to yet. They are not. Nothing in the binary ever stores a handle into either:
+// every reference to 0x00d43b48..0x00d43bd8 was enumerated, and the base 0x00d43b50 appears exactly
+// four times -- all of them the indexed reads in this function, FUN_008a2a10 and FUN_008a2f00 --
+// while 0x00d43b54 and every other element address appears not once. The only writes are the zeroing
+// here. So the two extra groups are dead storage, their loops skip every iteration in the reference
+// as much as here, and closing the three procedural handles is the whole of what this function does.
 //
 // The latches come off with the handles, so the pair stays consistent: whatever is made next is
 // uploaded again rather than being assumed current.
@@ -306,6 +354,15 @@ void ReleaseProceduralTextures() {
 // Nothing calls this yet. Frozen's textures are created with their generator callback attached, so
 // the device asks for the pixels itself the first time it binds one; this is the reference's own
 // eager path and is ported for the parity rather than to fix a blank texture.
+//
+// THE REFERENCE HAS TWO MORE ARMS THAN THIS AND THEY ARE BOTH INERT, which is why the tag above is
+// still a whole claim on the function rather than a `part of`. After the three procedural textures
+// it walks a block of thirty-two handles at 0x00d43b50 and then a single one at 0x00d43b4c. Neither
+// is ever populated: enumerating every reference to 0x00d43b48..0x00d43bd8 in the binary turns up
+// the base 0x00d43b50 exactly four times and 0x00d43b54, 0x00d43b58 and the rest not once, so no
+// instruction anywhere stores a handle into that array. The only writes are the zeroing in
+// FUN_008a2980. Both loops therefore run over nulls and skip every iteration, in the reference as
+// much as here, and reproducing storage nothing fills would be copying a ghost.
 void UpdateProceduralTextures() {
     for (uint32_t i = 0; i < 3; i++) {
         if (s_proceduralUpdated[i] || !s_proceduralTextures[i]) {

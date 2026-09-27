@@ -168,6 +168,13 @@ IMaterial* GetMaterial(int32_t liquidType);
 // Drop every material the bank holds. ref: FUN_008a1f50
 void ReleaseMaterials();
 
+// Drop every settings record's texture frames and open them again. ref: FUN_008a2780
+void ReloadAllLiquidTextures();
+
+// Put the procedural textures back in the cache and reopen every liquid's frames, after a device
+// reset has emptied the cache. ref: FUN_008a2a10
+void RestoreLiquidTextures();
+
 // Drop every record the bank holds. ref: part of FUN_008a2380
 void ReleaseMaterialSettings();
 

@@ -10448,7 +10448,7 @@
   ],
   "frozen": "GxDevApi",
   "frozenSize": 14,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "Texture.cpp",
   "refSize": 53,
   "status": "ported"
@@ -65666,6 +65666,21 @@
   "refSize": 809,
   "status": "ported"
  },
+ "008a2780": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::ReloadAllLiquidTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
  "008a27c0": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
@@ -65696,6 +65711,36 @@
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 132,
+  "status": "ported"
+ },
+ "008a2980": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::ReleaseProceduralTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
+ "008a2a10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::RestoreLiquidTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 138,
   "status": "ported"
  },
  "008a2ac0": {
