@@ -4107,9 +4107,11 @@ addr	how	frozen	evidence
 008a1fa0	annotated	Liquid::GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
 008a20c0	annotated	Liquid::Add	tag in src/world/map/LiquidSurface.cpp
 008a2240	annotated	Liquid::Draw	tag in src/world/map/LiquidSurface.cpp
-008a2450	annotated	Liquid::CMaterialSettings::LoadTextures	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2450	string	Liquid::CMaterialSettings::LoadTextures	unique "procedural"
 008a27c0	annotated	Liquid::CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
 008a28f0	annotated	Liquid::GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2ac0	annotated	Liquid::WmoWaterGenerate	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2e20	annotated	Liquid::ProceduralLiquidTexture	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3050	annotated	CMapLiquidData::CMapLiquidData	tag in src/world/map/CMapLiquidData.cpp
 008a3060	annotated	CMapLiquidData::HasLiquid	tag in src/world/map/CMapLiquidData.cpp
 008a3070	annotated	CMapLiquidData::Chunk	tag in src/world/map/CMapLiquidData.cpp

@@ -90,6 +90,9 @@ HTEXTURE TextureCreate(uint32_t, uint32_t, EGxTexFormat, EGxTexFormat, CGxTexFla
 HTEXTURE TextureCreate(EGxTexTarget, uint32_t, uint32_t, uint32_t, EGxTexFormat, EGxTexFormat, CGxTexFlags, void*, void (*)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char*, int32_t);
 
 HTEXTURE TextureCreateSolid(const CImVector&);
+// A texture the client GENERATED, fetched by the name it was registered under rather than read off
+// disk. ref: FUN_004b6f30
+HTEXTURE TextureCacheGetProcedural(char* name);
 
 int32_t TextureGetDimensions(HTEXTURE, uint32_t*, uint32_t*, int32_t);
 

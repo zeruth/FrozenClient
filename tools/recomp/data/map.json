@@ -10447,7 +10447,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCacheNewTexture",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 87,
@@ -10463,7 +10463,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCacheNewTexture",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 108,
@@ -65376,7 +65376,7 @@
   "status": "ported"
  },
  "008a2450": {
-  "branchRatio": 0.267,
+  "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.429,
@@ -65385,8 +65385,8 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialSettings::LoadTextures",
-  "frozenSize": 719,
-  "how": "annotated",
+  "frozenSize": 1021,
+  "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 809,
   "status": "ported"
@@ -65421,6 +65421,38 @@
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 132,
+  "status": "ported"
+ },
+ "008a2ac0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::WmoWaterGenerate",
+  "frozenSize": 680,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 297,
+  "status": "ported"
+ },
+ "008a2e20": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::ProceduralLiquidTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 213,
   "status": "ported"
  },
  "008a3050": {
@@ -65673,7 +65705,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::SetupTransforms",
-  "frozenSize": 398,
+  "frozenSize": 1174,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 448,

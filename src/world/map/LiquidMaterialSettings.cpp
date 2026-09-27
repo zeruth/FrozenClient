@@ -7,6 +7,7 @@
 #include <cstring>
 #include "gx/Transform.hpp"
 #include "model/CM2Lighting.hpp"
+#include "world/CWorld.hpp"
 #include "world/map/LiquidSurface.hpp"
 #include "gx/CGxBatch.hpp"
 #include "gx/Buffer.hpp"
@@ -76,6 +77,231 @@ static const uint32_t MAX_FRAMES = 30;
 // ref: FUN_008a2450
 // Procedural water is generated rather than read, so it is sampled without mipmaps and clamped;
 // everything else is an ordinary wrapped, trilinear texture.
+// ------------------------------------------------------------------------------------------------
+// The procedural liquid textures
+//
+// Three textures the client GENERATES rather than reads off disk, 8 wide and 64 tall, named
+// proceduralRiverDepthTex, proceduralOceanDepthTex and proceduralWmoWaterTex. LiquidType.dbc puts
+// one of those names in a liquid's second texture column, and the second texcoord -- the depth in
+// 0..1 that LiquidTypeBlock's ramp produces -- is what reads down them. So these ARE the water's
+// depth shading: the colour and transparency of shallow water at the top row and of deep water at
+// the bottom, taken from the day/night light bands so they change with the hour and the zone.
+//
+// Every input was already in frozen, which is why this could be written at all: CWorld publishes
+// LightIntBand bands 14..17 as the ocean and river close/far colours and LightParams' four alphas,
+// and the reference reads exactly those out of its light block at +0x10c..+0x118 and +0x140..+0x14c.
+// The offsets line up with frozen's existing ordering entry for entry, which is a check rather than
+// a coincidence.
+
+const uint32_t PROC_TEX_WIDTH = 8;
+const uint32_t PROC_TEX_HEIGHT = 64;
+
+// The gradient is stepped in 8.8 fixed point, and the reference's step is (to - from) * 256 / 64.
+// The 64 is the texture's height, so the shift belongs to the texture rather than to the row count
+// the callback happens to be handed.
+const int32_t PROC_GRADIENT_SHIFT = 6;
+
+// One component of a band colour, back to the byte it came from.
+uint8_t BandByte(float v) {
+    int32_t b = static_cast<int32_t>(nearbyintf(v * 255.0f));
+
+    return static_cast<uint8_t>(b < 0 ? 0 : (b > 255 ? 255 : b));
+}
+
+// A band colour packed the way the reference's light block holds it and the way the generators read
+// it back: blue in the low byte, then green, then red, alpha left clear.
+uint32_t PackBandColor(const C3Vector& c) {
+    return static_cast<uint32_t>(BandByte(c.z))
+         | (static_cast<uint32_t>(BandByte(c.y)) << 8)
+         | (static_cast<uint32_t>(BandByte(c.x)) << 16);
+}
+
+// ref: FUN_008a2bf0
+// The two DEPTH textures, river and ocean, told apart by the user argument -- 1 is the river.
+//
+// Each row is one colour repeated across the width, interpolated from the close colour and shallow
+// alpha at row 0 to the far colour and deep alpha at row 63. The interpolation is integer 8.8 fixed
+// point rather than float, and it is reproduced rather than tidied because a texture is exactly the
+// kind of thing where a rounding difference shows as a band.
+//
+// THE LAST ROW OF THE OCEAN TEXTURE IS DARKENED, and only the ocean's. The reference unpacks it,
+// converts to HSV, multiplies the VALUE by 0.9, converts back and repacks. Scaling V in HSV scales
+// R, G and B by the same factor -- C = V*S, X and the m = V - C offset are all linear in V, and H
+// and S are untouched -- so the round trip is exactly a 0.9 multiply on the three colour bytes, and
+// that is what this does. Alpha does not go through HSV and is left alone.
+//
+// UNCERTAIN, and flagged rather than hidden: the decompilation calls PackColor and does not show
+// its result being stored back, so it is possible the reference computes that darkened row and
+// throws it away. One row in sixty-four of one of three textures either way.
+void DepthGradientGenerate(EGxTexCommand command, uint32_t width, uint32_t height, uint32_t x,
+                           uint32_t y, void* userArg, uint32_t& pitch, const void*& data) {
+    static uint32_t s_pixels[PROC_TEX_WIDTH * PROC_TEX_HEIGHT] = { 0 };
+
+    (void)x;
+    (void)y;
+
+    if (command != GxTex_Latch) {
+        return;
+    }
+
+    bool river = reinterpret_cast<intptr_t>(userArg) != 0;
+    int32_t oceanic = river ? 0 : 1;
+
+    uint32_t shallow = PackBandColor(CWorld::GetLiquidShallow(oceanic));
+    uint32_t deep = PackBandColor(CWorld::GetLiquidDeep(oceanic));
+
+    uint8_t alphaClose = BandByte(CWorld::GetLiquidAlpha(oceanic, 0));
+    uint8_t alphaFar = BandByte(CWorld::GetLiquidAlpha(oceanic, 1));
+
+    int32_t b = static_cast<int32_t>(shallow & 0xff) << 8;
+    int32_t g = static_cast<int32_t>((shallow >> 8) & 0xff) << 8;
+    int32_t r = static_cast<int32_t>((shallow >> 16) & 0xff) << 8;
+    int32_t a = static_cast<int32_t>(alphaClose) << 8;
+
+    int32_t db = ((static_cast<int32_t>(deep & 0xff)
+                   - static_cast<int32_t>(shallow & 0xff)) * 0x100) >> PROC_GRADIENT_SHIFT;
+    int32_t dg = ((static_cast<int32_t>((deep >> 8) & 0xff)
+                   - static_cast<int32_t>((shallow >> 8) & 0xff)) * 0x100) >> PROC_GRADIENT_SHIFT;
+    int32_t dr = ((static_cast<int32_t>((deep >> 16) & 0xff)
+                   - static_cast<int32_t>((shallow >> 16) & 0xff)) * 0x100) >> PROC_GRADIENT_SHIFT;
+    int32_t da = ((static_cast<int32_t>(alphaFar)
+                   - static_cast<int32_t>(alphaClose)) * 0x100) >> PROC_GRADIENT_SHIFT;
+
+    uint32_t* out = s_pixels;
+
+    for (uint32_t row = 0; row < height; row++) {
+        uint32_t pixel = static_cast<uint32_t>((b >> 8) & 0xff)
+                       | (static_cast<uint32_t>((g >> 8) & 0xff) << 8)
+                       | (static_cast<uint32_t>((r >> 8) & 0xff) << 16)
+                       | (static_cast<uint32_t>((a >> 8) & 0xff) << 24);
+
+        if (row == height - 1 && !river) {
+            static const float DEEPEST_ROW_VALUE = 0.89999998f;
+
+            uint32_t db8 = static_cast<uint32_t>(
+                nearbyintf(static_cast<float>(pixel & 0xff) * DEEPEST_ROW_VALUE));
+            uint32_t dg8 = static_cast<uint32_t>(
+                nearbyintf(static_cast<float>((pixel >> 8) & 0xff) * DEEPEST_ROW_VALUE));
+            uint32_t dr8 = static_cast<uint32_t>(
+                nearbyintf(static_cast<float>((pixel >> 16) & 0xff) * DEEPEST_ROW_VALUE));
+
+            pixel = (pixel & 0xff000000u) | db8 | (dg8 << 8) | (dr8 << 16);
+        }
+
+        for (uint32_t col = 0; col < width; col++) {
+            out[col] = pixel;
+        }
+
+        out += width;
+
+        b += db;
+        g += dg;
+        r += dr;
+        a += da;
+    }
+
+    pitch = width * 4;
+    data = s_pixels;
+}
+
+// ref: FUN_008a2ac0
+// The MAP OBJECT water texture, and it is two columns rather than a gradient of one colour: the left
+// half of every row is the RIVER's deep colour and the right half is white, both carrying the same
+// depth-interpolated alpha. It always reads the river's bands, never the ocean's, however the water
+// it shades is classified.
+//
+// That is what the WMO vertex writer's first texcoord component is for -- it writes a real value
+// where the terrain writer writes zero, which picks the column and so picks between the tinted half
+// and the plain one.
+void WmoWaterGenerate(EGxTexCommand command, uint32_t width, uint32_t height, uint32_t x,
+                      uint32_t y, void* userArg, uint32_t& pitch, const void*& data) {
+    static uint32_t s_pixels[PROC_TEX_WIDTH * PROC_TEX_HEIGHT] = { 0 };
+
+    (void)x;
+    (void)y;
+    (void)userArg;
+
+    if (command != GxTex_Latch) {
+        return;
+    }
+
+    uint32_t tint = PackBandColor(CWorld::GetLiquidDeep(0));
+
+    uint8_t alphaClose = BandByte(CWorld::GetLiquidAlpha(0, 0));
+    uint8_t alphaFar = BandByte(CWorld::GetLiquidAlpha(0, 1));
+
+    int32_t a = static_cast<int32_t>(alphaClose) << 8;
+    int32_t da = ((static_cast<int32_t>(alphaFar)
+                   - static_cast<int32_t>(alphaClose)) * 0x100) >> PROC_GRADIENT_SHIFT;
+
+    uint32_t* out = s_pixels;
+
+    for (uint32_t row = 0; row < height; row++) {
+        uint32_t alpha = static_cast<uint32_t>((a >> 8) & 0xff) << 24;
+        uint32_t half = width / 2;
+
+        for (uint32_t col = 0; col < width; col++) {
+            out[col] = (col < half ? tint : 0xffffffu) | alpha;
+        }
+
+        out += width;
+
+        a += da;
+    }
+
+    pitch = width * 4;
+    data = s_pixels;
+}
+
+// ref: FUN_008a2e20
+// Make the three and put them in the texture cache under their names, which is how LoadTextures
+// finds them: a liquid whose texture column holds one of these names gets the generated texture
+// instead of a file read.
+//
+// DIVERGED in WHEN, not what: the reference makes them from its liquid initialise, beside the depth
+// ramps. Frozen makes them the first time a liquid asks for one, which needs no initialisation
+// order and cannot be skipped by a map that loads before the subsystem is up.
+HTEXTURE ProceduralLiquidTexture(const char* name) {
+    static bool s_created = false;
+
+    if (!s_created) {
+        s_created = true;
+
+        struct { const char* name; TEXTURE_CALLBACK* generate; intptr_t arg; } kTextures[3] = {
+            { "proceduralRiverDepthTex", DepthGradientGenerate, 1 },
+            { "proceduralOceanDepthTex", DepthGradientGenerate, 0 },
+            { "proceduralWmoWaterTex", WmoWaterGenerate, 0 }
+        };
+
+        for (uint32_t i = 0; i < 3; i++) {
+            CGxTexFlags flags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
+
+            HTEXTURE handle = TextureCreate(PROC_TEX_WIDTH, PROC_TEX_HEIGHT, GxTex_Argb8888,
+                                           GxTex_Argb8888, flags,
+                                           reinterpret_cast<void*>(kTextures[i].arg),
+                                           kTextures[i].generate, kTextures[i].name, 0);
+
+            if (!handle) {
+                continue;
+            }
+
+            CTexture* texture = TextureGetTexturePtr(handle);
+
+            if (texture) {
+                TextureCacheNewTexture(texture, flags);
+            }
+        }
+    }
+
+    // ref: FUN_004b6f30 -- the by-name lookup, which hashes the name and takes whatever the cache
+    // holds under it. A name nothing registered comes back null, and the caller falls through to
+    // its solid stand-in.
+    char key[CMaterialSettings::TEXTURE_NAME_SIZE];
+
+    SStrCopy(key, name, sizeof(key));
+
+    return TextureCacheGetProcedural(key);
+}
 void CMaterialSettings::LoadTextures() {
     for (uint32_t slot = 0; slot < TEXTURE_SLOTS; slot++) {
         const char* name = this->m_textureName[slot];
@@ -97,21 +323,16 @@ void CMaterialSettings::LoadTextures() {
             HTEXTURE texture = nullptr;
 
             if (procedural) {
-                // TODO FUN_004b6f30: the generated texture, looked up by name hash rather than read
-                // off disk. It hashes the name, asks the texture cache for an entry under that hash
-                // with linear filtering and no wrap, and wraps the result in an HTEXTURE. The pixels
-                // arrive later, from FUN_008a2f00 -- the call CMap::Render is still missing -- which
-                // uploads a 64x8 rect into each of the three procedural liquid textures once.
-                //
-                // FROZEN-ONLY STAND-IN, and it is OPAQUE WHITE rather than the green it used to be.
-                // Green was chosen as a look-at-me marker while nothing drew liquid at all; the
-                // moment liquid actually drew it painted every water surface in the world green,
-                // because this slot is a multiplied depth ramp. White is the neutral for that
-                // multiply, so water now shows its real texture and simply lacks the depth ramp's
-                // shading. Both are wrong; one of them is wrong quietly and in the right direction.
-                CImVector white = { 0xff, 0xff, 0xff, 0xff };
+                // The generated texture, looked up by name rather than read off disk.
+                texture = ProceduralLiquidTexture(name);
 
-                texture = TextureCreateSolid(white);
+                if (!texture) {
+                    // The reference falls back to a solid too, and only when its generator has
+                    // nothing under the name. White is the neutral for a multiplied depth ramp.
+                    CImVector white = { 0xff, 0xff, 0xff, 0xff };
+
+                    texture = TextureCreateSolid(white);
+                }
             } else {
                 texture = TextureCreate(name, flags, &status, 0);
             }

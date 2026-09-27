@@ -1243,6 +1243,27 @@ HTEXTURE TextureCacheGetTexture(const CImVector& color) {
     return nullptr;
 }
 
+// ref: FUN_004b6f30
+// The by-name fetch for a GENERATED texture. It is a separate entry point from the file lookup above
+// for one reason: that one splits the extension off the name before hashing and refuses to hand back
+// a handle unless it was given somewhere to put the dot. A procedural name has no extension, so it
+// hashes whole.
+//
+// The flags are the reference's own, and the same ones the generated textures are registered with --
+// linear, no wrap, one anisotropy -- because the cache key carries them and a mismatch would miss.
+HTEXTURE TextureCacheGetProcedural(char* name) {
+    auto hashval = SStrHashHT(name);
+
+    HASHKEY_TEXTUREFILE key = { name, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1) };
+
+    auto texture = Texture::s_textureCache.Ptr(hashval, key);
+
+    if (!texture) {
+        return nullptr;
+    }
+
+    return HandleCreate(texture);
+}
 void TextureCacheNewTexture(CTexture* texture, CGxTexFlags texFlags) {
     auto hashval = SStrHashHT(texture->filename);
     HASHKEY_TEXTUREFILE key = { texture->filename, texFlags };
