@@ -1,6 +1,7 @@
 #include "model/CM2Shared.hpp"
 #include "async/AsyncFile.hpp"
 #include "async/CAsyncObject.hpp"
+#include <storm/Array.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include "gx/Buffer.hpp"
@@ -459,6 +460,18 @@ CM2Shared::~CM2Shared() {
         SMemFree(this->m_sequenceBuffers, __FILE__, __LINE__, 0);
         this->m_sequenceBuffers = nullptr;
         this->m_sequenceBufferCount = 0;
+    }
+
+    if (this->m_rebuiltTextureCombos) {
+        SMemFree(this->m_rebuiltTextureCombos, __FILE__, __LINE__, 0);
+        this->m_rebuiltTextureCombos = nullptr;
+        this->m_rebuiltTextureComboCount = 0;
+    }
+
+    if (this->m_rebuiltTextureTransformCombos) {
+        SMemFree(this->m_rebuiltTextureTransformCombos, __FILE__, __LINE__, 0);
+        this->m_rebuiltTextureTransformCombos = nullptr;
+        this->m_rebuiltTextureTransformComboCount = 0;
     }
 
     bool cancelPending = false;
@@ -1407,6 +1420,169 @@ void CM2Shared::SubstituteSimpleShaders() {
     }
 }
 
+// ref: FUN_00837250
+// Rebuild both combo arrays so that every entry the batches will be indexed against exists. This is
+// the piece that makes FixUpTextureCombos's search unable to fail, and it runs between the analysis
+// and that fixup.
+//
+// PORTED FROM THE DISASSEMBLY. The decompilation of this one is unusable -- it builds its scratch
+// with alloca and Ghidra reports "Unable to track spacebase fully for stack", so every local it
+// prints is suspect.
+//
+// TWO PASSES, and which list an entry lands in depends on the batch:
+//
+//   multi-texture batches (textureCount >= 2) contribute a sorted PAIR through M2EnsureComboPair;
+//   single-texture batches contribute ONE entry, appended at the end and deduplicated against
+//   everything already written.
+//
+// So each finished array is a sorted pair region followed by an append region of singles. The
+// fixup's two search shapes line up with that exactly: its pair search wants two consecutive
+// entries, its single search wants one entry anywhere.
+//
+// ONE ENTRY PER MATERIAL, in both passes, and it is what makes the scratch capacity sound. The
+// reference allocas 2 shorts per batch for each list, which would not cover 2 shorts from pass one
+// plus 1 from pass two if a batch could feed both. It cannot: each pass skips a batch whose
+// materialIndex repeats the previous one's, so only the FIRST batch of each material is ever
+// considered, and that batch goes to exactly one of the two passes by its texture count. Worst case
+// is therefore 2 shorts per material, and there cannot be more materials than batches.
+//
+// The single-entry dedup searches only as far as the CURRENT append cursor, which covers the pair
+// region and the singles written before it -- so a single that happens to equal a byte of an
+// existing pair is not appended again.
+//
+// DIVERGENCE, and it is the reason the accessors on this class exist. The reference publishes by
+// writing into the model data: it allocates a bigger array only when the rebuilt list outgrows what
+// m_data carries, otherwise it memcpys over the existing one in place, then stores the new counts at
+// M2Data +0x80 and +0x98 and marks what it reallocated by OR-ing 0x20 and 0x40 into M2Data::flags.
+// frozen cannot point an M2Array at a fresh block -- it holds a signed 32-bit delta, not a pointer --
+// so the rebuilt arrays are kept on this object instead and the readers go through TextureCombos and
+// TextureTransformCombos. That also means the loaded model data is never mutated and the two flag
+// bits are not needed: a non-null member is the same marker.
+void CM2Shared::RebuildComboArrays() {
+    M2SkinProfile* profile = this->skinProfile;
+
+    uint32_t batchCount = profile->batches.Count();
+
+    if (!batchCount) {
+        return;
+    }
+
+    // The reference's two allocas, as locals that free themselves the same way.
+    TSGrowableArray<int16_t> textureScratch;
+    TSGrowableArray<int16_t> transformScratch;
+
+    textureScratch.SetCount(batchCount * 2);
+    transformScratch.SetCount(batchCount * 2);
+
+    M2ComboPairList textures = { 0, textureScratch.Ptr() };
+    M2ComboPairList transforms = { 0, transformScratch.Ptr() };
+
+    uint32_t lastMaterialIndex = 0xFFFFFFFF;
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        M2Batch& batch = profile->batches[i];
+
+        if (batch.materialIndex == lastMaterialIndex) {
+            continue;
+        }
+
+        lastMaterialIndex = batch.materialIndex;
+
+        if (batch.textureCount < 2) {
+            continue;
+        }
+
+        M2EnsureComboPair(batch.textureComboIndex, textures, 0);
+        M2EnsureComboPair(batch.textureTransformComboIndex, transforms, 1);
+    }
+
+    lastMaterialIndex = 0xFFFFFFFF;
+
+    int32_t textureCursor = textures.count;
+    int32_t transformCursor = transforms.count;
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        M2Batch& batch = profile->batches[i];
+
+        if (batch.materialIndex == lastMaterialIndex) {
+            continue;
+        }
+
+        lastMaterialIndex = batch.materialIndex;
+
+        if (batch.textureCount > 1) {
+            continue;
+        }
+
+        auto wantTexture = static_cast<int16_t>(batch.textureComboIndex);
+
+        bool present = false;
+
+        for (int32_t j = 0; j < textureCursor; j++) {
+            if (textures.data[j] == wantTexture) {
+                present = true;
+
+                break;
+            }
+        }
+
+        if (!present) {
+            textures.data[textureCursor++] = wantTexture;
+            textures.count++;
+        }
+
+        // The same plus-one bias PackTextureCombos applied, undone -- so the rebuilt transform array
+        // holds real combo values with -1 for "none", which is what the draw path expects to read.
+        auto wantTransform = static_cast<int16_t>(
+            batch.textureTransformComboIndex == 0
+                ? -1
+                : batch.textureTransformComboIndex - 1);
+
+        present = false;
+
+        for (int32_t j = 0; j < transformCursor; j++) {
+            if (transforms.data[j] == wantTransform) {
+                present = true;
+
+                break;
+            }
+        }
+
+        if (!present) {
+            transforms.data[transformCursor++] = wantTransform;
+            transforms.count++;
+        }
+    }
+
+    this->PublishComboArray(&this->m_rebuiltTextureCombos, &this->m_rebuiltTextureComboCount,
+                            textures);
+    this->PublishComboArray(&this->m_rebuiltTextureTransformCombos,
+                            &this->m_rebuiltTextureTransformComboCount, transforms);
+}
+
+// Take a finished scratch list onto this object, replacing whatever was there. Frozen-only: the
+// reference publishes into the model data instead, for the reason recorded above.
+void CM2Shared::PublishComboArray(uint16_t** target, uint32_t* targetCount,
+                                  const M2ComboPairList& built) {
+    if (*target) {
+        SMemFree(*target, __FILE__, __LINE__, 0);
+        *target = nullptr;
+    }
+
+    *targetCount = 0;
+
+    if (built.count <= 0) {
+        return;
+    }
+
+    auto bytes = static_cast<uint32_t>(built.count) * sizeof(uint16_t);
+
+    *target = static_cast<uint16_t*>(SMemAlloc(bytes, __FILE__, __LINE__, 0));
+
+    memcpy(*target, built.data, bytes);
+
+    *targetCount = static_cast<uint32_t>(built.count);
+}
 // The combo arrays a batch's fields index, preferring the specialized pass's rebuilt ones. Both
 // return uint16_t deliberately, even though transform entries are logically signed: every existing
 // reader compares the value against a Count() to decide whether it means "none", and an unsigned

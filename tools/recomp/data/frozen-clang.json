@@ -58218,7 +58218,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 115
+"line": 119
 },
 "CCharacterCreation::CalcClasses": {
 "files": [
@@ -86078,7 +86078,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 26
+"line": 27
 },
 "CM2Shared::LoadFailedCallback": {
 "files": [
@@ -86093,7 +86093,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 32
+"line": 33
 },
 "CM2Shared::LoadSucceededCallback": {
 "files": [
@@ -86112,7 +86112,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 39
+"line": 40
 },
 "M2AnimFileName": {
 "files": [
@@ -86132,7 +86132,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 67
+"line": 68
 },
 "M2SkinFileName": {
 "files": [
@@ -86152,7 +86152,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 84
+"line": 85
 },
 "SequenceBufferAlloc": {
 "files": [
@@ -86172,7 +86172,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 103
+"line": 104
 },
 "SequenceBufferFree": {
 "files": [
@@ -86192,7 +86192,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 119
+"line": 120
 },
 "CM2Shared::LoadSequence": {
 "files": [
@@ -86235,17 +86235,17 @@
 "stub": false,
 "lines": 87,
 "refs": [],
-"line": 215
+"line": 216
 },
 "CM2Shared::InitSequence": {
 "files": [
 "src/model/cm2shared.cpp"
 ],
 "callseq": [
-"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:308:20)::operator()",
+"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:309:20)::operator()",
 "M2Array<M2Sequence>::operator[]",
 "M2Array<M2Sequence>::operator[]",
-"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:308:20)::operator()"
+"CM2Shared::InitSequence::(lambda at c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp:309:20)::operator()"
 ],
 "strings": [],
 "consts": [
@@ -86256,7 +86256,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 305
+"line": 306
 },
 "CM2Shared::CancelSequenceLoads": {
 "files": [
@@ -86278,7 +86278,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 343
+"line": 344
 },
 "CM2Shared::DestroySequenceLoad": {
 "files": [
@@ -86300,7 +86300,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 373
+"line": 374
 },
 "CM2Shared::SequenceLoadedCallback": {
 "files": [
@@ -86330,7 +86330,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 389
+"line": 390
 },
 "CM2Shared::SequenceLoadFailedCallback": {
 "files": [
@@ -86345,7 +86345,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 428
+"line": 429
 },
 "CM2Shared::SkinProfileLoadedCallback": {
 "files": [
@@ -86361,7 +86361,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 434
+"line": 435
 },
 "CM2Shared::~CM2Shared": {
 "files": [
@@ -86370,6 +86370,8 @@
 "callseq": [
 "CM2Shared::CancelSequenceLoads",
 "SequenceBufferFree",
+"SMemFree",
+"SMemFree",
 "SMemFree",
 "AsyncFileReadCancel",
 "M2Array<M2Texture>::Count",
@@ -86384,11 +86386,11 @@
 "consts": [
 "0"
 ],
-"branches": 8,
+"branches": 10,
 "stub": false,
-"lines": 48,
+"lines": 60,
 "refs": [],
-"line": 448
+"line": 449
 },
 "CM2Shared::AddRef": {
 "files": [
@@ -86403,7 +86405,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 499
+"line": 512
 },
 "CM2Shared::CallbackWhenLoaded": {
 "files": [
@@ -86422,7 +86424,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 529
+"line": 542
 },
 "CM2Shared::CreateSimpleEffect": {
 "files": [
@@ -86475,7 +86477,7 @@
 "stub": false,
 "lines": 179,
 "refs": [],
-"line": 545
+"line": 558
 },
 "CM2Shared::FinishLoadingSkinProfile": {
 "files": [
@@ -86496,7 +86498,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 725
+"line": 738
 },
 "CM2Shared::GetEffect": {
 "files": [
@@ -86531,7 +86533,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 755
+"line": 768
 },
 "CM2Shared::Initialize": {
 "files": [
@@ -86571,7 +86573,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 831
+"line": 844
 },
 "CM2Shared::InitializeSkinProfile": {
 "files": [
@@ -86622,7 +86624,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 897
+"line": 910
 },
 "CM2Shared::Load": {
 "files": [
@@ -86646,7 +86648,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 977
+"line": 990
 },
 "CM2Shared::LoadSkinProfile": {
 "files": [
@@ -86674,7 +86676,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 1021
+"line": 1034
 },
 "CM2Shared::Release": {
 "files": [
@@ -86689,7 +86691,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1070
+"line": 1083
 },
 "CM2Shared::ReleaseGeometryBuffers": {
 "files": [
@@ -86707,7 +86709,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1095
+"line": 1108
 },
 "CM2Shared::ReserveInstances": {
 "files": [
@@ -86725,7 +86727,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1131
+"line": 1144
 },
 "CM2Shared::SetIndices": {
 "files": [
@@ -86757,7 +86759,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1157
+"line": 1170
 },
 "CM2Shared::SetVertices": {
 "files": [
@@ -86800,7 +86802,7 @@
 "stub": false,
 "lines": 102,
 "refs": [],
-"line": 1231
+"line": 1244
 },
 "CM2Shared::SubstituteSimpleShaders": {
 "files": [
@@ -86827,7 +86829,60 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 1334
+"line": 1347
+},
+"CM2Shared::RebuildComboArrays": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"M2Array<M2Batch>::Count",
+"TSGrowableArray<short>::TSGrowableArray",
+"TSGrowableArray<short>::TSGrowableArray",
+"TSGrowableArray<short>::SetCount",
+"TSGrowableArray<short>::SetCount",
+"TSBaseArray<short>::Ptr",
+"TSBaseArray<short>::Ptr",
+"M2Array<M2Batch>::operator[]",
+"M2EnsureComboPair",
+"M2EnsureComboPair",
+"M2Array<M2Batch>::operator[]",
+"CM2Shared::PublishComboArray",
+"CM2Shared::PublishComboArray"
+],
+"strings": [],
+"consts": [
+"0",
+"0xFFFFFFFF",
+"1",
+"2"
+],
+"branches": 14,
+"stub": false,
+"lines": 101,
+"refs": [],
+"line": 1461
+},
+"CM2Shared::PublishComboArray": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"SMemFree",
+"SMemAlloc",
+"memcpy"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\model\\cm2shared.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 2,
+"stub": false,
+"lines": 20,
+"refs": [],
+"line": 1565
 },
 "CM2Shared::TextureCombos": {
 "files": [
@@ -86843,7 +86898,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1415
+"line": 1591
 },
 "CM2Shared::TextureTransformCombos": {
 "files": [
@@ -86859,7 +86914,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1427
+"line": 1603
 },
 "M2EnsureComboPair": {
 "files": [
@@ -86880,7 +86935,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1467
+"line": 1643
 },
 "CM2Shared::PackTextureCombos": {
 "files": [
@@ -86904,7 +86959,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1530
+"line": 1706
 },
 "CM2Shared::FixUpTextureCombos": {
 "files": [
@@ -86933,7 +86988,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 1587
+"line": 1763
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
@@ -86946,7 +87001,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 1744
+"line": 1920
 },
 "M2Init": {
 "files": [

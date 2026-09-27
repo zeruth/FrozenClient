@@ -71,6 +71,10 @@ class CM2Shared {
         uint16_t* TextureCombos(uint32_t* count);
         uint16_t* TextureTransformCombos(uint32_t* count);
 
+        // Rebuild the two combo arrays so they hold every entry the specialized batches need.
+        void RebuildComboArrays();
+        void PublishComboArray(uint16_t** target, uint32_t* targetCount,
+                               const struct M2ComboPairList& built);
         void PackTextureCombos();
         void FixUpTextureCombos();
         TSList<CM2SequenceLoad, TSGetLink<CM2SequenceLoad>> m_sequenceLoads;

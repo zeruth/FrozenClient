@@ -58473,6 +58473,22 @@
   "refSize": 143,
   "status": "ported"
  },
+ "00837250": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::RebuildComboArrays",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 583,
+  "status": "ported"
+ },
  "008374a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -58762,16 +58778,16 @@
   "status": "ported"
  },
  "0083d5b0": {
-  "branchRatio": 0.258,
+  "branchRatio": 0.323,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::~CM2Shared",
-  "frozenSize": 660,
+  "frozenSize": 740,
   "how": "override",
   "module": "M2Shared.cpp",
   "refSize": 643,

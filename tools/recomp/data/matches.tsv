@@ -3665,6 +3665,7 @@ addr	how	frozen	evidence
 008370a0	override	M2Init	
 00837130	override	M2Init	
 008371c0	override	M2Init	
+00837250	annotated	CM2Shared::RebuildComboArrays	tag in src/model/CM2Shared.cpp
 008374a0	annotated	CM2Shared::FixUpTextureCombos	tag in src/model/CM2Shared.cpp
 00837680	override	CM2Shared::SubstituteSpecializedShaders	
 00837a40	override	CM2Shared::InitializeSkinProfile	
