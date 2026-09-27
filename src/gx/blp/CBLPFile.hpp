@@ -29,6 +29,7 @@ class CBLPFile {
         void DecompPalARGB1555DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);
         void DecompPalARGB4444DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);
         void DecompPalRGB565DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);
+        void DecompPalARGB2565DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);
         uint32_t GetMipPixelCount(uint32_t mipLevel);
         int32_t GetMipSize(PIXEL_FORMAT format, uint32_t mipLevel, uint32_t* size, uint32_t* stride);
         int32_t Lock2(const char*, PIXEL_FORMAT, uint32_t, unsigned char*, uint32_t&);

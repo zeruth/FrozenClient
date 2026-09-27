@@ -2372,6 +2372,7 @@ addr	how	frozen	evidence
 006aeba0	annotated	CBLPFile::DecompPalARGB4444DitherFS	tag in src/gx/blp/CBLPFile.cpp
 006aee70	annotated	CBLPFile::DecompPalARGB1555DitherFS	tag in src/gx/blp/CBLPFile.cpp
 006af140	annotated	CBLPFile::DecompPalRGB565DitherFS	tag in src/gx/blp/CBLPFile.cpp
+006af340	annotated	CBLPFile::DecompPalARGB2565DitherFS	tag in src/gx/blp/CBLPFile.cpp
 006af6a0	annotated	CBLPFile::GetMipPixelCount	tag in src/gx/blp/CBLPFile.cpp
 006af6e0	annotated	CBLPFile::Unlock	tag in src/gx/blp/CBLPFile.cpp
 006af730	annotated	CBLPFile::GetMipSize	tag in src/gx/blp/CBLPFile.cpp

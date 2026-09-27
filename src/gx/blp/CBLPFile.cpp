@@ -12,6 +12,15 @@ TSGrowableArray<unsigned char> CBLPFile::s_blpFileLoadBuffer;
 static int32_t s_ditherErrors1555[2 * 0xC06];  // ref: DAT_00c67580
 static int32_t s_ditherErrors565[2 * 0xC06];   // ref: DAT_00c6d5b0
 static int32_t s_ditherErrors4444[2 * 0xC06];  // ref: DAT_00c61550
+static int32_t s_ditherErrors2565[2 * 0xC06];  // ref: DAT_00c735e0
+
+// Where each texel's two alpha bits live inside its byte of the trailing alpha plane, four
+// texels to a byte. Both tables are the reference's own, at 0x00ad9188 (as BYTES -- the dword
+// there reads 0xc0300c03) and 0x00ad918c.
+static const unsigned char s_alpha2Mask[4] = { 0x03, 0x0C, 0x30, 0xC0 };
+static const unsigned char s_alpha2Shift[4] = { 0, 2, 4, 6 };
+// And where the two bits come FROM in a 4-bit source plane: the top two of each nibble.
+static const unsigned char s_alpha2From4[2] = { 2, 6 };
 
 // ref: FUN_004b58d0
 // An empty BLP2 header: version 1, preferred format 2, bit 4 of the mip byte clear.
@@ -500,12 +509,16 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                     // Handled below, because it is the one case that needs the alpha plane.
                     break;
 
+                case PIXEL_ARGB2565:
+                    this->DecompPalARGB2565DitherFS(
+                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+                    return 1;
+
                 default:
-                    // One palette decoder left: ARGB2565, the reference's FUN_006af340. It is the
-                    // odd one out -- 2565 carries its alpha in a SEPARATE plane after the colour
-                    // data (GetMipSize allots `alphaBytes + pixels * 2` for it, where every other
-                    // 16-bit format gets `pixels * 2`), so it is not a variation on the three
-                    // above. Until it is ported this format answers 0, which the caller handles.
+                    // Every palette target the reference has is now handled. What is left here is
+                    // the formats it does not decode from a palette either -- DXT1/3/5 and A8 --
+                    // and it answers 0 for those too.
                     return 0;
             }
 
@@ -730,6 +743,135 @@ int32_t CBLPFile::Source(void* fileBits) {
     }
 
     return 1;
+}
+
+// ref: FUN_006af340
+// Palette to ARGB2565: RGB565 colour with TWO bits of alpha, and the alpha does not share the
+// 16-bit texel -- it goes in a plane of its own after all the colour data, four texels to a byte.
+// That is what makes this format the odd one out, and it is visible in GetMipSize, which allots
+// `alphaBytes + pixels * 2` for it where every other 16-bit format gets `pixels * 2`.
+//
+// The colour pass is the 565 one exactly -- 5/6/5, so rounding terms 0x40000, 0x20000, 0x40000,
+// shifts 19, 18, 19, and residual masks 0xFFF80000, 0xFFFC0000, 0xFFF80000 -- because 565 and
+// 2565 differ only in where the alpha ends up.
+void CBLPFile::DecompPalARGB2565DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height) {
+    const BlpPalPixel* palette = this->m_header.extended.palette;
+    uint16_t* row = out;
+
+    memset(s_ditherErrors2565, 0, (width * 3 + 6) * 4);
+
+    for (uint32_t y = 0; y < height; y++) {
+        int32_t* next = &s_ditherErrors2565[((y - 1) & 1) * 0xC06];
+
+        next[2] = 0;
+        next[1] = 0;
+        next[0] = 0;
+        next[5] = 0;
+        next[4] = 0;
+        next[3] = 0;
+
+        int32_t* below = next + 1;
+        int32_t* cur = &s_ditherErrors2565[(y & 1) * 0xC06 + 6];
+
+        for (uint32_t x = 0; x < width; x++) {
+            const BlpPalPixel& color = palette[in[x]];
+
+            int32_t r = color.r * 0x10000 + (cur[-3] >> 4);
+            int32_t g = color.g * 0x10000 + (cur[-2] >> 4);
+            int32_t b = color.b * 0x10000 + (cur[-1] >> 4);
+
+            uint32_t br = static_cast<uint32_t>(b) + 0x40000;
+            uint32_t gr = static_cast<uint32_t>(g) + 0x20000;
+            uint32_t rr = static_cast<uint32_t>(r) + 0x40000;
+
+            int32_t r5 = static_cast<int32_t>(rr) >> 19;
+            int32_t g6 = static_cast<int32_t>(gr) >> 18;
+            int32_t b5 = static_cast<int32_t>(br) >> 19;
+
+            if (r5 < 0) {
+                r5 = 0;
+            } else if (r5 > 0x1F) {
+                r5 = 0x1F;
+            }
+
+            if (g6 < 0) {
+                g6 = 0;
+            } else if (g6 > 0x3F) {
+                g6 = 0x3F;
+            }
+
+            if (b5 < 0) {
+                b5 = 0;
+            } else if (b5 > 0x1F) {
+                b5 = 0x1F;
+            }
+
+            r = static_cast<int32_t>(static_cast<uint32_t>(r) - (rr & 0xFFF80000));
+            row[x] = static_cast<uint16_t>(((r5 << 6 | g6) << 5) | b5);
+            g = static_cast<int32_t>(static_cast<uint32_t>(g) - (gr & 0xFFFC0000));
+            b = static_cast<int32_t>(static_cast<uint32_t>(b) - (br & 0xFFF80000));
+
+            cur[0] += r * 7;
+            cur[1] += g * 7;
+            cur[2] += b * 7;
+            below[-1] += r * 5;
+            below[0] += g * 5;
+            below[1] += b * 5;
+            below[2] += r * 3;
+            below[3] += g * 3;
+            below[4] += b * 3;
+            below[6] = g;
+            below[7] = b;
+            below[5] = r;
+
+            cur += 3;
+            below += 3;
+        }
+
+        in += width;
+        row += width;
+    }
+
+    // `row` has walked past every texel, so it is the alpha plane.
+    unsigned char* alpha = reinterpret_cast<unsigned char*>(row);
+    char alphaSize = this->m_header.alphaSize;
+    uint32_t count = width * height;
+
+    // NOTE on all three loops: the value is OR-ed in without being masked to its two bits, which
+    // is the reference's own arithmetic (byte registers, `addb %dl,%dl` then `shlb`) and is not a
+    // transcription slip. It is safe for a reason worth stating, because it looks wrong: a shift
+    // left can only spill into HIGHER fields of the byte, and the fields are written in rising
+    // order, so anything that spills is overwritten by the write that owns it. The only bits that
+    // keep a spill are those of a final partly-filled byte, which is past the end of the image.
+    if (alphaSize == 1) {
+        for (uint32_t i = 0; i < count; i++) {
+            unsigned char* dst = &alpha[i >> 2];
+            unsigned char bits = static_cast<unsigned char>(in[i >> 3] >> (i & 7));
+
+            // One bit becomes 2 rather than 3 -- the reference doubles it and stops there, so a
+            // 1-bit opaque texel lands two thirds of the way up the two-bit range.
+            *dst = static_cast<unsigned char>(static_cast<unsigned char>(bits + bits)
+                                             << s_alpha2Shift[i & 3])
+                 | static_cast<unsigned char>(~s_alpha2Mask[i & 3] & *dst);
+        }
+    } else if (alphaSize == 4) {
+        for (uint32_t i = 0; i < count; i++) {
+            unsigned char* dst = &alpha[i >> 2];
+            unsigned char bits =
+                static_cast<unsigned char>(in[i >> 1] >> s_alpha2From4[i & 1]);
+
+            *dst = static_cast<unsigned char>(bits << s_alpha2Shift[i & 3])
+                 | static_cast<unsigned char>(~s_alpha2Mask[i & 3] & *dst);
+        }
+    } else if (alphaSize == 8) {
+        for (uint32_t i = 0; i < count; i++) {
+            unsigned char* dst = &alpha[i >> 2];
+            unsigned char bits = static_cast<unsigned char>(in[i] >> 6);
+
+            *dst = static_cast<unsigned char>(bits << s_alpha2Shift[i & 3])
+                 | static_cast<unsigned char>(~s_alpha2Mask[i & 3] & *dst);
+        }
+    }
 }
 
 // ref: FUN_006af6e0

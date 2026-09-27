@@ -37831,6 +37831,22 @@
   "refSize": 511,
   "status": "ported"
  },
+ "006af340": {
+  "branchRatio": 0.737,
+  "constOverlap": 0.24,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::DecompPalARGB2565DitherFS",
+  "frozenSize": 1016,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 797,
+  "status": "ported"
+ },
  "006af6a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
