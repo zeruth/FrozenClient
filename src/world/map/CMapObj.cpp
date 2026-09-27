@@ -1212,3 +1212,31 @@ bool CMapObj::GroupFaceColor(uint32_t groupIndex, const C3Vector& point, uint16_
 int32_t CMapObjDef::SegmentVsBounds(const C3Vector& start, const C3Vector& end) {
     return SegmentIntersectsBox(this->m_bounds, start, end);
 }
+
+// ref: FUN_007ae920
+// Is the point inside one group's bounds, with no slack? The strict sibling of
+// PointInGroupBounds (FUN_007ae970) -- same two gates, same MOGI box, and the reference keeps
+// them as two bodies 0x50 bytes apart rather than one with a slack of zero, so they stay two
+// here. This one hands the box to CAaBox::IsPointInside where the other inlines three widened
+// comparisons.
+//
+// THE BOX IS THE ROOT'S, NOT THE GROUP'S. It comes from m_mogi[groupIndex].bounds (+0x130, stride
+// 0x20, box at +4 -- the shift and the lea in the disassembly say all three), which is the MOGI
+// record the root always carries, not CMapObjGroup::m_bounds at +0xb0, which is the BSP's own
+// copy. They describe the same group and are not guaranteed to be the same numbers.
+bool CMapObj::PointInGroupBox(const C3Vector& point, uint32_t groupIndex) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    // The reference reads the state without checking the slot, which is safe for it because the
+    // index always comes from a walk over the groups it already has. The null check costs a
+    // compare and matches what PointInGroupBounds beside it already does.
+    if (!group || !(group->m_state & 0x1)) {
+        return false;
+    }
+
+    return this->m_mogi[groupIndex].bounds.IsPointInside(point) != 0;
+}

@@ -205812,6 +205812,24 @@
 "refs": [],
 "line": 1212
 },
+"CMapObj::PointInGroupBox": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"CAaBox::IsPointInside"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1"
+],
+"branches": 2,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 1227
+},
 "CMapObj::SetInstanceTransform": {
 "files": [
 "src/world/map/cmapobjdraw.cpp"

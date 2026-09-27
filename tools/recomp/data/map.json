@@ -48184,6 +48184,22 @@
   "refSize": 76,
   "status": "ported"
  },
+ "007ae920": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::PointInGroupBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 69,
+  "status": "ported"
+ },
  "007ae970": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,

@@ -3014,6 +3014,7 @@ addr	how	frozen	evidence
 007ae7b0	annotated	CMapObj::GroupFlags	tag in src/world/map/CMapObj.cpp
 007ae840	annotated	CMapObj::SegmentVsBounds	tag in src/world/map/CMapObj.cpp
 007ae880	annotated	CMapObj::SegmentVsGroupBounds	tag in src/world/map/CMapObj.cpp
+007ae920	annotated	CMapObj::PointInGroupBox	tag in src/world/map/CMapObj.cpp
 007ae970	annotated	CMapObj::PointInGroupBounds	tag in src/world/map/CMapObj.cpp
 007aea80	annotated	CMapObj::GetGroup	tag in src/world/map/CMapObj.cpp
 007aeab0	annotated	CMapObj::WaitForGroup	tag in src/world/map/CMapObj.cpp

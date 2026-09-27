@@ -404,6 +404,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // group-state gates as SegmentVsGroupBounds. ref: FUN_007ae970
         bool PointInGroupBounds(const C3Vector& point, uint32_t groupIndex, float slack);
 
+        // The same test with no slack at all -- a separate function in the reference, sitting
+        // 0x50 bytes before the one above, so a separate one here. ref: FUN_007ae920
+        bool PointInGroupBox(const C3Vector& point, uint32_t groupIndex);
+
         // One group's own name, out of MOGN. Null until the group's file has arrived, same gates as
         // the bounds queries. ref: FUN_007aeae0
         const char* GroupName(uint32_t groupIndex);
