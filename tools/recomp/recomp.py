@@ -159,6 +159,26 @@ MODULE_RANGES = [
     # reason it was mis-filed. If a `Liquid.cpp` assert ever turns up elsewhere the two merge, which
     # is the right outcome.
     (0x008a1300, 0x008a65d0, 'Liquid.cpp'),
+
+    # The CHAT WINDOW bindings, 55 functions, which the render surface was counting as
+    # TextureCache.cpp. They are nowhere near it: TextureCache.cpp's anchor is at 0x004f2b40 and
+    # its own content ends by the CACHEENTRY RTTI at 0x004f3420, after which the bucket runs on
+    # through a long stretch of Player_C (its asserts name
+    # `WoW\\Source\\Object/ObjectClient/Player_C.h` at 0x004f7350 and seven more addresses) and
+    # then into this.
+    #
+    # The evidence here is about as plain as it gets: `Usage: GetChatWindowInfo(index)`,
+    # `Usage: SetChatWindowName(index, "name")`, `SetChatWindowColor`, `SetChatWindowAlpha`,
+    # `SetChatWindowLocked`, `SetChatWindowDocked` and half a dozen more Lua usage strings, plus
+    # BATTLEGROUND and SYSTEM channel names. The START is an object-file gap rather than a guess --
+    # 135 bytes of padding at 0x004fb619, the largest anywhere in the region -- and the END is the
+    # last function of the bucket.
+    #
+    # This one REMOVES 55 functions from the render-surface denominator rather than relabelling
+    # within it, because ChatFrame.cpp is not a render module and TextureCache.cpp is. The
+    # percentage goes UP slightly as a result, and that is the honest direction: they were never
+    # render surface and counting them made the remaining work look larger than it is.
+    (0x004fb6a0, 0x004fd260, 'ChatFrame.cpp'),
 ]
 
 # The next candidate, left out deliberately rather than forgotten: 0x008a65d0..0x008bfe80 is the DBC

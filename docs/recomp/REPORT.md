@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 16:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 16:25 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -16,15 +16,15 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | unmapped | 22238 | 4.36M |
 | world spine (reachable from OnFrameRender) | 5381, mapped 1618 (=) (30.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1641 (=) (29.1%) | |
-| **render surface** (the modules that draw the world) | **4882, mapped 1207 (=) (24.7%)** | |
-| of which the module is an anchor GUESS | 3159 (64.7%) | |
+| **render surface** (the modules that draw the world) | **4827, mapped 1202 (-5) (24.9%)** | |
+| of which the module is an anchor GUESS | 3104 (64.3%) | |
 | frozen functions (src/, from PDB + source) | 13978, stubs 1638 | |
 
 Match evidence: annotated 2436, callgraph 253, callorder 111, cvar 31, handler 29, order 143, override 361, sticky 19, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-27 16:19 -- mapped 4708, ported 4029, stub 573, spine mapped 1618.
+Previous run: 2026-09-27 16:20 -- mapped 4708, ported 4029, stub 573, spine mapped 1618.
 
 ## Lua API coverage (binding tables)
 
@@ -141,9 +141,9 @@ Module = the source file named by the reference's own assert strings near the fu
 | M2Scene.cpp | 277 | 99.5k | 193 (69.7%) | 72.0% | 4 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 17 (7.1%) | 9.2% | 0 | 0 | 1 |
 | GameUI.cpp | 487 | 95.7k | 231 (47.4%) | 47.7% | 78 | 0 | 70 |
+| ChatFrame.cpp | 399 | 87.5k | 102 (25.6%) | 18.3% | 35 | 2 | 38 |
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
-| ChatFrame.cpp | 344 | 81.0k | 97 (28.2%) | 18.5% | 34 | 2 | 33 |
 | lmemPool.cpp | 342 | 80.2k | 78 (22.8%) | 32.1% | 0 | 0 | 107 |
 | Map.cpp | 229 | 76.5k | 74 (32.3%) | 35.1% | 0 | 2 | 135 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
@@ -171,7 +171,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | framing.c | 123 | 38.6k | 37 (30.1%) | 53.6% | 0 | 0 | 37 |
 | DBCache.cpp | 235 | 38.6k | 48 (20.4%) | 12.3% | 0 | 0 | 82 |
 | TradeSkillFrame.cpp | 160 | 38.4k | 14 (8.8%) | 2.7% | 5 | 0 | 20 |
-| TextureCache.cpp | 250 | 38.4k | 44 (17.6%) | 16.8% | 2 | 0 | 77 |
 | GameObject_C.cpp | 285 | 38.0k | 19 (6.7%) | 3.9% | 0 | 0 | 59 |
 | GxuFontMiscClasses.cpp | 155 | 37.1k | 14 (9.0%) | 11.3% | 0 | 0 | 85 |
 | MapChunk.cpp | 126 | 36.5k | 67 (53.2%) | 61.2% | 0 | 1 | 82 |
@@ -180,6 +179,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | TextureBlob.cpp | 212 | 34.4k | 61 (28.8%) | 35.2% | 0 | 0 | 83 |
 | AchievementInfo.cpp | 178 | 33.6k | 69 (38.8%) | 32.7% | 55 | 0 | 0 |
 | Calendar.cpp | 108 | 32.1k | 19 (17.6%) | 16.7% | 18 | 0 | 0 |
+| TextureCache.cpp | 195 | 31.8k | 39 (20.0%) | 17.0% | 1 | 0 | 72 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | XMLTree.cpp | 183 | 31.0k | 88 (48.1%) | 52.6% | 5 | 0 | 30 |
 | MapChunkLiquid.cpp | 76 | 30.8k | 41 (53.9%) | 56.0% | 0 | 2 | 46 |
@@ -728,7 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-27 12:41 | 4673 (17.3%) | 2440 (9.1%) | 573 | 1608/5381 | 2924/2964 | 1380 |
 | 2026-09-27 12:49 | 4674 (17.3%) | 2441 (9.1%) | 573 | 1609/5381 | 2924/2964 | 1380 |
 | 2026-09-27 12:53 | 4676 (17.4%) | 2443 (9.1%) | 573 | 1609/5381 | 2924/2964 | 1380 |
 | 2026-09-27 13:02 | 4677 (17.4%) | 2443 (9.1%) | 573 | 1610/5381 | 2924/2964 | 1380 |
@@ -753,6 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 16:18 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:19 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:20 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
+| 2026-09-27 16:25 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

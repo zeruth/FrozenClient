@@ -15845,7 +15845,7 @@
   "frozen": "ChatTypeGetColor",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "TextureCache.cpp",
+  "module": "ChatFrame.cpp",
   "refSize": 66,
   "status": "ported"
  },
@@ -15861,7 +15861,7 @@
   "frozen": "Script_GetChatWindowInfo",
   "frozenSize": 276,
   "how": "string",
-  "module": "TextureCache.cpp",
+  "module": "ChatFrame.cpp",
   "refSize": 461,
   "status": "ported"
  },
@@ -15876,7 +15876,7 @@
   "frozen": "Script_Stub_AddChatWindowMessages",
   "frozenSize": 60,
   "how": "order",
-  "module": "TextureCache.cpp",
+  "module": "ChatFrame.cpp",
   "refSize": 217,
   "status": "stub"
  },
@@ -15892,7 +15892,7 @@
   "frozen": "Script_SetChatWindowDocked",
   "frozenSize": 155,
   "how": "annotated",
-  "module": "TextureCache.cpp",
+  "module": "ChatFrame.cpp",
   "refSize": 167,
   "status": "ported"
  },
@@ -15908,7 +15908,7 @@
   "frozen": "Script_SetChatWindowSavedDimensions",
   "frozenSize": 225,
   "how": "annotated",
-  "module": "TextureCache.cpp",
+  "module": "ChatFrame.cpp",
   "refSize": 171,
   "status": "ported"
  },
