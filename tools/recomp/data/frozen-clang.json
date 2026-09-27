@@ -65731,7 +65731,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 17
+"line": 18
 },
 "CBLPFile::Close": {
 "files": [
@@ -65750,7 +65750,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 30
+"line": 31
 },
 "CBLPFile::DecompPalARGB8888Alpha8": {
 "files": [
@@ -65768,7 +65768,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 42
+"line": 43
 },
 "CBLPFile::DecompPalARGB1555DitherFS": {
 "files": [
@@ -65803,7 +65803,42 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 53
+"line": 54
+},
+"CBLPFile::DecompPalARGB4444DitherFS": {
+"files": [
+"src/gx/blp/cblpfile.cpp"
+],
+"callseq": [
+"memset"
+],
+"strings": [],
+"consts": [
+"0",
+"0x10000",
+"0x80000",
+"0xC06",
+"0xF",
+"0xF0",
+"0xF000",
+"0xFF",
+"0xFFF00000",
+"1",
+"12",
+"2",
+"20",
+"3",
+"4",
+"5",
+"6",
+"7",
+"8"
+],
+"branches": 17,
+"stub": false,
+"lines": 120,
+"refs": [],
+"line": 184
 },
 "CBLPFile::DecompPalRGB565DitherFS": {
 "files": [
@@ -65837,7 +65872,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 173
+"line": 306
 },
 "CBLPFile::GetMipPixelCount": {
 "files": [
@@ -65854,7 +65889,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 252
+"line": 385
 },
 "CBLPFile::GetMipSize": {
 "files": [
@@ -65873,7 +65908,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 270
+"line": 403
 },
 "CBLPFile::Lock2": {
 "files": [
@@ -65881,6 +65916,7 @@
 ],
 "callseq": [
 "CBLPFile::DecompPalARGB1555DitherFS",
+"CBLPFile::DecompPalARGB4444DitherFS",
 "CBLPFile::DecompPalRGB565DitherFS",
 "memcpy",
 "memcpy"
@@ -65899,11 +65935,11 @@
 "7",
 "8"
 ],
-"branches": 23,
+"branches": 24,
 "stub": false,
-"lines": 135,
+"lines": 142,
 "refs": [],
-"line": 315
+"line": 448
 },
 "CBLPFile::LockChain2": {
 "files": [
@@ -65926,7 +65962,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 451
+"line": 591
 },
 "CBLPFile::Open": {
 "files": [
@@ -65955,7 +65991,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 521
+"line": 661
 },
 "CBLPFile::Source": {
 "files": [
@@ -65979,7 +66015,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 569
+"line": 709
 },
 "CBLPFile::Unlock": {
 "files": [
@@ -66000,7 +66036,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 596
+"line": 736
 },
 "GxVertexAttribOffset": {
 "files": [

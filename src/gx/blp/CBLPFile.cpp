@@ -11,6 +11,7 @@ TSGrowableArray<unsigned char> CBLPFile::s_blpFileLoadBuffer;
 // three channels, alternating between the current and the next row.
 static int32_t s_ditherErrors1555[2 * 0xC06];  // ref: DAT_00c67580
 static int32_t s_ditherErrors565[2 * 0xC06];   // ref: DAT_00c6d5b0
+static int32_t s_ditherErrors4444[2 * 0xC06];  // ref: DAT_00c61550
 
 // ref: FUN_004b58d0
 // An empty BLP2 header: version 1, preferred format 2, bit 4 of the mip byte clear.
@@ -164,6 +165,138 @@ void CBLPFile::DecompPalARGB1555DitherFS(uint16_t* out, const unsigned char* in,
             unsigned char a = *in;
             in++;
             *out |= static_cast<uint16_t>((a & 0x80) << 8);
+            out++;
+        }
+    }
+}
+
+// ref: FUN_006aeba0
+// The palette-to-ARGB4444 conversion, dithered. Structurally the same pass as the 1555 one
+// above -- same Floyd-Steinberg 7/5/3 weights, same two alternating error rows, same 16.16
+// fixed-point accumulation -- with three differences, all of them just the narrower channel:
+// the rounding term is 0x80000 rather than 0x40000, the quantised value comes out at >> 20
+// rather than >> 19, and the residual is taken against 0xFFF00000 rather than 0xFFF80000.
+//
+// The alpha pass afterwards is the part that is NOT shared, because 4444 has a whole nibble of
+// alpha where 1555 has one bit. A 1-bit plane expands to 0xF or 0x0, a 4-bit plane goes in as it
+// is, and an 8-bit plane keeps only its TOP nibble -- the reference discards the low four bits
+// rather than rounding them.
+void CBLPFile::DecompPalARGB4444DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height) {
+    const BlpPalPixel* palette = this->m_header.extended.palette;
+    uint16_t* row = out;
+
+    memset(s_ditherErrors4444, 0, (width * 3 + 6) * 4);
+
+    for (uint32_t y = 0; y < height; y++) {
+        int32_t* next = &s_ditherErrors4444[((y - 1) & 1) * 0xC06];
+
+        next[2] = 0;
+        next[1] = 0;
+        next[0] = 0;
+        next[5] = 0;
+        next[4] = 0;
+        next[3] = 0;
+
+        int32_t* below = next + 1;
+        int32_t* cur = &s_ditherErrors4444[(y & 1) * 0xC06 + 6];
+
+        for (uint32_t x = 0; x < width; x++) {
+            const BlpPalPixel& color = palette[in[x]];
+
+            int32_t r = color.r * 0x10000 + (cur[-3] >> 4);
+            int32_t g = color.g * 0x10000 + (cur[-2] >> 4);
+            int32_t b = color.b * 0x10000 + (cur[-1] >> 4);
+
+            uint32_t br = static_cast<uint32_t>(b) + 0x80000;
+            uint32_t gr = static_cast<uint32_t>(g) + 0x80000;
+            uint32_t rr = static_cast<uint32_t>(r) + 0x80000;
+
+            int32_t r4 = static_cast<int32_t>(rr) >> 20;
+            int32_t g4 = static_cast<int32_t>(gr) >> 20;
+            int32_t b4 = static_cast<int32_t>(br) >> 20;
+
+            if (r4 < 0) {
+                r4 = 0;
+            } else if (r4 > 0xF) {
+                r4 = 0xF;
+            }
+
+            if (g4 < 0) {
+                g4 = 0;
+            } else if (g4 > 0xF) {
+                g4 = 0xF;
+            }
+
+            if (b4 < 0) {
+                b4 = 0;
+            } else if (b4 > 0xF) {
+                b4 = 0xF;
+            }
+
+            r = static_cast<int32_t>(static_cast<uint32_t>(r) - (rr & 0xFFF00000));
+            row[x] = static_cast<uint16_t>(((r4 << 4 | g4) << 4) | b4);
+            g = static_cast<int32_t>(static_cast<uint32_t>(g) - (gr & 0xFFF00000));
+            b = static_cast<int32_t>(static_cast<uint32_t>(b) - (br & 0xFFF00000));
+
+            cur[0] += r * 7;
+            cur[1] += g * 7;
+            cur[2] += b * 7;
+            below[-1] += r * 5;
+            below[0] += g * 5;
+            below[1] += b * 5;
+            below[2] += r * 3;
+            below[3] += g * 3;
+            below[4] += b * 3;
+            below[6] = g;
+            below[7] = b;
+            below[5] = r;
+
+            cur += 3;
+            below += 3;
+        }
+
+        in += width;
+        row += width;
+    }
+
+    char alphaSize = this->m_header.alphaSize;
+    uint32_t count = width * height;
+
+    if (alphaSize == 1) {
+        // LSB-first within each byte, and a set bit means opaque -- the same polarity the ARGB8888
+        // path uses, here widened to the whole nibble.
+        uint32_t bit = 1;
+
+        for (; count != 0; count--) {
+            if (*in & bit) {
+                *out |= 0xF000;
+            }
+
+            bit *= 2;
+            out++;
+
+            if (bit > 0xFF) {
+                bit = 1;
+                in++;
+            }
+        }
+    } else if (alphaSize == 4) {
+        // Two texels per byte, low nibble first.
+        for (uint32_t i = 0; i < count; i++) {
+            if ((i & 1) == 0) {
+                *out |= static_cast<uint16_t>(*in << 12);
+            } else {
+                *out |= static_cast<uint16_t>((*in & 0xF0) << 8);
+                in++;
+            }
+
+            out++;
+        }
+    } else if (alphaSize == 8) {
+        for (; count != 0; count--) {
+            unsigned char a = *in;
+            in++;
+            *out |= static_cast<uint16_t>((a & 0xF0) << 8);
             out++;
         }
     }
@@ -351,6 +484,12 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
 
                     return 1;
 
+                case PIXEL_ARGB4444:
+                    this->DecompPalARGB4444DitherFS(
+                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+                    return 1;
+
                 case PIXEL_RGB565:
                     this->DecompPalRGB565DitherFS(
                         reinterpret_cast<uint16_t*>(data), mipData, width, height);
@@ -362,10 +501,11 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                     break;
 
                 default:
-                    // STILL MISSING, and now named rather than lumped in with "16 bit":
-                    // ARGB4444 goes through FUN_006aeba0 and ARGB2565 through FUN_006af340,
-                    // the reference's other two palette decoders. Neither is ported, so those
-                    // two formats keep answering 0 -- which is what the caller already handles.
+                    // One palette decoder left: ARGB2565, the reference's FUN_006af340. It is the
+                    // odd one out -- 2565 carries its alpha in a SEPARATE plane after the colour
+                    // data (GetMipSize allots `alphaBytes + pixels * 2` for it, where every other
+                    // 16-bit format gets `pixels * 2`), so it is not a variation on the three
+                    // above. Until it is ported this format answers 0, which the caller handles.
                     return 0;
             }
 
