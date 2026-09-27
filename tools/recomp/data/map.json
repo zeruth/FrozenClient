@@ -11602,6 +11602,22 @@
   "refSize": 274,
   "status": "ported"
  },
+ "004c5990": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/sound/SoundKitProperties.cpp",
+   "src/sound/soundkitproperties.cpp"
+  ],
+  "frozen": "SoundKitProperties::ResetToDefaults",
+  "frozenSize": 150,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
  "004c5a60": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -11702,7 +11718,7 @@
   "branchRatio": 0.324,
   "constOverlap": 0.17,
   "faithful": false,
-  "fidelity": 0.255,
+  "fidelity": 0.277,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
@@ -11718,13 +11734,13 @@
   "branchRatio": 0.25,
   "constOverlap": 0.143,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 1.0,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::PlayUISound",
-  "frozenSize": 582,
+  "frozenSize": 598,
   "how": "string",
   "module": "TextureBlob.cpp",
   "refSize": 179,
@@ -11757,7 +11773,7 @@
   ],
   "frozen": "SI2::GetSoundKitID",
   "frozenSize": 37,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "SoundInterface2Internal.cpp",
   "refSize": 30,
   "status": "ported"
@@ -59272,15 +59288,15 @@
   "status": "ported"
  },
  "0084e3d0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "vendor/lua-5.1.3/src/lauxlib.c"
+   "vendor/lua-5.1.3/src/lapi.c"
   ],
-  "frozen": "tag_error",
-  "frozenSize": 100,
+  "frozen": "lua_pushfstring",
+  "frozenSize": 66,
   "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 47,
@@ -59709,8 +59725,8 @@
  "0084f210": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -59919,8 +59935,8 @@
  "0084f960": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -59949,8 +59965,8 @@
  "0084f9f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -59979,8 +59995,8 @@
  "0084fab0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.429,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -59994,8 +60010,8 @@
  "0084fb60": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.429,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -60040,7 +60056,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lauxlib.c"
   ],
@@ -61542,7 +61558,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.923,
+  "fidelity": 1.0,
   "files": [
    "vendor/lua-5.1.3/src/lbaselib.c"
   ],
@@ -72836,14 +72852,14 @@
  "00985fb0": {
   "branchRatio": 0.6,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::StartGlueAmbience",
-  "frozenSize": 483,
+  "frozenSize": 489,
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 204,
@@ -72884,14 +72900,14 @@
  "009861c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::StartGlueMusic",
-  "frozenSize": 502,
+  "frozenSize": 516,
   "how": "callgraph",
   "module": "cmemblock.cpp",
   "refSize": 254,
@@ -72901,13 +72917,13 @@
   "branchRatio": 1.0,
   "constOverlap": 0.167,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/sound/SI2.cpp",
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::StartCreditsMusic",
-  "frozenSize": 434,
+  "frozenSize": 441,
   "how": "callgraph",
   "module": "cmemblock.cpp",
   "refSize": 207,

@@ -723,6 +723,7 @@ addr	how	frozen	evidence
 004c5340	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5550	annotated	C33Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5820	annotated	C33Matrix::RotationAroundAxis	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c5990	annotated	SoundKitProperties::ResetToDefaults	tag in src/sound/SoundKitProperties.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
 004c5ab0	annotated	SI2::GetNumOutputDrivers	tag in src/sound/SI2.cpp
@@ -732,7 +733,7 @@ addr	how	frozen	evidence
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004cc180	annotated	SI2::GetSoundKitDef	tag in src/sound/SI2.cpp
-004ccaa0	callorder	SI2::GetSoundKitID	same slot between linked calls in 009858b0=Script_PlaySound, 00985fb0=SI2::StartGlueAmbience, 009861c0=SI2::StartGlueMusic
+004ccaa0	callgraph	SI2::GetSoundKitID	only unmatched callee of 004c8fc0=SI2::PlayUISound
 004cfbb0	annotated	DbUnpackRecord	tag in src/db/Db.cpp
 004cfd20	sticky	WowClientDB<SpellRec>::GetRecord	held from the previous run, where it was sticky
 004cfd90	callgraph	CCharacterComponent::GetSectionsRecord	only unmatched callee of 004ed900=CCharacterComponent::GeosRenderPrep
@@ -3717,7 +3718,7 @@ addr	how	frozen	evidence
 0084e300	callgraph	lua_pushlstring	only unmatched callee of 0084e350=lua_pushstring, 00853340=push_onecapture
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e06f0=Script_GetFactionForRace, 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
-0084e3d0	callgraph	tag_error	only unmatched callee of 0084f9f0=luaL_checklstring, 0084fb60=luaL_checkinteger
+0084e3d0	callgraph	lua_pushfstring	only unmatched callee of 009858b0=Script_PlaySound
 0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
 0084e4d0	override	lua_pushboolean	
 0084e500	callorder	lua_pushlightuserdata	same slot between linked calls in 00819880=FrameScript_Object::RegisterScriptObject

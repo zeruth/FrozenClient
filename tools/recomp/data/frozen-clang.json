@@ -106115,14 +106115,17 @@
 "strings": [],
 "consts": [
 "0",
-"0.0f",
-"1"
+"0.5f",
+"1",
+"1.0f",
+"2",
+"360.0f"
 ],
 "branches": 0,
 "stub": false,
-"lines": 30,
+"lines": 31,
 "refs": [],
-"line": 4
+"line": 17
 },
 "AddOnGetNumAddOns": {
 "files": [
