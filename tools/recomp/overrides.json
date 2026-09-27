@@ -3329,5 +3329,9 @@
   "0079d5e0": {
     "status": "unlinked",
     "note": "REJECTED automatic match, and the reason it happened is worth keeping. The callgraph matcher bound this to frozen's Liquid::Draw, scoring 0% call order against 2552 reference bytes when the real Liquid::Draw is 313 -- the giveaway that it was wrong. The collision is over the short name Draw: the reference's own symbol for THIS function is \"Liquid::Draw\" and for the queue drain is plain \"Draw\", which is the opposite way round from frozen's naming, where the queue drain is Liquid::Draw and is correctly hand-tagged on 008a2240.  What 0079d5e0 actually is: the POST-LIQUID DECAL PASS. CWorldScene::DrawLiquidPass (FUN_00790a80) calls SetupFogRenderStates, then the queue drain, then this. It walks an offset-linked list off the global at 0x00adfb60, and its callees say the rest -- DecalBuildTransforms, C44Matrix::RotationAroundZ, TextureGetGxTex, then BufStream, GxPrimVertexPtr and PrimIndexPtr to build and draw a rotated quad per decal.  Nothing in frozen stands in for it, and frozen's own TODO in CWorldScene::DrawLiquidPass already names this address. Porting it needs the decal record layout behind 0x00adfb60 worked out first, which is the one thing not yet read."
+  },
+  "007a8800": {
+    "status": "unlinked",
+    "note": "REJECTED proposal, recorded so it is not adopted later. --propose ranks frozen's Liquid::Draw as this address's best candidate and marks it clearly ahead of the runner-up, which is the SAME short-name collision that had put 0079d5e0 on Liquid::Draw -- see the note there. It is not this either: Liquid::Draw is 313 reference bytes and is correctly hand-tagged on 008a2240. What 007a8800 does is set up fixed-function lights (CGxDevice::LightSet and LightEnable), which makes it a sibling of 00834b50 rather than anything in the liquid stack. Two proposals for one already-tagged name is the signal to check the tag, not to take the proposal."
   }
 }

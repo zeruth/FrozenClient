@@ -36,6 +36,16 @@ uint8_t* CM2Model::s_sequenceBase;
 uint32_t CM2Model::s_sequenceBaseSize;
 uint32_t CM2Model::s_skinProfileBoneCountMax[] = { 256, 64, 53, 21 };
 
+// ref: FUN_0081cd70
+// One model out of an ObjectAlloc heap, constructed in place. Pins m_memHandle at +0x2e8, which
+// is where frozen already had it.
+//
+// The reference guards the constructor call on the allocation having produced a pointer, which
+// is redundant inside a branch ObjectAlloc already reported success from; the placement new here
+// is unconditional for that reason.
+//
+// This became findable only once CM2Model's constructor was moved out of line -- the matcher had
+// nothing to key on while it was inlined into every creation site.
 CM2Model* CM2Model::AllocModel(uint32_t* heapId) {
     uint32_t memHandle;
     void* mem = nullptr;
