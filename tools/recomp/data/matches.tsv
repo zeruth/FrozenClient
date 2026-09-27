@@ -3514,6 +3514,7 @@ addr	how	frozen	evidence
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
+0081ca80	annotated	M2ParticleMaterialClass	tag in src/model/CM2Scene.cpp
 0081cac0	annotated	CM2Scene::BeginRayQuery	tag in src/model/CM2Scene.cpp
 0081cad0	annotated	CM2Scene::ReserveRayCandidates	tag in src/model/CM2Scene.cpp
 0081cc30	annotated	CM2Scene::SetProjectionCallback	tag in src/model/CM2Scene.cpp
@@ -3528,6 +3529,7 @@ addr	how	frozen	evidence
 0081ead0	override	CM2Scene::SortOpaqueGeoBatches	
 0081eea0	override	CM2Scene::SortOpaque	
 0081ef30	override	CM2Scene::SortTransparent	
+0081f0e0	annotated	CM2Scene::SortTransparentGrouped	tag in src/model/CM2Scene.cpp
 0081f1d0	annotated	CM2Scene::ComputeElementShaders	tag in src/model/CM2Scene.cpp
 0081f330	annotated	CM2SceneRender::CM2SceneRender	tag in src/model/cm2scenerender.hpp
 0081f450	override	CM2SceneRender::SetupTextures	

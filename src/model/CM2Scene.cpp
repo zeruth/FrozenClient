@@ -276,6 +276,124 @@ static bool M2BlendIsAdditive(uint32_t blendIndex) {
     return gxBlend == GxBlend_Add || gxBlend == GxBlend_NoAlphaAdd;
 }
 
+// ref: FUN_0081ca80
+// An ordering class for a particle emitter's material, built from the three low flag bits. Each
+// bit contributes only when it is CLEAR, which is why the result reads inverted: the base is 5
+// unless bit 0 is set, and bits 1 and 2 add 2 and 0x10 by being absent.
+//
+// It is called on the emitter's MATERIAL rather than on the emitter: the reference reads its
+// argument's +4, and the call site hands it the {blend, flags} pair at emitter +0xd0, so the
+// field it lands on is m_materialFlags at +0xd4. That pairing is what identifies the argument --
+// the comparator has just finished reading +0xd0 one line above.
+//
+// What the three bits MEAN is not established here and is not guessed at; the function only has
+// to be a stable key, and it is reproduced exactly so that two emitters compare the way the
+// reference compares them.
+static uint32_t M2ParticleMaterialClass(uint32_t materialFlags) {
+    uint32_t key = 4;
+
+    if (!(materialFlags & 1)) {
+        key = 5;
+    }
+
+    if (!(materialFlags & 2)) {
+        key |= 2;
+    }
+
+    if (!(materialFlags & 4)) {
+        key |= 0x10;
+    }
+
+    return key;
+}
+
+// ref: FUN_0081f0e0
+// The comparator the reference sorts its two TRANSPARENT element lists with, and the reason
+// KeyAndSortElementList below numbers additive runs at all: the run number is this one's FIRST
+// key, so a run that shares a number stays contiguous no matter what the finer keys say.
+//
+// With the runs equal it splits three ways. A particle sorts ahead of anything that is not one.
+// Two non-particles fall through to SortTransparent, which is the whole of the ordering they had
+// before this landed. Two particles get a tail of their own: their emitters' blend mode, then the
+// material class above, then the texture -- each one only breaking a tie in the one before it.
+//
+// DIVERGED at the last key, and unavoidably. The reference ends on FUN_0047bf20, which is
+// `(a - b) >> 2` over the two emitters' +0x128 -- a pointer difference shifted into an index,
+// which is a stable total order over 32-bit handles. frozen's HTEXTURE is 64 bits, so that shift
+// would discard the high half and order handles wrongly. Comparing the handles directly gives the
+// same thing the reference was after: a deterministic order on texture, so particles sharing one
+// draw together.
+int32_t CM2Scene::SortTransparentGrouped(uint32_t a, uint32_t b, const void* userArg) {
+    auto scene = static_cast<const CM2Scene*>(userArg);
+    auto elements = scene->m_elements.Ptr();
+
+    auto elementA = const_cast<M2Element*>(&elements[a]);
+    auto elementB = const_cast<M2Element*>(&elements[b]);
+
+    if (elementB->additiveRun < elementA->additiveRun) {
+        return 1;
+    }
+
+    if (elementB->additiveRun > elementA->additiveRun) {
+        return -1;
+    }
+
+    // A particle ahead of anything that is not one. The test runs only when at least one of the
+    // two IS a particle, so it cannot reorder two ordinary elements.
+    if (elementA->type == 4 || elementB->type == 4) {
+        if (elementB->type < elementA->type) {
+            return -1;
+        }
+
+        if (elementA->type < elementB->type) {
+            return 1;
+        }
+    }
+
+    if (elementA->type != 4) {
+        return CM2Scene::SortTransparent(a, b, userArg);
+    }
+
+    // Both are particles.
+    CM2ParticleEmitter* emitterA = elementA->emitter;
+    CM2ParticleEmitter* emitterB = elementB->emitter;
+
+    // FROZEN-ONLY: the reference dereferences both emitters here without checking. A particle
+    // element with no emitter should not exist, and if one ever does this keeps the sort total
+    // instead of faulting inside a comparator, where the stack says nothing useful.
+    if (!emitterA || !emitterB) {
+        return 0;
+    }
+
+    if (emitterA->m_blendMode < emitterB->m_blendMode) {
+        return -1;
+    }
+
+    if (emitterA->m_blendMode > emitterB->m_blendMode) {
+        return 1;
+    }
+
+    uint32_t classA = M2ParticleMaterialClass(emitterA->m_materialFlags);
+    uint32_t classB = M2ParticleMaterialClass(emitterB->m_materialFlags);
+
+    if (classA < classB) {
+        return -1;
+    }
+
+    if (classA > classB) {
+        return 1;
+    }
+
+    if (emitterA->m_texture < emitterB->m_texture) {
+        return -1;
+    }
+
+    if (emitterA->m_texture > emitterB->m_texture) {
+        return 1;
+    }
+
+    return 0;
+}
 // ref: FUN_0081f9e0
 // Give every element of one list its additive-run number, then sort the list.
 //
@@ -345,7 +463,7 @@ void CM2Scene::KeyAndSortElementList(uint32_t listIndex) {
         element.additiveRun = run;
     }
 
-    M2HeapSort(CM2Scene::SortTransparent, list.Ptr(), count, this);
+    M2HeapSort(CM2Scene::SortTransparentGrouped, list.Ptr(), count, this);
 }
 int32_t CM2Scene::SortTransparent(uint32_t a, uint32_t b, const void* userArg) {
     auto elements = static_cast<const CM2Scene*>(userArg)->m_elements.Ptr();
@@ -1046,10 +1164,9 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     // before sorting. The opaque list above does not -- the reference keys only these two, and
     // grouping additive runs means nothing in a list that has none.
     //
-    // STILL TO COME: the reference sorts these with FUN_0081f0e0, which takes the run number as
-    // its FIRST key and only then falls through to SortTransparent, with a particle-specific tail
-    // of its own. Until that lands the run numbers are computed and not yet read, so this pass is
-    // inert by design rather than by accident.
+    // The run numbers ARE read now: KeyAndSortElementList sorts with SortTransparentGrouped
+    // (FUN_0081f0e0), which takes the run number as its first key. This pass stopped being inert
+    // when that landed.
     this->KeyAndSortElementList(1);
     this->KeyAndSortElementList(2);
 
