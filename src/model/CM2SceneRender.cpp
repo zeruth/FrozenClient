@@ -353,12 +353,15 @@ void CM2SceneRender::DrawBatch() {
 // now CM2Model.cpp's M2GetPackBatchVerticesFn -- see the table there. Both packers are ported and
 // were checked numerically on 2026-09-26.
 //
-// LEFT: FUN_008362b0 and FUN_00836df0, neither linked yet, plus the three scene render fields
-// above and IsBatchDoodadCompatible's one unmapped field.
+// LEFT: the three scene render fields above, and IsBatchDoodadCompatible's one unmapped field.
 //
-// Both of those are CM2Shared methods, not scene render ones -- they read +0x150 as m_data, which
-// is the offset IsBatchDoodadCompatible's own expression proves. Decoded 2026-09-26 so the port
-// does not have to start cold:
+// The buffer side is DONE as of 2026-09-26. FUN_008362b0, FUN_00836df0 and FUN_008368b0 are all
+// CM2Shared methods, not scene render ones -- they read +0x150 as m_data, the offset
+// IsBatchDoodadCompatible's own expression proves -- and they are now CM2Shared::SetVertices,
+// ReserveInstances and ReleaseGeometryBuffers. Two things that looked like blockers were not:
+// SetVertices was already ported and merely untagged, and every field the trio needs already
+// existed on CM2Shared at the right offsets. The decode is kept below because it is what the
+// remaining scene-render half has to line up against:
 //
 //   FUN_008362b0, 796 bytes, 6 callers. Builds ONE shared static vertex buffer holding every
 //   instance's copy of the mesh, created on first use (guarded on +0x180 being null): PoolCreate
@@ -387,9 +390,15 @@ void CM2SceneRender::DrawBatch() {
 //   ceiling, stored, and FUN_008368b0 reallocates. It returns what it could manage, which is why
 //   DrawBatchDoodad draws in chunks rather than assuming it got what it asked for.
 //
-// Porting those needs six CM2Shared fields frozen does not have yet (+0x140, +0x170, +0x180,
-// +0x184, +0x190, +0x194) and FUN_008368b0 on top, so it is its own change -- and per the rule in
-// CM2Model::IsBatchDoodadCompatible, still not one that may enable either stub alone.
+// Both of those are ported now, along with FUN_008368b0, the release that the grow depends on --
+// growing the capacity drops the buffers so the next fill rebuilds them larger. ReserveInstances
+// is still UNREACHABLE: its only callers are this function and FUN_00829ba0, so nothing raises the
+// instance capacity above 1 until one of them lands.
+//
+// What remains for this stub is therefore the scene-render half alone: the three cached fields
+// (+0x88 the M2Batch, +0x90 the M2SkinSection, +0x98 the bone lookup base) and the two draw arms.
+// Per the rule in CM2Model::IsBatchDoodadCompatible, that still may not be landed in a change
+// that enables either stub alone.
 void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
     // TODO -- see the decode above; the per-vertex packers it needs are ported already
 }
