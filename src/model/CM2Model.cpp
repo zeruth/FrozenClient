@@ -3437,9 +3437,13 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 9: {
-                // FUN_008272f0(args[0], &args[1]) -- 224 bytes, 6 callers, and it takes a POINTER
-                // into the argument block rather than a value, which is why the call site passes
-                // &args[1]. Needs SequenceBufferAlloc, which is linked.
+                // The matrix was copied into args[1..16] when this was queued, so it is read back
+                // out of the block in place rather than from a pointer the caller still owns.
+                this->SetBoneMatrix(
+                    modelCall->args[0],
+                    *reinterpret_cast<const C44Matrix*>(&modelCall->args[1])
+                );
+
                 break;
             }
 
@@ -5814,6 +5818,75 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_008272f0
+// Hand one bone a matrix from outside the animation system.
+//
+// THIS IS THE CALL THAT NEEDS THE WIDE ARGUMENT BLOCK. Deferring it copies the whole matrix into
+// the model call -- sixteen dwords into args[1] through args[16] -- so a CM2ModelCall with the
+// eight slots frozen used to declare would have been written nine dwords past its end. The block
+// was widened to seventeen a few cycles ago from the reference's fixed 0x50 allocation, on the
+// reasoning that some case must need them; this is that case.
+//
+// The storage is allocated ONCE per bone, on first use, out of the sequence buffer rather than the
+// general heap -- and every later call overwrites it in place. So a caller driving a bone every
+// frame allocates nothing after the first.
+//
+// The bone id is a lookup id, resolved the same way SetBoneSequenceTime resolves it: 0xFFFFFFFF
+// means bone 0, an id past the end of boneIndicesById yields 0xFFFF, and that then fails the
+// bones.Count() test and does nothing.
+void CM2Model::SetBoneMatrix(uint32_t boneId, const C44Matrix& matrix) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 9;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = boneId;
+
+        memcpy(&modelCall->args[1], &matrix, sizeof(C44Matrix));
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    M2Data* data = this->m_shared->m_data;
+
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        return;
+    }
+
+    M2ModelBone& bone = this->m_bones[boneIndex];
+
+    if (!bone.matrix88) {
+        // DIVERGENCE, and the same one InitializeLoaded already takes a few hundred lines up: the
+        // reference allocates this through SequenceBufferAlloc and frozen calls SMemAlloc. That
+        // allocator is a 16-byte-ALIGNING wrapper, and it lives in an anonymous namespace in
+        // CM2Shared.cpp, so it has internal linkage and is not reachable from here. Prising it out
+        // for one caller is more churn than the difference is worth, because frozen's C44Matrix
+        // arithmetic is all scalar -- nothing here requires the alignment the wrapper exists to
+        // provide. If SSE matrix paths ever land, this is one of the places to revisit.
+        bone.matrix88 = static_cast<C44Matrix*>(
+            SMemAlloc(sizeof(C44Matrix), __FILE__, __LINE__, 0));
+
+        if (!bone.matrix88) {
+            return;
+        }
+    }
+
+    *bone.matrix88 = matrix;
+}
 // ref: FUN_0082c8a0
 // Show or hide a run of skin sections, selected BY INDEX.
 //

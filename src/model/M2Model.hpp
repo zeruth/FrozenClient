@@ -63,6 +63,18 @@ struct M2ModelBone {
     M2ModelTrack<C3Vector> scaleTrack;
     M2ModelBoneSeq sequence;
     M2ModelBoneSeq secondarySequence;
+
+    // +0x88: an externally supplied matrix for this bone, or null. CM2Model::SetBoneMatrix
+    // allocates it out of the sequence buffer on first use -- 0x40 bytes, a C44Matrix -- and
+    // overwrites it on every later call, so the storage is allocated once per bone and reused.
+    //
+    // ADDED 2026-09-27, and its absence had pushed `flags` one slot early. The reference's
+    // SetBoneFlags (FUN_008265e0) writes bone + 0x8c, and the two M2ModelBoneSeq before it end at
+    // 0x88 -- so 0x88 was a field nothing here had, and flags was sitting in it. Nothing was broken
+    // by that, because every access here is by NAME, but a port transcribing bone offsets would
+    // have hit it.
+    C44Matrix* matrix88 = nullptr;
+
     uint32_t flags = 0;
     uint32_t uint90 = -1;
     uint16_t uint94 = 0;

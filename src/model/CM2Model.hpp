@@ -523,6 +523,10 @@ class CM2Model {
         // sibling SetGeometryVisible selects by skinSectionId instead -- see the note at the
         // definition. Deferred as model call 2 when the model has not loaded.
         void SetGeometryVisibleByIndex(uint32_t first, uint32_t last, int32_t visible);
+
+        // Give one bone an externally supplied matrix. Deferred as model call 9 when the model has
+        // not loaded -- and that call is the reason CM2ModelCall needs seventeen argument slots.
+        void SetBoneMatrix(uint32_t boneId, const C44Matrix& matrix);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };
