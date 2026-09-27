@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 16:14 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 16:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -24,7 +24,7 @@ Match evidence: annotated 2436, callgraph 253, callorder 111, cvar 31, handler 2
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-27 16:04 -- mapped 4708, ported 4029, stub 573, spine mapped 1618.
+Previous run: 2026-09-27 16:19 -- mapped 4708, ported 4029, stub 573, spine mapped 1618.
 
 ## Lua API coverage (binding tables)
 
@@ -728,9 +728,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-27 12:01 | 4671 (17.3%) | 2438 (9.0%) | 573 | 1606/5381 | 2924/2964 | 1380 |
-| 2026-09-27 12:25 | 4671 (17.3%) | 2438 (9.0%) | 573 | 1606/5381 | 2924/2964 | 1380 |
-| 2026-09-27 12:28 | 4672 (17.3%) | 2439 (9.1%) | 573 | 1607/5381 | 2924/2964 | 1380 |
 | 2026-09-27 12:41 | 4673 (17.3%) | 2440 (9.1%) | 573 | 1608/5381 | 2924/2964 | 1380 |
 | 2026-09-27 12:49 | 4674 (17.3%) | 2441 (9.1%) | 573 | 1609/5381 | 2924/2964 | 1380 |
 | 2026-09-27 12:53 | 4676 (17.4%) | 2443 (9.1%) | 573 | 1609/5381 | 2924/2964 | 1380 |
@@ -753,6 +750,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 16:02 | 4707 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:04 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 | 2026-09-27 16:14 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
+| 2026-09-27 16:18 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
+| 2026-09-27 16:19 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
+| 2026-09-27 16:20 | 4708 (17.5%) | 2457 (9.1%) | 573 | 1618/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 

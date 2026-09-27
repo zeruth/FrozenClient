@@ -300,6 +300,17 @@ void ReloadAllLiquidTextures() {
 // Same two inert arms as UpdateProceduralTextures, for the same reason and with the same evidence:
 // the reference also re-registers the thirty-two handles at 0x00d43b50 and the one at 0x00d43b4c,
 // and nothing in the binary ever puts a handle in either.
+// DO NOT WIRE THIS INTO ProceduralLiquidTexture, however much the reference looks like it says to.
+// The reference calls it from the tail of FUN_008a2e20, which CREATES the three textures eagerly at
+// liquid-initialise time (from FUN_0079e3c0); at that moment reloading every settings record is
+// safe. frozen merged creation and by-name lookup into one lazily-guarded function -- the
+// divergence recorded at ProceduralLiquidTexture -- and that function is called from INSIDE
+// CMaterialSettings::LoadTextures. Adding the call there closes a loop:
+//
+//     LoadTextures -> ProceduralLiquidTexture -> RestoreLiquidTextures
+//                  -> ReloadAllLiquidTextures -> LoadTextures
+//
+// Its real home is a device-reset path, which frozen does not have yet.
 void RestoreLiquidTextures() {
     for (uint32_t i = 0; i < 3; i++) {
         if (!s_proceduralTextures[i]) {

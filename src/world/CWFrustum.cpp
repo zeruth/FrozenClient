@@ -8,7 +8,6 @@
 // reference keeps this as a WorldScene.cpp file static at 0x00adf6a8.
 static STORM_EXPLICIT_LIST(CWFrustum, link) s_freeFrustums;
 
-// ref: FUN_007983b0
 // ref: FUN_00601650
 CWFrustum::CWFrustum() {
     // A (0, 0, 1) normal with distance 0 -- the reference writes 1.0 into the third float of each
@@ -29,6 +28,7 @@ CWFrustum::CWFrustum() {
     memset(this->unknownC0, 0, sizeof(this->unknownC0));
 }
 
+// ref: FUN_007983b0
 CWFrustum* CWFrustum::Alloc() {
     auto frustum = s_freeFrustums.Head();
 
@@ -75,6 +75,7 @@ void CWFrustum::NegatePlanes() {
         this->planes[i].d = -this->planes[i].d;
     }
 }
+
 // ref: FUN_00983f40
 void CWFrustum::Transform(const C44Matrix& matrix) {
     for (int32_t i = 0; i < 8; i++) {

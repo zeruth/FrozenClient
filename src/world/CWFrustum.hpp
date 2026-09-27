@@ -23,7 +23,7 @@ class CWFrustum {
         // Static functions
         // Take a record off the free list, or make one. The list itself is a file static of
         // CWFrustum.cpp, as it is of the reference's WorldScene.cpp (0x00adf6a8 and
-        // friends). ref: FUN_007983b0
+        // friends). reference FUN_007983b0
         static CWFrustum* Alloc();
         // Put one back.
         static void Free(CWFrustum* frustum);
@@ -43,17 +43,17 @@ class CWFrustum {
         // zeroed. Alloc() hands out recycled records from a free list, so without it a fresh
         // frustum carries whatever the last user left. Nothing today depends on that -- the one
         // Alloc() site assigns the whole object immediately -- so this is the reference's behaviour
-        // and a closed hole rather than a fix. ref: FUN_00601650
+        // and a closed hole rather than a fix. reference FUN_00601650
         CWFrustum();
         explicit CWFrustum(const C3Vector* corners);
         void SetCorners(const C3Vector* corners);
         void ComputePlanes();
         // Move the whole volume into another space, corners first and planes after. The map
         // object pass uses it to bring the view into a building's own space, where the batch
-        // boxes already live. ref: FUN_00983f40
+        // boxes already live. reference FUN_00983f40
         void Transform(const C44Matrix& matrix);
         // Turn the frustum inside out -- every plane's normal and distance negated. The shadow
-        // map's ortho frusta need it right after SetCorners. ref: FUN_007ba960
+        // map's ortho frusta need it right after SetCorners. reference FUN_007ba960
         void NegatePlanes();
         int32_t SphereInside(const CAaSphere& sphere);
 };
