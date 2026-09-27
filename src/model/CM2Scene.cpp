@@ -1,5 +1,6 @@
 #include <cstdio>
 #include "model/CM2Scene.hpp"
+#include "util/Log.hpp"
 #include "model/M2Model.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 #include "gx/shader/CShaderEffectManager.hpp"
@@ -943,8 +944,23 @@ CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
 }
 
 int32_t CM2Scene::Draw(M2PASS pass) {
-    // TODO
-    // - conditional check on this->dword144
+    // NOT GATED ON m_passMask YET, and this is a measured decision rather than a missing line.
+    // The reference tests `m_passMask & (1 << pass)` here and returns without drawing when the
+    // bit is clear (FUN_00823cb0). Adding that test was tried on 2026-09-26 and SUPPRESSED MOST
+    // OF THE DRAWING: an instrumented run counted 301 calls through here, of which only 69 had a
+    // non-zero mask and 232 did not -- the first of them carrying 47 elements. So frozen reaches
+    // this function through paths that never assign the mask, where the reference evidently does
+    // not, and the ordering is the clue: the mask comes from CWorld::s_m2PassMask, which is only
+    // raised by CWorld::Initialize, so everything drawn before the world exists -- the glue and
+    // character-selection model frames -- sees zero.
+    //
+    // Defaulting the field to all-passes instead would make the gate harmless, and would also
+    // make it pointless and hide the real difference. What has to happen first is finding what
+    // sets the mask for a scene that is not the world's; in the reference only the constructor
+    // (which clears it) and the world frame (0x004f9117) write it, so either those frames do not
+    // come through CM2Scene::Draw there, or there is a writer the text dump has not been asked
+    // for yet. Until then the field is carried and honoured by nobody, which draws exactly what
+    // frozen drew before it existed.
 
     if (CM2Scene::s_optFlags != (this->m_cache->m_flags & 0xE000)) {
         CM2Scene::s_optFlags = this->m_cache->m_flags & 0xE000;

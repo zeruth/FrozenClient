@@ -29,6 +29,7 @@ uint32_t CWorld::s_curTimeMs;
 float CWorld::s_curTimeSec;
 uint32_t CWorld::s_enables;
 uint32_t CWorld::s_enables2;
+uint32_t CWorld::s_m2PassMask;
 float CWorld::s_farClip;
 float CWorld::s_horizonFarClipScale = 1.0f;
 float CWorld::s_horizonNearClipScale = 0.7f;
@@ -893,6 +894,10 @@ void CWorld::Initialize() {
     if (GxCaps().m_shaderTargets[GxSh_Vertex] > GxShVS_none) {
         CWorld::s_enables2 |= Enables2::Enable_VertexShader;
     }
+
+    // All three M2 passes on. The reference ORs a literal 7 here (0x780fb4); M2PASS_COUNT is 3,
+    // so this is the same value said in terms of the enum rather than as a magic number.
+    CWorld::s_m2PassMask |= (1 << M2PASS_COUNT) - 1;
 
     // TODO
 

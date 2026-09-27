@@ -474,6 +474,11 @@ void CGWorldFrame::OnWorldRender() {
         // the transparent block draws pass 2 before pass 1 with the camera above liquid (the order
         // flips underwater, which is not ported yet). Pass 2 was never drawn before.
         if (scene) {
+            // Which passes the scene may run. The reference does this assignment here too, one
+            // instruction before its own Draw (0x004f9117), rather than at scene creation -- so a
+            // scene that is never drawn through this frame keeps its constructor's zero.
+            scene->m_passMask = CWorld::s_m2PassMask;
+
             scene->Draw(M2PASS_0);
         }
 

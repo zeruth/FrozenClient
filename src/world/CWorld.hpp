@@ -85,6 +85,11 @@ class CWorld {
         // Public static variables
         static uint32_t s_enables;
         static uint32_t s_enables2;
+        // The reference's THIRD enables word, 0x00cd7754, and it is not a general flag set: one
+        // bit per M2 draw pass. World init raises the low three (there are three passes), and the
+        // frame copies it into the scene immediately before CM2Scene::Draw, which tests
+        // `mask & (1 << pass)`. Its only writer and its only reader in the whole binary.
+        static uint32_t s_m2PassMask;
         // The eight scrolling texture offsets (DAT_00cd77f8): one (x, y, 0, 1) per MCLY animation
         // direction, advanced every update along s_textureScrollDir and wrapped at 64
         static float s_textureScroll[8][4];

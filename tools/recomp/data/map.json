@@ -15560,7 +15560,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1728,
+  "frozenSize": 1740,
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 1016,
@@ -44726,7 +44726,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Initialize",
-  "frozenSize": 327,
+  "frozenSize": 334,
   "how": "string",
   "module": "SEvt.cpp",
   "refSize": 1247,

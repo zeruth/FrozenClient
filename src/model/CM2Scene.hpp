@@ -91,6 +91,15 @@ class CM2Scene {
         // Section vertices projected onto the query plane: in-plane x, y and the height above it.
         C3Vector* m_rayProjected = nullptr;                  // +0x124
 
+        // +0x144: which draw passes this scene will run, one bit per M2PASS. Draw tests
+        // `m_passMask & (1 << pass)` and does nothing when the bit is clear.
+        //
+        // Born ZERO, which is the reference's own default (its constructor clears this field at
+        // 0x0081bf50) and means "draw nothing". What actually turns the passes on is the frame
+        // copying CWorld::s_m2PassMask in just before calling Draw. Defaulting this to all-ones
+        // instead would have hidden a missing copy rather than exposed it.
+        uint32_t m_passMask = 0;
+
         // Static functions
         // ref: FUN_0081d2c0
         static void BlendBoneMatrices(const C44Matrix* bones, ubyte4 weights, ubyte4 indices, C44Matrix* out);
