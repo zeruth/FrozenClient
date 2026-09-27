@@ -353,10 +353,43 @@ void CM2SceneRender::DrawBatch() {
 // now CM2Model.cpp's M2GetPackBatchVerticesFn -- see the table there. Both packers are ported and
 // were checked numerically on 2026-09-26.
 //
-// LEFT: FUN_008362b0 (796 bytes, the shared instance-geometry pool -- PoolCreate plus BufCreate
-// at 0x30 stride, filled by walking the skin sections) and FUN_00836df0 (69 bytes, the capacity
-// grow, which calls FUN_008368b0 to reallocate). Neither is linked yet. Plus the three scene
-// render fields above, and IsBatchDoodadCompatible's one unmapped field.
+// LEFT: FUN_008362b0 and FUN_00836df0, neither linked yet, plus the three scene render fields
+// above and IsBatchDoodadCompatible's one unmapped field.
+//
+// Both of those are CM2Shared methods, not scene render ones -- they read +0x150 as m_data, which
+// is the offset IsBatchDoodadCompatible's own expression proves. Decoded 2026-09-26 so the port
+// does not have to start cold:
+//
+//   FUN_008362b0, 796 bytes, 6 callers. Builds ONE shared static vertex buffer holding every
+//   instance's copy of the mesh, created on first use (guarded on +0x180 being null): PoolCreate
+//   then BufCreate at 0x30 stride for (skinProfile->vertexTotal * instanceCapacity) vertices.
+//   Then it fills the buffer in one of two layouts and declares the format to GxPrimVertexPtr:
+//
+//     DAT_00d43020 == 0  ->  40 bytes per vertex, format 5:  position, normal, BOTH authored
+//                            texture coordinate sets (the second is picked with `arg == 0`, so
+//                            the two sets swap when the argument is 1). This arm is for the other
+//                            five callers; the doodad path never takes it.
+//     otherwise          ->  48 bytes per vertex, format 0xc: the whole M2Vertex copied verbatim,
+//                            then the bone index word at +0x10 REWRITTEN to
+//                            boneCombo[i] + boneCount * instance * 0x1010101 -- one byte added to
+//                            each of the four indices, which walks each instance onto its own
+//                            block of bone matrices. This is the arm DrawBatchDoodad uses, and it
+//                            is why the shader arm uploads matrices instead of transforming:
+//                            the vertex program does the skinning.
+//
+//   The 40 against 48 is NOT an overrun and not a reference bug -- checked against the
+//   disassembly at 0x83651c (`leal 0x18(%eax,%edx,8)` with edx = i*5, so a genuine 40-byte step).
+//   The buffer is allocated at the LARGER stride so one allocation serves either format, and each
+//   arm writes its own.
+//
+//   FUN_00836df0, 69 bytes. The instance-capacity grow: +0x190 is the current capacity and +0x194
+//   the ceiling; a request above the current one is rounded up to a multiple of 16, clamped to the
+//   ceiling, stored, and FUN_008368b0 reallocates. It returns what it could manage, which is why
+//   DrawBatchDoodad draws in chunks rather than assuming it got what it asked for.
+//
+// Porting those needs six CM2Shared fields frozen does not have yet (+0x140, +0x170, +0x180,
+// +0x184, +0x190, +0x194) and FUN_008368b0 on top, so it is its own change -- and per the rule in
+// CM2Model::IsBatchDoodadCompatible, still not one that may enable either stub alone.
 void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
     // TODO -- see the decode above; the per-vertex packers it needs are ported already
 }
