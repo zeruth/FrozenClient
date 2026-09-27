@@ -322,6 +322,10 @@ class CMapObjGroup {
         // Member functions
 
         // Count the liquid tiles that render, into m_liquidTileCount. Cheap after the first call.
+        // ref: FUN_00431f30
+        // The LiquidType.dbc id this group's water uses.
+        uint32_t GetLiquidType();
+
         void LiquidTileCount();
 
         // ref: FUN_007cbdc0

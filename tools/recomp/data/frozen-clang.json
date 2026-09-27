@@ -204742,6 +204742,23 @@
 "refs": [],
 "line": 1093
 },
+"CMapObj::GetGroupLiquidMaterial": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [
+"CMapObj::GetGroup"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 1112
+},
 "CMapObj::SetInstanceTransform": {
 "files": [
 "src/world/map/cmapobjdraw.cpp"
@@ -206320,6 +206337,19 @@
 "lines": 23,
 "refs": [],
 "line": 1415
+},
+"CMapObjGroup::GetLiquidType": {
+"files": [
+"src/world/map/cmapobjgroup.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 1444
 },
 "CMapObjGroup::VertexFormat": {
 "files": [

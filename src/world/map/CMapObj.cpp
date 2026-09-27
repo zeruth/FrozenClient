@@ -1100,3 +1100,21 @@ float CMapObj::NearestPortalDistance(CMapObjGroup* group, const C3Vector& point,
 
     return best;
 }
+
+// ref: FUN_007a6d70
+// The material a group's liquid surface draws with. Returns null for a group that is not loaded,
+// which is the same answer GetGroup gives and is why the caller only needs one check.
+//
+// This is the function the liquid geometry factory's texture id comes through: the caller takes the
+// material this returns and reads its +0x1c. Both offsets it uses were already declared --
+// CMapObjGroup::m_liquidMaterial at +0x130 and CMapObj::m_materials at +0x160 -- and the 0x40 stride
+// is sizeof(SMOMaterial), which frozen already asserts.
+SMOMaterial* CMapObj::GetGroupLiquidMaterial(uint32_t groupIndex) {
+    CMapObjGroup* group = this->GetGroup(groupIndex, 0);
+
+    if (!group) {
+        return nullptr;
+    }
+
+    return &this->m_materials[group->m_liquidMaterial];
+}

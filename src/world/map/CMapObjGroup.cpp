@@ -1436,3 +1436,11 @@ void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t v
 
     this->m_liquidBufferUsers++;
 }
+
+// ref: FUN_00431f30
+// Seven bytes: the group's liquid type id. Defined out of line rather than in the header so it stays
+// a real function for the map to bind to -- the reference keeps it as one and its caller reaches it
+// through a call, so inlining it away here would lose the link for no gain.
+uint32_t CMapObjGroup::GetLiquidType() {
+    return this->m_liquidType;
+}

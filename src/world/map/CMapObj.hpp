@@ -430,6 +430,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         uint32_t GroupFlags(uint32_t index);
         CMapObjGroup* GetGroup(uint32_t index, int32_t allowUnloaded);
 
+        // ref: FUN_007a6d70
+        // The material one group's liquid draws with, or null when the group is not loaded.
+        SMOMaterial* GetGroupLiquidMaterial(uint32_t groupIndex);
+
         // ref: FUN_007d8010
         // How far a point is from the nearest portal polygon reachable from `group`, or FLT_MAX when
         // none is within range.

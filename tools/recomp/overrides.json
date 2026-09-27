@@ -498,8 +498,9 @@
     "note": "3-byte 'return ecx' identity"
   },
   "00407f80": {
+    "frozen": "",
     "status": "excluded",
-    "note": "16-dword struct copy (C44Matrix operator=), inlined in frozen"
+    "note": "A 64-byte copy, sixteen dwords one at a time, with 247 callers: the compiler's assignment operator for C44Matrix. frozen expresses this with `=` and lets the compiler emit it, so there is no distinct function in frozen's binary for a tag to bind to -- and leaving it in the denominator scores 247 callers against a call frozen cannot make. Excluded on the same grounds as the scalar deleting destructors and the return-by-value constructor wrappers. Read 2026-09-27 while unblocking the map-object liquid queue."
   },
   "0076e5e0": {
     "frozen": "SMemReAlloc",
