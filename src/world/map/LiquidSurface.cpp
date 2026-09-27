@@ -4,6 +4,7 @@
 #include "db/Db.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CChunkLiquid.hpp"
+#include "world/map/LiquidVertexData.hpp"
 #include <storm/Memory.hpp>
 #include <storm/Error.hpp>
 #include "world/map/CMapObjDef.hpp"
@@ -274,9 +275,30 @@ void CreateSurface(CChunkLiquid* liquid) {
 // BuildVertices and verified -- transformed by the matrix the caller has already positioned for
 // this layer. Every attribute the format carries is written and its pointer advanced by the
 // stride, so the same body serves any format.
+//
+// THE TWO TEXCOORDS ARE NOT IN SLOT ORDER, and getting that wrong is why water drew untextured.
+// The reference takes TexCoord1's cursor as its seventh argument and TexCoord0's as its eighth --
+// FUN_007d4ab0 resolves attribute 6 into local_14 and attribute 7 into local_10, then calls this
+// with `&local_10, &local_14`. So the parameters are named for what they CARRY rather than for
+// their slot, and the call site passes them crossed to match:
+//
+//   uvRamp   is TexCoord1: (0, depth) where depth is the liquid type's ramp sampled by the
+//            vertex's depth byte. This is what the procedural depth-ramp texture is indexed by.
+//   uvTiling is TexCoord0: the real surface coordinate. Ordinary liquid takes the transformed
+//            position's x and y times 0.06 -- one texture wrap every 16 and two thirds yards --
+//            and a layer whose layout is LVF 1 (magma and slime, which carry their own scrolling
+//            coordinates) takes the stored uint16 pair times 3/256 instead.
 static void WriteLayerVertices(const CChunkLiquid* layer, const C44Matrix& placement,
                                uint32_t stride, uint8_t** position, uint8_t** normal,
-                               uint8_t** color, uint8_t** uv0, uint8_t** uv1) {
+                               uint8_t** color, uint8_t** uvRamp, uint8_t** uvTiling) {
+    // 0x00a40410 and 0x00a40414.
+    static const float UV_WORLD_SCALE = 0.060000002384185791f;
+    static const float UV_STORED_SCALE = 0.01171875f;
+
+    const uint32_t* ramp = LiquidTypeBlock(static_cast<int32_t>(layer->m_liquidType));
+
+    // LVF 1 keeps coordinates with its heights instead of depths, which is what magma and slime use.
+    bool stored = layer->m_vertexFormat == 1;
     uint32_t countX = layer->m_tileEndX - layer->m_tileX + 1;
     uint32_t countY = layer->m_tileEndY - layer->m_tileY + 1;
 
@@ -316,25 +338,35 @@ static void WriteLayerVertices(const CChunkLiquid* layer, const C44Matrix& place
             *color += stride;
         }
 
-        // TODO ref: with a per-type coordinate table (FUN_0079b870) the reference indexes it by a
-        // byte it reads back through the layer's vertex data. Without that table it writes zeroes,
-        // which is the branch this takes.
-        if (*uv0) {
-            auto out = reinterpret_cast<float*>(*uv0);
+        // TexCoord1: x is always zero and y is the depth, so the ramp texture is read as the 1-D
+        // lookup it is. A type with no ramp writes a zero pair, which samples the ramp's shallow end.
+        if (*uvRamp) {
+            auto out = reinterpret_cast<uint32_t*>(*uvRamp);
 
-            out[0] = 0.0f;
-            out[1] = 0.0f;
+            out[0] = 0;
+            out[1] = ramp ? ramp[layer->m_vertexData->GetDepth(i)] : 0;
 
-            *uv0 += stride;
+            *uvRamp += stride;
         }
 
-        if (*uv1) {
-            auto out = reinterpret_cast<float*>(*uv1);
+        // TexCoord0: the surface coordinate the water texture actually tiles across.
+        if (*uvTiling) {
+            auto out = reinterpret_cast<float*>(*uvTiling);
 
-            out[0] = 0.0f;
-            out[1] = 0.0f;
+            if (!stored) {
+                out[0] = p.x * UV_WORLD_SCALE;
+                out[1] = p.y * UV_WORLD_SCALE;
+            } else {
+                // A PAIR OF UINT16, not of bytes: the reference reads the block back through a
+                // ushort* and takes both entries unsigned. The interface hands out bytes because
+                // that is what the file stores them as.
+                auto coord = reinterpret_cast<const uint16_t*>(layer->m_vertexData->GetCoord(i));
 
-            *uv1 += stride;
+                out[0] = static_cast<float>(coord[0]) * UV_STORED_SCALE;
+                out[1] = static_cast<float>(coord[1]) * UV_STORED_SCALE;
+            }
+
+            *uvTiling += stride;
         }
     }
 }
@@ -555,8 +587,10 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
 
                 placement.Translate(offset);
 
+                // CROSSED DELIBERATELY: the ramp cursor is TexCoord1 and the tiling cursor is
+                // TexCoord0, which is the order the reference passes them in.
                 WriteLayerVertices(layer, placement, stride, &position, &normal, &color,
-                                   &uv0, &uv1);
+                                   &uv1, &uv0);
             }
 
             GxBufUnlock(heldVertexBuf, 0);
@@ -1262,6 +1296,39 @@ void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t*
 }
 
 
+// ref: FUN_0079e3c0 (the table-building half of it)
+// The two depth ramps the per-vertex writers sample, as floats in 0..1 indexed by a depth byte.
+// Ramp 0 saturates at 42 and ramp 1 at 255; see LiquidTypeBlock below for the decode and for which
+// liquid types take which.
+//
+// DIVERGED in shape only: the reference fills two file-scope arrays from its liquid initialise and
+// never rebuilds them. Frozen builds them on first use, which needs no initialisation order.
+const uint32_t DEPTH_RAMP_COUNT = 2;
+const uint32_t DEPTH_RAMP_ENTRIES = 256;
+
+// The saturation depth of each ramp: ramp 0 reaches full at 42, ramp 1 at 255.
+const float DEPTH_RAMP_FULL[DEPTH_RAMP_COUNT] = { 42.0f, 255.0f };
+
+const uint32_t* DepthRamp(uint32_t which) {
+    static float s_ramps[DEPTH_RAMP_COUNT][DEPTH_RAMP_ENTRIES];
+    static bool s_built = false;
+
+    if (!s_built) {
+        s_built = true;
+
+        for (uint32_t r = 0; r < DEPTH_RAMP_COUNT; r++) {
+            for (uint32_t i = 0; i < DEPTH_RAMP_ENTRIES; i++) {
+                float v = static_cast<float>(i) / DEPTH_RAMP_FULL[r];
+
+                s_ramps[r][i] = v > 1.0f ? 1.0f : v;
+            }
+        }
+    }
+
+    // The writers copy the entry as an opaque dword straight into the vertex, which is what the
+    // reference does and why the tables are reached as uint32_t rather than float.
+    return reinterpret_cast<const uint32_t*>(s_ramps[which]);
+}
 // ref: FUN_0079b870
 // Two DBC hops and a gate, resolving a liquid type to the block the per-vertex writer samples.
 // Every offset in the reference landed on a field frozen already names, which is what makes the
@@ -1274,16 +1341,25 @@ void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t*
 //   LiquidTypeRec +0xa4 is m_int[0], the first of the four trailing ints -- m_texture[6],
 //   m_color[2] and m_float[18] account for every byte between it and m_materialID.
 //
-// THE RETURN TYPE IS HONESTLY void*. The reference indexes a table at 0x00adfbb4 by m_int[0], and
-// that table has exactly TWO pointer entries, 0x00cdf7d0 and 0x00cdfbd0, which sit 0x400 bytes
-// apart -- the data after them is unrelated floats, so it really is two. What those two 1024-byte
-// blocks hold is not established, so this returns void* and says so rather than inventing a type.
-// Naming it wants the consumer, FUN_007a7b00's use of the value, which is not ported yet.
+// THE TWO BLOCKS ARE DEPTH RAMPS, identified 2026-09-27 and no longer a blocker. They are built by
+// FUN_0079e3c0, one loop over i = 0..255 filling both 256-float tables, and every constant in it
+// resolves:
 //
-// FROZEN-ONLY: the two blocks are reference globals with no counterpart here, so the lookup and the
-// gate are faithful and the final index returns null. That is the same answer an undrawable type
-// gives, so no caller can tell the difference yet -- and the moment the blocks are identified this
-// becomes a one-line change rather than a reinvestigation.
+//   0x00cdfbd0[i] = min(i * A / (255 * A), 1) -- the A at 0x00adf800 cancels, so it is i / 255,
+//                   and the clamp can never fire. A plain byte-to-unit normalisation.
+//   0x00cdf7d0[i] = i * (1/9) <= 14/3 ? i * (1/9) * (3/14) : 1  -- which is min(i / 42, 1). The
+//                   same normalisation, saturating at a depth of 42 instead of 255.
+//
+// The selector at 0x00adfbb4 holds exactly those two pointers, [0] = 0x00cdf7d0 and
+// [1] = 0x00cdfbd0, and m_int[0] picks between them -- so LiquidType.dbc's first trailing int
+// chooses how quickly a liquid reaches full depth. Everything past the second entry is unrelated
+// floats, which is what made the pair countable in the first place.
+//
+// So the value the per-vertex writers sample is a DEPTH IN 0..1, and the texcoord it becomes
+// indexes the procedural depth ramp texture. That is what the second texcoord has always been for.
+//
+// The tables are generated on first use rather than carried as literals: they are two lines of
+// arithmetic and a literal table would be 2KB of magic numbers nobody could check.
 const uint32_t* LiquidTypeBlock(int32_t liquidType) {
     if (!liquidType) {
         return nullptr;
@@ -1305,12 +1381,13 @@ const uint32_t* LiquidTypeBlock(int32_t liquidType) {
         return nullptr;
     }
 
-    // The reference returns s_liquidTypeBlocks[type->m_int[0]] here -- one of two 256-dword tables.
-    // Their contents are still unidentified, so this stays null; WriteLiquidVertex treats null as
-    // "no second texcoord" and carries on, which is the same path an undrawable type takes.
-    (void)type->m_int;
+    uint32_t which = static_cast<uint32_t>(type->m_int[0]);
 
-    return nullptr;
+    if (which >= DEPTH_RAMP_COUNT) {
+        return nullptr;
+    }
+
+    return DepthRamp(which);
 }
 
 
