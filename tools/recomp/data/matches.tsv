@@ -3616,6 +3616,7 @@ addr	how	frozen	evidence
 00828680	override	M2AnimateTrack<M2CompQuat,C4Quaternion>	
 00828a00	annotated	CM2Model::AnimateST	tag in src/model/CM2Model.cpp
 00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
+00829aa0	annotated	CM2Model::DrawReceiverGeometry	tag in src/model/CM2Model.cpp
 0082a210	annotated	M2PackBatchVerticesBlended	tag in src/model/CM2Model.cpp
 0082a4e0	annotated	M2PackBatchVerticesSingleBone	tag in src/model/CM2Model.cpp
 0082ad50	callgraph	C3Vector::operator-	only unmatched callee of 0082d6f0=CM2Model::AnimateTextureTransformsMT

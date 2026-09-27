@@ -518,6 +518,9 @@ class CM2Model {
         // carried through the bone it hangs off and then out of view space. The origin when the
         // model has no such event. Animates first, because the bone matrix has to be current --
         // this is what tells a footfall or a weapon-swing event where to put its effect.
+        // The model's triangles with no material, for a decal pass to composite onto.
+        // ref: FUN_00829aa0
+        void DrawReceiverGeometry();
         // The event's position in MODEL space; the world-space sibling is below.
         C3Vector& GetEventPosition(C3Vector& out, uint32_t eventId);
         C3Vector& GetEventWorldPosition(C3Vector& out, uint32_t eventId);

@@ -10,6 +10,7 @@
 #include "model/CM2Shared.hpp"
 #include "model/M2Animate.hpp"
 #include "model/CM2Cache.hpp"
+#include "gx/CGxBatch.hpp"
 #include "gx/Device.hpp"
 #include "gx/Buffer.hpp"
 #include "gx/buffer/CGxBuf.hpp"
@@ -2446,6 +2447,66 @@ uint32_t CM2Model::GetEventTimestamp(uint32_t animId, uint32_t eventId) {
     return 0;
 }
 
+// ref: FUN_00829aa0
+// The model's own triangles drawn as a DECAL RECEIVER: no material, no texture, no shader
+// selection -- just the geometry, so whatever the decal pass has already bound composites onto
+// it. DecalDrawReceivers names this as the draw for its second receiver list, the one holding up
+// to ten M2 receivers.
+//
+// ONE DRAW PER SKIN SECTION, not per batch record. The walk takes only material layer 0 and skips
+// anything flagged 0x20, so a section wearing several layers contributes its triangles once --
+// which is what a receiver wants, since the decal is composited on top rather than blended per
+// layer.
+//
+// THE VERTEX RANGE IS THE WHOLE PROFILE, not the section's own. CM2SceneRender's material path
+// narrows m_minIndex and m_maxIndex to the section it is drawing; this deliberately does not, and
+// passes 0 with the profile's vertex count minus one, which is what the reference does.
+//
+// The batch count is read BEFORE the buffers are bound, which is also the reference's order: it
+// wants the count even when SetIndices or SetVertices fails.
+void CM2Model::DrawReceiverGeometry() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    // FROZEN-ONLY. The reference dereferences the skin profile straight after the wait. frozen
+    // guards, because m_skinProfileLoaded stays clear when the load failed -- the bug class
+    // CLAUDE.md names -- and a null profile would fault here, inside a decal pass, rather than
+    // anywhere that would point at the real cause.
+    if (!this->m_shared || !this->m_shared->m_skinProfileLoaded || !this->m_shared->skinProfile) {
+        return;
+    }
+
+    M2SkinProfile* profile = this->m_shared->skinProfile;
+
+    uint32_t batchCount = profile->batches.Count();
+
+    if (!this->m_shared->SetIndices() || !this->m_shared->SetVertices(0) || !batchCount) {
+        return;
+    }
+
+    uint16_t maxIndex = static_cast<uint16_t>(profile->vertices.Count() - 1);
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        const M2Batch& batch = profile->batches[i];
+
+        if (batch.materialLayer != 0 || (batch.flags & 0x20)) {
+            continue;
+        }
+
+        const M2SkinSection& section = this->m_shared->m_skinSections[batch.skinSectionIndex];
+
+        CGxBatch gxBatch;
+
+        gxBatch.m_primType = GxPrim_Triangles;
+        gxBatch.m_start = section.indexStart;
+        gxBatch.m_count = section.indexCount;
+        gxBatch.m_minIndex = 0;
+        gxBatch.m_maxIndex = maxIndex;
+
+        g_theGxDevicePtr->Draw(&gxBatch, 1);
+    }
+}
 // ref: FUN_008276f0
 // The event's position in MODEL space. GetEventWorldPosition below is the same lookup carried on
 // into the world, and the difference between the two is the whole of their content: this one

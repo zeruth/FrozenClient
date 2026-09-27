@@ -57796,6 +57796,21 @@
   "refSize": 464,
   "status": "ported"
  },
+ "00829aa0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "frozen": "CM2Model::DrawReceiverGeometry",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 244,
+  "status": "ported"
+ },
  "0082a210": {
   "branchRatio": 0.429,
   "constOverlap": 0.0,

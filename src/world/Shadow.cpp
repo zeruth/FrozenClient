@@ -744,7 +744,9 @@ void DecalDrawReceivers(const CAaBox& casterBox, const CImVector& color, uint32_
     }
 
     // TODO the reference's SECOND receiver list, DAT_00d38014 with its count at DAT_00d38054: up to
-    // ten M2 receivers, each drawn through its own matrix at +0xb4 with the draw at FUN_00829aa0.
+    // ten M2 receivers, each drawn through its own matrix at +0xb4. THE DRAW ITSELF IS NOW PORTED
+    // -- FUN_00829aa0 is CM2Model::DrawReceiverGeometry -- so what is still missing here is only
+    // the list and the per-receiver matrix, not the geometry.
     // It is gated on bit 0 of the flags, which the blob leaves clear, so a blob never collects M2
     // receivers at all -- that list belongs to whichever decal kind passes an odd flag word. The
     // render inventory's open "M2 receivers" item is about the M2 SHADOW pass, not this.
