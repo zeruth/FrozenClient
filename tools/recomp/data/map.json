@@ -65570,6 +65570,21 @@
   "refSize": 37,
   "status": "ported"
  },
+ "008a1c90": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialSettings::~CMaterialSettings",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
  "008a1d00": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -65684,7 +65699,7 @@
   "branchRatio": 0.8,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -65694,6 +65709,21 @@
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 124,
+  "status": "ported"
+ },
+ "008a2400": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::Shutdown",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 74,
   "status": "ported"
  },
  "008a2450": {
@@ -66236,6 +66266,21 @@
   "refSize": 184,
   "status": "ported"
  },
+ "008a3ec0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialProcWater::~CMaterialProcWater",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
  "008a3f70": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -66312,6 +66357,21 @@
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 102,
+  "status": "ported"
+ },
+ "008a4200": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialMagma::~CMaterialMagma",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 86,
   "status": "ported"
  },
  "008a48f0": {

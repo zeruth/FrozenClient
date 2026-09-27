@@ -56,6 +56,9 @@ class CMaterialSettings {
         // ref: FUN_008a2100
         CMaterialSettings();
 
+        // Give back the two sets of frame arrays. ref: FUN_008a1c90
+        ~CMaterialSettings();
+
         // Fill the record from one LiquidType row and the material it names. False when the DBC
         // carries neither, which is what sends the bank to its fallback. ref: FUN_008a27c0
         bool LoadFromDbc(int32_t liquidType);
@@ -182,6 +185,10 @@ IMaterial* GetMaterial(int32_t liquidType);
 // Configure the module: the liquid texture scale, the procedural shader suffix, and a hold on
 // the settings bank. ref: FUN_008a1770
 void Initialize(int32_t a1, float textureScale, int32_t a3, const char* procWaterSuffix);
+
+// Give back the hold Initialize took, and tear the module down when the last one goes.
+// ref: FUN_008a2400
+void Shutdown();
 
 void ReleaseMaterials();
 

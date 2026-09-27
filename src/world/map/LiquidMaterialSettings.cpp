@@ -1431,8 +1431,11 @@ CMaterialWaterNoSpec::~CMaterialWaterNoSpec() {
     ReleasePair(s_vsWaterNoSpec, 4, s_psWaterNoSpec, 1);
 }
 
-// The same shape as CMaterialWater's, which is ref FUN_008a3fe0; this class's own
-// destructor address is not pinned, so it carries no tag rather than a guessed one.
+// ref: FUN_008a4200
+// Pinned by its SHADER COUNT. Every one of these destructors has the same shape -- drop a count,
+// set the vtable, release the pair -- so shape alone cannot tell them apart. What can is how many
+// vertex slots each releases: this one checks a single shader at 0x00d44bf4 with no loop at all,
+// and magma is the only material with one vertex permutation rather than four.
 CMaterialMagma::~CMaterialMagma() {
     if (s_magmaRefs > 0) {
         s_magmaRefs--;
@@ -1445,8 +1448,10 @@ CMaterialMagma::~CMaterialMagma() {
     ReleasePair(s_vsMagma, 1, s_psMagma, 1);
 }
 
-// The same shape as CMaterialWater's, which is ref FUN_008a3fe0; this class's own
-// destructor address is not pinned, so it carries no tag rather than a guessed one.
+// ref: FUN_008a3ec0
+// Four vertex slots at 0x00d44c24, which rules out magma; and a different count and vtable from
+// the two water materials already pinned (0x00d44c34 against water's 0x00d44c38 and the
+// no-specular variant's 0x00d44c3c), which leaves procedural water.
 CMaterialProcWater::~CMaterialProcWater() {
     if (s_procWaterRefs > 0) {
         s_procWaterRefs--;
@@ -1724,6 +1729,20 @@ void ReleaseMaterials() {
     s_materialBank.SetCount(0);
 }
 
+// ref: FUN_008a1c90
+// Give back the two sets of frame arrays.
+//
+// The reference walks BACKWARDS from +0x444 in steps of 0x10, freeing each array's buffer -- six
+// of m_framesAlt and then six of m_frames. It frees the BUFFERS, not the texture handles inside
+// them; those are ReleaseFrames's job, and the teardown calls that first. Doing it the other way
+// round would drop the handles on the floor.
+//
+// The body is empty because TSGrowableArray already frees its own buffer when it is destroyed,
+// and member destruction runs after this returns. Writing the frees out by hand would be a second
+// copy of that logic and would double-free the moment the class was used anywhere else.
+CMaterialSettings::~CMaterialSettings() {
+}
+
 // ref: FUN_008a2100
 // Clear the record. The reference writes zero over every dword from +0x300 to +0x438, which is
 // everything this class holds after the six texture-name buffers -- the two colours, the four
@@ -1811,6 +1830,38 @@ void ReleaseMaterialSettings() {
     s_settingsBank.SetCount(0);
 }
 
+
+// ref: FUN_008a2400
+// Give back the hold Initialize took, and tear the module down when the last one goes.
+//
+// The order is the reference's and it matters: the material bank is released only when the count
+// reaches zero, but the SETTINGS bank is released every time, because that one keeps its own count
+// and does its own gating. Releasing the materials unconditionally would pull the bank out from
+// under a second holder.
+//
+// NOTHING CALLS THIS YET, and that is worth stating plainly rather than leaving to be discovered:
+// the reference calls it from the world scene's teardown, FUN_00798310, which frozen does not
+// have. Neither ReleaseMaterials nor ReleaseMaterialSettings had any caller before this either.
+// So the whole liquid teardown chain -- this, the material destructors, ReleaseFrames, the handle
+// release -- is correct and currently unreachable. The leaks those fixed are still leaks in
+// practice until a CWorldScene teardown exists to start the chain.
+//
+// The reference also calls FUN_008a4280 here, which destroys its material SINGLETONS. frozen has
+// no singletons -- the bank owns its materials and ReleaseMaterials destroys them through their
+// vtable -- so there is nothing for that call to do and it is not reproduced.
+void Shutdown() {
+    if (s_moduleRefs > 0) {
+        s_moduleRefs--;
+    }
+
+    if (!s_moduleRefs) {
+        ReleaseMaterials();
+
+        s_initArg2 = 0;
+    }
+
+    ReleaseMaterialSettings();
+}
 
 // ref: FUN_008a1770
 // Configure the liquid module. One caller, CWorldScene::Initialize, which passes (1, 1.0f, 0, "").
