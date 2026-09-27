@@ -56591,6 +56591,22 @@
   "refSize": 342,
   "status": "ported"
  },
+ "008272f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetBoneMatrix",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 224,
+  "status": "ported"
+ },
  "008273d0": {
   "branchRatio": 0.4,
   "constOverlap": 0.111,
@@ -56947,7 +56963,7 @@
    "src/model/m2internal.cpp"
   ],
   "frozen": "M2ModelBone::M2ModelBone",
-  "frozenSize": 157,
+  "frozenSize": 164,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 250,
@@ -57357,13 +57373,13 @@
   "branchRatio": 0.606,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.537,
+  "fidelity": 0.552,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 8356,
+  "frozenSize": 8660,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -71783,7 +71799,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::Draw",
-  "frozenSize": 1085,
+  "frozenSize": 1069,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 851,
