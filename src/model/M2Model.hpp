@@ -190,6 +190,33 @@ struct M2BatchDoodadVertex {
     C3Vector normal;
     C2Vector texcoord;
 };
+// The animated state of one ribbon emitter, parallel to m2Data->ribbons -- the ribbon's answer to
+// M2ModelParticle. SIZE IS 0x50, and both the size and every field WIDTH are measured rather than
+// inferred: CM2Model::InitializeLoaded strides by 0x50 between records, and the fields it clears
+// pin the layout exactly because it clears them at their real widths --
+//
+//     +0x34 dword   heightBelowTrack.currentValue
+//     +0x38 dword   textureSlotTrack.currentKey
+//     +0x3c dword   textureSlotTrack.currentKey2
+//     +0x40 SHORT   textureSlotTrack.currentValue
+//     +0x44 dword   visibilityTrack.currentKey
+//     +0x48 dword   visibilityTrack.currentKey2
+//     +0x4c BYTE    visibilityTrack.currentValue
+//
+// -- and the short at +0x40 with the byte at +0x4c is what fixes the last two element types.
+//
+// alphaTrack is a FLOAT here even though the file's M2Ribbon carries that track as fixed16: the
+// reference writes a dword 1.0 to +0x1c (`fld1` then `fstps 0x1c(%eax,%edx)` at 0x833a7a), which
+// only lands correctly if the slot is four bytes wide. The file type is the on-disk encoding; this
+// is the decoded value.
+struct M2ModelRibbon {
+    M2ModelTrack<C3Vector> colorTrack;      // +0x00
+    M2ModelTrack<float> alphaTrack;         // +0x14
+    M2ModelTrack<float> heightAboveTrack;   // +0x20
+    M2ModelTrack<float> heightBelowTrack;   // +0x2c
+    M2ModelTrack<uint16_t> textureSlotTrack;// +0x38
+    M2ModelTrack<uint8_t> visibilityTrack;  // +0x44
+};
 struct M2ModelTextureTransform {
     M2ModelTrack<C3Vector> translationTrack;
     M2ModelTrack<C4Quaternion> rotationTrack;

@@ -27,6 +27,8 @@ struct M2ModelCamera;
 struct M2ModelColor;
 struct M2ModelLight;
 struct M2ModelParticle;
+struct M2ModelRibbon;
+class CM2Ribbon;
 struct M2ModelTextureTransform;
 struct M2ModelTextureWeight;
 struct M2SequenceFallback;
@@ -266,6 +268,15 @@ class CM2Model {
         void (*m_lightingCallback)(CM2Model*, CM2Lighting*, void*) = nullptr;
         void* m_lightingArg = nullptr;
         M2ModelCamera* m_cameras = nullptr;
+        // The ribbon pair, reference +0x2b8 and +0x2bc, and it sits BEFORE the particle pair below
+        // because that is the order the reference carves them out of the shared buffer. Same shape
+        // as that pair one slot along: the animated state parallel to m_shared->m_data->ribbons,
+        // then one emitter per M2Ribbon.
+        //
+        // Unlike the particle emitters, none of these is ever null -- every ribbon gets a
+        // CM2Ribbon, because there is only one kind.
+        M2ModelRibbon* m_ribbons = nullptr;
+        CM2Ribbon** m_ribbonEmitters = nullptr;
         // The animated state of every emitter, parallel to m_shared->m_data->particles. The
         // reference keeps this at +0x2c0 and an array of emitter OBJECTS at +0x2c4; only the state
         // is here so far -- see CM2Model::AnimateParticles.

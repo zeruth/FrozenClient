@@ -16,6 +16,7 @@
 #include "gx/buffer/CGxPool.hpp"
 #include "model/M2Data.hpp"
 #include "model/CM2ParticleEmitter.hpp"
+#include "model/CM2Ribbon.hpp"
 #include "model/M2Internal.hpp"
 #include "model/M2Model.hpp"
 #include <common/DataMgr.hpp>
@@ -162,6 +163,19 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
     return 0xFFFF;
 }
 
+// M2 blend mode to EGxBlend for a ribbon material, the reference's table at 0x00a45570. It is a
+// pure enum translation and the ONE out-of-sequence entry is the proof: raw value 10 at index 3,
+// which is M2BLEND_NO_ALPHA_ADD mapping to GxBlend_NoAlphaAdd. Written as the named constants it
+// resolves to rather than the seven raw numbers.
+static const EGxBlend s_ribbonBlend[M2BLEND_COUNT] = {
+    GxBlend_Opaque,      // M2BLEND_OPAQUE
+    GxBlend_AlphaKey,    // M2BLEND_ALPHA_KEY
+    GxBlend_Alpha,       // M2BLEND_ALPHA
+    GxBlend_NoAlphaAdd,  // M2BLEND_NO_ALPHA_ADD
+    GxBlend_Add,         // M2BLEND_ADD
+    GxBlend_Mod,         // M2BLEND_MOD
+    GxBlend_Mod2x,       // M2BLEND_MOD_2X
+};
 // Bone weights are bytes that stand for a fraction of 255. The reference keeps the reciprocal as
 // a constant at 0x00a45564 and multiplies, rather than dividing.
 static const float M2_BONE_WEIGHT_SCALE = 0.0039215689f;
@@ -2618,6 +2632,15 @@ int32_t CM2Model::InitializeLoaded() {
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelAttachment, this->m_shared->m_data->attachments.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelLight, this->m_shared->m_data->lights.Count());
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelCamera, this->m_shared->m_data->cameras.Count());
+    // The ribbons come BEFORE the particles, which is the order the reference carves them
+    // (+0x2b8 and +0x2bc against +0x2c0 and +0x2c4). Each ALIGN_SIZE is relative to the running
+    // offset, so this order has to agree with the fill below and it now agrees with the reference
+    // as well. Both runs are fixed-size -- there is only one kind of ribbon emitter, so unlike the
+    // particle factory there is nothing to switch on.
+    bufferSize += ALIGN_SIZE(bufferSize, M2ModelRibbon, this->m_shared->m_data->ribbons.Count());
+    bufferSize += ALIGN_SIZE(bufferSize, CM2Ribbon*, this->m_shared->m_data->ribbons.Count());
+    bufferSize += ALIGN_SIZE(bufferSize, CM2Ribbon, this->m_shared->m_data->ribbons.Count());
+
     bufferSize += ALIGN_SIZE(bufferSize, M2ModelParticle, this->m_shared->m_data->particles.Count());
 
     // The emitter pointer array, then the emitter objects themselves. The reference carves both
@@ -2647,7 +2670,6 @@ int32_t CM2Model::InitializeLoaded() {
         }
     }
 
-    // TODO allocate space for ribbons
 
     auto buffer = static_cast<char*>(SMemAlloc(bufferSize, __FILE__, __LINE__, 0));
     auto start = buffer;
@@ -2846,8 +2868,109 @@ int32_t CM2Model::InitializeLoaded() {
         }
     }
 
+    // The ribbon emitters, and they come before the particles for the reason given in the sizing
+    // pass. Three runs out of the buffer: the animated state, the pointer array, then the objects.
+    if (this->m_shared->m_data->ribbons.Count()) {
+        auto ribbonCount = static_cast<uint32_t>(this->m_shared->m_data->ribbons.Count());
+
+        buffer = ALIGN_BUFFER(buffer, start, M2ModelRibbon);
+        this->m_ribbons = reinterpret_cast<M2ModelRibbon*>(buffer);
+        buffer += sizeof(M2ModelRibbon) * ribbonCount;
+
+        for (uint32_t i = 0; i < ribbonCount; i++) {
+            new (&this->m_ribbons[i]) M2ModelRibbon();
+        }
+
+        buffer = ALIGN_BUFFER(buffer, start, CM2Ribbon*);
+        this->m_ribbonEmitters = reinterpret_cast<CM2Ribbon**>(buffer);
+        buffer += sizeof(CM2Ribbon*) * ribbonCount;
+
+        // The three lists Initialize copies in. Declared out here rather than per ribbon because
+        // the reference reuses three file-static arrays across every ribbon of every model; these
+        // are locals instead, so nothing survives the function, but they are still reused across
+        // this model's ribbons rather than reallocated per ribbon.
+        TSGrowableArray<HTEXTURE> ribbonTextures;
+        TSGrowableArray<CM2Ribbon::Material> ribbonMaterials;
+        TSGrowableArray<M2Texture*> ribbonRecords;
+
+        for (uint32_t i = 0; i < ribbonCount; i++) {
+            const M2Ribbon& file = this->m_shared->m_data->ribbons[i];
+
+            buffer = ALIGN_BUFFER(buffer, start, CM2Ribbon);
+            this->m_ribbonEmitters[i] = new (buffer) CM2Ribbon();
+            buffer += sizeof(CM2Ribbon);
+
+            CM2Ribbon* emitter = this->m_ribbonEmitters[i];
+
+            // Gated on Count() because element 0 of an EMPTY M2Array is a wild pointer, not null.
+            auto passCount = static_cast<uint32_t>(file.textureIndices.Count());
+
+            ribbonTextures.SetCount(passCount);
+            ribbonMaterials.SetCount(passCount);
+            ribbonRecords.SetCount(passCount);
+
+            for (uint32_t j = 0; j < passCount; j++) {
+                uint16_t textureIndex = file.textureIndices[j];
+
+                // The resolved handle, and beside it the FILE record the handle does not carry.
+                ribbonTextures[j] = this->m_shared->textures[textureIndex];
+                ribbonRecords[j] = &this->m_shared->m_data->textures[textureIndex];
+
+                // The reference walks materialIndices with the SAME index and never checks that
+                // it is as long as textureIndices. Transcribed as it stands: a .m2 whose two
+                // arrays disagree would over-read here, in the reference too.
+                const M2Material& material =
+                    this->m_shared->m_data->materials[file.materialIndices[j]];
+
+                // ENABLE bits, each the negation of one of the material's DISABLE flags. The
+                // reference builds them with five xor-and-mask instructions over the same word
+                // rather than an or-chain, which is the same result written unreadably.
+                //
+                // Note the crossed pair: ribbon bit 0x10 comes from M2 flag 0x04 (two-sided) and
+                // ribbon bits 0x4/0x8 come from M2 flags 0x08/0x10. That is the reference's own
+                // ordering, not a transcription slip.
+                uint32_t flags = 0;
+
+                if (!(material.flags & 0x01)) { flags |= 0x01; }   // lit
+                if (!(material.flags & 0x02)) { flags |= 0x02; }   // fogged
+                if (!(material.flags & 0x08)) { flags |= 0x04; }   // depth test
+                if (!(material.flags & 0x10)) { flags |= 0x08; }   // depth write
+                if (!(material.flags & 0x04)) { flags |= 0x10; }   // culling
+
+                ribbonMaterials[j].m_flags = flags;
+                ribbonMaterials[j].m_blend =
+                    material.blendMode < M2BLEND_COUNT
+                        ? static_cast<uint32_t>(s_ribbonBlend[material.blendMode])
+                        : static_cast<uint32_t>(GxBlend_Opaque);
+            }
+
+            // White, and the whole texture -- both are constants at the reference's call site
+            // (four 0xFF bytes at 0x833a13, and the rect built as 0/0/1/1), not anything off the
+            // file record.
+            CImVector color;
+            color.value = 0xFFFFFFFF;
+
+            float textureRect[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+            emitter->Initialize(file.edgesPerSecond, file.edgeLifetime, color,
+                                ribbonTextures, ribbonMaterials, ribbonRecords,
+                                textureRect, file.textureRows, file.textureCols);
+
+            emitter->SetGravity(file.gravity);
+
+            // A literal zero at the call site (`pushl $0x0` at 0x833a56), not a field -- so every
+            // ribbon starts NOT above, and something else has to raise it later.
+            emitter->SetAbove(0);
+
+            // Visible, fully opaque. The two tracks the driver would otherwise leave at zero, so
+            // a ribbon that is never animated still draws.
+            this->m_ribbons[i].visibilityTrack.currentValue = 1;
+            this->m_ribbons[i].alphaTrack.currentValue = 1.0f;
+        }
+    }
+
     // The runtime half of every emitter. The reference allocates it here, out of the same buffer
-    // and directly after the cameras, which is why the size list above has it in that position --
+    // and directly after the ribbons, which is why the size list above has it in that position --
     // each ALIGN_SIZE is relative to the running offset, so the two orders have to agree.
     if (this->m_shared->m_data->particles.Count()) {
         buffer = ALIGN_BUFFER(buffer, start, M2ModelParticle);
@@ -3262,11 +3385,14 @@ int32_t CM2Model::InitializeLoaded() {
                 // m_particles / m_particleEmitters one slot along. Unit movement drives a ribbon's
                 // MOTION, not its creation; the emitters exist as soon as the model loads.
                 //
-                // So the array has a filler waiting, and this case is one step behind it rather
-                // than two. CM2Ribbon::Initialize landed the same day, which was the last piece
-                // the class was missing; what remains before this loop is worth writing is the
-                // CM2Model pair and InitializeLoaded's ribbon block. That block's decode is in
-                // the --diff for FUN_00832ea0.
+                // BOTH of those landed 2026-09-26 -- the pair is above and the ribbon block is in
+                // InitializeLoaded -- so the loop is live rather than a loop over nothing.
+                if (this->m_ribbonEmitters) {
+                    for (int32_t i = 0; i < this->m_shared->m_data->ribbons.Count(); i++) {
+                        this->m_ribbonEmitters[i]->SetFlag8(modelCall->args[0]);
+                    }
+                }
+
                 break;
             }
 
