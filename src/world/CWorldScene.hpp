@@ -37,7 +37,24 @@ class CWorldScene {
         // frame by SetupTerrainConstants and per chunk by CMapRenderChunk::SetupVertexShader
         struct TerrainConstants {
             C44Matrix view;                     // c0-c3: the world-to-view transform
-            C44Matrix proj;                     // c4-c7: the native projection, z row negated
+            // c4-c7: the native projection, UNCHANGED. This comment used to say "z row negated",
+            // which is what the reference does and the opposite of what SetupTerrainConstants
+            // actually assigns -- it stores m_projNative as is, and the note beside that
+            // assignment explains why (negating made D3D clip every chunk, terrain invisible on
+            // the first run, 2026-09-25).
+            //
+            // The two are equivalent, which is worth writing down because the difference keeps
+            // coming back as a suspect. frozen's view space is +z forward and the reference's is
+            // -z forward, so vz_f = -vz_ref, and with the reference negating row 2 of the
+            // projection (m22' = -m22, m23' = -m23):
+            //
+            //   clip.z_ref = vz_ref * -m22 + m32   clip.z_f = vz_f * m22 + m32   -- both -vz_ref*m22 + m32
+            //   clip.w_ref = vz_ref * -m23         clip.w_f = vz_f * m23         -- both -vz_ref*m23
+            //
+            // Identical in both components. So frozen's un-negated projection over a +z-forward
+            // view produces exactly the reference's clip coordinates, and the liquid path -- which
+            // feeds the REFERENCE's own shaders out of the archives -- agrees with terrain.
+            C44Matrix proj;
             C44Matrix viewTransposed;           // c8-c11
             float fog[4];                       // c12: -1/(end-start), end/(end-start), rate, 0
             float layerScroll[4][4];            // c13-c16: the UV scroll of animated layers
