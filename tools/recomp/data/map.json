@@ -36476,7 +36476,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxBufData",
-  "frozenSize": 0,
+  "frozenSize": 67,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 56,
@@ -55632,20 +55632,20 @@
   "status": "stub"
  },
  "00820f40": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawRibbon",
   "frozenSize": 0,
-  "how": "override",
+  "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 251,
-  "status": "stub"
+  "status": "ported"
  },
  "008214e0": {
   "branchRatio": 0.8,
@@ -55721,7 +55721,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 792,
+  "frozenSize": 1108,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
@@ -62837,7 +62837,7 @@
    "src/gx/shader/cshadereffect.cpp"
   ],
   "frozen": "CShaderEffect::SetLightEnabled",
-  "frozenSize": 0,
+  "frozenSize": 28,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 67,
@@ -62997,7 +62997,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetAlphaRefForBlendMode",
-  "frozenSize": 0,
+  "frozenSize": 75,
   "how": "annotated",
   "module": "OsClipboard.cpp",
   "refSize": 67,
@@ -71575,7 +71575,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::Draw",
-  "frozenSize": 0,
+  "frozenSize": 1085,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 851,

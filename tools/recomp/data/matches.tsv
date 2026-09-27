@@ -3486,7 +3486,7 @@ addr	how	frozen	evidence
 008203b0	override	CM2SceneRender::DrawBatch	
 00820720	override	CM2SceneRender::DrawBatchProj	
 00820ae0	override	CM2SceneRender::DrawBatchDoodad	
-00820f40	override	CM2SceneRender::DrawRibbon	
+00820f40	annotated	CM2SceneRender::DrawRibbon	tag in src/model/CM2SceneRender.cpp
 008214e0	override	CM2SceneRender::DrawParticle	
 00821930	annotated	CM2Scene::AddParticleElement	tag in src/model/CM2Scene.cpp
 00821a20	override	CM2Scene::Animate	

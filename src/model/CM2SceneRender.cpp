@@ -1,4 +1,5 @@
 #include "model/CM2SceneRender.hpp"
+#include "model/CM2Ribbon.hpp"
 #include "gx/Device.hpp"
 #include "gx/Draw.hpp"
 #include "gx/RenderState.hpp"
@@ -344,8 +345,8 @@ void CM2SceneRender::DrawBatch() {
 // it is now most of the way in. What the reference does, and what is left:
 //
 //   The scene render caches three things off the element before drawing: the M2Batch
-//   (element+0x28) into +0x88, the M2SkinSection (element+0x2c) into +0x90, and a bone lookup
-//   base into +0x98. Then SetCurrent, SetupLighting, SetupMaterial, SetupTextures and SetIndices
+//   (element+0x28) into +0x88, the M2SkinSection (element+0x2c) into +0x90, and m_curMaterial
+//   into +0x98. Then SetCurrent, SetupLighting, SetupMaterial, SetupTextures and SetIndices
 //   -- all five already linked in frozen.
 //
 //   It then draws the instances in CHUNKS, because one vertex buffer holds a bounded number of
@@ -403,7 +404,11 @@ void CM2SceneRender::DrawBatch() {
 // instance capacity above 1 until one of them lands.
 //
 // What remains for this stub is therefore the scene-render half alone: the three cached fields
-// (+0x88 the M2Batch, +0x90 the M2SkinSection, +0x98 the bone lookup base) and the two draw arms.
+// (+0x88 the M2Batch, +0x90 the M2SkinSection, +0x98 m_curMaterial) and the two draw arms.
+//
+// CORRECTED 2026-09-27: +0x98 was written here twice as "a bone lookup base". It is not. The
+// expression is `&m_data->materials[batch.materialIndex]` -- the same shape DrawRibbon uses for its
+// own first pass -- and frozen's field at that offset is m_curMaterial, which SetupMaterial reads.
 // Per the rule in CM2Model::IsBatchDoodadCompatible, that still may not be landed in a change
 // that enables either stub alone.
 void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
@@ -677,8 +682,64 @@ int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t*
     return 0;
 }
 
+// ref: FUN_00820f40
+// One ribbon element. Short, because the geometry and all the render state live in
+// CM2Ribbon::Draw -- this only sets up what the shared Setup* helpers need and then hands over.
+//
+// The effect is the particle UNLIT one, unconditionally, where DrawParticle chooses between the
+// lit and unlit pair on its emitter's material flag. A ribbon does not choose: its own per-material
+// bit 0 drives emissive and the lighting state inside CM2Ribbon::Draw, so the effect it draws
+// through is always the unlit variant. Read off the receiver at 0x820f8f, which the decompilation
+// drops because it is a register argument.
+//
+// NOT PORTED from it: the leading SysMsgPrintf. Its target FUN_005eeb70 is a bare `retl` in the
+// reference -- a trace hook compiled out -- so there is nothing behind it to reproduce.
 void CM2SceneRender::DrawRibbon() {
-    // TODO
+    uint32_t index = this->m_curElement->index;
+
+    if (index >= static_cast<uint32_t>(this->m_data->ribbons.Count())
+            || !this->m_curModel->m_ribbonEmitters) {
+        return;
+    }
+
+    const M2Ribbon& file = this->m_data->ribbons[index];
+
+    // The FIRST material pass decides what the shared Setup* helpers see. CM2Ribbon::Draw walks
+    // all of them itself afterwards; this one is only for the setup.
+    //
+    // Gated on Count() because element 0 of an EMPTY M2Array is a wild pointer, not null.
+    if (!file.materialIndices.Count()) {
+        return;
+    }
+
+    this->m_curMaterial = &this->m_data->materials[file.materialIndices[0]];
+
+    // DIVERGENCE, the same one DrawParticle carries: the reference calls SetCurrent
+    // unconditionally, and frozen's effects come from a lookup that returns null for an effect the
+    // shader list has not been given.
+    if (this->m_particleUnlitEffect) {
+        this->m_particleUnlitEffect->SetCurrent();
+    }
+
+    this->SetupTextures();
+    this->SetupLighting();
+    this->SetupMaterial();
+
+    // A ZERO camera position, not the real one -- the reference builds three zeroes on the stack
+    // and passes those. The ribbon's geometry is already world-space and its own Draw subtracts the
+    // origin it is stored relative to, so there is nothing for this to re-centre.
+    C3Vector cameraPosition = { 0.0f, 0.0f, 0.0f };
+
+    this->SetupParticleTransform(cameraPosition);
+    CShaderEffect::SetTexMtx_Identity(0);
+
+    this->m_curModel->m_ribbonEmitters[index]->Draw(this->m_curModel->m_particleRelative);
+
+    // Put the world transform back to identity. CM2Ribbon::Draw pushed and popped its own, and this
+    // SETS the level the pop returned to -- the reference's tail at 0x820ff0 is a device XformSet
+    // plus the same dirty-flag and level bookkeeping GxXformSet does, against the identity matrix
+    // at 0x00af58a8. frozen already spells this exact pair elsewhere in this file.
+    GxXformSet(GxXform_World, CM2SceneRender::s_identity);
 }
 
 // ref: FUN_0081f700

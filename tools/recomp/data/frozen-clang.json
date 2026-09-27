@@ -85348,7 +85348,7 @@
 "stub": false,
 "lines": 174,
 "refs": [],
-"line": 75
+"line": 76
 },
 "CM2SceneRender::DrawBatch": {
 "files": [
@@ -85393,7 +85393,7 @@
 "stub": false,
 "lines": 88,
 "refs": [],
-"line": 250
+"line": 251
 },
 "CM2SceneRender::DrawBatchDoodad": {
 "files": [
@@ -85406,7 +85406,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 409
+"line": 414
 },
 "CM2SceneRender::DrawBatchProj": {
 "files": [
@@ -85419,7 +85419,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 413
+"line": 418
 },
 "CM2SceneRender::DrawCallback": {
 "files": [
@@ -85432,7 +85432,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 417
+"line": 422
 },
 "CM2SceneRender::SetupParticleTransform": {
 "files": [
@@ -85451,7 +85451,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 517
+"line": 522
 },
 "CM2SceneRender::DrawParticle": {
 "files": [
@@ -85489,20 +85489,38 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 558
+"line": 563
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
 "src/model/cm2scenerender.cpp"
 ],
-"callseq": [],
+"callseq": [
+"M2Array<M2Ribbon>::Count",
+"M2Array<M2Ribbon>::operator[]",
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::operator[]",
+"M2Array<M2Material>::operator[]",
+"CShaderEffect::SetCurrent",
+"CM2SceneRender::SetupTextures",
+"CM2SceneRender::SetupLighting",
+"CM2SceneRender::SetupMaterial",
+"C3Vector::C3Vector",
+"CM2SceneRender::SetupParticleTransform",
+"CShaderEffect::SetTexMtx_Identity",
+"CM2Ribbon::Draw",
+"GxXformSet"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 3,
+"consts": [
+"0",
+"0.0f"
+],
+"branches": 3,
+"stub": false,
+"lines": 47,
 "refs": [],
-"line": 680
+"line": 697
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -85519,7 +85537,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 685
+"line": 746
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -85559,7 +85577,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 724
+"line": 785
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -85614,7 +85632,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 802
+"line": 863
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -85650,7 +85668,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 916
+"line": 977
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

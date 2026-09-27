@@ -1423,9 +1423,8 @@
     "note": "logs 'BatchDoodad: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind"
   },
   "00820f40": {
-    "frozen": "CM2SceneRender::DrawRibbon",
-    "status": "stub",
-    "note": "logs 'Ribbon: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind"
+    "status": "ported",
+    "note": "CM2SceneRender::DrawRibbon. PORTED 2026-09-27 at recall 100%. The entry here said `stub`, which is what the report was flagging. Short because the geometry and all the render state live in CM2Ribbon::Draw; this sets m_curMaterial from the ribbon's FIRST material pass, runs the shared Setup* helpers, hands over, and puts the world transform back to identity. Two things came off the disassembly rather than the decompilation, which drops register arguments: the effect is m_particleUnlitEffect unconditionally (receiver at 0x820f8f), where DrawParticle picks between the lit and unlit pair -- a ribbon does not choose, because its own per-material bit 0 drives emissive inside CM2Ribbon::Draw; and the tail at 0x820ff0 is a GxXformSet of the identity matrix at 0x00af58a8, spelled out as a device XformSet plus the dirty-flag and stack-level bookkeeping GxXformSet already does. REACHABLE but never reached: CM2Scene::Animate emits type-3 elements only for a non-empty ribbon, and no animated model in this scene carries a ribbon at all."
   },
   "008214e0": {
     "frozen": "CM2SceneRender::DrawParticle",

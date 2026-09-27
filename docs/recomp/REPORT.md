@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 01:02 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 01:08 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -9,21 +9,21 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 |---|---:|---:|
 | reference (non-thunk) | 26955 | 5.35M |
 | mapped to a frozen function | 4588 (=) (17.0%) | 991.6k (18.1%) |
-| &nbsp;&nbsp;ported | 3910 (=) | 814.4k |
-| &nbsp;&nbsp;stub (unimplemented body) | 575 (=) | 124.3k |
+| &nbsp;&nbsp;ported | 3911 (+1) | 814.6k |
+| &nbsp;&nbsp;stub (unimplemented body) | 574 (-1) | 124.1k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2360 (+1) (8.8%)** | **329.2k (6.0%)** |
+| **faithful** (linked, not stub, call order >= 80%) | **2361 (+1) (8.8%)** | **329.5k (6.0%)** |
 | unmapped | 22367 | 4.39M |
 | world spine (reachable from OnFrameRender) | 5381, mapped 1567 (=) (29.1%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1589 (=) (28.1%) | |
 | **render surface** (the modules that draw the world) | **4782, mapped 1060 (=) (22.2%)** | |
-| frozen functions (src/, from PDB + source) | 13977, stubs 1687 | |
+| frozen functions (src/, from PDB + source) | 13977, stubs 1686 | |
 
-Match evidence: annotated 2333, callgraph 245, callorder 111, cvar 31, handler 29, order 141, override 353, sticky 20, string 305, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2334, callgraph 245, callorder 111, cvar 31, handler 29, order 141, override 352, sticky 20, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-27 01:01 -- mapped 4588, ported 3910, stub 575, spine mapped 1567.
+Previous run: 2026-09-27 01:08 -- mapped 4588, ported 3910, stub 575, spine mapped 1567.
 
 ## Lua API coverage (binding tables)
 
@@ -137,7 +137,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Unit_C.cpp | 703 | 182.2k | 95 (13.5%) | 9.5% | 0 | 0 | 292 |
 | Player_C.cpp | 728 | 146.7k | 58 (8.0%) | 9.5% | 0 | 0 | 156 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
-| M2Scene.cpp | 283 | 101.1k | 171 (60.4%) | 67.0% | 5 | 0 | 210 |
+| M2Scene.cpp | 283 | 101.1k | 171 (60.4%) | 67.0% | 4 | 0 | 210 |
 | CGxDeviceD3d9Ex.cpp | 238 | 98.4k | 17 (7.1%) | 9.2% | 0 | 0 | 1 |
 | GameUI.cpp | 487 | 95.7k | 231 (47.4%) | 47.7% | 78 | 0 | 70 |
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
@@ -726,9 +726,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
-| 2026-09-26 23:57 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:58 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-26 23:58 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
 | 2026-09-27 00:05 | 4573 (17.0%) | 2347 (8.7%) | 575 | 1552/5381 | 2924/2964 | 1380 |
@@ -751,6 +748,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 01:01 | 4588 (17.0%) | 2359 (8.8%) | 575 | 1567/5381 | 2924/2964 | 1380 |
 | 2026-09-27 01:01 | 4588 (17.0%) | 2359 (8.8%) | 575 | 1567/5381 | 2924/2964 | 1380 |
 | 2026-09-27 01:02 | 4588 (17.0%) | 2360 (8.8%) | 575 | 1567/5381 | 2924/2964 | 1380 |
+| 2026-09-27 01:07 | 4588 (17.0%) | 2360 (8.8%) | 575 | 1567/5381 | 2924/2964 | 1380 |
+| 2026-09-27 01:08 | 4588 (17.0%) | 2360 (8.8%) | 575 | 1567/5381 | 2924/2964 | 1380 |
+| 2026-09-27 01:08 | 4588 (17.0%) | 2361 (8.8%) | 574 | 1567/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 
