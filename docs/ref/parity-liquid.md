@@ -36,7 +36,7 @@ CWorldScene::TraverseRowLiquids            frustum + occlusion, then:
   Liquid::Add                   8a20c0     puts it in a bucket           [ported]
 CMap::Render
   Liquid::Draw(cameraPos, 0)    8a2240     plain water and magma         [ported]
-    CInstance::m_material->Draw(...)  vtable slot 2                      <-- THE GAP
+    CInstance::m_material->Draw(...)  vtable slot 2                      [ported]
   Liquid::Draw(cameraPos, 1)    8a2240     procedural water              [ported, diverged site]
 ```
 

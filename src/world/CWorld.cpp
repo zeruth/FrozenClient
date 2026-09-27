@@ -408,6 +408,18 @@ void CWorld::ComputeOutdoorLight(int32_t mapID) {
         CWorld::s_outdoorDiffuse.x, CWorld::s_outdoorDiffuse.y, CWorld::s_outdoorDiffuse.z);
 }
 
+// NO REFERENCE TAG, on purpose, and this is not a tag waiting to be found -- the report lists
+// this as one of the largest frozen functions with no reference link, so here is why.
+//
+// The reference SPLITS what this merges. Its ComputeLightColors is FUN_007ebff0 and the only
+// thing that calls it is FUN_007ecd80, all of 117 bytes, which adds a fog clamp and nothing
+// else; the positional-light blend is separate again (FUN_007ee5d0, called once per light and
+// ACCUMULATING, where this picks the single heaviest -- the divergence already recorded below).
+// So no single reference function is this one, and tagging any of them would be claiming an
+// identity that is not there.
+//
+// ComputeLightColors itself IS linked, which is the part of this file that the measurement can
+// legitimately account for.
 void CWorld::UpdateOutdoorLight() {
     if (s_defaultParams <= 0) {
         return;

@@ -2890,7 +2890,6 @@ addr	how	frozen	evidence
 0079adc0	annotated	CMapObjGroup::SetBsp	tag in src/world/map/CMapObjGroupLoad.cpp
 0079ae80	override	CMap::BuildBspLeafCache	
 0079b440	annotated	CMap::GetLoadedArea	tag in src/world/map/CMap.cpp
-0079d5e0	callgraph	Liquid::Draw	only unmatched callee of 00790a80=CWorldScene::DrawLiquidPass
 0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
 0079e5c0	annotated	CMap::GetTerrainPixelShader	tag in src/world/map/CMap.cpp

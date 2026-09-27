@@ -193744,7 +193744,7 @@
 "stub": false,
 "lines": 193,
 "refs": [],
-"line": 411
+"line": 423
 },
 "CWorld::SetCameraUnderLiquid": {
 "files": [
@@ -193757,7 +193757,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 605
+"line": 617
 },
 "CWorld::IsCameraUnderLiquid": {
 "files": [
@@ -193770,7 +193770,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 609
+"line": 621
 },
 "CWorld::GetSkyboxPath": {
 "files": [
@@ -193785,7 +193785,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 613
+"line": 625
 },
 "CWorld::GetDayProgress": {
 "files": [
@@ -193805,7 +193805,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 617
+"line": 629
 },
 "CWorld::GetOutdoorAmbient": {
 "files": [
@@ -193818,7 +193818,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 629
+"line": 641
 },
 "CWorld::GetOutdoorDiffuse": {
 "files": [
@@ -193831,7 +193831,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 633
+"line": 645
 },
 "CWorld::GetOutdoorDirection": {
 "files": [
@@ -193844,7 +193844,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 637
+"line": 649
 },
 "CWorld::GetFogColor": {
 "files": [
@@ -193857,7 +193857,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 641
+"line": 653
 },
 "CWorld::GetSkyHighlight": {
 "files": [
@@ -193870,7 +193870,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 645
+"line": 657
 },
 "CWorld::GetFogStart": {
 "files": [
@@ -193883,7 +193883,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 649
+"line": 661
 },
 "CWorld::GetFogEnd": {
 "files": [
@@ -193896,7 +193896,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 653
+"line": 665
 },
 "CWorld::GetFogRate": {
 "files": [
@@ -193909,7 +193909,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 657
+"line": 669
 },
 "CWorld::GetSidnScale": {
 "files": [
@@ -193924,7 +193924,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 661
+"line": 673
 },
 "CWorld::GetSkyColor": {
 "files": [
@@ -193940,7 +193940,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 665
+"line": 677
 },
 "AdjustFarClip": {
 "files": [
@@ -193965,7 +193965,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 677
+"line": 689
 },
 "CWorld::AddObject": {
 "files": [
@@ -193996,7 +193996,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 695
+"line": 707
 },
 "CWorld::RemoveObject": {
 "files": [
@@ -194015,7 +194015,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 743
+"line": 755
 },
 "CWorld::SetObjectHandler": {
 "files": [
@@ -194028,7 +194028,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 760
+"line": 772
 },
 "CWorld::GetObjectFloor": {
 "files": [
@@ -194045,7 +194045,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 768
+"line": 780
 },
 "CWorld::UpdateWindowAndMap": {
 "files": [
@@ -194063,7 +194063,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 783
+"line": 795
 },
 "CWorld::GetCurTimeMs": {
 "files": [
@@ -194076,7 +194076,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 793
+"line": 805
 },
 "CWorld::GetCurTimeSec": {
 "files": [
@@ -194089,7 +194089,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 797
+"line": 809
 },
 "CWorld::GetFarClip": {
 "files": [
@@ -194102,7 +194102,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 801
+"line": 813
 },
 "CWorld::GetHorizonFarClip": {
 "files": [
@@ -194120,7 +194120,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 813
+"line": 825
 },
 "CWorld::GetFixedPrecisionTime": {
 "files": [
@@ -194135,7 +194135,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 826
+"line": 838
 },
 "CWorld::GetGameTimeFixed": {
 "files": [
@@ -194148,7 +194148,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 830
+"line": 842
 },
 "CWorld::GetGameTimeSec": {
 "files": [
@@ -194161,7 +194161,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 834
+"line": 846
 },
 "CWorld::GetM2Scene": {
 "files": [
@@ -194174,7 +194174,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 838
+"line": 850
 },
 "CWorld::GetNearClip": {
 "files": [
@@ -194187,7 +194187,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 842
+"line": 854
 },
 "CWorld::GetTickTimeFixed": {
 "files": [
@@ -194200,7 +194200,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 846
+"line": 858
 },
 "CWorld::GetTickTimeMs": {
 "files": [
@@ -194213,7 +194213,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 850
+"line": 862
 },
 "CWorld::GetTickTimeSec": {
 "files": [
@@ -194226,7 +194226,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 854
+"line": 866
 },
 "CWorld::Initialize": {
 "files": [
@@ -194271,7 +194271,7 @@
 "stub": false,
 "lines": 69,
 "refs": [],
-"line": 858
+"line": 870
 },
 "CWorld::GetOutdoorParamsID": {
 "files": [
@@ -194284,7 +194284,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 928
+"line": 940
 },
 "CWorld::GetLiquidAlpha": {
 "files": [
@@ -194301,7 +194301,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 935
+"line": 947
 },
 "CWorld::GetLiquidShallow": {
 "files": [
@@ -194317,7 +194317,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 939
+"line": 951
 },
 "CWorld::GetLiquidDeep": {
 "files": [
@@ -194333,7 +194333,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 944
+"line": 956
 },
 "CWorld::LoadMap": {
 "files": [
@@ -194357,7 +194357,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 948
+"line": 960
 },
 "CWorld::OnTick": {
 "files": [
@@ -194374,7 +194374,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 982
+"line": 994
 },
 "CWorld::SetFarClip": {
 "files": [
@@ -194391,7 +194391,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 988
+"line": 1000
 },
 "CWorld::LightingCallback": {
 "files": [
@@ -194420,7 +194420,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 1033
+"line": 1045
 },
 "CWorld::SetLoadProgressCallback": {
 "files": [
@@ -194433,7 +194433,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1070
+"line": 1082
 },
 "CWorld::SetUpdateTime": {
 "files": [
@@ -194451,7 +194451,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1074
+"line": 1086
 },
 "CWorld::UpdateWindow": {
 "files": [
@@ -194488,7 +194488,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 1094
+"line": 1106
 },
 "CWorld::Update": {
 "files": [
@@ -194521,7 +194521,7 @@
 "stub": false,
 "lines": 84,
 "refs": [],
-"line": 1157
+"line": 1169
 },
 "CWorld::GetCloudDensity": {
 "files": [
@@ -194534,7 +194534,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1242
+"line": 1254
 },
 "CWorld::GetBodyTint": {
 "files": [
@@ -194547,7 +194547,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1246
+"line": 1258
 },
 "CWorld::GetCameraPos": {
 "files": [
@@ -194560,7 +194560,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1250
+"line": 1262
 },
 "CWorld::GetCameraDir": {
 "files": [
@@ -194573,7 +194573,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1254
+"line": 1266
 },
 "CWorld::SetNearClip": {
 "files": [
@@ -194586,7 +194586,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1259
+"line": 1271
 },
 "CWorld::SetHorizonFarClipScale": {
 "files": [
@@ -194599,7 +194599,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1264
+"line": 1276
 },
 "CWorld::SetHorizonNearClipScale": {
 "files": [
@@ -194612,7 +194612,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1269
+"line": 1281
 },
 "CWorld::GetDetailBands": {
 "files": [
@@ -194625,7 +194625,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1285
+"line": 1297
 },
 "CWorld::SetupFogRenderStates": {
 "files": [
@@ -194653,7 +194653,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1292
+"line": 1304
 },
 "CWorld::SetEnvironmentDetail": {
 "files": [
@@ -194670,7 +194670,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1308
+"line": 1320
 },
 "TextureLodBiasSet": {
 "files": [
