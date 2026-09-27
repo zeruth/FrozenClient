@@ -5907,6 +5907,85 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_008243e0
+// Move every live particle and ribbon through a matrix. Used when the space those particles are
+// expressed in changes, so that what is already on screen moves with it instead of jumping.
+//
+// Counts come from the MODEL DATA, not from the emitter arrays: the reference loops
+// m_shared->m_data->particles.Count() and ribbons.Count(), which is the authored count, and the
+// arrays are sized to match in InitializeLoaded. Particles first, then ribbons, which is the
+// reference's order.
+//
+// The null checks on each slot are FROZEN-ONLY and are not optional. InitializeLoaded leaves an
+// emitter slot null when the model asks for an emitter type frozen does not implement, so the
+// arrays are as long as the authored count but can be sparse. The reference has no such holes.
+void CM2Model::TransformEmitters(const C44Matrix& m) {
+    M2Data* data = this->m_shared->m_data;
+
+    if (this->m_particleEmitters) {
+        for (uint32_t i = 0; i < data->particles.Count(); i++) {
+            if (this->m_particleEmitters[i]) {
+                this->m_particleEmitters[i]->Transform(m);
+            }
+        }
+    }
+
+    if (this->m_ribbonEmitters) {
+        for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+            if (this->m_ribbonEmitters[i]) {
+                this->m_ribbonEmitters[i]->Transform(m);
+            }
+        }
+    }
+}
+
+// ref: FUN_00824460
+// Put this model's particles into a relative space, or back into world space when handed null.
+//
+// THE TRANSFORM ONLY RUNS ON A TRANSITION, and which matrix it uses differs by direction. Going
+// from world space into a relative space it uses the new matrix's AffineInverse -- the particles
+// already hold world positions, so they have to be pulled back into the new space. Going the other
+// way it uses the OUTGOING matrix as-is, pushing them out into world space. Setting a second
+// relative matrix over an existing one transforms NOTHING: the old pointer was non-null, so the
+// branch is skipped and the particles are simply reinterpreted in the new space. That looks like an
+// oversight and is transcribed as written -- it is the reference's behaviour and callers evidently
+// clear to null between spaces.
+//
+// The recursion covers ATTACHED models, because a particle emitter on an attachment has to move
+// with the same space as its parent. m_attachIndex of 0xFFFF means the child is not attached at a
+// real point and is skipped -- and note the skip is on the CHILD's index, so an unattached child
+// also stops the walk descending through it.
+//
+// Gated on m_loaded, and that gate covers the whole body: an unloaded model has no emitter arrays
+// to transform and no attachment list to walk, and unlike most setters here this one does NOT
+// defer through a model call -- the reference simply drops the request.
+void CM2Model::SetParticleRelative(C44Matrix* relative) {
+    if (!this->m_loaded) {
+        return;
+    }
+
+    if (!relative) {
+        if (this->m_particleRelative) {
+            this->TransformEmitters(*this->m_particleRelative);
+        }
+
+        this->m_particleRelative = nullptr;
+    } else {
+        C44Matrix* previous = this->m_particleRelative;
+
+        this->m_particleRelative = relative;
+
+        if (!previous) {
+            this->TransformEmitters(relative->AffineInverse());
+        }
+    }
+
+    for (CM2Model* child = this->m_attachList; child; child = child->m_attachNext) {
+        if (child->m_attachIndex != 0xFFFF) {
+            child->SetParticleRelative(relative);
+        }
+    }
+}
 // ref: FUN_008272f0
 // Hand one bone a matrix from outside the animation system.
 //

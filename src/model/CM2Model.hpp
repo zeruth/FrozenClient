@@ -260,13 +260,17 @@ class CM2Model {
         // nullable matrix. CM2SceneRender::DrawParticle and DrawRibbon both hand it straight to
         // the emitter's Draw.
         //
-        // FUN_00824460 is its only setter and is not ported. It walks the attachment tree from
-        // this model down (skipping attachments whose index is 0xFFFF) and, on the null ->
-        // non-null transition ONLY, transforms the already-live particles through the new
-        // matrix's AffineInverse so they do not jump; passing null runs the same transform with
-        // the OUTGOING matrix on the way out. Porting it means porting FUN_008243e0 with it.
-        // Until then this stays null and every particle draws in world space, which is what the
-        // reference does for everything that never calls that setter.
+        // Set through CM2Model::SetParticleRelative (FUN_00824460), PORTED 2026-09-27 together
+        // with the transform it needs (FUN_008243e0, TransformEmitters). That setter walks the
+        // attachment tree from this model down, skipping attachments whose index is 0xFFFF, and
+        // on the null -> non-null transition ONLY it moves the already-live particles through the
+        // new matrix's AffineInverse so they do not jump; passing null runs the same transform
+        // with the OUTGOING matrix on the way out.
+        //
+        // STILL EFFECTIVELY NULL, because nothing in frozen CALLS that setter yet -- the
+        // reference's eight callers are all unported. So every particle continues to draw in
+        // world space, which is also what the reference does for anything that never calls it.
+        // The difference is that the mechanism is now here rather than missing.
         C44Matrix* m_particleRelative = nullptr;
 
         // NOT PORTED, and recorded so the gap is visible rather than silently closed: the
@@ -546,6 +550,13 @@ class CM2Model {
         // Give one bone an externally supplied matrix. Deferred as model call 9 when the model has
         // not loaded -- and that call is the reason CM2ModelCall needs seventeen argument slots.
         void SetBoneMatrix(uint32_t boneId, const C44Matrix& matrix);
+
+        // Move every live particle and ribbon of this model through a matrix.
+        void TransformEmitters(const C44Matrix& m);
+
+        // Put this model's particles into a RELATIVE space, or back into world space with null.
+        // Recurses down the attachment tree.
+        void SetParticleRelative(C44Matrix* relative);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };

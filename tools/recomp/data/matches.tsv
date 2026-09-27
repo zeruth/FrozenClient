@@ -3520,6 +3520,8 @@ addr	how	frozen	evidence
 008240f0	annotated	CM2Model::SetLightEnabled	tag in src/model/CM2Model.cpp
 00824230	annotated	CM2Model::SetRibbonFlag8	tag in src/model/CM2Model.cpp
 00824320	annotated	CM2Model::GetSharedUint194	tag in src/model/CM2Model.cpp
+008243e0	annotated	CM2Model::TransformEmitters	tag in src/model/CM2Model.cpp
+00824460	annotated	CM2Model::SetParticleRelative	tag in src/model/CM2Model.cpp
 008244f0	annotated	CM2Model::LinkToCallbackListTail	tag in src/model/CM2Model.cpp
 00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp

@@ -82537,6 +82537,46 @@
 "refs": [],
 "line": 5892
 },
+"CM2Model::TransformEmitters": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"M2Array<M2Particle>::Count",
+"CM2ParticleEmitter::Transform",
+"M2Array<M2Ribbon>::Count",
+"CM2Ribbon::Transform"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 6,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 5922
+},
+"CM2Model::SetParticleRelative": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"CM2Model::TransformEmitters",
+"C44Matrix::AffineInverse",
+"CM2Model::TransformEmitters",
+"CM2Model::SetParticleRelative"
+],
+"strings": [],
+"consts": [
+"0xFFFF"
+],
+"branches": 6,
+"stub": false,
+"lines": 27,
+"refs": [],
+"line": 5962
+},
 "CM2Model::SetBoneMatrix": {
 "files": [
 "src/model/cm2model.cpp"
@@ -82565,7 +82605,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 5926
+"line": 6005
 },
 "CM2Model::SetGeometryVisibleByIndex": {
 "files": [
@@ -82589,7 +82629,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 5998
+"line": 6077
 },
 "CM2Model::LoadSequence": {
 "files": [
@@ -82616,7 +82656,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 6056
+"line": 6135
 },
 "CM2Model::SetLightEnabled": {
 "files": [
@@ -82639,7 +82679,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 6100
+"line": 6179
 },
 "CM2Model::SetBoneSequenceTime": {
 "files": [
@@ -82668,7 +82708,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 6138
+"line": 6217
 },
 "CM2Model::SetRibbonFlag8": {
 "files": [
@@ -82691,7 +82731,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 6204
+"line": 6283
 },
 "CM2Model::SetParticleEmission": {
 "files": [
@@ -82715,7 +82755,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 6238
+"line": 6317
 },
 "CM2Model::GetAttachmentWorldPosition": {
 "files": [
@@ -82740,7 +82780,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 6274
+"line": 6353
 },
 "M2BuildBasisFromAxis": {
 "files": [
@@ -82767,7 +82807,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 6302
+"line": 6381
 },
 "M2ParticleFlushDenormals": {
 "files": [
