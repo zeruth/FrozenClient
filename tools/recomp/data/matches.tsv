@@ -2914,6 +2914,7 @@ addr	how	frozen	evidence
 00790e20	override	CWorldScene::SubFrustum	
 00791120	annotated	CWorldScene::SphereOutsideFrustum	tag in src/world/CWorldScene.cpp
 007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
+007917b0	callgraph	TSBaseArray<CMapObjDefGroup *>::operator[]	only unmatched callee of 007c1dc0=QueryDefGroupSegment
 00791cb0	annotated	CWorldScene::VisitStaticEntity	tag in src/world/CWorldScene.cpp
 00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
@@ -3164,6 +3165,7 @@ addr	how	frozen	evidence
 007c1660	annotated	CMap::GetTerrainHeight	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
 007c1c40	annotated	CMapDoodadDef::FloorLight	tag in src/world/map/CMapDoodadDef.cpp
+007c1dc0	override	QueryDefGroupSegment	
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
 007c21e0	annotated	CMapDoodadDef::CMapDoodadDef	tag in src/world/map/CMapDoodadDef.cpp
 007c2ff0	annotated	CMap::AsyncLoadCleanup	tag in src/world/map/CMap.cpp

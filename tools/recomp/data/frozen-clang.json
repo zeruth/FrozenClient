@@ -208843,6 +208843,34 @@
 "refs": [],
 "line": 116
 },
+"QueryDefGroupSegment": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"CMapObj::GetGroup",
+"C3Segment::C3Segment",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"CMapObjGroup::QuerySegmentDual",
+"CMapObj::SegmentVsPortals",
+"TSBaseArray<CMapObjDefGroup *>::operator[]",
+"CMapObj::GetGroup"
+],
+"strings": [],
+"consts": [
+"0",
+"0x8",
+"0xffff",
+"1",
+"2"
+],
+"branches": 11,
+"stub": false,
+"lines": 72,
+"refs": [],
+"line": 156
+},
 "DetailDoodad::ReleaseBuffers": {
 "files": [
 "src/world/map/detaildoodad.cpp"

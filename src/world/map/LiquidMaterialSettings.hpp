@@ -168,7 +168,13 @@ class CMaterialProcWater : public IMaterial {
 };
 
 // The fixed-function flavours. They load no shaders, which is the whole point of them.
-// ref: FUN_008a4850, FUN_008a48d0, FUN_008a4770
+//
+// NOT TAGGED, because these three are EMPTY and are meant to stay that way: their reference
+// bodies (water FUN_008a4850, magma FUN_008a48d0, procedural water FUN_008a4770) draw through
+// SetTextureStageState, and frozen's D3D backend does not have a single call to it. Their
+// overrides record that as the reason. The line used to read `// ref:` and so claimed all three
+// at once on whichever declaration the parser reached first, which is both false and a link the
+// addresses' own `unlinked` entries were refusing.
 class CMaterialWaterFFP : public IMaterial {};
 class CMaterialMagmaFFP : public IMaterial {};
 class CMaterialProcWaterFFP : public IMaterial {};

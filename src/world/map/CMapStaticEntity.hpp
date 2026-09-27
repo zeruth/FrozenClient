@@ -84,6 +84,31 @@ class CMapStaticEntity : public CMapBaseObj {
                                 const C3Vector* point) = 0;
 };
 
+// One hit from a segment query over the placed buildings. Sixteen bytes in the reference, and
+// the queries keep them in PAIRS -- a collision hit and a render hit -- which is why their
+// callers offset by 0x10 to pick one.
+//
+// A face of 0xffff does not mean 'no face': it means the segment left through a PORTAL rather
+// than landing on a polygon, and the distance is the portal crossing.
+struct SMapObjHit {
+    CMapObjDef* def = nullptr;              // +0x00
+    CMapObjDefGroup* defGroup = nullptr;    // +0x04
+    float distance = 0.0f;                  // +0x08
+    uint16_t face = 0;                      // +0x0c
+    uint16_t interior = 0;                  // +0x0e: the group is a room, not open air
+};
+
+// NO SIZE ASSERT, and deliberately: the reference packs this into 16 bytes with two 32-bit
+// pointers, and frozen is a 64-bit build, so it measures 24. Nothing reads the record from a file
+// or indexes it by a baked stride -- the reference's own callers keep PAIRS of it and step by
+// sizeof, which is why the width can differ without changing behaviour. The offsets in the comments
+// above are the reference's, for reading its disassembly against this.
+
+// One placed building group's answer to a segment: the geometry it hits, and the portal it
+// leaves through. Both records are updated in place. ref: FUN_007c1dc0
+void QueryDefGroupSegment(CMapObjDef* def, CMapObjDefGroup* defGroup, const C3Vector& start,
+                          const C3Vector& end, SMapObjHit* collision, SMapObjHit* render);
+
 // Which side of a building's wall a placed entity ended up on, and its floor light if it
 // ended up inside. A free function in the reference too -- it returns with a plain `ret`,
 // so the caller cleans the stack and there is no `this`. ref: FUN_007c15f0

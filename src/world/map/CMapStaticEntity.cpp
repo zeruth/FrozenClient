@@ -127,3 +127,102 @@ void ClassifyEntityInterior(CMapStaticEntity* entity, CMapObjDef* def,
         entity->FloorLight(def, defGroup->m_groupIndex, &face, &point);
     }
 }
+
+// Where the portal search starts, as a fraction of the segment: DAT_00a40314, and slightly PAST
+// the far end at 1.05 rather than 1.0, so a portal sitting exactly on the endpoint is still found.
+static const float PORTAL_SEARCH_LIMIT = 1.05f;
+
+// How much nearer a portal crossing has to be than the geometry hit to replace it. DAT_009e8cd0.
+static const float PORTAL_NEARER_EPSILON = 0.0001f;
+
+// ref: FUN_007c1dc0
+// One placed building group's answer to a segment: what geometry it hits, and whether the segment
+// leaves the room through a portal instead.
+//
+// The group's BSP is asked for both hits at once -- QuerySegmentDual returns a collision hit and a
+// render hit, which are different surfaces: a doorway's collision volume is not its drawn
+// geometry. A face of -1 from either means that half found nothing, and that half's record is left
+// alone rather than cleared, because its caller is accumulating across many groups.
+//
+// THE PORTAL PASS runs only for an interior group, and only replaces the COLLISION record. It is
+// what lets a query started inside a room reach out of it: if the nearest portal crossing is
+// closer than the geometry, the hit becomes that portal, the face becomes 0xffff, and the record's
+// group becomes the one on the far side. The 0xffff is not a sentinel for failure -- the caller
+// reads it as 'left through a doorway'.
+//
+// The reference compares `t - collision->distance` against 1e-4 with an x87 pair whose `jp` is
+// taken unless the difference is strictly less, so an equal or NaN difference does NOT replace the
+// record. A plain C `<` reproduces both of those.
+void QueryDefGroupSegment(CMapObjDef* def, CMapObjDefGroup* defGroup, const C3Vector& start,
+                          const C3Vector& end, SMapObjHit* collision, SMapObjHit* render) {
+    CMapObj* mapObj = def->m_mapObj;
+
+    CMapObjGroup* group = mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+    if (!group) {
+        return;
+    }
+
+    int32_t collisionFace = -1;
+    int32_t renderFace = -1;
+
+    C3Segment segment;
+    segment.start = start;
+    segment.end = end;
+
+    // MOGP bit 3 is Exterior, so its complement is 'this group is a room'.
+    uint16_t interior = (group->m_flags & 0x8) ? 0 : 1;
+
+    if (group->QuerySegmentDual(segment, &collision->distance, &collisionFace,
+                               &render->distance, &renderFace)) {
+        if (collisionFace != -1) {
+            collision->def = def;
+            collision->defGroup = defGroup;
+            collision->face = static_cast<uint16_t>(collisionFace);
+            collision->interior = interior;
+        }
+
+        if (renderFace != -1) {
+            render->face = static_cast<uint16_t>(renderFace);
+            render->def = def;
+            render->defGroup = defGroup;
+            render->interior = interior;
+        }
+    }
+
+    if (!interior) {
+        return;
+    }
+
+    float t = PORTAL_SEARCH_LIMIT;
+    uint32_t portalGroups[2] = { 0, 0 };
+
+    if (!mapObj->SegmentVsPortals(defGroup->m_groupIndex, segment, &t, portalGroups)) {
+        return;
+    }
+
+    if (!(t - collision->distance < PORTAL_NEARER_EPSILON)) {
+        return;
+    }
+
+    // portalGroups[0] is the group the segment is heading into, as an index into the def's own
+    // per-group array -- the reference reaches it through a hand-rolled accessor over four inline
+    // slots and a heap spill (FUN_007917b0), which is frozen's m_defGroups.
+    CMapObjDefGroup* target = def->m_defGroups[portalGroups[0]];
+
+    if (!target) {
+        return;
+    }
+
+    collision->def = def;
+    collision->distance = t;
+    collision->defGroup = target;
+    collision->face = 0xffff;
+
+    // FROZEN-ONLY null check: the reference reads the far group's flags without one.
+    CMapObjGroup* targetGroup = mapObj->GetGroup(target->m_groupIndex, 0);
+
+    if (targetGroup) {
+        collision->interior = (targetGroup->m_flags & 0x8) ? 0 : 1;
+    }
+}

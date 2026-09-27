@@ -46584,6 +46584,19 @@
   "refSize": 184,
   "status": "ported"
  },
+ "007917b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "TSBaseArray<CMapObjDefGroup *>::operator[]",
+  "frozenSize": 142,
+  "how": "callgraph",
+  "module": "WorldParam.cpp",
+  "refSize": 32,
+  "status": "diverged"
+ },
  "00791cb0": {
   "branchRatio": 0.533,
   "constOverlap": 0.136,
@@ -50582,6 +50595,22 @@
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 376,
+  "status": "ported"
+ },
+ "007c1dc0": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "QueryDefGroupSegment",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapMem.cpp",
+  "refSize": 345,
   "status": "ported"
  },
  "007c1ff0": {
