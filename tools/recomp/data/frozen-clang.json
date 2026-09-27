@@ -65354,21 +65354,20 @@
 "files": [
 "src/gx/blit.cpp"
 ],
-"callseq": [
-"__acrt_iob_func",
-"fprintf"
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"3",
+"4"
 ],
-"strings": [
-"Blit_Argb8888_Abgr8888",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\gx\\blit.cpp"
-],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 26,
 "refs": [],
-"line": 62
+"line": 67
 },
 "Blit_Argb8888_Argb8888_A1": {
 "files": [
@@ -65390,7 +65389,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 67
+"line": 95
 },
 "Blit_Argb8888_Argb8888_A8": {
 "files": [
@@ -65405,7 +65404,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 84
+"line": 112
 },
 "Blit_Argb8888_Argb4444": {
 "files": [
@@ -65426,7 +65425,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 88
+"line": 116
 },
 "Blit_Argb8888_Argb1555": {
 "files": [
@@ -65450,7 +65449,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 113
+"line": 141
 },
 "Blit_Argb8888_Rgb565": {
 "files": [
@@ -65475,27 +65474,29 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 138
+"line": 166
 },
 "Blit_Argb4444_Abgr8888": {
 "files": [
 "src/gx/blit.cpp"
 ],
-"callseq": [
-"__acrt_iob_func",
-"fprintf"
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0xF",
+"1",
+"12",
+"2",
+"3",
+"4",
+"8"
 ],
-"strings": [
-"Blit_Argb4444_Abgr8888",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\gx\\blit.cpp"
-],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 3,
+"stub": false,
+"lines": 32,
 "refs": [],
-"line": 206
+"line": 244
 },
 "BuildDxtWeights": {
 "files": [
@@ -65515,7 +65516,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 257
+"line": 324
 },
 "Dxt565ToArgb8888": {
 "files": [
@@ -65533,7 +65534,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 270
+"line": 337
 },
 "Dxt1ExpandColors": {
 "files": [
@@ -65562,7 +65563,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 283
+"line": 350
 },
 "Dxt1DecodeBlock": {
 "files": [
@@ -65582,7 +65583,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 327
+"line": 394
 },
 "Blit_Dxt1_Argb8888": {
 "files": [
@@ -65602,7 +65603,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 354
+"line": 421
 },
 "DxtBlend565": {
 "files": [
@@ -65617,7 +65618,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 390
+"line": 457
 },
 "Dxt1ExpandColorsRgb565": {
 "files": [
@@ -65643,7 +65644,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 406
+"line": 473
 },
 "Dxt1ExpandColorsArgb1555": {
 "files": [
@@ -65671,7 +65672,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 440
+"line": 507
 },
 "Dxt1DecodeBlock16": {
 "files": [
@@ -65689,7 +65690,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 472
+"line": 539
 },
 "Blit_Dxt1_Argb1555": {
 "files": [
@@ -65711,7 +65712,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 488
+"line": 555
 },
 "Blit_Dxt1_Rgb565": {
 "files": [
@@ -65733,7 +65734,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 525
+"line": 592
 },
 "Blit_Dxt1_Dxt1": {
 "files": [
@@ -65753,7 +65754,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 559
+"line": 626
 },
 "DxtExpandColorsNoAlphaMode": {
 "files": [
@@ -65781,7 +65782,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 572
+"line": 639
 },
 "Dxt3DecodeBlock": {
 "files": [
@@ -65807,7 +65808,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 608
+"line": 675
 },
 "Blit_Dxt3_Argb8888": {
 "files": [
@@ -65827,7 +65828,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 635
+"line": 702
 },
 "Dxt565ToArgb4444": {
 "files": [
@@ -65846,7 +65847,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 678
+"line": 745
 },
 "DxtExpandColorsArgb4444": {
 "files": [
@@ -65876,7 +65877,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 686
+"line": 753
 },
 "Dxt3DecodeBlock4444": {
 "files": [
@@ -65902,7 +65903,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 710
+"line": 777
 },
 "Dxt5DecodeBlock4444": {
 "files": [
@@ -65929,7 +65930,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 737
+"line": 804
 },
 "Blit_Dxt3_Argb4444": {
 "files": [
@@ -65950,7 +65951,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 772
+"line": 839
 },
 "Blit_Dxt35_Dxt35": {
 "files": [
@@ -65972,7 +65973,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 804
+"line": 871
 },
 "Dxt5ExpandAlpha": {
 "files": [
@@ -65995,7 +65996,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 830
+"line": 897
 },
 "Dxt5DecodeBlock": {
 "files": [
@@ -66022,7 +66023,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 864
+"line": 931
 },
 "Blit_Dxt5_Argb8888": {
 "files": [
@@ -66042,7 +66043,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 900
+"line": 967
 },
 "Blit_Dxt5_Argb4444": {
 "files": [
@@ -66063,7 +66064,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 935
+"line": 1002
 },
 "InitBlit": {
 "files": [
@@ -66076,7 +66077,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 970
+"line": 1037
 },
 "Blit": {
 "files": [
@@ -66095,7 +66096,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1006
+"line": 1073
 },
 "CBLPFile::CBLPFile": {
 "files": [

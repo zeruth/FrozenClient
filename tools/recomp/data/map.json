@@ -37703,6 +37703,38 @@
   "refSize": 317,
   "status": "ported"
  },
+ "006abe90": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.4,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb4444_Abgr8888",
+  "frozenSize": 212,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 175,
+  "status": "ported"
+ },
+ "006abf40": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb8888_Abgr8888",
+  "frozenSize": 141,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 126,
+  "status": "ported"
+ },
  "006ac130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

@@ -59,8 +59,36 @@ void Blit_uint32_uint32(const C2iVector& size, const void* in, uint32_t inStride
     }
 }
 
+// ref: FUN_006abf40
+// ARGB8888 to ABGR8888: red and blue trade places and the other two bytes stay where they are.
+// Both formats hold alpha in the top byte, so only bytes 0 and 2 move.
+//
+// Written byte by byte rather than as a shift-and-mask word, which is how the reference does it.
 void Blit_Argb8888_Abgr8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (int32_t y = 0; y < size.y; y++) {
+        const unsigned char* s = src;
+        unsigned char* d = dst;
+
+        for (int32_t x = 0; x < size.x; x++) {
+            d[0] = s[2];
+            d[1] = s[1];
+            d[2] = s[0];
+            d[3] = s[3];
+
+            s += 4;
+            d += 4;
+        }
+
+        src += inStride;
+        dst += outStride;
+    }
 }
 
 // Copies ARGB8888 texels, collapsing alpha to fully opaque or fully transparent
@@ -203,8 +231,47 @@ void Blit_Argb8888_Rgb565(const C2iVector& size, const void* in, uint32_t inStri
     }
 }
 
+// ref: FUN_006abe90
+// ARGB4444 to ABGR8888: widen every channel from four bits to eight AND reorder, in one pass.
+//
+// The widening is REPLICATION -- `v << 4 | v` -- so a full nibble reaches 0xFF and the scale is
+// preserved. That is worth contrasting with the DXT3 to ARGB8888 path, which widens the same four
+// bits with a plain `v << 4` and therefore stops at 0xF0. Both are the reference's; they are
+// different functions and they genuinely disagree.
+//
+// Destination byte order is red, green, blue, alpha from the low byte up, which is ABGR8888 read
+// as a little-endian word.
 void Blit_Argb4444_Abgr8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (int32_t y = 0; y < size.y; y++) {
+        auto s = reinterpret_cast<const uint16_t*>(src);
+        unsigned char* d = dst;
+
+        for (int32_t x = 0; x < size.x; x++) {
+            uint32_t v = s[x];
+
+            uint32_t a = (v >> 12) & 0xF;
+            uint32_t r = (v >> 8) & 0xF;
+            uint32_t g = (v >> 4) & 0xF;
+            uint32_t b = v & 0xF;
+
+            d[0] = static_cast<unsigned char>((r << 4) | r);
+            d[1] = static_cast<unsigned char>((g << 4) | g);
+            d[2] = static_cast<unsigned char>((b << 4) | b);
+            d[3] = static_cast<unsigned char>((a << 4) | a);
+
+            d += 4;
+        }
+
+        src += inStride;
+        dst += outStride;
+    }
 }
 
 // THE SEVEN DXT-TO-UNCOMPRESSED BLITTERS BELOW ARE ALL STUBS, and they are the only reason
