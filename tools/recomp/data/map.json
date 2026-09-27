@@ -11516,6 +11516,51 @@
   "refSize": 47,
   "status": "ported"
  },
+ "004c3e00": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+  ],
+  "frozen": "CBezierSpline::SegmentAt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "004c4880": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+  ],
+  "frozen": "CBezierSpline::Evaluate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
+ "004c4930": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+  ],
+  "frozen": "CBezierSpline::Tangent",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 58,
+  "status": "ported"
+ },
  "004c4b80": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,

@@ -7,6 +7,7 @@ file(GLOB TEMPEST_SOURCES CONFIGURE_DEPENDS
     "random/*.cpp"
     "rect/*.cpp"
     "segment/*.cpp"
+    "spline/*.cpp"
     "vector/*.cpp"
 )
 

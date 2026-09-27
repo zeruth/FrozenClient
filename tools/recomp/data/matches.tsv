@@ -718,6 +718,9 @@ addr	how	frozen	evidence
 004c35d0	annotated	C3Vector::operator/=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3650	annotated	C3Vector::Cross	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c3e00	annotated	CBezierSpline::SegmentAt	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
+004c4880	annotated	CBezierSpline::Evaluate	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
+004c4930	annotated	CBezierSpline::Tangent	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
 004c4b80	override	CWorld::GetTickTimeSec	
 004c4df0	annotated	C2Vector::operator=	tag in lib/typhoon/tempest/vector/C2Vector.cpp
 004c51b0	annotated	C33Matrix::C33Matrix	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
