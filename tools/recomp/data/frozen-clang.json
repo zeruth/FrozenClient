@@ -208823,7 +208823,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 125
+"line": 128
 },
 "Liquid::IGeomFactory::AddRef": {
 "files": [
@@ -208836,7 +208836,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 34
+"line": 35
 },
 "Liquid::CChunkGeomFactory::Release": {
 "files": [
@@ -208856,7 +208856,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 38
+"line": 39
 },
 "Liquid::CClientEnvironment::AddRef": {
 "files": [
@@ -208869,7 +208869,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 48
+"line": 49
 },
 "Liquid::CClientEnvironment::Release": {
 "files": [
@@ -208889,7 +208889,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 51
+"line": 52
 },
 "Liquid::CInstance::AddRef": {
 "files": [
@@ -208902,7 +208902,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 58
+"line": 59
 },
 "Liquid::CInstance::Release": {
 "files": [
@@ -208925,7 +208925,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 63
+"line": 64
 },
 "Liquid::CreateGeomFactory": {
 "files": [
@@ -208949,7 +208949,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 89
+"line": 90
 },
 "Liquid::CreateEnvironment": {
 "files": [
@@ -208969,7 +208969,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 109
+"line": 110
 },
 "Liquid::CreateSurface": {
 "files": [
@@ -209012,7 +209012,7 @@
 "stub": false,
 "lines": 123,
 "refs": [],
-"line": 128
+"line": 129
 },
 "Liquid::WriteLayerVertices": {
 "files": [
@@ -209034,7 +209034,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 257
+"line": 258
 },
 "Liquid::WriteLayerIndices": {
 "files": [
@@ -209053,7 +209053,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 328
+"line": 329
 },
 "Liquid::CChunkGeomFactory::Build": {
 "files": [
@@ -209099,7 +209099,7 @@
 "stub": false,
 "lines": 152,
 "refs": [],
-"line": 385
+"line": 386
 },
 "Liquid::Add": {
 "files": [
@@ -209117,7 +209117,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 544
+"line": 545
 },
 "Liquid::Queued": {
 "files": [
@@ -209134,7 +209134,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 557
+"line": 558
 },
 "Liquid::SortAscending": {
 "files": [
@@ -209150,7 +209150,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 569
+"line": 570
 },
 "Liquid::SortDescending": {
 "files": [
@@ -209166,7 +209166,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 592
+"line": 593
 },
 "Liquid::Draw": {
 "files": [
@@ -209198,7 +209198,7 @@
 "stub": false,
 "lines": 44,
 "refs": [],
-"line": 623
+"line": 624
 },
 "Liquid::CClientEnvironment::SetupLighting": {
 "files": [
@@ -209229,7 +209229,7 @@
 "stub": false,
 "lines": 36,
 "refs": [],
-"line": 672
+"line": 673
 },
 "Liquid::CWaveManager::AddRef": {
 "files": [
@@ -209242,7 +209242,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 737
+"line": 738
 },
 "Liquid::CWaveManager::Release": {
 "files": [
@@ -209262,7 +209262,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 742
+"line": 743
 },
 "Liquid::CWaveManager::Update": {
 "files": [
@@ -209310,7 +209310,7 @@
 "stub": false,
 "lines": 123,
 "refs": [],
-"line": 753
+"line": 754
 },
 "Liquid::GetWaveManager": {
 "files": [
@@ -209330,7 +209330,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 881
+"line": 882
 },
 "Liquid::CMeshGeomFactory::Create": {
 "files": [
@@ -209350,7 +209350,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 914
+"line": 915
 },
 "Liquid::CMeshGeomFactory::Release": {
 "files": [
@@ -209370,7 +209370,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 934
+"line": 935
 },
 "Liquid::CMeshGeomFactory::SetTextureId": {
 "files": [
@@ -209383,7 +209383,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 945
+"line": 946
 },
 "Liquid::CMeshGeomFactory::SetLvf": {
 "files": [
@@ -209396,7 +209396,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 950
+"line": 951
 },
 "Liquid::CMeshGeomFactory::SetFixedLight": {
 "files": [
@@ -209409,7 +209409,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 955
+"line": 956
 },
 "Liquid::CMeshGeomFactory::Build": {
 "files": [
@@ -209424,7 +209424,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 984
+"line": 985
 },
 "Liquid::WriteLiquidIndices": {
 "files": [
@@ -209436,13 +209436,13 @@
 "TSBaseArray<unsigned char>::operator[]",
 "TSBaseArray<unsigned char>::Count",
 "TSBaseArray<unsigned char>::operator[]",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()",
-"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1026:17)::operator()"
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()",
+"Liquid::WriteLiquidIndices::(lambda at c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp:1027:17)::operator()"
 ],
 "strings": [],
 "consts": [
@@ -209457,7 +209457,26 @@
 "stub": false,
 "lines": 79,
 "refs": [],
-"line": 1024
+"line": 1025
+},
+"Liquid::LiquidTypeBlock": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"WowClientDB<LiquidTypeRec>::GetRecord",
+"WowClientDB<LiquidMaterialRec>::GetRecord"
+],
+"strings": [],
+"consts": [
+"0",
+"2"
+],
+"branches": 4,
+"stub": false,
+"lines": 26,
+"refs": [],
+"line": 1129
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

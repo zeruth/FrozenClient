@@ -1,5 +1,6 @@
 #include "world/map/LiquidSurface.hpp"
 #include "world/map/CMapObjGroup.hpp"
+#include "db/Db.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include <storm/Memory.hpp>
@@ -1100,6 +1101,56 @@ void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t*
             emittedRow++;
         }
     }
+}
+
+
+// ref: FUN_0079b870
+// Two DBC hops and a gate, resolving a liquid type to the block the per-vertex writer samples.
+// Every offset in the reference landed on a field frozen already names, which is what makes the
+// decode trustworthy rather than plausible:
+//
+//   LiquidTypeRec +0x38 is m_materialID -- it falls exactly after m_particleTexSlots;
+//   LiquidMaterialRec +0x04 is m_LVF, so the gate is a VERTEX FORMAT test, admitting only formats
+//   0 and 2. The other two formats are drawn some other way, which is consistent with the factory
+//   keeping its own `m_LVF == 1` answer in a separate field;
+//   LiquidTypeRec +0xa4 is m_int[0], the first of the four trailing ints -- m_texture[6],
+//   m_color[2] and m_float[18] account for every byte between it and m_materialID.
+//
+// THE RETURN TYPE IS HONESTLY void*. The reference indexes a table at 0x00adfbb4 by m_int[0], and
+// that table has exactly TWO pointer entries, 0x00cdf7d0 and 0x00cdfbd0, which sit 0x400 bytes
+// apart -- the data after them is unrelated floats, so it really is two. What those two 1024-byte
+// blocks hold is not established, so this returns void* and says so rather than inventing a type.
+// Naming it wants the consumer, FUN_007a7b00's use of the value, which is not ported yet.
+//
+// FROZEN-ONLY: the two blocks are reference globals with no counterpart here, so the lookup and the
+// gate are faithful and the final index returns null. That is the same answer an undrawable type
+// gives, so no caller can tell the difference yet -- and the moment the blocks are identified this
+// becomes a one-line change rather than a reinvestigation.
+void* LiquidTypeBlock(int32_t liquidType) {
+    if (!liquidType) {
+        return nullptr;
+    }
+
+    LiquidTypeRec* type = g_liquidTypeDB.GetRecord(liquidType);
+
+    if (!type) {
+        return nullptr;
+    }
+
+    LiquidMaterialRec* material = g_liquidMaterialDB.GetRecord(type->m_materialID);
+
+    if (!material) {
+        return nullptr;
+    }
+
+    if (material->m_LVF != 0 && material->m_LVF != 2) {
+        return nullptr;
+    }
+
+    // The reference returns s_liquidTypeBlocks[type->m_int[0]] here.
+    (void)type->m_int;
+
+    return nullptr;
 }
 
 } // namespace Liquid

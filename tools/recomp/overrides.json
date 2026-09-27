@@ -3380,5 +3380,10 @@
   "0082c8a0": {
     "status": "faithful",
     "note": "CM2Model::SetGeometryVisibleByIndex. Recall 50% on a TWO-call function, and the evidence that it is an artifact rather than a gap is that its already-tagged near-twin CM2Model::SetGeometryVisible (FUN_0082c7c0) scores exactly the same 50% with exactly the same missing SMemAlloc. Both reach SMemAlloc through STORM_NEW, and in both the reference's two calls -- SMemAlloc and UnoptimizeVisibleGeometry -- sit in OPPOSITE branches of the loaded test, so an in-order match can only anchor one of them. Same failure as 00824230. The pair differ only in their selector, which is the thing worth knowing: FUN_0082c7c0 compares each section's authored skinSectionId against the range, this one compares the section's POSITION in the skin profile."
+  },
+  "0079b870": {
+    "frozen": "Liquid::LiquidTypeBlock",
+    "status": "diverged",
+    "note": "Resolves a liquid type through LiquidType.dbc and LiquidMaterial.dbc and gates on the material's m_LVF being 0 or 2. Both lookups and the gate are faithful; the FINAL RETURN is not. The reference indexes a table at 0x00adfbb4 by LiquidTypeRec::m_int[0] -- exactly two pointer entries, 0x00cdf7d0 and 0x00cdfbd0, 0x400 bytes apart -- and what those two 1024-byte blocks hold is not established, so frozen returns null instead of inventing a type for them. Null is also what an undrawable liquid type returns, so no caller can yet tell the difference. Naming the blocks wants FUN_007a7b00's use of the value, which is the per-vertex emit and is not ported. Offsets confirmed against frozen's own records: LiquidTypeRec +0x38 is m_materialID, +0xa4 is m_int[0]; LiquidMaterialRec +0x04 is m_LVF."
   }
 }

@@ -138,6 +138,11 @@ class IGeomFactory {
                               CGxBatch* batch) = 0;
 };
 
+// ref: FUN_0079b870
+// Resolve a liquid type id to the shared block the vertex writer samples, or null when the type
+// cannot be drawn this way. See the definition for what is and is not known about the block.
+void* LiquidTypeBlock(int32_t liquidType);
+
 // The duplicated-edge lists the liquid index writer is handed: which tile columns and which tile
 // rows get emitted TWICE, so a seam can carry two sets of vertices. Two TSGrowableArrays back to
 // back, which is how the reference lays it out -- the counts it reads at +0x04 and +0x14 and the
