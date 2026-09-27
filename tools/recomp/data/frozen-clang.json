@@ -77953,7 +77953,7 @@
 ],
 "branches": 12,
 "stub": false,
-"lines": 111,
+"lines": 117,
 "refs": [],
 "line": 1283
 },
@@ -77979,7 +77979,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1404
+"line": 1410
 },
 "TextureGetDimensions": {
 "files": [
@@ -77998,7 +77998,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1425
+"line": 1431
 },
 "TextureGetGxTex": {
 "files": [
@@ -78027,7 +78027,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 1450
+"line": 1456
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -78040,7 +78040,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1507
+"line": 1513
 },
 "TextureHasAlpha": {
 "files": [
@@ -78058,7 +78058,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1512
+"line": 1518
 },
 "TextureFreeMem": {
 "files": [
@@ -78077,7 +78077,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1523
+"line": 1529
 },
 "TextureGetTexFlags": {
 "files": [
@@ -78097,7 +78097,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1530
+"line": 1536
 },
 "TextureHasPendingData": {
 "files": [
@@ -78115,7 +78115,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1539
+"line": 1545
 },
 "TextureGetRefCount": {
 "files": [
@@ -78134,7 +78134,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1547
+"line": 1553
 },
 "TextureIncreasePriority": {
 "files": [
@@ -78147,7 +78147,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1572
+"line": 1578
 },
 "TextureInitialize": {
 "files": [
@@ -78169,7 +78169,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1576
+"line": 1582
 },
 "TextureIsSame": {
 "files": [
@@ -78191,7 +78191,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1591
+"line": 1597
 },
 "CGxTexFlags::operator==": {
 "files": [
@@ -204421,6 +204421,42 @@
 "lines": 30,
 "refs": [],
 "line": 976
+},
+"CMapObj::RectAdd": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"3"
+],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 1015
+},
+"CMapObj::RectDivide": {
+"files": [
+"src/world/map/cmapobj.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1",
+"2",
+"3"
+],
+"branches": 0,
+"stub": false,
+"lines": 6,
+"refs": [],
+"line": 1025
 },
 "CMapObj::SetInstanceTransform": {
 "files": [

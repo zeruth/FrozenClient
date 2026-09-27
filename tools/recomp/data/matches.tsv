@@ -2960,6 +2960,8 @@ addr	how	frozen	evidence
 007a6b40	annotated	CMapObj::SetVisibleCallback	tag in src/world/map/CMapObjDraw.cpp
 007a6b60	annotated	CMapObj::ReportVisible	tag in src/world/map/CMapObjDraw.cpp
 007a6b90	annotated	CMapObj::ScreenBounds	tag in src/world/map/CMapObjDraw.cpp
+007a6da0	annotated	CMapObj::RectAdd	tag in src/world/map/CMapObj.cpp
+007a6dd0	annotated	CMapObj::RectDivide	tag in src/world/map/CMapObj.cpp
 007a6e00	annotated	CMapObj::SetupPortalContext	tag in src/world/map/CMapObjDraw.cpp
 007a7210	annotated	CMapObj::TestCameraInPortal	tag in src/world/map/CMapObjDraw.cpp
 007a72a0	annotated	ClipPolygonToPlanes	tag in lib/typhoon/tempest/Intersect.cpp

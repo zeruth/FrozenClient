@@ -1348,9 +1348,15 @@ HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* stat
 
     ReportTextureFailure(fileName, "no loader accepted it");
 
+    // THE GREEN SQUARE IS THE REFERENCE'S OWN BEHAVIOUR -- checked 2026-09-27 and recorded here
+    // because a run logs this for Character\Skeleton\Hair00_00.blp and it looks like a frozen bug.
+    // It is not. The reference ends this function with TextureCreateSolid(&DAT_00ac3354), and that
+    // constant is 0xff00ff00, which is exactly CRAPPY_GREEN: green at full alpha. A texture the
+    // loaders will not take draws as a green block in the real client too.
+    //
+    // What IS still missing is the FileError call above, which is why the CStatus the caller passed
+    // learns nothing about the failure.
     return TextureCreateSolid(CRAPPY_GREEN);
-
-    return nullptr;
 }
 
 HTEXTURE TextureCreate(uint32_t width, uint32_t height, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags texFlags, void* userArg, TEXTURE_CALLBACK* userFunc, const char* a8, int32_t a9) {

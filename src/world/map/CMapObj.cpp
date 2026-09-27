@@ -1003,3 +1003,28 @@ void CMapObj::Initialize() {
         ObjectAllocAddHeap(CMapObj::OCCLUSION_RECORD_SIZE, 128, "MAPOBJOCC", true)
     );
 }
+
+// ref: FUN_007a6da0
+// The four floats of a portal rect added componentwise. Four separate scalar adds in the reference,
+// not a vector op, and it is its own function there rather than inlined.
+//
+// NOT WIRED UP YET: frozen's CMapObj::WalkPortals does not call either of these, which is part of why
+// its call-order fidelity sits at 39% -- the rest of that gap is seven callees that are still
+// unlinked. They go in now because they are unambiguous; whoever raises WalkPortals to the
+// reference's shape will need them.
+void CMapObj::RectAdd(float* result, const float* a, const float* b) {
+    result[0] = a[0] + b[0];
+    result[1] = a[1] + b[1];
+    result[2] = a[2] + b[2];
+    result[3] = a[3] + b[3];
+}
+
+// ref: FUN_007a6dd0
+// The same four floats divided componentwise. No guard on a zero divisor, which is the reference's
+// own shape -- the portal walk only ever divides by an extent it has already measured as non-empty.
+void CMapObj::RectDivide(float* result, const float* a, const float* b) {
+    result[0] = a[0] / b[0];
+    result[1] = a[1] / b[1];
+    result[2] = a[2] / b[2];
+    result[3] = a[3] / b[3];
+}

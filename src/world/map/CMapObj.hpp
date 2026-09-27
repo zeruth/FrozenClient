@@ -186,6 +186,12 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // it covers, and how to treat it. Kept per portal rather than per visit, because a
         // portal reached twice in one frame covers the same rectangle both times
         // (DAT_00adff54, 28 bytes each).
+        // Componentwise arithmetic over a PortalRect's four floats, which the reference keeps as two
+        // tiny helpers of its own rather than inlining. Both take the rect's FLOAT BLOCK, so callers
+        // pass &rect.minY -- the flags word is not part of the arithmetic.
+        static void RectAdd(float* result, const float* a, const float* b);
+        static void RectDivide(float* result, const float* a, const float* b);
+
         struct PortalRect {
             // Bit 0: the portal faces away or projects to nothing, so it opens onto nowhere.
             // Bit 1: the camera is standing in the doorway, so it opens onto everything.
