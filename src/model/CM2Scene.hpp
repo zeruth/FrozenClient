@@ -144,6 +144,12 @@ class CM2Scene {
                                 float alpha, int32_t aboveLiquid, int32_t& elementIndex,
                                 uint32_t& additiveCount);
         CM2Model* CreateModel(const char* file, uint32_t a3);
+
+        // Create a model AGAINST an existing one: it shares `source`'s CM2Shared instead of asking
+        // the cache for one, and holds a reference to `source` itself. That reference is the field
+        // CM2Model's header describes at ref +0x30 as "always null so far" -- this is the path that
+        // makes it non-null.
+        CM2Model* CreateModelFrom(CM2Model* source, uint32_t flags);
         int32_t Draw(M2PASS pass);
 
         // Draw the opaque pass into the shadow map, with the reference's ShadowMap / ShadowMapSL

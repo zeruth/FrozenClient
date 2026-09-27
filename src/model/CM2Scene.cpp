@@ -1,5 +1,6 @@
 #include <cstdio>
 #include "model/CM2Scene.hpp"
+#include <common/ObjectAlloc.hpp>
 #include "util/Log.hpp"
 #include "model/M2Model.hpp"
 #include "gx/shader/CShaderEffect.hpp"
@@ -1008,6 +1009,41 @@ void CM2Scene::SetProjectionCallback(void* callback, void* context) {
     this->m_projectionContext = context;
 }
 
+// ref: FUN_0081f8c0
+// The unwind both creation paths share. Not a destructor call on its own: the model's storage came
+// out of an ObjectAlloc pool by handle, so the block has to go back to that pool rather than to
+// free(). CM2Model::Release does these same two steps inline against g_modelPool.
+void DestroyModel(uint32_t* pool, CM2Model* model) {
+    model->~CM2Model();
+
+    ObjectFree(*pool, model->m_memHandle);
+}
+
+// ref: FUN_0081f970
+// Create a model against another one rather than against a file.
+//
+// The difference from CreateModel is entirely in what Initialize is given: the shared data comes
+// from `source` instead of the cache, and `source` itself goes in as the fourth argument, which is
+// the reference it keeps at ref +0x30 and hands back in its destructor. There is no Release of the
+// shared here, and that is correct rather than an omission -- this path never took a reference on
+// it, where CreateModel has to give back the one CreateShared took.
+CM2Model* CM2Scene::CreateModelFrom(CM2Model* source, uint32_t flags) {
+    if (!source) {
+        return nullptr;
+    }
+
+    CM2Model* model = CM2Model::AllocModel(g_modelPool);
+
+    if (model) {
+        if (!model->Initialize(this, source->m_shared, source, flags)) {
+            DestroyModel(g_modelPool, model);
+
+            model = nullptr;
+        }
+    }
+
+    return model;
+}
 // ref: FUN_0081f8f0
 CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
     if (!file) {
@@ -1026,7 +1062,11 @@ CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
 
         if (model) {
             if (!model->Initialize(this, shared, nullptr, a3)) {
-                // TODO
+                // The reference calls FUN_0081f8c0 here, which is DestroyModel above -- so the
+                // failure path leaked a pooled block until 2026-09-27.
+                DestroyModel(g_modelPool, model);
+
+                model = nullptr;
             }
         }
 

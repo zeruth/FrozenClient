@@ -702,7 +702,7 @@ addr	how	frozen	evidence
 004c2440	callgraph	C44Matrix::Adjoint	only unmatched callee of 004c2f90=C44Matrix::Inverse
 004c2f90	annotated	C44Matrix::Inverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2fc0	annotated	C44Matrix::AffineInverse	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
-004c30a0	sticky	CM2Model::AddRef	held from the previous run, where it was sticky
+004c30a0	callgraph	CM2Model::AddRef	only unmatched callee of 00831630=CM2Model::AttachToParent
 004c31b0	annotated	C44Matrix::RotationAroundX	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3220	annotated	C44Matrix::RotationAroundY	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3290	annotated	C44Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -3486,7 +3486,9 @@ addr	how	frozen	evidence
 0081f450	override	CM2SceneRender::SetupTextures	
 0081f620	annotated	CM2SceneRender::SetupParticleTransform	tag in src/model/CM2SceneRender.cpp
 0081f700	annotated	CM2SceneRender::SetBatchVertices	tag in src/model/CM2SceneRender.cpp
+0081f8c0	annotated	DestroyModel	tag in src/model/CM2Scene.cpp
 0081f8f0	annotated	CM2Scene::CreateModel	tag in src/model/CM2Scene.cpp
+0081f970	annotated	CM2Scene::CreateModelFrom	tag in src/model/CM2Scene.cpp
 0081fb10	override	CM2SceneRender::SetupLighting	
 0081fe90	override	CM2SceneRender::SetupMaterial	
 008203b0	override	CM2SceneRender::DrawBatch	
