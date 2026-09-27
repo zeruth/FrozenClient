@@ -1836,12 +1836,17 @@ void CM2Scene::ReserveRayProjected(uint32_t count) {
 //   the rest of the function reads, and computing a model-view matrix to then not use it would
 //   be dead code. m_view is scene + 0x84, which is where array54's three entries end.
 //
-//   The non-collision bounds are CONSERVATIVE here. The reference takes the current sequence's
-//   animated box, through a pointer at model + 0x94 that frozen does not model; this takes the
-//   model's overall box instead. That box encloses every sequence, so the sphere can only ever be
-//   too big -- it admits extra candidates for the exact test to reject and can never drop a real
-//   hit. Guessing the sequence index instead would index sequences[] with a wrong value, which
-//   has already read out of bounds in this codebase once.
+//   The non-collision bounds are the CURRENT SEQUENCE's animated box, which is what the reference
+//   uses. This was a documented widening for one commit, because model + 0x94 was unidentified.
+//   It is m_bones: the reference reads a uint16 at +0x48 of whatever it points at, and
+//   M2ModelBoneSeq sits at +0x40 inside M2ModelBone with its uint8 field at +0x48 -- and frozen's
+//   own CM2Model already indexes sequences[] with exactly that field. M2Sequence's 0x40 stride and
+//   its bounds at +0x20 match the reference's scaling too, which is three independent checks.
+//
+//   The fallback to the model's overall box is kept for a bone with no sequence, an index past
+//   the end, or a model whose bones have not been built. That box encloses every sequence, so the
+//   sphere only ever comes out too big -- extra candidates for the exact test to reject, never a
+//   dropped hit.
 uint32_t CM2Scene::CollectRayCandidates(const C3Vector& start, const C3Vector& dir, float length,
                                         int32_t requireAnimated) {
     const float epsilon = 9.9999997e-6f;
@@ -1878,17 +1883,29 @@ uint32_t CM2Scene::CollectRayCandidates(const C3Vector& start, const C3Vector& d
             }
 
             M2Data* data = model->m_shared->m_data;
-            const M2Bounds& bounds = model->m_rayQueryType == 3 ? data->collisionBounds
-                                                                : data->bounds;
 
-            if (fabsf(bounds.radius) < epsilon) {
+            const M2Bounds* bounds = &data->collisionBounds;
+
+            if (model->m_rayQueryType != 3) {
+                bounds = &data->bounds;
+
+                if (model->m_bones) {
+                    uint16_t sequence = model->m_bones[0].sequence.uint8;
+
+                    if (sequence != 0xFFFF && sequence < data->sequences.Count()) {
+                        bounds = &data->sequences[sequence].bounds;
+                    }
+                }
+            }
+
+            if (fabsf(bounds->radius) < epsilon) {
                 break;
             }
 
             // CAaBox's corners are b (bottom) and t (top); the reference averages the two.
-            C3Vector centre = { (bounds.extent.t.x + bounds.extent.b.x) * 0.5f,
-                                (bounds.extent.t.y + bounds.extent.b.y) * 0.5f,
-                                (bounds.extent.t.z + bounds.extent.b.z) * 0.5f };
+            C3Vector centre = { (bounds->extent.t.x + bounds->extent.b.x) * 0.5f,
+                                (bounds->extent.t.y + bounds->extent.b.y) * 0.5f,
+                                (bounds->extent.t.z + bounds->extent.b.z) * 0.5f };
 
             C3Vector c = centre * model->matrixF4;
 
@@ -1896,7 +1913,7 @@ uint32_t CM2Scene::CollectRayCandidates(const C3Vector& start, const C3Vector& d
                         + model->matrixF4.a1 * model->matrixF4.a1
                         + model->matrixF4.a2 * model->matrixF4.a2;
 
-            float radiusSq = scale * bounds.radius * bounds.radius;
+            float radiusSq = scale * bounds->radius * bounds->radius;
 
             float along = dir.x * (c.x - start.x) + dir.y * (c.y - start.y)
                         + dir.z * (c.z - start.z);
