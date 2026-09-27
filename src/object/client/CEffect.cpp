@@ -3,9 +3,12 @@
 #include "object/Types.hpp"
 #include "object/client/CGObject_C.hpp"
 #include "object/client/ObjMgr.hpp"
+#include "world/CWorld.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
+
+CEffect* CEffect::s_effectList;
 
 // ref: FUN_006f75f0
 // frozen leaves an emitter slot null for an emitter type it does not have (see
@@ -220,4 +223,98 @@ void CEffect::Sub6f8040(uint32_t argcc, int32_t kitID, const SpellVisualKitRec* 
     this->m_kitID = kitID;
     this->m_owner = owner;
     this->m_flags = flags;
+}
+
+// ref: FUN_006f7680
+// The loaded callback every effect model gets. Two receivers that the decompilation drops and that
+// the callback signature settles: the flag lives on the EFFECT, which arrives as the callback's
+// argument, and the bone sequence goes to the MODEL, which is its first parameter.
+//
+// The bone id is 0xFFFFFFFF, which SetBoneSequence resolves to bone 0, and the sequence id is 0 --
+// the stand animation. So a freshly loaded effect model is started on its first animation at full
+// speed, and the 0x400000 emitter flag is raised first if the effect asked for it. That flag has to
+// be set here rather than at Initialize because the model has no emitters until it loads.
+void CEffect::ModelLoadedCallback(CM2Model* model, void* arg) {
+    auto effect = static_cast<CEffect*>(arg);
+
+    if (effect->m_flags & 0x400000) {
+        effect->SetEmittersFlag400000(1);
+    }
+
+    model->SetBoneSequence(0xFFFFFFFF, 0, 0xFFFFFFFF, 0, 1.0f, 1, 1);
+}
+
+// ref: FUN_006f7a00
+// Eleven bytes in the reference: LinkToHead against the global list and nothing else.
+void CEffect::LinkToGlobalList() {
+    this->LinkToHead(&CEffect::s_effectList);
+}
+
+// ref: FUN_006f7d60
+// Build the effect. Records what it plays, creates the model for it, registers the three callbacks
+// and joins the global list.
+//
+// The model comes from the GLOBAL scene, not from anything passed in: the reference loads the scene
+// pointer out of 0x00cd754c at the call, which is CWorld::s_m2Scene here (the same global drives the
+// scene in OnWorldRender). The filename is effectName's +0x08 and is the only field of it read.
+//
+// THE SEQUENCE-DONE AND ANIM-EVENT OWNERS ARE NOT GUIDS. Both setters take a WOWGUID owner, and the
+// reference passes the effect POINTER as the low half with zero as the high half -- it is reusing the
+// owner field as a context pointer. Transcribed as written, because a callback that arrives with a
+// guid-shaped context and looks up an object with it would find nothing.
+//
+// LinkToHead is OUTSIDE the model test, so an effect whose model could not be created still joins the
+// global list -- and the reference count is only taken when the model exists, because it is the model
+// that holds the reference.
+//
+// GAP, AND IT IS A REAL ONE: the reference registers FUN_006f7b00 as the anim-event callback and this
+// passes null, so animation events do nothing. That function is a SOUND dispatch -- it resolves
+// m_eventOwner, and on the event id 0x444E5324 ('$SND') plays a sound kit through SI2::PlaySoundKit,
+// on 0x54494824 ('$HIT') calls FUN_00736640 -- and reaching it means porting the sound chain below it:
+// FUN_004c5990 (136 bytes, 54 callers, the 0xE8-byte play-parameter block's defaults), FUN_004c5c80
+// (49 bytes, the 3D-position update behind SESound::Is3D) and FUN_00736640 (360 bytes). That is the
+// sound engine rather than the render surface, which is the one thing --render is meant to keep a
+// cycle out of, so it is named here instead of half-ported. The call is still made with null so the
+// call sequence matches and the measurement can see the gap.
+void CEffect::Initialize(int32_t kitID, const SpellVisualKitRec* kit, void* effectName, uint32_t flags,
+                         M2SequenceDoneCallback sequenceDone, const C3Vector& position, uint32_t arga0,
+                         uint32_t argc0, uint32_t argc4) {
+    this->ptr20 = effectName;
+    this->int24 = -1;
+
+    this->m_owner = 0;
+    this->m_eventOwner = 0;
+
+    this->veca4 = position;
+
+    this->uintc0 = argc0;
+    this->uintc4 = argc4;
+
+    this->m_kitID = kitID;
+    this->m_kit = kit;
+
+    // The reference stores effectName a second time here. Kept, because it is what it does.
+    this->ptr20 = effectName;
+
+    this->m_flags = flags | 2;
+    this->uinta0 = arga0;
+
+    this->m_model = CWorld::GetM2Scene()->CreateModel(
+        *reinterpret_cast<const char**>(static_cast<char*>(effectName) + 8), 0);
+
+    if (this->m_model) {
+        this->m_refCount++;
+
+        auto context = static_cast<WOWGUID>(reinterpret_cast<uintptr_t>(this));
+
+        this->m_model->SetLoadedCallback(CEffect::ModelLoadedCallback, this);
+        this->m_model->SetSequenceDoneCallback(sequenceDone, context);
+        this->m_model->SetAnimEventCallback(nullptr, context);
+
+        if (this->m_flags & 0x400000) {
+            this->SetEmittersFlag400000(1);
+        }
+    }
+
+    this->LinkToHead(&CEffect::s_effectList);
 }

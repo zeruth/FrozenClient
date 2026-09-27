@@ -3,9 +3,14 @@
 
 #include "util/GUID.hpp"
 
+#include "model/CM2Model.hpp"
+
+#include <tempest/Vector.hpp>
+
 #include <cstdint>
 
 class CM2Model;
+class CM2Scene;
 class SpellVisualKitRec;
 
 // The reference's CEffect (Effect_C.cpp): a model played on or at an object. Only the fields the
@@ -48,6 +53,23 @@ class CEffect {
         // +0x08. The object this effect plays on, stored by the two attach paths below and looked
         // up with TYPE_UNIT.
         WOWGUID m_owner = 0;
+        // +0x10. A SECOND guid, and not a copy of the first -- the anim-event callback
+        // (FUN_006f7b00) resolves this one, and with TYPE_OBJECT rather than TYPE_UNIT. Initialize
+        // clears both.
+        WOWGUID m_eventOwner = 0;
+        // +0x20. Whatever Initialize is handed as the thing to play, and all that is established
+        // about it is that its +0x08 is the model filename, which is the only field read: it goes
+        // straight to CM2Scene::CreateModel. A DBC row of some effect-name table is the obvious
+        // guess and frozen has no such record type, so it stays a void* rather than acquiring an
+        // invented one.
+        void* ptr20 = nullptr;
+        // +0x24. Minus one from Initialize, read nowhere the port has reached.
+        int32_t int24 = -1;
+        // +0xa4. A position, copied in by Initialize three floats at a time.
+        C3Vector veca4 = { 0.0f, 0.0f, 0.0f };
+        // +0xc0 and +0xc4. Two more Initialize arguments, stored and not yet read.
+        uint32_t uintc0 = 0;
+        uint32_t uintc4 = 0;
         // +0xf4. One from the constructor; Release decrements it and frees the effect at zero.
         uint32_t m_refCount = 1;
         // The SpellVisualKit this effect plays, as the id and the row it resolves to. The row's
@@ -84,6 +106,26 @@ class CEffect {
 
         // ref: FUN_006f7850
         void DetachModel();
+
+        // The head of the list of EVERY effect, the reference's 0x00ca0504. Initialize links each
+        // new effect onto it whether or not the model was created.
+        static CEffect* s_effectList;
+
+        // ref: FUN_006f7680
+        // CM2Model's loaded callback, handed to every effect model. Static because it is only ever
+        // taken as a function pointer -- which is why the reference shows it with no callers.
+        static void ModelLoadedCallback(CM2Model* model, void* arg);
+
+        // ref: FUN_006f7d60
+        // Build the effect: record what it plays, create its model, and register the three
+        // callbacks.
+        void Initialize(int32_t kitID, const SpellVisualKitRec* kit, void* effectName, uint32_t flags,
+                        M2SequenceDoneCallback sequenceDone, const C3Vector& position, uint32_t arga0,
+                        uint32_t argc0, uint32_t argc4);
+
+        // ref: FUN_006f7a00
+        // Put this effect back on the global list without touching anything else.
+        void LinkToGlobalList();
 
         // ref: FUN_006f74b0
         // Take this effect out of whatever list holds it. This is LinkToHead's first half on its

@@ -92035,7 +92035,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 13
+"line": 16
 },
 "CEffect::LinkToHead": {
 "files": [
@@ -92048,7 +92048,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 50
+"line": 53
 },
 "CEffect::DetachModel": {
 "files": [
@@ -92063,7 +92063,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 70
+"line": 73
 },
 "CEffect::Unlink": {
 "files": [
@@ -92076,7 +92076,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 83
+"line": 86
 },
 "CEffect::SetEmission": {
 "files": [
@@ -92095,7 +92095,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 99
+"line": 102
 },
 "CEffect::Stop": {
 "files": [
@@ -92115,7 +92115,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 122
+"line": 125
 },
 "CEffect::Start": {
 "files": [
@@ -92136,7 +92136,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 152
+"line": 155
 },
 "CEffect::AttachToOwner": {
 "files": [
@@ -92157,7 +92157,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 179
+"line": 182
 },
 "CEffect::Sub6f8040": {
 "files": [
@@ -92177,7 +92177,72 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 207
+"line": 210
+},
+"CEffect::ModelLoadedCallback": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"CEffect::SetEmittersFlag400000",
+"CM2Model::SetBoneSequence"
+],
+"strings": [],
+"consts": [
+"0",
+"0x400000",
+"0xFFFFFFFF",
+"1",
+"1.0f"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 237
+},
+"CEffect::LinkToGlobalList": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"CEffect::LinkToHead"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 249
+},
+"CEffect::Initialize": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"C3Vector::operator=",
+"CWorld::GetM2Scene",
+"CM2Scene::CreateModel",
+"CM2Model::SetLoadedCallback",
+"CM2Model::SetSequenceDoneCallback",
+"CM2Model::SetAnimEventCallback",
+"CEffect::SetEmittersFlag400000",
+"CEffect::LinkToHead"
+],
+"strings": [],
+"consts": [
+"0",
+"0x400000",
+"1",
+"2",
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 40,
+"refs": [],
+"line": 279
 },
 "CGBag_C::FindSlot": {
 "files": [
