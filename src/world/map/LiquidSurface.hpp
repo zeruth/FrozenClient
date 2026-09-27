@@ -254,6 +254,14 @@ int32_t MapObjPolyCloseOutline(MapObjPolySet* set);
 // Park the cursor on the first edge whose flag is still zero.
 void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set);
 
+// ref: FUN_007a7b00
+// Write one liquid vertex's attributes, each to its own cursor and only where that cursor exists.
+void WriteLiquidVertex(CMapObjGroup* group, const C44Matrix& matrix, const C3Vector& position,
+                       const uint8_t* vertexBytes, const uint32_t* color, int32_t uvFromBytes,
+                       uint32_t uv2First, int32_t stride, uint8_t** positionOut,
+                       uint8_t** normalOut, uint8_t** colorOut, uint8_t** uvOut,
+                       uint8_t** uv2Out);
+
 // ref: FUN_007d9470
 // Clip the outline against one plane, in place. `side` flips which half-space is kept.
 void MapObjPolyClipToPlane(MapObjPolySet* set, const C4Plane& plane, int32_t side);
@@ -281,7 +289,10 @@ uint8_t MapObjPolyAtEnd(const MapObjPolyWalk* walk);
 // ref: FUN_0079b870
 // Resolve a liquid type id to the shared block the vertex writer samples, or null when the type
 // cannot be drawn this way. See the definition for what is and is not known about the block.
-void* LiquidTypeBlock(int32_t liquidType);
+// 256 dwords, indexed by a byte out of the liquid vertex data -- the shape is settled by
+// WriteLiquidVertex, whose second texcoord reads block[byte]. That matches the two 0x400-byte
+// globals the reference selects between exactly.
+const uint32_t* LiquidTypeBlock(int32_t liquidType);
 
 // The duplicated-edge lists the liquid index writer is handed: which tile columns and which tile
 // rows get emitted TWICE, so a seam can carry two sets of vertices. Two TSGrowableArrays back to

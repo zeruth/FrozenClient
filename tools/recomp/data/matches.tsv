@@ -2968,6 +2968,7 @@ addr	how	frozen	evidence
 007a72a0	annotated	ClipPolygonToPlanes	tag in lib/typhoon/tempest/Intersect.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
 007a7920	annotated	WriteLiquidIndices	tag in src/world/map/LiquidSurface.cpp
+007a7b00	annotated	WriteLiquidVertex	tag in src/world/map/LiquidSurface.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs
 007a8440	annotated	CMapObj::SetupFog	tag in src/world/map/CMapObjDraw.cpp

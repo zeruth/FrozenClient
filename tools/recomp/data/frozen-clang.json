@@ -209702,7 +209702,7 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 26,
+"lines": 28,
 "refs": [],
 "line": 1129
 },
@@ -209719,7 +209719,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1160
+"line": 1162
 },
 "Liquid::MapObjPolyBeginWalk": {
 "files": [
@@ -209735,7 +209735,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1176
+"line": 1178
 },
 "Liquid::MapObjPolyAdvance": {
 "files": [
@@ -209750,7 +209750,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1200
+"line": 1202
 },
 "Liquid::MapObjPolyAtEnd": {
 "files": [
@@ -209763,7 +209763,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1226
+"line": 1228
 },
 "Liquid::MapObjPolyCloseOutline": {
 "files": [
@@ -209779,7 +209779,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1245
+"line": 1247
 },
 "Liquid::MapObjPolySeekUnflaggedEdge": {
 "files": [
@@ -209794,7 +209794,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1283
+"line": 1285
 },
 "Liquid::MapObjPolyReset": {
 "files": [
@@ -209811,7 +209811,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1305
+"line": 1307
 },
 "Liquid::MapObjPolyEval": {
 "files": [
@@ -209828,7 +209828,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1336
+"line": 1338
 },
 "Liquid::MapObjPolyDeref": {
 "files": [
@@ -209846,7 +209846,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1361
+"line": 1363
 },
 "Liquid::MapObjPolyClipToPlane": {
 "files": [
@@ -209869,7 +209869,39 @@
 "stub": false,
 "lines": 130,
 "refs": [],
-"line": 1402
+"line": 1404
+},
+"Liquid::WriteLiquidVertex": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"Liquid::LiquidTypeBlock",
+"operator*",
+"CGxDevice::Caps",
+"C44Matrix::C44Matrix",
+"C3Vector::C3Vector",
+"operator*"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.24f",
+"1",
+"1.0f",
+"16",
+"2",
+"24",
+"256.0f",
+"3",
+"8"
+],
+"branches": 8,
+"stub": false,
+"lines": 87,
+"refs": [],
+"line": 1562
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

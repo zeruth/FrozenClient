@@ -1126,7 +1126,7 @@ void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t*
 // gate are faithful and the final index returns null. That is the same answer an undrawable type
 // gives, so no caller can tell the difference yet -- and the moment the blocks are identified this
 // becomes a one-line change rather than a reinvestigation.
-void* LiquidTypeBlock(int32_t liquidType) {
+const uint32_t* LiquidTypeBlock(int32_t liquidType) {
     if (!liquidType) {
         return nullptr;
     }
@@ -1147,7 +1147,9 @@ void* LiquidTypeBlock(int32_t liquidType) {
         return nullptr;
     }
 
-    // The reference returns s_liquidTypeBlocks[type->m_int[0]] here.
+    // The reference returns s_liquidTypeBlocks[type->m_int[0]] here -- one of two 256-dword tables.
+    // Their contents are still unidentified, so this stays null; WriteLiquidVertex treats null as
+    // "no second texcoord" and carries on, which is the same path an undrawable type takes.
     (void)type->m_int;
 
     return nullptr;
@@ -1528,6 +1530,125 @@ void MapObjPolyClipToPlane(MapObjPolySet* set, const C4Plane& plane, int32_t sid
     closing->flag = 0;
 
     set->edgeCount++;
+}
+
+
+// ref: FUN_007a7b00
+// Write one liquid vertex. Each attribute goes to its own cursor and ONLY where that cursor is
+// non-null, so the caller selects the vertex format by which cursors it passes -- which is why the
+// build gates every GxVertexAttribOffset on the format having that attribute.
+//
+// The normal is the constant (0, 0, 1). Liquid is flat by construction, so there is nothing to
+// compute.
+//
+// THE COLOUR IS BYTE-SWIZZLED when the device wants RGBA. Caps().m_colorFormat of GxCF_rgba means R
+// belongs in the low byte, so the reference rebuilds the dword as bytes 2, 1, 0, 3 -- exchanging R
+// and B while leaving G and A alone -- and otherwise stores it unchanged. Getting this backwards
+// tints every water surface, and it would look plausible rather than broken.
+//
+// TWO WAYS TO GET THE FIRST TEXCOORD, chosen by the caller:
+//
+//   from the vertex bytes -- two int16s scaled by 1/256, which is what those bytes are, authored
+//   texture coordinates in 0..255;
+//   computed -- the position taken RELATIVE to the group's liquid origin and turned by the
+//   placement's ROTATION ONLY. The reference copies the whole matrix and then overwrites its last
+//   row with (0, 0, 0, 1), which is how it strips the translation, and scales the result by 0.24.
+//
+// The second texcoord's y is the liquid type's 256-entry table indexed by a byte of the vertex data,
+// or zero when the type resolves to nothing. That read is what settled the table's shape.
+//
+// The eighth argument is unused -- the reference takes it and never touches it. Kept so the signature
+// matches, rather than quietly dropping a parameter a caller still passes.
+void WriteLiquidVertex(CMapObjGroup* group, const C44Matrix& matrix, const C3Vector& position,
+                       const uint8_t* vertexBytes, const uint32_t* color, int32_t uvFromBytes,
+                       uint32_t uv2First, int32_t stride, uint8_t** positionOut,
+                       uint8_t** normalOut, uint8_t** colorOut, uint8_t** uvOut,
+                       uint8_t** uv2Out) {
+    const uint32_t* typeBlock = LiquidTypeBlock(static_cast<int32_t>(group->m_liquidType));
+
+    if (*positionOut) {
+        C3Vector world = position * matrix;
+
+        auto out = reinterpret_cast<float*>(*positionOut);
+
+        out[0] = world.x;
+        out[1] = world.y;
+        out[2] = world.z;
+
+        *positionOut += stride;
+    }
+
+    if (*normalOut) {
+        auto out = reinterpret_cast<float*>(*normalOut);
+
+        out[0] = 0.0f;
+        out[1] = 0.0f;
+        out[2] = 1.0f;
+
+        *normalOut += stride;
+    }
+
+    if (*colorOut) {
+        uint32_t value;
+
+        if (g_theGxDevicePtr->Caps().m_colorFormat == GxCF_rgba) {
+            auto bytes = reinterpret_cast<const uint8_t*>(color);
+
+            value = static_cast<uint32_t>(bytes[2])
+                  | (static_cast<uint32_t>(bytes[1]) << 8)
+                  | (static_cast<uint32_t>(bytes[0]) << 16)
+                  | (static_cast<uint32_t>(bytes[3]) << 24);
+        } else {
+            value = *color;
+        }
+
+        *reinterpret_cast<uint32_t*>(*colorOut) = value;
+
+        *colorOut += stride;
+    }
+
+    if (*uvOut) {
+        auto out = reinterpret_cast<float*>(*uvOut);
+
+        if (uvFromBytes) {
+            auto authored = reinterpret_cast<const int16_t*>(vertexBytes);
+
+            out[0] = static_cast<float>(authored[0]) * (1.0f / 256.0f);
+            out[1] = static_cast<float>(authored[1]) * (1.0f / 256.0f);
+        } else {
+            // The placement with its translation removed, so only the rotation turns the offset.
+            C44Matrix rotation = matrix;
+
+            rotation.d0 = 0.0f;
+            rotation.d1 = 0.0f;
+            rotation.d2 = 0.0f;
+            rotation.d3 = 1.0f;
+
+            C3Vector local = {
+                position.x - group->m_liquidPos.x,
+                position.y - group->m_liquidPos.y,
+                position.z - group->m_liquidPos.z
+            };
+
+            C3Vector turned = local * rotation;
+
+            out[0] = turned.x * 0.24f;
+            out[1] = turned.y * 0.24f;
+        }
+
+        *uvOut += stride;
+    }
+
+    if (*uv2Out) {
+        auto out = reinterpret_cast<uint32_t*>(*uv2Out);
+
+        out[0] = uv2First;
+        out[1] = typeBlock ? typeBlock[*vertexBytes] : 0;
+
+        *uv2Out += stride;
+    }
+
+    (void)uv2First;
 }
 
 } // namespace Liquid
