@@ -21403,30 +21403,32 @@
   "status": "stub"
  },
  "00530ec0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNConnected",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNConnected",
+  "frozenSize": 21,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 83,
   "status": "ported"
  },
  "00530f20": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_IsBNLogin",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_IsBNLogin",
+  "frozenSize": 83,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 56,
@@ -21449,825 +21451,880 @@
   "status": "ported"
  },
  "005343f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 401,
   "status": "stub"
  },
  "00534590": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.182,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumFriends",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumFriends",
+  "frozenSize": 39,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 347,
   "status": "ported"
  },
  "005349f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumFriendToons",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumFriendToons",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 364,
   "status": "stub"
  },
  "00534ed0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNRemoveFriend",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNRemoveFriend",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 163,
   "status": "stub"
  },
  "00534f80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetFriendNote",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetFriendNote",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 251,
   "status": "stub"
  },
  "00535080": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.143,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumFriendInvites",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumFriendInvites",
+  "frozenSize": 22,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 241,
   "status": "ported"
  },
  "00535180": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetFriendInviteInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetFriendInviteInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 510,
   "status": "stub"
  },
  "00535380": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSendFriendInvite",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSendFriendInvite",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 267,
   "status": "stub"
  },
  "00535490": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSendFriendInviteByID",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSendFriendInviteByID",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 290,
   "status": "stub"
  },
  "005355c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNAcceptFriendInvite",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNAcceptFriendInvite",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 150,
   "status": "stub"
  },
  "00535660": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNDeclineFriendInvite",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNDeclineFriendInvite",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 150,
   "status": "stub"
  },
  "00535700": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNReportFriendInvite",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNReportFriendInvite",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 150,
   "status": "stub"
  },
  "005357a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetAFK",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetAFK",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 190,
   "status": "stub"
  },
  "00535860": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetDND",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetDND",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 190,
   "status": "stub"
  },
  "00535920": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetCustomMessage",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetCustomMessage",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 379,
   "status": "stub"
  },
  "00535aa0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetCustomMessageTable",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetCustomMessageTable",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 435,
   "status": "stub"
  },
  "00535c60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetFocus",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetFocus",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 121,
   "status": "stub"
  },
  "00535ce0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNCreateConversation",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNCreateConversation",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 452,
   "status": "stub"
  },
  "00535eb0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNInviteToConversation",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNInviteToConversation",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 374,
   "status": "stub"
  },
  "00536030": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNLeaveConversation",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNLeaveConversation",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 215,
   "status": "stub"
  },
  "00536110": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSendConversationMessage",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSendConversationMessage",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 271,
   "status": "stub"
  },
  "00536220": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.1,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumConversationMembers",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumConversationMembers",
+  "frozenSize": 22,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 265,
   "status": "ported"
  },
  "00536330": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetConversationInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetConversationInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 203,
   "status": "stub"
  },
  "00536400": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumBlocked",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumBlocked",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 215,
   "status": "stub"
  },
  "005364e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNIsBlocked",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNIsBlocked",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 198,
   "status": "stub"
  },
  "005365b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetBlocked",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetBlocked",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 236,
   "status": "stub"
  },
  "005366a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetSelectedBlock",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetSelectedBlock",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 236,
   "status": "stub"
  },
  "00536790": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetSelectedBlock",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetSelectedBlock",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 250,
   "status": "stub"
  },
  "00536890": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumBlockedToons",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumBlockedToons",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 215,
   "status": "stub"
  },
  "00536970": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetBlockedToonInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetBlockedToonInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 288,
   "status": "stub"
  },
  "00536a90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.143,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNIsToonBlocked",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNIsToonBlocked",
+  "frozenSize": 21,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 198,
   "status": "ported"
  },
  "00536b60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetToonBlocked",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetToonBlocked",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 236,
   "status": "stub"
  },
  "00536c50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetSelectedToonBlock",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetSelectedToonBlock",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 236,
   "status": "stub"
  },
  "00536d40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetSelectedToonBlock",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetSelectedToonBlock",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 250,
   "status": "stub"
  },
  "00536e40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.154,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNReportPlayer",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNReportPlayer",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 457,
   "status": "stub"
  },
  "00537010": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.25,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNFeaturesEnabledAndConnected",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNFeaturesEnabledAndConnected",
+  "frozenSize": 21,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 92,
   "status": "ported"
  },
  "00537070": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.333,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNFeaturesEnabled",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNFeaturesEnabled",
+  "frozenSize": 21,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 90,
   "status": "ported"
  },
  "005370d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetNumFOF",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetNumFOF",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 365,
   "status": "stub"
  },
  "00537240": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.091,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetFOFInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetFOFInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 719,
   "status": "stub"
  },
  "00537510": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetSelectedFriend",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetSelectedFriend",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 231,
   "status": "stub"
  },
  "00537600": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetSelectedFriend",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetSelectedFriend",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 187,
   "status": "stub"
  },
  "005376c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSetMatureLanguageFilter",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSetMatureLanguageFilter",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 243,
   "status": "stub"
  },
  "005377c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetMatureLanguageFilter",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetMatureLanguageFilter",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 224,
   "status": "stub"
  },
  "005378a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.143,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNIsSelf",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNIsSelf",
+  "frozenSize": 21,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 163,
   "status": "ported"
  },
  "00537950": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.143,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNIsFriend",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNIsFriend",
+  "frozenSize": 21,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 163,
   "status": "ported"
  },
  "00537a00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetMaxPlayersInConversation",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetMaxPlayersInConversation",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 94,
   "status": "stub"
  },
  "00539bf0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetFriendInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetFriendInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 200,
   "status": "stub"
  },
  "00539cc0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetFriendInfoByID",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetFriendInfoByID",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 171,
   "status": "stub"
  },
  "00539d70": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetFriendToonInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetFriendToonInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 530,
   "status": "stub"
  },
  "00539f90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetToonInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetToonInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 149,
   "status": "stub"
  },
  "0053a030": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNSendWhisper",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNSendWhisper",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 288,
   "status": "stub"
  },
  "0053a150": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetConversationMemberInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetConversationMemberInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 422,
   "status": "stub"
  },
  "0053a300": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNListConversation",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNListConversation",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 568,
   "status": "stub"
  },
  "0053a540": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.286,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNGetBlockedInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNGetBlockedInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 286,
   "status": "stub"
  },
  "0053a660": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/BattlenetUI.cpp"
+   "src/ui/game/BattlenetUI.cpp",
+   "src/ui/game/battlenetui.cpp"
   ],
-  "frozen": "Script_BNRequestFOFInfo",
-  "frozenSize": 0,
+  "frozen": "BattlenetUI::Script_BNRequestFOFInfo",
+  "frozenSize": 75,
   "how": "table",
   "module": "PartyFrame.cpp",
   "refSize": 226,
@@ -37284,7 +37341,7 @@
   "files": [],
   "frozen": "TSGrowableArray<CMapChunkBufBlock>::SetCount",
   "frozenSize": 593,
-  "how": "sticky",
+  "how": "callgraph",
   "module": "CGxDevice.cpp",
   "refSize": 172,
   "status": "ported"
@@ -45582,22 +45639,6 @@
   "refSize": 862,
   "status": "ported"
  },
- "00783b90": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/world/Weather.cpp",
-   "src/world/weather.cpp"
-  ],
-  "frozen": "WeatherDefaultTexture",
-  "frozenSize": 0,
-  "how": "string",
-  "module": "SEvt.cpp",
-  "refSize": 62,
-  "status": "ported"
- },
  "00784040": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -46355,7 +46396,7 @@
   "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -46429,21 +46470,6 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 184,
-  "status": "ported"
- },
- "00791980": {
-  "branchRatio": 0.25,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/world/map/mapocclusion.cpp"
-  ],
-  "frozen": "MapOcclusion::BuildVolumes",
-  "frozenSize": 320,
-  "how": "callgraph",
-  "module": "WorldParam.cpp",
-  "refSize": 806,
   "status": "ported"
  },
  "00791cb0": {
@@ -46594,7 +46620,7 @@
   "branchRatio": 0.15,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -46671,14 +46697,15 @@
   "status": "ported"
  },
  "00793d20": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.286,
+  "branchRatio": 0.556,
+  "constOverlap": 0.192,
+  "faithful": true,
+  "fidelity": 0.929,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "BuildPendingMapObjSurfaces",
+  "frozen": "Liquid::BuildPendingMapObjSurfaces",
   "frozenSize": 0,
   "how": "annotated",
   "module": "WorldParam.cpp",
@@ -46769,7 +46796,7 @@
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -46913,7 +46940,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 0.9,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -46929,7 +46956,7 @@
   "branchRatio": 0.542,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.34,
+  "fidelity": 0.377,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -46995,6 +47022,7 @@
   "faithful": false,
   "fidelity": 1.0,
   "files": [
+   "src/world/map/LiquidSurface.cpp",
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::LiquidTypeBlock",
@@ -47088,7 +47116,7 @@
   "branchRatio": 0.476,
   "constOverlap": 0.114,
   "faithful": false,
-  "fidelity": 0.762,
+  "fidelity": 0.786,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -47453,14 +47481,15 @@
   "status": "ported"
  },
  "007a7920": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.625,
+  "constOverlap": 0.053,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "WriteLiquidIndices",
+  "frozen": "Liquid::WriteLiquidIndices",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -47468,14 +47497,15 @@
   "status": "ported"
  },
  "007a7b00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.2,
+  "branchRatio": 1.0,
+  "constOverlap": 0.067,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "WriteLiquidVertex",
+  "frozen": "Liquid::WriteLiquidVertex",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -47483,14 +47513,15 @@
   "status": "ported"
  },
  "007a7cc0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "WriteLiquidGridVertices",
+  "frozen": "Liquid::WriteLiquidGridVertices",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -47498,14 +47529,15 @@
   "status": "ported"
  },
  "007a7e50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyFoldShortPair",
+  "frozen": "Liquid::MapObjPolyFoldShortPair",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -47513,14 +47545,15 @@
   "status": "ported"
  },
  "007a7f00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyFoldByte",
+  "frozen": "Liquid::MapObjPolyFoldByte",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -47528,14 +47561,15 @@
   "status": "ported"
  },
  "007a7f60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.091,
+  "branchRatio": 0.579,
+  "constOverlap": 0.021,
+  "faithful": true,
+  "fidelity": 0.909,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "EmitLiquidTiles",
+  "frozen": "Liquid::EmitLiquidTiles",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -48167,14 +48201,15 @@
   "status": "ported"
  },
  "007b1000": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "RotateBasisAboutZ",
+  "frozen": "DetailDoodad::RotateBasisAboutZ",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -48182,14 +48217,15 @@
   "status": "ported"
  },
  "007b11b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.125,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "BuildFadeTexels",
+  "frozen": "DetailDoodad::BuildFadeTexels",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -48197,29 +48233,31 @@
   "status": "ported"
  },
  "007b1270": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "FadeTextureCallback",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::FadeTextureCallback",
+  "frozenSize": 210,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 47,
   "status": "ported"
  },
  "007b12b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "FillIndexBuffer",
+  "frozen": "DetailDoodad::FillIndexBuffer",
   "frozenSize": 0,
   "how": "annotated",
   "module": "Map.cpp",
@@ -48227,59 +48265,63 @@
   "status": "ported"
  },
  "007b1b10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "OnModelLoaded",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::OnModelLoaded",
+  "frozenSize": 86,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 57,
   "status": "verified"
  },
  "007b1b50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.471,
+  "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "FillVertexBuffer",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::FillVertexBuffer",
+  "frozenSize": 2690,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2655,
   "status": "ported"
  },
  "007b2760": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.111,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "Initialize",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::Initialize",
+  "frozenSize": 677,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 586,
   "status": "ported"
  },
  "007b29b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "ReleaseBuffers",
+  "frozen": "DetailDoodad::ReleaseBuffers",
   "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
@@ -48287,29 +48329,31 @@
   "status": "ported"
  },
  "007b2a80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.444,
+  "fidelity": 0.556,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "CreateBuffers",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::CreateBuffers",
+  "frozenSize": 1118,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 530,
   "status": "ported"
  },
  "007b2ca0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "AcquireBuffers",
+  "frozen": "DetailDoodad::AcquireBuffers",
   "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
@@ -48317,29 +48361,31 @@
   "status": "ported"
  },
  "007b2d30": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.043,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.158,
+  "fidelity": 0.263,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "SetupState",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::SetupState",
+  "frozenSize": 338,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 798,
   "status": "ported"
  },
  "007b3050": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.333,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "EnsureModel",
+  "frozen": "DetailDoodad::EnsureModel",
   "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
@@ -48347,29 +48393,31 @@
   "status": "ported"
  },
  "007b31e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.412,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "AddPlacement",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::AddPlacement",
+  "frozenSize": 439,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 432,
   "status": "verified"
  },
  "007b3390": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.571,
+  "branchRatio": 0.625,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "DrawBatch",
+  "frozen": "DetailDoodad::DrawBatch",
   "frozenSize": 0,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
@@ -48377,46 +48425,80 @@
   "status": "ported"
  },
  "007b3530": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.667,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "IsReady",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::IsReady",
+  "frozenSize": 261,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 48,
   "status": "ported"
  },
  "007b36b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/DetailDoodad.cpp",
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "Draw",
-  "frozenSize": 0,
+  "frozen": "DetailDoodad::Draw",
+  "frozenSize": 855,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 39,
   "status": "ported"
  },
- "007b3960": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "007b3780": {
+  "branchRatio": 0.077,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/DetailDoodad.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "ReleaseInstance",
+  "frozen": "DetailDoodad::ReturnBuffers",
   "frozenSize": 0,
+  "how": "callgraph",
+  "module": "DetailDoodad.cpp",
+  "refSize": 398,
+  "status": "ported"
+ },
+ "007b3910": {
+  "branchRatio": 0.074,
+  "constOverlap": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
+  ],
+  "frozen": "DetailDoodad::Scatter",
+  "frozenSize": 2320,
+  "how": "callgraph",
+  "module": "DetailDoodad.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "007b3960": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
+  ],
+  "frozen": "DetailDoodad::ReleaseInstance",
+  "frozenSize": 624,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 39,
@@ -50298,7 +50380,7 @@
   "branchRatio": 0.231,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.538,
+  "fidelity": 0.615,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -50634,7 +50716,7 @@
   "branchRatio": 0.371,
   "constOverlap": 0.043,
   "faithful": false,
-  "fidelity": 0.7,
+  "fidelity": 0.8,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -51427,6 +51509,22 @@
   "refSize": 1105,
   "status": "ported"
  },
+ "007ccd20": {
+  "branchRatio": 0.9,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/MapOcclusion.cpp",
+   "src/world/map/mapocclusion.cpp"
+  ],
+  "frozen": "MapOcclusion::BuildBoxes",
+  "frozenSize": 2117,
+  "how": "callgraph",
+  "module": "MapChunk.cpp",
+  "refSize": 207,
+  "status": "diverged"
+ },
  "007cce00": {
   "branchRatio": 0.308,
   "constOverlap": 0.0,
@@ -51444,30 +51542,32 @@
   "status": "ported"
  },
  "007cd4e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.077,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.125,
   "files": [
-   "src/world/map/MapOcclusion.cpp"
+   "src/world/map/MapOcclusion.cpp",
+   "src/world/map/mapocclusion.cpp"
   ],
-  "frozen": "AddVolume",
-  "frozenSize": 0,
+  "frozen": "MapOcclusion::AddVolume",
+  "frozenSize": 455,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 857,
   "status": "ported"
  },
  "007cd850": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.4,
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/MapOcclusion.cpp"
+   "src/world/map/MapOcclusion.cpp",
+   "src/world/map/mapocclusion.cpp"
   ],
-  "frozen": "BuildVolumes",
-  "frozenSize": 0,
+  "frozen": "MapOcclusion::BuildVolumes",
+  "frozenSize": 320,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 181,
@@ -51476,8 +51576,8 @@
  "007cde10": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CChunkLiquid.cpp",
    "src/world/map/cchunkliquid.cpp"
@@ -51586,14 +51686,15 @@
   "status": "ported"
  },
  "007ce270": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "WriteLayerIndices",
+  "frozen": "Liquid::WriteLayerIndices",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunk.cpp",
@@ -51601,14 +51702,15 @@
   "status": "ported"
  },
  "007ce390": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "WriteLayerVertices",
+  "frozen": "Liquid::WriteLayerVertices",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunk.cpp",
@@ -51661,15 +51763,16 @@
   "status": "ported"
  },
  "007cf200": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.419,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.4,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CreateSurface",
-  "frozenSize": 0,
+  "frozen": "Liquid::CreateSurface",
+  "frozenSize": 1562,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1421,
@@ -51679,7 +51782,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/world/map/CChunkLiquid.cpp",
    "src/world/map/cchunkliquid.cpp"
@@ -51790,8 +51893,8 @@
  "007d05f0": {
   "branchRatio": 0.556,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
@@ -51887,8 +51990,9 @@
   "branchRatio": 0.042,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.083,
   "files": [
+   "src/world/map/DetailDoodad.cpp",
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::CreateInstance",
@@ -51963,14 +52067,15 @@
   "status": "ported"
  },
  "007d4360": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CMeshGeomFactory::SetLvf",
+  "frozen": "Liquid::CMeshGeomFactory::SetLvf",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -51978,14 +52083,15 @@
   "status": "ported"
  },
  "007d4370": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CMeshGeomFactory::SetFixedLight",
+  "frozen": "Liquid::CMeshGeomFactory::SetFixedLight",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -51993,14 +52099,15 @@
   "status": "ported"
  },
  "007d43b0": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CMeshGeomFactory::Release",
+  "frozen": "Liquid::CMeshGeomFactory::Release",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -52008,14 +52115,15 @@
   "status": "ported"
  },
  "007d43e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CMeshGeomFactory::SetDiffColor",
+  "frozen": "Liquid::CMeshGeomFactory::SetDiffColor",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -52026,8 +52134,9 @@
   "branchRatio": 0.538,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.625,
   "files": [
+   "src/world/map/LiquidSurface.cpp",
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CMeshGeomFactory::Build",
@@ -52038,14 +52147,15 @@
   "status": "ported"
  },
  "007d49b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CMeshGeomFactory::Create",
+  "frozen": "Liquid::CMeshGeomFactory::Create",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -52053,30 +52163,32 @@
   "status": "ported"
  },
  "007d49d0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CreateGeomFactory",
-  "frozenSize": 0,
+  "frozen": "Liquid::CreateGeomFactory",
+  "frozenSize": 378,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 220,
   "status": "ported"
  },
  "007d4ab0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.533,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.118,
+  "fidelity": 0.294,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CChunkGeomFactory::Build",
-  "frozenSize": 0,
+  "frozen": "Liquid::CChunkGeomFactory::Build",
+  "frozenSize": 2014,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1099,
@@ -52099,29 +52211,31 @@
   "status": "verified"
  },
  "007d4f40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.222,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CClientEnvironment::SetupLighting",
-  "frozenSize": 0,
+  "frozen": "Liquid::CClientEnvironment::SetupLighting",
+  "frozenSize": 208,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 439,
   "status": "ported"
  },
  "007d5120": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CreateEnvironment",
+  "frozen": "Liquid::CreateEnvironment",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -52145,14 +52259,15 @@
   "status": "ported"
  },
  "007d6210": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CWaveManager::Release",
+  "frozen": "Liquid::CWaveManager::Release",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
@@ -52160,15 +52275,16 @@
   "status": "ported"
  },
  "007d62a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.857,
+  "constOverlap": 0.093,
   "faithful": false,
-  "fidelity": 0.692,
+  "fidelity": 0.769,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CWaveManager::Update",
-  "frozenSize": 0,
+  "frozen": "Liquid::CWaveManager::Update",
+  "frozenSize": 1478,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 925,
@@ -52685,14 +52801,15 @@
   "status": "ported"
  },
  "007d91f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyEval",
+  "frozen": "Liquid::MapObjPolyEval",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52700,14 +52817,15 @@
   "status": "ported"
  },
  "007d9230": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyAddPoint",
+  "frozen": "Liquid::MapObjPolyAddPoint",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52715,14 +52833,15 @@
   "status": "ported"
  },
  "007d9270": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyCloseOutline",
+  "frozen": "Liquid::MapObjPolyCloseOutline",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52730,14 +52849,15 @@
   "status": "ported"
  },
  "007d92f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolySeekUnflaggedEdge",
+  "frozen": "Liquid::MapObjPolySeekUnflaggedEdge",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52745,14 +52865,15 @@
   "status": "ported"
  },
  "007d9330": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyBeginWalk",
+  "frozen": "Liquid::MapObjPolyBeginWalk",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52760,14 +52881,15 @@
   "status": "ported"
  },
  "007d9390": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyDeref",
+  "frozen": "Liquid::MapObjPolyDeref",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52775,14 +52897,15 @@
   "status": "ported"
  },
  "007d9400": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyAdvance",
+  "frozen": "Liquid::MapObjPolyAdvance",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52790,14 +52913,15 @@
   "status": "ported"
  },
  "007d9460": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyAtEnd",
+  "frozen": "Liquid::MapObjPolyAtEnd",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52805,14 +52929,15 @@
   "status": "ported"
  },
  "007d9470": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.929,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyClipToPlane",
+  "frozen": "Liquid::MapObjPolyClipToPlane",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -52820,14 +52945,15 @@
   "status": "ported"
  },
  "007d9740": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "MapObjPolyReset",
+  "frozen": "Liquid::MapObjPolyReset",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapObjRead.cpp",
@@ -65090,59 +65216,79 @@
   "status": "ported"
  },
  "008a1700": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CInstance::AddRef",
+  "frozen": "Liquid::CInstance::AddRef",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 5,
   "status": "ported"
  },
- "008a1a40": {
-  "branchRatio": -1.0,
+ "008a1760": {
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CInstance::CInstance",
+  "frozen": "Liquid::ProcWaterSuffix",
   "frozenSize": 0,
+  "how": "callorder",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a1a40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::CInstance::CInstance",
+  "frozenSize": 239,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 122,
   "status": "ported"
  },
  "008a1ac0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CInstance::Release",
-  "frozenSize": 0,
+  "frozen": "Liquid::CInstance::Release",
+  "frozenSize": 130,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 60,
   "status": "ported"
  },
  "008a1b00": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "CInstance::Create",
+  "frozen": "Liquid::CInstance::Create",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65150,29 +65296,31 @@
   "status": "ported"
  },
  "008a1d60": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.55,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.714,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialSettings::GetFrame",
-  "frozenSize": 0,
+  "frozen": "Liquid::CMaterialSettings::GetFrame",
+  "frozenSize": 479,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 481,
   "status": "ported"
  },
  "008a1f50": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.667,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "ReleaseMaterials",
+  "frozen": "Liquid::ReleaseMaterials",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65180,15 +65328,16 @@
   "status": "ported"
  },
  "008a1fa0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.182,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "GetMaterial",
-  "frozenSize": 0,
+  "frozen": "Liquid::GetMaterial",
+  "frozenSize": 743,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 285,
@@ -65200,57 +65349,58 @@
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "lib/squall/storm/big/Ops.cpp",
-   "lib/squall/storm/big/ops.cpp",
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "Add",
-  "frozenSize": 157,
+  "frozen": "Liquid::Add",
+  "frozenSize": 261,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 53,
   "status": "ported"
  },
  "008a2240": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 0.8,
   "files": [
-   "src/world/map/DetailDoodad.cpp",
-   "src/world/map/LiquidSurface.cpp"
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
   ],
-  "frozen": "Draw",
-  "frozenSize": 0,
+  "frozen": "Liquid::Draw",
+  "frozenSize": 809,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 313,
   "status": "ported"
  },
  "008a2450": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.267,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.357,
+  "fidelity": 0.429,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialSettings::LoadTextures",
-  "frozenSize": 0,
+  "frozen": "Liquid::CMaterialSettings::LoadTextures",
+  "frozenSize": 719,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 809,
   "status": "ported"
  },
  "008a27c0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialSettings::LoadFromDbc",
+  "frozen": "Liquid::CMaterialSettings::LoadFromDbc",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65258,15 +65408,16 @@
   "status": "ported"
  },
  "008a28f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.4,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "GetMaterialSettings",
-  "frozenSize": 0,
+  "frozen": "Liquid::GetMaterialSettings",
+  "frozenSize": 1097,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 132,
@@ -65385,134 +65536,143 @@
   "status": "ported"
  },
  "008a3130": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMH2O::GetHeight",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMH2O::GetHeight",
+  "frozenSize": 45,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 40,
   "status": "verified"
  },
  "008a3160": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMH2O::GetDepth",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMH2O::GetDepth",
+  "frozenSize": 76,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 76,
   "status": "ported"
  },
  "008a31b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMH2O::GetCoord",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMH2O::GetCoord",
+  "frozenSize": 42,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 43,
   "status": "ported"
  },
  "008a31e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMCLQ::CVertexDataMCLQ",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMCLQ::CVertexDataMCLQ",
+  "frozenSize": 29,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 27,
   "status": "ported"
  },
  "008a3200": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMCLQ::GetHeight",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMCLQ::GetHeight",
+  "frozenSize": 31,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 29,
   "status": "ported"
  },
  "008a3220": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMCLQ::GetDepth",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMCLQ::GetDepth",
+  "frozenSize": 31,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 35,
   "status": "ported"
  },
  "008a3250": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMCLQ::GetCoord",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMCLQ::GetCoord",
+  "frozenSize": 26,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 33,
   "status": "ported"
  },
  "008a3280": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidVertexData.cpp"
+   "src/world/map/LiquidVertexData.cpp",
+   "src/world/map/liquidvertexdata.cpp"
   ],
-  "frozen": "CVertexDataMH2O::CVertexDataMH2O",
-  "frozenSize": 0,
+  "frozen": "Liquid::CVertexDataMH2O::CVertexDataMH2O",
+  "frozenSize": 68,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 50,
   "status": "verified"
  },
  "008a32f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "SetupTransforms",
+  "frozen": "Liquid::SetupTransforms",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65520,44 +65680,47 @@
   "status": "ported"
  },
  "008a3620": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "SetupWaveA",
-  "frozenSize": 0,
+  "frozen": "Liquid::SetupWaveA",
+  "frozenSize": 219,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 235,
   "status": "ported"
  },
  "008a3710": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "SetupWaveB",
-  "frozenSize": 0,
+  "frozen": "Liquid::SetupWaveB",
+  "frozenSize": 226,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 245,
   "status": "ported"
  },
  "008a3810": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.222,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "SetupWaveConstants",
+  "frozen": "Liquid::SetupWaveConstants",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65565,14 +65728,15 @@
   "status": "ported"
  },
  "008a38b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "SetupLightConstants",
+  "frozen": "Liquid::SetupLightConstants",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65580,14 +65744,15 @@
   "status": "ported"
  },
  "008a3c90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "SetupSunConstants",
+  "frozen": "Liquid::SetupSunConstants",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65595,44 +65760,47 @@
   "status": "ported"
  },
  "008a3e00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialProcWater::EnsureShaders",
-  "frozenSize": 0,
+  "frozen": "Liquid::CMaterialProcWater::EnsureShaders",
+  "frozenSize": 238,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 184,
   "status": "ported"
  },
  "008a3f70": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialWater::EnsureShaders",
-  "frozenSize": 0,
+  "frozen": "Liquid::CMaterialWater::EnsureShaders",
+  "frozenSize": 134,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 102,
   "status": "ported"
  },
  "008a4070": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialWaterNoSpec::EnsureShaders",
+  "frozen": "Liquid::CMaterialWaterNoSpec::EnsureShaders",
   "frozenSize": 0,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -65640,15 +65808,16 @@
   "status": "ported"
  },
  "008a4190": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
-  "frozen": "CMaterialMagma::EnsureShaders",
-  "frozenSize": 0,
+  "frozen": "Liquid::CMaterialMagma::EnsureShaders",
+  "frozenSize": 134,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 102,

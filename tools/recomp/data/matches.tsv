@@ -1333,64 +1333,64 @@ addr	how	frozen	evidence
 0052e420	table	Script_ChangePlayerDifficulty	binding "ChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
 0052e570	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00737ef0=CGUnit_C::ApplySequence
 005302b0	string	Script_Stub_FlagTutorial	score 0.50 shared FlagTutorial
-00530ec0	table	Script_BNConnected	binding "BNConnected" in s_ScriptFunctions ~ table 00accae8
-00530f20	table	Script_IsBNLogin	binding "IsBNLogin" in s_ScriptFunctions ~ table 00accae8
+00530ec0	table	BattlenetUI::Script_BNConnected	binding "BNConnected" in s_ScriptFunctions ~ table 00accae8
+00530f20	table	BattlenetUI::Script_IsBNLogin	binding "IsBNLogin" in s_ScriptFunctions ~ table 00accae8
 00532af0	override	CGxDevice::Caps	
-005343f0	table	Script_BNGetInfo	binding "BNGetInfo" in s_ScriptFunctions ~ table 00accae8
-00534590	table	Script_BNGetNumFriends	binding "BNGetNumFriends" in s_ScriptFunctions ~ table 00accae8
-005349f0	table	Script_BNGetNumFriendToons	binding "BNGetNumFriendToons" in s_ScriptFunctions ~ table 00accae8
-00534ed0	table	Script_BNRemoveFriend	binding "BNRemoveFriend" in s_ScriptFunctions ~ table 00accae8
-00534f80	table	Script_BNSetFriendNote	binding "BNSetFriendNote" in s_ScriptFunctions ~ table 00accae8
-00535080	table	Script_BNGetNumFriendInvites	binding "BNGetNumFriendInvites" in s_ScriptFunctions ~ table 00accae8
-00535180	table	Script_BNGetFriendInviteInfo	binding "BNGetFriendInviteInfo" in s_ScriptFunctions ~ table 00accae8
-00535380	table	Script_BNSendFriendInvite	binding "BNSendFriendInvite" in s_ScriptFunctions ~ table 00accae8
-00535490	table	Script_BNSendFriendInviteByID	binding "BNSendFriendInviteByID" in s_ScriptFunctions ~ table 00accae8
-005355c0	table	Script_BNAcceptFriendInvite	binding "BNAcceptFriendInvite" in s_ScriptFunctions ~ table 00accae8
-00535660	table	Script_BNDeclineFriendInvite	binding "BNDeclineFriendInvite" in s_ScriptFunctions ~ table 00accae8
-00535700	table	Script_BNReportFriendInvite	binding "BNReportFriendInvite" in s_ScriptFunctions ~ table 00accae8
-005357a0	table	Script_BNSetAFK	binding "BNSetAFK" in s_ScriptFunctions ~ table 00accae8
-00535860	table	Script_BNSetDND	binding "BNSetDND" in s_ScriptFunctions ~ table 00accae8
-00535920	table	Script_BNSetCustomMessage	binding "BNSetCustomMessage" in s_ScriptFunctions ~ table 00accae8
-00535aa0	table	Script_BNGetCustomMessageTable	binding "BNGetCustomMessageTable" in s_ScriptFunctions ~ table 00accae8
-00535c60	table	Script_BNSetFocus	binding "BNSetFocus" in s_ScriptFunctions ~ table 00accae8
-00535ce0	table	Script_BNCreateConversation	binding "BNCreateConversation" in s_ScriptFunctions ~ table 00accae8
-00535eb0	table	Script_BNInviteToConversation	binding "BNInviteToConversation" in s_ScriptFunctions ~ table 00accae8
-00536030	table	Script_BNLeaveConversation	binding "BNLeaveConversation" in s_ScriptFunctions ~ table 00accae8
-00536110	table	Script_BNSendConversationMessage	binding "BNSendConversationMessage" in s_ScriptFunctions ~ table 00accae8
-00536220	table	Script_BNGetNumConversationMembers	binding "BNGetNumConversationMembers" in s_ScriptFunctions ~ table 00accae8
-00536330	table	Script_BNGetConversationInfo	binding "BNGetConversationInfo" in s_ScriptFunctions ~ table 00accae8
-00536400	table	Script_BNGetNumBlocked	binding "BNGetNumBlocked" in s_ScriptFunctions ~ table 00accae8
-005364e0	table	Script_BNIsBlocked	binding "BNIsBlocked" in s_ScriptFunctions ~ table 00accae8
-005365b0	table	Script_BNSetBlocked	binding "BNSetBlocked" in s_ScriptFunctions ~ table 00accae8
-005366a0	table	Script_BNSetSelectedBlock	binding "BNSetSelectedBlock" in s_ScriptFunctions ~ table 00accae8
-00536790	table	Script_BNGetSelectedBlock	binding "BNGetSelectedBlock" in s_ScriptFunctions ~ table 00accae8
-00536890	table	Script_BNGetNumBlockedToons	binding "BNGetNumBlockedToons" in s_ScriptFunctions ~ table 00accae8
-00536970	table	Script_BNGetBlockedToonInfo	binding "BNGetBlockedToonInfo" in s_ScriptFunctions ~ table 00accae8
-00536a90	table	Script_BNIsToonBlocked	binding "BNIsToonBlocked" in s_ScriptFunctions ~ table 00accae8
-00536b60	table	Script_BNSetToonBlocked	binding "BNSetToonBlocked" in s_ScriptFunctions ~ table 00accae8
-00536c50	table	Script_BNSetSelectedToonBlock	binding "BNSetSelectedToonBlock" in s_ScriptFunctions ~ table 00accae8
-00536d40	table	Script_BNGetSelectedToonBlock	binding "BNGetSelectedToonBlock" in s_ScriptFunctions ~ table 00accae8
-00536e40	table	Script_BNReportPlayer	binding "BNReportPlayer" in s_ScriptFunctions ~ table 00accae8
-00537010	table	Script_BNFeaturesEnabledAndConnected	binding "BNFeaturesEnabledAndConnected" in s_ScriptFunctions ~ table 00accae8
-00537070	table	Script_BNFeaturesEnabled	binding "BNFeaturesEnabled" in s_ScriptFunctions ~ table 00accae8
-005370d0	table	Script_BNGetNumFOF	binding "BNGetNumFOF" in s_ScriptFunctions ~ table 00accae8
-00537240	table	Script_BNGetFOFInfo	binding "BNGetFOFInfo" in s_ScriptFunctions ~ table 00accae8
-00537510	table	Script_BNSetSelectedFriend	binding "BNSetSelectedFriend" in s_ScriptFunctions ~ table 00accae8
-00537600	table	Script_BNGetSelectedFriend	binding "BNGetSelectedFriend" in s_ScriptFunctions ~ table 00accae8
-005376c0	table	Script_BNSetMatureLanguageFilter	binding "BNSetMatureLanguageFilter" in s_ScriptFunctions ~ table 00accae8
-005377c0	table	Script_BNGetMatureLanguageFilter	binding "BNGetMatureLanguageFilter" in s_ScriptFunctions ~ table 00accae8
-005378a0	table	Script_BNIsSelf	binding "BNIsSelf" in s_ScriptFunctions ~ table 00accae8
-00537950	table	Script_BNIsFriend	binding "BNIsFriend" in s_ScriptFunctions ~ table 00accae8
-00537a00	table	Script_BNGetMaxPlayersInConversation	binding "BNGetMaxPlayersInConversation" in s_ScriptFunctions ~ table 00accae8
-00539bf0	table	Script_BNGetFriendInfo	binding "BNGetFriendInfo" in s_ScriptFunctions ~ table 00accae8
-00539cc0	table	Script_BNGetFriendInfoByID	binding "BNGetFriendInfoByID" in s_ScriptFunctions ~ table 00accae8
-00539d70	table	Script_BNGetFriendToonInfo	binding "BNGetFriendToonInfo" in s_ScriptFunctions ~ table 00accae8
-00539f90	table	Script_BNGetToonInfo	binding "BNGetToonInfo" in s_ScriptFunctions ~ table 00accae8
-0053a030	table	Script_BNSendWhisper	binding "BNSendWhisper" in s_ScriptFunctions ~ table 00accae8
-0053a150	table	Script_BNGetConversationMemberInfo	binding "BNGetConversationMemberInfo" in s_ScriptFunctions ~ table 00accae8
-0053a300	table	Script_BNListConversation	binding "BNListConversation" in s_ScriptFunctions ~ table 00accae8
-0053a540	table	Script_BNGetBlockedInfo	binding "BNGetBlockedInfo" in s_ScriptFunctions ~ table 00accae8
-0053a660	table	Script_BNRequestFOFInfo	binding "BNRequestFOFInfo" in s_ScriptFunctions ~ table 00accae8
+005343f0	table	BattlenetUI::Script_BNGetInfo	binding "BNGetInfo" in s_ScriptFunctions ~ table 00accae8
+00534590	table	BattlenetUI::Script_BNGetNumFriends	binding "BNGetNumFriends" in s_ScriptFunctions ~ table 00accae8
+005349f0	table	BattlenetUI::Script_BNGetNumFriendToons	binding "BNGetNumFriendToons" in s_ScriptFunctions ~ table 00accae8
+00534ed0	table	BattlenetUI::Script_BNRemoveFriend	binding "BNRemoveFriend" in s_ScriptFunctions ~ table 00accae8
+00534f80	table	BattlenetUI::Script_BNSetFriendNote	binding "BNSetFriendNote" in s_ScriptFunctions ~ table 00accae8
+00535080	table	BattlenetUI::Script_BNGetNumFriendInvites	binding "BNGetNumFriendInvites" in s_ScriptFunctions ~ table 00accae8
+00535180	table	BattlenetUI::Script_BNGetFriendInviteInfo	binding "BNGetFriendInviteInfo" in s_ScriptFunctions ~ table 00accae8
+00535380	table	BattlenetUI::Script_BNSendFriendInvite	binding "BNSendFriendInvite" in s_ScriptFunctions ~ table 00accae8
+00535490	table	BattlenetUI::Script_BNSendFriendInviteByID	binding "BNSendFriendInviteByID" in s_ScriptFunctions ~ table 00accae8
+005355c0	table	BattlenetUI::Script_BNAcceptFriendInvite	binding "BNAcceptFriendInvite" in s_ScriptFunctions ~ table 00accae8
+00535660	table	BattlenetUI::Script_BNDeclineFriendInvite	binding "BNDeclineFriendInvite" in s_ScriptFunctions ~ table 00accae8
+00535700	table	BattlenetUI::Script_BNReportFriendInvite	binding "BNReportFriendInvite" in s_ScriptFunctions ~ table 00accae8
+005357a0	table	BattlenetUI::Script_BNSetAFK	binding "BNSetAFK" in s_ScriptFunctions ~ table 00accae8
+00535860	table	BattlenetUI::Script_BNSetDND	binding "BNSetDND" in s_ScriptFunctions ~ table 00accae8
+00535920	table	BattlenetUI::Script_BNSetCustomMessage	binding "BNSetCustomMessage" in s_ScriptFunctions ~ table 00accae8
+00535aa0	table	BattlenetUI::Script_BNGetCustomMessageTable	binding "BNGetCustomMessageTable" in s_ScriptFunctions ~ table 00accae8
+00535c60	table	BattlenetUI::Script_BNSetFocus	binding "BNSetFocus" in s_ScriptFunctions ~ table 00accae8
+00535ce0	table	BattlenetUI::Script_BNCreateConversation	binding "BNCreateConversation" in s_ScriptFunctions ~ table 00accae8
+00535eb0	table	BattlenetUI::Script_BNInviteToConversation	binding "BNInviteToConversation" in s_ScriptFunctions ~ table 00accae8
+00536030	table	BattlenetUI::Script_BNLeaveConversation	binding "BNLeaveConversation" in s_ScriptFunctions ~ table 00accae8
+00536110	table	BattlenetUI::Script_BNSendConversationMessage	binding "BNSendConversationMessage" in s_ScriptFunctions ~ table 00accae8
+00536220	table	BattlenetUI::Script_BNGetNumConversationMembers	binding "BNGetNumConversationMembers" in s_ScriptFunctions ~ table 00accae8
+00536330	table	BattlenetUI::Script_BNGetConversationInfo	binding "BNGetConversationInfo" in s_ScriptFunctions ~ table 00accae8
+00536400	table	BattlenetUI::Script_BNGetNumBlocked	binding "BNGetNumBlocked" in s_ScriptFunctions ~ table 00accae8
+005364e0	table	BattlenetUI::Script_BNIsBlocked	binding "BNIsBlocked" in s_ScriptFunctions ~ table 00accae8
+005365b0	table	BattlenetUI::Script_BNSetBlocked	binding "BNSetBlocked" in s_ScriptFunctions ~ table 00accae8
+005366a0	table	BattlenetUI::Script_BNSetSelectedBlock	binding "BNSetSelectedBlock" in s_ScriptFunctions ~ table 00accae8
+00536790	table	BattlenetUI::Script_BNGetSelectedBlock	binding "BNGetSelectedBlock" in s_ScriptFunctions ~ table 00accae8
+00536890	table	BattlenetUI::Script_BNGetNumBlockedToons	binding "BNGetNumBlockedToons" in s_ScriptFunctions ~ table 00accae8
+00536970	table	BattlenetUI::Script_BNGetBlockedToonInfo	binding "BNGetBlockedToonInfo" in s_ScriptFunctions ~ table 00accae8
+00536a90	table	BattlenetUI::Script_BNIsToonBlocked	binding "BNIsToonBlocked" in s_ScriptFunctions ~ table 00accae8
+00536b60	table	BattlenetUI::Script_BNSetToonBlocked	binding "BNSetToonBlocked" in s_ScriptFunctions ~ table 00accae8
+00536c50	table	BattlenetUI::Script_BNSetSelectedToonBlock	binding "BNSetSelectedToonBlock" in s_ScriptFunctions ~ table 00accae8
+00536d40	table	BattlenetUI::Script_BNGetSelectedToonBlock	binding "BNGetSelectedToonBlock" in s_ScriptFunctions ~ table 00accae8
+00536e40	table	BattlenetUI::Script_BNReportPlayer	binding "BNReportPlayer" in s_ScriptFunctions ~ table 00accae8
+00537010	table	BattlenetUI::Script_BNFeaturesEnabledAndConnected	binding "BNFeaturesEnabledAndConnected" in s_ScriptFunctions ~ table 00accae8
+00537070	table	BattlenetUI::Script_BNFeaturesEnabled	binding "BNFeaturesEnabled" in s_ScriptFunctions ~ table 00accae8
+005370d0	table	BattlenetUI::Script_BNGetNumFOF	binding "BNGetNumFOF" in s_ScriptFunctions ~ table 00accae8
+00537240	table	BattlenetUI::Script_BNGetFOFInfo	binding "BNGetFOFInfo" in s_ScriptFunctions ~ table 00accae8
+00537510	table	BattlenetUI::Script_BNSetSelectedFriend	binding "BNSetSelectedFriend" in s_ScriptFunctions ~ table 00accae8
+00537600	table	BattlenetUI::Script_BNGetSelectedFriend	binding "BNGetSelectedFriend" in s_ScriptFunctions ~ table 00accae8
+005376c0	table	BattlenetUI::Script_BNSetMatureLanguageFilter	binding "BNSetMatureLanguageFilter" in s_ScriptFunctions ~ table 00accae8
+005377c0	table	BattlenetUI::Script_BNGetMatureLanguageFilter	binding "BNGetMatureLanguageFilter" in s_ScriptFunctions ~ table 00accae8
+005378a0	table	BattlenetUI::Script_BNIsSelf	binding "BNIsSelf" in s_ScriptFunctions ~ table 00accae8
+00537950	table	BattlenetUI::Script_BNIsFriend	binding "BNIsFriend" in s_ScriptFunctions ~ table 00accae8
+00537a00	table	BattlenetUI::Script_BNGetMaxPlayersInConversation	binding "BNGetMaxPlayersInConversation" in s_ScriptFunctions ~ table 00accae8
+00539bf0	table	BattlenetUI::Script_BNGetFriendInfo	binding "BNGetFriendInfo" in s_ScriptFunctions ~ table 00accae8
+00539cc0	table	BattlenetUI::Script_BNGetFriendInfoByID	binding "BNGetFriendInfoByID" in s_ScriptFunctions ~ table 00accae8
+00539d70	table	BattlenetUI::Script_BNGetFriendToonInfo	binding "BNGetFriendToonInfo" in s_ScriptFunctions ~ table 00accae8
+00539f90	table	BattlenetUI::Script_BNGetToonInfo	binding "BNGetToonInfo" in s_ScriptFunctions ~ table 00accae8
+0053a030	table	BattlenetUI::Script_BNSendWhisper	binding "BNSendWhisper" in s_ScriptFunctions ~ table 00accae8
+0053a150	table	BattlenetUI::Script_BNGetConversationMemberInfo	binding "BNGetConversationMemberInfo" in s_ScriptFunctions ~ table 00accae8
+0053a300	table	BattlenetUI::Script_BNListConversation	binding "BNListConversation" in s_ScriptFunctions ~ table 00accae8
+0053a540	table	BattlenetUI::Script_BNGetBlockedInfo	binding "BNGetBlockedInfo" in s_ScriptFunctions ~ table 00accae8
+0053a660	table	BattlenetUI::Script_BNRequestFOFInfo	binding "BNRequestFOFInfo" in s_ScriptFunctions ~ table 00accae8
 0053b410	annotated	SpellCompanionType	tag in src/object/client/SpellBook.cpp
 0053b5c0	table	Script_GetNumSpellTabs	binding "GetNumSpellTabs" in s_ScriptFunctions ~ table 00accce0
 0053b650	table	Script_GetKnownSlotFromHighestRankSlot	binding "GetKnownSlotFromHighestRankSlot" in s_ScriptFunctions ~ table 00accce0
@@ -2337,7 +2337,7 @@ addr	how	frozen	evidence
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
-00688290	sticky	TSGrowableArray<CMapChunkBufBlock>::SetCount	held from the previous run, where it was sticky
+00688290	callgraph	TSGrowableArray<CMapChunkBufBlock>::SetCount	only unmatched callee of 007ba3d0=CMap::FreeBufBlocks
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
@@ -2414,7 +2414,7 @@ addr	how	frozen	evidence
 006aff10	annotated	CBLPFile::Open	tag in src/gx/blp/CBLPFile.cpp
 006b0850	callorder	ClientConnection::Cleanup	same slot between linked calls in 004d98d0=CGlueMgr::StatusDialogClick
 006b0970	override	ClientServices::Connection	
-006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=Script_IsBNLogin
+006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=BattlenetUI::Script_IsBNLogin
 006b0b50	annotated	ClientServices::Send	tag in src/client/ClientServices.cpp
 006b0b80	override	ClientServices::SetMessageHandler	
 006b0bc0	annotated	ClientServices::ClearMessageHandler	tag in src/client/ClientServices.cpp
@@ -2855,7 +2855,6 @@ addr	how	frozen	evidence
 00781a10	annotated	CWorld::AddObject	tag in src/world/CWorld.cpp
 007826e0	annotated	CWorld::RemoveObject	tag in src/world/CWorld.cpp
 007831a0	override	CWorld::Update	
-00783b90	string	WeatherDefaultTexture	unique "textures\Weather\RainDrop01.blp"
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
 00787780	string	Weather::Weather	unique "useWeatherShaders"
 0078d660	annotated	CWorldParam::MapShadowsCallback	tag in src/world/CWorldParam.cpp
@@ -2908,7 +2907,6 @@ addr	how	frozen	evidence
 00790e20	override	CWorldScene::SubFrustum	
 00791120	annotated	CWorldScene::SphereOutsideFrustum	tag in src/world/CWorldScene.cpp
 007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
-00791980	callgraph	MapOcclusion::BuildVolumes	only unmatched callee of 0079a790=CWorldScene::Traverse
 00791cb0	annotated	CWorldScene::VisitStaticEntity	tag in src/world/CWorldScene.cpp
 00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
@@ -2923,7 +2921,7 @@ addr	how	frozen	evidence
 00793980	annotated	CWorldScene::DrawEntityShadows	tag in src/world/CWorldScene.cpp
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
-00793d20	annotated	BuildPendingMapObjSurfaces	tag in src/world/map/LiquidSurface.cpp
+00793d20	annotated	Liquid::BuildPendingMapObjSurfaces	tag in src/world/map/LiquidSurface.cpp
 007946d0	annotated	CWorldScene::SubmitOccluderBox	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
 00795d40	annotated	CWorldScene::UpdateCameraDef	tag in src/world/CWorldScene.cpp
@@ -2972,12 +2970,12 @@ addr	how	frozen	evidence
 007a7210	annotated	CMapObj::TestCameraInPortal	tag in src/world/map/CMapObjDraw.cpp
 007a72a0	annotated	ClipPolygonToPlanes	tag in lib/typhoon/tempest/Intersect.cpp
 007a7630	annotated	CMapObjGroup::BatchOutsideFrustum	tag in src/world/map/CMapObjDraw.cpp
-007a7920	annotated	WriteLiquidIndices	tag in src/world/map/LiquidSurface.cpp
-007a7b00	annotated	WriteLiquidVertex	tag in src/world/map/LiquidSurface.cpp
-007a7cc0	annotated	WriteLiquidGridVertices	tag in src/world/map/LiquidSurface.cpp
-007a7e50	annotated	MapObjPolyFoldShortPair	tag in src/world/map/LiquidSurface.cpp
-007a7f00	annotated	MapObjPolyFoldByte	tag in src/world/map/LiquidSurface.cpp
-007a7f60	annotated	EmitLiquidTiles	tag in src/world/map/LiquidSurface.cpp
+007a7920	annotated	Liquid::WriteLiquidIndices	tag in src/world/map/LiquidSurface.cpp
+007a7b00	annotated	Liquid::WriteLiquidVertex	tag in src/world/map/LiquidSurface.cpp
+007a7cc0	annotated	Liquid::WriteLiquidGridVertices	tag in src/world/map/LiquidSurface.cpp
+007a7e50	annotated	Liquid::MapObjPolyFoldShortPair	tag in src/world/map/LiquidSurface.cpp
+007a7f00	annotated	Liquid::MapObjPolyFoldByte	tag in src/world/map/LiquidSurface.cpp
+007a7f60	annotated	Liquid::EmitLiquidTiles	tag in src/world/map/LiquidSurface.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs
 007a8440	annotated	CMapObj::SetupFog	tag in src/world/map/CMapObjDraw.cpp
@@ -3017,23 +3015,25 @@ addr	how	frozen	evidence
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
 007b0cc0	annotated	CMapObj::Create	tag in src/world/map/CMapObj.cpp
-007b1000	annotated	RotateBasisAboutZ	tag in src/world/map/DetailDoodad.cpp
-007b11b0	annotated	BuildFadeTexels	tag in src/world/map/DetailDoodad.cpp
-007b1270	annotated	FadeTextureCallback	tag in src/world/map/DetailDoodad.cpp
-007b12b0	annotated	FillIndexBuffer	tag in src/world/map/DetailDoodad.cpp
-007b1b10	annotated	OnModelLoaded	tag in src/world/map/DetailDoodad.cpp
-007b1b50	annotated	FillVertexBuffer	tag in src/world/map/DetailDoodad.cpp
-007b2760	annotated	Initialize	tag in src/world/map/DetailDoodad.cpp
-007b29b0	annotated	ReleaseBuffers	tag in src/world/map/DetailDoodad.cpp
-007b2a80	annotated	CreateBuffers	tag in src/world/map/DetailDoodad.cpp
-007b2ca0	annotated	AcquireBuffers	tag in src/world/map/DetailDoodad.cpp
-007b2d30	annotated	SetupState	tag in src/world/map/DetailDoodad.cpp
-007b3050	annotated	EnsureModel	tag in src/world/map/DetailDoodad.cpp
-007b31e0	annotated	AddPlacement	tag in src/world/map/DetailDoodad.cpp
-007b3390	annotated	DrawBatch	tag in src/world/map/DetailDoodad.cpp
-007b3530	annotated	IsReady	tag in src/world/map/DetailDoodad.cpp
-007b36b0	annotated	Draw	tag in src/world/map/DetailDoodad.cpp
-007b3960	annotated	ReleaseInstance	tag in src/world/map/DetailDoodad.cpp
+007b1000	annotated	DetailDoodad::RotateBasisAboutZ	tag in src/world/map/DetailDoodad.cpp
+007b11b0	annotated	DetailDoodad::BuildFadeTexels	tag in src/world/map/DetailDoodad.cpp
+007b1270	annotated	DetailDoodad::FadeTextureCallback	tag in src/world/map/DetailDoodad.cpp
+007b12b0	annotated	DetailDoodad::FillIndexBuffer	tag in src/world/map/DetailDoodad.cpp
+007b1b10	annotated	DetailDoodad::OnModelLoaded	tag in src/world/map/DetailDoodad.cpp
+007b1b50	annotated	DetailDoodad::FillVertexBuffer	tag in src/world/map/DetailDoodad.cpp
+007b2760	annotated	DetailDoodad::Initialize	tag in src/world/map/DetailDoodad.cpp
+007b29b0	annotated	DetailDoodad::ReleaseBuffers	tag in src/world/map/DetailDoodad.cpp
+007b2a80	annotated	DetailDoodad::CreateBuffers	tag in src/world/map/DetailDoodad.cpp
+007b2ca0	annotated	DetailDoodad::AcquireBuffers	tag in src/world/map/DetailDoodad.cpp
+007b2d30	annotated	DetailDoodad::SetupState	tag in src/world/map/DetailDoodad.cpp
+007b3050	annotated	DetailDoodad::EnsureModel	tag in src/world/map/DetailDoodad.cpp
+007b31e0	annotated	DetailDoodad::AddPlacement	tag in src/world/map/DetailDoodad.cpp
+007b3390	annotated	DetailDoodad::DrawBatch	tag in src/world/map/DetailDoodad.cpp
+007b3530	annotated	DetailDoodad::IsReady	tag in src/world/map/DetailDoodad.cpp
+007b36b0	annotated	DetailDoodad::Draw	tag in src/world/map/DetailDoodad.cpp
+007b3780	callgraph	DetailDoodad::ReturnBuffers	only unmatched callee of 007b3960=DetailDoodad::ReleaseInstance
+007b3910	callgraph	DetailDoodad::Scatter	only unmatched callee of 007d3390=DetailDoodad::CreateInstance
+007b3960	annotated	DetailDoodad::ReleaseInstance	tag in src/world/map/DetailDoodad.cpp
 007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b3b20	annotated	CMapObj::EnterPortalWalk	tag in src/world/map/CMapObjDraw.cpp
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
@@ -3222,9 +3222,10 @@ addr	how	frozen	evidence
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
+007ccd20	callgraph	MapOcclusion::BuildBoxes	only unmatched callee of 007cd850=MapOcclusion::BuildVolumes
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
-007cd4e0	annotated	AddVolume	tag in src/world/map/MapOcclusion.cpp
-007cd850	annotated	BuildVolumes	tag in src/world/map/MapOcclusion.cpp
+007cd4e0	annotated	MapOcclusion::AddVolume	tag in src/world/map/MapOcclusion.cpp
+007cd850	annotated	MapOcclusion::BuildVolumes	tag in src/world/map/MapOcclusion.cpp
 007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
 007cde80	annotated	CChunkLiquid::GetBounds	tag in src/world/map/CChunkLiquid.cpp
@@ -3232,12 +3233,12 @@ addr	how	frozen	evidence
 007ce0b0	annotated	CChunkLiquid::GetHeightAt	tag in src/world/map/CChunkLiquid.cpp
 007ce180	annotated	CChunkLiquid::ReadTileFlags	tag in src/world/map/CChunkLiquid.cpp
 007ce1f0	annotated	CChunkLiquid::CoversTile	tag in src/world/map/CChunkLiquid.cpp
-007ce270	annotated	WriteLayerIndices	tag in src/world/map/LiquidSurface.cpp
-007ce390	annotated	WriteLayerVertices	tag in src/world/map/LiquidSurface.cpp
+007ce270	annotated	Liquid::WriteLayerIndices	tag in src/world/map/LiquidSurface.cpp
+007ce390	annotated	Liquid::WriteLayerVertices	tag in src/world/map/LiquidSurface.cpp
 007ce5d0	annotated	CChunkLiquid::RecordHits	tag in src/world/map/CChunkLiquid.cpp
 007ce960	annotated	CChunkLiquid::QueryBox	tag in src/world/map/CChunkLiquid.cpp
 007cee10	callgraph	CChunkLiquid::CChunkLiquid	only unmatched callee of 007c0980=CMap::AllocChunkLiquid
-007cf200	annotated	CreateSurface	tag in src/world/map/LiquidSurface.cpp
+007cf200	annotated	Liquid::CreateSurface	tag in src/world/map/LiquidSurface.cpp
 007cf9a0	annotated	CChunkLiquid::UpdateForFrame	tag in src/world/map/CChunkLiquid.cpp
 007cfb10	annotated	CMapChunk::FeedHorizon	tag in src/world/map/CMapChunk.cpp
 007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
@@ -3256,20 +3257,20 @@ addr	how	frozen	evidence
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
-007d4360	annotated	CMeshGeomFactory::SetLvf	tag in src/world/map/LiquidSurface.cpp
-007d4370	annotated	CMeshGeomFactory::SetFixedLight	tag in src/world/map/LiquidSurface.cpp
-007d43b0	annotated	CMeshGeomFactory::Release	tag in src/world/map/LiquidSurface.cpp
-007d43e0	annotated	CMeshGeomFactory::SetDiffColor	tag in src/world/map/LiquidSurface.cpp
+007d4360	annotated	Liquid::CMeshGeomFactory::SetLvf	tag in src/world/map/LiquidSurface.cpp
+007d4370	annotated	Liquid::CMeshGeomFactory::SetFixedLight	tag in src/world/map/LiquidSurface.cpp
+007d43b0	annotated	Liquid::CMeshGeomFactory::Release	tag in src/world/map/LiquidSurface.cpp
+007d43e0	annotated	Liquid::CMeshGeomFactory::SetDiffColor	tag in src/world/map/LiquidSurface.cpp
 007d43f0	override	Liquid::CMeshGeomFactory::Build	
-007d49b0	annotated	CMeshGeomFactory::Create	tag in src/world/map/LiquidSurface.cpp
-007d49d0	annotated	CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
-007d4ab0	annotated	CChunkGeomFactory::Build	tag in src/world/map/LiquidSurface.cpp
+007d49b0	annotated	Liquid::CMeshGeomFactory::Create	tag in src/world/map/LiquidSurface.cpp
+007d49d0	annotated	Liquid::CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
+007d4ab0	annotated	Liquid::CChunkGeomFactory::Build	tag in src/world/map/LiquidSurface.cpp
 007d4f10	annotated	CMapLiquidData::SetBody	tag in src/world/map/CMapLiquidData.cpp
-007d4f40	annotated	CClientEnvironment::SetupLighting	tag in src/world/map/LiquidSurface.cpp
-007d5120	annotated	CreateEnvironment	tag in src/world/map/LiquidSurface.cpp
+007d4f40	annotated	Liquid::CClientEnvironment::SetupLighting	tag in src/world/map/LiquidSurface.cpp
+007d5120	annotated	Liquid::CreateEnvironment	tag in src/world/map/LiquidSurface.cpp
 007d59b0	annotated	QuerySegmentMapObjs	tag in src/world/map/CMapObj.cpp
-007d6210	annotated	CWaveManager::Release	tag in src/world/map/LiquidSurface.cpp
-007d62a0	annotated	CWaveManager::Update	tag in src/world/map/LiquidSurface.cpp
+007d6210	annotated	Liquid::CWaveManager::Release	tag in src/world/map/LiquidSurface.cpp
+007d62a0	annotated	Liquid::CWaveManager::Update	tag in src/world/map/LiquidSurface.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
 007d66d0	annotated	CMapChunk::CanPairWith	tag in src/world/map/CMapChunk.cpp
 007d6810	annotated	CMapArea::PairRenderChunks	tag in src/world/map/CMapArea.cpp
@@ -3302,16 +3303,16 @@ addr	how	frozen	evidence
 007d82e0	annotated	CMapObjGroup::ReadComplete	tag in src/world/map/CMapObjGroupLoad.cpp
 007d8570	annotated	CMapObjGroup::ReadCallback	tag in src/world/map/CMapObjGroupLoad.cpp
 007d85e0	annotated	CMapObjGroup::Read	tag in src/world/map/CMapObjGroupLoad.cpp
-007d91f0	annotated	MapObjPolyEval	tag in src/world/map/LiquidSurface.cpp
-007d9230	annotated	MapObjPolyAddPoint	tag in src/world/map/LiquidSurface.cpp
-007d9270	annotated	MapObjPolyCloseOutline	tag in src/world/map/LiquidSurface.cpp
-007d92f0	annotated	MapObjPolySeekUnflaggedEdge	tag in src/world/map/LiquidSurface.cpp
-007d9330	annotated	MapObjPolyBeginWalk	tag in src/world/map/LiquidSurface.cpp
-007d9390	annotated	MapObjPolyDeref	tag in src/world/map/LiquidSurface.cpp
-007d9400	annotated	MapObjPolyAdvance	tag in src/world/map/LiquidSurface.cpp
-007d9460	annotated	MapObjPolyAtEnd	tag in src/world/map/LiquidSurface.cpp
-007d9470	annotated	MapObjPolyClipToPlane	tag in src/world/map/LiquidSurface.cpp
-007d9740	annotated	MapObjPolyReset	tag in src/world/map/LiquidSurface.cpp
+007d91f0	annotated	Liquid::MapObjPolyEval	tag in src/world/map/LiquidSurface.cpp
+007d9230	annotated	Liquid::MapObjPolyAddPoint	tag in src/world/map/LiquidSurface.cpp
+007d9270	annotated	Liquid::MapObjPolyCloseOutline	tag in src/world/map/LiquidSurface.cpp
+007d92f0	annotated	Liquid::MapObjPolySeekUnflaggedEdge	tag in src/world/map/LiquidSurface.cpp
+007d9330	annotated	Liquid::MapObjPolyBeginWalk	tag in src/world/map/LiquidSurface.cpp
+007d9390	annotated	Liquid::MapObjPolyDeref	tag in src/world/map/LiquidSurface.cpp
+007d9400	annotated	Liquid::MapObjPolyAdvance	tag in src/world/map/LiquidSurface.cpp
+007d9460	annotated	Liquid::MapObjPolyAtEnd	tag in src/world/map/LiquidSurface.cpp
+007d9470	annotated	Liquid::MapObjPolyClipToPlane	tag in src/world/map/LiquidSurface.cpp
+007d9740	annotated	Liquid::MapObjPolyReset	tag in src/world/map/LiquidSurface.cpp
 007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp
@@ -4096,18 +4097,19 @@ addr	how	frozen	evidence
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
-008a1700	annotated	CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
-008a1a40	annotated	CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
-008a1ac0	annotated	CInstance::Release	tag in src/world/map/LiquidSurface.cpp
-008a1b00	annotated	CInstance::Create	tag in src/world/map/LiquidSurface.cpp
-008a1d60	annotated	CMaterialSettings::GetFrame	tag in src/world/map/LiquidMaterialSettings.cpp
-008a1f50	annotated	ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
-008a1fa0	annotated	GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
-008a20c0	annotated	Add	tag in lib/squall/storm/big/Ops.cpp
-008a2240	annotated	Draw	tag in src/world/map/DetailDoodad.cpp
-008a2450	annotated	CMaterialSettings::LoadTextures	tag in src/world/map/LiquidMaterialSettings.cpp
-008a27c0	annotated	CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
-008a28f0	annotated	GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
+008a1700	annotated	Liquid::CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
+008a1760	callorder	Liquid::ProcWaterSuffix	same slot between linked calls in 008a3e00=Liquid::CMaterialProcWater::EnsureShaders
+008a1a40	annotated	Liquid::CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
+008a1ac0	annotated	Liquid::CInstance::Release	tag in src/world/map/LiquidSurface.cpp
+008a1b00	annotated	Liquid::CInstance::Create	tag in src/world/map/LiquidSurface.cpp
+008a1d60	annotated	Liquid::CMaterialSettings::GetFrame	tag in src/world/map/LiquidMaterialSettings.cpp
+008a1f50	annotated	Liquid::ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
+008a1fa0	annotated	Liquid::GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
+008a20c0	annotated	Liquid::Add	tag in src/world/map/LiquidSurface.cpp
+008a2240	annotated	Liquid::Draw	tag in src/world/map/LiquidSurface.cpp
+008a2450	annotated	Liquid::CMaterialSettings::LoadTextures	tag in src/world/map/LiquidMaterialSettings.cpp
+008a27c0	annotated	Liquid::CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
+008a28f0	annotated	Liquid::GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3050	annotated	CMapLiquidData::CMapLiquidData	tag in src/world/map/CMapLiquidData.cpp
 008a3060	annotated	CMapLiquidData::HasLiquid	tag in src/world/map/CMapLiquidData.cpp
 008a3070	annotated	CMapLiquidData::Chunk	tag in src/world/map/CMapLiquidData.cpp
@@ -4115,24 +4117,24 @@ addr	how	frozen	evidence
 008a30b0	annotated	CMapLiquidData::FishableMask	tag in src/world/map/CMapLiquidData.cpp
 008a30e0	annotated	CMapLiquidData::DeepMask	tag in src/world/map/CMapLiquidData.cpp
 008a3110	annotated	CMapLiquidData::ExistsMask	tag in src/world/map/CMapLiquidData.cpp
-008a3130	annotated	CVertexDataMH2O::GetHeight	tag in src/world/map/LiquidVertexData.cpp
-008a3160	annotated	CVertexDataMH2O::GetDepth	tag in src/world/map/LiquidVertexData.cpp
-008a31b0	annotated	CVertexDataMH2O::GetCoord	tag in src/world/map/LiquidVertexData.cpp
-008a31e0	annotated	CVertexDataMCLQ::CVertexDataMCLQ	tag in src/world/map/LiquidVertexData.cpp
-008a3200	annotated	CVertexDataMCLQ::GetHeight	tag in src/world/map/LiquidVertexData.cpp
-008a3220	annotated	CVertexDataMCLQ::GetDepth	tag in src/world/map/LiquidVertexData.cpp
-008a3250	annotated	CVertexDataMCLQ::GetCoord	tag in src/world/map/LiquidVertexData.cpp
-008a3280	annotated	CVertexDataMH2O::CVertexDataMH2O	tag in src/world/map/LiquidVertexData.cpp
-008a32f0	annotated	SetupTransforms	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3620	annotated	SetupWaveA	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3710	annotated	SetupWaveB	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3810	annotated	SetupWaveConstants	tag in src/world/map/LiquidMaterialSettings.cpp
-008a38b0	annotated	SetupLightConstants	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3c90	annotated	SetupSunConstants	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3e00	annotated	CMaterialProcWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3f70	annotated	CMaterialWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
-008a4070	annotated	CMaterialWaterNoSpec::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
-008a4190	annotated	CMaterialMagma::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3130	annotated	Liquid::CVertexDataMH2O::GetHeight	tag in src/world/map/LiquidVertexData.cpp
+008a3160	annotated	Liquid::CVertexDataMH2O::GetDepth	tag in src/world/map/LiquidVertexData.cpp
+008a31b0	annotated	Liquid::CVertexDataMH2O::GetCoord	tag in src/world/map/LiquidVertexData.cpp
+008a31e0	annotated	Liquid::CVertexDataMCLQ::CVertexDataMCLQ	tag in src/world/map/LiquidVertexData.cpp
+008a3200	annotated	Liquid::CVertexDataMCLQ::GetHeight	tag in src/world/map/LiquidVertexData.cpp
+008a3220	annotated	Liquid::CVertexDataMCLQ::GetDepth	tag in src/world/map/LiquidVertexData.cpp
+008a3250	annotated	Liquid::CVertexDataMCLQ::GetCoord	tag in src/world/map/LiquidVertexData.cpp
+008a3280	annotated	Liquid::CVertexDataMH2O::CVertexDataMH2O	tag in src/world/map/LiquidVertexData.cpp
+008a32f0	annotated	Liquid::SetupTransforms	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3620	annotated	Liquid::SetupWaveA	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3710	annotated	Liquid::SetupWaveB	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3810	annotated	Liquid::SetupWaveConstants	tag in src/world/map/LiquidMaterialSettings.cpp
+008a38b0	annotated	Liquid::SetupLightConstants	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3c90	annotated	Liquid::SetupSunConstants	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3e00	annotated	Liquid::CMaterialProcWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3f70	annotated	Liquid::CMaterialWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
+008a4070	annotated	Liquid::CMaterialWaterNoSpec::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
+008a4190	annotated	Liquid::CMaterialMagma::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"
 008a8360	string	AchievementRec::GetFilename	unique "DBFilesClient\Achievement.dbc"

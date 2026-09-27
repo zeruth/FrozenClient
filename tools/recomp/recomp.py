@@ -300,6 +300,66 @@ def unescape(s):
             .replace('\\"', '"').replace("\\'", "'").replace('\x00', '\\'))
 
 
+NS_OPEN_RE = re.compile(r'\bnamespace\s+([A-Za-z_]\w*(?:\s*::\s*[A-Za-z_]\w*)*)\s*\{')
+
+
+def skip_to_close(text, i):
+    """Index of the brace matching the '{' at i, skipping strings, chars and comments."""
+    depth = 0
+    n = len(text)
+    j = i
+    while j < n:
+        c = text[j]
+        if c == '{':
+            depth += 1
+        elif c == '}':
+            depth -= 1
+            if depth == 0:
+                return j
+        elif c == '"' or c == "'":
+            q = c
+            j += 1
+            while j < n and text[j] != q:
+                if text[j] == '\\':
+                    j += 1
+                j += 1
+        elif text.startswith('//', j):
+            j = text.find(chr(10), j)
+            if j < 0:
+                return n - 1
+        elif text.startswith('/*', j):
+            j = text.find('*/', j + 2)
+            if j < 0:
+                return n - 1
+            j += 1
+        j += 1
+    return n - 1
+
+
+def namespace_ranges(text):
+    """Every named `namespace X {` block in the file as (start, end, qualifier).
+
+    WHY THIS EXISTS. The definition regex sees `void Foo::Bar() {` and keys the function `Foo::Bar`,
+    with no idea it sits inside `namespace Liquid`. clangparse keys the same function
+    `Liquid::Foo::Bar`, so the two inventories disagreed on the name of every function in a
+    namespace -- and since the `// ref:` tags are read by the regex pass, a tag bound to the
+    unqualified key, which carries the regex pass's guessed call list rather than clang's exact
+    one. Worse, the unqualified key COLLIDES: the free `Draw` in namespace Liquid and another
+    free `Draw` elsewhere merged into one entry with both bodies' calls, and 83 liquid functions
+    were measured against that mixture. Anonymous namespaces contribute nothing to a name, so
+    they are deliberately not matched here."""
+    out = []
+    for m in NS_OPEN_RE.finditer(text):
+        brace = text.index('{', m.end() - 1)
+        out.append((brace, skip_to_close(text, brace), m.group(1).replace(' ', '')))
+    return out
+
+
+def namespace_prefix(ranges, pos):
+    """The qualifier a definition at `pos` inherits from the namespaces enclosing it."""
+    parts = [q for start, end, q in ranges if start < pos < end]
+    return '::'.join(parts)
+
 def parse_sources():
     """Function bodies from src/**/*.cpp: name, file, strings, calls, stub flag, ref annotations."""
     fns = {}
@@ -308,11 +368,17 @@ def parse_sources():
     for path in paths:
         rel = os.path.relpath(path, ROOT).replace('\\', '/')
         text = io.open(path, encoding='utf-8', errors='replace').read()
+        ns = namespace_ranges(text)
         for m in sorted(list(DEF_RE.finditer(text)) + list(OP_DEF_RE.finditer(text)),
                         key=lambda m: m.start()):
             name = m.group(1)
             if name in KEYWORDS:
                 continue
+            # A definition inside `namespace Liquid` is Liquid::whatever, which is how clangparse
+            # and the PDB both spell it. Written out qualified already? Leave it alone.
+            prefix = namespace_prefix(ns, m.start())
+            if prefix and not name.startswith(prefix + '::'):
+                name = prefix + '::' + name
             if 'operator' in name:
                 # Operators are admitted only when they carry an explicit `// ref:` tag. They are
                 # hopeless for automatic matching -- no strings, no distinguishing calls, frozen
