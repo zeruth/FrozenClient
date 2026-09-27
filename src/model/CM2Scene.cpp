@@ -1529,6 +1529,56 @@ void CM2Scene::BeginRayQuery() {
     this->m_flags |= 0x2;
 }
 
+// ref: FUN_0081cbc0
+// Order the ray candidates near to far: entry distance, then exit distance, then the candidate's
+// own index. The driver walks the result front to back and stops as soon as a candidate's entry
+// distance is further than the best hit it already has, which only works on this order.
+//
+// Like the other comparators here it sorts INDICES and takes the candidate array as its user
+// argument, which is why the reference scales both by sixteen -- the size of M2SceneRayCandidate,
+// and a useful check that the struct is the right shape.
+//
+// READ OFF THE INSTRUCTIONS, not the decompilation, because the x87 compare-and-branch pairs do
+// not survive it. Each pair here loads B's key and compares it against A's, so the senses look
+// inverted written out: `testb $0x41` with `jne` is taken when B <= A, and the fall-through is
+// B > A, which is the -1 case. The final tiebreak ends `sbbl %eax, %eax` then NEGL -- negate, not
+// or, which is what makes the two branches +1 and 0 rather than -1 and -1.
+//
+// The three keys are lexicographic and the last is unique, so this is a strict weak ordering by
+// construction; no sampling needed.
+int32_t CM2Scene::SortRayCandidates(uint32_t a, uint32_t b, const void* userArg) {
+    auto candidates = static_cast<const M2SceneRayCandidate*>(userArg);
+
+    const M2SceneRayCandidate& ca = candidates[a];
+    const M2SceneRayCandidate& cb = candidates[b];
+
+    if (cb.tNear > ca.tNear) {
+        return -1;
+    }
+
+    if (cb.tNear < ca.tNear) {
+        return 1;
+    }
+
+    if (cb.tFar > ca.tFar) {
+        return -1;
+    }
+
+    if (cb.tFar < ca.tFar) {
+        return 1;
+    }
+
+    if (b > a) {
+        return -1;
+    }
+
+    if (b < a) {
+        return 1;
+    }
+
+    return 0;
+}
+
 // Make room for one candidate per model on the ray list. The capacity only grows, doubling from
 // one, and the old contents are not kept.
 // ref: FUN_0081cad0
@@ -1667,7 +1717,6 @@ void CM2Scene::BlendBoneMatrices3x4(const C44Matrix* bones, ubyte4 weights, ubyt
 // query plane. A hit inside the triangle at a non-negative height replaces best when it is no
 // higher than *bestHeight -- or unconditionally, with preferOther set, when best is empty or has a
 // different key. Returns the (possibly new) best candidate.
-// ref: FUN_0081d510
 // ref: FUN_0081dd50
 // Project one model's collision mesh onto the query plane, then test its triangles.
 //
@@ -1750,6 +1799,7 @@ M2SceneRayCandidate* CM2Scene::RayTestModel(CM2Model* model, int32_t preferOther
                                   candidate, bestHeight, best);
 }
 
+// ref: FUN_0081d510
 M2SceneRayCandidate* CM2Scene::RayTestTriangles(const uint16_t* indices, const uint16_t* indicesEnd, uint32_t vertexBase, const C2Vector& point, int32_t preferOther, M2SceneRayCandidate* candidate, float* bestHeight, M2SceneRayCandidate* best) {
     const float epsilon = 1.0e-5f;
 

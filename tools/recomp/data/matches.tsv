@@ -3525,13 +3525,14 @@ addr	how	frozen	evidence
 0081ca80	annotated	M2ParticleMaterialClass	tag in src/model/CM2Scene.cpp
 0081cac0	annotated	CM2Scene::BeginRayQuery	tag in src/model/CM2Scene.cpp
 0081cad0	annotated	CM2Scene::ReserveRayCandidates	tag in src/model/CM2Scene.cpp
+0081cbc0	annotated	CM2Scene::SortRayCandidates	tag in src/model/CM2Scene.cpp
 0081cc30	annotated	CM2Scene::SetProjectionCallback	tag in src/model/CM2Scene.cpp
 0081cd70	annotated	CM2Model::AllocModel	tag in src/model/CM2Model.cpp
 0081cdc0	callorder	TSGrowableArray<M2Element>::New	same slot between linked calls in 00821a20=CM2Scene::Animate
 0081cf20	annotated	CM2Scene::RaySetup	tag in src/model/CM2Scene.cpp
 0081d2c0	annotated	CM2Scene::BlendBoneMatrices	tag in src/model/CM2Scene.cpp
 0081d3d0	annotated	CM2Scene::BlendBoneMatrices3x4	tag in src/model/CM2Scene.cpp
-0081d510	annotated	CM2Scene::RayTestModel	tag in src/model/CM2Scene.cpp
+0081d510	annotated	CM2Scene::RayTestTriangles	tag in src/model/CM2Scene.cpp
 0081d9c0	annotated	CM2Scene::ProjectSectionVertices	tag in src/model/CM2Scene.cpp
 0081dd50	override	CM2Scene::RayTestModel	
 0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp

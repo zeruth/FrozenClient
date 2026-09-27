@@ -41,6 +41,8 @@ class CM2Scene {
         // Number one list's additive runs, then sort it. ref: FUN_0081f9e0
         void KeyAndSortElementList(uint32_t listIndex);
         static int32_t SortTransparent(uint32_t a, uint32_t b, const void* userArg);
+        // Order the ray candidates near to far. ref: FUN_0081cbc0
+        static int32_t SortRayCandidates(uint32_t a, uint32_t b, const void* userArg);
         // The same, with the additive run number as its first key. ref: FUN_0081f0e0
         static int32_t SortTransparentGrouped(uint32_t a, uint32_t b, const void* userArg);
 

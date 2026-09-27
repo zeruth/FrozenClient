@@ -56339,6 +56339,21 @@
   "refSize": 229,
   "status": "ported"
  },
+ "0081cbc0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortRayCandidates",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 110,
+  "status": "ported"
+ },
  "0081cc30": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -56433,14 +56448,15 @@
   "status": "ported"
  },
  "0081d510": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.545,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
-  "frozen": "CM2Scene::RayTestModel",
+  "frozen": "CM2Scene::RayTestTriangles",
   "frozenSize": 0,
   "how": "annotated",
   "module": "M2Scene.cpp",
@@ -56467,7 +56483,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Scene.cpp"
   ],
