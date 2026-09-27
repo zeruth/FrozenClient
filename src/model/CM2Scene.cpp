@@ -862,6 +862,15 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
         // CM2SceneRender::DrawRibbon stays empty and nothing would draw the elements anyway --
         // which is safe here in a way it would NOT be for doodads, because ribbons displace
         // nothing. See the note at CM2Model::IsBatchDoodadCompatible for the contrast.
+        // This gather crashed the client when it first went live, and the fault was NOT here -- it
+        // was a bare 0 clearing a texture stage in CM2SceneRender::SetupTextures, which half-wrote
+        // an eight-byte pointer slot. See the note there; it is fixed.
+        //
+        // Worth keeping because it cost real time: an earlier probe reported 1,394,001 AnimateST
+        // calls with no ribbon-bearing model and I read that as "this path is unreachable". It is
+        // not -- WeatherRender reaches CM2Scene::Draw, weather models carry ribbons, and whether
+        // any are active depends on the zone and the time of day. So the path was live all along
+        // and merely idle whenever I happened to sample it.
         if (model->m_ribbonEmitters) {
             for (int32_t i = 0; i < data->ribbons.Count(); i++) {
                 CM2Ribbon* emitter = model->m_ribbonEmitters[i];

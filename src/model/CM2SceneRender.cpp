@@ -977,7 +977,21 @@ void CM2SceneRender::SetupMaterial() {
 void CM2SceneRender::SetupTextures() {
     if (this->m_curType > 2) {
         for (int32_t i = 0; i < 2; i++) {
-            GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), 0);
+            // THE CAST IS LOAD-BEARING and its absence was a crash. A bare 0 picks the int32_t
+            // overload of GxRsSet, and CGxStateBom's value is a union of `int32_t i[3]` with a
+            // `void* p` -- so assigning an int writes FOUR bytes and leaves bytes 4 through 7 of
+            // an eight-byte pointer exactly as they were.
+            //
+            // A texture slot that had held a real CGxTex* therefore kept its HIGH half and lost
+            // its low half: 0x00000211777C01D0 became 0x0000021100000000. The device faulted on
+            // that in ITexMarkAsUpdated the next time it synced the stage. Found 2026-09-27 from
+            // tools/crashstack.py, whose registers showed exactly that pair of values.
+            //
+            // This branch is the one every element type above 2 takes -- ribbons and particles --
+            // and it clears BOTH stages while those draws bind only stage 0, so stage 1 kept the
+            // corrupt pointer. The loop at the bottom of this function always spelled the cast
+            // out; only this one did not.
+            GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), static_cast<CGxTex*>(nullptr));
             CShaderEffect::SetTexMtx_Identity(i);
         }
 
