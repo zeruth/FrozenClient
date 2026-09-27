@@ -3292,6 +3292,7 @@ addr	how	frozen	evidence
 007d9270	annotated	MapObjPolyCloseOutline	tag in src/world/map/LiquidSurface.cpp
 007d92f0	annotated	MapObjPolySeekUnflaggedEdge	tag in src/world/map/LiquidSurface.cpp
 007d9330	annotated	MapObjPolyBeginWalk	tag in src/world/map/LiquidSurface.cpp
+007d9390	annotated	MapObjPolyDeref	tag in src/world/map/LiquidSurface.cpp
 007d9400	annotated	MapObjPolyAdvance	tag in src/world/map/LiquidSurface.cpp
 007d9460	annotated	MapObjPolyAtEnd	tag in src/world/map/LiquidSurface.cpp
 007d9740	annotated	MapObjPolyReset	tag in src/world/map/LiquidSurface.cpp

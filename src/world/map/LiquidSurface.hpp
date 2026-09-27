@@ -139,29 +139,9 @@ class IGeomFactory {
                               CGxBatch* batch) = 0;
 };
 
-// One node of the memoised tree the outline's values are computed from. The reference evaluates
-// exactly this shape recursively and caches into the first slot, so a zero value means unevaluated.
-//
-// The children are real pointers here where the reference's are 32-bit, which widens the struct past
-// its 0x10 bytes. That costs nothing: every access is by name, nothing copies one of these out of
-// file data, and the reference's own byte offsets are only needed where its hand-computed strides
-// are reproduced -- which is the point array, not this.
-struct MapObjPolyNode {
-    int32_t value;              // +0x00, memoised; zero means unevaluated
-    MapObjPolyNode* childA;     // +0x04 in the reference
-    MapObjPolyNode* childB;     // +0x08
-    float operand;              // +0x0c
-};
-
-// What the evaluator folds two child values and an operand through. Note the mixed signature: two
-// integers and a float, which is what the reference pushes.
+// What the outline's values are folded through. Note the mixed signature -- two integers and a
+// float -- which is what the reference pushes.
 typedef int32_t (*MapObjPolyFold)(int32_t a, int32_t b, float operand);
-
-// ref: FUN_007d91f0
-// Evaluate a node, memoising into it. See the definition for the argument order, which the
-// decompilation gets wrong.
-int32_t MapObjPolyEval(MapObjPolyNode* node, MapObjPolyFold fold);
-
 // The point-and-edge accumulator the map-object liquid geometry emitter builds its outline in, and
 // the walker that reads it back. The reference keeps both in MapObjRead.cpp; their purpose was only
 // established once FUN_007a7f60 -- the emitter -- was read, because nine functions operate on this
@@ -186,9 +166,21 @@ struct MapObjPolyPoint {
     // 0x2c to 0x40, which breaks the stride the append and the walk both compute by hand and which
     // the static_asserts below pin. So they stay 32-bit and opaque, and whoever ports the evaluator
     // has to decide between an index-based node and a side table. Recorded rather than guessed at.
-    int32_t value;          // +0x0c, memoized; zero means unevaluated
-    uint32_t childA;        // +0x10, a 32-bit pointer in the reference
-    uint32_t childB;        // +0x14, likewise
+    int32_t value;          // +0x0c, memoised; zero means unevaluated
+    // +0x10 and +0x14: the two points this one's value interpolates between, as INDICES.
+    //
+    // DIVERGENCE, and the reason the earlier note here about pointer width is now moot. The
+    // reference stores addresses -- FUN_007d9470 writes `&points[from].value` and
+    // `&points[to].value` into these slots at 0x7d95xx, reinterpreting a float field as a pointer --
+    // and they always aim INSIDE THIS SAME ARRAY. So an index carries the identical information, at
+    // 32 bits on any build, and the point keeps its 0x2c stride.
+    //
+    // Only read when `value` is zero, which is only true of points the clipper interpolated and so
+    // wrote these for. A point from MapObjPolyAddPoint carries a non-zero value and never reaches
+    // them -- which is what that function's fourth argument is for. The reference shares the hazard
+    // that a leaf whose value is legitimately zero would read them uninitialised.
+    int32_t childA;         // +0x10
+    int32_t childB;         // +0x14
     // +0x18: the evaluator's third argument, and a FLOAT. Ghidra shows it as an int because it
     // reads the slot with an integer load; the reference uses flds and fstps on it (0x7d91fb and
     // 0x7d9206), so it goes to the callback as a float.
@@ -259,6 +251,14 @@ int32_t MapObjPolyCloseOutline(MapObjPolySet* set);
 // ref: FUN_007d92f0
 // Park the cursor on the first edge whose flag is still zero.
 void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set);
+
+// ref: FUN_007d91f0
+// Evaluate one point's value, memoising into it and recursing through the two it interpolates.
+int32_t MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold);
+
+// ref: FUN_007d9390
+// Read the walk's current point: its position, and its value evaluated on demand.
+void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, int32_t* value);
 
 // ref: FUN_007d9230
 void MapObjPolyAddPoint(MapObjPolySet* set, const C3Vector& position, uint32_t value);

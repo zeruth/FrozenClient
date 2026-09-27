@@ -1317,34 +1317,54 @@ void MapObjPolyReset(MapObjPolySet* set) {
 
 
 // ref: FUN_007d91f0
-// Evaluate one node and memoise the answer into it. A stored value of zero means unevaluated, so a
-// subtree that genuinely folds to zero is recomputed every time -- the reference's own cost and not
-// worth diverging over.
+// Evaluate one point's value, memoising into it. A stored zero means unevaluated, so a value that
+// genuinely folds to zero is recomputed on every touch -- the reference's own cost.
 //
 // THE ARGUMENT ORDER IS FROM THE DISASSEMBLY, because the decompilation cannot express it. Ghidra
 // drops both recursive receivers and renders the fold as `(uVar2, uVar1, operand)` with uVar1
-// evaluated first, which reads as though the two children are swapped. The pushes settle it: at
-// 0x7d9203 the receiver is +0x08 and at 0x7d920f it is +0x04, and cdecl's last push is the first
-// argument -- so the child at +0x04 is argument one and the child at +0x08 is argument two. The
-// EVALUATION order is the opposite of the argument order, which is what made the decompilation look
-// inconsistent, and it matters only if the fold has side effects.
+// evaluated first, which reads as though the two children are swapped. The pushes settle it: the
+// receiver at 0x7d9203 is +0x08 of the node (childB) and at 0x7d920f it is +0x04 (childA), and
+// cdecl's last push is the first argument -- so childA is argument one. The EVALUATION order is the
+// reverse of the argument order, which is what made the decompilation look self-inconsistent.
 //
-// The operand is a FLOAT. The reference loads it with flds and stores it to the argument slot with
-// fstps (0x7d91fb, 0x7d9206); Ghidra shows an integer read of the same slot, which is the x87 trap
-// this project's notes warn about. A fold reading it as an int would get a denormal-looking integer
-// rather than the number.
-int32_t MapObjPolyEval(MapObjPolyNode* node, MapObjPolyFold fold) {
-    if (node->value) {
-        return node->value;
+// The operand is a FLOAT: the reference loads it with flds and stores it to the argument slot with
+// fstps (0x7d91fb, 0x7d9206), where Ghidra shows an integer read of the same slot. A fold taking it
+// as an int would get the bit pattern rather than the number.
+//
+// Recurses on INDICES rather than the reference's pointers, for the reason recorded at the point's
+// childA -- the reference's addresses always aim inside this same array.
+int32_t MapObjPolyEval(MapObjPolySet* set, int32_t point, MapObjPolyFold fold) {
+    MapObjPolyPoint* p = &set->points[point];
+
+    if (p->value) {
+        return p->value;
     }
 
-    // Evaluated second-child-first, as the reference does, then folded first-child-first.
-    int32_t b = MapObjPolyEval(node->childB, fold);
-    int32_t a = MapObjPolyEval(node->childA, fold);
+    // Evaluated child-B-first, as the reference does, then folded child-A-first.
+    int32_t b = MapObjPolyEval(set, p->childB, fold);
+    int32_t a = MapObjPolyEval(set, p->childA, fold);
 
-    node->value = fold(a, b, node->operand);
+    p->value = fold(a, b, p->operand);
 
-    return node->value;
+    return p->value;
 }
 
+// ref: FUN_007d9390
+// Read whichever end of the walk is current -- the low bit of the step counter picks it, the same bit
+// MapObjPolyAdvance uses to decide which end moves, so a caller reading between steps sees the end
+// that is about to move.
+//
+// The reference INLINES the whole of MapObjPolyEval here rather than calling it, down to the same
+// child order and the same float operand -- confirmed instruction for instruction at 0x7d93c4
+// through 0x7d93df. frozen calls it instead. That trades one call against duplicating a memoising
+// recursion, and the computation is identical; the only cost is a call the reference does not make.
+void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, int32_t* value) {
+    int32_t index = (walk->steps & 1) ? walk->forward : walk->back;
+
+    MapObjPolySet* set = walk->set;
+
+    *position = set->points[index].position;
+
+    *value = MapObjPolyEval(set, index, static_cast<MapObjPolyFold>(walk->callback));
+}
 } // namespace Liquid

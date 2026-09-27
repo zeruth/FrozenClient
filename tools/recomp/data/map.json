@@ -42545,12 +42545,13 @@
   "status": "ported"
  },
  "00747b20": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.933,
+  "constOverlap": 0.1,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CVehiclePassenger_C.cpp"
+   "src/object/client/CVehiclePassenger_C.cpp",
+   "src/object/client/cvehiclepassenger_c.cpp"
   ],
   "frozen": "CVehiclePassenger_C::GetSeatAnimation",
   "frozenSize": 0,
@@ -42560,12 +42561,13 @@
   "status": "ported"
  },
  "00747bd0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.2,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CVehiclePassenger_C.cpp"
+   "src/object/client/CVehiclePassenger_C.cpp",
+   "src/object/client/cvehiclepassenger_c.cpp"
   ],
   "frozen": "CVehiclePassenger_C::GetSeatUpperAnimation",
   "frozenSize": 0,
@@ -42575,12 +42577,13 @@
   "status": "ported"
  },
  "00748560": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.4,
+  "constOverlap": 0.167,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CVehiclePassenger_C.cpp"
+   "src/object/client/CVehiclePassenger_C.cpp",
+   "src/object/client/cvehiclepassenger_c.cpp"
   ],
   "frozen": "CVehiclePassenger_C::GetRideAnimation",
   "frozenSize": 0,
@@ -42590,12 +42593,13 @@
   "status": "ported"
  },
  "007485b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.556,
+  "constOverlap": 0.125,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CVehiclePassenger_C.cpp"
+   "src/object/client/CVehiclePassenger_C.cpp",
+   "src/object/client/cvehiclepassenger_c.cpp"
   ],
   "frozen": "CVehiclePassenger_C::GetRideUpperAnimation",
   "frozenSize": 0,
@@ -42605,12 +42609,13 @@
   "status": "ported"
  },
  "007487e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.2,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CVehiclePassenger_C.cpp"
+   "src/object/client/CVehiclePassenger_C.cpp",
+   "src/object/client/cvehiclepassenger_c.cpp"
   ],
   "frozen": "CVehiclePassenger_C::IsRidingLiveVehicle",
   "frozenSize": 0,
@@ -52522,6 +52527,21 @@
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 90,
+  "status": "ported"
+ },
+ "007d9390": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "MapObjPolyDeref",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjRead.cpp",
+  "refSize": 112,
   "status": "ported"
  },
  "007d9400": {
@@ -66160,12 +66180,13 @@
   "status": "ported"
  },
  "008bad50": {
-  "branchRatio": -1.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/db/rec/VehicleSeatRec.cpp"
+   "src/db/rec/VehicleSeatRec.cpp",
+   "src/db/rec/vehicleseatrec.cpp"
   ],
   "frozen": "VehicleSeatRec::GetFilename",
   "frozenSize": 8,
