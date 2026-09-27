@@ -104,6 +104,13 @@ class CM2Shared {
         int32_t InitializeSkinProfile();
         int32_t Load(SFile* file, int32_t a3, CAaBox* a4);
         int32_t LoadSkinProfile(uint32_t profile);
+        // Drop the shared index and vertex buffers and the pools behind them. Safe to call when
+        // they were never built, and leaves every slot null so SetIndices and SetVertices rebuild
+        // on next use -- which is exactly how the instance capacity grows.
+        void ReleaseGeometryBuffers();
+        // Raise the instance capacity toward `count` and return what is actually available, which
+        // may be less than asked for. Callers MUST draw in chunks of the returned value.
+        uint32_t ReserveInstances(uint32_t count);
         uint32_t Release();
         int32_t SetIndices();
         int32_t SetVertices(uint32_t a2);

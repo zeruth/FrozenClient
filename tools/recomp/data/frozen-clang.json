@@ -84969,7 +84969,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 360
+"line": 393
 },
 "CM2SceneRender::DrawBatchProj": {
 "files": [
@@ -84982,7 +84982,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 364
+"line": 397
 },
 "CM2SceneRender::DrawCallback": {
 "files": [
@@ -84995,7 +84995,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 368
+"line": 401
 },
 "CM2SceneRender::SetupParticleTransform": {
 "files": [
@@ -85014,7 +85014,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 468
+"line": 501
 },
 "CM2SceneRender::DrawParticle": {
 "files": [
@@ -85052,7 +85052,7 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 509
+"line": 542
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -85065,7 +85065,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 631
+"line": 664
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -85082,7 +85082,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 636
+"line": 669
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -85122,7 +85122,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 675
+"line": 708
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -85177,7 +85177,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 753
+"line": 786
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -85213,7 +85213,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 867
+"line": 900
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [
@@ -85525,6 +85525,7 @@
 "M2Array<M2Texture>::Count",
 "HandleClose",
 "SMemFree",
+"CM2Shared::ReleaseGeometryBuffers",
 "SMemFree"
 ],
 "strings": [
@@ -85535,7 +85536,7 @@
 ],
 "branches": 8,
 "stub": false,
-"lines": 46,
+"lines": 48,
 "refs": [],
 "line": 446
 },
@@ -85552,7 +85553,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 495
+"line": 497
 },
 "CM2Shared::CallbackWhenLoaded": {
 "files": [
@@ -85571,7 +85572,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 525
+"line": 527
 },
 "CM2Shared::CreateSimpleEffect": {
 "files": [
@@ -85624,7 +85625,7 @@
 "stub": false,
 "lines": 179,
 "refs": [],
-"line": 541
+"line": 543
 },
 "CM2Shared::FinishLoadingSkinProfile": {
 "files": [
@@ -85645,7 +85646,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 721
+"line": 723
 },
 "CM2Shared::GetEffect": {
 "files": [
@@ -85680,7 +85681,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 751
+"line": 753
 },
 "CM2Shared::Initialize": {
 "files": [
@@ -85720,7 +85721,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 827
+"line": 829
 },
 "CM2Shared::InitializeSkinProfile": {
 "files": [
@@ -85771,7 +85772,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 893
+"line": 895
 },
 "CM2Shared::Load": {
 "files": [
@@ -85795,7 +85796,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 973
+"line": 975
 },
 "CM2Shared::LoadSkinProfile": {
 "files": [
@@ -85823,7 +85824,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 1017
+"line": 1019
 },
 "CM2Shared::Release": {
 "files": [
@@ -85838,7 +85839,43 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1066
+"line": 1068
+},
+"CM2Shared::ReleaseGeometryBuffers": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"GxBufDestroy",
+"GxPoolDestroy",
+"GxBufDestroy",
+"GxPoolDestroy"
+],
+"strings": [],
+"consts": [],
+"branches": 4,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 1093
+},
+"CM2Shared::ReserveInstances": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"CM2Shared::ReleaseGeometryBuffers"
+],
+"strings": [],
+"consts": [
+"0xFFFFFFF0",
+"15"
+],
+"branches": 2,
+"stub": false,
+"lines": 19,
+"refs": [],
+"line": 1129
 },
 "CM2Shared::SetIndices": {
 "files": [
@@ -85870,7 +85907,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1089
+"line": 1155
 },
 "CM2Shared::SetVertices": {
 "files": [
@@ -85890,6 +85927,17 @@
 "M2Array<ubyte4>::operator[]",
 "M2Array<unsigned short>::Count",
 "GxBufUnlock",
+"GxPrimVertexPtr",
+"GxBufLock",
+"M2Array<M2SkinSection>::Count",
+"M2Array<M2SkinSection>::operator[]",
+"M2Array<unsigned short>::operator[]",
+"M2Array<M2Vertex>::operator[]",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C2Vector::operator=",
+"C2Vector::operator=",
+"GxBufUnlock",
 "GxPrimVertexPtr"
 ],
 "strings": [],
@@ -85898,11 +85946,11 @@
 "0x1010101",
 "1"
 ],
-"branches": 9,
+"branches": 14,
 "stub": false,
-"lines": 65,
+"lines": 102,
 "refs": [],
-"line": 1150
+"line": 1229
 },
 "CM2Shared::SubstituteSimpleShaders": {
 "files": [
@@ -85929,7 +85977,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 1216
+"line": 1332
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
@@ -85942,7 +85990,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1292
+"line": 1408
 },
 "M2Init": {
 "files": [

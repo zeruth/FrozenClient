@@ -481,7 +481,9 @@ CM2Shared::~CM2Shared() {
         STORM_FREE(this->textures);
     }
 
-    // TODO
+    // The reference calls this here, between the textures and the skin sections, and nothing in
+    // frozen released these before -- every shared model leaked its index and vertex pools.
+    this->ReleaseGeometryBuffers();
 
     if (this->m_skinSections) {
         STORM_FREE(this->m_skinSections);
@@ -1079,6 +1081,70 @@ uint32_t CM2Shared::Release() {
     return 0;
 }
 
+// ref: FUN_008368b0
+// Both pool-and-buffer pairs go together, buffer before pool in each case, because a buffer is
+// carved out of its pool and releasing the pool first would leave it dangling.
+//
+// The reference inlines the buffer destroy here, which is why the decompilation shows it as a
+// GxDevice::BufStream call followed by a TSGrowableArray<CMapChunkBufBlock>::SetCount -- that
+// second name is a matcher false positive, not a real container operation. frozen has the two
+// primitives as GxBufDestroy and GxPoolDestroy (added for the optimized-geometry chain), so this
+// calls them instead of reproducing the inlining.
+void CM2Shared::ReleaseGeometryBuffers() {
+    if (this->m_indexBuf) {
+        GxBufDestroy(this->m_indexBuf);
+        this->m_indexBuf = nullptr;
+    }
+
+    if (this->m_indexPool) {
+        GxPoolDestroy(this->m_indexPool);
+        this->m_indexPool = nullptr;
+    }
+
+    if (this->m_vertexBuf) {
+        GxBufDestroy(this->m_vertexBuf);
+        this->m_vertexBuf = nullptr;
+    }
+
+    if (this->m_vertexPool) {
+        GxPoolDestroy(this->m_vertexPool);
+        this->m_vertexPool = nullptr;
+    }
+}
+
+// ref: FUN_00836df0
+// How many instances of this model one batched draw may carry. uint190 is the current capacity and
+// uint194 the ceiling InitializeSkinProfile worked out from the index count; the capacity starts at
+// 1 and is raised on demand, never lowered.
+//
+// Growing does NOT reallocate in place. It stores the new capacity and RELEASES the buffers, so the
+// next SetIndices and SetVertices rebuild them at the larger size -- those two size their pools
+// from uint190 and skip creation only when the pool is still there. That is the whole mechanism,
+// and it is why the release lives on this path rather than only in the destructor.
+//
+// The return value is the capacity actually available, which is the requested count rounded up to
+// a multiple of 16 but clamped to the ceiling, and is the UNCHANGED current capacity when no growth
+// was possible. A caller that assumes it got what it asked for will overrun the buffer; the
+// reference's own callers loop in chunks of this value.
+uint32_t CM2Shared::ReserveInstances(uint32_t count) {
+    uint32_t capacity = this->uint190;
+
+    if (capacity < count && capacity < this->uint194) {
+        capacity = (count + 15) & 0xFFFFFFF0;
+
+        if (capacity > this->uint194) {
+            capacity = this->uint194;
+        }
+
+        this->uint190 = capacity;
+
+        this->ReleaseGeometryBuffers();
+
+        capacity = this->uint190;
+    }
+
+    return capacity;
+}
 // Matched field for field rather than by position, which is worth recording because the two
 // SetIndices functions sit next to each other in DrawBatch and are easy to swap. The reference
 // skips the creation when +0x178 is already non-null (m_indexPool); computes the pool size as
@@ -1147,6 +1213,19 @@ int32_t CM2Shared::SetIndices() {
     return 1;
 }
 
+// ref: FUN_008362b0
+// The shared static vertex buffer every instanced draw of this model reads from. Created on first
+// use and then refilled only when the buffer has lost its contents, which is what the two flags on
+// CGxBuf record.
+//
+// `a2` selects which authored texture coordinate set is the PRIMARY one. It only reaches the
+// non-shader arm below, where both sets are written and the other one follows the chosen one; the
+// shader arm copies the whole vertex and so carries both in their authored order regardless.
+//
+// The buffer is allocated at the LARGER of the two vertex strides (CGxVertexPBNT2, 48 bytes) so
+// one allocation serves either arm; the non-shader arm writes 40-byte CGxVertexPNT2 records into
+// it and simply uses less than was reserved. That is the reference's own arrangement, not a
+// rounding accident -- 0x83651c steps by a genuine 40 bytes.
 int32_t CM2Shared::SetVertices(uint32_t a2) {
     if (!this->m_vertexPool) {
         this->m_vertexPool = GxPoolCreate(
@@ -1206,8 +1285,45 @@ int32_t CM2Shared::SetVertices(uint32_t a2) {
 
         return 1;
     } else {
-        // TODO
-        // non-shader code path
+        // The non-shader arm. ONE copy of the mesh, not one per instance: without a vertex program
+        // to skin it, the transform happens on the CPU per instance instead -- see the packers at
+        // M2GetPackBatchVerticesFn -- and this buffer only has to carry the untransformed mesh.
+        // That is why there is no instance loop here and why the bone words are absent from the
+        // format.
+        if (!this->m_vertexBuf->unk1C || !this->m_vertexBuf->unk1D) {
+            char* vertexData = GxBufLock(this->m_vertexBuf);
+
+            if (!vertexData) {
+                return 0;
+            }
+
+            auto vertexBuf = reinterpret_cast<CGxVertexPNT2*>(vertexData);
+
+            // The chosen set first, then the other one. With two sets authored, `other` is just
+            // the opposite index; the reference spells it `a2 == 0` rather than `1 - a2`, which is
+            // the same thing for the only two values it is ever passed.
+            uint32_t primary = a2;
+            uint32_t other = a2 == 0 ? 1 : 0;
+
+            for (int32_t j = 0; j < this->skinProfile->skinSections.Count(); j++) {
+                auto& skinSection = this->skinProfile->skinSections[j];
+                auto vertexStart = skinSection.vertexStart;
+                auto vertexEnd = vertexStart + skinSection.vertexCount;
+
+                for (int32_t k = vertexStart; k < vertexEnd; k++) {
+                    auto vertex = &this->m_data->vertices[this->skinProfile->vertices[k]];
+
+                    vertexBuf[k].p = vertex->position;
+                    vertexBuf[k].n = vertex->normal;
+                    vertexBuf[k].tc[0] = vertex->texcoord[primary];
+                    vertexBuf[k].tc[1] = vertex->texcoord[other];
+                }
+            }
+
+            GxBufUnlock(this->m_vertexBuf, 0);
+        }
+
+        GxPrimVertexPtr(this->m_vertexBuf, GxVBF_PNT2);
 
         return 1;
     }

@@ -3614,12 +3614,15 @@ addr	how	frozen	evidence
 00835df0	override	M2Init	
 00835e40	override	M2Init	
 008360a0	annotated	CM2Shared::SetIndices	tag in src/model/CM2Shared.cpp
+008362b0	annotated	CM2Shared::SetVertices	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
+008368b0	annotated	CM2Shared::ReleaseGeometryBuffers	tag in src/model/CM2Shared.cpp
 00836980	override	CM2Shared::SubstituteSimpleShaders	
 00836ad0	override	M2Init	
 00836b60	override	M2Init	
 00836c00	override	M2Init	
 00836c90	string	CM2Shared::GetEffect	unique "Combiners_Opaque_AddAlpha"
+00836df0	annotated	CM2Shared::ReserveInstances	tag in src/model/CM2Shared.cpp
 00836e40	override	M2Init	
 00836f80	override	M2Init	
 00837010	override	M2Init	

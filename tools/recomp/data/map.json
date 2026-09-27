@@ -55459,7 +55459,7 @@
   "branchRatio": 0.143,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.25,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -57657,6 +57657,22 @@
   "refSize": 525,
   "status": "ported"
  },
+ "008362b0": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.042,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SetVertices",
+  "frozenSize": 865,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 796,
+  "status": "ported"
+ },
  "00836600": {
   "branchRatio": 0.71,
   "constOverlap": 0.0,
@@ -57672,6 +57688,22 @@
   "module": "M2Scene.cpp",
   "refSize": 591,
   "status": "ported"
+ },
+ "008368b0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::ReleaseGeometryBuffers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 200,
+  "status": "faithful"
  },
  "00836980": {
   "branchRatio": 0.769,
@@ -57751,6 +57783,22 @@
   "how": "string",
   "module": "M2Scene.cpp",
   "refSize": 321,
+  "status": "ported"
+ },
+ "00836df0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::ReserveInstances",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 69,
   "status": "ported"
  },
  "00836e40": {
@@ -58125,13 +58173,13 @@
   "branchRatio": 0.258,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.357,
+  "fidelity": 0.429,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::~CM2Shared",
-  "frozenSize": 564,
+  "frozenSize": 660,
   "how": "override",
   "module": "M2Shared.cpp",
   "refSize": 643,

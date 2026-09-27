@@ -82,6 +82,13 @@ struct CGxVertexPBNT2 {
     C2Vector tc[2];
 };
 
+// GxVBF_PNT2, 40 bytes. The same mesh as CGxVertexPBNT2 without the two bone words, for the
+// paths that skin on the CPU and so have no use for them.
+struct CGxVertexPNT2 {
+    C3Vector p;
+    C3Vector n;
+    C2Vector tc[2];
+};
 struct CGxVertexPCT {
     C3Vector p;
     CImVector c;
