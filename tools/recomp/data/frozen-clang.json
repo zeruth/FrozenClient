@@ -86837,10 +86837,10 @@
 "strings": [],
 "consts": [],
 "branches": 0,
-"stub": true,
-"lines": 3,
+"stub": false,
+"lines": 2,
 "refs": [],
-"line": 1408
+"line": 1456
 },
 "M2Init": {
 "files": [

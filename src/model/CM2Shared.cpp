@@ -1405,6 +1405,53 @@ void CM2Shared::SubstituteSimpleShaders() {
     }
 }
 
+// FUN_00837680, mapped 2026-09-27 and deliberately still empty. READ THIS BEFORE PORTING IT: the
+// port is not hard, but landing it a piece at a time puts WRONG TEXTURES ON EVERY MODEL, and the
+// stub being empty is currently what keeps frozen self-consistent.
+//
+// The chain is four functions, all in this module, each with exactly one caller -- its parent:
+//
+//     FUN_00837680  957 bytes  this function
+//       FUN_00835e90  251      the batch combo packer, decoded below
+//       FUN_00837250  583      not yet read
+//       FUN_008374a0  463      not yet read; carries "Failed to fix up texture com..."
+//
+// WHAT FUN_00835e90 DOES. It walks skinProfile->batches and REWRITES two fields of every batch IN
+// PLACE, replacing lookup indices with resolved values:
+//
+//   textureCount == 2: textureComboIndex becomes the low bytes of textureCombos[idx] and
+//     textureCombos[idx + 1] packed as a byte pair, and textureTransformComboIndex becomes the
+//     matching pair out of textureTransformCombos -- each biased so that -1 becomes 0 and anything
+//     else becomes itself plus one, which is how "no transform" survives being packed into a byte.
+//
+//   otherwise: textureComboIndex becomes textureCombos[idx] outright, and
+//     textureTransformComboIndex takes the same plus-one bias on its single entry.
+//
+// Every offset in it lands on a field this tree already names, which is how the decode is known to
+// be right: batch +0x0e/+0x10/+0x16 are textureCount, textureComboIndex and
+// textureTransformComboIndex; m_data +0x84 and +0x9c are the DATA pointers of textureCombos and
+// textureTransformCombos (their M2Array counts sit at +0x80 and +0x98); skinProfile +0x24 and +0x28
+// are the batches array's count and data; and this class's +0x150 and +0x170 are m_data and
+// skinProfile.
+//
+// THE HAZARD. After that pass a batch no longer holds an index, and FOUR places in frozen read
+// those two fields as indices:
+//
+//     CM2SceneRender.cpp  m_data->textureCombos[m_curBatch->textureComboIndex + i]
+//     CM2SceneRender.cpp  m_data->textureTransformCombos[...textureTransformComboIndex + i]
+//     CM2Scene.cpp        dataA->textureCombos[batchA->textureComboIndex]   (x2, in one sort)
+//
+// Port the packer alone and all four index the combo arrays with a texture index instead of a combo
+// index, so every model draws with whatever texture happens to live at that slot. That is the same
+// failure the ribbon index-stride bug produced, arrived at from the other direction, and a clean
+// build says nothing about it.
+//
+// So this lands as ONE change or not at all: the three helpers, this parent, and all four consumers
+// switched to the substituted form together -- the two-texture case reading the packed bytes rather
+// than indexing, and the transform case undoing the plus-one bias. It also has to run exactly once
+// per shared model, which InitializeLoaded already guarantees by calling this from one place.
+//
+// Returning without doing anything is the correct resting state meanwhile, because frozen's
+// consumers and its un-substituted batches agree with each other.
 void CM2Shared::SubstituteSpecializedShaders() {
-    // TODO
 }
