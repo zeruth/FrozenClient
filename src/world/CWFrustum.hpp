@@ -52,6 +52,9 @@ class CWFrustum {
         // object pass uses it to bring the view into a building's own space, where the batch
         // boxes already live. ref: FUN_00983f40
         void Transform(const C44Matrix& matrix);
+        // Turn the frustum inside out -- every plane's normal and distance negated. The shadow
+        // map's ortho frusta need it right after SetCorners. ref: FUN_007ba960
+        void NegatePlanes();
         int32_t SphereInside(const CAaSphere& sphere);
 };
 

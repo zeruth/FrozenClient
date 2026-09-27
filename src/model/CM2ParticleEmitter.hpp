@@ -352,14 +352,45 @@ class CM2ParticleEmitter {
         // plane subclass's do.
         //
         // IT IS NOT SHAPED LIKE THE OTHER TWO. The constructor installs a SECOND vtable at +0x24c
-        // (0x00aa2e20), so the class has a second base; and its slot [1], FUN_009799c0, calls
-        // CM2Scene::CreateModel, which makes this the emitter whose particles are MODELS rather
-        // than quads. That is why it is a bigger job than adding a third case to the factory.
+        // (0x00aa2e20), so the class has a second base -- and that base is a CURVE. That is why it
+        // is a bigger job than adding a third case to the factory.
         //
-        // What it needs, measured rather than estimated -- eight unported functions, about 1750
-        // bytes: FUN_009799c0 (483, the model-particle creator), FUN_00981d40 (936),
-        // FUN_00982150 (97), FUN_00981cd0 (97), FUN_00982240 (56), FUN_00981c90 (54),
-        // FUN_009814e0 (28), plus the second base class and the layout from +0x234.
+        // IT IS A SPLINE EMITTER, and the map below replaces a rougher one written a day earlier
+        // that got two things wrong: FUN_009799c0 is NOT its model-particle creator -- it is the
+        // BASE's slot [1], shared by every subclass -- and the work is not eight independent
+        // functions but one class plus a curve class underneath it.
+        //
+        // Slots [0], [1] and [3] are the base's, untouched. It overrides [2] and [4] through [10].
+        //
+        // ITS OWN FIELDS, all six the constructor zeroes, with meanings read off their setters:
+        //
+        //   +0x234  emission rate. SetEmissionRate here (FUN_009814e0) OVERRIDES the base's, drops
+        //           the base's non-positive guard, and writes rate * +0x23c into the base's +0x9c.
+        //   +0x238  spline parameter the particles START at, clamped to [0, 1]  (the SetWidth slot)
+        //   +0x23c  spline parameter they END at, clamped to [0, 1]             (the SetLength slot)
+        //   +0x240  a spread angle about the curve's tangent                    (the SetLatitude slot)
+        //   +0x244  a magnitude applied to that spread                          (the SetLongitude slot)
+        //   +0x248  a one-shot flag SetLength raises when the end moves: the next particle is
+        //           placed exactly at +0x23c instead of being lerped, and the flag is cleared.
+        //
+        // The [0, 1] clamps on the two "width" and "length" slots are the tell: they are not
+        // extents in units, they are positions along a curve, and CreateParticle lerps between
+        // them to pick where on the curve a particle is born.
+        //
+        // THE SECOND BASE AT +0x24c IS THE CURVE ITSELF. FUN_004c3870 evaluates it at a parameter
+        // and FUN_004c3920 takes its tangent, both dispatching through the curve's own vtable with
+        // a mode argument that picks between two curve kinds (slots [2]/[3] and [4]/[5]). The curve
+        // holds 26 C3Vector control points inline from its +0x8 and spills to a heap array at its
+        // +0x13c with the count at +0x144 -- and +0x24c + 0x13c is +0x388, which is exactly the
+        // pointer the deleting destructor frees under the tag .?AVC3Vector@NTempest@@. That
+        // agreement is what confirms the layout rather than merely fitting it.
+        //
+        // sizeof is 0x40c: slot [4] allocates that much before placement-constructing through
+        // FUN_009821c0.
+        //
+        // So the real dependency is the CURVE CLASS, not the emitter: its two evaluate front ends
+        // have five and six callers between them, so they are shared machinery rather than
+        // anything particle-specific, and nothing in this emitter can be built before they are.
         //
         // Deliberately NOT started as a stub. An emitter that constructs but cannot create a
         // particle emits nothing, which looks exactly like today's null slot except that the

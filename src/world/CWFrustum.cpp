@@ -55,6 +55,26 @@ void CWFrustum::Free(CWFrustum* frustum) {
     s_freeFrustums.LinkToTail(frustum);
 }
 
+// ref: FUN_007ba960
+// Flip every plane, turning the frustum inside out: what was in front of each face is now behind
+// it, so a test that reported "inside" reports "outside" and the other way round.
+//
+// The reference negates all twenty-four floats straight through, which is the six planes' normals
+// AND their distances -- both halves, or the plane would move rather than turn.
+//
+// Its callers are the SHADOW MAP's frustum setup, and they all run it in the same place: build the
+// corners, SetCorners to derive the planes from them, negate, then carry on. That is the tell for
+// what it is for -- those frusta come from GxuXformCreateOrtho, whose handedness is the opposite
+// of the one SetCorners assumes, so the planes come out facing the wrong way and this turns them
+// back rather than reworking the derivation.
+void CWFrustum::NegatePlanes() {
+    for (int32_t i = 0; i < 6; i++) {
+        this->planes[i].n.x = -this->planes[i].n.x;
+        this->planes[i].n.y = -this->planes[i].n.y;
+        this->planes[i].n.z = -this->planes[i].n.z;
+        this->planes[i].d = -this->planes[i].d;
+    }
+}
 // ref: FUN_00983f40
 void CWFrustum::Transform(const C44Matrix& matrix) {
     for (int32_t i = 0; i < 8; i++) {

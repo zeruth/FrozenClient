@@ -3101,6 +3101,7 @@ addr	how	frozen	evidence
 007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
 007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
 007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp
+007ba960	annotated	CWFrustum::NegatePlanes	tag in src/world/CWFrustum.cpp
 007bb3e0	annotated	MapShadowFocus	tag in src/world/MapShadow.cpp
 007bb570	annotated	MapShadowRender	tag in src/world/MapShadow.cpp
 007bb670	annotated	MapShadowSetupPlane	tag in src/world/MapShadow.cpp
