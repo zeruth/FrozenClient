@@ -3250,9 +3250,23 @@ int32_t CM2Model::InitializeLoaded() {
                 // Set flag 8 on every RIBBON emitter (FUN_00824230 queues this type and, once
                 // loaded, walks m_shared->m_data->ribbons calling CM2Ribbon::SetFlag8 on each).
                 // CM2Ribbon::SetFlag8 exists here; the emitter ARRAY does not -- CM2Model has no
-                // m_ribbonEmitters, and nothing creates ribbons yet because unit movement is not
-                // ported. Adding the array before anything fills it would only put a loop over
-                // nothing behind this case.
+                // m_ribbonEmitters yet.
+                //
+                // CORRECTED 2026-09-26. This note used to say "nothing creates ribbons yet
+                // because unit movement is not ported", and that adding the array would only put
+                // a loop over nothing behind this case. Both halves were wrong. What creates the
+                // emitters is CM2Model::InitializeLoaded (FUN_00832ea0), which constructs one
+                // CM2Ribbon per m_shared->m_data->ribbons entry out of the same carved buffer as
+                // the particle emitters, at 0x180 each, and stores them in an array at +0x2bc
+                // beside a parallel 0x50-byte state array at +0x2b8 -- the same pair shape as
+                // m_particles / m_particleEmitters one slot along. Unit movement drives a ribbon's
+                // MOTION, not its creation; the emitters exist as soon as the model loads.
+                //
+                // So the array has a filler waiting, and this case is one step behind it rather
+                // than two. CM2Ribbon::Initialize landed the same day, which was the last piece
+                // the class was missing; what remains before this loop is worth writing is the
+                // CM2Model pair and InitializeLoaded's ribbon block. That block's decode is in
+                // the --diff for FUN_00832ea0.
                 break;
             }
 
