@@ -3242,6 +3242,11 @@ addr	how	frozen	evidence
 007d3f70	annotated	CMapRenderChunk::Build	tag in src/world/map/CMapRenderChunk.cpp
 007d3fe0	annotated	CMapChunk::PrepareRender	tag in src/world/map/CMapChunk.cpp
 007d40a0	annotated	CMapRenderChunk::DrawDebug	tag in src/world/map/CMapRenderChunk.cpp
+007d4360	annotated	CMeshGeomFactory::SetLvf	tag in src/world/map/LiquidSurface.cpp
+007d4370	annotated	CMeshGeomFactory::SetFixedLight	tag in src/world/map/LiquidSurface.cpp
+007d43b0	annotated	CMeshGeomFactory::Release	tag in src/world/map/LiquidSurface.cpp
+007d43e0	annotated	CMeshGeomFactory::SetTextureId	tag in src/world/map/LiquidSurface.cpp
+007d49b0	annotated	CMeshGeomFactory::Create	tag in src/world/map/LiquidSurface.cpp
 007d49d0	annotated	CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
 007d4ab0	annotated	CChunkGeomFactory::Build	tag in src/world/map/LiquidSurface.cpp
 007d4f10	annotated	CMapLiquidData::SetBody	tag in src/world/map/CMapLiquidData.cpp

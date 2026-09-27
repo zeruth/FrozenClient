@@ -897,3 +897,97 @@ CWaveManager* GetWaveManager() {
 }
 
 }
+
+// Reopened: everything in this file lives in the Liquid namespace, the same as the reference's own
+// ".?AVCMeshGeomFactory@Liquid@@".
+namespace Liquid {
+// ref: FUN_007d49b0
+// Make a factory for one map-object group. The reference splits this in two -- FUN_007d4920 does the
+// allocation and the field fill, and this sets the two pointers afterwards -- because the allocator
+// half is the class's operator new and is shared with the placement the vtable's destructor slot
+// unwinds. frozen folds them, since its allocation is a plain SMemAlloc.
+//
+// DIVERGENCE: the reference takes the block from CDataAllocator::GetData under the RTTI name
+// ".?AVCMeshGeomFactory@Liquid@@" and gives it back with PutData. frozen has no CDataAllocator and
+// its sibling CChunkGeomFactory already uses SMemAlloc/SMemFree, so this matches the sibling.
+CMeshGeomFactory* CMeshGeomFactory::Create(CMapObj* mapObj, CMapObjGroup* group) {
+    auto factory = static_cast<CMeshGeomFactory*>(
+        SMemAlloc(sizeof(CMeshGeomFactory), __FILE__, __LINE__, 0));
+
+    if (!factory) {
+        return nullptr;
+    }
+
+    new (factory) CMeshGeomFactory();
+
+    factory->m_mapObj = mapObj;
+    factory->m_group = group;
+
+    return factory;
+}
+
+// ref: FUN_007d43b0
+// Drop a reference and tear down at zero, the same shape as CChunkGeomFactory::Release. The
+// reference reaches its destructor through vtable slot 0 with a zero argument -- the scalar-deleting
+// form -- and then hands the block back; frozen destructs directly and frees.
+void CMeshGeomFactory::Release() {
+    if (--this->m_refCount) {
+        return;
+    }
+
+    this->~CMeshGeomFactory();
+
+    SMemFree(this, __FILE__, __LINE__, 0);
+}
+
+// ref: FUN_007d43e0
+void CMeshGeomFactory::SetTextureId(const uint32_t* textureId) {
+    this->m_textureId = *textureId;
+}
+
+// ref: FUN_007d4360
+void CMeshGeomFactory::SetLvf(int32_t lvf) {
+    this->m_lvf = lvf;
+}
+
+// ref: FUN_007d4370
+void CMeshGeomFactory::SetFixedLight(float fixedLight) {
+    this->m_fixedLight = fixedLight;
+}
+
+// FUN_007d43f0, the vtable's slot 2. NOT PORTED, and deliberately left untagged so the measurement
+// does not count it -- returning 0 here means "no geometry", which is the safe answer while nothing
+// constructs this class anyway (its creator, the map-object liquid queue FUN_00793d20, is unported).
+//
+// Everything about it that IS known, so the next pass starts here rather than at the disassembly:
+//
+//   it fatals with "Water in chunk \"%s\" of object \"%s\" has no materialId." when
+//   group->m_liquidMaterial is not less than the map object's material count;
+//   the vertex count is (m_liquidYVerts + m_extraYVerts) * (m_liquidXVerts + m_extraXVerts) +
+//   LiquidTileCount() * 6, and the index count is three times that -- CMapObjGroup::LiquidTileCount
+//   is ported and caches into m_liquidTileCount;
+//   the buffer pair comes off the GROUP through FUN_007cbdc0, not off this factory, and it
+//   early-returns the cached batch when both buffers still report ready;
+//   attribute offsets come from GxVertexAttribOffset for attributes 0, 3, 4, 6 and 7, each gated on
+//   FUN_00681260(format, n).
+//
+// WHAT BLOCKS IT is two unread writers and one layout question, neither of them guessable:
+//
+//   FUN_007a7920 (462 bytes) and FUN_007a7f60 (944) are the second and third vertex writers; only
+//   the first, FUN_007a7cc0, has been decoded (its walk is written out in parity-liquid.md).
+//   FUN_007cbdc0 is a CMapObjGroup method and needs fields frozen's group does not declare: a
+//   SECOND VBB pair at +0x10/+0x14 -- distinct from m_vertexBuf/m_colorBuf/m_indexBuf at
+//   +0x04/+0x08/+0x0c, which are the group's own geometry -- a counter at +0x110, and a
+//   sub-object at +0x20 whose address is what gets cached in m_bufferHolder. Adding those to
+//   CMapObjGroup on a guess would be the wrong kind of change to make blind.
+int32_t CMeshGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf,
+                               CGxBuf** indexBuf, CGxBatch* batch) {
+    (void)format;
+    (void)vertexBuf;
+    (void)indexBuf;
+    (void)batch;
+
+    return 0;
+}
+
+} // namespace Liquid

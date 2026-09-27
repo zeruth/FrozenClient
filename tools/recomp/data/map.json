@@ -51744,6 +51744,81 @@
   "refSize": 689,
   "status": "ported"
  },
+ "007d4360": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CMeshGeomFactory::SetLvf",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "007d4370": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CMeshGeomFactory::SetFixedLight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "007d43b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CMeshGeomFactory::Release",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
+ "007d43e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CMeshGeomFactory::SetTextureId",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 15,
+  "status": "ported"
+ },
+ "007d49b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "CMeshGeomFactory::Create",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
  "007d49d0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,

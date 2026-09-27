@@ -208823,7 +208823,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 120
+"line": 124
 },
 "Liquid::IGeomFactory::AddRef": {
 "files": [
@@ -209331,6 +209331,100 @@
 "lines": 18,
 "refs": [],
 "line": 880
+},
+"Liquid::CMeshGeomFactory::Create": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"Liquid::CMeshGeomFactory::CMeshGeomFactory"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 913
+},
+"Liquid::CMeshGeomFactory::Release": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"Liquid::CMeshGeomFactory::~CMeshGeomFactory",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 933
+},
+"Liquid::CMeshGeomFactory::SetTextureId": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 944
+},
+"Liquid::CMeshGeomFactory::SetLvf": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 949
+},
+"Liquid::CMeshGeomFactory::SetFixedLight": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 954
+},
+"Liquid::CMeshGeomFactory::Build": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 0,
+"stub": false,
+"lines": 8,
+"refs": [],
+"line": 983
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

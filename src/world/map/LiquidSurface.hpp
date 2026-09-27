@@ -113,6 +113,10 @@ class CMaterialSettings;
 // Slot 1 is the release and slot 2 the build, which are the two the instance and the material
 // actually call through, so those are the two this base makes virtual. The refcount sits at +0x04
 // in both, right after the vtable, which is where the reference keeps it too.
+class CMapObj;
+
+class CMapObjGroup;
+
 class IGeomFactory {
     public:
         uint32_t m_refCount = 1;
@@ -128,6 +132,54 @@ class IGeomFactory {
         // what was built last time.
         virtual int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
                               CGxBatch* batch) = 0;
+};
+
+// The map-object (WMO) half of the factory pair, vtable 0x00a404d4. Its sibling above covers
+// terrain chunks; Liquid::CInstance holds either one polymorphically.
+//
+// Field map from the allocator's own fill (FUN_007d4920) rather than from a writer hunt -- it sets
+// every slot it owns in one run, so the layout is read straight off it. Note it skips +0x18 and
+// gives +0x14 the sentinel 0xffffffff while zeroing everything else through +0x44.
+class CMeshGeomFactory : public IGeomFactory {
+    public:
+        CMapObj* m_mapObj = nullptr;            // +0x08
+        CMapObjGroup* m_group = nullptr;        // +0x0c
+        // +0x10: the cached buffer pair, which the build takes off the GROUP rather than owning.
+        // Still null because the build is not ported -- see the note at Build.
+        void* m_bufferHolder = nullptr;
+        // +0x14: the texture, from m_materials[group->m_liquidMaterial]. The sentinel is what the
+        // allocator writes, so "no texture yet" is -1 and not zero.
+        uint32_t m_textureId = 0xFFFFFFFF;
+        // +0x1c: whether the material's LVF is 1.
+        int32_t m_lvf = 0;
+        // +0x20: the fixed light the surface draws with -- 1.0 outdoors, 0.0 indoors. The caller
+        // decides which, through the indoor test recorded in docs/ref/parity-liquid.md.
+        float m_fixedLight = 0.0f;
+        // +0x2c and +0x3c: extra grid extents the build ADDS to the group's vertex counts. Nothing
+        // in the reference ever writes either, so both stay zero and the count reduces to the
+        // group's own grid plus six per rendering tile. Kept because the build reads them.
+        int32_t m_extraXVerts = 0;
+        int32_t m_extraYVerts = 0;
+
+        // ref: FUN_007d49b0
+        static CMeshGeomFactory* Create(CMapObj* mapObj, CMapObjGroup* group);
+
+        // ref: FUN_007d43b0 (the vtable's slot 1)
+        void Release() override;
+
+        int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
+                      CGxBatch* batch) override;
+
+        // ref: FUN_007d43e0
+        // Takes a POINTER and reads one dword through it, which is how the caller hands over the
+        // material's texture field rather than a value.
+        void SetTextureId(const uint32_t* textureId);
+
+        // ref: FUN_007d4360
+        void SetLvf(int32_t lvf);
+
+        // ref: FUN_007d4370
+        void SetFixedLight(float fixedLight);
 };
 
 class CChunkGeomFactory : public IGeomFactory {
