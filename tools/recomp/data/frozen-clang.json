@@ -65718,13 +65718,14 @@
 ],
 "strings": [],
 "consts": [
+"0",
 "1"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 16,
 "refs": [],
-"line": 295
+"line": 303
 },
 "CBLPFile::CBLPFile": {
 "files": [
@@ -77877,6 +77878,55 @@
 "refs": [],
 "line": 180
 },
+"TgaFile::GetImage32": {
+"files": [
+"src/gx/texture/tgafile.cpp"
+],
+"callseq": [
+"SErrSetLastError",
+"SErrSetLastError"
+],
+"strings": [],
+"consts": [
+"0xF720007D",
+"0xF720007F",
+"32"
+],
+"branches": 2,
+"stub": false,
+"lines": 15,
+"refs": [],
+"line": 193
+},
+"TgaFile::SetTopDown": {
+"files": [
+"src/gx/texture/tgafile.cpp"
+],
+"callseq": [
+"SErrSetLastError",
+"SMemAlloc",
+"memcpy",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\gx\\texture\\tgafile.cpp"
+],
+"consts": [
+"0",
+"0x20",
+"0xF7200083",
+"1",
+"12",
+"3",
+"7",
+"8"
+],
+"branches": 4,
+"stub": false,
+"lines": 41,
+"refs": [],
+"line": 221
+},
 "TgaFile::Close": {
 "files": [
 "src/gx/texture/tgafile.cpp"
@@ -77897,7 +77947,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 190
+"line": 264
 },
 "GxXformPop": {
 "files": [

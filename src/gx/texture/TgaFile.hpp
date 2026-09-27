@@ -60,6 +60,12 @@ class TgaFile {
     void AddAlphaChannel(uint8_t* dst, const uint8_t* src, const uint8_t* alpha);
     int32_t DecodeRle(const uint8_t* src, uint8_t* dst);
     uint8_t* GetImage() const;
+    // The image, but only if it is 32 bits per pixel. A caller that can only consume Argb8888
+    // asks through this instead of checking the header itself.
+    uint8_t* GetImage32() const;
+    // Make the stored rows run top-down (non-zero) or bottom-up (zero), reversing them if they
+    // do not already. No-op when the image is already the way round that was asked for.
+    int32_t SetTopDown(int32_t topDown);
     void Close();
 };
 

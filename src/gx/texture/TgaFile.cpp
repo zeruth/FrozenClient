@@ -186,6 +186,80 @@ uint8_t* TgaFile::GetImage() const {
     return this->m_image;
 }
 
+// ref: FUN_006aa840
+// Two different refusals, and they carry different Storm error codes, which is the only way a
+// caller can tell "nothing loaded" from "loaded but not 32-bit". The first code is the same one
+// GetImage uses for an absent image.
+uint8_t* TgaFile::GetImage32() const {
+    if (!this->m_image) {
+        SErrSetLastError(0xF720007F);
+
+        return nullptr;
+    }
+
+    if (this->m_header.pixelDepth != 32) {
+        SErrSetLastError(0xF720007D);
+
+        return nullptr;
+    }
+
+    return this->m_image;
+}
+
+// ref: FUN_006aa700
+// Bit 5 of the image descriptor is TGA's vertical origin: set means the rows are stored top
+// down. This makes that bit agree with `topDown`, reversing the row order if it does not
+// already, and returns 1 for "the image is now the way you asked" -- including the case where
+// it already was and nothing happened.
+//
+// Image types 9, 10 and 11 are the RLE-compressed ones, and those are refused rather than
+// flipped: the rows are not addressable until DecodeRle has run, so there is nothing to reverse.
+//
+// The copy goes forwards through the source and backwards through the destination one row at a
+// time, into a fresh buffer, rather than swapping in place -- so a row's bytes keep their order
+// and only the rows move.
+int32_t TgaFile::SetTopDown(int32_t topDown) {
+    bool isTopDown = (this->m_header.imageDescriptor & 0x20) != 0;
+
+    if (isTopDown == (topDown != 0)) {
+        return 1;
+    }
+
+    if (this->m_header.imageType > 8 && this->m_header.imageType < 12) {
+        SErrSetLastError(0xF7200083);
+
+        return 0;
+    }
+
+    uint32_t bytesPerPixel = (this->m_header.pixelDepth + 7) >> 3;
+    uint32_t rowBytes = bytesPerPixel * this->m_header.width;
+    uint32_t height = this->m_header.height;
+
+    auto flipped = static_cast<uint8_t*>(SMemAlloc(rowBytes * height, __FILE__, __LINE__, 0));
+
+    const uint8_t* src = this->m_image;
+    uint8_t* dst = flipped + (height - 1) * rowBytes;
+
+    for (uint32_t row = 0; row < height; row++) {
+        memcpy(dst, src, rowBytes);
+
+        src += rowBytes;
+        dst -= rowBytes;
+    }
+
+    SMemFree(this->m_image, __FILE__, __LINE__, 0);
+
+    if (topDown) {
+        this->m_header.imageDescriptor |= 0x20;
+    } else {
+        this->m_header.imageDescriptor &= ~0x20;
+    }
+
+    this->m_image = flipped;
+
+    return 1;
+}
+
 // ref: FUN_006aaf40
 void TgaFile::Close() {
     if (this->m_image) {

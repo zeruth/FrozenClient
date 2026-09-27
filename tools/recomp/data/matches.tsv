@@ -2357,12 +2357,15 @@ addr	how	frozen	evidence
 006aa3e0	annotated	TgaFile::ImageDataOffset	tag in src/gx/texture/TgaFile.cpp
 006aa420	annotated	TgaFile::AddAlphaChannel	tag in src/gx/texture/TgaFile.cpp
 006aa630	annotated	TgaFile::DecodeRle	tag in src/gx/texture/TgaFile.cpp
+006aa700	annotated	TgaFile::SetTopDown	tag in src/gx/texture/TgaFile.cpp
 006aa820	annotated	TgaFile::GetImage	tag in src/gx/texture/TgaFile.cpp
+006aa840	annotated	TgaFile::GetImage32	tag in src/gx/texture/TgaFile.cpp
 006aaf40	annotated	TgaFile::Close	tag in src/gx/texture/TgaFile.cpp
 006aafb0	annotated	TgaFile::Open	tag in src/gx/texture/TgaFile.cpp
 006ab700	annotated	CalcLevelCount	tag in src/gx/Texture.cpp
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006ae6e0	annotated	InitBlit	tag in src/gx/Blit.cpp
+006ae7c0	annotated	Blit	tag in src/gx/Blit.cpp
 006ae8b0	annotated	CBLPFile::Close	tag in src/gx/blp/CBLPFile.cpp
 006ae990	annotated	CBLPFile::DecompPalARGB8888Alpha8	tag in src/gx/blp/CBLPFile.cpp
 006aee70	annotated	CBLPFile::DecompPalARGB1555DitherFS	tag in src/gx/blp/CBLPFile.cpp

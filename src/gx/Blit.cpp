@@ -292,7 +292,15 @@ void InitBlit() {
     s_blits [BlitFormat_D24X8]      [BlitFormat_D24X8]      [BlitAlpha_0]   = &Blit_uint32_uint32;
 }
 
-void Blit(const C2iVector& size, BlitAlpha alpha, const void* src, uint32_t srcStride, BlitFormat srcFmt, void* dst, uint32_t dstStride, BlitFormat dstFmt) {
+// ref: FUN_006ae7c0
+// The reference's own index arithmetic is `alpha + (srcFmt * 13 + dstFmt) * 4`, which is exactly
+// this table's declaration order -- that is what identifies which argument is which index.
+//
+// THE NULL CHECK IS NOT DEFENSIVE PADDING, it is the reference's and it was missing. InitBlit
+// fills 26 of the table's 676 slots, so most format pairs have no blitter at all, and calling
+// the slot unconditionally was a null call waiting for the first unhandled pair. The reference
+// answers 0 instead, which is why this returns int32_t rather than void.
+int32_t Blit(const C2iVector& size, BlitAlpha alpha, const void* src, uint32_t srcStride, BlitFormat srcFmt, void* dst, uint32_t dstStride, BlitFormat dstFmt) {
     if (!initBlit) {
         InitBlit();
         initBlit = 1;
@@ -300,5 +308,11 @@ void Blit(const C2iVector& size, BlitAlpha alpha, const void* src, uint32_t srcS
 
     BLIT_FUNCTION blit = s_blits[srcFmt][dstFmt][alpha];
 
+    if (!blit) {
+        return 0;
+    }
+
     blit(size, src, srcStride, dst, dstStride);
+
+    return 1;
 }

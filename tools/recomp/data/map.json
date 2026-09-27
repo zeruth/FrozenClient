@@ -37594,6 +37594,22 @@
   "refSize": 191,
   "status": "ported"
  },
+ "006aa700": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::SetTopDown",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 285,
+  "status": "ported"
+ },
  "006aa820": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37608,6 +37624,22 @@
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 20,
+  "status": "ported"
+ },
+ "006aa840": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::GetImage32",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 39,
   "status": "ported"
  },
  "006aaf40": {
@@ -37688,6 +37720,22 @@
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 222,
+  "status": "ported"
+ },
+ "006ae7c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit",
+  "frozenSize": 420,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 87,
   "status": "ported"
  },
  "006ae8b0": {
