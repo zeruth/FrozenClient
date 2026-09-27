@@ -1813,6 +1813,143 @@ void CM2Scene::ReserveRayProjected(uint32_t count) {
     }
 }
 
+// ref: FUN_0081cff0
+// The BROAD PHASE: walk the ray model list, keep the ones whose bounding sphere the ray reaches,
+// and record where it enters and leaves each. The driver sorts those by entry distance and then
+// does the exact test on them in order.
+//
+// The list is CONSUMED as it is walked -- each model is unlinked on the way past, whether or not
+// it is kept -- so the ray list is empty when this returns and the next query starts clean. That
+// is the reference's own behaviour and the reason nothing else has to clear it.
+//
+// THE SPHERE comes from a bounding box turned into a centre and a radius, brought into view space
+// by the model's own matrix, with the radius scaled by that matrix's first row -- a uniform scale
+// assumption the reference makes and this keeps. The test is the standard one: project the centre
+// onto the ray, reject when the perpendicular distance exceeds the radius, then reject again when
+// both intersections fall off either end of the segment. The two kept distances are clamped into
+// [0, length], which is what M2SceneRayCandidate's declaration already describes.
+//
+// TWO THINGS TO KNOW, both marked where they happen:
+//
+//   The un-animated fix-up assigns matrixB4 * m_view. The reference's destination register does
+//   not survive the decompilation, but it cannot be anything else: matrixF4 is the only matrix
+//   the rest of the function reads, and computing a model-view matrix to then not use it would
+//   be dead code. m_view is scene + 0x84, which is where array54's three entries end.
+//
+//   The non-collision bounds are CONSERVATIVE here. The reference takes the current sequence's
+//   animated box, through a pointer at model + 0x94 that frozen does not model; this takes the
+//   model's overall box instead. That box encloses every sequence, so the sphere can only ever be
+//   too big -- it admits extra candidates for the exact test to reject and can never drop a real
+//   hit. Guessing the sequence index instead would index sequences[] with a wrong value, which
+//   has already read out of bounds in this codebase once.
+uint32_t CM2Scene::CollectRayCandidates(const C3Vector& start, const C3Vector& dir, float length,
+                                        int32_t requireAnimated) {
+    const float epsilon = 9.9999997e-6f;
+
+    uint32_t count = 0;
+
+    CM2Model* model = this->m_rayModelList;
+
+    while (model) {
+        CM2Model* next = model->m_rayNext;
+
+        if (model->m_rayPrev) {
+            *model->m_rayPrev = nullptr;
+
+            model->m_rayPrev = nullptr;
+        }
+
+
+        do {
+            if (!model->m_loaded || model->m_animCounter == 0xFFFFFFFF) {
+                break;
+            }
+
+            if (requireAnimated && model->m_animCounter != this->uint14) {
+                if (model->m_rayQueryType != 3 || model->m_attachParent) {
+                    break;
+                }
+
+                model->matrixF4 = model->matrixB4 * this->m_view;
+            }
+
+            if (!model->m_shared || !model->m_shared->m_m2DataLoaded || !model->m_shared->m_data) {
+                break;
+            }
+
+            M2Data* data = model->m_shared->m_data;
+            const M2Bounds& bounds = model->m_rayQueryType == 3 ? data->collisionBounds
+                                                                : data->bounds;
+
+            if (fabsf(bounds.radius) < epsilon) {
+                break;
+            }
+
+            // CAaBox's corners are b (bottom) and t (top); the reference averages the two.
+            C3Vector centre = { (bounds.extent.t.x + bounds.extent.b.x) * 0.5f,
+                                (bounds.extent.t.y + bounds.extent.b.y) * 0.5f,
+                                (bounds.extent.t.z + bounds.extent.b.z) * 0.5f };
+
+            C3Vector c = centre * model->matrixF4;
+
+            float scale = model->matrixF4.a0 * model->matrixF4.a0
+                        + model->matrixF4.a1 * model->matrixF4.a1
+                        + model->matrixF4.a2 * model->matrixF4.a2;
+
+            float radiusSq = scale * bounds.radius * bounds.radius;
+
+            float along = dir.x * (c.x - start.x) + dir.y * (c.y - start.y)
+                        + dir.z * (c.z - start.z);
+
+            float px = dir.x * along - (c.x - start.x);
+            float py = dir.y * along - (c.y - start.y);
+            float pz = dir.z * along - (c.z - start.z);
+
+            float perpSq = px * px + py * py + pz * pz;
+
+            if (perpSq > radiusSq) {
+                break;
+            }
+
+            float half = radiusSq - perpSq;
+
+            // Both intersections behind the start, or both past the end, and the segment misses.
+            if (along < 0.0f && along * along > half) {
+                break;
+            }
+
+            float beyond = along - length;
+
+            if (beyond > 0.0f && beyond * beyond > half) {
+                break;
+            }
+
+            float root = sqrtf(half);
+
+            float tNear = along - root;
+            float tFar = along + root;
+
+            tNear = tNear < 0.0f ? 0.0f : (tNear > length ? length : tNear);
+            tFar = tFar < 0.0f ? 0.0f : (tFar > length ? length : tFar);
+
+            M2SceneRayCandidate& candidate = this->m_rayCandidates[count];
+
+            candidate.model = model;
+            candidate.tNear = tNear;
+            candidate.tFar = tFar;
+            candidate.key = model->m_rayKey;
+
+            this->m_rayCandidateOrder[count] = count;
+
+            count++;
+        } while (false);
+
+        model = next;
+    }
+
+    return count;
+}
+
 // ref: FUN_0081daf0
 // Walk one model's batches, project every section that is actually visible, and test its
 // triangles. The counterpart to RayTestModel, which runs against the collision hull instead --

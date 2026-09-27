@@ -133,6 +133,11 @@ class CM2Scene {
         // ray functions; one copy is the same doubling with one place to get it wrong.
         void ReserveRayProjected(uint32_t count);
 
+        // Bounding-sphere pass: keep the models on the ray list the ray actually reaches, with
+        // their entry and exit distances. Returns how many were kept. ref: FUN_0081cff0
+        uint32_t CollectRayCandidates(const C3Vector& start, const C3Vector& dir, float length,
+                                      int32_t requireAnimated);
+
         // Walk one model's visible BATCHES, project each section and test its triangles.
         // ref: FUN_0081daf0
         M2SceneRayCandidate* RayTestModelGeometry(CM2Model* model, int32_t addNormal,

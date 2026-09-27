@@ -56415,6 +56415,21 @@
   "refSize": 197,
   "status": "ported"
  },
+ "0081cff0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp"
+  ],
+  "frozen": "CM2Scene::CollectRayCandidates",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 695,
+  "status": "ported"
+ },
  "0081d2c0": {
   "branchRatio": 0.4,
   "constOverlap": 0.077,

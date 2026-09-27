@@ -3530,6 +3530,7 @@ addr	how	frozen	evidence
 0081cd70	annotated	CM2Model::AllocModel	tag in src/model/CM2Model.cpp
 0081cdc0	callorder	TSGrowableArray<M2Element>::New	same slot between linked calls in 00821a20=CM2Scene::Animate
 0081cf20	annotated	CM2Scene::RaySetup	tag in src/model/CM2Scene.cpp
+0081cff0	annotated	CM2Scene::CollectRayCandidates	tag in src/model/CM2Scene.cpp
 0081d2c0	annotated	CM2Scene::BlendBoneMatrices	tag in src/model/CM2Scene.cpp
 0081d3d0	annotated	CM2Scene::BlendBoneMatrices3x4	tag in src/model/CM2Scene.cpp
 0081d510	annotated	CM2Scene::RayTestTriangles	tag in src/model/CM2Scene.cpp
