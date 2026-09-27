@@ -56239,6 +56239,38 @@
   "refSize": 228,
   "status": "ported"
  },
+ "00824b70": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2MergeEntryLess",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 237,
+  "status": "ported"
+ },
+ "00824c60": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2MergeEntriesGroup",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 195,
+  "status": "ported"
+ },
  "00824d30": {
   "branchRatio": 0.211,
   "constOverlap": 0.0,
@@ -56301,6 +56333,38 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 234,
+  "status": "ported"
+ },
+ "008250b0": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ApplySequencePlayBack",
+  "frozenSize": 305,
+  "how": "order",
+  "module": "M2Scene.cpp",
+  "refSize": 152,
+  "status": "ported"
+ },
+ "00825150": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetLightingCallback",
+  "frozenSize": 15,
+  "how": "order",
+  "module": "M2Scene.cpp",
+  "refSize": 32,
   "status": "ported"
  },
  "00825170": {

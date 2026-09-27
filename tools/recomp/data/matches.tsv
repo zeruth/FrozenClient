@@ -3524,10 +3524,14 @@ addr	how	frozen	evidence
 00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
 00824a80	annotated	M2BuildBasisFromAxis	tag in src/model/CM2Model.cpp
+00824b70	annotated	M2MergeEntryLess	tag in src/model/CM2Model.cpp
+00824c60	annotated	M2MergeEntriesGroup	tag in src/model/CM2Model.cpp
 00824d30	override	CM2Model::FreeExternalResources	
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
 00824fc0	annotated	CM2Model::IsDrawable	tag in src/model/CM2Model.cpp
+008250b0	order	CM2Model::ApplySequencePlayBack	definition order between CM2Model::Release and CM2Model::SetLoadedCallback in src/model/CM2Model.cpp
+00825150	order	CM2Model::SetLightingCallback	definition order between CM2Model::Release and CM2Model::SetLoadedCallback in src/model/CM2Model.cpp
 00825170	callgraph	CM2Model::UpdateLoaded	only unmatched callee of 008251b0=CM2Model::SetLoadedCallback
 008251b0	annotated	CM2Model::SetLoadedCallback	tag in src/model/CM2Model.cpp
 008251d0	callgraph	CM2Model::SetWorldTransform	only unmatched callee of 004e0160=CCharacterCreation::SetFacing, 004e2e70=CCharacterSelection::SetFacing

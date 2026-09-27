@@ -3547,9 +3547,14 @@ int32_t CM2Model::InitializeLoaded() {
 // The six std::sort internals underneath FUN_00832dd0 are STL and are marked `excluded` in
 // overrides.json, named for the standard function each one is; they are not work.
 //
-// NOT PORTED, deliberately: FUN_00832dd0's own two callers are unported, so the predicates would
-// be two functions nothing calls, with one invented field name between them. They go in with their
-// consumer.
+// THE TWO PREDICATES ARE NOW PORTED -- M2MergeEntryLess and M2MergeEntriesGroup, below
+// M2BatchesCanMerge. What this paragraph used to say, that they would need an invented field name
+// between them, turned out not to be true: neither predicate reads the element's third field, so it
+// is carried as uint08 and named nothing. Only FUN_00832dd0 itself, which walks the sorted run, is
+// still unported.
+//
+// The warning below still stands and is about the MERGE TEST, not these two. A comparator nothing
+// calls changes no behaviour; a non-zero answer from FUN_00824550 does.
 //
 // Returns 0, which is the safe answer rather than a placeholder: it means "this batch cannot be
 // merged into a doodad batch", so CM2Scene::Animate gives every element type 0 and the doodad path
@@ -3747,6 +3752,90 @@ bool M2BatchesCanMerge(const M2Batch& a, const M2Batch& b,
         && a.textureWeightComboIndex == b.textureWeightComboIndex
         && a.textureTransformComboIndex == b.textureTransformComboIndex
         && sectionA.boneComboIndex == sectionB.boneComboIndex;
+}
+
+// The skin section a merge element refers to, which both predicates below need and the reference
+// spells out inline in all four places it wants it. Static so the compiler folds it back in: these
+// two functions make NO calls in the reference and there is no reason for frozen's to.
+//
+// The two arms are the same lookup through different arrays. A model carrying optimized geometry
+// has its own merged batches and sections hanging off ptr2D0; one without goes to the skin profile
+// for the batch and to CM2Shared::m_skinSections for the section -- and note those are NOT the same
+// array as skinProfile->skinSections, which is why the resolved pointer is used rather than the
+// M2Array beside the batches.
+//
+// No Count() gate, matching the reference: the merge pass only ever asks about batch indices it
+// took from the profile itself. An M2Array would otherwise need one, per the empty-array trap.
+static const M2SkinSection& M2MergeEntrySection(const M2MergeEntry& entry) {
+    CM2Model* model = entry.model;
+
+    if (model->ptr2D0) {
+        const M2Batch& batch = model->ptr2D0->batches[entry.batchIndex];
+
+        return model->ptr2D0->skinSections[batch.skinSectionIndex];
+    }
+
+    const M2Batch& batch = model->m_shared->skinProfile->batches[entry.batchIndex];
+
+    return model->m_shared->m_skinSections[batch.skinSectionIndex];
+}
+
+// ref: FUN_00824b70
+// The merge pass's ordering, and the first key is the whole point of it: BONE INFLUENCES. That is
+// what selects the vertex shader permutation, so sorting on it puts equal-influence batches next to
+// each other and one shader serves the whole run.
+//
+// The other three keys carry no meaning and exist to make the order TOTAL -- ptr2D0, then m_shared,
+// then the batch index, each only consulted when everything before it ties. Sorting pointers makes
+// the result vary between runs, which is fine here and is not fine to copy anywhere that the order
+// is visible: it is a grouping key, and the grouping test below is what reads the result.
+//
+// EXTERNAL LINKAGE IS DELIBERATE, and not a style choice. Nothing calls either predicate yet, so as
+// statics the compiler would discard them both and the ref tags above would bind to nothing at all.
+bool M2MergeEntryLess(const M2MergeEntry& a, const M2MergeEntry& b) {
+    const M2SkinSection& sectionA = M2MergeEntrySection(a);
+    const M2SkinSection& sectionB = M2MergeEntrySection(b);
+
+    if (sectionA.boneInfluences != sectionB.boneInfluences) {
+        return sectionA.boneInfluences < sectionB.boneInfluences;
+    }
+
+    if (a.model->ptr2D0 != b.model->ptr2D0) {
+        return a.model->ptr2D0 < b.model->ptr2D0;
+    }
+
+    if (a.model->m_shared != b.model->m_shared) {
+        return a.model->m_shared < b.model->m_shared;
+    }
+
+    return a.batchIndex < b.batchIndex;
+}
+
+// ref: FUN_00824c60
+// Whether two neighbours of the sorted run merge together, and what it accepts is the definition of
+// a merge: the same shared model, the same batch index, the same optimized-geometry block, and skin
+// sections agreeing on bone influences.
+//
+// Same batch of the same model on DIFFERENT instances -- that is instanced doodad batching, and it
+// is why M2BatchesCanMerge above leaves skinSectionIndex out of its own comparison while this leaves
+// the section identity out of its own.
+//
+// The section lookup happens only after the three cheap tests pass, which is the reference's order
+// and worth keeping: it is the only part that dereferences anything.
+bool M2MergeEntriesGroup(const M2MergeEntry& a, const M2MergeEntry& b) {
+    if (a.model->m_shared != b.model->m_shared) {
+        return false;
+    }
+
+    if (a.batchIndex != b.batchIndex) {
+        return false;
+    }
+
+    if (a.model->ptr2D0 != b.model->ptr2D0) {
+        return false;
+    }
+
+    return M2MergeEntrySection(a).boneInfluences == M2MergeEntrySection(b).boneInfluences;
 }
 
 // ref: FUN_0082c970
