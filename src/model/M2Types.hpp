@@ -51,6 +51,48 @@ enum M2PASS {
 // emission could not be written down honestly: it writes three of them.
 class CM2ParticleEmitter;
 
+// LAYOUT WARNING, raised 2026-09-27 and NOT yet resolved. The field ORDER below disagrees with
+// what two reference functions read, and it matters because it decides whether the doodad and
+// ribbon draws can be transcribed field for field.
+//
+// This order puts batch at the reference's +0x20, skinSection at +0x24 and effect at +0x28. But
+// CM2SceneRender::DrawBatchDoodad (FUN_00820ae0) caches the M2Batch from element+0x28 and the
+// M2SkinSection from element+0x2c, and the element hash FUN_0081cc50 reads element+0x28 as a
+// pointer whose +8 is a colour index it bounds against m_data->colors.Count(). Both of those want
+// batch at +0x28, two slots later than this.
+//
+// SETTLED, by reading what the reference's own batch-element gather writes field by field inside
+// CM2Scene::Animate. Those writes are the authority, and they give:
+//
+//     +0x00 type        [0], assigned 0, 1 or 2
+//     +0x04 model       [1]
+//     +0x08 flags       [2], zeroed then OR'd with 2 and 4
+//     +0x0c alpha       [3]
+//     +0x10, +0x14      the two floats -- confirmed by the particle and ribbon writes
+//     +0x18 index       [6]
+//     +0x1c, +0x20      TWO SLOTS THIS STRUCT DOES NOT HAVE
+//     +0x24 priorityPlane  [9], taken off the batch record
+//     +0x28 batch          [10]
+//     +0x2c skinSection    [0xb]
+//     +0x30 effect         [0xc]
+//     +0x34 .. +0x40    four more, the three the particle builder sets among them
+//
+// Seventeen slots, 0x44, which is the element stride -- so the SIZE was never wrong. The ORDER is:
+// everything from priorityPlane down sits TWO SLOTS EARLIER here than in the reference, and the
+// two fields at +0x1c and +0x20 are absent. vertexPermute and pixelPermute are parked where the
+// reference keeps skinSection and effect, so they are not at the reference's offsets either.
+//
+// This also CORRECTS a note in CM2Scene.cpp's ribbon gather. That gather stores the ribbon's
+// priority plane at dword 9 and the note called it an overload of the skinSection slot. It is not
+// an overload -- +0x24 IS priorityPlane in the reference. The "overload" was this discrepancy
+// showing through, and the ribbon code writes the semantically right field either way.
+//
+// NOTHING IS BROKEN TODAY: frozen allocates and indexes its own struct consistently, so every
+// ported consumer agrees with every ported producer. What it blocks is transcribing a NEW draw
+// against reference offsets -- DrawBatchDoodad caches element+0x28 and +0x2c expecting batch and
+// skinSection, which land on effect and vertexPermute here. Fix the struct before porting that,
+// and the fix needs what +0x1c and +0x20 hold, which the reference's ComputeElementShaders is the
+// place to read.
 struct M2Element {
     int32_t type;
     CM2Model* model;

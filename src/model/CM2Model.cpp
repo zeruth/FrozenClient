@@ -3564,14 +3564,30 @@ int32_t CM2Model::InitializeLoaded() {
 //   +0x10  RESOLVED. This is the per-frame bitfield block, not the m_flags creation word, so the
 //          test is `this->m_flag10`. The header's own note at m_flags spells out why confusing
 //          the two is silent, and it is the same pair of storages that kept doodads off screen.
-//   +0x2a8 STILL OPEN. A pointer whose +0xa4 gates the answer. Do NOT read it off frozen's field
-//          comments: frozen is 64-bit, so its members do not sit at the reference's offsets, and
-//          counting forward from m_particles (+0x2c0) lands +0x2a8 inside CM2Lighting, which
-//          cannot be right because the constructor zeroes +0x2a8 through +0x2e4 as a run of
-//          pointer-sized slots. Settle it from the disassembly, not by counting.
+//   +0x2a8 RESOLVED 2026-09-27: it is `CM2Lighting* m_currentLighting`, and the +0xa4 the gate
+//          reads is its m_lightCount. Found from FUN_0081cc50, an element render-state hash that
+//          dereferences the same +0x2a8 and hashes FIVE fields off it whose offsets this class
+//          already documents: m_sunAmbient at +0x54, m_sunDiffuse at +0x60, m_lightCount at
+//          +0xa4, m_fogStart and m_fogEnd at +0xa8 and +0xac, and m_fogColor at +0xb8. Five
+//          independent matches against offsets written down before this was looked for, which is
+//          why the earlier guess that it lay INSIDE CM2Lighting was half right -- it points at
+//          one.
 //
-// So this is still a specification rather than a port, and the blocker is now that one field plus
-// the DrawBatchDoodad half below.
+// So the body is now fully specified, and it reads sensibly: a model carrying LOCAL LIGHTS cannot
+// join a doodad batch, because instanced batching draws every instance with one set of light
+// constants. That is the same reason the sort in the merge-prep pass (mapped below) groups on
+// boneInfluences -- anything that changes per instance has to break the batch.
+//
+//     if (this->m_currentLighting && this->m_currentLighting->m_lightCount) return 0;
+//
+// WHAT IS LEFT is now only the pairing rule, not a missing fact. Every dependency of
+// DrawBatchDoodad has landed since this note was written: the two vertex packers, CM2Shared::
+// SetVertices for the shader arm's buffer, ReserveInstances for its capacity, and the three scene
+// render fields it caches into (m_curBatch, m_curSkinSection, m_curMaterial all exist). The pair
+// is landable in one change for the first time.
+//
+// One thing to settle FIRST, because it decides whether DrawBatchDoodad can be transcribed as
+// written: see the M2Element layout warning in M2Types.hpp.
 //
 // **Still not implemented, deliberately, and the reason below has not changed.**
 // ref: FUN_00824550

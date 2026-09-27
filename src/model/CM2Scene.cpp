@@ -902,6 +902,10 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
                 element->float14 = model->float88;
                 // Which ribbon this element is for -- the draw has no other way back to it.
                 element->index = i;
+                // The reference writes this at dword 9. A note here used to call that an overload
+                // of the skinSection slot; it is not -- +0x24 IS priorityPlane in the reference,
+                // and frozen's field simply sits two slots earlier. See the layout note in
+                // M2Types.hpp. The field written is the right one either way.
                 element->priorityPlane = file.priorityPlane;
                 element->pixelPermute = 0;
                 element->dword34 = 0xFFFFFFFF;
