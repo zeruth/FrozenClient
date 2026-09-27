@@ -49619,7 +49619,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjGroup",
-  "frozenSize": 488,
+  "frozenSize": 495,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 75,
@@ -50823,6 +50823,22 @@
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 81,
+  "status": "ported"
+ },
+ "007c8bf0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::LiquidTileCount",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 110,
   "status": "ported"
  },
  "007c8c60": {

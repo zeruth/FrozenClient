@@ -267,6 +267,12 @@ class CMapObjGroup {
         float m_liquidMinZ = 0.0f;               // +0x13c
         float m_liquidMaxZ = 0.0f;               // +0x140
         uint32_t m_liquidType = 0;               // +0x144: the LiquidType row, after the fixup
+        // +0x148: how many liquid tiles actually render, cached. LiquidTileCount() fills it and is
+        // the only writer; a value below 1 means "not computed yet", which is also why a group whose
+        // tiles all turn out to be hidden recomputes the zero every time it is asked. The mesh
+        // builder for map-object water needs it -- its vertex count is
+        // m_liquidXVerts * m_liquidYVerts + m_liquidTileCount * 6.
+        int32_t m_liquidTileCount = 0;
 
         uint32_t m_faceCount = 0;                // +0x150: MOPY
         uint32_t m_indexCount = 0;               // +0x154: MOVI
@@ -297,6 +303,9 @@ class CMapObjGroup {
         TSLink<CMapObjGroup> m_link;             // +0x1b4: unlinked by CMap::FreeMapObjGroup
 
         // Member functions
+
+        // Count the liquid tiles that render, into m_liquidTileCount. Cheap after the first call.
+        void LiquidTileCount();
         ~CMapObjGroup();
         void FreeQueryData();
 

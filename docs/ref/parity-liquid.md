@@ -374,8 +374,10 @@ verts = m_liquidXVerts * m_liquidYVerts + LiquidTileCount() * 6
 **`FUN_007c8bf0` is `CMapObjGroup::LiquidTileCount()`** (identified 2026-09-26): it walks
 `m_liquidTiles` over `m_liquidXTiles` x `m_liquidYTiles` and counts entries where
 `(flag & 0xf) != 0xf` **and** the high bit `0x80` is set -- the tiles that actually render -- caching
-the result in a field at group `+0x148` that it recomputes only while that field is `< 1`. Frozen's
-`CMapObjGroup` needs that cache field.
+the result in a field at group `+0x148` that it recomputes only while that field is `< 1`. **PORTED
+2026-09-27** as `CMapObjGroup::LiquidTileCount`, with the cache as `m_liquidTileCount`; it returns
+void and callers read the field, which is the reference's shape. Nothing calls it yet -- the mesh
+builder is still the gap.
 
 **Still unread:** `FUN_007a7b00` (the per-vertex emit), `FUN_007a7920` (462) and `FUN_007a7f60`
 (944), plus `FUN_007cbdc0` (109, the buffer-pair allocation).

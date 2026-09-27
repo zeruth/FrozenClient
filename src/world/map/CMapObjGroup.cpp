@@ -1348,3 +1348,46 @@ bool MapQueryBox(const CAaBox& box, void* object, uint32_t queryMask) {
 
     return hit;
 }
+
+// ref: FUN_007c8bf0
+// How many of the group's liquid tiles actually render. The name comes from the identification in
+// docs/ref/parity-liquid.md; note that it RETURNS NOTHING -- it computes into m_liquidTileCount and
+// callers read that, which is the reference's own shape.
+//
+// A TILE RENDERS when its flag byte has bit 0x80 set and its low nibble is not 0xF. The reference
+// spells the second half as a SIGNED byte compare against zero, which is the same test for bit 0x80
+// and is worth keeping in mind when reading the disassembly.
+//
+// The cache is a plain int and "below 1" is the not-computed marker, so a group whose tiles are all
+// hidden recomputes its zero on every call. That is the reference's behaviour and it is harmless:
+// the walk is at most m_liquidXTiles * m_liquidYTiles byte tests.
+//
+// No null check on m_liquidTiles, matching the reference, and it is safe for the same reason there:
+// both tile counts and the tile pointer come out of the same MLIQ chunk, so a group without MLIQ has
+// zero for both extents and neither loop body runs.
+//
+// Ported for the map-object water mesh, which sizes its vertex buffer as
+// m_liquidXVerts * m_liquidYVerts + m_liquidTileCount * 6. Nothing calls it yet -- that builder,
+// Liquid::CMeshGeomFactory, is the remaining liquid gap -- so this lands as its documented
+// prerequisite rather than as a behaviour change.
+void CMapObjGroup::LiquidTileCount() {
+    if (this->m_liquidTileCount >= 1) {
+        return;
+    }
+
+    int32_t count = 0;
+
+    const uint8_t* tile = this->m_liquidTiles;
+
+    for (int32_t y = static_cast<int32_t>(this->m_liquidYTiles); y > 0; y--) {
+        for (int32_t x = static_cast<int32_t>(this->m_liquidXTiles); x > 0; x--) {
+            if ((*tile & 0xF) != 0xF && (*tile & 0x80)) {
+                count++;
+            }
+
+            tile++;
+        }
+    }
+
+    this->m_liquidTileCount = count;
+}

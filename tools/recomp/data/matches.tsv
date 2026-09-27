@@ -3184,6 +3184,7 @@ addr	how	frozen	evidence
 007c8360	annotated	CMapObjGroup::GetLiquidAt	tag in src/world/map/CMapObjGroupLoad.cpp
 007c8560	annotated	CMapObjGroup::FillVertexBuffer	tag in src/world/map/CMapObjGroupBuffers.cpp
 007c8b90	annotated	CMapObjGroup::FillIndexBuffer	tag in src/world/map/CMapObjGroupBuffers.cpp
+007c8bf0	annotated	CMapObjGroup::LiquidTileCount	tag in src/world/map/CMapObjGroup.cpp
 007c8c60	annotated	CMapObjGroup::BuildLiquidVertices	tag in src/world/map/CMapObjGroupLoad.cpp
 007c8d80	annotated	CMapObjGroup::FirstLiquidTileType	tag in src/world/map/CMapObjGroupLoad.cpp
 007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp

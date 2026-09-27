@@ -205999,6 +205999,24 @@
 "refs": [],
 "line": 1329
 },
+"CMapObjGroup::LiquidTileCount": {
+"files": [
+"src/world/map/cmapobjgroup.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0x80",
+"0xF",
+"1"
+],
+"branches": 4,
+"stub": false,
+"lines": 21,
+"refs": [],
+"line": 1373
+},
 "CMapObjGroup::VertexFormat": {
 "files": [
 "src/world/map/cmapobjgroupbuffers.cpp"
