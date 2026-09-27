@@ -3019,6 +3019,7 @@ addr	how	frozen	evidence
 007aeab0	annotated	CMapObj::WaitForGroup	tag in src/world/map/CMapObj.cpp
 007aeae0	annotated	CMapObj::GroupName	tag in src/world/map/CMapObj.cpp
 007aeb10	annotated	CMapObj::GroupInfo	tag in src/world/map/CMapObj.cpp
+007aeb40	override	CMapObj::GroupFaceColor	
 007af280	annotated	CMapObj::QuerySegmentPortals	tag in src/world/map/CMapObj.cpp
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
 007afee0	annotated	CMapObj::Initialize	tag in src/world/map/CMapObj.cpp
@@ -3042,6 +3043,7 @@ addr	how	frozen	evidence
 007b3780	callgraph	DetailDoodad::ReturnBuffers	only unmatched callee of 007b3960=DetailDoodad::ReleaseInstance
 007b3910	callgraph	DetailDoodad::Scatter	only unmatched callee of 007d3390=DetailDoodad::CreateInstance
 007b3960	annotated	DetailDoodad::ReleaseInstance	tag in src/world/map/DetailDoodad.cpp
+007b3990	annotated	CMapObjDef::SegmentVsBounds	tag in src/world/map/CMapObj.cpp
 007b39b0	annotated	CMapObjDef::GetPolyGroundType	tag in src/world/map/CMapObj.cpp
 007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b3b20	annotated	CMapObj::EnterPortalWalk	tag in src/world/map/CMapObjDraw.cpp
@@ -3156,7 +3158,10 @@ addr	how	frozen	evidence
 007c0a90	annotated	CMap::AllocAreaLow	tag in src/world/map/CMap.cpp
 007c0ae0	annotated	CMap::FreeAreaLowObject	tag in src/world/map/CMap.cpp
 007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
+007c15f0	override	ClassifyEntityInterior	
+007c1660	annotated	CMap::GetTerrainHeight	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
+007c1c40	annotated	CMapDoodadDef::FloorLight	tag in src/world/map/CMapDoodadDef.cpp
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
 007c21e0	annotated	CMapDoodadDef::CMapDoodadDef	tag in src/world/map/CMapDoodadDef.cpp
 007c2ff0	annotated	CMap::AsyncLoadCleanup	tag in src/world/map/CMap.cpp
@@ -3525,6 +3530,7 @@ addr	how	frozen	evidence
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
 0081ca80	annotated	M2ParticleMaterialClass	tag in src/model/CM2Scene.cpp
+0081cab0	order	CM2Scene::DrawShadowCasters	definition order between M2ParticleMaterialClass and CM2Scene::BeginRayQuery in src/model/CM2Scene.cpp
 0081cac0	annotated	CM2Scene::BeginRayQuery	tag in src/model/CM2Scene.cpp
 0081cad0	annotated	CM2Scene::ReserveRayCandidates	tag in src/model/CM2Scene.cpp
 0081cbc0	annotated	CM2Scene::SortRayCandidates	tag in src/model/CM2Scene.cpp

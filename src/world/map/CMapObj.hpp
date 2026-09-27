@@ -380,7 +380,13 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void ParseChunks();
         void ClearMaterialTextures();
 
-        bool GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
+        bool GroupFloorColor(uint32_t groupIndex, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag);
+
+        // The vertex colour at one KNOWN face of one group, rather than whatever a probe finds.
+        // The floor-light path takes this when it already knows which face it landed on.
+        // ref: FUN_007aeb40
+        bool GroupFaceColor(uint32_t groupIndex, const C3Vector& point, uint16_t face,
+                            CImVector* outColor, uint8_t* outFlag);
 
         // One group's MOGI record, or null when the root's chunks have not been parsed yet.
         // ref: FUN_007aeb10

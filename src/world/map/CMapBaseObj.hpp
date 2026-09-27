@@ -52,6 +52,13 @@ class CMapBaseObj {
         // Links whose owner is this object: CMap::AllocBaseObjLink raises it, FreeBaseObjLink
         // lowers it, and the destroy paths only release an object once it reaches zero.
         int16_t m_linkCount = 0;
+        // +0xc. Two bits settled 2026-09-27 from FUN_007c15f0, which is the only thing that
+        // writes either: 0x2 means the object was placed INSIDE a building's room and 0x4 that
+        // it was not. They are ORed, never cleared, and the floor-light path tests 0x2.
+        enum {
+            Flag_Interior = 0x2,
+            Flag_Exterior = 0x4,
+        };
         uint32_t m_flags = 0x0;
         TSLink<CMapBaseObj> m_lameAssLink;
         STORM_EXPLICIT_LIST(CMapBaseObjLink, ownerLink) m_parentLinkList;

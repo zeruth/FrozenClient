@@ -76,14 +76,10 @@ void CMapEntity::SplitFloorLight(const CImVector& color, CImVector* diffuse, uin
     }
 }
 
-// ref: FUN_007a0d60
-// The entity's light from the WMO floor under it. A probe from one yard above its feet to twelve
-// below, in the object's space, finds the floor face; its MOCV colour is split into the entity's
-// diffuse and ambient, and the MOCV alpha then blends both toward the outdoor light when the face
-// is flagged for it (MOPY bit 0). The reference reads the entity's position and its MapObjDef link
-// (with the def's inverse placement); the caller passes the already-transformed position and the
-// group here. flags bit 0x1000 records that the blend applies.
-bool CMapEntity::FloorLight(const C3Vector& localPos, CMapObj* mapObj, CMapObjGroup* group, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha) {
+// FROZEN-ONLY. The probe half of the reference's FloorLight, for FloorLightAt, which has to
+// search for the building rather than follow a link to it. A probe from one yard above the
+// entity's feet to twelve below, in the building's space, finds the floor face.
+bool CMapEntity::FloorLightLocal(const C3Vector& localPos, CMapObj* mapObj, uint32_t groupIndex, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha) {
     CImVector color;
     color.value = 0;
     uint8_t exteriorBlend = 0;
@@ -92,10 +88,17 @@ bool CMapEntity::FloorLight(const C3Vector& localPos, CMapObj* mapObj, CMapObjGr
     segment.start = { localPos.x, localPos.y, 1.0f + localPos.z };
     segment.end = { localPos.x, localPos.y, localPos.z - 12.0f };
 
-    if (!mapObj->GroupFloorColor(group, segment, &color, &exteriorBlend)) {
+    if (!mapObj->GroupFloorColor(groupIndex, segment, &color, &exteriorBlend)) {
         return false;
     }
 
+    return CMapEntity::ApplyFloorLight(color, exteriorBlend, diffuse, ambient, flags, outAlpha);
+}
+
+// FROZEN-ONLY. The tail both FloorLight overrides share: the floor colour becomes the two
+// lights, and the MOCV alpha then blends both toward the outdoor light when the face is
+// flagged for it (MOPY bit 0). flags bit 0x1000 records that the blend applies.
+bool CMapEntity::ApplyFloorLight(const CImVector& color, uint8_t exteriorBlend, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha) {
     CMapEntity::SplitFloorLight(color, diffuse, 0xA8, ambient, 0x60);
 
     if (exteriorBlend) {
@@ -185,8 +188,8 @@ bool CMapEntity::FloorLightAt(const C3Vector& pos, CImVector* diffuse, CImVector
             uint32_t flags = 0;
             uint8_t alpha = 0;
 
-            if (CMapEntity::FloorLight(local, def->m_mapObj, group, diffuse, ambient, &flags,
-                                       &alpha)) {
+            if (CMapEntity::FloorLightLocal(local, def->m_mapObj, groupIndex, diffuse, ambient,
+                                            &flags, &alpha)) {
                 return true;
             }
         }
@@ -225,4 +228,55 @@ bool CMapEntity::PointIsIndoors(const C3Vector& pos) {
     uint32_t groups[4] = { 0xffff, 0xffff, 0xffff, 0xffff };
 
     return QuerySegmentMapObjs(start, end, 1.0f, defs, groups) != 0;
+}
+
+// How far above and below the entity the probe reaches, in the building's own space:
+// DAT_009e1130 and DAT_00a1047c, a unit's feet and the floor it could be standing on.
+static const float ENTITY_PROBE_RISE = 1.0f;
+static const float ENTITY_PROBE_DROP = 12.0f;
+
+// ref: FUN_007a0d60
+// Vtable slot 3 for a unit. Transforms its position into the building ONCE and then offsets in
+// that space, which is what separates it from CMapDoodadDef's override: that one offsets out in
+// the world and transforms both ends.
+//
+// The ambient goes to m_ambientTarget, not to the base's m_ambient: the reference writes +0xc0
+// here where the doodad override writes +0x84, so the two do not share the field. SelectLights
+// (FUN_007c1730) is what identifies +0xc0 -- it reads the ambient CM2Lighting consumes from
+// +0x84 and never touches +0xc0, so +0xc0 is the target the current one is moved toward, which
+// is the m_ambient / m_ambientTarget pair frozen already had. A doodad is placed once and takes
+// its light directly; a unit's fades in.
+void CMapEntity::FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint16_t* face,
+                            const C3Vector* point) {
+    CImVector color;
+    color.value = 0;
+    uint8_t exteriorBlend = 0;
+    bool sampled;
+
+    if (!face) {
+        C3Vector local = this->m_position * def->m_inversePlacement;
+
+        C3Segment segment;
+        segment.start = { local.x, local.y, local.z + ENTITY_PROBE_RISE };
+        segment.end = { local.x, local.y, local.z - ENTITY_PROBE_DROP };
+
+        sampled = def->m_mapObj->GroupFloorColor(groupIndex, segment, &color, &exteriorBlend);
+    } else {
+        C3Vector local = *point * def->m_inversePlacement;
+
+        sampled = def->m_mapObj->GroupFaceColor(groupIndex, local, *face, &color, &exteriorBlend);
+    }
+
+    if (!sampled) {
+        return;
+    }
+
+    uint8_t alpha = 0;
+
+    CMapEntity::ApplyFloorLight(color, exteriorBlend, &this->m_interiorDirColor,
+                                &this->m_ambientTarget, &this->m_flags7c, &alpha);
+
+    if (exteriorBlend) {
+        this->m_interiorDirColor.a = alpha;
+    }
 }

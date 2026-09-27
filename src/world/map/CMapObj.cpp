@@ -60,12 +60,24 @@ uint32_t CMapObj::QuerySkipFlags(uint32_t queryFlags) {
 // ref: FUN_007af780
 // The colour of the floor a probe segment lands on: the first face the group's BSP reports along
 // the segment, sampled from that group's MOCV. Exterior groups (MOGP 0x8, 0x40) are never
-// probed: an entity over them is lit by the sky. The reference indexes the group in its own
-// array and also checks that it is loaded; here the caller hands the group over.
-bool CMapObj::GroupFloorColor(CMapObjGroup* group, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag) {
+// probed: an entity over them is lit by the sky.
+//
+// Takes the group INDEX, as the reference does, and keeps all three of its gates: the root's
+// chunks parsed, the group loaded, and the group not exterior. It used to take a resolved
+// CMapObjGroup* and test only the last of those, leaving the other two to its one caller --
+// which was fine while that caller was the only one, and stopped being fine when FloorLight
+// became a virtual with two overrides that would each have had to repeat them.
+// CMapObj::GroupFaceColor is the same three gates without the probe.
+bool CMapObj::GroupFloorColor(uint32_t groupIndex, const C3Segment& segment, CImVector* outColor, uint8_t* outFlag) {
     float t = 1.0f;
 
-    if (group && (group->m_flags & 0x48) == 0) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    if (group && (group->m_state & 0x1) && (group->m_flags & 0x48) == 0) {
         CMapObjGroup::s_hitFlags = 0;
         CMapObjGroup::s_hitRecordCount = 0;
         CMapObjGroup::s_hitFacePoolCount = 0;
@@ -576,9 +588,14 @@ int32_t CMapObj::Read(const char* path) {
 
     SFile* file = nullptr;
 
+    // The separators are DOUBLED because this is a C string, not a path literal: written
+    // singly the compiler ate them, and the escapes it did not recognise (\w, \D, \m) at
+    // least drew a warning while \t silently became a TAB -- so the fallback resolved to
+    // "worldwmoDungeon<tab>estmissingwmo.wmo" and could never open. The reference's own string
+    // is "world\wmo\Dungeon\test\missingwmo.wmo", which is what this now produces.
     if (!CMap::SafeOpen(path, &file)) {
-        CMap::SafeOpen("world\wmo\Dungeon\test\missingwmo.wmo", &file);
-        path = "world\wmo\Dungeon\test\missingwmo.wmo";
+        CMap::SafeOpen("world\\wmo\\Dungeon\\test\\missingwmo.wmo", &file);
+        path = "world\\wmo\\Dungeon\\test\\missingwmo.wmo";
     }
 
     SStrCopy(this->m_name, path, STORM_MAX_STR);
@@ -1155,4 +1172,43 @@ uint32_t CMapObjDef::GetPolyGroundType(uint32_t groupIndex, uint16_t polyIndex) 
     }
 
     return this->m_mapObj->m_materials[group->m_polys[polyIndex].material].groundType;
+}
+
+// ref: FUN_007aeb40
+// The vertex colour at one known face, for the floor-light path that already knows which face
+// it is standing on. Three gates before it samples: the root's chunks have to be parsed, the
+// group itself has to be loaded, and the group must not carry either of the two MOGP flags in
+// 0x48 -- the same pair the interior/exterior decision tests, so a group that counts as outside
+// never lends its floor colour to anything.
+//
+// The reference reads the group's state without checking the slot first, which is safe for it
+// because the index comes from a query that just walked that group. The null check here costs a
+// compare and makes the function safe to call with an index from anywhere.
+bool CMapObj::GroupFaceColor(uint32_t groupIndex, const C3Vector& point, uint16_t face, CImVector* outColor, uint8_t* outFlag) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    CMapObjGroup* group = this->m_groups[groupIndex];
+
+    if (!group || !(group->m_state & 0x1)) {
+        return false;
+    }
+
+    if (group->m_flags & 0x48) {
+        return false;
+    }
+
+    return group->SampleColorAtFace(point, face, outColor, outFlag);
+}
+
+// ref: FUN_007b3990
+// Does a segment reach this building's box? Twenty-seven bytes in the reference and nothing but
+// a forward to SegmentIntersectsBox against m_bounds, which is the MODF extents in world space.
+//
+// Worth having as its own function rather than inlining the test at the three call sites, because
+// that is what the reference does and because those three are the entry to every walk over the
+// placed buildings: the segment queries reject most instances here before touching a group.
+int32_t CMapObjDef::SegmentVsBounds(const C3Vector& start, const C3Vector& end) {
+    return SegmentIntersectsBox(this->m_bounds, start, end);
 }

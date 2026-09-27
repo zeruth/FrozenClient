@@ -913,6 +913,47 @@ bool CMap::GetTerrainType(const C3Vector& position, int32_t* terrainType) {
     return true;
 }
 
+// ref: FUN_007c1660
+// The terrain height under a world point, and which chunk answered.
+//
+// The same cell addressing as GetTerrainType above, with two differences worth naming because
+// both are the reference's choices rather than oversights. There is NO bounds test in yards: the
+// masks and the grid lookup are what keep a wild point from reading out of the array, so a point
+// off the map comes back false through the area test rather than being rejected up front. And the
+// grid is indexed here rather than going through GetLoadedArea, which is a separate function in
+// the reference and not called from this one -- the m_asyncObject test inlined below is exactly
+// what GetLoadedArea does, so routing through it would behave the same and make one call the
+// reference does not.
+//
+// The chunk is an OUT parameter, cleared before anything else, and its caller
+// (FUN_007c28f0, the placement query) uses it to tell the two failures apart: a point over
+// nothing at all, versus a point over a chunk whose height it then compares against.
+bool CMap::GetTerrainHeight(const C3Vector& position, float* height, CMapChunk** outChunk) {
+    *outChunk = nullptr;
+
+    int32_t col = static_cast<int32_t>(roundf(-(position.y - MAP_HALF_EXTENT) * CELLS_PER_YARD
+                                             - CELL_ROUND_BIAS));
+    int32_t row = static_cast<int32_t>(roundf(-(position.x - MAP_HALF_EXTENT) * CELLS_PER_YARD
+                                             - CELL_ROUND_BIAS));
+
+    auto area = CMap::s_areaGrid[((row >> 7) & 0x3f) * 64 + ((col >> 7) & 0x3f)];
+
+    if (!area || area->m_asyncObject) {
+        return false;
+    }
+
+    auto chunk = area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
+
+    if (!chunk) {
+        return false;
+    }
+
+    *outChunk = chunk;
+
+    return chunk->HeightAt(position, static_cast<uint32_t>(col), static_cast<uint32_t>(row),
+                           height);
+}
+
 // How close under a surface still counts as being at it.
 static const float LIQUID_EPSILON = 0.009999999776482582f;   // DAT_009f1968
 

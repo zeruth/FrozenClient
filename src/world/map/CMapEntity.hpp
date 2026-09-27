@@ -12,7 +12,13 @@ class CMapEntity : public CMapStaticEntity {
     public:
         // Static functions
         static void SplitFloorLight(const CImVector& color, CImVector* diffuse, uint8_t diffuseMax, CImVector* ambient, uint8_t ambientMax);
-        static bool FloorLight(const C3Vector& localPos, CMapObj* mapObj, CMapObjGroup* group, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha);
+
+        // FROZEN-ONLY, both of these. The reference does this work inside the two FloorLight
+        // overrides, which reach the building through the entity's parent links; frozen has no
+        // such link on a unit yet, so FloorLightAt searches for the building and needs the
+        // probe and the tail as separate pieces it can drive itself.
+        static bool ApplyFloorLight(const CImVector& color, uint8_t exteriorBlend, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha);
+        static bool FloorLightLocal(const C3Vector& localPos, CMapObj* mapObj, uint32_t groupIndex, CImVector* diffuse, CImVector* ambient, uint32_t* flags, uint8_t* outAlpha);
 
         // The floor light for a world position: finds the building and room the point stands in and
         // asks FloorLight above. Lived in the stand-in renderer until 2026-09-26, purely because it
@@ -46,6 +52,10 @@ class CMapEntity : public CMapStaticEntity {
 
         // Member functions
         CMapEntity();
+
+        // Vtable slot 3. Tagged on the definition in the .cpp, not here.
+        void FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint16_t* face,
+                        const C3Vector* point) override;
 };
 
 #endif

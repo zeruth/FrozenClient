@@ -95,6 +95,22 @@ python tools/recomp/recomp.py --next 20 --spine  # 2. decompile the next batch -
 #    Identified-but-not-ported? Still tag it (or add it to overrides.json with a note).
 #    CRT / STL / fmod / nullsub? overrides.json status "excluded" so it leaves the denominator.
 cmake --build build --config Release --target Frozen   # 4. build; install exe + PDB with the timestamp guard
+python tools/recomp/clangparse.py                     # 4b. RE-PARSE THE SOURCES. recomp.py never
+                                                      #     does this for you and fails SILENTLY
+                                                      #     without it: the fidelity half of every
+                                                      #     number comes from data/frozen-clang.json,
+                                                      #     so a stale one measures the code you had
+                                                      #     when it was last written. On 2026-09-27
+                                                      #     its cache (data/clang-cache.json) was found
+                                                      #     truncated mid-write by an interrupted run,
+                                                      #     which made clangparse.py die on startup and
+                                                      #     left frozen-clang.json four hours stale --
+                                                      #     ports measured as unfaithful while the PDB
+                                                      #     plainly showed the calls. If it raises
+                                                      #     JSONDecodeError, delete that cache and let
+                                                      #     it rebuild. Do NOT delete frozen-clang.json
+                                                      #     to force a refresh: recomp.py then runs
+                                                      #     without it and drops ~270 links.
 #    (added a .cpp? also run tools/recomp/refresh-compile-db.bat so clangparse sees it)
 python tools/recomp/recomp.py --pdb                   # 5. re-measure; the totals line prints the delta
 git commit                                            # 6. one scoped commit per cycle; put the delta in the

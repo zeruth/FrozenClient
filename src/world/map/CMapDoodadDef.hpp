@@ -32,6 +32,11 @@ class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef
         // the inverse for queries that need to get into its own space (+0xd8 and +0x118).
         C44Matrix m_placement;
         C44Matrix m_inversePlacement;
+
+        // Member functions
+        // Vtable slot 3. Tagged on the definition in the .cpp, not here.
+        void FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint16_t* face,
+                        const C3Vector* point) override;
         // TODO +0x158 onwards beyond the sound kit
         // The doodad's own sound emitter, stopped by CMap::FreeDoodadDef before the def is released.
         SOUNDKITOBJECT m_soundKit;        // +0x158

@@ -1,4 +1,8 @@
 #include "world/map/CMapStaticEntity.hpp"
+#include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
@@ -85,5 +89,41 @@ void CMapStaticEntity::Place(const C44Matrix& placement) {
         // m_flag40, not `m_flags & ~0x40`: the same two-storages confusion that stopped doodads
         // drawing at all. The reference's flags word is frozen's bitfield block.
         this->m_model->m_flag40 = 0;
+    }
+}
+
+// ref: FUN_007c15f0
+// Which side of a building's wall a placed entity ended up on, and its floor light if it ended
+// up inside.
+//
+// The group it landed on decides. A group that is neither Exterior (MOGP 0x8) nor ExteriorLit
+// (0x40) is a room, so the entity is marked interior; an open-air group -- or no group at all,
+// which is what an unloaded one reads as -- marks it exterior. The two bits are ORed rather than
+// assigned, so an entity that has already been classified keeps what it had.
+//
+// Only an interior entity then takes the floor light, through vtable slot 3. That slot is the
+// whole reason this function could not be written before: CMapStaticEntity had three virtuals and
+// the reference calls a fourth here, so porting it earlier would have meant either inventing a
+// no-op or guessing what the call does.
+//
+// The face arrives BY VALUE and its address is what goes to FloorLight, so this is always the
+// known-face path -- whatever found the group also knows which polygon the entity stands on, and
+// FloorLight does not have to probe for it.
+//
+// It tests the flag rather than the branch it just took, which is not the same thing: an entity
+// that was already interior from an earlier group is lit even when this group put 0x4 on it.
+// Kept as the reference has it.
+void ClassifyEntityInterior(CMapStaticEntity* entity, CMapObjDef* def,
+                            CMapObjDefGroup* defGroup, uint16_t face, const C3Vector& point) {
+    CMapObjGroup* group = def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+    if (group && !(group->m_flags & 0x8) && !(group->m_flags & 0x40)) {
+        entity->m_flags |= CMapBaseObj::Flag_Interior;
+    } else {
+        entity->m_flags |= CMapBaseObj::Flag_Exterior;
+    }
+
+    if (entity->m_flags & CMapBaseObj::Flag_Interior) {
+        entity->FloorLight(def, defGroup->m_groupIndex, &face, &point);
     }
 }

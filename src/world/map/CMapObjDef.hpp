@@ -56,6 +56,11 @@ class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_N
         // 0xFFFFFFFF when the group, the polygon or the material is not there.
         // ref: FUN_007b39b0
         uint32_t GetPolyGroundType(uint32_t groupIndex, uint16_t polyIndex);
+
+        // Does a segment reach this building's MODF box at all? The cheap first test every
+        // walk over the placed buildings does before it opens one up.
+        // ref: FUN_007b3990
+        int32_t SegmentVsBounds(const C3Vector& start, const C3Vector& end);
         uint32_t m_doodadSet = 0;        // +0x100
         uint32_t m_nameSet = 0;          // +0x104
         // The links the def's own groups hold on it (+0x114); each group is the owner

@@ -10985,12 +10985,13 @@
   "status": "ported"
  },
  "004c1590": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "M2ParticleRand01",
   "frozenSize": 0,
@@ -11548,12 +11549,13 @@
   "status": "ported"
  },
  "004c3e00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp",
+   "lib/typhoon/tempest/spline/cbezierspline.cpp"
   ],
   "frozen": "CBezierSpline::SegmentAt",
   "frozenSize": 0,
@@ -11563,12 +11565,13 @@
   "status": "ported"
  },
  "004c4880": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp",
+   "lib/typhoon/tempest/spline/cbezierspline.cpp"
   ],
   "frozen": "CBezierSpline::Evaluate",
   "frozenSize": 795,
@@ -11578,12 +11581,13 @@
   "status": "ported"
  },
  "004c4930": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp",
+   "lib/typhoon/tempest/spline/cbezierspline.cpp"
   ],
   "frozen": "CBezierSpline::Tangent",
   "frozenSize": 780,
@@ -11609,12 +11613,13 @@
   "status": "ported"
  },
  "004c4d50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp",
+   "lib/typhoon/tempest/spline/cbezierspline.cpp"
   ],
   "frozen": "CBezierSpline::SetPoints",
   "frozenSize": 319,
@@ -40392,12 +40397,13 @@
   "status": "ported"
  },
  "006ebc70": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/object/client/CMovement_C.cpp"
+   "src/object/client/CMovement_C.cpp",
+   "src/object/client/cmovement_c.cpp"
   ],
   "frozen": "MoveEventAllocate",
   "frozenSize": 0,
@@ -46982,7 +46988,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.6,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -47062,7 +47068,7 @@
   "branchRatio": 0.542,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.396,
+  "fidelity": 0.415,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -47235,12 +47241,13 @@
   "status": "ported"
  },
  "007a0530": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.75,
+  "constOverlap": 0.2,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/CMap.cpp"
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetTerrainType",
   "frozenSize": 0,
@@ -47266,20 +47273,20 @@
   "status": "ported"
  },
  "007a0d60": {
-  "branchRatio": 0.8,
-  "constOverlap": 0.094,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/world/map/CMapEntity.cpp",
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::FloorLight",
-  "frozenSize": 0,
+  "frozenSize": 484,
   "how": "override",
   "module": "Map.cpp",
   "refSize": 360,
-  "status": "faithful"
+  "status": "ported"
  },
  "007a0fe0": {
   "branchRatio": 1.0,
@@ -48257,6 +48264,22 @@
   "refSize": 34,
   "status": "ported"
  },
+ "007aeb40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GroupFaceColor",
+  "frozenSize": 76,
+  "how": "override",
+  "module": "Map.cpp",
+  "refSize": 68,
+  "status": "ported"
+ },
  "007af280": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -48274,7 +48297,7 @@
   "status": "ported"
  },
  "007af780": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.091,
   "faithful": true,
   "fidelity": 1.0,
@@ -48283,7 +48306,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::GroupFloorColor",
-  "frozenSize": 302,
+  "frozenSize": 335,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 200,
@@ -48625,13 +48648,30 @@
   "refSize": 39,
   "status": "ported"
  },
- "007b39b0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+ "007b3990": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/CMapObj.cpp"
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObjDef::SegmentVsBounds",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 27,
+  "status": "ported"
+ },
+ "007b39b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObjDef::GetPolyGroundType",
   "frozenSize": 0,
@@ -49713,12 +49753,13 @@
   "status": "ported"
  },
  "007ba960": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/CWFrustum.cpp"
+   "src/world/CWFrustum.cpp",
+   "src/world/cwfrustum.cpp"
   ],
   "frozen": "CWFrustum::NegatePlanes",
   "frozenSize": 0,
@@ -50447,6 +50488,38 @@
   "refSize": 20,
   "status": "ported"
  },
+ "007c15f0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "ClassifyEntityInterior",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapMem.cpp",
+  "refSize": 101,
+  "status": "ported"
+ },
+ "007c1660": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.429,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTerrainHeight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 198,
+  "status": "ported"
+ },
  "007c1ad0": {
   "branchRatio": 1.0,
   "constOverlap": 0.222,
@@ -50461,6 +50534,22 @@
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 362,
+  "status": "ported"
+ },
+ "007c1c40": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.889,
+  "files": [
+   "src/world/map/CMapDoodadDef.cpp",
+   "src/world/map/cmapdoodaddef.cpp"
+  ],
+  "frozen": "CMapDoodadDef::FloorLight",
+  "frozenSize": 422,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 376,
   "status": "ported"
  },
  "007c1ff0": {
@@ -56323,18 +56412,35 @@
   "status": "ported"
  },
  "0081ca80": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 1.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "M2ParticleMaterialClass",
   "frozenSize": 0,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 35,
+  "status": "ported"
+ },
+ "0081cab0": {
+  "branchRatio": 0.25,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::DrawShadowCasters",
+  "frozenSize": 366,
+  "how": "order",
+  "module": "XMLTree.cpp",
+  "refSize": 15,
   "status": "ported"
  },
  "0081cac0": {
@@ -56370,12 +56476,13 @@
   "status": "ported"
  },
  "0081cbc0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortRayCandidates",
   "frozenSize": 0,
@@ -56446,12 +56553,13 @@
   "status": "ported"
  },
  "0081cff0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::CollectRayCandidates",
   "frozenSize": 0,
@@ -56509,12 +56617,13 @@
   "status": "ported"
  },
  "0081d680": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::ProjectSectionVerticesBlended4x4",
   "frozenSize": 0,
@@ -56524,12 +56633,13 @@
   "status": "ported"
  },
  "0081d830": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::ProjectSectionVerticesBlended3x4",
   "frozenSize": 0,
@@ -56555,12 +56665,13 @@
   "status": "ported"
  },
  "0081daf0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.619,
+  "constOverlap": 0.037,
   "faithful": true,
   "fidelity": 0.833,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::RayTestModelGeometry",
   "frozenSize": 0,
@@ -56570,12 +56681,13 @@
   "status": "ported"
  },
  "0081dd50": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::RayTestModel",
   "frozenSize": 0,
@@ -56585,12 +56697,13 @@
   "status": "ported"
  },
  "0081df10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 0.833,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::RayQuery",
   "frozenSize": 0,
@@ -56664,12 +56777,13 @@
   "status": "ported"
  },
  "0081f0e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.846,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortTransparentGrouped",
   "frozenSize": 351,
@@ -56806,12 +56920,13 @@
   "status": "ported"
  },
  "0081f9e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.778,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2Scene.cpp"
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::KeyAndSortElementList",
   "frozenSize": 384,
@@ -56949,10 +57064,10 @@
   "status": "ported"
  },
  "00821a20": {
-  "branchRatio": 0.283,
+  "branchRatio": 0.288,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.615,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -58098,12 +58213,13 @@
   "status": "ported"
  },
  "00829aa0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.062,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
-   "src/model/CM2Model.cpp"
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::DrawReceiverGeometry",
   "frozenSize": 0,
@@ -58526,12 +58642,13 @@
   "status": "ported"
  },
  "008318a0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 1.0,
   "files": [
-   "src/model/CM2Model.cpp"
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetEventWorldTransform",
   "frozenSize": 0,
@@ -58669,7 +58786,7 @@
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.606,
+  "branchRatio": 0.624,
   "constOverlap": 0.083,
   "faithful": false,
   "fidelity": 0.552,
@@ -59341,7 +59458,7 @@
   "status": "ported"
  },
  "00836ad0": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59357,7 +59474,7 @@
   "status": "ported"
  },
  "00836b60": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59373,7 +59490,7 @@
   "status": "ported"
  },
  "00836c00": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59421,7 +59538,7 @@
   "status": "ported"
  },
  "00836e40": {
-  "branchRatio": 0.124,
+  "branchRatio": 0.123,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59437,7 +59554,7 @@
   "status": "ported"
  },
  "00836f80": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59453,7 +59570,7 @@
   "status": "ported"
  },
  "00837010": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59469,7 +59586,7 @@
   "status": "ported"
  },
  "008370a0": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59485,7 +59602,7 @@
   "status": "ported"
  },
  "00837130": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59501,7 +59618,7 @@
   "status": "ported"
  },
  "008371c0": {
-  "branchRatio": 0.078,
+  "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59581,7 +59698,7 @@
   "status": "ported"
  },
  "00837ee0": {
-  "branchRatio": 0.341,
+  "branchRatio": 0.338,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59597,7 +59714,7 @@
   "status": "ported"
  },
  "008382a0": {
-  "branchRatio": 0.194,
+  "branchRatio": 0.192,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59613,7 +59730,7 @@
   "status": "ported"
  },
  "008385a0": {
-  "branchRatio": 0.488,
+  "branchRatio": 0.485,
   "constOverlap": 0.056,
   "faithful": false,
   "fidelity": 1.0,
@@ -59629,7 +59746,7 @@
   "status": "ported"
  },
  "00838b10": {
-  "branchRatio": 0.488,
+  "branchRatio": 0.485,
   "constOverlap": 0.143,
   "faithful": false,
   "fidelity": 1.0,
@@ -59645,7 +59762,7 @@
   "status": "ported"
  },
  "00839080": {
-  "branchRatio": 0.194,
+  "branchRatio": 0.192,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59661,7 +59778,7 @@
   "status": "ported"
  },
  "00839270": {
-  "branchRatio": 0.928,
+  "branchRatio": 0.935,
   "constOverlap": 0.079,
   "faithful": true,
   "fidelity": 1.0,
@@ -59677,7 +59794,7 @@
   "status": "ported"
  },
  "00839ef0": {
-  "branchRatio": 0.488,
+  "branchRatio": 0.485,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -59693,7 +59810,7 @@
   "status": "ported"
  },
  "0083a460": {
-  "branchRatio": 0.946,
+  "branchRatio": 0.938,
   "constOverlap": 0.028,
   "faithful": true,
   "fidelity": 1.0,
@@ -59709,7 +59826,7 @@
   "status": "ported"
  },
  "0083af90": {
-  "branchRatio": 0.566,
+  "branchRatio": 0.57,
   "constOverlap": 0.042,
   "faithful": true,
   "fidelity": 1.0,
@@ -59725,7 +59842,7 @@
   "status": "ported"
  },
  "0083c6e0": {
-  "branchRatio": 0.287,
+  "branchRatio": 0.285,
   "constOverlap": 0.081,
   "faithful": false,
   "fidelity": 1.0,
@@ -65643,12 +65760,13 @@
   "status": "ported"
  },
  "008a1770": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::Initialize",
   "frozenSize": 113,
@@ -65706,12 +65824,13 @@
   "status": "ported"
  },
  "008a1c90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialSettings::~CMaterialSettings",
   "frozenSize": 0,
@@ -65721,12 +65840,13 @@
   "status": "ported"
  },
  "008a1d00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialSettings::ReleaseFrames",
   "frozenSize": 0,
@@ -65800,12 +65920,13 @@
   "status": "ported"
  },
  "008a2100": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialSettings::CMaterialSettings",
   "frozenSize": 0,
@@ -65831,10 +65952,10 @@
   "status": "ported"
  },
  "008a2380": {
-  "branchRatio": 0.8,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -65847,12 +65968,13 @@
   "status": "ported"
  },
  "008a2400": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.5,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::Shutdown",
   "frozenSize": 0,
@@ -65878,12 +66000,13 @@
   "status": "ported"
  },
  "008a2780": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.667,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::ReloadAllLiquidTextures",
   "frozenSize": 0,
@@ -65925,12 +66048,13 @@
   "status": "ported"
  },
  "008a2980": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.2,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::ReleaseProceduralTextures",
   "frozenSize": 0,
@@ -65940,12 +66064,13 @@
   "status": "ported"
  },
  "008a2a10": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.286,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::RestoreLiquidTextures",
   "frozenSize": 0,
@@ -66003,12 +66128,13 @@
   "status": "ported"
  },
  "008a2f00": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.214,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.2,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::UpdateProceduralTextures",
   "frozenSize": 256,
@@ -66338,9 +66464,9 @@
   "status": "ported"
  },
  "008a38b0": {
-  "branchRatio": 0.25,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
@@ -66402,12 +66528,13 @@
   "status": "ported"
  },
  "008a3ec0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialProcWater::~CMaterialProcWater",
   "frozenSize": 0,
@@ -66433,12 +66560,13 @@
   "status": "ported"
  },
  "008a3fe0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialWater::~CMaterialWater",
   "frozenSize": 0,
@@ -66464,12 +66592,13 @@
   "status": "ported"
  },
  "008a40e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialWaterNoSpec::~CMaterialWaterNoSpec",
   "frozenSize": 0,
@@ -66495,12 +66624,13 @@
   "status": "ported"
  },
  "008a4200": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/map/LiquidMaterialSettings.cpp"
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialMagma::~CMaterialMagma",
   "frozenSize": 0,
@@ -73806,12 +73936,13 @@
   "status": "ported"
  },
  "009814e0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::SetEmissionRate",
   "frozenSize": 0,
@@ -73821,12 +73952,13 @@
   "status": "ported"
  },
  "00981500": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::SetSplinePoints",
   "frozenSize": 12,
@@ -73868,12 +74000,13 @@
   "status": "ported"
  },
  "00981c90": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::SetWidth",
   "frozenSize": 29,
@@ -73883,12 +74016,13 @@
   "status": "ported"
  },
  "00981cd0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::SetLength",
   "frozenSize": 86,
@@ -73898,12 +74032,13 @@
   "status": "ported"
  },
  "00981d40": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.075,
   "faithful": false,
-  "fidelity": 0.538,
+  "fidelity": 0.615,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::CreateParticle",
   "frozenSize": 1333,
@@ -73913,12 +74048,13 @@
   "status": "ported"
  },
  "009820f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/model/CM2ParticleEmitter.cpp"
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::CM2ParticleEmitterSpline",
   "frozenSize": 355,

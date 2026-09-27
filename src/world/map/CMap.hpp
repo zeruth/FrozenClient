@@ -307,6 +307,13 @@ class CMap {
         // the layer showing there. False when the point is off the map, over a tile that is not
         // loaded, or over a hole. ref: FUN_007a0530
         static bool GetTerrainType(const C3Vector& position, int32_t* terrainType);
+
+        // The terrain height under a world point, and which chunk answered it. False when the
+        // point is over a tile that is not loaded or a chunk that is not there; the chunk is
+        // cleared in that case, so a caller can tell 'no chunk' from 'chunk but no height'.
+        // ref: FUN_007c1660
+        static bool GetTerrainHeight(const C3Vector& position, float* height,
+                                     CMapChunk** outChunk);
         // ref: FUN_0079ae80
         static void BuildBspLeafCache(CMapBspLeafCache* leaf, const uint16_t* faceRefs, const CAaBspNode* node, const SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices);
         // ref: FUN_007a20e0

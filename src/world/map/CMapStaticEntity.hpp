@@ -9,6 +9,8 @@
 #include <tempest/Vector.hpp>
 
 class CM2Model;
+class CMapObjDef;
+class CMapObjDefGroup;
 
 class CMapStaticEntity : public CMapBaseObj {
     public:
@@ -32,9 +34,18 @@ class CMapStaticEntity : public CMapBaseObj {
         // How opaque it draws, before any distance fade. The chunk reference walk sets it to
         // one; nothing dims it yet.
         float m_opacity = 1.0f;                  // +0x8c
-        // TODO
-        CImVector m_ambient = {};
-        CImVector m_interiorDirColor = {};
+        // The floor light, as CMapDoodadDef::FloorLight leaves it: the directional half at
+        // +0x88 (whose ALPHA byte, +0x8b, keeps the MOCV alpha the blend used) and the
+        // ambient half at +0x84.
+        //
+        // m_ambient is the CURRENT ambient, and SelectLights is what says so: it reads three
+        // bytes at +0x84 and hands them to CM2Lighting::AddAmbient. A doodad is placed once
+        // and writes it straight; a unit writes CMapEntity::m_ambientTarget (+0xc0) instead
+        // and is moved toward it, which is why the two FloorLight overrides do not share the
+        // field even though they share this class.
+        CImVector m_ambient = {};              // +0x84
+        CImVector m_interiorDirColor = {};     // +0x88
+        // TODO: no reader yet.
         float m_dirLightScale = 0.0f;
         // Entity state bits (reference +0x7c). Bit 1 (0x2) makes CMap::LinkToMapObjDefGroup put
         // the entity at the head of the group's entity list instead of the tail; bit 10 (0x400)
@@ -59,6 +70,24 @@ class CMapStaticEntity : public CMapBaseObj {
         // in. The placement matrix lives on the subclasses in frozen, so it is passed in; the
         // reference reads it at one offset both of them share. ref: FUN_007bdb10
         void Place(const C44Matrix& placement);
+
+        // VTABLE SLOT 3, and pure here exactly as in the reference: the base's slot at
+        // 0x00a3fd80 holds _purecall (0x0040baa5), while CMapEntity (0x00a3fd90) and
+        // CMapDoodadDef (0x00a40318) each supply a body. CMapBaseObj declares the three
+        // virtuals above this one, so adding it here is what puts it at slot 3.
+        //
+        // The light the entity takes from the floor of the building it stands in. `def` is
+        // that building's placement -- the CMapObj comes from def->m_mapObj, not from a
+        // parameter -- and `face` being null is how the caller asks for a probe instead of
+        // naming a face it already found, in which case `point` is where to sample.
+        virtual void FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint16_t* face,
+                                const C3Vector* point) = 0;
 };
+
+// Which side of a building's wall a placed entity ended up on, and its floor light if it
+// ended up inside. A free function in the reference too -- it returns with a plain `ret`,
+// so the caller cleans the stack and there is no `this`. ref: FUN_007c15f0
+void ClassifyEntityInterior(CMapStaticEntity* entity, CMapObjDef* def,
+                            CMapObjDefGroup* defGroup, uint16_t face, const C3Vector& point);
 
 #endif
