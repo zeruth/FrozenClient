@@ -1414,10 +1414,34 @@ void CMapObjGroup::LiquidTileCount() {
 // enough to work and wrong about what it pointed at.
 void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t vertexCount,
                                         uint32_t indexCount, void** holderOut) {
-    if (!this->m_liquidVertexBuf) {
-        uint32_t stride = GxVertexBufferFormatSize(format);
+    uint32_t stride = GxVertexBufferFormatSize(format);
 
+    // THE FORMAT AND THE SIZE ARE RE-CHECKED, not assumed once. This used to allocate on the first
+    // call and never look again, which was safe only while every liquid material asked for the same
+    // vertex format. They do not: CMaterialWater and CMaterialWaterNoSpec build at GxVBF_PNCT2
+    // (stride 44), CMaterialMagma at GxVBF_PCT (24) and CMaterialProcWater at GxVBF_PT2 (28). A
+    // group whose buffer was made for one and then built for another would have its vertices written
+    // at one stride and read at another -- geometry from the wrong bytes, drawn at whatever depth
+    // those bytes happen to mean. The terrain side (Liquid::CChunkGeomFactory::Build) already
+    // re-checks; this is the same fix on the map-object side.
+    if (this->m_liquidVertexBuf
+            && (this->m_liquidBufStride != stride || this->m_liquidBufVertices < vertexCount)) {
+        VBBList::s_vertexList.Free(this->m_liquidVertexBuf);
+
+        this->m_liquidVertexBuf = nullptr;
+    }
+
+    if (this->m_liquidIndexBuf && this->m_liquidBufIndices < indexCount) {
+        VBBList::s_indexList.Free(this->m_liquidIndexBuf);
+
+        this->m_liquidIndexBuf = nullptr;
+    }
+
+    if (!this->m_liquidVertexBuf) {
         VBBList::s_vertexList.Alloc(&this->m_liquidVertexBuf, stride, vertexCount);
+
+        this->m_liquidBufStride = stride;
+        this->m_liquidBufVertices = vertexCount;
 
         if (this->m_liquidVertexBuf && this->m_liquidVertexBuf->buf) {
             this->m_liquidVertexBuf->buf->unk1C = 0;
@@ -1426,6 +1450,8 @@ void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t v
 
     if (!this->m_liquidIndexBuf) {
         VBBList::s_indexList.Alloc(&this->m_liquidIndexBuf, 2, indexCount);
+
+        this->m_liquidBufIndices = indexCount;
 
         if (this->m_liquidIndexBuf && this->m_liquidIndexBuf->buf) {
             this->m_liquidIndexBuf->buf->unk1C = 0;

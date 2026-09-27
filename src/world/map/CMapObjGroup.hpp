@@ -272,6 +272,11 @@ class CMapObjGroup {
         // +0x110: how many surfaces have taken the liquid buffer pair. FUN_007cbdc0 bumps it and
         // nothing read so far lowers it, so its only established use is as a claim count.
         uint32_t m_liquidBufferUsers = 0;
+        // What the liquid buffer pair was actually made for, so a later build at a different vertex
+        // format or a bigger grid reallocates instead of writing at the wrong stride.
+        uint32_t m_liquidBufStride = 0;
+        uint32_t m_liquidBufVertices = 0;
+        uint32_t m_liquidBufIndices = 0;
 
         uint32_t m_liquidXVerts = 0;             // +0x114
         uint32_t m_liquidYVerts = 0;             // +0x118
