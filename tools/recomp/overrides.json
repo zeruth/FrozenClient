@@ -2045,8 +2045,8 @@
   },
   "00837680": {
     "frozen": "CM2Shared::SubstituteSpecializedShaders",
-    "status": "stub",
-    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. **frozen's body is empty and it has a live call site**, so every batch this pass would have rewritten reaches GetEffect with an unsubstituted shader id and picks a different effect than the reference would. It merges adjacent batches sharing a material into one multi-texture batch and marks the pair with shader 0x8000 / 0x8001. Roughly 960 bytes of branchy state machine; the field offsets and the pair protocol are decoded in the parity doc, but it wants its own cycle and a run, not a transcription squeezed in beside other work."
+    "status": "ported",
+    "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. PORTED 2026-09-27 together with the whole chain under it -- PackTextureCombos, M2EnsureComboPair, RebuildComboArrays and FixUpTextureCombos -- so the batches this pass rewrites now reach GetEffect with the substituted shader ids the reference gives them. Status corrected from stub, which is what kept it out of the ported count."
   },
   "00682d30": {
     "status": "unlinked",

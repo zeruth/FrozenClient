@@ -86507,6 +86507,7 @@
 "callseq": [
 "CM2Shared::CreateSimpleEffect",
 "CM2Shared::CreateSimpleEffect",
+"CM2Shared::CreateSimpleEffect",
 "strcpy",
 "strcat",
 "CShaderEffectManager::GetEffect",
@@ -86529,9 +86530,9 @@
 "256",
 "3"
 ],
-"branches": 7,
+"branches": 8,
 "stub": false,
-"lines": 75,
+"lines": 95,
 "refs": [],
 "line": 768
 },
@@ -86573,7 +86574,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 844
+"line": 864
 },
 "CM2Shared::InitializeSkinProfile": {
 "files": [
@@ -86624,7 +86625,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 910
+"line": 930
 },
 "CM2Shared::Load": {
 "files": [
@@ -86648,7 +86649,7 @@
 "stub": false,
 "lines": 43,
 "refs": [],
-"line": 990
+"line": 1010
 },
 "CM2Shared::LoadSkinProfile": {
 "files": [
@@ -86676,7 +86677,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 1034
+"line": 1054
 },
 "CM2Shared::Release": {
 "files": [
@@ -86691,7 +86692,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1083
+"line": 1103
 },
 "CM2Shared::ReleaseGeometryBuffers": {
 "files": [
@@ -86709,7 +86710,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1108
+"line": 1128
 },
 "CM2Shared::ReserveInstances": {
 "files": [
@@ -86727,7 +86728,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1144
+"line": 1164
 },
 "CM2Shared::SetIndices": {
 "files": [
@@ -86759,7 +86760,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 1170
+"line": 1190
 },
 "CM2Shared::SetVertices": {
 "files": [
@@ -86802,7 +86803,7 @@
 "stub": false,
 "lines": 102,
 "refs": [],
-"line": 1244
+"line": 1264
 },
 "CM2Shared::SubstituteSimpleShaders": {
 "files": [
@@ -86829,7 +86830,7 @@
 "stub": false,
 "lines": 75,
 "refs": [],
-"line": 1347
+"line": 1367
 },
 "CM2Shared::RebuildComboArrays": {
 "files": [
@@ -86861,7 +86862,7 @@
 "stub": false,
 "lines": 101,
 "refs": [],
-"line": 1461
+"line": 1481
 },
 "CM2Shared::PublishComboArray": {
 "files": [
@@ -86882,7 +86883,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 1565
+"line": 1585
 },
 "CM2Shared::TextureCombos": {
 "files": [
@@ -86898,7 +86899,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1591
+"line": 1611
 },
 "CM2Shared::TextureTransformCombos": {
 "files": [
@@ -86914,7 +86915,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1603
+"line": 1623
 },
 "M2EnsureComboPair": {
 "files": [
@@ -86935,7 +86936,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1643
+"line": 1663
 },
 "CM2Shared::PackTextureCombos": {
 "files": [
@@ -86959,7 +86960,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1706
+"line": 1726
 },
 "CM2Shared::FixUpTextureCombos": {
 "files": [
@@ -86988,20 +86989,53 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 1763
+"line": 1783
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
 "src/model/cm2shared.cpp"
 ],
-"callseq": [],
+"callseq": [
+"M2Array<unsigned short>::Count",
+"M2Array<M2Batch>::Count",
+"M2Array<M2Batch>::operator[]",
+"M2Array<M2Batch>::Count",
+"CM2Shared::PackTextureCombos",
+"M2Array<M2Batch>::Count",
+"M2Array<M2Batch>::operator[]",
+"M2Array<M2Material>::operator[]",
+"M2Array<unsigned short>::Data",
+"M2Array<unsigned short>::Data",
+"M2Array<M2Material>::operator[]",
+"CM2Shared::RebuildComboArrays",
+"CM2Shared::FixUpTextureCombos",
+"M2Array<M2Batch>::Count",
+"M2Array<M2Batch>::operator[]",
+"M2Array<M2Batch>::operator[]"
+],
 "strings": [],
-"consts": [],
-"branches": 0,
+"consts": [
+"0",
+"0x8000",
+"0x8001",
+"0x8002",
+"0x8003",
+"0x800E",
+"0xFF8F",
+"0xFFFFFFFF",
+"1",
+"2",
+"3",
+"4",
+"6",
+"7",
+"8"
+],
+"branches": 24,
 "stub": false,
-"lines": 2,
+"lines": 183,
 "refs": [],
-"line": 1920
+"line": 1907
 },
 "M2Init": {
 "files": [

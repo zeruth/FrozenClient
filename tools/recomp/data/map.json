@@ -58346,7 +58346,7 @@
   "status": "ported"
  },
  "00836c90": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.875,
   "constOverlap": 0.222,
   "faithful": false,
   "fidelity": 0.5,
@@ -58355,7 +58355,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::GetEffect",
-  "frozenSize": 334,
+  "frozenSize": 330,
   "how": "string",
   "module": "M2Scene.cpp",
   "refSize": 321,
@@ -58483,7 +58483,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::RebuildComboArrays",
-  "frozenSize": 0,
+  "frozenSize": 1002,
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 583,
@@ -58499,27 +58499,27 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::FixUpTextureCombos",
-  "frozenSize": 0,
+  "frozenSize": 532,
   "how": "annotated",
   "module": "M2Shared.cpp",
   "refSize": 463,
   "status": "ported"
  },
  "00837680": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.522,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::SubstituteSpecializedShaders",
-  "frozenSize": 0,
+  "frozenSize": 1490,
   "how": "override",
   "module": "M2Shared.cpp",
   "refSize": 957,
-  "status": "stub"
+  "status": "ported"
  },
  "00837a40": {
   "branchRatio": 0.447,
@@ -58531,7 +58531,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::InitializeSkinProfile",
-  "frozenSize": 919,
+  "frozenSize": 967,
   "how": "override",
   "module": "M2Shared.cpp",
   "refSize": 1137,

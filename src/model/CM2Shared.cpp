@@ -821,6 +821,26 @@ CShaderEffect* CM2Shared::GetEffect(M2Batch* batch) {
             break;
     }
 
+    // DIVERGENCE, and a deliberate one: the reference DEREFERENCES NULL here.
+    //
+    // Its table covers specialized shaders 0 through 3 and nothing else, and its default arm falls
+    // into the shared name-building code with both name pointers still null, which copies from
+    // address zero. frozen reproduced that faithfully -- strcpy(effectName, vsName) on a null vsName.
+    //
+    // It is reachable. SubstituteSpecializedShaders writes shader 0x800e, which is case 14, whenever
+    // its second pattern matches on a material whose blendMode is 6 (the constant is built at
+    // 0x837943 as `sbb` on blendMode - 4, giving 0x8002 for 4 and 0x800e for anything else, and the
+    // guard above it admits only 4 and 6). Whether real model data ever presents that combination is
+    // unknown -- the client shipped, so probably not -- but the pass that produces it is ported now,
+    // and a null dereference is not behaviour worth reproducing.
+    //
+    // Falling back to the simple effect is what the reference itself does at the END of this function
+    // when the specialized lookup yields nothing, so this is that same fallback reached one branch
+    // earlier rather than an invention.
+    if (!vsName || !psName) {
+        return this->CreateSimpleEffect(batch->textureCount, 0x11, batch->textureCoordComboIndex);
+    }
+
     char effectName[256];
 
     // Create effect name for hashing
@@ -1852,70 +1872,218 @@ void CM2Shared::FixUpTextureCombos() {
         lastMaterialIndex = batch.materialIndex;
     }
 }
-// FUN_00837680, mapped 2026-09-27 and still empty -- but for a smaller reason than the note that
-// used to sit here claimed, and that note was wrong in a way worth recording.
+// ref: FUN_00837680
+// Recognise two authored multi-layer patterns and replace each with ONE specialized shader draw.
+// This is the pass the other four functions in this chain exist to serve, and it is what switches
+// the whole thing on.
 //
-// It said the texture-combo packer could not land without also rewriting the four places in frozen
-// that read textureComboIndex and textureTransformComboIndex as indices, because the packer leaves
-// them holding packed values. The first half was right and the conclusion was not. Reading
-// FUN_008374a0 settled it: THE PACKED FORM IS AN INTERMEDIATE that exists only inside this
-// function.
+// THE GATE COMES FIRST and it is why most models never touch any of this: it returns unless the skin
+// profile has indices AND at least one batch has a non-zero materialLayer. A single-layer model
+// leaves without even packing.
 //
-//     PackTextureCombos    (FUN_00835e90, 251 b)  indices -> packed byte pairs
-//     the analysis          (this function)        compares and merges while they are packed
-//     FixUpTextureCombos   (FUN_008374a0, 463 b)  packed byte pairs -> indices again
+// The shape is two independent state machines walked over the batches in order, each remembering the
+// LAYER-ZERO batch of the current material (`pending`) and looking for a later layer that completes
+// a known pair. When one matches, the later batch's shader becomes 0x8000 -- which CM2Shared::GetEffect
+// maps to no effect at all, so it stops drawing -- and `pending` takes a specialized shader id that
+// draws both layers in one pass. That is the whole trick: two draws become one.
 //
-// By the time this returns the batches hold indices, so CM2SceneRender::SetupTextures and the
-// CM2Scene comparator need no change at all -- and the reference's own SetupTextures (FUN_0081f450)
-// confirms it, reading textureCombos[textureComboIndex + i] unconditionally. The shader bit 0x8000
-// it tests does not select a different combo layout; it only forces the stage count to one.
+// Machine one pairs a two-texture layer-zero batch with a following one-texture batch and needs no
+// new combo entries, so it only rewrites the two shader ids.
 //
-// Both ends are PORTED now, and they were safe to land as a pair because nothing calls either while
-// this function stays empty. The fixup searches for its pair rather than computing it, which is what
-// makes the round trip lossless even when the analysis in between changed a batch's selection.
+// Machine two starts from a ONE-texture batch and folds a second texture into it, so it also has to
+// widen `pending` to textureCount 2 and merge the two packed combo bytes -- which is what makes the
+// rebuild necessary, and why `needRebuild` gates RebuildComboArrays. Its shader id depends on the
+// blend mode: 0x8002 for 4, and 0x800e for 6 (see the divergence note in GetEffect, which is where
+// 0x800e lands).
 //
-// WHAT IS LEFT, and DO NOT PORT IT FROM THE DECOMPILATION -- two of the three have C that Ghidra
-// itself flags as unreliable, so this part wants the objdump text dump instead:
+// Machine one's success SKIPS machine two for that batch, which the reference does with a jump past
+// it; a batch cannot be claimed by both.
 //
-//   FUN_00837250 (583 b) REPLACES m_data->textureCombos and m_data->textureTransformCombos with
-//     freshly allocated arrays rebuilt to hold every pair the batches need -- it stores the new
-//     pointers at +0x84 and +0x9c and the new counts at +0x80 and +0x98 (0x8373ef, 0x83742b,
-//     0x83745e, 0x837487). That is the missing piece of the design: the rebuild is what guarantees
-//     the fixup's search succeeds.
-//
-//     AND IT DOES NOT PORT DIRECTLY, for a reason that has nothing to do with decoding it. The
-//     reference stores an absolute pointer in those slots, because M2Init converts every M2Array
-//     offset to a pointer in place. frozen deliberately does NOT do that -- see M2Data.hpp -- it
-//     keeps a signed 32-bit DELTA from the array header's own address and resolves through
-//     M2ArrayDelta, which is what makes the 64-bit build work at all. A fresh SMemAlloc block is
-//     not guaranteed to land within 2GB of the model data, so it cannot simply be pointed at.
-//
-//     Two ways out, neither started: place the allocation near the model data the way
-//     SequenceBufferPlaceNear already does for .anim buffers, or keep the rebuilt arrays as their
-//     own members on CM2Shared and have the consumers prefer them when present. The second is
-//     probably better -- it leaves the loaded model data untouched -- but it changes every reader,
-//     so it is a decision rather than a transcription.
-//
-//     It also builds two variable-length stack arrays with ALLOCA, sized by the batch
-//     count, and Ghidra prints "Unable to track spacebase fully for stack" on it -- every local it
-//     shows is suspect. It fills the two arrays for batches with textureCount > 1, walks again for
-//     batches with textureCount < 2, and finishes with an SMemAlloc, so it hands something
-//     persistent back.
-//
-//   FUN_00835f90 is PORTED as M2EnsureComboPair above, read off the disassembly. Its two call sites
-//     here pass (list, 0) for the textures and (list, 1) for the transforms.
-//
-// This function itself decompiles cleanly and walks the batches keeping
-// two small state machines -- the locals the decompilation calls local_c and cStack_b, each stepping
-// through 0, 1 and 3 -- and on a match writes batch->shader to 0x8000 on one batch and 0x8001 on the
-// batch it remembered, which is how a pair of batches becomes one specialized two-stage draw. It
-// also clears shader bits with `&= 0xff8f` when a batch's material has no blend mode. The gate at
-// the top is worth keeping in mind: it returns immediately unless skinProfile->indices.Count() is
-// non-zero AND at least one batch has a non-zero materialLayer, so single-layer models never reach
-// the packer at all.
-//
-// Returning without doing anything stays correct meanwhile: frozen's consumers and its
-// un-substituted batches agree with each other, and the models this would touch simply draw with
-// their authored per-layer batches instead of merged specialized ones.
+// The trailing propagation is the subtle part. Only the FIRST batch of each material is examined by
+// either machine, so when a material owns several batches the rest still carry their original shader
+// and texture fields. The loop copies four fields from each batch to its successor while the material
+// index repeats, cascading the decision along the run -- and it is gated on having actually seen a
+// repeat, so the common case pays nothing.
 void CM2Shared::SubstituteSpecializedShaders() {
+    M2SkinProfile* profile = this->skinProfile;
+
+    if (!profile->indices.Count() || !profile->batches.Count()) {
+        return;
+    }
+
+    uint32_t layered = 0;
+
+    while (profile->batches[layered].materialLayer == 0) {
+        layered++;
+
+        if (layered >= profile->batches.Count()) {
+            return;
+        }
+    }
+
+    int32_t state1 = 0;
+    int32_t state2 = 0;
+
+    this->PackTextureCombos();
+
+    M2Batch* pending = nullptr;
+
+    uint32_t lastMaterialIndex = 0xFFFFFFFF;
+
+    bool sawRepeatedMaterial = false;
+    bool needRebuild = false;
+
+    for (uint32_t i = 0; i < profile->batches.Count(); i++) {
+        M2Batch& batch = profile->batches[i];
+
+        if (batch.materialIndex == lastMaterialIndex) {
+            sawRepeatedMaterial = true;
+
+            continue;
+        }
+
+        auto combiner = static_cast<uint16_t>(batch.shader & 7);
+
+        M2Material& material = this->m_data->materials[batch.materialIndex];
+
+        if (batch.materialLayer == 0) {
+            state1 = 0;
+            state2 = 0;
+
+            // An opaque layer zero that actually has a texture cannot be using the combiner bits
+            // this clears, so they are dropped before either machine looks at the batch.
+            if (batch.textureCount != 0 && material.blendMode == 0) {
+                batch.shader &= 0xFF8F;
+            }
+
+            pending = &batch;
+        }
+
+        lastMaterialIndex = batch.materialIndex;
+
+        if (!pending) {
+            continue;
+        }
+
+        auto coordCombos = reinterpret_cast<int16_t*>(this->m_data->textureCoordCombos.Data());
+        auto weightCombos = reinterpret_cast<int16_t*>(this->m_data->textureWeightCombos.Data());
+
+        M2Material& pendingMaterial = this->m_data->materials[pending->materialIndex];
+
+        bool sameAlphaBit = ((pendingMaterial.flags ^ material.flags) & 1) == 0;
+        bool sameWeight = weightCombos[pending->textureWeightComboIndex]
+                        == weightCombos[batch.textureWeightComboIndex];
+
+        // ---- machine one
+
+        if (state1 == 1) {
+            if ((material.blendMode == 2 || material.blendMode == 1)
+                    && batch.textureCount == 1
+                    && sameAlphaBit
+                    && batch.textureComboIndex
+                        == static_cast<uint8_t>(pending->textureComboIndex)
+                    && sameWeight) {
+                batch.shader = 0x8000;
+                pending->shader = 0x8001;
+
+                state1 = 3;
+
+                continue;
+            }
+
+            state1 = 0;
+        }
+
+        if (state1 == 0) {
+            if (material.blendMode == 0
+                    && batch.textureCount == 2
+                    && (combiner == 4 || combiner == 6)
+                    && coordCombos[batch.textureCoordComboIndex] == 0
+                    && static_cast<uint16_t>(coordCombos[batch.textureCoordComboIndex + 1]) > 2) {
+                state1 = 1;
+            }
+        }
+
+        // ---- machine two
+
+        if (state2 == 1) {
+            if ((material.blendMode == 4 || material.blendMode == 6)
+                    && batch.textureCount == 1
+                    && static_cast<uint16_t>(coordCombos[batch.textureCoordComboIndex]) >= 3
+                    && sameWeight) {
+                batch.shader = 0x8000;
+
+                needRebuild = true;
+
+                pending->shader = material.blendMode == 4 ? 0x8002 : 0x800E;
+                pending->textureCount = 2;
+
+                pending->textureComboIndex = static_cast<uint16_t>(
+                    static_cast<uint8_t>(pending->textureComboIndex)
+                    | (static_cast<uint8_t>(batch.textureComboIndex) << 8));
+                pending->textureTransformComboIndex = static_cast<uint16_t>(
+                    static_cast<uint8_t>(pending->textureTransformComboIndex)
+                    | (static_cast<uint8_t>(batch.textureTransformComboIndex) << 8));
+
+                state2 = 2;
+            } else {
+                state2 = 0;
+            }
+        } else if (state2 == 2) {
+            if ((material.blendMode == 2 || material.blendMode == 1)
+                    && batch.textureCount == 1
+                    && sameAlphaBit
+                    && static_cast<int8_t>(batch.textureComboIndex)
+                        == static_cast<int8_t>(pending->textureComboIndex)
+                    && sameWeight) {
+                batch.shader = 0x8000;
+
+                pending->shader = pending->shader == 0x8002 ? 0x8003 : 0x8001;
+
+                state2 = 3;
+            } else {
+                state2 = 0;
+            }
+        }
+
+        if (state2 == 0) {
+            if (material.blendMode == 0
+                    && batch.textureCount == 1
+                    && coordCombos[batch.textureCoordComboIndex] == 0) {
+                state2 = 1;
+            }
+        }
+    }
+
+    if (needRebuild) {
+        this->RebuildComboArrays();
+    }
+
+    this->FixUpTextureCombos();
+
+    if (!sawRepeatedMaterial) {
+        return;
+    }
+
+    uint32_t previousMaterialIndex = 0xFFFFFFFF;
+
+    for (uint32_t i = 0; i < profile->batches.Count(); i++) {
+        M2Batch& batch = profile->batches[i];
+
+        if (batch.materialIndex != previousMaterialIndex) {
+            previousMaterialIndex = batch.materialIndex;
+
+            continue;
+        }
+
+        // From the IMMEDIATE predecessor, not from the run's first batch, so a decision cascades
+        // along the run. i is never 0 here: a uint16 material index cannot equal the 0xFFFFFFFF the
+        // walk starts from.
+        M2Batch& previous = profile->batches[i - 1];
+
+        batch.shader = previous.shader;
+        batch.textureCount = previous.textureCount;
+        batch.textureComboIndex = previous.textureComboIndex;
+        batch.textureTransformComboIndex = previous.textureTransformComboIndex;
+    }
 }
