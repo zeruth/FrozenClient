@@ -5,6 +5,7 @@
 #include <tempest/Matrix.hpp>
 #include "gx/CGxBatch.hpp"
 #include "gx/buffer/Types.hpp"
+#include "world/map/VBBList.hpp"
 #include <tempest/Sphere.hpp>
 #include <tempest/Plane.hpp>
 
@@ -421,8 +422,18 @@ class CChunkGeomFactory : public IGeomFactory {
                       CGxBatch* batch) override;
 
         // The buffer pair built last time, and what it was built for.
-        CGxBuf* m_vertexBuf = nullptr;
-        CGxBuf* m_indexBuf = nullptr;
+        //
+        // THESE ARE VBBList BLOCKS, not device stream buffers, and the difference is the whole
+        // reason terrain water drew garbage the first time it drew at all. CGxDevice::BufStream
+        // hands back m_streamBufs[target] -- ONE buffer for the entire device, shared by every
+        // caller in the renderer -- so every liquid surface was handed the same CGxBuf, each
+        // overwrote the last, and whatever streamed next overwrote them all. The note that used to
+        // sit on the allocation called the divergence "an allocation strategy rather than
+        // behaviour"; it is behaviour, because the geometry has to survive until the draw.
+        VBBList::Block* m_vertexBlock = nullptr;
+        VBBList::Block* m_indexBlock = nullptr;
+        uint32_t m_blockVertices = 0;
+        uint32_t m_blockIndices = 0;
         CGxBatch m_batch;
         uint32_t m_builtFormat = 0xffffffff;
         int32_t m_dirty = 1;

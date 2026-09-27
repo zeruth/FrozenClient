@@ -1482,7 +1482,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::GetLiquidType",
-  "frozenSize": 0,
+  "frozenSize": 7,
   "how": "annotated",
   "module": "OggDecompress.cpp",
   "refSize": 7,
@@ -36501,7 +36501,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxVertexBufferFormatHasAttrib",
-  "frozenSize": 0,
+  "frozenSize": 28,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 38,
@@ -46706,7 +46706,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::BuildPendingMapObjSurfaces",
-  "frozenSize": 0,
+  "frozenSize": 1205,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 679,
@@ -46956,13 +46956,13 @@
   "branchRatio": 0.542,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.377,
+  "fidelity": 0.396,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 1021,
+  "frozenSize": 1026,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -47378,7 +47378,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::GetGroupLiquidMaterial",
-  "frozenSize": 0,
+  "frozenSize": 50,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 47,
@@ -47490,7 +47490,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::WriteLiquidIndices",
-  "frozenSize": 0,
+  "frozenSize": 681,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 462,
@@ -47506,7 +47506,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::WriteLiquidVertex",
-  "frozenSize": 0,
+  "frozenSize": 490,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 445,
@@ -47522,7 +47522,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::WriteLiquidGridVertices",
-  "frozenSize": 0,
+  "frozenSize": 702,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 388,
@@ -47538,7 +47538,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::MapObjPolyFoldShortPair",
-  "frozenSize": 0,
+  "frozenSize": 179,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 161,
@@ -47554,7 +47554,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::MapObjPolyFoldByte",
-  "frozenSize": 0,
+  "frozenSize": 101,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 87,
@@ -47570,7 +47570,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::EmitLiquidTiles",
-  "frozenSize": 0,
+  "frozenSize": 2615,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 944,
@@ -51106,7 +51106,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::LiquidTileCount",
-  "frozenSize": 0,
+  "frozenSize": 124,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 110,
@@ -51455,7 +51455,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::AcquireLiquidBuffers",
-  "frozenSize": 0,
+  "frozenSize": 157,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 109,
@@ -52108,7 +52108,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CMeshGeomFactory::Release",
-  "frozenSize": 0,
+  "frozenSize": 57,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 34,
@@ -52140,7 +52140,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CMeshGeomFactory::Build",
-  "frozenSize": 0,
+  "frozenSize": 979,
   "how": "override",
   "module": "MapChunkLiquid.cpp",
   "refSize": 865,
@@ -52172,14 +52172,14 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CreateGeomFactory",
-  "frozenSize": 378,
+  "frozenSize": 346,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 220,
   "status": "ported"
  },
  "007d4ab0": {
-  "branchRatio": 0.533,
+  "branchRatio": 0.767,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.294,
@@ -52188,7 +52188,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CChunkGeomFactory::Build",
-  "frozenSize": 2014,
+  "frozenSize": 2213,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1099,
@@ -52810,7 +52810,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::MapObjPolyEval",
-  "frozenSize": 0,
+  "frozenSize": 110,
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 57,
@@ -52938,7 +52938,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::MapObjPolyClipToPlane",
-  "frozenSize": 0,
+  "frozenSize": 865,
   "how": "annotated",
   "module": "MapObjRead.cpp",
   "refSize": 680,
@@ -65673,10 +65673,26 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::SetupTransforms",
-  "frozenSize": 0,
+  "frozenSize": 398,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 448,
+  "status": "ported"
+ },
+ "008a34b0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::MagmaScrollMatrix",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 355,
   "status": "ported"
  },
  "008a3620": {
@@ -65737,7 +65753,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::SetupLightConstants",
-  "frozenSize": 0,
+  "frozenSize": 492,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 974,
@@ -65757,6 +65773,22 @@
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 266,
+  "status": "ported"
+ },
+ "008a3da0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::DrawWaterMaterial",
+  "frozenSize": 949,
+  "how": "callgraph",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 55,
   "status": "ported"
  },
  "008a3e00": {
@@ -65821,6 +65853,54 @@
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 102,
+  "status": "ported"
+ },
+ "008a5590": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.043,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialWater::Draw",
+  "frozenSize": 25,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 878,
+  "status": "ported"
+ },
+ "008a5900": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.043,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialWaterNoSpec::Draw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 878,
+  "status": "ported"
+ },
+ "008a6090": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.022,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialMagma::Draw",
+  "frozenSize": 921,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 695,
   "status": "ported"
  },
  "008a65d0": {

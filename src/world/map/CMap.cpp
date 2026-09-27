@@ -1469,9 +1469,12 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // FUN_00795f80 (the map-object groups carrying group flag 0x8, drawn through FUN_007abac0 in
     // their own viewport), FUN_007968d0, FUN_00796c10 twice, and two calls to FUN_007f31c0.
     // TODO FUN_008a2f00(): uploads two 64x8 liquid ramp textures, once each.
-    // TODO FUN_00793d20(): queues the MAP OBJECTS' liquid into these same buckets, taking the
-    // surface from the group at +0x68. Without it only terrain liquid is queued, so water inside
-    // buildings will not draw even once the material lands.
+
+    // The map objects' water, queued into the same two buckets the terrain's goes into. This is the
+    // reference's own position for it, at 0x0079acce: after the ramp textures and before the first
+    // bucket is drained, and OUTSIDE the liquid enable that gates the draw -- so the surfaces are
+    // built and queued even on a frame that will not draw them, and the queue empties either way.
+    Liquid::BuildPendingMapObjSurfaces();
 
     // The liquid. Bucket 0 is plain water and magma, bucket 1 procedural water; which one a
     // surface went into was decided by its settings back in Liquid::Add.

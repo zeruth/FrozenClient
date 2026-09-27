@@ -97,12 +97,21 @@ void CMaterialSettings::LoadTextures() {
             HTEXTURE texture = nullptr;
 
             if (procedural) {
-                // TODO FUN_004b6f30: the generated texture, looked up by name hash rather than
-                // read off disk. Without it the still falls through to the solid below, which
-                // is what the reference does only when the generator has nothing for the name.
-                CImVector green = { 0, 0xff, 0, 0xff };
+                // TODO FUN_004b6f30: the generated texture, looked up by name hash rather than read
+                // off disk. It hashes the name, asks the texture cache for an entry under that hash
+                // with linear filtering and no wrap, and wraps the result in an HTEXTURE. The pixels
+                // arrive later, from FUN_008a2f00 -- the call CMap::Render is still missing -- which
+                // uploads a 64x8 rect into each of the three procedural liquid textures once.
+                //
+                // FROZEN-ONLY STAND-IN, and it is OPAQUE WHITE rather than the green it used to be.
+                // Green was chosen as a look-at-me marker while nothing drew liquid at all; the
+                // moment liquid actually drew it painted every water surface in the world green,
+                // because this slot is a multiplied depth ramp. White is the neutral for that
+                // multiply, so water now shows its real texture and simply lacks the depth ramp's
+                // shading. Both are wrong; one of them is wrong quietly and in the right direction.
+                CImVector white = { 0xff, 0xff, 0xff, 0xff };
 
-                texture = TextureCreateSolid(green);
+                texture = TextureCreateSolid(white);
             } else {
                 texture = TextureCreate(name, flags, &status, 0);
             }
@@ -611,9 +620,209 @@ void SetupWaves(CWaveManager* manager, const CMaterialSettings& settings) {
     SetupWaveConstants(settings);
 }
 
-// Part of ref: FUN_008a48f0 -- the shared body behind all four shader materials, which differ only
-// in the shader pair they hand it.
-void DrawShaderMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
+// The magma and water pixel programs take a FIXED constant block, which the reference keeps as a
+// static at 0x00b24120: an identity matrix in c0..c3 and two zero registers. psLiquidWater and
+// psLiquidMagma read nothing from the CPU -- everything they need arrives interpolated out of the
+// vertex program -- so this six-register upload is a formality the reference performs anyway, and
+// skipping it would leave whatever the previous pass wrote in those registers.
+const float FIXED_PS_CONSTANTS[24] = {
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 0.0f
+};
+
+// The whole vertex block goes up in ONE upload of 46 registers for these materials, where the
+// procedural one splits it in two around the wave constants it alone writes.
+const uint32_t VS_UPLOAD_REGISTERS = 46;
+const uint32_t FIXED_PS_REGISTERS = 6;
+
+// ref: FUN_008a5590
+// CMaterialWater::Draw, and also CMaterialWaterNoSpec::Draw at FUN_008a5900 -- those two reference
+// bodies are instruction-for-instruction the same but for the two shader tables they read, so one
+// function taking the pair is the honest shape for them.
+//
+// TWO frames, not six. Frame 0 animates on the period in m_int[1] and frame 1 on the default 1250,
+// and the pair goes to the stages CROSSED: frame 1 to texture 0 and frame 0 to texture 1.
+//
+// THE VERTEX FORMAT IS GxVBF_PNCT2, which is the second defect this function fixes. Frozen asked
+// for GxVBF_PT2 everywhere; the reference passes 6 here, and 6 is PNCT2 -- position, normal,
+// colour and two texcoords, which is exactly the five attributes the liquid vertex writers fill
+// (GxVA_Position, Normal, Color0, TexCoord0, TexCoord1). Under PT2 the format carries no colour
+// and no normal, so CMeshGeomFactory::Build's attribute test left three of its five cursors null
+// and the writers skipped them -- including the diffColor the map-object queue goes to the trouble
+// of reading off the group's material.
+//
+// THE STAGE FLOATS ARE 0, 1 AND 2. The procedural body uses 8, 9 and 10 for its scale pair, and
+// frozen was applying those indices to water, which reads floats LiquidType.dbc leaves at zero --
+// a zero texture scale collapses every texcoord to one point.
+//
+// TWO THINGS THE REFERENCE DOES THAT ARE NOT REPRODUCED, both deliberate:
+//
+//   It copies the device's projection into c0..c3 and negates the third row when a device flag is
+//   clear, BEFORE calling SetupTransforms -- which then writes the same four registers from the
+//   same source. The negation is therefore discarded in the reference too. SetupTransforms already
+//   records that divergence; doing it twice here would only duplicate it.
+//
+//   It asks the geometry a virtual question (IGeomFactory vtable +0x10) and swaps the placement for
+//   an identity when the answer is true -- a factory saying "my vertices are already where they
+//   belong". frozen's IGeomFactory has no such virtual and both of its factories write local-space
+//   vertices, so the placement is always used. If map-object water turns up at the world origin,
+//   this is the question to answer.
+//
+// Depth write comes from a device capability at Caps+0xf8 that frozen does not model (the same one
+// the GL arbvp path tests); absent, the reference's `cap == 0` yields 1, which is what this passes.
+void DrawWaterMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
+                       CClientEnvironment* environment, IGeomFactory* geometry,
+                       const C3Vector& cameraPos, const C44Matrix* placement,
+                       const CAaSphere* sphere, CMaterialSettings* settings) {
+    if (!geometry || !settings || !environment) {
+        return;
+    }
+
+    static const uint32_t DEFAULT_PERIOD = 1250;
+    static const float ANGLE_SCALE = 57.295780181884766f;
+
+    CGxTex* frame0 = settings->GetFrame(0, static_cast<uint32_t>(settings->GetInt(1)));
+
+    if (!frame0) {
+        return;
+    }
+
+    CGxTex* frame1 = settings->GetFrame(1, DEFAULT_PERIOD);
+
+    if (!frame1) {
+        return;
+    }
+
+    float texScale = settings->GetStageFloat(0);
+    float texAngle = settings->GetStageFloat(1) * ANGLE_SCALE;
+    float scaleY = settings->GetStageFloat(2);
+
+    GxRsPush();
+
+    GxRsSet(GxRs_Culling, 0);
+    GxRsSet(GxRs_BlendingMode, GxBlend_Alpha);
+    GxRsSet(GxRs_DepthWrite, 1);
+    GxRsSet(GxRs_Fog, 1);
+
+    SetupTransforms(cameraPos, *placement);
+
+    CM2Lighting lighting;
+    lighting.Initialize(nullptr, *sphere);
+
+    environment->SetupLighting(&lighting);
+
+    SetupLightConstants(lighting);
+
+    // Texture matrix 1 (c13) is a plain scale down the second row, paired with texture stage 0.
+    C44Matrix scale(1.0f);
+
+    scale.b1 = scaleY;
+
+    StoreMatrix(&s_constants.vs[VS_TEX_MATRIX + 4], scale);
+
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<void*>(frame1));
+
+    // Texture matrix 0 (c9) turns and then scales, paired with texture stage 1.
+    C44Matrix rotScale = C44Matrix::RotationAroundZ(texAngle);
+
+    rotScale.Scale(texScale);
+
+    StoreMatrix(&s_constants.vs[VS_TEX_MATRIX], rotScale);
+
+    g_theGxDevicePtr->RsSet(GxRs_Texture1, static_cast<void*>(frame0));
+
+    GxShaderConstantsSet(GxSh_Vertex, 0,
+                         reinterpret_cast<const float*>(&s_constants.vs[0]),
+                         VS_UPLOAD_REGISTERS);
+    GxShaderConstantsSet(GxSh_Pixel, 0, FIXED_PS_CONSTANTS, FIXED_PS_REGISTERS);
+
+    uint32_t permutation = lighting.m_lightCount;
+
+    if (permutation > 2) {
+        permutation = 3;
+    }
+
+    g_theGxDevicePtr->RsSet(GxRs_VertexShader, static_cast<void*>(vertexShaders[permutation]));
+    g_theGxDevicePtr->RsSet(GxRs_PixelShader, static_cast<void*>(pixelShaders[0]));
+
+    CGxBuf* vertexBuf = nullptr;
+    CGxBuf* indexBuf = nullptr;
+    CGxBatch batch;
+
+    if (!geometry->Build(GxVBF_PNCT2, &vertexBuf, &indexBuf, &batch)) {
+        GxRsPop();
+
+        return;
+    }
+
+    GxPrimVertexPtr(vertexBuf, GxVBF_PNCT2);
+    g_theGxDevicePtr->PrimIndexPtr(indexBuf);
+
+    g_theGxDevicePtr->Draw(&batch, 1);
+
+    GxRsPop();
+}
+
+// ref: FUN_008a1750
+// The global multiplier on a liquid texture matrix's scale. Liquid::Initialize writes it from its
+// own argument and it rests at 1.0 (0x00b23f64), which is why every scale in this file has looked
+// like it had no multiplier at all.
+float TextureScaleMultiplier() {
+    return 1.0f;
+}
+
+// ref: FUN_008a34b0
+// Magma's scrolling texture matrix: an identity carrying a phase in x and y. Each phase is the wall
+// clock modulo a period of round(1000 / rate) milliseconds, divided by that period, so a rate is in
+// wraps per second and a rate of zero holds still.
+//
+// DIVERGED in storage only: the reference keeps the matrix in a static at 0x00d450d8, initialises
+// its identity once behind a flag and returns its address. Returning a value is the same matrix
+// with less state.
+C44Matrix MagmaScrollMatrix(float rateX, float rateY) {
+    static const float SCROLL_PERIOD_BASE = 1000.0f;
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    C44Matrix m(1.0f);
+
+    if (rateX != 0.0f) {
+        uint32_t period = static_cast<uint32_t>(nearbyintf(SCROLL_PERIOD_BASE / rateX));
+
+        if (period) {
+            m.d0 = static_cast<float>(now % period) / static_cast<float>(period);
+        }
+    }
+
+    if (rateY != 0.0f) {
+        uint32_t period = static_cast<uint32_t>(nearbyintf(SCROLL_PERIOD_BASE / rateY));
+
+        if (period) {
+            m.d1 = static_cast<float>(now % period) / static_cast<float>(period);
+        }
+    }
+
+    return m;
+}
+
+// ref: FUN_008a48f0 -- CMaterialProcWater::Draw, and NOT the shared body behind all four shader
+// materials, which is what this comment used to claim and what routed every material through it.
+// The four shader materials have FOUR SEPARATE reference bodies with different frame counts, vertex
+// formats and constant sets: ProcWater 0x008a48f0 (six frames), Water 0x008a5590 and WaterNoSpec
+// 0x008a5900 (two frames, and those two genuinely do share a shape), Magma 0x008a6090 (one frame).
+// Sending water through this one made it ask for six frames, and LiquidType.dbc fills only two --
+// so GetFrame(2) returned null and the draw returned before building anything. That is why no
+// liquid has ever appeared, terrain or map object.
+//
+// STILL WRONG HERE, and left alone because material 3 is the only thing that reaches it and nothing
+// on map 0 asks for material 3: the reference binds FOUR textures (render states 0x15..0x18), where
+// this binds six. Its Build format of GxVBF_PT2 IS right -- the reference passes 0xb here, which is
+// what made the wrong format elsewhere so easy to miss.
+void DrawProcWaterMaterial(CGxShader** vertexShaders, CGxShader** pixelShaders,
                         CClientEnvironment* environment, IGeomFactory* geometry,
                         CWaveManager* waveManager, const C3Vector& cameraPos,
                         const C44Matrix* placement, const CAaSphere* sphere,
@@ -806,39 +1015,108 @@ void CMaterialProcWater::EnsureShaders() {
     LoadPair(s_vsProcWater, 4, vertexName, s_psProcWater, 1, pixelName);
 }
 
+// ref: FUN_008a5590
+// The wave manager is not a parameter of this reference body at all -- only the procedural material
+// reads waves -- so it is accepted and ignored to keep the IMaterial signature.
 void CMaterialWater::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                           const C3Vector& cameraPos, const C44Matrix* placement,
                           const CAaSphere* sphere, CMaterialSettings* settings) {
-    DrawShaderMaterial(s_vsWater, s_psWater, environment, geometry,
-                       static_cast<CWaveManager*>(waveManager), cameraPos, placement, sphere,
-                       settings);
+    (void)waveManager;
+
+    DrawWaterMaterial(s_vsWater, s_psWater, environment, geometry, cameraPos, placement, sphere,
+                      settings);
 }
 
+// ref: FUN_008a5900
 void CMaterialWaterNoSpec::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                                 const C3Vector& cameraPos, const C44Matrix* placement,
                                 const CAaSphere* sphere, CMaterialSettings* settings) {
-    DrawShaderMaterial(s_vsWaterNoSpec, s_psWaterNoSpec, environment, geometry,
-                       static_cast<CWaveManager*>(waveManager), cameraPos,
-                       placement, sphere, settings);
+    (void)waveManager;
+
+    DrawWaterMaterial(s_vsWaterNoSpec, s_psWaterNoSpec, environment, geometry, cameraPos,
+                      placement, sphere, settings);
 }
 
+// ref: FUN_008a6090
+// ONE frame, ONE vertex program, ONE texcoord. Magma is the simplest of the four and the only one
+// whose vertex format is GxVBF_PCT (the reference passes 8) -- no normal, because nothing about
+// magma is lit by a direction, and one texture coordinate because it has one texture.
+//
+// Its texture matrix is not a rotate-and-scale like water's but a SCROLL: the stage floats are two
+// rates in wraps per second, and MagmaScrollMatrix turns them into a translation that advances with
+// the clock. The global scale multiplier is applied on top.
+//
+// Two states rather than water's four: no blend mode and no depth-write override, so magma draws
+// with whatever the pass established and is opaque.
 void CMaterialMagma::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                           const C3Vector& cameraPos, const C44Matrix* placement,
                           const CAaSphere* sphere, CMaterialSettings* settings) {
-    // Magma loads ONE vertex program rather than four, so the permutation is always 0 -- which is
-    // what DrawShaderMaterial would pick anyway only when no local light was found. Passing the
-    // one-entry array through the same body would index past it, so magma clamps here.
-    CGxShader* shaders[4] = { s_vsMagma[0], s_vsMagma[0], s_vsMagma[0], s_vsMagma[0] };
+    (void)waveManager;
 
-    DrawShaderMaterial(shaders, s_psMagma, environment, geometry,
-                       static_cast<CWaveManager*>(waveManager), cameraPos, placement, sphere,
-                       settings);
+    if (!geometry || !settings || !environment) {
+        return;
+    }
+
+    static const uint32_t DEFAULT_PERIOD = 1250;
+
+    CGxTex* frame0 = settings->GetFrame(0, DEFAULT_PERIOD);
+
+    if (!frame0) {
+        return;
+    }
+
+    GxRsPush();
+
+    GxRsSet(GxRs_Culling, 0);
+    GxRsSet(GxRs_Fog, 1);
+
+    SetupTransforms(cameraPos, *placement);
+
+    CM2Lighting lighting;
+    lighting.Initialize(nullptr, *sphere);
+
+    environment->SetupLighting(&lighting);
+
+    SetupLightConstants(lighting);
+
+    C44Matrix scroll = MagmaScrollMatrix(settings->GetStageFloat(0), settings->GetStageFloat(1));
+
+    scroll.Scale(TextureScaleMultiplier());
+
+    StoreMatrix(&s_constants.vs[VS_TEX_MATRIX], scroll);
+
+    g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<void*>(frame0));
+
+    GxShaderConstantsSet(GxSh_Vertex, 0,
+                         reinterpret_cast<const float*>(&s_constants.vs[0]),
+                         VS_UPLOAD_REGISTERS);
+    GxShaderConstantsSet(GxSh_Pixel, 0, FIXED_PS_CONSTANTS, FIXED_PS_REGISTERS);
+
+    g_theGxDevicePtr->RsSet(GxRs_VertexShader, static_cast<void*>(s_vsMagma[0]));
+    g_theGxDevicePtr->RsSet(GxRs_PixelShader, static_cast<void*>(s_psMagma[0]));
+
+    CGxBuf* vertexBuf = nullptr;
+    CGxBuf* indexBuf = nullptr;
+    CGxBatch batch;
+
+    if (!geometry->Build(GxVBF_PCT, &vertexBuf, &indexBuf, &batch)) {
+        GxRsPop();
+
+        return;
+    }
+
+    GxPrimVertexPtr(vertexBuf, GxVBF_PCT);
+    g_theGxDevicePtr->PrimIndexPtr(indexBuf);
+
+    g_theGxDevicePtr->Draw(&batch, 1);
+
+    GxRsPop();
 }
 
 void CMaterialProcWater::Draw(CClientEnvironment* environment, IGeomFactory* geometry, void* waveManager,
                               const C3Vector& cameraPos, const C44Matrix* placement,
                               const CAaSphere* sphere, CMaterialSettings* settings) {
-    DrawShaderMaterial(s_vsProcWater, s_psProcWater, environment, geometry,
+    DrawProcWaterMaterial(s_vsProcWater, s_psProcWater, environment, geometry,
                        static_cast<CWaveManager*>(waveManager), cameraPos, placement,
                        sphere, settings);
 }
@@ -886,9 +1164,10 @@ IMaterial* GetMaterial(int32_t liquidType) {
     // Material 1 is water, 2 magma and slime, 3 procedural water. Each has a shader flavour and
     // a fixed-function one, and the caps decide which.
     //
-    // TODO the specular choice. The reference picks CMaterialWater or CMaterialWaterNoSpec on a
-    // setting frozen does not model; with specular is the richer of the two, so it is what this
-    // takes.
+    // The specular choice is SETTLED, and frozen's guess was right. The reference reads a global at
+    // 0x00b23f68: zero picks CMaterialWaterNoSpec, anything else CMaterialWater. Liquid::Initialize
+    // writes 1 there and the only other writer is a one-line setter, so specular water is the
+    // default and staying on CMaterialWater matches an unmodified client.
     switch (materialId) {
     case 2:
         material = shaders ? static_cast<IMaterial*>(new CMaterialMagma())

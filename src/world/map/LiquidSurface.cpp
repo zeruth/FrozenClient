@@ -46,6 +46,20 @@ void CChunkGeomFactory::Release() {
         return;
     }
 
+    // The blocks go back to the map's lists. Leaking them would hold a pool per surface for the
+    // life of the process, and every chunk that has ever carried water makes one.
+    if (this->m_vertexBlock) {
+        VBBList::s_vertexList.Free(this->m_vertexBlock);
+
+        this->m_vertexBlock = nullptr;
+    }
+
+    if (this->m_indexBlock) {
+        VBBList::s_indexList.Free(this->m_indexBlock);
+
+        this->m_indexBlock = nullptr;
+    }
+
     this->~CChunkGeomFactory();
 
     SMemFree(this, __FILE__, __LINE__, 0);
@@ -390,14 +404,17 @@ static void WriteLayerIndices(CChunkLiquid* layer, uint16_t* out, uint16_t base,
 // the format has not changed.
 int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf,
                                  CGxBuf** indexBuf, CGxBatch* batch) {
-    bool cached = this->m_vertexBuf && this->m_indexBuf
-               && this->m_vertexBuf->unk1C && this->m_vertexBuf->unk1D
-               && this->m_indexBuf->unk1C && this->m_indexBuf->unk1D
+    CGxBuf* heldVertexBuf = this->m_vertexBlock ? this->m_vertexBlock->buf : nullptr;
+    CGxBuf* heldIndexBuf = this->m_indexBlock ? this->m_indexBlock->buf : nullptr;
+
+    bool cached = heldVertexBuf && heldIndexBuf
+               && heldVertexBuf->unk1C && heldVertexBuf->unk1D
+               && heldIndexBuf->unk1C && heldIndexBuf->unk1D
                && !this->m_dirty && this->m_builtFormat == static_cast<uint32_t>(format);
 
     if (cached) {
-        *vertexBuf = this->m_vertexBuf;
-        *indexBuf = this->m_indexBuf;
+        *vertexBuf = heldVertexBuf;
+        *indexBuf = heldIndexBuf;
         *batch = this->m_batch;
 
         return 1;
@@ -432,29 +449,69 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
 
     uint32_t stride = GxVertexBufferFormatSize(format);
 
-    // DIVERGED: the reference takes its buffer pair from a pool keyed on the exact byte sizes
-    // (FUN_007cf140 walks a free list for stride*vertices and indices*2, FUN_007cefd0 makes one
-    // when nothing fits). Frozen streams a pair instead. That is an allocation strategy rather
-    // than behaviour, and the pool is worth porting on its own merits, not inside this.
-    if (!this->m_vertexBuf) {
-        this->m_vertexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, stride, totalVertices);
-        this->m_indexBuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, maxIndices);
+    // DIVERGED, but no longer in a way that changes behaviour: the reference takes its buffer pair
+    // from a pool of its own keyed on the exact byte sizes (FUN_007cf140 walks a free list for
+    // stride*vertices and indices*2, FUN_007cefd0 makes one when nothing fits). Frozen takes a block
+    // from VBBList, which is the map's own allocator and gives each surface a pool and a buffer to
+    // itself, exactly as CMapObjGroup::AcquireLiquidBuffers does for the map objects' water.
+    //
+    // What this MUST NOT do is call BufStream, which is what it used to do. That returns the
+    // device's single shared stream buffer, so every surface got the same one and the last writer
+    // won -- which is what put green shrapnel across the scene the first frame liquid ever drew.
+    //
+    // The size is re-checked rather than allocated once, because the layer set behind a factory can
+    // grow: a block sized for two chunks and then written for five overruns its buffer.
+    if (this->m_vertexBlock && (this->m_blockVertices < totalVertices
+                                || this->m_builtFormat != static_cast<uint32_t>(format))) {
+        VBBList::s_vertexList.Free(this->m_vertexBlock);
+
+        this->m_vertexBlock = nullptr;
     }
 
-    if (!this->m_vertexBuf || !this->m_indexBuf) {
+    if (this->m_indexBlock && this->m_blockIndices < maxIndices) {
+        VBBList::s_indexList.Free(this->m_indexBlock);
+
+        this->m_indexBlock = nullptr;
+    }
+
+    if (!this->m_vertexBlock) {
+        VBBList::s_vertexList.Alloc(&this->m_vertexBlock, stride, totalVertices);
+
+        this->m_blockVertices = totalVertices;
+
+        if (this->m_vertexBlock && this->m_vertexBlock->buf) {
+            this->m_vertexBlock->buf->unk1C = 0;
+        }
+    }
+
+    if (!this->m_indexBlock) {
+        VBBList::s_indexList.Alloc(&this->m_indexBlock, 2, maxIndices);
+
+        this->m_blockIndices = maxIndices;
+
+        if (this->m_indexBlock && this->m_indexBlock->buf) {
+            this->m_indexBlock->buf->unk1C = 0;
+        }
+    }
+
+    if (!this->m_vertexBlock || !this->m_vertexBlock->buf
+            || !this->m_indexBlock || !this->m_indexBlock->buf) {
         return 0;
     }
 
-    *vertexBuf = this->m_vertexBuf;
-    *indexBuf = this->m_indexBuf;
+    heldVertexBuf = this->m_vertexBlock->buf;
+    heldIndexBuf = this->m_indexBlock->buf;
+
+    *vertexBuf = heldVertexBuf;
+    *indexBuf = heldIndexBuf;
 
     if (this->m_dirty) {
-        this->m_vertexBuf->unk1C = 0;
-        this->m_indexBuf->unk1C = 0;
+        heldVertexBuf->unk1C = 0;
+        heldIndexBuf->unk1C = 0;
     }
 
-    if (!this->m_vertexBuf->unk1C || !this->m_vertexBuf->unk1D) {
-        auto locked = reinterpret_cast<uint8_t*>(g_theGxDevicePtr->BufLock(this->m_vertexBuf));
+    if (!heldVertexBuf->unk1C || !heldVertexBuf->unk1D) {
+        auto locked = reinterpret_cast<uint8_t*>(GxBufLock(heldVertexBuf));
 
         if (locked) {
             uint8_t* position = locked + GxVertexAttribOffset(format, GxVA_Position);
@@ -502,20 +559,20 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
                                    &uv0, &uv1);
             }
 
-            g_theGxDevicePtr->BufUnlock(this->m_vertexBuf, 0);
+            GxBufUnlock(heldVertexBuf, 0);
 
-            this->m_vertexBuf->unk1C = 1;
+            heldVertexBuf->unk1C = 1;
         }
     }
 
-    if (!this->m_indexBuf->unk1C || !this->m_indexBuf->unk1D) {
+    if (!heldIndexBuf->unk1C || !heldIndexBuf->unk1D) {
         batch->m_primType = GxPrim_TriangleStrip;
         batch->m_start = 0;
         batch->m_count = 0;
         batch->m_minIndex = 0;
         batch->m_maxIndex = static_cast<uint16_t>(totalVertices - 1);
 
-        auto locked = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(this->m_indexBuf));
+        auto locked = reinterpret_cast<uint16_t*>(GxBufLock(heldIndexBuf));
 
         if (locked) {
             uint16_t base = 0;
@@ -526,9 +583,9 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
                 base = static_cast<uint16_t>(base + s_perLayerVertices[i]);
             }
 
-            g_theGxDevicePtr->BufUnlock(this->m_indexBuf, 0);
+            GxBufUnlock(heldIndexBuf, 0);
 
-            this->m_indexBuf->unk1C = 1;
+            heldIndexBuf->unk1C = 1;
         }
 
         this->m_batch = *batch;
@@ -2116,10 +2173,12 @@ CInstance* CInstance::Create() {
 // the surface needs the model-to-world matrix, and that lives on the CMapObjDef reached through the
 // def group's parent link.
 //
-// NOT WIRED IN YET, deliberately. The reference calls this from CMap::Render at 0x0079acce; frozen
-// does not call it, because the WMO half of the liquid DRAW is a separate question from the build and
-// putting surfaces on the queue before that is settled would be geometry nothing consumes. The
-// producer side is live -- CWorldScene::MarkMapObjGroupVisible now fills the list.
+// WIRED IN as of 2026-09-27. CMap::Render calls this where the reference does, between the liquid
+// ramp textures and the first bucket's draw. The question that held it back -- whether the draw side
+// consumes a map-object surface or only a terrain one -- was settled already: the draw dispatches
+// through IMaterial::Draw on the instance's own m_geometry, and CMeshGeomFactory and
+// CChunkGeomFactory are both IGeomFactory, so the material asks whichever one it was handed to Build
+// its buffers and never learns which it had. There was no WMO half of the draw to write.
 //
 // One gate frozen cannot evaluate: the reference also requires DAT_00cd8610, two 16-byte records this
 // tree notes as unported. Treated as satisfied, because it reads as an "is the liquid system up"
@@ -2132,109 +2191,112 @@ void BuildPendingMapObjSurfaces() {
             continue;
         }
 
-        if (defGroup->m_liquidSurface) {
-            continue;
-        }
+        // THE BUILD HAPPENS ONCE; THE QUEUEING HAPPENS EVERY FRAME. This used to `continue` on a
+        // group that already had a surface, which reads naturally and is wrong: the reference's Add
+        // is OUTSIDE its `surface == 0` test, so a group built on one frame is queued again on every
+        // later frame it is visible. Skipping the Add meant a surface drew exactly once, on the frame
+        // it was created, and never again.
+        if (!defGroup->m_liquidSurface) {
+            CMapBaseObjLink* parent = defGroup->m_parentLinkList.Head();
 
-        CMapBaseObjLink* parent = defGroup->m_parentLinkList.Head();
-
-        if (!parent) {
-            continue;
-        }
-
-        auto def = static_cast<CMapObjDef*>(parent->ref);
-        CMapObj* mapObj = def->m_mapObj;
-
-        CMapObjGroup* group = mapObj->GetGroup(defGroup->m_groupIndex, 0);
-
-        // FROZEN-ONLY. The reference dereferences the group without checking, and is safe because the
-        // traversal only enqueues a group it already resolved; this guards anyway, since a group can
-        // be unloaded between being marked visible and being built.
-        if (!group) {
-            continue;
-        }
-
-        uint32_t liquidType = group->GetLiquidType();
-
-        LiquidTypeRec* typeRec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
-
-        if (!typeRec) {
-            SysMsgPrintf(SYSMSG_ERROR, "WMO: Liquid type [%d] not found, defaulting to water!",
-                         liquidType);
-
-            liquidType = 1;
-            typeRec = g_liquidTypeDB.GetRecord(1);
-
-            if (!typeRec) {
+            if (!parent) {
                 continue;
             }
-        }
 
-        bool indoor = true;
+            auto def = static_cast<CMapObjDef*>(parent->ref);
+            CMapObj* mapObj = def->m_mapObj;
 
-        if (((group->m_flags & 0x48) == 0 || (defGroup->m_flags & 2))
-                && !(typeRec->m_flags & 0x200)) {
-            indoor = false;
+            CMapObjGroup* group = mapObj->GetGroup(defGroup->m_groupIndex, 0);
 
-            if (liquidType && liquidType < 0x15 && ((liquidType - 1) & 3) == 0) {
-                liquidType = 0x11;
+            // FROZEN-ONLY. The reference dereferences the group without checking, and is safe because the
+            // traversal only enqueues a group it already resolved; this guards anyway, since a group can
+            // be unloaded between being marked visible and being built.
+            if (!group) {
+                continue;
+            }
 
-                LiquidTypeRec* remapped = g_liquidTypeDB.GetRecord(0x11);
+            uint32_t liquidType = group->GetLiquidType();
 
-                if (remapped) {
-                    typeRec = remapped;
+            LiquidTypeRec* typeRec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
+
+            if (!typeRec) {
+                SysMsgPrintf(SYSMSG_ERROR, "WMO: Liquid type [%d] not found, defaulting to water!",
+                             liquidType);
+
+                liquidType = 1;
+                typeRec = g_liquidTypeDB.GetRecord(1);
+
+                if (!typeRec) {
+                    continue;
                 }
             }
-        }
 
-        CClientEnvironment* environment = CreateEnvironment(indoor ? 0 : 1);
+            bool indoor = true;
 
-        CMeshGeomFactory* factory = CMeshGeomFactory::Create(mapObj, group);
+            if (((group->m_flags & 0x48) == 0 || (defGroup->m_flags & 2))
+                    && !(typeRec->m_flags & 0x200)) {
+                indoor = false;
 
-        if (!factory) {
-            continue;
-        }
+                if (liquidType && liquidType < 0x15 && ((liquidType - 1) & 3) == 0) {
+                    liquidType = 0x11;
 
-        LiquidMaterialRec* material = g_liquidMaterialDB.GetRecord(typeRec->m_materialID);
+                    LiquidTypeRec* remapped = g_liquidTypeDB.GetRecord(0x11);
 
-        factory->SetLvf(material && material->m_LVF == 1);
-
-        uint32_t diffColor = 0xFFFFFFFF;
-        float fixedLight = 0.0f;
-
-        if (!indoor) {
-            SMOMaterial* groupMaterial = mapObj->GetGroupLiquidMaterial(defGroup->m_groupIndex);
-
-            if (groupMaterial) {
-                diffColor = groupMaterial->diffColor;
+                    if (remapped) {
+                        typeRec = remapped;
+                    }
+                }
             }
 
-            fixedLight = 1.0f;
+            CClientEnvironment* environment = CreateEnvironment(indoor ? 0 : 1);
+
+            CMeshGeomFactory* factory = CMeshGeomFactory::Create(mapObj, group);
+
+            if (!factory) {
+                continue;
+            }
+
+            LiquidMaterialRec* material = g_liquidMaterialDB.GetRecord(typeRec->m_materialID);
+
+            factory->SetLvf(material && material->m_LVF == 1);
+
+            uint32_t diffColor = 0xFFFFFFFF;
+            float fixedLight = 0.0f;
+
+            if (!indoor) {
+                SMOMaterial* groupMaterial = mapObj->GetGroupLiquidMaterial(defGroup->m_groupIndex);
+
+                if (groupMaterial) {
+                    diffColor = groupMaterial->diffColor;
+                }
+
+                fixedLight = 1.0f;
+            }
+
+            factory->SetDiffColor(&diffColor);
+            factory->SetFixedLight(fixedLight);
+
+            CInstance* instance = CInstance::Create();
+
+            if (!instance) {
+                factory->Release();
+
+                continue;
+            }
+
+            defGroup->m_liquidSurface = instance;
+
+            instance->m_material = GetMaterial(static_cast<int32_t>(liquidType));
+            instance->m_settings = GetMaterialSettings(static_cast<int32_t>(liquidType));
+            instance->m_environment = environment;
+            instance->m_geometry = factory;
+            instance->m_placement = def->m_placement;
+
+            instance->m_sphere.c = defGroup->m_center;
+            instance->m_sphere.r = defGroup->m_radius;
         }
 
-        factory->SetDiffColor(&diffColor);
-        factory->SetFixedLight(fixedLight);
-
-        CInstance* instance = CInstance::Create();
-
-        if (!instance) {
-            factory->Release();
-
-            continue;
-        }
-
-        defGroup->m_liquidSurface = instance;
-
-        instance->m_material = GetMaterial(static_cast<int32_t>(liquidType));
-        instance->m_settings = GetMaterialSettings(static_cast<int32_t>(liquidType));
-        instance->m_environment = environment;
-        instance->m_geometry = factory;
-        instance->m_placement = def->m_placement;
-
-        instance->m_sphere.c = defGroup->m_center;
-        instance->m_sphere.r = defGroup->m_radius;
-
-        Add(instance);
+        Add(defGroup->m_liquidSurface);
     }
 }
 

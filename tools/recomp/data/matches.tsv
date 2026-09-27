@@ -4126,15 +4126,20 @@ addr	how	frozen	evidence
 008a3250	annotated	Liquid::CVertexDataMCLQ::GetCoord	tag in src/world/map/LiquidVertexData.cpp
 008a3280	annotated	Liquid::CVertexDataMH2O::CVertexDataMH2O	tag in src/world/map/LiquidVertexData.cpp
 008a32f0	annotated	Liquid::SetupTransforms	tag in src/world/map/LiquidMaterialSettings.cpp
+008a34b0	annotated	Liquid::MagmaScrollMatrix	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3620	annotated	Liquid::SetupWaveA	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3710	annotated	Liquid::SetupWaveB	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3810	annotated	Liquid::SetupWaveConstants	tag in src/world/map/LiquidMaterialSettings.cpp
 008a38b0	annotated	Liquid::SetupLightConstants	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3c90	annotated	Liquid::SetupSunConstants	tag in src/world/map/LiquidMaterialSettings.cpp
+008a3da0	callgraph	Liquid::DrawWaterMaterial	only unmatched callee of 008a5590=Liquid::CMaterialWater::Draw, 008a5900=Liquid::CMaterialWaterNoSpec::Draw
 008a3e00	annotated	Liquid::CMaterialProcWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3f70	annotated	Liquid::CMaterialWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a4070	annotated	Liquid::CMaterialWaterNoSpec::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a4190	annotated	Liquid::CMaterialMagma::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
+008a5590	annotated	Liquid::CMaterialWater::Draw	tag in src/world/map/LiquidMaterialSettings.cpp
+008a5900	annotated	Liquid::CMaterialWaterNoSpec::Draw	tag in src/world/map/LiquidMaterialSettings.cpp
+008a6090	annotated	Liquid::CMaterialMagma::Draw	tag in src/world/map/LiquidMaterialSettings.cpp
 008a65d0	string	SpellRec::GetFilename	unique "DBFilesClient\Spell.dbc"
 008a7fc0	string	ItemDisplayInfoRec::GetFilename	unique "DBFilesClient\ItemDisplayInfo.dbc"
 008a8360	string	AchievementRec::GetFilename	unique "DBFilesClient\Achievement.dbc"
