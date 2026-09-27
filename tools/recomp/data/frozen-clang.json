@@ -81123,6 +81123,7 @@
 "CM2Model::SetParticleEmission",
 "M2Array<M2Ribbon>::Count",
 "CM2Ribbon::SetFlag8",
+"CM2Model::LoadSequence",
 "HandleClose",
 "SMemFree",
 "CM2Model::UpdateLoaded"
@@ -82487,6 +82488,33 @@
 "refs": [],
 "line": 5798
 },
+"CM2Model::LoadSequence": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"CM2ModelCall::CM2ModelCall",
+"CM2Model::Sub826350",
+"CM2Model::Sub8260C0",
+"M2Array<M2Sequence>::Count",
+"M2Array<M2Sequence>::operator[]",
+"CM2Shared::LoadSequence"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\model\\cm2model.cpp"
+],
+"consts": [
+"0",
+"0x30",
+"14"
+],
+"branches": 3,
+"stub": false,
+"lines": 36,
+"refs": [],
+"line": 5834
+},
 "CM2Model::SetLightEnabled": {
 "files": [
 "src/model/cm2model.cpp"
@@ -82508,7 +82536,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 5824
+"line": 5878
 },
 "CM2Model::SetBoneSequenceTime": {
 "files": [
@@ -82537,7 +82565,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 5862
+"line": 5916
 },
 "CM2Model::SetRibbonFlag8": {
 "files": [
@@ -82560,7 +82588,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 5928
+"line": 5982
 },
 "CM2Model::SetParticleEmission": {
 "files": [
@@ -82584,7 +82612,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 5962
+"line": 6016
 },
 "CM2Model::GetAttachmentWorldPosition": {
 "files": [
@@ -82609,7 +82637,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 5998
+"line": 6052
 },
 "M2BuildBasisFromAxis": {
 "files": [
@@ -82636,7 +82664,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 6026
+"line": 6080
 },
 "M2ParticleFlushDenormals": {
 "files": [

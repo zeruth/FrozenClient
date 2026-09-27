@@ -3545,6 +3545,7 @@ addr	how	frozen	evidence
 00826e60	annotated	CM2Model::Sub826E60	tag in src/model/CM2Model.cpp
 00826ed0	annotated	CM2Model::SetBoneSequenceTime	tag in src/model/CM2Model.cpp
 00827000	annotated	CM2Model::SetBoneSequenceSpeed	tag in src/model/CM2Model.cpp
+00827190	annotated	CM2Model::LoadSequence	tag in src/model/CM2Model.cpp
 008273d0	annotated	CM2Model::HasAttachment	tag in src/model/CM2Model.cpp
 00827460	annotated	CM2Model::GetAttachmentPosition	tag in src/model/CM2Model.cpp
 008274f0	annotated	CM2Model::DetachFromParent	tag in src/model/CM2Model.cpp

@@ -514,6 +514,10 @@ class CM2Model {
         // Enable or disable one of the model's lights. Deferred as model call 10 when the model has
         // not loaded.
         void SetLightEnabled(uint32_t lightIndex, int32_t enable);
+
+        // Ask the shared data to load every VARIATION of one animation. Deferred as model call 14
+        // when the model has not loaded.
+        void LoadSequence(uint32_t sequenceId);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };

@@ -3490,8 +3490,8 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 14: {
-                // FUN_00827190() -- 342 bytes, no arguments. Its callees are all linked
-                // (CM2Model::Sub826350, CM2Shared::LoadSequence), so this one is portable now.
+                this->LoadSequence(modelCall->args[0]);
+
                 break;
             }
         }
@@ -5813,6 +5813,60 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_00827190
+// Preload an animation: resolve the id, then walk its VARIATION CHAIN asking the shared data for
+// each variation whose keyframes live outside the .m2.
+//
+// Three things about it are worth stating because none is obvious from the shape:
+//
+// The id is resolved through Sub826350 FIRST, so a model that does not carry the animation asked
+// for still preloads whatever AnimationData.dbc's fallback chain lands on rather than nothing. The
+// reference passes a raw uint32 where that function wants an M2SequenceFallback, which works
+// because the two uint16s it writes are exactly four bytes -- it is reusing the argument slot as
+// the output. frozen uses the struct.
+//
+// `flags & 0x30` clear is the test for "this variation's data is EXTERNAL". A sequence carrying
+// its keyframes inside the .m2 needs no load, so those are skipped rather than requested and
+// ignored.
+//
+// The loop condition is the chain terminator: variationNext holds an index, and a value at or past
+// sequences.Count() ends the walk. There is no separate sentinel.
+void CM2Model::LoadSequence(uint32_t sequenceId) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 14;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = sequenceId;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    M2SequenceFallback fallback = {};
+
+    this->Sub826350(fallback, sequenceId);
+
+    M2Data* data = this->m_shared->m_data;
+
+    // The reference inlines the id-to-index lookup -- the hash probe, or a linear scan when the
+    // model carries no hash. Sub8260C0 with a hop count of ZERO is that same lookup, so this calls
+    // it rather than spelling the probe out a second time.
+    uint32_t index = CM2Model::Sub8260C0(data, fallback.uint0, 0);
+
+    while (index < static_cast<uint32_t>(data->sequences.Count())) {
+        M2Sequence& sequence = data->sequences[index];
+
+        if (!(sequence.flags & 0x30)) {
+            this->m_shared->LoadSequence(static_cast<uint16_t>(index));
+        }
+
+        index = sequence.variationNext;
+    }
+}
 // ref: FUN_008240f0
 // The per-light enable, which is M2ModelLight::uint64 -- born 1, and read in three places in this
 // file alongside the light's animated visibilityTrack: a light draws only when BOTH are set. So
