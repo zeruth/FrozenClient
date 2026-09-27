@@ -1,4 +1,6 @@
 #include "model/CM2Ribbon.hpp"
+#include <cmath>
+#include <cstring>
 
 // Zero almost everything.
 //
@@ -19,6 +21,124 @@ CM2Ribbon::CM2Ribbon() {
     this->m_flags &= ~0x12u;
 }
 
+// ref: FUN_009808a0
+// The edge rate is CEILED and the lifetime has a floor of 0.25 (0x00aa2d0c), so a ribbon always
+// gets at least one edge per second's worth of ring and a quarter second to live in.
+//
+// The ring holds one segment per edge over the whole lifetime plus TWO (0x00a4040c): one spare at
+// each end, because the head advances before the tail retires.
+void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector color,
+                           const TSGrowableArray<HTEXTURE>& textures,
+                           const TSGrowableArray<Material>& materials,
+                           const TSGrowableArray<M2Texture*>& textureRecords,
+                           const float textureRect[4], uint32_t textureRows,
+                           uint32_t textureCols) {
+    float edgeRate = std::ceil(edgesPerSecond);
+
+    if (edgeLifetime < 0.25f) {
+        edgeLifetime = 0.25f;
+    }
+
+    auto segmentCount = static_cast<uint32_t>(std::ceil(edgeLifetime * edgeRate) + 2.0f);
+
+    // SetCount IS the reference's grow: it compares against both the count and the allocation,
+    // asks for a chunk size when there is none, and rounds the reallocation to it -- the same
+    // four steps the reference inlines here.
+    this->m_segments.SetCount(segmentCount);
+
+    this->m_flags &= ~1u;
+
+    this->uint1C = 0;
+    this->m_tail = 0;
+    this->m_head = 0;
+
+    // Every segment, not just the ones SetCount just made: Initialize can be called on a ribbon
+    // that already has a ring, and the reference clears the whole thing.
+    for (uint32_t i = 0; i < segmentCount; i++) {
+        memset(&this->m_segments[i], 0, sizeof(Segment));
+    }
+
+    // Two vertices per segment, and four indices per segment so the strip can close each quad.
+    // The modulo is what makes the ring wrap: the indices run past the end of the vertex span and
+    // come back to the front.
+    uint32_t indexCount = segmentCount * 4;
+
+    this->m_indices.SetCount(indexCount);
+
+    for (uint32_t i = 0; i < indexCount; i++) {
+        this->m_indices[i] = static_cast<uint16_t>(i % (segmentCount * 2));
+    }
+
+    this->m_invEdgeLifetime = 1.0f / edgeLifetime;
+
+    // Transcribed exactly, INCLUDING the pairing, which looks transposed and is what the reference
+    // does: the height divides the rectangle's V extent by the COLUMN count and the width divides
+    // its U extent by the ROW count. Both names come from the offsets they are stored at, and the
+    // cell rectangle built at the end of this function confirms which axis each one moves along --
+    // so the oddity is in which grid dimension is used, not in the naming. Do not "fix" it without
+    // a ribbon on screen to check against.
+    this->m_cellHeight = (textureRect[3] - textureRect[1]) / static_cast<float>(textureCols);
+    this->m_cellWidth = (textureRect[2] - textureRect[0]) / static_cast<float>(textureRows);
+
+    // The reference divides rather than keeping the numerators around.
+    this->m_invCellHeight = 1.0f / this->m_cellHeight;
+    this->m_invCellWidth = 1.0f / this->m_cellWidth;
+
+    this->m_edgesPerSecond = edgeRate;
+    this->m_edgeLifetime = edgeLifetime;
+
+    this->m_color = color;
+
+    // The reference takes the scratch arrays over wholesale -- count, data pointer and chunk size
+    // in three assignments, leaving the model's scratch arrays pointing at storage the ribbon now
+    // owns. frozen copies the elements instead, because its TSGrowableArray owns its allocation and
+    // stealing the pointer would double-free. Same contents either way.
+    this->m_materials.SetCount(materials.Count());
+
+    for (uint32_t i = 0; i < materials.Count(); i++) {
+        this->m_materials[i] = materials[i];
+    }
+
+    this->m_textures.SetCount(textures.Count());
+
+    for (uint32_t i = 0; i < textures.Count(); i++) {
+        this->m_textures[i] = textures[i];
+    }
+
+    this->m_textureRecords.SetCount(textureRecords.Count());
+
+    for (uint32_t i = 0; i < textureRecords.Count(); i++) {
+        this->m_textureRecords[i] = textureRecords[i];
+    }
+
+    this->m_textureRect[0] = textureRect[0];
+    this->m_textureRect[1] = textureRect[1];
+    this->m_textureRect[2] = textureRect[2];
+    this->m_textureRect[3] = textureRect[3];
+
+    this->m_textureRows = textureRows;
+    this->m_textureCols = textureCols;
+
+    this->uint170 = 0;
+
+    // The starting cell is cell 0, the rectangle's own corner. The reference reaches it through
+    // `0 % textureCols` and a multiply by zero -- a general cell-index expression evaluated at
+    // index 0 -- which is why the two additive terms below look redundant. Kept as the corner they
+    // come out as, since nothing here can vary.
+    this->m_cellV0 = textureRect[1];
+    this->m_cellU0 = textureRect[0];
+    this->m_cellV1 = this->m_cellV0 + this->m_cellHeight;
+    this->m_cellU1 = this->m_cellU0 + this->m_cellWidth;
+
+    // Bits 1, 2 and 3. Bit 0 was cleared at the top and stays clear.
+    this->m_flags |= 0xEu;
+
+    // Both 10.0 (0x009e30cc), and both left alone by the constructor.
+    this->float174 = 10.0f;
+    this->float178 = 10.0f;
+
+    this->m_gravity = 0.0f;
+}
 // Head and tail meeting means the ring is empty.
 //
 // ref: FUN_0097f640

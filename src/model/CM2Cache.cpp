@@ -35,6 +35,13 @@ void CM2Cache::BeginThread(void (*callback)(void*), void* arg) {
     // TODO -- with WaitThread, and not before; see above
 }
 
+// ref: FUN_0081c390
+// Identified 2026-09-26 from CM2Scene::CreateModel's diff, which showed frozen calling this twice
+// exactly where the reference calls FUN_0081c390 twice. Confirmed on its own contents rather than
+// on position: the reference function opens the path with SFile::OpenEx, lowercases and checks the
+// extension, constructs a CM2Shared and calls Load then AddRef on it, destroys it again when Load
+// fails, and carries the two strings "Model2: File not found: %s" and
+// "Model2: Invalid file extension: %s". That is this function.
 CM2Shared* CM2Cache::CreateShared(const char* path, uint32_t flags) {
     char convertedPath[STORM_MAX_PATH];
     if (!M2ConvertModelFileName(path, convertedPath, STORM_MAX_PATH, flags)) {

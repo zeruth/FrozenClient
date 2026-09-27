@@ -3454,6 +3454,7 @@ addr	how	frozen	evidence
 0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
 0081c0c0	annotated	M2SetCacheFlags	tag in src/model/Model2.cpp
 0081c0d0	callgraph	CM2Cache::Initialize	only unmatched callee of 0081c6e0=M2Initialize
+0081c390	annotated	CM2Cache::CreateShared	tag in src/model/CM2Cache.cpp
 0081c6e0	string	M2Initialize	unique "CM2Model"
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
@@ -4485,6 +4486,7 @@ addr	how	frozen	evidence
 0097fe40	annotated	CM2Ribbon::GetMaterialCount	tag in src/model/CM2Ribbon.cpp
 0097fe50	annotated	CM2Ribbon::CountVertices	tag in src/model/CM2Ribbon.cpp
 00980630	annotated	CM2Ribbon::CM2Ribbon	tag in src/model/CM2Ribbon.cpp
+009808a0	annotated	CM2Ribbon::Initialize	tag in src/model/CM2Ribbon.cpp
 00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
 00981310	annotated	CM2ParticleEmitterPlane::CM2ParticleEmitterPlane	tag in src/model/CM2ParticleEmitter.cpp

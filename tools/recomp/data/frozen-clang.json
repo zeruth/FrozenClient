@@ -78930,7 +78930,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 38
+"line": 45
 },
 "CM2Cache::GarbageCollect": {
 "files": [
@@ -78943,7 +78943,7 @@
 "stub": true,
 "lines": 7,
 "refs": [],
-"line": 81
+"line": 88
 },
 "CM2Cache::Initialize": {
 "files": [
@@ -78967,7 +78967,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 89
+"line": 96
 },
 "CM2Cache::UpdateShared": {
 "files": [
@@ -78980,7 +78980,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 164
+"line": 171
 },
 "CM2Cache::WaitThread": {
 "files": [
@@ -78993,7 +78993,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 168
+"line": 175
 },
 "CM2Light::CM2Light": {
 "files": [
@@ -84164,7 +84164,58 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 15
+"line": 17
+},
+"CM2Ribbon::Initialize": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [
+"ceil",
+"ceil",
+"TSGrowableArray<CM2Ribbon::Segment>::SetCount",
+"TSBaseArray<CM2Ribbon::Segment>::operator[]",
+"memset",
+"TSGrowableArray<unsigned short>::SetCount",
+"TSBaseArray<unsigned short>::operator[]",
+"CImVector::operator=",
+"TSBaseArray<CM2Ribbon::Material>::Count",
+"TSGrowableArray<CM2Ribbon::Material>::SetCount",
+"TSBaseArray<CM2Ribbon::Material>::Count",
+"TSBaseArray<CM2Ribbon::Material>::operator[]",
+"TSBaseArray<CM2Ribbon::Material>::operator[]",
+"CM2Ribbon::Material::operator=",
+"TSBaseArray<HOBJECT__ *>::Count",
+"TSGrowableArray<HOBJECT__ *>::SetCount",
+"TSBaseArray<HOBJECT__ *>::Count",
+"TSBaseArray<HOBJECT__ *>::operator[]",
+"TSBaseArray<HOBJECT__ *>::operator[]",
+"TSBaseArray<M2Texture *>::Count",
+"TSGrowableArray<M2Texture *>::SetCount",
+"TSBaseArray<M2Texture *>::Count",
+"TSBaseArray<M2Texture *>::operator[]",
+"TSBaseArray<M2Texture *>::operator[]"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0.25f",
+"0xEu",
+"1",
+"1.0f",
+"10.0f",
+"1u",
+"2",
+"2.0f",
+"3",
+"4"
+],
+"branches": 6,
+"stub": false,
+"lines": 107,
+"refs": [],
+"line": 30
 },
 "CM2Ribbon::IsEmpty": {
 "files": [
@@ -84177,7 +84228,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 25
+"line": 145
 },
 "CM2Ribbon::SetGravity": {
 "files": [
@@ -84190,7 +84241,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 30
+"line": 150
 },
 "CM2Ribbon::SetAbove": {
 "files": [
@@ -84208,7 +84259,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 40
+"line": 160
 },
 "CM2Ribbon::SetFlag8": {
 "files": [
@@ -84225,7 +84276,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 51
+"line": 171
 },
 "CM2Ribbon::Transform": {
 "files": [
@@ -84247,7 +84298,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 63
+"line": 183
 },
 "CM2Ribbon::GetMaterialCount": {
 "files": [
@@ -84262,7 +84313,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 103
+"line": 223
 },
 "CM2Ribbon::CountVertices": {
 "files": [
@@ -84279,7 +84330,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 110
+"line": 230
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [
@@ -84969,7 +85020,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 393
+"line": 402
 },
 "CM2SceneRender::DrawBatchProj": {
 "files": [
@@ -84982,7 +85033,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 397
+"line": 406
 },
 "CM2SceneRender::DrawCallback": {
 "files": [
@@ -84995,7 +85046,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 401
+"line": 410
 },
 "CM2SceneRender::SetupParticleTransform": {
 "files": [
@@ -85014,7 +85065,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 501
+"line": 510
 },
 "CM2SceneRender::DrawParticle": {
 "files": [
@@ -85052,7 +85103,7 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 542
+"line": 551
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -85065,7 +85116,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 664
+"line": 673
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -85082,7 +85133,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 669
+"line": 678
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -85122,7 +85173,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 708
+"line": 717
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -85177,7 +85228,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 786
+"line": 795
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -85213,7 +85264,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 900
+"line": 909
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

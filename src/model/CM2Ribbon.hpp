@@ -22,9 +22,10 @@
 // the idiom CM2Model already uses for uint74, float88 and friends; inventing a plausible name for
 // a field nobody has read is how a later reader ends up trusting a guess.
 //
-// NOT USABLE YET. The constructor and the small setters are here; `Initialize`, the per-frame
-// segment update and `Draw` are not, so nothing constructs one of these outside a test. The
-// update is the part with real behaviour and has not been read at all.
+// `Initialize` landed 2026-09-26. Still missing: the per-frame segment update and `Draw`, and
+// nothing constructs one of these outside a test yet -- CM2Model has no ribbon emitter array, so
+// CM2Model::InitializeLoaded's ribbon block is the next piece. The update is the part with real
+// behaviour and has not been read at all.
 class CM2Ribbon {
     public:
         // One material pass over the ribbon's geometry -- the reference's `CRibbonMat`, 8 bytes.
@@ -117,12 +118,18 @@ class CM2Ribbon {
         float m_edgeLifetime = 0.0f;
         // +0x114, +0x124, +0x134: three arrays Initialize copies in wholesale from scratch arrays
         // the model builds. The first two are pinned by the draw, which walks the materials at
-        // +0x118/+0x11c and the textures at +0x12c. The third is not read by anything seen so
-        // far, so its element type is not established and it is left as raw storage rather than
-        // given a made-up one.
+        // +0x118/+0x11c and the textures at +0x12c.
+        //
+        // The THIRD one's element type was established 2026-09-26, from the site that fills the
+        // scratch array rather than from any declaration: CM2Model::InitializeLoaded stores
+        // `&m_shared->m_data->textures[textureIndex]` into it, one per texture, so it is a
+        // parallel array of M2Texture RECORDS beside m_textures' resolved handles -- the record
+        // is what carries the wrap-mode flags the handle does not. Not a guess: the stride at the
+        // fill site is 0x10, which is sizeof(M2Texture), and the base is m_data + 0x54, which is
+        // the textures array whose count the destructor reads at m_data + 0x50.
         TSGrowableArray<Material> m_materials;
         TSGrowableArray<HTEXTURE> m_textures;
-        uint32_t array134[4] = {};
+        TSGrowableArray<M2Texture*> m_textureRecords;
         // +0x144: a flat colour, white at construction.
         CImVector m_color = {};
         // +0x148 through +0x154: the sub-rectangle of the texture the grid divides up.
@@ -145,6 +152,17 @@ class CM2Ribbon {
         // Member functions
 
         CM2Ribbon();
+
+        // Size the ring, the indices and the texture grid, and take copies of the three arrays the
+        // model built. Everything the constructor deliberately left alone is set here.
+        //
+        // The argument order is the reference's. `textureRect` is the sub-rectangle of the texture
+        // the grid divides up, as (u0, v0, u1, v1).
+        void Initialize(float edgesPerSecond, float edgeLifetime, CImVector color,
+                        const TSGrowableArray<HTEXTURE>& textures,
+                        const TSGrowableArray<Material>& materials,
+                        const TSGrowableArray<M2Texture*>& textureRecords,
+                        const float textureRect[4], uint32_t textureRows, uint32_t textureCols);
 
         void SetGravity(float gravity);
 

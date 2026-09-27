@@ -55123,6 +55123,22 @@
   "refSize": 441,
   "status": "ported"
  },
+ "0081c390": {
+  "branchRatio": 0.135,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.429,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::CreateShared",
+  "frozenSize": 516,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 830,
+  "status": "ported"
+ },
  "0081c6e0": {
   "branchRatio": 0.5,
   "constOverlap": 0.2,
@@ -55474,8 +55490,8 @@
  "0081f8f0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -71308,6 +71324,22 @@
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 476,
   "status": "ported"
+ },
+ "009808a0": {
+  "branchRatio": 0.353,
+  "constOverlap": 0.024,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::Initialize",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 682,
+  "status": "faithful"
  },
  "00980ed0": {
   "branchRatio": 1.0,
