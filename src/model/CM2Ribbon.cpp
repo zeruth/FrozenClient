@@ -1,6 +1,12 @@
 #include "model/CM2Ribbon.hpp"
 #include "gx/Device.hpp"
 #include "gx/CGxDevice.hpp"
+#include "world/map/CMapObj.hpp"
+#include "gx/shader/CShaderEffect.hpp"
+#include "gx/Transform.hpp"
+#include "gx/RenderState.hpp"
+#include "gx/CGxBatch.hpp"
+#include "gx/Draw.hpp"
 #include <cmath>
 #include <cstring>
 
@@ -384,6 +390,142 @@ void CM2Ribbon::Update(float delta, int32_t suppressEmit) {
     // Drop 0x20 and set 0x10. Setting 0x10 is what stops the one-edge delta substitution above
     // from happening again.
     this->m_flags = (this->m_flags & ~0x20u) | 0x10u;
+}
+// Whether ribbons draw at all. The reference keeps this as static initialised data at 0x00b2d658
+// holding 1, with exactly ONE reader and no writer anywhere -- the same shape as the particle
+// system's 0x00b2d530. It reads as a permanently-false branch in the disassembly and is not one;
+// the value was taken out of the image.
+static int32_t s_ribbonsEnabled = 1;
+
+// ref: FUN_00980b70
+// The trail is built on the CPU and uploaded WHOLE, which is the opposite of the particle path's
+// write-through-cursors -- a ribbon has few vertices and they all move every frame.
+//
+// Drawn as a triangle STRIP: two vertices per ring slot, and the index count carries a closing
+// pair so the last quad joins up.
+int32_t CM2Ribbon::Draw(const C44Matrix* relativeTo) {
+    // An empty ring has nothing to draw, and head == tail IS empty.
+    if (!s_ribbonsEnabled || this->m_head == this->m_tail) {
+        return 0;
+    }
+
+    // Identity unless the geometry lives in a relative space, then MINUS the origin the trail is
+    // stored relative to. The reference builds the identity inline and overwrites it wholesale when
+    // the argument is non-null, so the subtraction lands on whichever matrix ended up there.
+    C44Matrix world(1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f);
+
+    if (relativeTo) {
+        world = *relativeTo;
+    }
+
+    world.d0 -= this->m_origin.x;
+    world.d1 -= this->m_origin.y;
+    world.d2 -= this->m_origin.z;
+
+    // Push and set in one, which is what the reference's XformPush(GxXform_World, m) does.
+    GxXformPush(GxXform_World);
+    GxXformSet(GxXform_World, world);
+
+    uint32_t vertexCount = this->m_vertices.Count();
+    uint32_t indexCount = this->m_indices.Count();
+
+    // 0x18 is 24 bytes, which is GxVBF_PCT exactly -- position, colour, one texcoord.
+    CGxBuf* vbuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, sizeof(Vertex), vertexCount);
+    CGxBuf* ibuf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, sizeof(uint16_t), indexCount);
+
+    if (!vbuf || !ibuf) {
+        GxXformPop(GxXform_World);
+
+        return 0;
+    }
+
+    GxBufData(vbuf, reinterpret_cast<char*>(this->m_vertices.Ptr()),
+              vertexCount * sizeof(Vertex), 0);
+    GxPrimVertexPtr(vbuf, GxVBF_PCT);
+
+    // The live span of the ring, which WRAPS, plus the closing pair. Two vertices per slot.
+    uint32_t tail = this->m_tail;
+    uint32_t span = tail < this->m_head
+                  ? this->m_head - tail
+                  : this->m_head + this->m_segmentAges.Count() - tail;
+
+    uint32_t drawIndices = span * 2 + 2;
+
+    // The index run STARTS at the tail, four indices per slot, so the strip begins at the oldest
+    // live segment rather than at the front of the array.
+    GxBufData(ibuf, reinterpret_cast<char*>(this->m_indices.Ptr() + tail * 4),
+              drawIndices * sizeof(uint16_t), 0);
+    g_theGxDevicePtr->PrimIndexPtr(ibuf);
+
+    for (uint32_t i = 0; i < this->m_materials.Count(); i++) {
+        const Material& material = this->m_materials[i];
+
+        GxRsPush();
+
+        // Bit 0 is LIT, despite reading as its opposite: set means emissive BLACK, so the surface
+        // takes its brightness from the lights, and clear means emissive white, which is the unlit
+        // look. The same bit drives the lighting state on the next line. (The table in
+        // docs/ref/parity-ribbons.md labels this bit "unlit" while describing exactly this
+        // behaviour -- the label is the part that is inverted.)
+        // FLOATS, not a packed colour: the reference builds (1,1,1,0) or (0,0,0,0) on the stack and
+        // SetEmissive takes a C4Vector.
+        C4Vector emissive = material.m_flags & 0x1
+                          ? C4Vector{ 0.0f, 0.0f, 0.0f, 0.0f }
+                          : C4Vector{ 1.0f, 1.0f, 1.0f, 0.0f };
+
+        CShaderEffect::SetEmissive(emissive);
+        CShaderEffect::SetFogEnabled((material.m_flags >> 1) & 1);
+        CShaderEffect::SetLightEnabled(material.m_flags & 1);
+
+        // Each of these four lands on a frozen EGxRenderState on the nose, which is the check that
+        // the bit assignments are right: 13, 15, 17 and 6.
+        GxRsSet(GxRs_DepthTest, static_cast<int32_t>((material.m_flags >> 2) & 1));
+        GxRsSet(GxRs_DepthWrite, static_cast<int32_t>((material.m_flags >> 3) & 1));
+        GxRsSet(GxRs_Culling, static_cast<int32_t>((material.m_flags >> 4) & 1));
+        GxRsSet(GxRs_BlendingMode, static_cast<int32_t>(material.m_blend));
+
+        // The SHADER alpha reference, as a fraction -- NOT CGxDevice::RsSetAlphaRef, which sets the
+        // fixed-function state from the same table with the raw 0..255 value. They are different
+        // functions with different targets and the reference calls this one; substituting the device
+        // one left the shader path's alpha reference unset. Same model-to-world include the particle
+        // emitter already takes.
+        CMapObj::SetAlphaRefForBlendMode();
+
+        // No texture means no pass -- the reference skips the whole submit rather than drawing
+        // untextured.
+        CGxTex* tex = i < this->m_textures.Count()
+                    ? TextureGetGxTex(this->m_textures[i], 0, nullptr)
+                    : nullptr;
+
+        if (tex) {
+            GxRsSet(GxRs_Texture0, tex);
+            GxTexSetWrap(tex, GxTex_Clamp, GxTex_Clamp);
+
+            // Zero bone influences: trail geometry is unskinned, the same call the particle submit
+            // makes.
+            CShaderEffect::SetShadersForGeometry(0);
+            CShaderEffect::SetWorldViewConstants();
+
+            CGxBatch batch;
+
+            batch.m_primType = GxPrim_TriangleStrip;
+            batch.m_start = 0;
+            batch.m_count = drawIndices;
+            batch.m_minIndex = 0;
+            batch.m_maxIndex = static_cast<uint16_t>(vertexCount - 1);
+
+            GxDraw(&batch, 1);
+        }
+
+        GxRsPop();
+    }
+
+    GxXformPop(GxXform_World);
+
+    return 1;
 }
 // ref: FUN_0097f940
 // The pair shift. Everything the trail knows about where it is lives in two points and two frames

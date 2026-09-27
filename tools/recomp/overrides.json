@@ -3345,5 +3345,9 @@
   "004c12b0": {
     "status": "ported",
     "note": "DataMgrSetCoord. The call-graph matcher inferred CM2Model::AnimateCamerasST for this address on 2026-09-27 and it is wrong -- the classic shape of that failure, a CALLEE picking up its caller's name because the caller is the frozen function that calls it. AnimateCamerasST takes no arguments and calls DataMgrSetCoord twice with field ids 7 and 8; the reference function here takes (mgr, fieldId, C3Vector*, flags) and calls DataMgrGetCoord once. Its `flags & 4` test, which keeps the existing z instead of the passed one, is DataMgrSetCoord's own per-component keep logic. And it is 172 bytes ending at 0x004c135c, immediately before DataMgrSetFloat at FUN_004c1360 -- adjacent definitions in one module, in source order. Now tagged on DataMgrSetCoord in lib/common/common/DataMgr.cpp, so the hand tag takes the address back off the inference."
+  },
+  "00980b70": {
+    "status": "faithful",
+    "note": "CM2Ribbon::Draw. Recall 82%, and the only four calls it is missing are CGxDevice::IRsDirty, which the reference reaches by inlining the compare-and-dirty around each render state while frozen calls GxRsSet and the check lives inside it. Four states, four inlined checks, four missing calls -- the same factoring difference already recorded for 008368b0 and 009808a0, not absent behaviour. Every state number was cross-checked against frozen's EGxRenderState: DepthTest 13, DepthWrite 15, Culling 17, BlendingMode 6, Texture0 21, Lighting 11, which is what confirms the material flag bit assignments rather than assuming them. UNREACHABLE for now: the only caller is CM2SceneRender::DrawRibbon, still a stub."
   }
 }

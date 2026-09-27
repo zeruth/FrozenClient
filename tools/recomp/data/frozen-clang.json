@@ -76547,6 +76547,21 @@
 "refs": [],
 "line": 225
 },
+"CShaderEffect::SetLightEnabled": {
+"files": [
+"src/gx/shader/cshadereffect.cpp"
+],
+"callseq": [
+"GxRsSet"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 254
+},
 "CShaderEffect::SetLocalLighting": {
 "files": [
 "src/gx/shader/cshadereffect.cpp"
@@ -76584,7 +76599,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 250
+"line": 263
 },
 "CShaderEffect::PixelPermute": {
 "files": [
@@ -76601,7 +76616,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 312
+"line": 325
 },
 "CShaderEffect::SetShadersForGeometry": {
 "files": [
@@ -76624,7 +76639,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 330
+"line": 343
 },
 "CShaderEffect::SetWorldViewConstants": {
 "files": [
@@ -76648,7 +76663,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 348
+"line": 361
 },
 "CShaderEffect::SetShaders": {
 "files": [
@@ -76673,7 +76688,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 370
+"line": 383
 },
 "CShaderEffect::SetTexMtx": {
 "files": [
@@ -76691,7 +76706,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 393
+"line": 406
 },
 "CShaderEffect::SetTexMtx_Identity": {
 "files": [
@@ -76711,7 +76726,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 409
+"line": 422
 },
 "CShaderEffect::SetTexMtx_SphereMap": {
 "files": [
@@ -76731,7 +76746,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 425
+"line": 438
 },
 "CShaderEffect::UpdateProjMatrix": {
 "files": [
@@ -76751,7 +76766,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 440
+"line": 453
 },
 "CShaderEffect::InitEffect": {
 "files": [
@@ -76776,7 +76791,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 452
+"line": 465
 },
 "CShaderEffect::SetFixedFunc": {
 "files": [
@@ -76791,7 +76806,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 468
+"line": 481
 },
 "CShaderEffect::SetCurrent": {
 "files": [
@@ -76804,7 +76819,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 478
+"line": 491
 },
 "OpFromName": {
 "files": [
@@ -84232,7 +84247,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 19
+"line": 25
 },
 "CM2Ribbon::Initialize": {
 "files": [
@@ -84282,7 +84297,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 32
+"line": 38
 },
 "RibbonVertexColor": {
 "files": [
@@ -84298,7 +84313,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 156
+"line": 162
 },
 "CM2Ribbon::BuildControlPoints": {
 "files": [
@@ -84313,7 +84328,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 176
+"line": 182
 },
 "CM2Ribbon::EmitSegment": {
 "files": [
@@ -84336,7 +84351,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 215
+"line": 221
 },
 "CM2Ribbon::Update": {
 "files": [
@@ -84383,7 +84398,70 @@
 "stub": false,
 "lines": 136,
 "refs": [],
-"line": 252
+"line": 258
+},
+"CM2Ribbon::Draw": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"C44Matrix::operator=",
+"GxXformPush",
+"GxXformSet",
+"TSBaseArray<CM2Ribbon::Vertex>::Count",
+"TSBaseArray<unsigned short>::Count",
+"CGxDevice::BufStream",
+"CGxDevice::BufStream",
+"GxXformPop",
+"TSBaseArray<CM2Ribbon::Vertex>::Ptr",
+"GxBufData",
+"GxPrimVertexPtr",
+"TSBaseArray<float>::Count",
+"TSBaseArray<unsigned short>::Ptr",
+"GxBufData",
+"CGxDevice::PrimIndexPtr",
+"TSBaseArray<CM2Ribbon::Material>::Count",
+"TSBaseArray<CM2Ribbon::Material>::operator[]",
+"GxRsPush",
+"C4Vector::C4Vector",
+"C4Vector::C4Vector",
+"CShaderEffect::SetEmissive",
+"CShaderEffect::SetFogEnabled",
+"CShaderEffect::SetLightEnabled",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"GxRsSet",
+"CMapObj::SetAlphaRefForBlendMode",
+"TSBaseArray<HOBJECT__ *>::Count",
+"TSBaseArray<HOBJECT__ *>::operator[]",
+"TextureGetGxTex",
+"GxRsSet",
+"GxTexSetWrap",
+"CShaderEffect::SetShadersForGeometry",
+"CShaderEffect::SetWorldViewConstants",
+"CGxBatch::CGxBatch",
+"GxDraw",
+"GxRsPop",
+"GxXformPop"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x1",
+"1",
+"1.0f",
+"2",
+"3",
+"4"
+],
+"branches": 8,
+"stub": false,
+"lines": 124,
+"refs": [],
+"line": 406
 },
 "CM2Ribbon::SetPosition": {
 "files": [
@@ -84421,7 +84499,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 395
+"line": 537
 },
 "CM2Ribbon::UpdateCellRect": {
 "files": [
@@ -84437,7 +84515,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 451
+"line": 593
 },
 "CM2Ribbon::SetTextureSlot": {
 "files": [
@@ -84452,7 +84530,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 472
+"line": 614
 },
 "CM2Ribbon::SetHeightAbove": {
 "files": [
@@ -84465,7 +84543,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 483
+"line": 625
 },
 "CM2Ribbon::SetHeightBelow": {
 "files": [
@@ -84478,7 +84556,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 488
+"line": 630
 },
 "CM2Ribbon::SetAlpha": {
 "files": [
@@ -84494,7 +84572,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 494
+"line": 636
 },
 "CM2Ribbon::SetColor": {
 "files": [
@@ -84510,7 +84588,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 506
+"line": 648
 },
 "CM2Ribbon::IsEmpty": {
 "files": [
@@ -84523,7 +84601,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 518
+"line": 660
 },
 "CM2Ribbon::SetGravity": {
 "files": [
@@ -84536,7 +84614,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 523
+"line": 665
 },
 "CM2Ribbon::SetAbove": {
 "files": [
@@ -84554,7 +84632,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 533
+"line": 675
 },
 "CM2Ribbon::SetFlag8": {
 "files": [
@@ -84571,7 +84649,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 544
+"line": 686
 },
 "CM2Ribbon::Transform": {
 "files": [
@@ -84593,7 +84671,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 556
+"line": 698
 },
 "CM2Ribbon::GetMaterialCount": {
 "files": [
@@ -84608,7 +84686,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 596
+"line": 738
 },
 "CM2Ribbon::CountVertices": {
 "files": [
@@ -84625,7 +84703,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 603
+"line": 745
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

@@ -37,6 +37,10 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         static float s_fogMul;
         static C4Vector s_fogParams;
         static int32_t s_lightEnabled;
+
+        // Just the lighting flag, without the local-light bookkeeping SetLocalLighting also does.
+        // The reference keeps them as separate functions and the ribbon draw calls THIS one.
+        static void SetLightEnabled(int32_t lightEnabled);
         static uint32_t s_localLightCount;
         static LocalLights s_localLights;
         static C3Vector s_sunAmbient;

@@ -246,6 +246,19 @@ void CShaderEffect::SetFogParams(float fogStart, float fogEnd, float fogRate, co
     GxRsSet(GxRs_FogColor, fogColor.value);
 }
 
+// ref: FUN_008731c0
+// The strict subset of SetLocalLighting below: the flag, and the render state only when shaders
+// are off. The reference has both and the ribbon draw calls this one, so frozen needs it
+// separately rather than routing through the superset -- SetLocalLighting would also reset the
+// local light count, which a ribbon has no business touching.
+void CShaderEffect::SetLightEnabled(int32_t lightEnabled) {
+    CShaderEffect::s_lightEnabled = lightEnabled;
+
+    if (!CShaderEffect::s_enableShaders) {
+        GxRsSet(GxRs_Lighting, lightEnabled);
+    }
+}
+
 // ref: FUN_00873ca0
 void CShaderEffect::SetLocalLighting(CM2Lighting* lighting, int32_t lightEnabled, const C3Vector* a3) {
     CShaderEffect::s_lightEnabled = lightEnabled;

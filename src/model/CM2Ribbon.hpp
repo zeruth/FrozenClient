@@ -249,6 +249,13 @@ class CM2Ribbon {
         // `suppressEmit` non-zero skips the emission and only ages what is already there.
         void Update(float delta, int32_t suppressEmit);
 
+        // Upload the whole trail and draw it, once per material pass. Returns 0 without drawing
+        // when the ring is empty.
+        //
+        // `relativeTo` is the space the geometry is expressed in -- null for world -- and is the
+        // same CM2Model::m_particleRelative the placement was brought into.
+        int32_t Draw(const C44Matrix* relativeTo);
+
         // Place the ribbon for this frame: shift the current point down to the previous one and take
         // a new current point, edge direction and tangent from `placement`.
         //

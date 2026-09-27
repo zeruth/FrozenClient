@@ -3953,6 +3953,7 @@ addr	how	frozen	evidence
 00872f90	annotated	CShaderEffect::SetCurrent	tag in src/gx/shader/CShaderEffect.cpp
 00873060	annotated	CShaderEffect::SetShaders	tag in src/gx/shader/CShaderEffect.cpp
 00873160	annotated	CShaderEffect::SetShadersForGeometry	tag in src/gx/shader/CShaderEffect.cpp
+008731c0	annotated	CShaderEffect::SetLightEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873210	annotated	CShaderEffect::SetFogParams	tag in src/gx/shader/CShaderEffect.cpp
 00873390	annotated	CShaderEffect::SetFogEnabled	tag in src/gx/shader/CShaderEffect.cpp
 00873480	override	CShaderEffect::SetTexMtx_Identity	
@@ -4500,6 +4501,7 @@ addr	how	frozen	evidence
 00980090	annotated	CM2Ribbon::Update	tag in src/model/CM2Ribbon.cpp
 00980630	annotated	CM2Ribbon::CM2Ribbon	tag in src/model/CM2Ribbon.cpp
 009808a0	annotated	CM2Ribbon::Initialize	tag in src/model/CM2Ribbon.cpp
+00980b70	annotated	CM2Ribbon::Draw	tag in src/model/CM2Ribbon.cpp
 00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
 00981310	annotated	CM2ParticleEmitterPlane::CM2ParticleEmitterPlane	tag in src/model/CM2ParticleEmitter.cpp

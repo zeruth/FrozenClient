@@ -62827,6 +62827,22 @@
   "refSize": 84,
   "status": "ported"
  },
+ "008731c0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetLightEnabled",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "OsClipboard.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "00873210": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -71547,6 +71563,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 682,
+  "status": "faithful"
+ },
+ "00980b70": {
+  "branchRatio": 0.471,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.818,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::Draw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 851,
   "status": "faithful"
  },
  "00980ed0": {
