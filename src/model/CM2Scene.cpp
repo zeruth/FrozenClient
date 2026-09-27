@@ -1882,7 +1882,7 @@ void CM2Scene::ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfil
 // vertex with no weights and no indices keeps the identity the matrix is initialised to rather
 // than blending anything -- reproduced rather than tidied, since that is a real run of vertices
 // for an unskinned section and the identity is the right answer for it.
-void CM2Scene::ProjectSectionVerticesBlended(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist) {
+void CM2Scene::ProjectSectionVerticesBlended3x4(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist) {
     auto data = model->m_shared->m_data;
     uint32_t i = section->vertexStart;
     uint32_t end = section->vertexCount + i;
@@ -1902,6 +1902,58 @@ void CM2Scene::ProjectSectionVerticesBlended(CM2Model* model, M2SkinProfile* ski
 
             CM2Scene::BlendBoneMatrices3x4(model->m_boneMatrices, vertex.weights, vertex.indices,
                                            &blended);
+        }
+
+        C3Vector p = vertex.position * blended;
+
+        if (addNormal) {
+            p.x = vertex.normal.x * blended.a0 + blended.b0 * vertex.normal.y + blended.c0 * vertex.normal.z + p.x;
+            p.y = blended.a1 * vertex.normal.x + blended.b1 * vertex.normal.y + blended.c1 * vertex.normal.z + p.y;
+            p.z = p.z + (blended.a2 * vertex.normal.x + blended.b2 * vertex.normal.y + blended.c2 * vertex.normal.z);
+        }
+
+        float d = (planeNormal.x * p.x + planeNormal.y * p.y + planeNormal.z * p.z) - planeDist;
+
+        dst->x = p.x - planeNormal.x * d;
+        dst->y = p.y - planeNormal.y * d;
+        dst->z = d;
+        dst++;
+    }
+}
+
+// ref: FUN_0081d680
+// The same blended projection as above, asking for the FULL bone blend rather than the 3x4 one.
+//
+// The two bodies are otherwise identical, instruction for instruction: same vertex walk, same
+// cache on weights and indices, same seeded identity, same normal push and same plane projection.
+// Only the helper differs -- BlendBoneMatrices against BlendBoneMatrices3x4 -- and frozen already
+// had both, with the same signature.
+//
+// WHICH ONE RUNS is decided by the caller, FUN_0081daf0, on bit 4 of the global at 0x00d3fcec.
+// That global is NOT CM2Scene::s_optFlags, however much the shape suggests it: s_optFlags is
+// written by CM2Scene::Animate from the cache's flags masked to 0xE000, while 0x00d3fcec is
+// written by FUN_0081c0d0 and tested at bit 4. Conflating them would have put the wrong blend on
+// every skinned hit test, so the selector is left to the caller rather than guessed at here.
+void CM2Scene::ProjectSectionVerticesBlended4x4(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist) {
+    auto data = model->m_shared->m_data;
+    uint32_t i = section->vertexStart;
+    uint32_t end = section->vertexCount + i;
+    auto dst = this->m_rayProjected;
+
+    C44Matrix blended(1.0f);
+
+    uint32_t cachedWeights = 0;
+    uint32_t cachedIndices = 0;
+
+    for (; i < end; i++) {
+        auto& vertex = data->vertices[skinProfile->vertices[i]];
+
+        if (vertex.weights.u != cachedWeights || vertex.indices.u != cachedIndices) {
+            cachedWeights = vertex.weights.u;
+            cachedIndices = vertex.indices.u;
+
+            CM2Scene::BlendBoneMatrices(model->m_boneMatrices, vertex.weights, vertex.indices,
+                                        &blended);
         }
 
         C3Vector p = vertex.position * blended;

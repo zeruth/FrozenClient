@@ -134,8 +134,12 @@ class CM2Scene {
         // ref: FUN_0081d9c0
         void ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
         // The same projection for a section whose vertices are blended across several bones.
+        // The two differ only in which blend they ask for: the 3x4 one drops the last row, the
+        // 4x4 one keeps it. FUN_0081daf0 picks between them on bit 4 of the global at 0x00d3fcec.
         // ref: FUN_0081d830
-        void ProjectSectionVerticesBlended(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
+        void ProjectSectionVerticesBlended3x4(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
+        // ref: FUN_0081d680
+        void ProjectSectionVerticesBlended4x4(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
 
         // Install the projected-decal callback. Until something calls this, the scene emits no
         // type-1 elements and DrawBatchProj cannot be reached. ref: FUN_0081cc30

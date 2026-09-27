@@ -56463,6 +56463,21 @@
   "refSize": 360,
   "status": "ported"
  },
+ "0081d680": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Scene.cpp"
+  ],
+  "frozen": "CM2Scene::ProjectSectionVerticesBlended4x4",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 417,
+  "status": "ported"
+ },
  "0081d830": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -56471,7 +56486,7 @@
   "files": [
    "src/model/CM2Scene.cpp"
   ],
-  "frozen": "CM2Scene::ProjectSectionVerticesBlended",
+  "frozen": "CM2Scene::ProjectSectionVerticesBlended3x4",
   "frozenSize": 0,
   "how": "annotated",
   "module": "M2Scene.cpp",
