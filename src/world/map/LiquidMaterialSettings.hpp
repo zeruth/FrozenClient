@@ -61,6 +61,10 @@ class CMaterialSettings {
         // the files run out; anything else is a single still. ref: FUN_008a2450
         void LoadTextures();
 
+        // Close every frame handle this record holds, in BOTH sets, and empty them.
+        // ref: FUN_008a1d00
+        void ReleaseFrames();
+
         // The frame one slot is showing now, over an animation `periodMs` long. Null while the
         // slot has nothing, or while its frames are still streaming and there is no stand-in.
         // ref: FUN_008a1d60

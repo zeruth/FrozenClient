@@ -4119,6 +4119,7 @@ addr	how	frozen	evidence
 008a1a40	annotated	Liquid::CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
 008a1ac0	annotated	Liquid::CInstance::Release	tag in src/world/map/LiquidSurface.cpp
 008a1b00	annotated	Liquid::CInstance::Create	tag in src/world/map/LiquidSurface.cpp
+008a1d00	annotated	Liquid::CMaterialSettings::ReleaseFrames	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1d60	annotated	Liquid::CMaterialSettings::GetFrame	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1f50	annotated	Liquid::ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1fa0	annotated	Liquid::GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
@@ -4129,7 +4130,8 @@ addr	how	frozen	evidence
 008a28f0	annotated	Liquid::GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2ac0	annotated	Liquid::WmoWaterGenerate	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2bf0	override	Liquid::DepthGradientGenerate	
-008a2e20	annotated	Liquid::ProceduralLiquidTexture	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2e20	string	Liquid::ProceduralLiquidTexture	unique "proceduralOceanDepthTex"
+008a2f00	annotated	Liquid::UpdateProceduralTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3050	annotated	CMapLiquidData::CMapLiquidData	tag in src/world/map/CMapLiquidData.cpp
 008a3060	annotated	CMapLiquidData::HasLiquid	tag in src/world/map/CMapLiquidData.cpp
 008a3070	annotated	CMapLiquidData::Chunk	tag in src/world/map/CMapLiquidData.cpp

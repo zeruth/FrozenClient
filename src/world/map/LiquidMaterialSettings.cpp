@@ -24,6 +24,7 @@
 #include <common/Handle.hpp>
 #include "gx/texture/CGxTex.hpp"
 #include <tempest/Vector.hpp>
+#include <tempest/Rect.hpp>
 #include <new>
 
 namespace Liquid {
@@ -262,6 +263,70 @@ void WmoWaterGenerate(EGxTexCommand command, uint32_t width, uint32_t height, ui
 // DIVERGED in WHEN, not what: the reference makes them from its liquid initialise, beside the depth
 // ramps. Frozen makes them the first time a liquid asks for one, which needs no initialisation
 // order and cannot be skipped by a map that loads before the subsystem is up.
+// The three procedural textures, in creation order, kept so they can be updated and released.
+// The reference holds them in three separate globals (0x00d43bd0, 0x00d43bd4, 0x00d43bd8) with a
+// latch byte each; which global carries which name is not established and does not need to be,
+// because every operation on them is identical and independently latched.
+static HTEXTURE s_proceduralTextures[3] = { nullptr, nullptr, nullptr };
+static bool s_proceduralUpdated[3] = { false, false, false };
+
+// ref: part of FUN_008a2980
+// Close the procedural texture handles and let them be made again.
+//
+// PART, and the rest is named here rather than left as a silent gap: the reference closes three
+// groups in one function -- a single handle at 0x00d43b4c, these three procedural ones, and a
+// block of THIRTY-TWO at 0x00d43b50. frozen keeps only the three. What the other thirty-three are
+// is not established; they are re-registered together with these by FUN_008a2a10, so they are
+// liquid textures of some kind rather than anything unrelated, and the place to pick that up is
+// that function. Tagged `part of` for the same reason ReleaseMaterialSettings is.
+//
+// The latches come off with the handles, so the pair stays consistent: whatever is made next is
+// uploaded again rather than being assumed current.
+void ReleaseProceduralTextures() {
+    for (uint32_t i = 0; i < 3; i++) {
+        if (s_proceduralTextures[i]) {
+            HandleClose(s_proceduralTextures[i]);
+
+            s_proceduralTextures[i] = nullptr;
+        }
+
+        s_proceduralUpdated[i] = false;
+    }
+}
+
+// ref: FUN_008a2f00
+// Push each procedural texture's generated pixels to the device, once.
+//
+// The reference does this as three copies of the same block, one per global, each guarded by its
+// own latch byte at 0x00d43b49..0x00d43b4b so the upload happens exactly once per texture. The
+// rect it hands over is {0, 0, 0x40, 8}, which against CiRect's {minY, minX, maxY, maxX} is the
+// whole 8 x 64 image -- the same dimensions frozen already builds them at, which is the check that
+// the rect is being read in the right field order.
+//
+// Nothing calls this yet. Frozen's textures are created with their generator callback attached, so
+// the device asks for the pixels itself the first time it binds one; this is the reference's own
+// eager path and is ported for the parity rather than to fix a blank texture.
+void UpdateProceduralTextures() {
+    for (uint32_t i = 0; i < 3; i++) {
+        if (s_proceduralUpdated[i] || !s_proceduralTextures[i]) {
+            continue;
+        }
+
+        CGxTex* tex = TextureGetGxTex(s_proceduralTextures[i], 0, nullptr);
+
+        if (!tex) {
+            continue;
+        }
+
+        CiRect rect = { 0, 0, static_cast<int32_t>(PROC_TEX_HEIGHT),
+                        static_cast<int32_t>(PROC_TEX_WIDTH) };
+
+        GxTexUpdate(tex, rect, 0);
+
+        s_proceduralUpdated[i] = true;
+    }
+}
+
 HTEXTURE ProceduralLiquidTexture(const char* name) {
     static bool s_created = false;
 
@@ -285,6 +350,8 @@ HTEXTURE ProceduralLiquidTexture(const char* name) {
             if (!handle) {
                 continue;
             }
+
+            s_proceduralTextures[i] = handle;
 
             CTexture* texture = TextureGetTexturePtr(handle);
 
@@ -1469,11 +1536,44 @@ IMaterial* GetMaterial(int32_t liquidType) {
 void ReleaseMaterials() {
     for (uint32_t i = 0; i < s_materialBank.Count(); i++) {
         if (s_materialBank[i]) {
-            // TODO each material releases itself through its own vtable.
+            // The reference reaches the material through its vtable, which is what the virtual
+            // destructor on IMaterial is for. This used to be a TODO and the bank simply dropped
+            // every material it had made: the objects were never destroyed and never freed, once
+            // per liquid material for the life of the process.
+            delete s_materialBank[i];
+
+            s_materialBank[i] = nullptr;
         }
     }
 
     s_materialBank.SetCount(0);
+}
+
+// ref: FUN_008a1d00
+// Close every frame handle this record holds and empty both arrays.
+//
+// BOTH SETS, which is the point of lifting this out of ReleaseMaterialSettings: that one walked
+// m_frames and stopped, so every handle in m_framesAlt leaked. The reference walks the two
+// together -- its loop runs six times over a pair of arrays 0x10 apart, reading the counts at
+// +0x380 and +0x3e0, which are exactly m_frames and m_framesAlt once TEXTURE_SLOTS is six.
+// The leak was invisible because the loader that fills m_framesAlt is still unidentified, so the
+// array is empty today -- it would have started leaking the moment that landed.
+void CMaterialSettings::ReleaseFrames() {
+    for (uint32_t slot = 0; slot < CMaterialSettings::TEXTURE_SLOTS; slot++) {
+        TSGrowableArray<HTEXTURE>* sets[2] = { &this->m_frames[slot], &this->m_framesAlt[slot] };
+
+        for (uint32_t which = 0; which < 2; which++) {
+            TSGrowableArray<HTEXTURE>& frames = *sets[which];
+
+            for (uint32_t i = 0; i < frames.Count(); i++) {
+                if (frames[i]) {
+                    HandleClose(frames[i]);
+                }
+            }
+
+            frames.SetCount(0);
+        }
+    }
 }
 
 // ref: part of FUN_008a2380
@@ -1482,15 +1582,7 @@ void ReleaseMaterialSettings() {
         if (s_settingsBank[i]) {
             auto settings = s_settingsBank[i];
 
-            for (uint32_t slot = 0; slot < CMaterialSettings::TEXTURE_SLOTS; slot++) {
-                for (uint32_t frame = 0; frame < settings->m_frames[slot].Count(); frame++) {
-                    if (settings->m_frames[slot][frame]) {
-                        HandleClose(settings->m_frames[slot][frame]);
-                    }
-                }
-
-                settings->m_frames[slot].SetCount(0);
-            }
+            settings->ReleaseFrames();
 
             settings->~CMaterialSettings();
             SMemFree(s_settingsBank[i], __FILE__, __LINE__, 0x0);
