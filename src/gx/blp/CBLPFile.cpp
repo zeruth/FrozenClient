@@ -631,12 +631,17 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                     BlitFormat srcFmt = s_pixelToBlitFormat[preferred];
                     BlitFormat dstFmt = s_pixelToBlitFormat[format];
 
-                    // All three DXT flavours reach ARGB8888 now. The four 16-bit targets do
-                    // not: their blitters are still stubs.
-                    bool haveConverter = dstFmt == BlitFormat_Argb8888
-                                      && (srcFmt == BlitFormat_Dxt1
-                                          || srcFmt == BlitFormat_Dxt3
-                                          || srcFmt == BlitFormat_Dxt5);
+                    // All three DXT flavours reach ARGB8888, and DXT1 also reaches the two
+                    // 16-bit targets that do not need an alpha block. Still stubs, so still
+                    // excluded: DXT3 and DXT5 to ARGB4444.
+                    bool haveConverter =
+                        (dstFmt == BlitFormat_Argb8888
+                         && (srcFmt == BlitFormat_Dxt1
+                             || srcFmt == BlitFormat_Dxt3
+                             || srcFmt == BlitFormat_Dxt5))
+                        || (srcFmt == BlitFormat_Dxt1
+                            && (dstFmt == BlitFormat_Rgb565
+                                || dstFmt == BlitFormat_Argb1555));
 
                     if (!haveConverter) {
                         return 0;

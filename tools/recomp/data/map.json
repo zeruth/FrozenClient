@@ -37735,6 +37735,38 @@
   "refSize": 381,
   "status": "ported"
  },
+ "006ac5d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt1ExpandColorsRgb565",
+  "frozenSize": 415,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 425,
+  "status": "ported"
+ },
+ "006ac780": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.6,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt1ExpandColorsArgb1555",
+  "frozenSize": 510,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 644,
+  "status": "ported"
+ },
  "006aca10": {
   "branchRatio": 1.0,
   "constOverlap": 0.5,
@@ -37799,6 +37831,22 @@
   "refSize": 327,
   "status": "ported"
  },
+ "006ad220": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt1DecodeBlock16",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 153,
+  "status": "ported"
+ },
  "006ad380": {
   "branchRatio": 0.4,
   "constOverlap": 0.0,
@@ -37816,7 +37864,7 @@
   "status": "ported"
  },
  "006ae440": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -37825,14 +37873,14 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt1_Rgb565",
-  "frozenSize": 77,
+  "frozenSize": 386,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "006ae4a0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -37841,11 +37889,11 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt1_Argb1555",
-  "frozenSize": 77,
+  "frozenSize": 386,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "006ae500": {
   "branchRatio": 0.667,

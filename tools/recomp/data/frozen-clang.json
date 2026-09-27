@@ -65604,45 +65604,136 @@
 "refs": [],
 "line": 354
 },
+"DxtBlend565": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"8"
+],
+"branches": 0,
+"stub": false,
+"lines": 5,
+"refs": [],
+"line": 390
+},
+"Dxt1ExpandColorsRgb565": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [
+"DxtBlend565",
+"DxtBlend565"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1F",
+"0x3F",
+"1",
+"11",
+"2",
+"3",
+"5",
+"8"
+],
+"branches": 1,
+"stub": false,
+"lines": 25,
+"refs": [],
+"line": 406
+},
+"Dxt1ExpandColorsArgb1555": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [
+"DxtBlend565",
+"DxtBlend565"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1F",
+"0x3F",
+"0x8000",
+"1",
+"10",
+"11",
+"2",
+"3",
+"5",
+"8"
+],
+"branches": 1,
+"stub": false,
+"lines": 27,
+"refs": [],
+"line": 440
+},
+"Dxt1DecodeBlock16": {
+"files": [
+"src/gx/blit.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"2",
+"3",
+"4"
+],
+"branches": 2,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 472
+},
 "Blit_Dxt1_Argb1555": {
 "files": [
 "src/gx/blit.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"BuildDxtWeights",
+"Dxt1ExpandColorsArgb1555",
+"Dxt1DecodeBlock16"
 ],
-"strings": [
-"Blit_Dxt1_Argb1555",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\gx\\blit.cpp"
+"strings": [],
+"consts": [
+"0",
+"2",
+"4",
+"8"
 ],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 6,
+"stub": false,
+"lines": 33,
 "refs": [],
-"line": 388
+"line": 488
 },
 "Blit_Dxt1_Rgb565": {
 "files": [
 "src/gx/blit.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"BuildDxtWeights",
+"Dxt1ExpandColorsRgb565",
+"Dxt1DecodeBlock16"
 ],
-"strings": [
-"Blit_Dxt1_Rgb565",
-"Function not yet implemented: %s in %s (line %i)\n",
-"c:\\users\\tyler\\runicworld-client\\src\\gx\\blit.cpp"
+"strings": [],
+"consts": [
+"0",
+"2",
+"4",
+"8"
 ],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 6,
+"stub": false,
+"lines": 33,
 "refs": [],
-"line": 393
+"line": 525
 },
 "Blit_Dxt1_Dxt1": {
 "files": [
@@ -65662,7 +65753,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 397
+"line": 559
 },
 "DxtExpandColorsNoAlphaMode": {
 "files": [
@@ -65690,7 +65781,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 410
+"line": 572
 },
 "Dxt3DecodeBlock": {
 "files": [
@@ -65716,7 +65807,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 446
+"line": 608
 },
 "Blit_Dxt3_Argb8888": {
 "files": [
@@ -65736,7 +65827,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 473
+"line": 635
 },
 "Blit_Dxt3_Argb4444": {
 "files": [
@@ -65756,7 +65847,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 506
+"line": 668
 },
 "Blit_Dxt35_Dxt35": {
 "files": [
@@ -65778,7 +65869,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 510
+"line": 672
 },
 "Dxt5ExpandAlpha": {
 "files": [
@@ -65801,7 +65892,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 536
+"line": 698
 },
 "Dxt5DecodeBlock": {
 "files": [
@@ -65828,7 +65919,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 570
+"line": 732
 },
 "Blit_Dxt5_Argb8888": {
 "files": [
@@ -65848,7 +65939,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 606
+"line": 768
 },
 "Blit_Dxt5_Argb4444": {
 "files": [
@@ -65868,7 +65959,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 639
+"line": 801
 },
 "InitBlit": {
 "files": [
@@ -65881,7 +65972,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 646
+"line": 808
 },
 "Blit": {
 "files": [
@@ -65900,7 +65991,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 682
+"line": 844
 },
 "CBLPFile::CBLPFile": {
 "files": [
@@ -66133,7 +66224,7 @@
 ],
 "branches": 30,
 "stub": true,
-"lines": 205,
+"lines": 210,
 "refs": [],
 "line": 479
 },
@@ -66158,7 +66249,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 685
+"line": 690
 },
 "CBLPFile::Open": {
 "files": [
@@ -66187,7 +66278,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 755
+"line": 760
 },
 "CBLPFile::Source": {
 "files": [
@@ -66211,7 +66302,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 803
+"line": 808
 },
 "CBLPFile::DecompPalARGB2565DitherFS": {
 "files": [
@@ -66246,7 +66337,7 @@
 "stub": false,
 "lines": 119,
 "refs": [],
-"line": 838
+"line": 843
 },
 "CBLPFile::Unlock": {
 "files": [
@@ -66267,7 +66358,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 959
+"line": 964
 },
 "GxVertexAttribOffset": {
 "files": [

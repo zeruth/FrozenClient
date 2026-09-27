@@ -384,14 +384,176 @@ void Blit_Dxt1_Argb8888(const C2iVector& size, const void* in, uint32_t inStride
     }
 }
 
+// The 5/6/5 blend the DXT1 expanders share, in 5/6/5 space rather than widened to eight bits.
+// Both 16-bit targets below want it before their own packing, and both take the weights the same
+// way round: colour 2 is two thirds of c0, colour 3 two thirds of c1.
+static inline void DxtBlend565(uint32_t r0, uint32_t g0, uint32_t b0,
+                               uint32_t r1, uint32_t g1, uint32_t b1,
+                               uint32_t& r, uint32_t& g, uint32_t& b) {
+    r = (s_dxtWeight2_3[r0] + s_dxtWeight1_3[r1]) >> 8;
+    g = (s_dxtWeight2_3[g0] + s_dxtWeight1_3[g1]) >> 8;
+    b = (s_dxtWeight2_3[b0] + s_dxtWeight1_3[b1]) >> 8;
+}
+
+// ref: FUN_006ac5d0
+// A DXT1 block's four colours as RGB565. The two endpoints need no conversion at all -- a DXT1
+// endpoint IS an RGB565 value, which is why this expander passes them straight through where the
+// ARGB8888 one has to widen them.
+//
+// Same endpoint-order rule as every DXT1 colour block: c0 > c1 gives four colours, otherwise
+// three and a fourth that is zero. Zero in RGB565 is black rather than transparent -- there is no
+// alpha bit in this format to carry the distinction, and the reference stores 0 regardless.
+static void Dxt1ExpandColorsRgb565(const unsigned char* block, uint16_t colors[4]) {
+    uint32_t c0 = static_cast<uint32_t>(block[0]) | (static_cast<uint32_t>(block[1]) << 8);
+    uint32_t c1 = static_cast<uint32_t>(block[2]) | (static_cast<uint32_t>(block[3]) << 8);
+
+    colors[0] = static_cast<uint16_t>(c0);
+    colors[1] = static_cast<uint16_t>(c1);
+
+    uint32_t r0 = c0 >> 11, g0 = (c0 >> 5) & 0x3F, b0 = c0 & 0x1F;
+    uint32_t r1 = c1 >> 11, g1 = (c1 >> 5) & 0x3F, b1 = c1 & 0x1F;
+
+    if (c1 < c0) {
+        uint32_t r, g, b;
+
+        DxtBlend565(r0, g0, b0, r1, g1, b1, r, g, b);
+        colors[2] = static_cast<uint16_t>((r << 11) | (g << 5) | b);
+
+        DxtBlend565(r1, g1, b1, r0, g0, b0, r, g, b);
+        colors[3] = static_cast<uint16_t>((r << 11) | (g << 5) | b);
+    } else {
+        colors[2] = static_cast<uint16_t>((((r0 + r1) / 2) << 11)
+                                       | (((g0 + g1) / 2) << 5)
+                                       | ((b0 + b1) / 2));
+        colors[3] = 0;
+    }
+}
+
+// ref: FUN_006ac780
+// The same four colours as ARGB1555. Two things are worth naming because the reference expresses
+// them as bit tricks rather than as what they mean:
+//
+//   - the alpha bit is set by OR-ing 0x20 into the five-bit RED before the shifts, which carries
+//     it to bit 15. Every colour is opaque; DXT1's transparent fourth colour is still just zero.
+//   - green loses its LOW bit (`& 0xFFFE` on a six-bit value) rather than being shifted down,
+//     because the shift that follows drops it. Six bits of green become five by TRUNCATION.
+static void Dxt1ExpandColorsArgb1555(const unsigned char* block, uint16_t colors[4]) {
+    uint32_t c0 = static_cast<uint32_t>(block[0]) | (static_cast<uint32_t>(block[1]) << 8);
+    uint32_t c1 = static_cast<uint32_t>(block[2]) | (static_cast<uint32_t>(block[3]) << 8);
+
+    uint32_t r0 = c0 >> 11, g0 = (c0 >> 5) & 0x3F, b0 = c0 & 0x1F;
+    uint32_t r1 = c1 >> 11, g1 = (c1 >> 5) & 0x3F, b1 = c1 & 0x1F;
+
+    colors[0] = static_cast<uint16_t>(0x8000 | (r0 << 10) | ((g0 >> 1) << 5) | b0);
+    colors[1] = static_cast<uint16_t>(0x8000 | (r1 << 10) | ((g1 >> 1) << 5) | b1);
+
+    if (c1 < c0) {
+        uint32_t r, g, b;
+
+        DxtBlend565(r0, g0, b0, r1, g1, b1, r, g, b);
+        colors[2] = static_cast<uint16_t>(0x8000 | (r << 10) | ((g >> 1) << 5) | b);
+
+        DxtBlend565(r1, g1, b1, r0, g0, b0, r, g, b);
+        colors[3] = static_cast<uint16_t>(0x8000 | (r << 10) | ((g >> 1) << 5) | b);
+    } else {
+        uint32_t r = (r0 + r1) / 2;
+        uint32_t g = (g0 + g1) / 2;
+        uint32_t b = (b0 + b1) / 2;
+
+        colors[2] = static_cast<uint16_t>(0x8000 | (r << 10) | ((g >> 1) << 5) | b);
+        colors[3] = 0;
+    }
+}
+
+// ref: FUN_006ad220 (RGB565) and FUN_006ad2d0 (ARGB1555)
+// One DXT1 block into a 16-bit target. Identical to the ARGB8888 block writer except that the
+// colour table and the destination are uint16, so the reference has two of these where frozen has
+// one taking the table it should use.
+static void Dxt1DecodeBlock16(const unsigned char* block, const uint16_t colors[4],
+                              unsigned char* dst, uint32_t dstStride,
+                              uint32_t cols, uint32_t rows) {
+    for (uint32_t y = 0; y < rows; y++) {
+        uint32_t indices = block[4 + y];
+        auto out = reinterpret_cast<uint16_t*>(dst + y * dstStride);
+
+        for (uint32_t x = 0; x < cols; x++) {
+            out[x] = colors[indices & 3];
+            indices >>= 2;
+        }
+    }
+}
 // ref: FUN_006ae4a0
+// One loop for both of the reference's arms and no cube-map case, as with the ARGB8888
+// blitters. Two bytes per texel here, so the destination advances by half as much.
 void Blit_Dxt1_Argb1555(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (!s_dxtWeightsBuilt) {
+        BuildDxtWeights();
+    }
+
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto width = static_cast<uint32_t>(size.x);
+    auto height = static_cast<uint32_t>(size.y);
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (uint32_t y = 0; y < height; y += 4) {
+        const unsigned char* block = src;
+        uint32_t rows = height - y < 4 ? height - y : 4;
+
+        for (uint32_t x = 0; x < width; x += 4) {
+            uint32_t cols = width - x < 4 ? width - x : 4;
+            uint16_t colors[4];
+
+            Dxt1ExpandColorsArgb1555(block, colors);
+            Dxt1DecodeBlock16(block, colors, dst + x * 2, outStride, cols, rows);
+
+            block += 8;
+        }
+
+        src += inStride;
+        dst += outStride * 4;
+    }
 }
 
 // ref: FUN_006ae440
+// One loop for both of the reference's arms and no cube-map case, as with the ARGB8888
+// blitters. Two bytes per texel here, so the destination advances by half as much.
 void Blit_Dxt1_Rgb565(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (!s_dxtWeightsBuilt) {
+        BuildDxtWeights();
+    }
+
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto width = static_cast<uint32_t>(size.x);
+    auto height = static_cast<uint32_t>(size.y);
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (uint32_t y = 0; y < height; y += 4) {
+        const unsigned char* block = src;
+        uint32_t rows = height - y < 4 ? height - y : 4;
+
+        for (uint32_t x = 0; x < width; x += 4) {
+            uint32_t cols = width - x < 4 ? width - x : 4;
+            uint16_t colors[4];
+
+            Dxt1ExpandColorsRgb565(block, colors);
+            Dxt1DecodeBlock16(block, colors, dst + x * 2, outStride, cols, rows);
+
+            block += 8;
+        }
+
+        src += inStride;
+        dst += outStride * 4;
+    }
 }
 
 void Blit_Dxt1_Dxt1(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
