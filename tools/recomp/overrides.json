@@ -3047,8 +3047,9 @@
     "note": "Same SCritSect difference as 004283b0 (wave 0, 2026-09-25)"
   },
   "007ce520": {
-    "status": "unlinked",
-    "note": "Builds a CChunkLiquid layer's bounding SPHERE, for the occlusion-volume test FUN_007cce00 that gates the row visit at 0x00793715 before UpdateForFrame runs. The callgraph matcher bound it to Liquid::Add once that was wired next door; that is wrong -- Liquid::Add is FUN_008a20c0. Not ported: CWorldScene::TraverseRowLiquids carries the TODO."
+    "status": "ported",
+    "frozen": "CChunkLiquid::GetBoundingSphere",
+    "note": "Builds a CChunkLiquid layer's bounding SPHERE, for the occlusion-volume test FUN_007cce00 that gates the row visit at 0x00793715 before UpdateForFrame runs. PORTED 2026-09-27 as CChunkLiquid::GetBoundingSphere: the cached sphere fills the class's +0x18..+0x24 TODO gap and the gate is wired into CWorldScene::TraverseRowLiquids. This entry said `unlinked` and \"Not ported\" until then -- it was written to reject the callgraph matcher's guess of Liquid::Add, which is FUN_008a20c0 and is still wrong, so the rejection was right and only the \"not ported\" half went stale. The tool caught the contradiction itself: \"annotated vs overrides.json `unlinked` -- one of the two is stale\"."
   },
   "008a16c0": {
     "status": "excluded",

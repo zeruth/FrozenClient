@@ -74,6 +74,35 @@ void CChunkLiquid::ReleaseSurface() {
     }
 }
 
+// ref: FUN_007ce520
+// The layer's bounding sphere, built once and kept. Its centre is the CHUNK's box in x and y --
+// a layer is as wide as its chunk for culling, the same simplification GetBounds below makes --
+// and the layer's own water in z. The radius reaches the box corner at the water's top.
+//
+// The cache is the radius itself: negative means unbuilt, so there is no separate flag and no
+// invalidation to forget. A layer is built for one chunk and its heights do not move, so once is
+// enough.
+//
+// Only CWorldScene::TraverseRowLiquids asks, and only to hand it to SphereOccludedByVolumes.
+const CAaSphere& CChunkLiquid::GetBoundingSphere() {
+    if (this->m_sphere.r < 0.0f) {
+        const CAaBox& bounds = this->m_chunk->m_bounds;
+
+        this->m_sphere.c.x = (bounds.b.x + bounds.t.x) * 0.5f;
+        this->m_sphere.c.y = (bounds.b.y + bounds.t.y) * 0.5f;
+        this->m_sphere.c.z = (this->m_maxHeight + this->m_minHeight) * 0.5f;
+
+        float dx = bounds.t.x - this->m_sphere.c.x;
+        float dy = bounds.t.y - this->m_sphere.c.y;
+        float dz = this->m_maxHeight - this->m_sphere.c.z;
+
+        // Summed in the reference's own order, z first, because a float sum is not associative
+        // and this feeds a cull that a rounding difference could flip at the margin.
+        this->m_sphere.r = sqrtf(dz * dz + dy * dy + dx * dx);
+    }
+
+    return this->m_sphere;
+}
 // ref: FUN_007cde80
 // A layer is as wide as its chunk for culling purposes -- the rectangle it actually covers is
 // not narrowed here -- but only as tall as its own water.

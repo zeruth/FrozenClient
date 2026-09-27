@@ -46620,7 +46620,7 @@
   "branchRatio": 0.15,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -46946,7 +46946,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::Traverse",
-  "frozenSize": 1536,
+  "frozenSize": 1552,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 209,
@@ -50082,7 +50082,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::FreeChunkLiquid",
-  "frozenSize": 301,
+  "frozenSize": 330,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 96,
@@ -51717,6 +51717,22 @@
   "refSize": 391,
   "status": "ported"
  },
+ "007ce520": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CChunkLiquid.cpp",
+   "src/world/map/cchunkliquid.cpp"
+  ],
+  "frozen": "CChunkLiquid::GetBoundingSphere",
+  "frozenSize": 218,
+  "how": "override",
+  "module": "MapChunk.cpp",
+  "refSize": 172,
+  "status": "ported"
+ },
  "007ce5d0": {
   "branchRatio": 0.611,
   "constOverlap": 0.0,
@@ -51756,7 +51772,7 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "CChunkLiquid::CChunkLiquid",
-  "frozenSize": 976,
+  "frozenSize": 996,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 209,
@@ -52188,7 +52204,7 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CChunkGeomFactory::Build",
-  "frozenSize": 2407,
+  "frozenSize": 2428,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1099,
@@ -65849,7 +65865,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::DrawWaterMaterial",
-  "frozenSize": 979,
+  "frozenSize": 949,
   "how": "callgraph",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 55,

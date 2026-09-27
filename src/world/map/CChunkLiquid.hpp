@@ -4,6 +4,7 @@
 #include <storm/List.hpp>
 #include <tempest/Vector.hpp>
 #include <tempest/Box.hpp>
+#include <tempest/Sphere.hpp>
 #include <tempest/Rect.hpp>
 #include "util/BitArray.hpp"
 #include <cstdint>
@@ -40,7 +41,13 @@ class CChunkLiquid {
         uint32_t m_vertexFormat = 0;      // +0x08
         // The owning chunk's corner, copied so the vertex build needs nothing but this record.
         C3Vector m_origin;                // +0x0c
-        // TODO +0x18..+0x24
+        // The layer's bounding sphere, built once and kept. This is the reference's own
+        // +0x18..+0x24 -- a C3Vector centre and a float radius, which is exactly the gap this
+        // class carried as a TODO, and CAaSphere lays out the same way.
+        //
+        // A NEGATIVE RADIUS MEANS "not built yet" and is the whole of the cache's bookkeeping:
+        // the builder rebuilds only when it sees one, so nothing has to remember to invalidate.
+        CAaSphere m_sphere = { { 0.0f, 0.0f, 0.0f }, -1.0f };  // +0x18 .. +0x24
         float m_minHeight = 0.0f;         // +0x28: CMapChunk::GetBounds lowers the box to it
         float m_maxHeight = 0.0f;         // +0x2c: and raises it to this
         // How long the layer has gone unseen, in seconds. Every frame the layer is visible
@@ -97,6 +104,8 @@ class CChunkLiquid {
         // Whether the layer actually covers one tile of its chunk's eight-by-eight grid. An
         // MH2O layer answers from its wet-tile bits, an MCLQ one from its own grid.
         // ref: FUN_007ce1f0
+        // The layer's bounding sphere, built on first ask. ref: FUN_007ce520
+        const CAaSphere& GetBoundingSphere();
         bool CoversTile(uint32_t x, uint32_t y) const;
 
         // One tile of an MCLQ layer's grid: which liquid it holds, and the two flags the file

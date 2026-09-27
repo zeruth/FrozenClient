@@ -1090,10 +1090,16 @@ void CWorldScene::TraverseRowLiquids(Row* row) {
         CAaBox box;
         liquid->GetBounds(&box);
 
+        // THREE GATES, in the reference's order: the clip frustum, the box occluders, and then
+        // the layer's bounding sphere against the occlusion VOLUMES. The third was a TODO here
+        // naming FUN_007ce520 and FUN_007cce00; the first is now CChunkLiquid::GetBoundingSphere
+        // and the second has been ported as SphereOccludedByVolumes for a while, so the note was
+        // half stale. The sphere is the cheaper test and the reference still runs it LAST, which
+        // is worth preserving rather than tidying: the volumes are a coarser structure than the
+        // box occluders and reject less, so asking them first would cost more than it saves.
         if (AaBoxVsPlanes6(CWorldScene::s_clipFrustum.planes, box)
-            && !CWorldScene::BoxOccluded(box, 0)) {
-            // TODO FUN_007ce520 builds the layer's bounding sphere and FUN_007cce00 is asked
-            // whether the volumes occlude it before any of this runs. Not ported.
+            && !CWorldScene::BoxOccluded(box, 0)
+            && !CWorldScene::SphereOccludedByVolumes(liquid->GetBoundingSphere())) {
             liquid->UpdateForFrame();
 
             // Then the surface joins this frame's queue. Which bucket it lands in is the
