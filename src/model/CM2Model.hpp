@@ -510,6 +510,10 @@ class CM2Model {
         // Seek a bone's current sequence so that `elapsed` milliseconds of it have already played.
         // Deferred as model call 7 when the model has not loaded.
         void SetBoneSequenceTime(uint32_t boneId, int32_t elapsed);
+
+        // Enable or disable one of the model's lights. Deferred as model call 10 when the model has
+        // not loaded.
+        void SetLightEnabled(uint32_t lightIndex, int32_t enable);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };

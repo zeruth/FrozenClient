@@ -55967,6 +55967,22 @@
   "refSize": 129,
   "status": "ported"
  },
+ "008240f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetLightEnabled",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 118,
+  "status": "ported"
+ },
  "00824230": {
   "branchRatio": 0.75,
   "constOverlap": 0.091,
@@ -57309,13 +57325,13 @@
   "branchRatio": 0.606,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.493,
+  "fidelity": 0.507,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 7836,
+  "frozenSize": 7980,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,

@@ -3370,7 +3370,11 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 2: {
-                // TODO
+                // FUN_0082c8a0, decoded 2026-09-27 and not yet ported. A skin-section RANGE
+                // visibility setter, distinct from case 1's: it walks skinProfile->skinSections,
+                // sets m_skinSections[i] for every i in [args[0], args[1]] whose on/off state
+                // actually changes, and calls UnoptimizeVisibleGeometry when any of them did --
+                // so the optimized-geometry cache is invalidated only on a real change.
                 break;
             }
 
@@ -3432,17 +3436,24 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 9: {
-                // TODO
+                // FUN_008272f0(args[0], &args[1]) -- 224 bytes, 6 callers, and it takes a POINTER
+                // into the argument block rather than a value, which is why the call site passes
+                // &args[1]. Needs SequenceBufferAlloc, which is linked.
                 break;
             }
 
             case 10: {
-                // TODO
+                this->SetLightEnabled(
+                    modelCall->args[0],
+                    static_cast<int32_t>(modelCall->args[1])
+                );
+
                 break;
             }
 
             case 11: {
-                // TODO
+                // FUN_00825410() -- 205 bytes, 3 callers, takes NO arguments off the call. Blocked
+                // on FUN_0097a990.
                 break;
             }
 
@@ -3479,7 +3490,8 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 14: {
-                // TODO
+                // FUN_00827190() -- 342 bytes, no arguments. Its callees are all linked
+                // (CM2Model::Sub826350, CM2Shared::LoadSequence), so this one is portable now.
                 break;
             }
         }
@@ -5801,6 +5813,40 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_008240f0
+// The per-light enable, which is M2ModelLight::uint64 -- born 1, and read in three places in this
+// file alongside the light's animated visibilityTrack: a light draws only when BOTH are set. So
+// this is the static half of a light's on/off and the track is the animated half.
+//
+// The branches are the other way round from SetParticleEmission and SetRibbonFlag8: the reference
+// tests LOADED first here and queues in the else. Same two outcomes, and transcribed in the
+// reference's order rather than normalised to match its siblings.
+void CM2Model::SetLightEnabled(uint32_t lightIndex, int32_t enable) {
+    if (this->m_loaded) {
+        // FROZEN-ONLY GUARD. The reference indexes m_lights with no check at all; frozen allocates
+        // that array inside a lights.Count() branch in InitializeLoaded, so a model with no lights
+        // has none to index. Every reader in this file bounds the same way.
+        if (!this->m_lights
+                || lightIndex >= static_cast<uint32_t>(this->m_shared->m_data->lights.Count())) {
+            return;
+        }
+
+        this->m_lights[lightIndex].uint64 = static_cast<uint32_t>(enable);
+
+        return;
+    }
+
+    auto modelCall = STORM_NEW(CM2ModelCall);
+
+    modelCall->type = 10;
+    modelCall->modelCallNext = nullptr;
+    modelCall->time = this->m_scene->m_time;
+    modelCall->args[0] = lightIndex;
+    modelCall->args[1] = static_cast<uint32_t>(enable);
+
+    *this->m_modelCallTail = modelCall;
+    this->m_modelCallTail = &modelCall->modelCallNext;
+}
 // ref: FUN_00826ed0
 // Back-date a bone's sequence so that `elapsed` of it has already played -- a seek, expressed by
 // moving the START time earlier rather than by keeping a cursor.
