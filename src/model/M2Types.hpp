@@ -89,8 +89,26 @@ class CM2ParticleEmitter;
 // `effect` being non-null before indexing a shader array with a permute, so leaving effect as
 // whatever a recycled slot held was a live hazard rather than a cosmetic one.
 //
-// So: port element builders BY MEANING, never by dword index. The two unidentified slots at +0x1c
-// and +0x20 have no writer in anything read so far, which is why they stay unnamed.
+// So: port element builders BY MEANING, never by dword index.
+//
+// TWO OF THE UNNAMED SLOTS ARE IDENTIFIED as of 2026-09-27, both from their consumers rather than
+// from any declaration:
+//
+//   +0x1c is the MERGED INSTANCE COUNT of a doodad-batch element.
+//   CM2SceneRender::DrawBatchDoodad loops on it, and frozen's own type-2 dispatch already carries
+//   `// i += this->m_curElement->dword1C - 1;` commented out, which is the same slot being used to
+//   skip the elements the merge swallowed. NOTHING writes it below the shadow-map tier -- see the
+//   chain in CM2Model::IsBatchDoodadCompatible -- which is why enabling that gate early would give
+//   the draw a loop count out of a recycled slot.
+//
+//   +0x40 is an ADDITIVE-RUN GROUP ID. FUN_0081f9e0 walks one of the three pass lists assigning it:
+//   the counter advances on every element EXCEPT a second or later consecutive additive one, so a
+//   run of additive elements shares a group. FUN_0081f0e0 then sorts primarily on that group, which
+//   is what lets additive elements be reordered freely inside a run -- additive blending is
+//   order-independent -- without ever crossing a non-additive boundary. That pair is the
+//   `// TODO sort additive particles` the tail of CM2Scene::Animate still owes.
+//
+//   +0x20 and +0x3c still have no writer in anything read, and stay unnamed.
 struct M2Element {
     int32_t type;
     CM2Model* model;
