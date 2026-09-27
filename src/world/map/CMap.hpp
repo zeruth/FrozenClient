@@ -302,6 +302,11 @@ class CMap {
 
         // ref: FUN_0079b440
         static CMapArea* GetLoadedArea(int32_t x, int32_t y);
+
+        // The terrain type of the ground under a world point, from the ground-effect record of
+        // the layer showing there. False when the point is off the map, over a tile that is not
+        // loaded, or over a hole. ref: FUN_007a0530
+        static bool GetTerrainType(const C3Vector& position, int32_t* terrainType);
         // ref: FUN_0079ae80
         static void BuildBspLeafCache(CMapBspLeafCache* leaf, const uint16_t* faceRefs, const CAaBspNode* node, const SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices);
         // ref: FUN_007a20e0

@@ -15,6 +15,7 @@
 #include "world/map/CMapAreaMed.hpp"
 #include "world/map/CMapCacheLight.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "db/Db.hpp"
 #include "world/map/CMapDoodadDef.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/map/CMapLight.hpp"
@@ -829,6 +830,87 @@ CMapChunk* CMap::ChunkAt(const C3Vector& position) {
     }
 
     return area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
+}
+
+// How far the map reaches, corner to corner, in yards. DAT_009e2ac8, and exactly twice
+// MAP_HALF_EXTENT -- the bounds test runs in YARDS, before the cell scaling, which is why it
+// needs its own constant rather than a cell count.
+static const float MAP_EXTENT = 34133.33203125f;
+
+// Two bits a cell, eight cells to a row of the low-quality texture map: which layer of the four
+// is showing at each. DAT_00a3fb88 and DAT_00a3fb98, the reference keeping the shifts as dwords.
+static const uint16_t LAYER_MASK[8] = {
+    0x0003, 0x000c, 0x0030, 0x00c0, 0x0300, 0x0c00, 0x3000, 0xc000
+};
+static const uint32_t LAYER_SHIFT[8] = { 0, 2, 4, 6, 8, 10, 12, 14 };
+
+// ref: FUN_007a0530
+// The terrain type of the ground under a world point.
+//
+// Same addressing as ChunkAt above, with the cell's own bits kept: the chunk's low-quality
+// texture map says which of its four layers is showing at that cell, two bits each, and the
+// layer's MCLY effectId names a GroundEffectTexture row whose m_terrainType is the answer.
+//
+// THE BOUNDS TEST IS IN YARDS and comes before the scaling, so it uses the full map extent rather
+// than a cell count. The hole test is the one CMapChunk already has a table for: s_holeMask is
+// indexed by the cell's 2x2 block, which is what SMChunk::holes stores a bit per.
+//
+// WHAT IT IS FOR, which is not obvious from here: the map's segment query (FUN_007a2760) stores
+// this on a CMapStaticEntity at +0xb8, and that field decides which branch the query takes when
+// it links models onto the ray list. An entity whose terrain type has never been resolved reads
+// as never placed. So this is the first half of what the ray chain is waiting on.
+//
+// GetLoadedArea rather than s_areaGrid directly, which is the reference's own choice: a tile
+// still streaming is passed over instead of half-read.
+bool CMap::GetTerrainType(const C3Vector& position, int32_t* terrainType) {
+    float yardsFromY = -(position.y - MAP_HALF_EXTENT);
+    float yardsFromX = -(position.x - MAP_HALF_EXTENT);
+
+    if (yardsFromY < 0.0f || yardsFromX < 0.0f) {
+        return false;
+    }
+
+    if (yardsFromY > MAP_EXTENT || yardsFromX > MAP_EXTENT) {
+        return false;
+    }
+
+    int32_t col = static_cast<int32_t>(roundf(yardsFromY * CELLS_PER_YARD - CELL_ROUND_BIAS));
+    int32_t row = static_cast<int32_t>(roundf(yardsFromX * CELLS_PER_YARD - CELL_ROUND_BIAS));
+
+    CMapArea* area = CMap::GetLoadedArea((col >> 7) & 0x3f, (row >> 7) & 0x3f);
+
+    if (!area) {
+        return false;
+    }
+
+    CMapChunk* chunk = area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
+
+    // FROZEN-ONLY. The reference dereferences the header, the texture map and the layers without
+    // checking; they are filled together when the chunk's data lands, so a chunk in the grid but
+    // not yet read would fault here rather than anywhere that points at the cause.
+    if (!chunk || !chunk->m_header || !chunk->m_lowQualityTextureMap || !chunk->m_layers) {
+        return false;
+    }
+
+    uint32_t cellY = static_cast<uint32_t>(col) & 7;
+    uint32_t cellX = static_cast<uint32_t>(row) & 7;
+
+    if (CMapChunk::s_holeMask[(cellY >> 1) + (cellX >> 1) * 4] & chunk->m_header->holes) {
+        return false;
+    }
+
+    uint32_t layer = (chunk->m_lowQualityTextureMap[cellX] & LAYER_MASK[cellY])
+                   >> LAYER_SHIFT[cellY];
+
+    auto effect = g_groundEffectTextureDB.GetRecord(chunk->m_layers[layer].effectId);
+
+    if (!effect) {
+        return false;
+    }
+
+    *terrainType = effect->m_terrainType;
+
+    return true;
 }
 
 // How close under a surface still counts as being at it.

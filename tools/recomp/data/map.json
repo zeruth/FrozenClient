@@ -47234,6 +47234,21 @@
   "refSize": 2068,
   "status": "ported"
  },
+ "007a0530": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMap.cpp"
+  ],
+  "frozen": "CMap::GetTerrainType",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 361,
+  "status": "ported"
+ },
  "007a0820": {
   "branchRatio": 0.667,
   "constOverlap": 0.176,
