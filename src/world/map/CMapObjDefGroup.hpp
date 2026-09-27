@@ -11,6 +11,9 @@
 // the CMapBaseObjLinks of the objects placed in the group; CMap::LinkToMapObjDefGroup appends an
 // entity's link to m_entityLinkList and a doodad def's to m_doodadDefLinkList, and the destroy
 // path (FUN_007c3150) drains all four. What the last two hold is not known yet.
+namespace Liquid { class CInstance; }
+using Liquid::CInstance;
+
 class CMapObjDefGroup;
 
 class CMapObjDefGroup : public CMapBaseObj {
@@ -22,6 +25,10 @@ class CMapObjDefGroup : public CMapBaseObj {
         float m_sortDistance = 0.0f;         // +0x4c: along the camera forward
         uint32_t m_groupIndex = 0;           // +0x50: into the root's groups
         CImVector m_ambientColor;            // +0x5c: taken from the def
+        // +0x68: this placed group's liquid surface, or null when it has none yet. The map-object
+        // liquid queue (FUN_00793d20) tests it to decide whether to build one, and stores the
+        // Liquid::CInstance it makes here. Nothing fills it yet -- see the note at that queue.
+        CInstance* m_liquidSurface = nullptr;
         // TODO +0x54, +0x60..+0x6c
         // What the traversal left of the view each time it reached this group, one record per
         // doorway. The render pass draws the group once per record, clipped to it, and gives
@@ -33,6 +40,11 @@ class CMapObjDefGroup : public CMapBaseObj {
         // Its place in the frame's visible list (+0xb0); empty means the traversal has
         // not reached it yet this frame
         TSLink<CMapObjDefGroup> m_renderLink;
+        // +0xb8: its place in the list of groups WAITING for a liquid surface. A third link beside
+        // the two above, which is what the reference's +0xb8 falls on once m_renderLink at +0xb0 has
+        // had its eight bytes -- the queue drains this list and unlinks each group as it goes.
+        TSLink<CMapObjDefGroup> m_liquidQueueLink;
+
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_doodadDefLinkList;   // +0x78
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_entityLinkList;      // +0x84
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_link90List;          // +0x90

@@ -9973,6 +9973,22 @@
   "refSize": 211,
   "status": "ported"
  },
+ "004b5040": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/Log.cpp",
+   "src/util/log.cpp"
+  ],
+  "frozen": "SysMsgPrintf",
+  "frozenSize": 189,
+  "how": "override",
+  "module": "CSimpleAnimScript.cpp",
+  "refSize": 73,
+  "status": "diverged"
+ },
  "004b50a0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -42384,11 +42400,27 @@
   "refSize": 406,
   "status": "ported"
  },
+ "0072a000": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGObject.cpp",
+   "src/object/client/cgobject.cpp"
+  ],
+  "frozen": "CGObject::GetType",
+  "frozenSize": 8,
+  "how": "callgraph",
+  "module": "Unit_C.cpp",
+  "refSize": 651,
+  "status": "ported"
+ },
  "0072d940": {
   "branchRatio": 0.24,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/object/client/CGUnit_C.cpp",
    "src/object/client/cgunit_c.cpp"
@@ -43230,22 +43262,6 @@
   "how": "override",
   "module": "ConsoleClient.cpp",
   "refSize": 77,
-  "status": "ported"
- },
- "007654a0": {
-  "branchRatio": 0.056,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/util/Log.cpp",
-   "src/util/log.cpp"
-  ],
-  "frozen": "SysMsgPrintf",
-  "frozenSize": 189,
-  "how": "string",
-  "module": "ConsoleClient.cpp",
-  "refSize": 462,
   "status": "ported"
  },
  "00765880": {
@@ -46712,7 +46728,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderMapObjs",
-  "frozenSize": 1009,
+  "frozenSize": 1012,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1058,
@@ -46808,7 +46824,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::MarkMapObjGroupVisible",
-  "frozenSize": 677,
+  "frozenSize": 680,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 281,
@@ -47713,7 +47729,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::Render",
-  "frozenSize": 329,
+  "frozenSize": 332,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 262,
@@ -50097,7 +50113,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDefGroup",
-  "frozenSize": 532,
+  "frozenSize": 553,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 103,
@@ -65152,7 +65168,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.091,
+  "fidelity": 0.182,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp"
   ],
@@ -65230,7 +65246,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.2,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp"
   ],

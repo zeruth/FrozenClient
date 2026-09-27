@@ -1351,8 +1351,9 @@
     "note": "call slot in TextureCreate (recomp --diff 004b9760): straight after the SStrCopy of the file name"
   },
   "004b5040": {
-    "status": "unlinked",
-    "note": "NOT CGUnit_C::GetDisplayID. The callgraph matcher proposed that on 2026-09-23 because it was the only unmatched callee left of FUN_00717a20 once that was annotated as CGUnit_C::GetModelData. It is a system-message printf: FUN_00717a20 calls it as (1, 2, \"NOCREATUREDISPLAYIDFOUND|%d\", id) and (1, 0x10, \"INVALIDDISPLAYMODELRECORD|%d|%d\", a, b), and it has 40 callers. CGUnit_C::GetDisplayID is a two-line accessor that takes no format string. Deliberately NOT tagged as frozen SysMsgPrintf either, close as that is: the reference takes (int, int, format, ...) and frozen takes (SYSMSG_TYPE, format, ...) -- one fixed argument fewer -- so they are not yet known to be the same function."
+    "frozen": "SysMsgPrintf",
+    "status": "diverged",
+    "note": "SysMsgPrintf, identified 2026-09-27 from its shape rather than a string: it vsnprintf's its format into a buffer, then returns 1 when its first argument is below 4 and otherwise sets last error 0x57 (ERROR_INVALID_PARAMETER). Four is SYSMSG_NUMTYPES, so that test is a message-severity validity check, which is what names the function. 40 callers. DIVERGED three ways, all in frozen's favour: the reference formats into a 0x100 local and then DISCARDS it -- the retail build's logging is stripped, the same way FUN_005eeb70 is a bare ret -- where frozen prints to stderr; frozen's buffer is 1024 bytes; and frozen returns void where the reference returns 1 or 0, so a caller cannot branch on the severity being valid. No caller ported so far uses that return."
   },
   "00715130": {
     "status": "unlinked",

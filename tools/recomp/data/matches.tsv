@@ -623,6 +623,7 @@ addr	how	frozen	evidence
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
 004a8570	string	ScreenshotRequest	unique "Screenshots"
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
+004b5040	override	SysMsgPrintf	
 004b50a0	annotated	AsyncReadIsUnstarted	tag in src/component/Texture.cpp
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
@@ -2657,6 +2658,7 @@ addr	how	frozen	evidence
 00724280	annotated	CGUnit_C::GetLootAnimation	tag in src/object/client/CGUnit_C.cpp
 00724330	annotated	CGUnit_C::GetSpellCastAnimation	tag in src/object/client/CGUnit_C.cpp
 00724500	annotated	CGUnit_C::ChooseAnimation	tag in src/object/client/CGUnit_C.cpp
+0072a000	callgraph	CGObject::GetType	only unmatched callee of 0072d940=CGUnit_C::RefreshDataPointers
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 00735820	override	CGUnit_C::SetBoneSequence	
@@ -2710,7 +2712,6 @@ addr	how	frozen	evidence
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
-007654a0	string	SysMsgPrintf	unique "warning"
 00765880	override	Script_AccessDenied	
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
