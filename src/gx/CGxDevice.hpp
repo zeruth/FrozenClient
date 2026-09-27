@@ -112,6 +112,15 @@ class CGxDevice {
         static uint32_t s_streamPoolSize[];
         static uint32_t s_texFormatBitDepth[];
         static uint32_t s_texFormatBytesPerBlock[];
+        // How many texels each entry of s_texFormatBytesPerBlock covers, as a shift: 0 for every
+        // uncompressed format and 2 for the three DXT ones, whose block is four texels wide.
+        static uint32_t s_texFormatBlockShift[];
+
+        // ref: FUN_006ac130
+        // The byte stride of one row of a texture in this format -- one row of BLOCKS for a
+        // compressed one. Takes the height as well because a cube map stores its six faces side
+        // by side, so its row is six faces wide rather than as wide as the image.
+        static uint32_t TexFormatStride(EGxTexFormat format, uint32_t width, uint32_t height);
 
         // Static functions
         static int32_t AdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats);

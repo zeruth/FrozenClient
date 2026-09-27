@@ -87,6 +87,50 @@ uint32_t CGxDevice::s_texFormatBitDepth[] = {
     32      // GxTex_D24X8
 };
 
+uint32_t CGxDevice::s_texFormatBlockShift[] = {
+    0,      // GxTex_Unknown
+    0,      // GxTex_Abgr8888
+    0,      // GxTex_Argb8888
+    0,      // GxTex_Argb4444
+    0,      // GxTex_Argb1555
+    0,      // GxTex_Rgb565
+    2,      // GxTex_Dxt1
+    2,      // GxTex_Dxt3
+    2,      // GxTex_Dxt5
+    0,      // GxTex_Uv88
+    0,      // GxTex_Gr1616F
+    0,      // GxTex_R32F
+    0       // GxTex_D24X8
+};
+
+// ref: FUN_006ac130
+// Both tables are the reference's own, dumped from 0x00ad906c (the shifts) and 0x00ad9038 (the
+// bytes) -- and the bytes one matches s_texFormatBytesPerBlock entry for entry, all thirteen,
+// which is what says the two are indexed the same way.
+//
+// The clamps are only reached for a compressed format, and 4 is its block width: a mip narrower
+// than one block still occupies one. The cube-map arm exists because a cube map is stored as its
+// six faces side by side, so `width == height * 6`, and the row is that wide.
+uint32_t CGxDevice::TexFormatStride(EGxTexFormat format, uint32_t width, uint32_t height) {
+    if (format >= GxTex_Dxt1 && format <= GxTex_Dxt5) {
+        if (width == height * 6) {
+            if (height < 5) {
+                height = 4;
+            }
+
+            return (height * 6 >> CGxDevice::s_texFormatBlockShift[format])
+                 * CGxDevice::s_texFormatBytesPerBlock[format];
+        }
+
+        if (width < 5) {
+            width = 4;
+        }
+    }
+
+    return (width >> CGxDevice::s_texFormatBlockShift[format])
+         * CGxDevice::s_texFormatBytesPerBlock[format];
+}
+
 uint32_t CGxDevice::s_texFormatBytesPerBlock[] = {
     0,      // GxTex_Unknown
     4,      // GxTex_Abgr8888

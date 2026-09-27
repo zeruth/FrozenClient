@@ -2363,7 +2363,15 @@ addr	how	frozen	evidence
 006aaf40	annotated	TgaFile::Close	tag in src/gx/texture/TgaFile.cpp
 006aafb0	annotated	TgaFile::Open	tag in src/gx/texture/TgaFile.cpp
 006ab700	annotated	CalcLevelCount	tag in src/gx/Texture.cpp
+006ac130	annotated	CGxDevice::TexFormatStride	tag in src/gx/CGxDevice.cpp
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
+006ae440	annotated	Blit_Dxt1_Rgb565	tag in src/gx/Blit.cpp
+006ae4a0	annotated	Blit_Dxt1_Argb1555	tag in src/gx/Blit.cpp
+006ae500	annotated	Blit_Dxt1_Argb8888	tag in src/gx/Blit.cpp
+006ae560	annotated	Blit_Dxt3_Argb4444	tag in src/gx/Blit.cpp
+006ae5c0	annotated	Blit_Dxt3_Argb8888	tag in src/gx/Blit.cpp
+006ae620	annotated	Blit_Dxt5_Argb4444	tag in src/gx/Blit.cpp
+006ae680	annotated	Blit_Dxt5_Argb8888	tag in src/gx/Blit.cpp
 006ae6e0	annotated	InitBlit	tag in src/gx/Blit.cpp
 006ae7c0	annotated	Blit	tag in src/gx/Blit.cpp
 006ae8b0	annotated	CBLPFile::Close	tag in src/gx/blp/CBLPFile.cpp

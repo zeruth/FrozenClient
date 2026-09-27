@@ -207,14 +207,46 @@ void Blit_Argb4444_Abgr8888(const C2iVector& size, const void* in, uint32_t inSt
     WHOA_UNIMPLEMENTED();
 }
 
+// THE SEVEN DXT-TO-UNCOMPRESSED BLITTERS BELOW ARE ALL STUBS, and they are the only reason
+// CBLPFile::Lock2 cannot convert a compressed mip -- see the long note at its COLOR_DXT case.
+// Their reference addresses were recovered from InitBlit (FUN_006ae6e0) by decoding the slot each
+// assignment writes: the table index is `alpha + (srcFmt * 13 + dstFmt) * 4` and each entry is 4
+// bytes, so the byte offset from the table base at 0x00c60930 is `16 * (src * 13 + dst) + 4 *
+// alpha`. Every one of InitBlit's twenty-five assignments decodes to a slot frozen also fills,
+// which is what makes the seven below trustworthy rather than guessed.
+//
+// Each is a six-line WRAPPER of identical shape -- verified on three of them -- choosing between
+// two decoders by whether the image is whole 4x4 blocks:
+//
+//     if (size.x > 3 && size.y > 3 && (size.x & 3) == 0 && (size.y & 3) == 0)
+//         fast(...);   // every block complete
+//     else
+//         general(...);   // partial blocks at the right or bottom edge
+//
+// so the work is in the fourteen decoders, not the wrappers. Those addresses, general then fast:
+//
+//     Blit_Dxt1_Rgb565    FUN_006ae440   ->  006ad440 / 006ad5b0
+//     Blit_Dxt1_Argb1555  FUN_006ae4a0   ->  006ad660 / (its own pair)
+//     Blit_Dxt1_Argb8888  FUN_006ae500   ->  006ad880 / 006ada10
+//     Blit_Dxt3_Argb4444  FUN_006ae560   ->  006adae0 / (its own pair)
+//     Blit_Dxt3_Argb8888  FUN_006ae5c0   ->  006add20 / (its own pair)
+//     Blit_Dxt5_Argb4444  FUN_006ae620   ->  006adf90 / (its own pair)
+//     Blit_Dxt5_Argb8888  FUN_006ae680   ->  006ae1d0 / 006ae360
+//
+// Implementing Dxt1 to Argb8888 first is worth the most: DXT1 is the commonest encoding in the
+// archives, and Argb8888 is what GetTextureFormats falls back to when the device cannot sample
+// compressed textures -- which is the case the GLES backend cares about.
+// ref: FUN_006ae500
 void Blit_Dxt1_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
 
+// ref: FUN_006ae4a0
 void Blit_Dxt1_Argb1555(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
 
+// ref: FUN_006ae440
 void Blit_Dxt1_Rgb565(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
@@ -226,10 +258,12 @@ void Blit_Dxt1_Dxt1(const C2iVector& size, const void* in, uint32_t inStride, vo
     memcpy(out, in, (4 * v6 * v7) >> 3);
 }
 
+// ref: FUN_006ae5c0
 void Blit_Dxt3_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
 
+// ref: FUN_006ae560
 void Blit_Dxt3_Argb4444(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
@@ -253,10 +287,12 @@ void Blit_Dxt35_Dxt35(const C2iVector& size, const void* in, uint32_t inStride, 
     }
 }
 
+// ref: FUN_006ae680
 void Blit_Dxt5_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }
 
+// ref: FUN_006ae620
 void Blit_Dxt5_Argb4444(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     WHOA_UNIMPLEMENTED();
 }

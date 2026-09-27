@@ -1,4 +1,7 @@
 #include "gx/blp/CBLPFile.hpp"
+#include "gx/Blit.hpp"
+#include "gx/CGxDevice.hpp"
+#include <tempest/Vector.hpp>
 #include "gx/Texture.hpp"
 #include "util/SFile.hpp"
 #include <storm/Error.hpp>
@@ -21,6 +24,25 @@ static const unsigned char s_alpha2Mask[4] = { 0x03, 0x0C, 0x30, 0xC0 };
 static const unsigned char s_alpha2Shift[4] = { 0, 2, 4, 6 };
 // And where the two bits come FROM in a 4-bit source plane: the top two of each nibble.
 static const unsigned char s_alpha2From4[2] = { 2, 6 };
+
+// PIXEL_FORMAT -> BlitFormat, the reference's own table at 0x00ad91bc. It is not the identity:
+// PIXEL_FORMAT orders DXT1 and DXT3 first and puts DXT5 at 7, where BlitFormat groups the three
+// DXTs at 6, 7, 8 -- and ARGB1555 and ARGB4444 swap places between the two enums.
+//
+// The three that map to Unknown are the ones Blit has no converter for: A8, UNSPECIFIED and
+// ARGB2565 (whose alpha is a separate plane, so a straight blit could not carry it anyway).
+static const BlitFormat s_pixelToBlitFormat[NUM_PIXEL_FORMATS] = {
+    BlitFormat_Dxt1,        // PIXEL_DXT1
+    BlitFormat_Dxt3,        // PIXEL_DXT3
+    BlitFormat_Argb8888,    // PIXEL_ARGB8888
+    BlitFormat_Argb1555,    // PIXEL_ARGB1555
+    BlitFormat_Argb4444,    // PIXEL_ARGB4444
+    BlitFormat_Rgb565,      // PIXEL_RGB565
+    BlitFormat_Unknown,     // PIXEL_A8
+    BlitFormat_Dxt5,        // PIXEL_DXT5
+    BlitFormat_Unknown,     // PIXEL_UNSPECIFIED
+    BlitFormat_Unknown      // PIXEL_ARGB2565
+};
 
 // ref: FUN_004b58d0
 // An empty BLP2 header: version 1, preferred format 2, bit 4 of the mip byte clear.
@@ -582,7 +604,28 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                 case PIXEL_ARGB1555:
                 case PIXEL_ARGB4444:
                 case PIXEL_RGB565:
-                    // TODO
+                    // The conversion is WORKED OUT but deliberately not wired, and the reason is
+                    // specific: it would report success on a buffer nothing had written.
+                    //
+                    // The reference converts a compressed mip through Blit (FUN_006af990) rather
+                    // than through a decoder of its own, and everything that needs is now here --
+                    // s_pixelToBlitFormat gives both sides' BlitFormat, GetMipSize gives the
+                    // destination stride, and CGxDevice::TexFormatStride gives the source's row
+                    // of blocks. The call is one line:
+                    //
+                    //     return Blit(extent, BlitAlpha_0, mipData, srcStride, srcFmt,
+                    //                 data, dstStride, dstFmt);
+                    //
+                    // What stops it is that EVERY DXT-to-uncompressed blitter in Blit.cpp is a
+                    // WHOA_UNIMPLEMENTED stub -- Dxt1/Dxt3/Dxt5 to Argb8888, Rgb565, Argb1555 and
+                    // Argb4444, all seven. InitBlit registers them, so the table entry is not
+                    // null, so Blit would call the stub, get nothing done, and answer 1. Lock2
+                    // would then report a decoded mip and the caller would upload whatever was
+                    // in the buffer. Answering 0 here is a clean failure and is what the caller
+                    // already handles.
+                    //
+                    // So the blocker is the blitters, not this dispatch. Implement
+                    // Blit_Dxt1_Argb8888 and friends and this becomes the one line above.
                     return 0;
 
                 case PIXEL_ARGB2565:
