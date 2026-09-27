@@ -1,4 +1,5 @@
 #include "world/map/CMapObj.hpp"
+#include <cfloat>
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "world/CWorld.hpp"
@@ -1027,4 +1028,75 @@ void CMapObj::RectDivide(float* result, const float* a, const float* b) {
     result[1] = a[1] / b[1];
     result[2] = a[2] / b[2];
     result[3] = a[3] / b[3];
+}
+
+// ref: FUN_007d77c0
+// Walk outward through this group's portals, narrowing `best` to the distance of the nearest portal
+// polygon. Recursive, and the recursion is what makes it a reachability question rather than a
+// geometric one: a portal only counts if you can get to it.
+//
+// THE DEPTH CAP IS FOUR, tested on entry, so the walk gives up rather than exploring a building
+// exhaustively. Combined with the cameFrom check -- which stops it immediately turning back through
+// the portal it arrived by -- that bounds the work without needing a visited set.
+//
+// THE MASK DECIDES WHETHER A NEIGHBOUR TERMINATES THE WALK. Testing it against the neighbour's MOGI
+// flags, a zero result means recurse into that group, and a non-zero one means stop and MEASURE the
+// portal leading to it. So the mask names the kind of group whose doorways are the ones worth
+// measuring to, and everything else is just corridor.
+//
+// Only portals within 25 units count -- the reference's own limit, from 0x00a2e868 -- and `best` only
+// ever narrows, so a caller seeds it with FLT_MAX and reads it back.
+//
+// Three arrays, all already declared on this class with the offsets this function uses: m_mopr for
+// the portal references, m_mopt for the portals themselves, m_mopv for their vertices, and m_mogi for
+// the per-group info whose first field is the flags word.
+void CMapObj::AccumulateNearestPortalDistance(uint32_t depth, uint32_t stopMask,
+                                              CMapObjGroup* group, CMapObjGroup* cameFrom,
+                                              const C3Vector& point, float* best) {
+    if (depth >= 4) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < group->m_portalCount; i++) {
+        const SMOPortalRef& ref = this->m_mopr[group->m_portalStart + i];
+
+        CMapObjGroup* other = this->m_groups[ref.groupIndex];
+
+        if (!other || other == cameFrom) {
+            continue;
+        }
+
+        if (!(this->m_mogi[ref.groupIndex].flags & stopMask)) {
+            this->AccumulateNearestPortalDistance(depth + 1, stopMask, other, group, point, best);
+
+            continue;
+        }
+
+        const SMOPortal& portal = this->m_mopt[ref.portalIndex];
+
+        float distance = DistancePointPolygonInPlane(point, &this->m_mopv[portal.startVertex],
+                                                    portal.count, portal.plane);
+
+        if (distance < 25.0f && distance < *best) {
+            *best = distance;
+        }
+    }
+}
+
+// ref: FUN_007d8010
+// Seed the walk and hand back what it found. FLT_MAX means nothing within range, which is the same
+// answer a group with no portals gives, so a caller cannot tell those apart -- and does not need to.
+//
+// The mask is 0x8 on its own, or 0x8 together with 0x40 when the caller asks for the wider one. The
+// reference selects between them on a FLOAT argument tested against zero rather than a flag, which is
+// transcribed as written.
+float CMapObj::NearestPortalDistance(CMapObjGroup* group, const C3Vector& point,
+                                     float includeFlag40) {
+    uint32_t stopMask = includeFlag40 != 0.0f ? 0x48 : 0x8;
+
+    float best = FLT_MAX;
+
+    this->AccumulateNearestPortalDistance(0, stopMask, group, nullptr, point, &best);
+
+    return best;
 }

@@ -429,6 +429,18 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void GroupBounds(uint32_t index, CAaBox* bounds);
         uint32_t GroupFlags(uint32_t index);
         CMapObjGroup* GetGroup(uint32_t index, int32_t allowUnloaded);
+
+        // ref: FUN_007d8010
+        // How far a point is from the nearest portal polygon reachable from `group`, or FLT_MAX when
+        // none is within range.
+        float NearestPortalDistance(CMapObjGroup* group, const C3Vector& point,
+                                    float includeFlag40);
+
+        // ref: FUN_007d77c0
+        // The recursive half of the above. Walks outward through portals, narrowing `best`.
+        void AccumulateNearestPortalDistance(uint32_t depth, uint32_t stopMask,
+                                            CMapObjGroup* group, CMapObjGroup* cameFrom,
+                                            const C3Vector& point, float* best);
         void WaitForRoot();
         void WaitForGroup(uint32_t index);
         void ReadGroup(uint32_t index);

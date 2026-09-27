@@ -3395,5 +3395,15 @@
     "frozen": "Liquid::CMeshGeomFactory::Build",
     "status": "ported",
     "note": "The map-object water build, vtable slot 2. PORTED 2026-09-27 with the whole chain under it. Its decompilation actively misleads on one point and the disassembly was needed: Ghidra's brace structure puts the batch fill before the buffer unlocks with a goto past them, which would leave both buffers locked and nothing drawable. The unlock at 0x7d4685 in fact follows the EmitLiquidTiles call at 0x7d466f directly, with the batch fill after."
+  },
+  "007d7120": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "MSVC's SCALAR DELETING DESTRUCTOR for CMapArea: forty-three bytes that call ~CMapArea and then SMemFree the object when the low bit of their flags argument is set. It is the compiler's vtable slot for `delete p`, emitted for every class with a virtual destructor, and there is no behaviour in it that frozen's own destructor and deletion path do not already cover. Excluded as glue rather than left looking like a gap -- the same treatment as FUN_007d9720, the matching constructor wrapper. Read 2026-09-27 while finishing MapArea.cpp."
+  },
+  "007d72a0": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "MSVC's SCALAR DELETING DESTRUCTOR for CMapBaseObj: forty-three bytes that call ~CMapBaseObj and then SMemFree the object when the low bit of their flags argument is set. It is the compiler's vtable slot for `delete p`, emitted for every class with a virtual destructor, and there is no behaviour in it that frozen's own destructor and deletion path do not already cover. Excluded as glue rather than left looking like a gap -- the same treatment as FUN_007d9720, the matching constructor wrapper. Read 2026-09-27 while finishing MapArea.cpp."
   }
 }

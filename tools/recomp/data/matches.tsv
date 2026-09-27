@@ -3286,10 +3286,12 @@ addr	how	frozen	evidence
 007d7380	annotated	CMapObjGroup::FixVertexColors	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7470	annotated	CMapObj::ParseChunks	tag in src/world/map/CMapObj.cpp
 007d7710	override	CMapObjGroup::LoadMaterialTextures	
+007d77c0	annotated	CMapObj::AccumulateNearestPortalDistance	tag in src/world/map/CMapObj.cpp
 007d78c0	annotated	CMapObjGroup::BakePortalLight	tag in src/world/map/CMapObjDraw.cpp
 007d7c30	annotated	CMapObjGroup::ParseOptionalChunks	tag in src/world/map/CMapObjGroupLoad.cpp
 007d7eb0	annotated	CMapObj::ReadComplete	tag in src/world/map/CMapObj.cpp
 007d7f50	annotated	CMapObjGroup::ParseChunks	tag in src/world/map/CMapObjGroupLoad.cpp
+007d8010	annotated	CMapObj::NearestPortalDistance	tag in src/world/map/CMapObj.cpp
 007d8050	annotated	CMapObj::ReadCallback	tag in src/world/map/CMapObj.cpp
 007d80c0	annotated	CMapObj::Read	tag in src/world/map/CMapObj.cpp
 007d81c0	annotated	CMapObjGroup::BuildAntiPortals	tag in src/world/map/CMapObjGroupLoad.cpp
