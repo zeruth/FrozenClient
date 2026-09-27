@@ -22,6 +22,15 @@ void DataMgrGetCoord(HDATAMGR mgr, uint32_t fieldId, C3Vector* coord) {
     *coord = field->m_data;
 }
 
+// ref: FUN_004c12b0
+// Identified 2026-09-27 after the call-graph matcher bound this address to
+// CM2Model::AnimateCamerasST instead -- a callee taking its caller's name, which is the matcher
+// failure mode worth knowing. Three things settle it and none of them is position in the queue:
+// the reference function's signature is (mgr in ECX, fieldId, C3Vector*, flags byte); it tests
+// bit 0x4 of that flags byte to decide whether to keep the EXISTING z rather than the passed one,
+// which is this function's per-component keep logic and nothing AnimateCamerasST does; and it is
+// 172 bytes ending at 0x004c135c, immediately before DataMgrSetFloat at FUN_004c1360, which was
+// already tagged. Adjacent definitions in the same module, in source order.
 void DataMgrSetCoord(HDATAMGR mgr, uint32_t fieldId, const C3Vector& coord, uint32_t coordFlags) {
     auto dataMgr = reinterpret_cast<CDataMgr*>(mgr);
     auto typeId = CBaseManaged::COORD;

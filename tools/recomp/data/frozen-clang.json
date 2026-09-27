@@ -974,7 +974,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 25
+"line": 34
 },
 "DataMgrSetFloat": {
 "files": [
@@ -992,7 +992,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 53
+"line": 62
 },
 "CDataMgr::AddManaged": {
 "files": [
@@ -84352,6 +84352,44 @@
 "refs": [],
 "line": 252
 },
+"CM2Ribbon::SetPosition": {
+"files": [
+"src/model/cm2ribbon.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"C44Matrix::AffineInverse",
+"C44Matrix::operator*=",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator="
+],
+"strings": [],
+"consts": [
+"0.0f",
+"0x1",
+"0x4",
+"0x8"
+],
+"branches": 3,
+"stub": false,
+"lines": 48,
+"refs": [],
+"line": 395
+},
 "CM2Ribbon::UpdateCellRect": {
 "files": [
 "src/model/cm2ribbon.cpp"
@@ -84366,7 +84404,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 395
+"line": 451
 },
 "CM2Ribbon::SetTextureSlot": {
 "files": [
@@ -84381,7 +84419,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 416
+"line": 472
 },
 "CM2Ribbon::SetHeightAbove": {
 "files": [
@@ -84394,7 +84432,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 427
+"line": 483
 },
 "CM2Ribbon::SetHeightBelow": {
 "files": [
@@ -84407,7 +84445,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 432
+"line": 488
 },
 "CM2Ribbon::SetAlpha": {
 "files": [
@@ -84423,7 +84461,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 438
+"line": 494
 },
 "CM2Ribbon::SetColor": {
 "files": [
@@ -84439,7 +84477,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 450
+"line": 506
 },
 "CM2Ribbon::IsEmpty": {
 "files": [
@@ -84452,7 +84490,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 462
+"line": 518
 },
 "CM2Ribbon::SetGravity": {
 "files": [
@@ -84465,7 +84503,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 467
+"line": 523
 },
 "CM2Ribbon::SetAbove": {
 "files": [
@@ -84483,7 +84521,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 477
+"line": 533
 },
 "CM2Ribbon::SetFlag8": {
 "files": [
@@ -84500,7 +84538,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 488
+"line": 544
 },
 "CM2Ribbon::Transform": {
 "files": [
@@ -84522,7 +84560,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 500
+"line": 556
 },
 "CM2Ribbon::GetMaterialCount": {
 "files": [
@@ -84537,7 +84575,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 540
+"line": 596
 },
 "CM2Ribbon::CountVertices": {
 "files": [
@@ -84554,7 +84592,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 547
+"line": 603
 },
 "CM2SceneRender::CM2SceneRender": {
 "files": [

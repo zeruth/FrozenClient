@@ -678,6 +678,8 @@ addr	how	frozen	evidence
 004bec40	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004bec70	annotated	GxXformProjection	tag in src/gx/Transform.cpp
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004c1220	callgraph	DataMgrGetCoord	only unmatched callee of 004c12b0=DataMgrSetCoord
+004c12b0	annotated	DataMgrSetCoord	tag in lib/common/common/DataMgr.cpp
 004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
 004c1510	callgraph	CRndSeed::CRndSeed	only unmatched callee of 0097a130=CM2ParticleEmitter::SampleSpin, 0097e150=CM2ParticleEmitter::CM2ParticleEmitter
 004c15c0	annotated	M2ParticleRandSigned	tag in src/model/CM2ParticleEmitter.cpp
@@ -4488,6 +4490,7 @@ addr	how	frozen	evidence
 0097f630	annotated	CM2Ribbon::SetGravity	tag in src/model/CM2Ribbon.cpp
 0097f640	annotated	CM2Ribbon::IsEmpty	tag in src/model/CM2Ribbon.cpp
 0097f700	annotated	CM2Ribbon::BuildControlPoints	tag in src/model/CM2Ribbon.cpp
+0097f940	annotated	CM2Ribbon::SetPosition	tag in src/model/CM2Ribbon.cpp
 0097fb60	annotated	CM2Ribbon::SetColor	tag in src/model/CM2Ribbon.cpp
 0097fba0	annotated	CM2Ribbon::SetAlpha	tag in src/model/CM2Ribbon.cpp
 0097fbe0	annotated	CM2Ribbon::Transform	tag in src/model/CM2Ribbon.cpp

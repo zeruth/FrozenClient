@@ -385,6 +385,62 @@ void CM2Ribbon::Update(float delta, int32_t suppressEmit) {
     // from happening again.
     this->m_flags = (this->m_flags & ~0x20u) | 0x10u;
 }
+// ref: FUN_0097f940
+// The pair shift. Everything the trail knows about where it is lives in two points and two frames
+// of direction; this moves the newer set into the older and takes a fresh one off the placement
+// matrix, which for a weapon trail is the attachment bone's.
+//
+// The matrix's ROW 1 is the edge direction and ROW 2 the tangent -- so the trail is widened along
+// the bone's Y and swept along its Z.
+void CM2Ribbon::SetPosition(const C44Matrix& placement, const C3Vector& offset,
+                            const C44Matrix* relativeTo) {
+    // Both of these are set by Initialize and cleared by nothing here, so in practice this gate
+    // only shuts on a ribbon that was never initialised.
+    if (!(this->m_flags & 0x4) || !(this->m_flags & 0x8)) {
+        return;
+    }
+
+    C44Matrix local = placement;
+
+    // The offset goes into the TRANSLATION ROW, before the relative-space change -- the reference
+    // writes it back into its own copy of the matrix rather than keeping it beside it, which is why
+    // the multiply below sees the offset applied.
+    local.d0 += offset.x;
+    local.d1 += offset.y;
+    local.d2 += offset.z;
+
+    // Into the space the geometry is expressed in. Null means world space, which is every case in
+    // frozen today: CM2Model::m_particleRelative has no ported setter.
+    if (relativeTo) {
+        local *= relativeTo->AffineInverse();
+    }
+
+    // The OFFSET, not the resulting point. The draw subtracts this from the world matrix's
+    // translation row, so the geometry is stored relative to it.
+    this->m_origin = offset;
+
+    if (!(this->m_flags & 0x1)) {
+        // First placement. Seed the PREVIOUS end from this same matrix, so the first segment has
+        // zero length instead of stretching from wherever the fields happened to be, and open the
+        // emission gate.
+        this->vec7C = { local.b0, local.b1, local.b2 };
+        this->vec94 = { local.c0, local.c1, local.c2 };
+        this->vec20 = { local.d0, local.d1, local.d2 };
+
+        this->m_edgeAccum = 0.0f;
+
+        this->m_flags |= 0x1;
+    } else {
+        // Every later frame: what was current becomes previous.
+        this->vec20 = this->vec164;
+        this->vec7C = this->vec88;
+        this->vec94 = this->vecA0;
+    }
+
+    this->vec164 = { local.d0, local.d1, local.d2 };
+    this->vec88 = { local.b0, local.b1, local.b2 };
+    this->vecA0 = { local.c0, local.c1, local.c2 };
+}
 // ref: FUN_0097f510
 // The slot walks the grid: the remainder picks the position along one axis and the quotient the
 // other, both from the COLUMN count. That is the same crossed pairing m_cellHeight already

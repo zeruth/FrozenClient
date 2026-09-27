@@ -249,6 +249,19 @@ class CM2Ribbon {
         // `suppressEmit` non-zero skips the emission and only ages what is already there.
         void Update(float delta, int32_t suppressEmit);
 
+        // Place the ribbon for this frame: shift the current point down to the previous one and take
+        // a new current point, edge direction and tangent from `placement`.
+        //
+        // `offset` is added to the placement's translation row before anything else. `relativeTo`
+        // is the space the trail's geometry is expressed in -- non-null brings the placement into
+        // that space, and it is CM2Model::m_particleRelative at the only call site.
+        //
+        // A no-op unless flags 0x4 and 0x8 are both set, and it is what SETS flag 0x1 -- the first
+        // placement seeds both ends of the pair from the same matrix and opens the gate that lets
+        // Update emit.
+        void SetPosition(const C44Matrix& placement, const C3Vector& offset,
+                         const C44Matrix* relativeTo);
+
         // Recompute the current cell's UV rectangle from m_textureSlot and the grid. Initialize's
         // tail is this same arithmetic evaluated at slot 0.
         void UpdateCellRect();
