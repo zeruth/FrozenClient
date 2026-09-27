@@ -3539,6 +3539,7 @@ addr	how	frozen	evidence
 0081d9c0	annotated	CM2Scene::ProjectSectionVertices	tag in src/model/CM2Scene.cpp
 0081daf0	annotated	CM2Scene::RayTestModelGeometry	tag in src/model/CM2Scene.cpp
 0081dd50	override	CM2Scene::RayTestModel	
+0081df10	override	CM2Scene::RayQuery	
 0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp
 0081ead0	override	CM2Scene::SortOpaqueGeoBatches	
 0081eea0	override	CM2Scene::SortOpaque	

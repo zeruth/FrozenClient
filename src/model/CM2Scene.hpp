@@ -104,6 +104,13 @@ class CM2Scene {
         // +0x128. How many m_rayProjected holds. It only grows, doubling from one, and the old
         // contents are not kept -- the same policy as m_rayCandidateCapacity above.
         uint32_t m_rayProjectedCapacity = 0;                 // +0x128
+        // +0x12c through +0x13c: what the last query hit. RayQuery fills all five, or leaves them
+        // as they were and returns null when nothing was hit.
+        CM2Model* m_rayHitModel = nullptr;                   // +0x12c
+        float m_rayHitNear = 0.0f;                           // +0x130
+        float m_rayHitFar = 0.0f;                            // +0x134
+        uint32_t m_rayHitKey = 0;                            // +0x138
+        void* m_rayHitOwner = nullptr;                       // +0x13c
 
         // +0x144: which draw passes this scene will run, one bit per M2PASS. Draw tests
         // `m_passMask & (1 << pass)` and does nothing when the bit is clear.
@@ -135,6 +142,11 @@ class CM2Scene {
 
         // Bounding-sphere pass: keep the models on the ray list the ray actually reaches, with
         // their entry and exit distances. Returns how many were kept. ref: FUN_0081cff0
+        // Cast a ray through the scene and return the owner of what it hit, or null.
+        // ref: FUN_0081df10
+        void* RayQuery(const C3Vector& start, const C3Vector& end, float* fraction,
+                       int32_t allowSecondPass);
+
         uint32_t CollectRayCandidates(const C3Vector& start, const C3Vector& dir, float length,
                                       int32_t requireAnimated);
 

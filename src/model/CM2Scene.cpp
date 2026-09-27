@@ -1950,6 +1950,118 @@ uint32_t CM2Scene::CollectRayCandidates(const C3Vector& start, const C3Vector& d
     return count;
 }
 
+// ref: FUN_0081df10
+// Cast a ray through the scene. The top of the chain: set the ray up, collect the models whose
+// bounding spheres it reaches, sort those near to far, and test them in that order until one is
+// hit. Returns the owner of whatever was hit, and leaves the full result in m_rayHit*.
+//
+// THE PLANE the whole chain projects onto is the one through the ray's start with the ray's
+// direction as its normal -- which is why planeDist is dot(start, dir) and the 2D query point is
+// the start itself: the start's own height above that plane is zero, so it projects to its own x
+// and y. That is the piece that makes the projections and RayTestTriangles agree.
+//
+// TWO PASSES, and the second only when the caller allows it. The first walks the sorted
+// candidates and stops early -- the list is ordered by entry distance, so once a candidate starts
+// further away than the best hit so far, nothing behind it can win. The second pass drops that
+// shortcut and instead prefers a candidate with a HIGHER key, breaking ties on distance; it runs
+// only when the first found nothing.
+//
+// THE FLOAT TESTS ARE DECODED, not transcribed from the decompiler, which renders both as
+// comparisons between two booleans. `a < b != (a == b)` is true when exactly one holds, and they
+// are mutually exclusive, so it is a <= b. `a < b == (a == b)` is true when neither holds, so it
+// is a > b. Getting either backwards would either stop the search one candidate early or never
+// stop it.
+//
+// The owner is found by walking up the attach chain from the model that was hit until one carries
+// a real m_rayOwner -- so a hit on an attached piece reports whatever it is attached to. The
+// reference's sentinel for `none` is -1 where frozen's is null, the field being a pointer here.
+void* CM2Scene::RayQuery(const C3Vector& start, const C3Vector& end, float* fraction,
+                         int32_t allowSecondPass) {
+    C3Vector dir = { 0.0f, 0.0f, 0.0f };
+    float length = 0.0f;
+
+    if (!this->RaySetup(start, end, *fraction, &length, &dir)) {
+        return nullptr;
+    }
+
+    this->ReserveRayCandidates();
+
+    uint32_t count = this->CollectRayCandidates(start, dir, length, 1);
+
+    M2HeapSort(CM2Scene::SortRayCandidates, this->m_rayCandidateOrder, count, this->m_rayCandidates);
+
+    M2SceneRayCandidate* best = nullptr;
+
+    float planeDist = start.x * dir.x + start.y * dir.y + start.z * dir.z;
+
+    // The search limit: the caller's fraction of the ray, or all of it.
+    float limit = *fraction < 1.0f ? *fraction * length : length;
+
+    for (uint32_t pass = 0; ; pass++) {
+        float bestT = limit;
+
+        for (uint32_t i = 0; i < count; i++) {
+            M2SceneRayCandidate* candidate = &this->m_rayCandidates[this->m_rayCandidateOrder[i]];
+
+            if (pass == 0) {
+                if (bestT <= candidate->tNear) {
+                    break;
+                }
+            } else if (best
+                       && !(best->key <= candidate->key
+                            && (best->key != candidate->key || bestT > candidate->tNear))) {
+                continue;
+            }
+
+            CM2Model* model = candidate->model;
+
+            if (model->m_rayQueryType == 3) {
+                best = this->RayTestModel(model, pass, dir, planeDist,
+                                          *reinterpret_cast<const C2Vector*>(&start), candidate,
+                                          &bestT, best);
+            } else {
+                best = this->RayTestModelGeometry(model, pass, dir, planeDist,
+                                                  *reinterpret_cast<const C2Vector*>(&start),
+                                                  candidate, &bestT, best);
+            }
+        }
+
+        limit = bestT;
+
+        if (best || !allowSecondPass || pass >= 1) {
+            break;
+        }
+
+        limit = length;
+    }
+
+    this->m_flags &= ~0x2u;
+
+    if (!best) {
+        return nullptr;
+    }
+
+    *fraction = limit / length;
+
+    void* owner = nullptr;
+
+    for (CM2Model* m = best->model; m; m = m->m_attachParent) {
+        if (m->m_rayOwner) {
+            owner = m->m_rayOwner;
+
+            break;
+        }
+    }
+
+    this->m_rayHitModel = best->model;
+    this->m_rayHitNear = best->tNear;
+    this->m_rayHitFar = best->tFar;
+    this->m_rayHitKey = best->key;
+    this->m_rayHitOwner = owner;
+
+    return owner;
+}
+
 // ref: FUN_0081daf0
 // Walk one model's batches, project every section that is actually visible, and test its
 // triangles. The counterpart to RayTestModel, which runs against the collision hull instead --

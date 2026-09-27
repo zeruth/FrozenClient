@@ -56554,6 +56554,21 @@
   "refSize": 446,
   "status": "ported"
  },
+ "0081df10": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/model/CM2Scene.cpp"
+  ],
+  "frozen": "CM2Scene::RayQuery",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 507,
+  "status": "ported"
+ },
  "0081e400": {
   "branchRatio": 0.778,
   "constOverlap": 0.071,
