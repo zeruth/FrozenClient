@@ -5725,6 +5725,45 @@ HCAMERA CM2Model::GetCameraById(uint32_t cameraId) {
     return nullptr;
 }
 
+// ref: FUN_00824230
+// The ribbon twin of SetParticleEmission, and the ENQUEUE side of model call type 13 -- the case
+// whose handler in the dispatch walks m_ribbonEmitters calling SetFlag8. Both halves exist now.
+//
+// A model that has not finished loading has no emitters to set the flag on, so the request is
+// recorded as a model call and replayed by InitializeLoaded's dispatch once they exist. That is the
+// whole reason the model-call list exists.
+//
+// The reference stores 0xFFFFFFFF into the type field and then immediately overwrites it with 13.
+// That is a constructor's default being assigned over, not two meaningful writes; STORM_NEW plus
+// the assignment below is the same thing.
+void CM2Model::SetRibbonFlag8(int32_t enable) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 13;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = enable;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    // Reaching here means InitializeLoaded has run, so a non-zero ribbon count implies the emitter
+    // array exists. The guard costs nothing and matches the dispatch's own.
+    if (!this->m_ribbonEmitters) {
+        return;
+    }
+
+    uint32_t count = this->m_shared->m_data->ribbons.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        this->m_ribbonEmitters[i]->SetFlag8(enable);
+    }
+}
+
 // ref: FUN_008279f0
 // Raise or clear bit 0x2 of every emitter's flags, the half of the (flags & 3) == 3 test the step
 // emits on. Before the model has loaded the request is queued as model call 12.

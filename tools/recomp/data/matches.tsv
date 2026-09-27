@@ -3507,6 +3507,7 @@ addr	how	frozen	evidence
 00823f90	annotated	M2BatchesCanMerge	tag in src/model/CM2Model.cpp
 00823fe0	annotated	CM2Model::SetSequenceDoneCallback	tag in src/model/CM2Model.cpp
 00824060	annotated	CM2Model::SetAnimEventCallback	tag in src/model/CM2Model.cpp
+00824230	annotated	CM2Model::SetRibbonFlag8	tag in src/model/CM2Model.cpp
 00824320	annotated	CM2Model::GetSharedUint194	tag in src/model/CM2Model.cpp
 008244f0	annotated	CM2Model::LinkToCallbackListTail	tag in src/model/CM2Model.cpp
 00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp

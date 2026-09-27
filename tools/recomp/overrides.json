@@ -3348,5 +3348,9 @@
   "00980b70": {
     "status": "faithful",
     "note": "CM2Ribbon::Draw. Recall 82%, and the only four calls it is missing are CGxDevice::IRsDirty, which the reference reaches by inlining the compare-and-dirty around each render state while frozen calls GxRsSet and the check lives inside it. Four states, four inlined checks, four missing calls -- the same factoring difference already recorded for 008368b0 and 009808a0, not absent behaviour. Every state number was cross-checked against frozen's EGxRenderState: DepthTest 13, DepthWrite 15, Culling 17, BlendingMode 6, Texture0 21, Lighting 11, which is what confirms the material flag bit assignments rather than assuming them. UNREACHABLE for now: the only caller is CM2SceneRender::DrawRibbon, still a stub."
+  },
+  "00824230": {
+    "status": "faithful",
+    "note": "CM2Model::SetRibbonFlag8. Recall 50%, which on a TWO-call function means one of two matched, and the granularity is the whole story. The reference calls SMemAlloc then CM2Ribbon::SetFlag8 from opposite branches of the same if; frozen reaches SMemAlloc through STORM_NEW and the matcher lines up only the second. Its twin CM2Model::SetParticleEmission (FUN_008279f0) is the same function shape with the same STORM_NEW and scores 100% -- it just has more calls after the branch for the in-order match to anchor on. Structure, argument, queued type and replay all agree; this is the ENQUEUE half of model call type 13, whose dispatch handler was already written."
   }
 }

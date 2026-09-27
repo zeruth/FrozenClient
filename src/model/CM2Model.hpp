@@ -61,7 +61,15 @@ struct CM2ModelCall {
     uint32_t type = -1;
     CM2ModelCall* modelCallNext;
     uint32_t time;
-    uint32_t args[8];
+    // SEVENTEEN, not eight. Every model call the reference queues is a fixed SMemAlloc of 0x50
+    // regardless of type -- SetParticleEmission at 0x8279f0 and SetRibbonFlag8 at 0x824230 both
+    // allocate exactly that -- and 0x50 less the three header dwords is seventeen slots.
+    //
+    // Widened 2026-09-27. frozen declared eight, and since STORM_NEW takes sizeof() the allocation
+    // shrank to match, so nothing overflowed: the cases ported so far reach args[6] at the widest.
+    // It was a trap waiting for the first case that needs more, which would have written past the
+    // block with no warning.
+    uint32_t args[17];
 };
 
 // Everything CM2Model::GetSequenceInfo reports about one animation: how the fallback chain resolved
@@ -494,6 +502,10 @@ class CM2Model {
         HCAMERA GetCameraById(uint32_t cameraId);
         // ref: FUN_008279f0
         void SetParticleEmission(int32_t enable);
+
+        // Set or clear flag 8 on every ribbon emitter. Deferred as a model call when the model is
+        // not loaded yet, exactly as SetParticleEmission defers its own.
+        void SetRibbonFlag8(int32_t enable);
         // ref: FUN_00831330
         C3Vector GetAttachmentWorldPosition(uint32_t id);
 };

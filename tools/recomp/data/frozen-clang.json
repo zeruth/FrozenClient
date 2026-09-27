@@ -82485,6 +82485,29 @@
 "refs": [],
 "line": 5710
 },
+"CM2Model::SetRibbonFlag8": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"CM2ModelCall::CM2ModelCall",
+"M2Array<M2Ribbon>::Count",
+"CM2Ribbon::SetFlag8"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\model\\cm2model.cpp"
+],
+"consts": [
+"0",
+"13"
+],
+"branches": 3,
+"stub": false,
+"lines": 27,
+"refs": [],
+"line": 5739
+},
 "CM2Model::SetParticleEmission": {
 "files": [
 "src/model/cm2model.cpp"
@@ -82507,7 +82530,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 5734
+"line": 5773
 },
 "CM2Model::GetAttachmentWorldPosition": {
 "files": [
@@ -82532,7 +82555,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 5770
+"line": 5809
 },
 "M2BuildBasisFromAxis": {
 "files": [
@@ -82559,7 +82582,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 5798
+"line": 5837
 },
 "M2ParticleFlushDenormals": {
 "files": [

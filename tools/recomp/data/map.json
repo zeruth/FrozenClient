@@ -55967,6 +55967,22 @@
   "refSize": 129,
   "status": "ported"
  },
+ "00824230": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetRibbonFlag8",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 140,
+  "status": "faithful"
+ },
  "00824320": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -57267,7 +57283,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetBoneSequence",
-  "frozenSize": 1182,
+  "frozenSize": 1197,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 797,
