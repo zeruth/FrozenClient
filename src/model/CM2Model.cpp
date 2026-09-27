@@ -2446,6 +2446,32 @@ uint32_t CM2Model::GetEventTimestamp(uint32_t animId, uint32_t eventId) {
     return 0;
 }
 
+// ref: FUN_008276f0
+// The event's position in MODEL space. GetEventWorldPosition below is the same lookup carried on
+// into the world, and the difference between the two is the whole of their content: this one
+// neither animates nor multiplies through the bone and view matrices, so it hands back the point
+// as the file authored it.
+//
+// An event the model does not carry reads (0, 0, 0) -- the same answer the world version gives,
+// and the reason both can return a reference rather than a success flag.
+C3Vector& CM2Model::GetEventPosition(C3Vector& out, uint32_t eventId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    C3Vector* local;
+    uint16_t boneIndex;
+
+    if (!this->GetEvent(eventId, &local, &boneIndex)) {
+        out = C3Vector(0.0f, 0.0f, 0.0f);
+
+        return out;
+    }
+
+    out = *local;
+
+    return out;
+}
 // ref: FUN_008317e0
 C3Vector& CM2Model::GetEventWorldPosition(C3Vector& out, uint32_t eventId) {
     if (!this->m_loaded) {
@@ -2495,6 +2521,13 @@ void CM2Model::GetBoundingSphere(CAaSphere& sphere) {
     sphere.r = bounds.radius;
 }
 
+// ref: FUN_00824170
+// Already written, never tagged -- which is why the queue kept offering it as unported with every
+// callee linked. The reference's body is this one instruction for instruction: the same m_loaded
+// guard, the same WaitForLoad (whose double async wait and flags & 0x20 InitializeLoaded ARE the
+// reference's inline sequence here), and the same return. Its record stride settles the layout
+// too: 0x38 a camera, with the handle at +0x34, which is exactly two C3Vector tracks (20 each), a
+// float track (12) and the handle.
 HCAMERA CM2Model::GetCameraByIndex(uint32_t index) {
     if (!this->m_loaded) {
         this->WaitForLoad("GetCameraByIndex");

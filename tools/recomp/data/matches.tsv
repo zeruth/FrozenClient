@@ -3554,6 +3554,7 @@ addr	how	frozen	evidence
 00823fe0	annotated	CM2Model::SetSequenceDoneCallback	tag in src/model/CM2Model.cpp
 00824060	annotated	CM2Model::SetAnimEventCallback	tag in src/model/CM2Model.cpp
 008240f0	annotated	CM2Model::SetLightEnabled	tag in src/model/CM2Model.cpp
+00824170	annotated	CM2Model::GetCameraByIndex	tag in src/model/CM2Model.cpp
 00824230	annotated	CM2Model::SetRibbonFlag8	tag in src/model/CM2Model.cpp
 00824320	annotated	CM2Model::GetSharedUint194	tag in src/model/CM2Model.cpp
 008243e0	annotated	CM2Model::TransformEmitters	tag in src/model/CM2Model.cpp
@@ -3605,6 +3606,7 @@ addr	how	frozen	evidence
 00827560	annotated	CM2Model::DetachAllChildrenById	tag in src/model/CM2Model.cpp
 008275f0	annotated	CM2Model::HasEvent	tag in src/model/CM2Model.cpp
 00827670	annotated	CM2Model::GetEvent	tag in src/model/CM2Model.cpp
+008276f0	annotated	CM2Model::GetEventPosition	tag in src/model/CM2Model.cpp
 00827780	annotated	CM2Model::GetEventTimestamp	tag in src/model/CM2Model.cpp
 008278e0	annotated	CM2Model::HasCamera	tag in src/model/CM2Model.cpp
 00827960	annotated	CM2Model::GetCameraById	tag in src/model/CM2Model.cpp
@@ -4227,6 +4229,7 @@ addr	how	frozen	evidence
 0095eb30	callgraph	CSimpleMovieFrame::StartMovie	only unmatched callee of 00970660=CSimpleMovieFrame_StartMovie
 0095eba0	annotated	CSimpleMovieFrame::StopMovie	tag in src/ui/simple/CSimpleMovieFrame.cpp
 0095f420	string	CSimpleModel::GetScriptByName	unique "OnAnimFinished"
+0095f4f0	callgraph	CSimpleModel::SetCamera	only unmatched callee of 0095f9f0=CSimpleModel::SetCameraByIndex
 0095f5c0	annotated	CSimpleModel::SetLight	tag in src/ui/simple/CSimpleModel.cpp
 0095f5e0	callgraph	CSimpleModel::SetSequence	only unmatched callee of 009607e0=CSimpleModel_SetSequence
 0095f610	callgraph	CSimpleModel::SetSequenceTime	only unmatched callee of 009608b0=CSimpleModel_SetSequenceTime

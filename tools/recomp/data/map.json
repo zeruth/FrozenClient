@@ -51359,7 +51359,7 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "CMapObjGroup::CMapObjGroup",
-  "frozenSize": 417,
+  "frozenSize": 430,
   "how": "callgraph",
   "module": "MapChunk.cpp",
   "refSize": 168,
@@ -51446,7 +51446,7 @@
   "status": "ported"
  },
  "007cbdc0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -51455,7 +51455,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::AcquireLiquidBuffers",
-  "frozenSize": 157,
+  "frozenSize": 274,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 109,
@@ -56807,6 +56807,22 @@
   "refSize": 118,
   "status": "ported"
  },
+ "00824170": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetCameraByIndex",
+  "frozenSize": 98,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
  "00824230": {
   "branchRatio": 0.75,
   "constOverlap": 0.091,
@@ -57621,6 +57637,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 125,
+  "status": "ported"
+ },
+ "008276f0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetEventPosition",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 132,
   "status": "ported"
  },
  "00827780": {
@@ -65705,7 +65737,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::SetupTransforms",
-  "frozenSize": 1174,
+  "frozenSize": 398,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 448,
@@ -65817,7 +65849,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::DrawWaterMaterial",
-  "frozenSize": 949,
+  "frozenSize": 979,
   "how": "callgraph",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 55,
@@ -67292,6 +67324,22 @@
   "refSize": 96,
   "status": "ported"
  },
+ "0095f4f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleModel.cpp",
+   "src/ui/simple/csimplemodel.cpp"
+  ],
+  "frozen": "CSimpleModel::SetCamera",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
  "0095f5c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -67359,8 +67407,8 @@
  "0095f9f0": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleModel.cpp",
    "src/ui/simple/csimplemodel.cpp"
