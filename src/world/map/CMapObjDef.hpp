@@ -51,6 +51,11 @@ class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_N
         C44Matrix m_inversePlacement;    // +0xb0
         uint32_t m_nameId = 0;           // +0xf0
         CMapObj* m_mapObj = nullptr;     // +0xf4: the root this places
+
+        // The ground type of one polygon's material, for a thing standing on this building.
+        // 0xFFFFFFFF when the group, the polygon or the material is not there.
+        // ref: FUN_007b39b0
+        uint32_t GetPolyGroundType(uint32_t groupIndex, uint16_t polyIndex);
         uint32_t m_doodadSet = 0;        // +0x100
         uint32_t m_nameSet = 0;          // +0x104
         // The links the def's own groups hold on it (+0x114); each group is the owner

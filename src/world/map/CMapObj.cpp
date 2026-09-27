@@ -1118,3 +1118,41 @@ SMOMaterial* CMapObj::GetGroupLiquidMaterial(uint32_t groupIndex) {
 
     return &this->m_materials[group->m_liquidMaterial];
 }
+
+// The MOMT entry the reference indexes with a shift of six, which is a free check that this
+// struct is the right shape: it ends on four runtime words at +0x30, so it measures 0x40.
+static_assert(sizeof(SMOMaterial) == 0x40, "SMOMaterial must match the reference's 0x40 stride");
+
+// ref: FUN_007b39b0
+// The ground type of one polygon's material -- the building's answer to CMap::GetTerrainType,
+// and the other half of what the entity placement stores. A thing standing on open terrain takes
+// its type from the ground effect of the layer showing under it; a thing standing on a WMO takes
+// it from the material of the polygon it is on, which is this.
+//
+// SMOMaterial::groundType is at +0x20 and SMOPoly is the two bytes {flags, material}, both of
+// which frozen already had at those offsets; the reference reads the material byte at +1 of a
+// two-byte stride and scales the material by 0x40, and all three agree.
+//
+// The group index is the FIRST argument and the poly index the second, which is worth stating
+// because the decompilation loses the `this` -- it is in ecx, and the group is fetched from
+// this->m_mapObj rather than from anything passed in.
+uint32_t CMapObjDef::GetPolyGroundType(uint32_t groupIndex, uint16_t polyIndex) {
+    if (!this->m_mapObj) {
+        return 0xFFFFFFFF;
+    }
+
+    CMapObjGroup* group = this->m_mapObj->GetGroup(groupIndex, 0);
+
+    if (!group || polyIndex >= group->m_faceCount) {
+        return 0xFFFFFFFF;
+    }
+
+    // The reference tests the ADDRESS of the polygon rather than the array, which can only be
+    // null when the array is and the index is zero. Testing the array says the same thing and
+    // says it for every index.
+    if (!group->m_polys || !this->m_mapObj->m_materials) {
+        return 0xFFFFFFFF;
+    }
+
+    return this->m_mapObj->m_materials[group->m_polys[polyIndex].material].groundType;
+}
