@@ -1867,3 +1867,56 @@ void CM2Scene::ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfil
         dst++;
     }
 }
+
+// ref: FUN_0081d830
+// The same projection as above for a section whose vertices are blended across several bones.
+//
+// The difference is one matrix. Where the single-bone version indexes m_boneMatrices directly,
+// this asks BlendBoneMatrices3x4 for the weighted combination and then uses it exactly as the
+// other one uses the bone -- transform the position, optionally push out along the rotated
+// normal, project onto the plane keeping the signed distance in z.
+//
+// THE BLEND IS CACHED across consecutive vertices, on BOTH the weights and the indices, because
+// a skinned section is authored with long runs sharing an influence set and the blend is the
+// expensive part. The two caches start at zero, which is the reference's own seed, so a first
+// vertex with no weights and no indices keeps the identity the matrix is initialised to rather
+// than blending anything -- reproduced rather than tidied, since that is a real run of vertices
+// for an unskinned section and the identity is the right answer for it.
+void CM2Scene::ProjectSectionVerticesBlended(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist) {
+    auto data = model->m_shared->m_data;
+    uint32_t i = section->vertexStart;
+    uint32_t end = section->vertexCount + i;
+    auto dst = this->m_rayProjected;
+
+    C44Matrix blended(1.0f);
+
+    uint32_t cachedWeights = 0;
+    uint32_t cachedIndices = 0;
+
+    for (; i < end; i++) {
+        auto& vertex = data->vertices[skinProfile->vertices[i]];
+
+        if (vertex.weights.u != cachedWeights || vertex.indices.u != cachedIndices) {
+            cachedWeights = vertex.weights.u;
+            cachedIndices = vertex.indices.u;
+
+            CM2Scene::BlendBoneMatrices3x4(model->m_boneMatrices, vertex.weights, vertex.indices,
+                                           &blended);
+        }
+
+        C3Vector p = vertex.position * blended;
+
+        if (addNormal) {
+            p.x = vertex.normal.x * blended.a0 + blended.b0 * vertex.normal.y + blended.c0 * vertex.normal.z + p.x;
+            p.y = blended.a1 * vertex.normal.x + blended.b1 * vertex.normal.y + blended.c1 * vertex.normal.z + p.y;
+            p.z = p.z + (blended.a2 * vertex.normal.x + blended.b2 * vertex.normal.y + blended.c2 * vertex.normal.z);
+        }
+
+        float d = (planeNormal.x * p.x + planeNormal.y * p.y + planeNormal.z * p.z) - planeDist;
+
+        dst->x = p.x - planeNormal.x * d;
+        dst->y = p.y - planeNormal.y * d;
+        dst->z = d;
+        dst++;
+    }
+}

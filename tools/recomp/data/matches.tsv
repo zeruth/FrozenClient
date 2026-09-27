@@ -3533,6 +3533,7 @@ addr	how	frozen	evidence
 0081d2c0	annotated	CM2Scene::BlendBoneMatrices	tag in src/model/CM2Scene.cpp
 0081d3d0	annotated	CM2Scene::BlendBoneMatrices3x4	tag in src/model/CM2Scene.cpp
 0081d510	annotated	CM2Scene::RayTestTriangles	tag in src/model/CM2Scene.cpp
+0081d830	annotated	CM2Scene::ProjectSectionVerticesBlended	tag in src/model/CM2Scene.cpp
 0081d9c0	annotated	CM2Scene::ProjectSectionVertices	tag in src/model/CM2Scene.cpp
 0081dd50	override	CM2Scene::RayTestModel	
 0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp

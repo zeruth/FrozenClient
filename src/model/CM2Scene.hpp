@@ -133,6 +133,9 @@ class CM2Scene {
         M2SceneRayCandidate* RayTestTriangles(const uint16_t* indices, const uint16_t* indicesEnd, uint32_t vertexBase, const C2Vector& point, int32_t preferOther, M2SceneRayCandidate* candidate, float* bestHeight, M2SceneRayCandidate* best);
         // ref: FUN_0081d9c0
         void ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
+        // The same projection for a section whose vertices are blended across several bones.
+        // ref: FUN_0081d830
+        void ProjectSectionVerticesBlended(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
 
         // Install the projected-decal callback. Until something calls this, the scene emits no
         // type-1 elements and DrawBatchProj cannot be reached. ref: FUN_0081cc30
