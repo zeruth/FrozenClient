@@ -56416,7 +56416,7 @@
    "src/model/CM2Scene.cpp"
   ],
   "frozen": "CM2Scene::SortTransparentGrouped",
-  "frozenSize": 0,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 227,
@@ -56558,7 +56558,7 @@
    "src/model/CM2Scene.cpp"
   ],
   "frozen": "CM2Scene::KeyAndSortElementList",
-  "frozenSize": 0,
+  "frozenSize": 384,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 275,
@@ -56702,7 +56702,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 5109,
+  "frozenSize": 5052,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
@@ -58267,6 +58267,21 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 178,
+  "status": "ported"
+ },
+ "008318a0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/model/CM2Model.cpp"
+  ],
+  "frozen": "CM2Model::GetEventWorldTransform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 235,
   "status": "ported"
  },
  "00831af0": {

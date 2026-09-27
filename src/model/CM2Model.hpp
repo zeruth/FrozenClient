@@ -524,6 +524,9 @@ class CM2Model {
         // The event's position in MODEL space; the world-space sibling is below.
         C3Vector& GetEventPosition(C3Vector& out, uint32_t eventId);
         C3Vector& GetEventWorldPosition(C3Vector& out, uint32_t eventId);
+        // The event's full frame in world space; identity when the model has no such event.
+        // ref: FUN_008318a0
+        C44Matrix& GetEventWorldTransform(C44Matrix& out, uint32_t eventId);
         // ref: FUN_008278e0
         int32_t HasCamera(uint32_t cameraId);
         // ref: FUN_00827960

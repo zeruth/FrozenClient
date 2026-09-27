@@ -2533,6 +2533,43 @@ C3Vector& CM2Model::GetEventPosition(C3Vector& out, uint32_t eventId) {
 
     return out;
 }
+// ref: FUN_008318a0
+// The event's full TRANSFORM in world space -- the third and last of the family, after
+// GetEventPosition (model space, FUN_008276f0) and GetEventWorldPosition (world space,
+// FUN_008317e0). Where that one carries a point out through the bone and the scene, this carries
+// a frame: the bone's own matrix, moved to the event, then taken into world space by the same
+// m_scene->m_viewInv. So a caller that needs an orientation at an event -- something to hang a
+// model or an effect on -- gets one without rebuilding it from the point.
+//
+// An event the model does not carry yields the IDENTITY, not a zero matrix. That matters: the
+// two sibling getters answer (0,0,0), which is a harmless point, but a zero matrix would collapse
+// whatever it was applied to. The reference writes the identity out explicitly for exactly that
+// reason, and it is the one place in the family where the failure value is not just "empty".
+C44Matrix& CM2Model::GetEventWorldTransform(C44Matrix& out, uint32_t eventId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    C3Vector* local;
+    uint16_t boneIndex;
+
+    if (!this->GetEvent(eventId, &local, &boneIndex)) {
+        out = C44Matrix();
+
+        return out;
+    }
+
+    this->Animate();
+
+    C44Matrix transform = this->m_boneMatrices[boneIndex];
+
+    transform.Translate(*local);
+    transform *= this->m_scene->m_viewInv;
+
+    out = transform;
+
+    return out;
+}
 // ref: FUN_008317e0
 C3Vector& CM2Model::GetEventWorldPosition(C3Vector& out, uint32_t eventId) {
     if (!this->m_loaded) {

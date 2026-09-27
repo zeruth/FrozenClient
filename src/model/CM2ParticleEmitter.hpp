@@ -340,9 +340,35 @@ class CM2ParticleEmitter {
         // particle module and reading the strings beside them. The class is CParticleEmitter2 and
         // its file is ParticleSystem2.cpp; both names come from that region.
         //
-        // There are exactly THREE vtables in the hierarchy: an abstract base at 0x00aa2cc0 whose
-        // slots [6]..[9] are _purecall (0x0040baa5 aborts -- it is not a nullsub), and two
-        // concrete subclasses at 0x00aa2d30 and 0x00aa2d5c that override [2], [4] and those four.
+        // There are FOUR vtables in the hierarchy, not three as this note said until 2026-09-27:
+        // an abstract base at 0x00aa2cc0 whose slots [6]..[9] are _purecall (0x0040baa5 aborts --
+        // it is not a nullsub), two concrete subclasses at 0x00aa2d30 and 0x00aa2d5c that override
+        // [2], [4] and those four, and a THIRD concrete subclass at 0x00aa2df4.
+        //
+        // THE THIRD ONE IS THE TYPE 3 EMITTER, the one InitializeLoaded reports as unimplemented
+        // and leaves null -- 81 models in one Teldrassil run ask for it. Its constructor is
+        // FUN_009820f0: it runs the base constructor, installs 0x00aa2df4, writes 3 into the type
+        // at +0x20, and zeroes +0x234 through +0x248 -- so its own fields begin exactly where the
+        // plane subclass's do.
+        //
+        // IT IS NOT SHAPED LIKE THE OTHER TWO. The constructor installs a SECOND vtable at +0x24c
+        // (0x00aa2e20), so the class has a second base; and its slot [1], FUN_009799c0, calls
+        // CM2Scene::CreateModel, which makes this the emitter whose particles are MODELS rather
+        // than quads. That is why it is a bigger job than adding a third case to the factory.
+        //
+        // What it needs, measured rather than estimated -- eight unported functions, about 1750
+        // bytes: FUN_009799c0 (483, the model-particle creator), FUN_00981d40 (936),
+        // FUN_00982150 (97), FUN_00981cd0 (97), FUN_00982240 (56), FUN_00981c90 (54),
+        // FUN_009814e0 (28), plus the second base class and the layout from +0x234.
+        //
+        // Deliberately NOT started as a stub. An emitter that constructs but cannot create a
+        // particle emits nothing, which looks exactly like today's null slot except that the
+        // factory would stop reporting it -- trading a visible gap for a silent one.
+        //
+        // Two of 0x00aa2df4's slots hold CM2ParticleEmitterPlane::SetLongitude and
+        // CM2ParticleEmitterSphere::SetLongitude. They are not shared by inheritance: they are
+        // one-line setters the linker folded, which is worth knowing before reading a vtable as
+        // evidence of a class relationship.
         //
         //   [ 0] +0x00  0x0097edf0  the per-step hook Step calls
         //   [ 1] +0x04  0x009799c0

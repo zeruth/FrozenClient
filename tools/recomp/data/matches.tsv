@@ -3647,6 +3647,7 @@ addr	how	frozen	evidence
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
 008317e0	annotated	CM2Model::GetEventWorldPosition	tag in src/model/CM2Model.cpp
+008318a0	annotated	CM2Model::GetEventWorldTransform	tag in src/model/CM2Model.cpp
 00831af0	annotated	CM2Model::SetupLighting	tag in src/model/CM2Model.cpp
 00831c30	override	CM2Model::SetBoneSequenceDeferred	
 00831e20	override	CM2Model::CancelAllDeferredSequences	
