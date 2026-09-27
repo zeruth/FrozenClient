@@ -180,6 +180,22 @@ RENDER_MODULES = {
     # textures, effects and the device
     'Texture.cpp', 'TextureCache.cpp', 'TextureBlob.cpp', 'FFXEffects.cpp', 'ShaderEffectManager.cpp',
     'CGxDevice.cpp', 'CGxDeviceD3d9Ex.cpp', 'CGxD3d9ExTexture.cpp', 'CGxDeviceOpenGl.cpp',
+    # Added 2026-09-26. CLAUDE.md asks for a graphics module to be added when one is missing, and
+    # these five were: the two texture DECODERS behind every surface in the world, the base D3D
+    # device (an odd gap when its D3d9Ex subclass and the OpenGL one were both already counted),
+    # the FFX glow and the weather lightning.
+    #
+    # It moves the render-surface percentage DOWN, by about 0.3 points: it adds 262 reference
+    # functions of which only 41 were already mapped. That is the honest direction -- the work was
+    # always outstanding and simply was not being counted.
+    'blp.cpp', 'tga.cpp', 'CGxDeviceD3d.cpp', 'EffectGlow.cpp', 'Lightning.cpp',
+    #
+    # Deliberately still OUT, so the next reader does not add them as more of the same: the font
+    # stack (GxuFontMiscClasses.cpp, GxuFontUtil.cpp, CSimpleFont.cpp), CSimpleRender.cpp and the
+    # UI frames that happen to hold a model (DressUpModelFrame.cpp, MinimapFrame.cpp,
+    # TaxiMapFrame.cpp). They draw, but they draw the INTERFACE; this set is the world. And
+    # ScanDLLGlue.cpp stays out for the same reason CreepTendril.cpp does -- it is an anchor that
+    # collects unrelated code rather than a module.
 }
 
 RENDER_ROOTS = ['004faf90',   # CGWorldFrame::RenderWorld

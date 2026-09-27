@@ -27,8 +27,12 @@ struct TgaHeader {
 
 static_assert(sizeof(TgaHeader) == 0x12, "TgaHeader is 18 bytes");
 
-// The reference's TGA image reader. The loader that fills it is not ported; only the fields its
-// ported helpers read are laid out, and the offsets in the comments are the reference's.
+// The reference's TGA image reader. The offsets in the comments are the reference's.
+//
+// Open is what fills it, and porting it (2026-09-26) is what named the two owned buffers: the
+// optional ID field and the colour map, both allocated there and both freed by Close, which is
+// the cross-check that they are owned rather than borrowed. The two unnamed gaps that remain are
+// genuinely unread -- nothing ported touches them.
 class TgaFile {
     public:
     // Member variables
@@ -36,12 +40,19 @@ class TgaFile {
     uint8_t* m_image;                   // +0x04
     TgaHeader m_header;                 // +0x08
     uint8_t m_unk1A[0x1C - 0x1A];
-    void* m_unk1C;                      // +0x1C
+    // +0x1C: the header's optional ID field, `idLength` bytes of it, read straight after the
+    // header. Nothing interprets it; it is read so the file position lands on the colour map.
+    void* m_idField;
     uint8_t m_unk20[0x3C - 0x20];
     uint32_t m_imageBytes;              // +0x3C
-    void* m_unk40;                      // +0x40
+    // +0x40: the colour map, ColorMapBytes() of it, present only when colorMapType is non-zero.
+    void* m_colorMap;
 
     // Member functions
+    // Open a .tga and read everything in front of the pixels. The image itself is NOT read
+    // here -- GetImage and DecodeRle do that on demand.
+    int32_t Open(const char* fileName, int32_t mustExist);
+
     int32_t ColorMapEntryBytes() const;
     int32_t ColorMapBytes() const;
     int32_t ValidateColorDepth() const;

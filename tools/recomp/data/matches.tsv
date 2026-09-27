@@ -2359,6 +2359,7 @@ addr	how	frozen	evidence
 006aa630	annotated	TgaFile::DecodeRle	tag in src/gx/texture/TgaFile.cpp
 006aa820	annotated	TgaFile::GetImage	tag in src/gx/texture/TgaFile.cpp
 006aaf40	annotated	TgaFile::Close	tag in src/gx/texture/TgaFile.cpp
+006aafb0	annotated	TgaFile::Open	tag in src/gx/texture/TgaFile.cpp
 006ab700	annotated	CalcLevelCount	tag in src/gx/Texture.cpp
 006acc50	annotated	LerpColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 006ae6e0	annotated	InitBlit	tag in src/gx/Blit.cpp

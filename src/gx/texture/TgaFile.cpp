@@ -4,6 +4,73 @@
 #include <storm/Memory.hpp>
 #include <cstring>
 
+// ref: FUN_006aafb0
+// Everything in front of the pixel data: the 18-byte header, the optional ID field and the
+// colour map, in that order, because each is positional -- the file offset after the header is
+// only right once the ID field has been consumed. Closes first, so reopening an already-open
+// TgaFile does not leak the previous file's buffers.
+//
+// The two fixups at the end are the interesting part. A header can lie about its alpha, and the
+// reference CORRECTS it in place and carries on with a warning rather than rejecting the file:
+// 24 bits per pixel cannot also carry 8 bits of alpha, and 32 always does. Each sets its own
+// Storm error code, which a caller can read but nothing has to.
+//
+// No allocation here is null-checked, and that is transcribed rather than hardened: Storm's
+// allocator does not hand back null, and adding a branch the reference does not have would
+// change the call sequence for a case that cannot arise.
+int32_t TgaFile::Open(const char* fileName, int32_t mustExist) {
+    if (!fileName || !*fileName) {
+        // 0x57 is ERROR_INVALID_PARAMETER.
+        SErrSetLastError(0x57);
+
+        return 0;
+    }
+
+    this->Close();
+
+    if (!SFile::OpenEx(nullptr, fileName, mustExist != 0, &this->m_file)) {
+        return 0;
+    }
+
+    if (!SFile::Read(this->m_file, &this->m_header, sizeof(TgaHeader), nullptr, nullptr, nullptr)) {
+        return 0;
+    }
+
+    if (!this->m_header.idLength) {
+        this->m_idField = nullptr;
+    } else {
+        this->m_idField = SMemAlloc(this->m_header.idLength, __FILE__, __LINE__, 0);
+
+        if (!SFile::Read(this->m_file, this->m_idField, this->m_header.idLength,
+                        nullptr, nullptr, nullptr)) {
+            return 0;
+        }
+    }
+
+    if (!this->m_header.colorMapType) {
+        this->m_colorMap = nullptr;
+    } else {
+        this->m_colorMap = SMemAlloc(this->ColorMapBytes(), __FILE__, __LINE__, 0);
+
+        if (!SFile::Read(this->m_file, this->m_colorMap, this->ColorMapBytes(),
+                        nullptr, nullptr, nullptr)) {
+            return 0;
+        }
+    }
+
+    if (this->m_header.pixelDepth == 24 && (this->m_header.imageDescriptor & 0xF) == 8) {
+        this->m_header.imageDescriptor &= 0xF0;
+        SErrSetLastError(0x8720012E);
+    }
+
+    if (this->m_header.pixelDepth == 32 && (this->m_header.imageDescriptor & 0xF) == 0) {
+        this->m_header.imageDescriptor = (this->m_header.imageDescriptor & 0xF8) | 8;
+        SErrSetLastError(0x8720012F);
+    }
+
+    return 1;
+}
+
 // ref: FUN_006aa350
 int32_t TgaFile::ColorMapEntryBytes() const {
     uint32_t channelBits = this->m_header.colorMapEntrySize / 3;
@@ -133,16 +200,16 @@ void TgaFile::Close() {
 
     this->m_file = nullptr;
 
-    if (this->m_unk1C) {
-        SMemFree(this->m_unk1C, __FILE__, __LINE__, 0);
+    if (this->m_idField) {
+        SMemFree(this->m_idField, __FILE__, __LINE__, 0);
     }
 
-    this->m_unk1C = nullptr;
+    this->m_idField = nullptr;
     this->m_header.idLength = 0;
 
-    if (this->m_unk40) {
-        SMemFree(this->m_unk40, __FILE__, __LINE__, 0);
+    if (this->m_colorMap) {
+        SMemFree(this->m_colorMap, __FILE__, __LINE__, 0);
     }
 
-    this->m_unk40 = nullptr;
+    this->m_colorMap = nullptr;
 }

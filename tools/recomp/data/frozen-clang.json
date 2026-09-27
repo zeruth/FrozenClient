@@ -77700,6 +77700,46 @@
 "refs": [],
 "line": 19
 },
+"TgaFile::Open": {
+"files": [
+"src/gx/texture/tgafile.cpp"
+],
+"callseq": [
+"SErrSetLastError",
+"TgaFile::Close",
+"SFile::OpenEx",
+"SFile::Read",
+"SMemAlloc",
+"SFile::Read",
+"TgaFile::ColorMapBytes",
+"SMemAlloc",
+"TgaFile::ColorMapBytes",
+"SFile::Read",
+"SErrSetLastError",
+"SErrSetLastError"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\gx\\texture\\tgafile.cpp"
+],
+"consts": [
+"0",
+"0x57",
+"0x8720012E",
+"0x8720012F",
+"0xF",
+"0xF0",
+"0xF8",
+"1",
+"24",
+"32",
+"8"
+],
+"branches": 9,
+"stub": false,
+"lines": 52,
+"refs": [],
+"line": 21
+},
 "TgaFile::ColorMapEntryBytes": {
 "files": [
 "src/gx/texture/tgafile.cpp"
@@ -77715,7 +77755,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 8
+"line": 75
 },
 "TgaFile::ColorMapBytes": {
 "files": [
@@ -77730,7 +77770,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 19
+"line": 86
 },
 "TgaFile::ValidateColorDepth": {
 "files": [
@@ -77752,7 +77792,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 25
+"line": 92
 },
 "TgaFile::ImageDataOffset": {
 "files": [
@@ -77767,7 +77807,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 36
+"line": 103
 },
 "TgaFile::AddAlphaChannel": {
 "files": [
@@ -77792,7 +77832,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 42
+"line": 109
 },
 "TgaFile::DecodeRle": {
 "files": [
@@ -77818,7 +77858,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 73
+"line": 140
 },
 "TgaFile::GetImage": {
 "files": [
@@ -77835,7 +77875,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 113
+"line": 180
 },
 "TgaFile::Close": {
 "files": [
@@ -77857,7 +77897,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 123
+"line": 190
 },
 "GxXformPop": {
 "files": [
@@ -196956,7 +196996,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 11,
+"lines": 18,
 "refs": [],
 "line": 2398
 },
@@ -196981,7 +197021,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 2432
+"line": 2439
 },
 "CWorldScene::UiShaders": {
 "files": [
@@ -196998,7 +197038,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 2447
+"line": 2454
 },
 "CWorldScene::UpdateWorldView": {
 "files": [
@@ -197028,7 +197068,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 2453
+"line": 2460
 },
 "EnsureShaders": {
 "files": [
