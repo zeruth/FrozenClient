@@ -77080,6 +77080,65 @@
 "refs": [],
 "line": 74
 },
+"PixelFormatBitsPerPixel": {
+"files": [
+"src/gx/texture.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"16",
+"32",
+"4",
+"8"
+],
+"branches": 8,
+"stub": false,
+"lines": 18,
+"refs": [],
+"line": 86
+},
+"PixelFormatLevelSize": {
+"files": [
+"src/gx/texture.cpp"
+],
+"callseq": [
+"PixelFormatBitsPerPixel"
+],
+"strings": [],
+"consts": [
+"1",
+"2",
+"3",
+"4",
+"5",
+"6"
+],
+"branches": 9,
+"stub": false,
+"lines": 45,
+"refs": [],
+"line": 116
+},
+"BuildMipLevelPointers": {
+"files": [
+"src/gx/texture.cpp"
+],
+"callseq": [
+"CalcLevelCount",
+"PixelFormatLevelSize"
+],
+"strings": [],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 173
+},
 "CalcLevelCountFlat": {
 "files": [
 "src/gx/texture.cpp"
@@ -77093,7 +77152,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 86
+"line": 193
 },
 "CalcLevelCount": {
 "files": [
@@ -77109,7 +77168,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 108
+"line": 215
 },
 "CalcLevelOffset": {
 "files": [
@@ -77126,7 +77185,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 141
+"line": 248
 },
 "CalcLevelSize": {
 "files": [
@@ -77153,7 +77212,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 151
+"line": 258
 },
 "FillInSolidTexture": {
 "files": [
@@ -77181,7 +77240,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 193
+"line": 300
 },
 "GetBitDepth": {
 "files": [
@@ -77206,7 +77265,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 228
+"line": 335
 },
 "GxCalcTexelStrideInBytes": {
 "files": [
@@ -77229,7 +77288,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 251
+"line": 358
 },
 "GxTexCreate": {
 "files": [
@@ -77249,7 +77308,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 294
+"line": 401
 },
 "GxTexDestroy": {
 "files": [
@@ -77264,7 +77323,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 344
+"line": 451
 },
 "GxTexParameters": {
 "files": [
@@ -77277,7 +77336,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 348
+"line": 455
 },
 "GxTexReusable": {
 "files": [
@@ -77290,7 +77349,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 372
+"line": 479
 },
 "GxTexSetWrap": {
 "files": [
@@ -77305,7 +77364,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 377
+"line": 484
 },
 "ReloadMips": {
 "files": [
@@ -77320,7 +77379,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 381
+"line": 488
 },
 "TextureFreeGxTex": {
 "files": [
@@ -77338,7 +77397,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 387
+"line": 494
 },
 "TextureAllocGxTex": {
 "files": [
@@ -77363,7 +77422,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 402
+"line": 509
 },
 "TextureAllocMippedImg": {
 "files": [
@@ -77384,7 +77443,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 442
+"line": 549
 },
 "GxTexUpdate": {
 "files": [
@@ -77400,7 +77459,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 453
+"line": 560
 },
 "GxuUpdateSingleColorTexture": {
 "files": [
@@ -77417,7 +77476,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 462
+"line": 569
 },
 "GetDefaultTexture": {
 "files": [
@@ -77430,7 +77489,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 489
+"line": 596
 },
 "GetTextureFormats": {
 "files": [
@@ -77451,7 +77510,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 493
+"line": 600
 },
 "MippedImgAllocA": {
 "files": [
@@ -77474,7 +77533,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 579
+"line": 686
 },
 "MippedImgCalcSize": {
 "files": [
@@ -77490,7 +77549,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 604
+"line": 711
 },
 "MippedImgSet": {
 "files": [
@@ -77510,7 +77569,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 614
+"line": 721
 },
 "RequestImageDimensions": {
 "files": [
@@ -77529,7 +77588,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 630
+"line": 737
 },
 "UpdateBlpTextureAsync": {
 "files": [
@@ -77548,7 +77607,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 657
+"line": 764
 },
 "ReportTextureFailure": {
 "files": [
@@ -77571,7 +77630,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 699
+"line": 806
 },
 "ReportTextureAllocFailure": {
 "files": [
@@ -77592,7 +77651,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 717
+"line": 824
 },
 "PumpBlpTextureAsync": {
 "files": [
@@ -77641,7 +77700,7 @@
 "stub": false,
 "lines": 156,
 "refs": [],
-"line": 730
+"line": 837
 },
 "FindSubstitution": {
 "files": [
@@ -77656,7 +77715,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 887
+"line": 994
 },
 "CreateBlpAsync": {
 "files": [
@@ -77669,7 +77728,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 903
+"line": 1010
 },
 "CreateBlpSync": {
 "files": [
@@ -77705,7 +77764,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 909
+"line": 1016
 },
 "CreateBlpTexture": {
 "files": [
@@ -77732,7 +77791,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 967
+"line": 1074
 },
 "CreateTgaTexture": {
 "files": [
@@ -77745,7 +77804,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 1023
+"line": 1130
 },
 "TextureCacheGetTexture": {
 "files": [
@@ -77767,7 +77826,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1029
+"line": 1136
 },
 "TextureCacheNewTexture": {
 "files": [
@@ -77787,7 +77846,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1086
+"line": 1193
 },
 "TextureCalcMipCount": {
 "files": [
@@ -77804,7 +77863,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1102
+"line": 1209
 },
 "TextureCreate": {
 "files": [
@@ -77857,7 +77916,7 @@
 "stub": false,
 "lines": 111,
 "refs": [],
-"line": 1123
+"line": 1230
 },
 "TextureCreateSolid": {
 "files": [
@@ -77881,7 +77940,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1244
+"line": 1351
 },
 "TextureGetDimensions": {
 "files": [
@@ -77900,7 +77959,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1265
+"line": 1372
 },
 "TextureGetGxTex": {
 "files": [
@@ -77929,7 +77988,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 1290
+"line": 1397
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -77942,7 +78001,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1347
+"line": 1454
 },
 "TextureHasAlpha": {
 "files": [
@@ -77960,7 +78019,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1352
+"line": 1459
 },
 "TextureFreeMem": {
 "files": [
@@ -77979,7 +78038,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1363
+"line": 1470
 },
 "TextureGetTexFlags": {
 "files": [
@@ -77999,7 +78058,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1370
+"line": 1477
 },
 "TextureHasPendingData": {
 "files": [
@@ -78017,7 +78076,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1379
+"line": 1486
 },
 "TextureGetRefCount": {
 "files": [
@@ -78036,7 +78095,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1387
+"line": 1494
 },
 "TextureIncreasePriority": {
 "files": [
@@ -78049,7 +78108,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1412
+"line": 1519
 },
 "TextureInitialize": {
 "files": [
@@ -78071,7 +78130,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1416
+"line": 1523
 },
 "TextureIsSame": {
 "files": [
@@ -78093,7 +78152,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1431
+"line": 1538
 },
 "CGxTexFlags::operator==": {
 "files": [

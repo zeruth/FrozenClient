@@ -75,6 +75,113 @@ void AsyncTextureWait(CTexture* texture) {
     // TODO
 }
 
+// ref: FUN_006ab5c0
+// Bits per pixel by BLP pixel format. The switch is what PINS the enum this family of functions
+// takes: DXT1 at 4 and DXT3 and DXT5 at 8 are the block-compressed rates, ARGB8888 is 32, the
+// three 16-bit formats are 16 and A8 is 8. That only lines up with PIXEL_FORMAT -- read as
+// EGxTexFormat the same numbers would make Abgr8888 eight bits wide.
+//
+// ARGB2565 is absent on purpose and falls to the default: it has no single rate, because its alpha
+// lives in a plane of its own. PixelFormatLevelSize handles it before ever asking.
+uint32_t PixelFormatBitsPerPixel(PIXEL_FORMAT format) {
+    switch (format) {
+    case PIXEL_DXT1:
+        return 4;
+    case PIXEL_DXT3:
+    case PIXEL_A8:
+    case PIXEL_DXT5:
+        return 8;
+    case PIXEL_ARGB8888:
+        return 32;
+    case PIXEL_ARGB1555:
+    case PIXEL_ARGB4444:
+    case PIXEL_RGB565:
+        return 16;
+    default:
+        return 0;
+    }
+}
+
+// ref: FUN_006ab620
+// One mip level's size in bytes.
+//
+// The block-compressed formats get a MINIMUM of 4 in each axis, because a DXT level is whole 4x4
+// blocks however small the level gets -- and the clamp is applied to the CUBE-MAP STRIP as a strip:
+// a level whose width is six times its height keeps that shape, so the height is clamped and the
+// width recomputed as six times it, rather than the two being clamped independently.
+//
+// ARGB2565 is the odd one out and is handled before the bits-per-pixel lookup: two bits of alpha
+// per texel in a plane of their own, four texels to a byte, after all the colour data -- which is
+// `pixels / 4 + pixels * 2` and is exactly what CBLPFile::GetMipSize allots for it.
+uint32_t PixelFormatLevelSize(uint32_t level, uint32_t width, uint32_t height,
+                              PIXEL_FORMAT format) {
+    width >>= level;
+
+    if (!width) {
+        width = 1;
+    }
+
+    height >>= level;
+
+    if (!height) {
+        height = 1;
+    }
+
+    if (format == PIXEL_DXT1 || format == PIXEL_DXT3 || format == PIXEL_DXT5) {
+        if (width == height * 6) {
+            if (height < 5) {
+                height = 4;
+            }
+
+            width = height * 6;
+        } else {
+            if (width < 5) {
+                width = 4;
+            }
+
+            if (height < 5) {
+                height = 4;
+            }
+        }
+    }
+
+    if (format == PIXEL_ARGB2565) {
+        uint32_t alphaBytes = (width * height) >> 2;
+
+        if (!alphaBytes) {
+            alphaBytes = 1;
+        }
+
+        return alphaBytes + width * height * 2;
+    }
+
+    // A plain 32-bit multiply then a shift of 3, which is what the disassembly does at 0x6ab6ab.
+    // The decompilation renders it as a 64-bit product; that is noise.
+    return (PixelFormatBitsPerPixel(format) * width * height) >> 3;
+}
+
+// ref: FUN_006ab810
+// Point each entry of a mip table at its own level, where the table and the level data share ONE
+// buffer: the table comes first and the levels follow it back to back.
+//
+// DIVERGENCE, and whoever ports the allocating caller (FUN_004b78a0) has to match it: the reference
+// steps over the table with `levelCount * 4` because its pointers are four bytes. This uses
+// sizeof(void*), so on 64-bit the table is twice as wide and the buffer must be sized with the same
+// expression or the first level will overlap the last pointer.
+//
+// Uses CalcLevelCount, which folds a cube-map strip -- NOT CalcLevelCountFlat.
+void BuildMipLevelPointers(PIXEL_FORMAT format, uint32_t width, uint32_t height, void** levels) {
+    uint32_t levelCount = CalcLevelCount(width, height);
+    uint32_t offset = 0;
+
+    auto data = reinterpret_cast<char*>(levels) + levelCount * sizeof(void*);
+
+    for (uint32_t i = 0; i < levelCount; i++) {
+        levels[i] = data + offset;
+
+        offset += PixelFormatLevelSize(i, width, height, format);
+    }
+}
 // ref: FUN_004b5510
 // Mip levels for an image, halving both axes and flooring each at 1 until both reach 1.
 //

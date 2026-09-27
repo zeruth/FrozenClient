@@ -2366,7 +2366,10 @@ addr	how	frozen	evidence
 006aa840	annotated	TgaFile::GetImage32	tag in src/gx/texture/TgaFile.cpp
 006aaf40	annotated	TgaFile::Close	tag in src/gx/texture/TgaFile.cpp
 006aafb0	annotated	TgaFile::Open	tag in src/gx/texture/TgaFile.cpp
+006ab5c0	annotated	PixelFormatBitsPerPixel	tag in src/gx/Texture.cpp
+006ab620	annotated	PixelFormatLevelSize	tag in src/gx/Texture.cpp
 006ab700	annotated	CalcLevelCount	tag in src/gx/Texture.cpp
+006ab810	annotated	BuildMipLevelPointers	tag in src/gx/Texture.cpp
 006abac0	annotated	Dxt5ExpandAlpha	tag in src/gx/Blit.cpp
 006abe90	annotated	Blit_Argb4444_Abgr8888	tag in src/gx/Blit.cpp
 006abf40	annotated	Blit_Argb8888_Abgr8888	tag in src/gx/Blit.cpp

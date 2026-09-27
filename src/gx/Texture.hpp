@@ -13,6 +13,16 @@ class CImVector;
 
 void AsyncTextureWait(CTexture*);
 
+// Bits per pixel for a BLP pixel format. Zero for a format with no fixed size.
+uint32_t PixelFormatBitsPerPixel(PIXEL_FORMAT);
+
+// The byte size of one mip level of a `width` x `height` image in `format`.
+uint32_t PixelFormatLevelSize(uint32_t level, uint32_t width, uint32_t height, PIXEL_FORMAT);
+
+// Fill a mip pointer table IN PLACE: `levels` is the head of a buffer whose pointer table is
+// followed immediately by the level data, and each entry is pointed at its own level.
+void BuildMipLevelPointers(PIXEL_FORMAT, uint32_t width, uint32_t height, void** levels);
+
 uint32_t CalcLevelCount(uint32_t, uint32_t);
 
 // The same mip count WITHOUT the cube-map strip fold. A separate reference function, not a
