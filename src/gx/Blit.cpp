@@ -1,5 +1,4 @@
 #include "gx/Blit.hpp"
-#include "util/Log.hpp"
 #include "util/Unimplemented.hpp"
 #include <algorithm>
 #include <cstring>
@@ -402,9 +401,105 @@ void Blit_Dxt1_Dxt1(const C2iVector& size, const void* in, uint32_t inStride, vo
     memcpy(out, in, (4 * v6 * v7) >> 3);
 }
 
+// ref: FUN_006ac270
+// The same four colours as Dxt1ExpandColors builds in its c0 > c1 arm, and ONLY that arm --
+// there is no endpoint-order test here and no transparent fourth colour. That is not an
+// omission: DXT3 and DXT5 carry their alpha in a block of its own, so the colour block always
+// means four interpolated opaque colours whichever way round the endpoints are. The reference
+// keeps this as a separate function from the DXT1 expander for exactly that reason.
+static void DxtExpandColorsNoAlphaMode(const unsigned char* block, uint32_t colors[4]) {
+    uint32_t c0 = static_cast<uint32_t>(block[0]) | (static_cast<uint32_t>(block[1]) << 8);
+    uint32_t c1 = static_cast<uint32_t>(block[2]) | (static_cast<uint32_t>(block[3]) << 8);
+
+    uint32_t r0 = c0 >> 11;
+    uint32_t g0 = (c0 >> 5) & 0x3F;
+    uint32_t b0 = c0 & 0x1F;
+
+    uint32_t r1 = c1 >> 11;
+    uint32_t g1 = (c1 >> 5) & 0x3F;
+    uint32_t b1 = c1 & 0x1F;
+
+    colors[0] = Dxt565ToArgb8888(r0, g0, b0);
+    colors[1] = Dxt565ToArgb8888(r1, g1, b1);
+
+    colors[2] = Dxt565ToArgb8888(
+        (s_dxtWeight2_3[r0] + s_dxtWeight1_3[r1]) >> 8,
+        (s_dxtWeight2_3[g0] + s_dxtWeight1_3[g1]) >> 8,
+        (s_dxtWeight2_3[b0] + s_dxtWeight1_3[b1]) >> 8
+    );
+
+    colors[3] = Dxt565ToArgb8888(
+        (s_dxtWeight1_3[r0] + s_dxtWeight2_3[r1]) >> 8,
+        (s_dxtWeight1_3[g0] + s_dxtWeight2_3[g1]) >> 8,
+        (s_dxtWeight1_3[b0] + s_dxtWeight2_3[b1]) >> 8
+    );
+}
+
+// ref: FUN_006acd80
+// One DXT3 block into ARGB8888, clipped like the DXT1 one. A DXT3 block is 16 bytes: eight of
+// alpha, four bits per texel and one uint16 per row, then an eight-byte colour block identical
+// to DXT1's -- which is why the colour indices are at +0x0c rather than +0x04.
+//
+// The alpha expansion is the reference's own and it is LOSSY in a way worth not tidying: it is
+// FUN_006abab0, `v << 4`, so a fully opaque texel comes out 0xF0 rather than 0xFF. Expanding by
+// `v * 0x11` would be the usual way and would reach 0xFF, and it is not what the reference does.
+static void Dxt3DecodeBlock(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
+                            uint32_t cols, uint32_t rows) {
+    uint32_t colors[4];
+
+    DxtExpandColorsNoAlphaMode(block + 8, colors);
+
+    for (uint32_t y = 0; y < rows; y++) {
+        uint32_t indices = block[0x0C + y];
+        uint32_t alpha = static_cast<uint32_t>(block[y * 2])
+                       | (static_cast<uint32_t>(block[y * 2 + 1]) << 8);
+
+        auto out = reinterpret_cast<uint32_t*>(dst + y * dstStride);
+
+        for (uint32_t x = 0; x < cols; x++) {
+            uint32_t color = colors[indices & 3];
+
+            out[x] = (color & 0x00FFFFFF) | ((alpha & 0xF) << 4 << 24);
+
+            indices >>= 2;
+            alpha >>= 4;
+        }
+    }
+}
 // ref: FUN_006ae5c0
+// One loop for both of the reference's arms, and no cube-map special case, for the reasons given
+// at Blit_Dxt1_Argb8888. The only difference from that function is the block size -- 16 bytes
+// here rather than 8, because of the alpha block in front.
 void Blit_Dxt3_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (!s_dxtWeightsBuilt) {
+        BuildDxtWeights();
+    }
+
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto width = static_cast<uint32_t>(size.x);
+    auto height = static_cast<uint32_t>(size.y);
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (uint32_t y = 0; y < height; y += 4) {
+        const unsigned char* block = src;
+        uint32_t rows = height - y < 4 ? height - y : 4;
+
+        for (uint32_t x = 0; x < width; x += 4) {
+            uint32_t cols = width - x < 4 ? width - x : 4;
+
+            Dxt3DecodeBlock(block, dst + x * 4, outStride, cols, rows);
+
+            block += 16;
+        }
+
+        src += inStride;
+        dst += outStride * 4;
+    }
 }
 
 // ref: FUN_006ae560

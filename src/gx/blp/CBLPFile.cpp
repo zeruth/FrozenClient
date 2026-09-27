@@ -631,8 +631,9 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
                     BlitFormat srcFmt = s_pixelToBlitFormat[preferred];
                     BlitFormat dstFmt = s_pixelToBlitFormat[format];
 
-                    bool haveConverter = srcFmt == BlitFormat_Dxt1
-                                      && dstFmt == BlitFormat_Argb8888;
+                    bool haveConverter = dstFmt == BlitFormat_Argb8888
+                                      && (srcFmt == BlitFormat_Dxt1
+                                          || srcFmt == BlitFormat_Dxt3);
 
                     if (!haveConverter) {
                         return 0;
