@@ -1537,6 +1537,7 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
                 'renderSpine': len(rsp & set(real)), 'renderSpineMapped': sum(1 for a in rsp if a in m and a in real),
                 'renderSurface': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES),
                 'renderSurfaceMapped': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and a in m),
+                'renderSurfaceUnsure': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and not r.get('moduleSure')),
                 'frozenFunctions': len(frozen), 'frozenStubs': sum(1 for w in frozen.values() if w['stub']),
                 'luaTotal': lua_total, 'luaHave': lua_have, 'luaStubbed': lua_stubbed}
     prev = None
@@ -1574,6 +1575,15 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     L.append('| world spine (reachable from OnFrameRender) | %d, mapped %d%s (%s) | |' % (snapshot['spine'], snapshot['spineMapped'], delta('spineMapped'), pct(snapshot['spineMapped'], snapshot['spine'])))
     L.append('| &nbsp;&nbsp;render spine (world update + map + M2 scene) | %d, mapped %d%s (%s) | |' % (snapshot['renderSpine'], snapshot['renderSpineMapped'], delta('renderSpineMapped'), pct(snapshot['renderSpineMapped'], snapshot['renderSpine'])))
     L.append('| **render surface** (the modules that draw the world) | **%d, mapped %d%s (%s)** | |' % (snapshot['renderSurface'], snapshot['renderSurfaceMapped'], delta('renderSurfaceMapped'), pct(snapshot['renderSurfaceMapped'], snapshot['renderSurface'])))
+    # HOW MUCH OF THAT DENOMINATOR IS GUESSED. Modules come from the nearest preceding assert
+    # string, so a region with none of its own inherits one from far away; `moduleSure` already
+    # records when the next anchor disagrees, and nothing used to report it. It matters here more
+    # than anywhere else, because this set is chosen BY module name -- a wrong name does not just
+    # mislabel a function, it decides whether the function is counted as render surface at all.
+    if snapshot.get('renderSurfaceUnsure') is not None:
+        L.append('| of which the module is an anchor GUESS | %d (%s) | |' % (
+            snapshot['renderSurfaceUnsure'],
+            pct(snapshot['renderSurfaceUnsure'], snapshot['renderSurface'])))
     L.append('| frozen functions (src/, from PDB + source) | %d, stubs %d | |' % (snapshot['frozenFunctions'], snapshot['frozenStubs']))
     L.append('')
     L.append('Match evidence: ' + ', '.join('%s %d' % kv for kv in sorted(by_how.items())) + '. Module anchors: %d assert strings.' % anchors)
@@ -2039,7 +2049,14 @@ def queue_next(args, refs, frozen, m):
                 '// when ported: put  // ref: FUN_%s  above the frozen definition, re-run recomp.py' % a, '']
         body = by_addr.get(a, '// (decompilation missing: run decomp.sh by hand)\n')
         io.open(os.path.join(QUEUE_DIR, a + '.c'), 'w', encoding='utf-8', newline='\n').write('\n'.join(head) + body)
-        print('  %s  %-22s size %5d callers %4d  -> docs/recomp/queue/%s.c' % (a, r['module'], r['size'], r['callers'], a))
+        # The '?' is the module attribution being a GUESS, and it is worth seeing here rather than
+        # only in the report: a queue entry whose module was inherited from a distant anchor is
+        # regularly not the kind of function its module name implies. Three cycles running, the
+        # top of --render turned out to be a logging helper labelled ShaderEffectManager.cpp and
+        # gameplay predicates labelled Unit_C.cpp. Decompile those by all means, but read the body
+        # before trusting the label.
+        mark = r['module'] + ('' if r['moduleSure'] else '?')
+        print('  %s  %-23s size %5d callers %4d  -> docs/recomp/queue/%s.c' % (a, mark, r['size'], r['callers'], a))
     if os.path.exists(tmp):
         os.remove(tmp)
 

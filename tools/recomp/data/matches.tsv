@@ -652,7 +652,7 @@ addr	how	frozen	evidence
 004b8a50	override	CreateBlpAsync	
 004b8be0	override	CreateBlpTexture	
 004b8c80	override	TextureCreate	
-004b9200	sticky	GxDevApi	held from the previous run, where it was callgraph
+004b9200	sticky	GxDevApi	held from the previous run, where it was sticky
 004b9480	override	TextureCacheNewTexture	
 004b94e0	annotated	TextureCacheNewTexture	tag in src/gx/Texture.cpp
 004b9550	override	TextureCreateSolid	
