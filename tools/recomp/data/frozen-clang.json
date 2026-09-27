@@ -92035,7 +92035,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 9
+"line": 13
 },
 "CEffect::LinkToHead": {
 "files": [
@@ -92048,7 +92048,7 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 46
+"line": 50
 },
 "CEffect::DetachModel": {
 "files": [
@@ -92063,7 +92063,121 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 66
+"line": 70
+},
+"CEffect::Unlink": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 2,
+"stub": false,
+"lines": 12,
+"refs": [],
+"line": 83
+},
+"CEffect::SetEmission": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"CM2Model::SetParticleEmission",
+"CM2Model::SetRibbonFlag8"
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 2,
+"stub": false,
+"lines": 9,
+"refs": [],
+"line": 99
+},
+"CEffect::Stop": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"CM2Model::SetParticleEmission",
+"CM2Model::SetRibbonFlag8"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 122
+},
+"CEffect::Start": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"CM2Model::SetParticleEmission",
+"CM2Model::SetRibbonFlag8"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"1.0f",
+"2"
+],
+"branches": 2,
+"stub": false,
+"lines": 13,
+"refs": [],
+"line": 152
+},
+"CEffect::AttachToOwner": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"ClntObjMgrObjectPtr",
+"CEffect::LinkToHead"
+],
+"strings": [
+".\\Effect_C.cpp"
+],
+"consts": [
+"0x28e",
+"0x800"
+],
+"branches": 1,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 179
+},
+"CEffect::Sub6f8040": {
+"files": [
+"src/object/client/ceffect.cpp"
+],
+"callseq": [
+"ClntObjMgrObjectPtr",
+"CEffect::LinkToHead"
+],
+"strings": [
+".\\Effect_C.cpp"
+],
+"consts": [
+"0x2ba"
+],
+"branches": 1,
+"stub": false,
+"lines": 16,
+"refs": [],
+"line": 207
 },
 "CGBag_C::FindSlot": {
 "files": [

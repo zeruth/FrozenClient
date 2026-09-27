@@ -1,6 +1,8 @@
 #ifndef OBJECT_CLIENT_C_EFFECT_HPP
 #define OBJECT_CLIENT_C_EFFECT_HPP
 
+#include "util/GUID.hpp"
+
 #include <cstdint>
 
 class CM2Model;
@@ -43,6 +45,9 @@ class CEffect {
     public:
         // Member variables
         CM2Model* m_model = nullptr;        // +0x00
+        // +0x08. The object this effect plays on, stored by the two attach paths below and looked
+        // up with TYPE_UNIT.
+        WOWGUID m_owner = 0;
         // +0xf4. One from the constructor; Release decrements it and frees the effect at zero.
         uint32_t m_refCount = 1;
         // The SpellVisualKit this effect plays, as the id and the row it resolves to. The row's
@@ -55,6 +60,15 @@ class CEffect {
         // already model-ready and must not go through ResolveAnimation, 0x4000 cleared in bulk when
         // the owner's state changes.
         uint32_t m_flags = 0;
+        // +0xa0 and +0xcc. One argument each, stored by the two attach paths and read nowhere the
+        // port has reached yet, so they keep offset names rather than invented ones.
+        uint32_t uinta0 = 0;
+        uint32_t uintcc = 0;
+        // +0xfc. The play state. Stop writes 0 and Start writes 2, and Start does its work only
+        // when it finds 0 -- so 0 means stopped, 2 means running, and starting an effect that is
+        // already running moves the state without touching the model a second time. No third
+        // value has turned up yet.
+        uint32_t m_playState = 0;
         CEffect** m_linkPrev = nullptr;     // +0x104
         CEffect* m_linkNext = nullptr;      // +0x108
 
@@ -70,6 +84,33 @@ class CEffect {
 
         // ref: FUN_006f7850
         void DetachModel();
+
+        // ref: FUN_006f74b0
+        // Take this effect out of whatever list holds it. This is LinkToHead's first half on its
+        // own, and the reference keeps it as its own function.
+        void Unlink();
+
+        // ref: FUN_006f7870
+        // Turn the model's particle and ribbon emission on or off together.
+        void SetEmission(int32_t enable);
+
+        // ref: FUN_006f78b0
+        // Stop the effect: hold the model's animation from now, and silence its emitters.
+        void Stop();
+
+        // ref: FUN_006f7900
+        // Start the effect: release the animation hold and let the emitters run again.
+        void Start();
+
+        // ref: FUN_006f7fd0
+        // Attach this effect to its owner object and take a reference for the attachment.
+        void AttachToOwner(int32_t kitID, const SpellVisualKitRec* kit, WOWGUID owner,
+                           uint32_t flags, uint32_t arga0);
+
+        // ref: FUN_006f8040
+        // The sibling attach path -- see the note at the definition for how the two differ.
+        void Sub6f8040(uint32_t argcc, int32_t kitID, const SpellVisualKitRec* kit, WOWGUID owner,
+                       uint32_t flags);
 };
 
 #endif

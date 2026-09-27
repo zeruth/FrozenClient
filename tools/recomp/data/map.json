@@ -40211,6 +40211,22 @@
   "refSize": 46,
   "status": "ported"
  },
+ "006f74b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CEffect.cpp",
+   "src/object/client/ceffect.cpp"
+  ],
+  "frozen": "CEffect::Unlink",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 57,
+  "status": "ported"
+ },
  "006f75f0": {
   "branchRatio": 0.857,
   "constOverlap": 0.0,
@@ -40259,6 +40275,54 @@
   "refSize": 18,
   "status": "ported"
  },
+ "006f7870": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CEffect.cpp",
+   "src/object/client/ceffect.cpp"
+  ],
+  "frozen": "CEffect::SetEmission",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 54,
+  "status": "ported"
+ },
+ "006f78b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CEffect.cpp",
+   "src/object/client/ceffect.cpp"
+  ],
+  "frozen": "CEffect::Stop",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "006f7900": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CEffect.cpp",
+   "src/object/client/ceffect.cpp"
+  ],
+  "frozen": "CEffect::Start",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 69,
+  "status": "ported"
+ },
  "006f7a60": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -40273,6 +40337,38 @@
   "how": "annotated",
   "module": "ObjectEffect.cpp",
   "refSize": 156,
+  "status": "ported"
+ },
+ "006f7fd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.182,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CEffect.cpp",
+   "src/object/client/ceffect.cpp"
+  ],
+  "frozen": "CEffect::AttachToOwner",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 111,
+  "status": "ported"
+ },
+ "006f8040": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CEffect.cpp",
+   "src/object/client/ceffect.cpp"
+  ],
+  "frozen": "CEffect::Sub6f8040",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ObjectEffect.cpp",
+  "refSize": 105,
   "status": "ported"
  },
  "006fc360": {

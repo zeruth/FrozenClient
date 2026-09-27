@@ -210,11 +210,19 @@ class CM2Model {
         // ref +0x1c4 / +0x1c8: told about the authored animation events (footfalls, weapon swings).
         M2AnimEventCallback m_animEventCallback = nullptr;
         WOWGUID m_animEventOwner = 0;
-        // The reference's +0x64: set while an effect owns this model's animation, cleared when that
-        // effect goes away (CEffect's teardown and the unit's own reset both write 0 here).
-        // CGUnit_C::SetAnimation refuses to touch a model whose animation is owned this way.
-        // Nothing in frozen sets it yet, so it reads null and that gate never fires.
-        void* m_animationOwner = nullptr;
+        // The reference's +0x64: non-zero while an effect is holding this model's animation, and
+        // the value is the SCENE TIME the hold began at. CGUnit_C::SetAnimation refuses to touch a
+        // model whose animation is held this way.
+        //
+        // RETYPED AND RENAMED 2026-09-27, from `void* m_animationOwner`. It never held a pointer.
+        // CEffect::Stop (FUN_006f78b0) writes m_scene->m_time here and CEffect::Start
+        // (FUN_006f7900) writes 0, so 0 is the not-held sentinel -- which is exactly why Stop
+        // carries an `if (t == 0) t = 1` bias, a line that makes no sense for a pointer and every
+        // bit of sense for a timestamp whose zero value is reserved.
+        //
+        // Those two functions are also the answer to the note that used to sit here saying nothing
+        // in frozen ever set this, so the gate never fired. It fires now.
+        uint32_t m_animationHeldTime = 0;
         uint32_t uint74 = 0;
         float float88 = 0.0f;
         // +0x8c: the scene time this model's emitters were last stepped at. The particle block in
@@ -222,6 +230,17 @@ class CM2Model {
         // in frozen computes one.
         uint32_t uint8c = 0;
         uint32_t uint90 = 0;
+        // ref +0x17c. A float, and the emission pair drives it: CEffect::SetEmission and
+        // CEffect::Stop/Start write 1.0f alongside enabling emission and 0.0f alongside disabling
+        // it. Declared out of offset order because frozen's CM2Model is a real class rather than
+        // an offset map, and this is where the fields it sits beside in behaviour live.
+        //
+        // Its full meaning is NOT settled and the name says so deliberately. What is known: the
+        // store at 0x82c06c writes it as part of one wholesale float run covering +0x158 through
+        // +0x194, and the read at 0x82e1f4 multiplies it by +0x178 into +0x19c. So it is a
+        // multiplier on something in that block, gated to zero while emission is off -- consistent
+        // with an emission rate scale, which is a guess and not yet evidence.
+        float float17c = 0.0f;
         union {
             M2ModelBone* m_bones = nullptr;
             void* m_internalResources;

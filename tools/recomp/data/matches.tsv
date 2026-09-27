@@ -2521,10 +2521,16 @@ addr	how	frozen	evidence
 006eb590	annotated	MoveEventQueueRemoveType	tag in src/object/client/CMovement_C.cpp
 006ec090	annotated	MoveEventQueueInsert	tag in src/object/client/CMovement_C.cpp
 006f1d20	annotated	CM2Model::AnimateAndGetWorldMatrix	tag in src/model/CM2Model.cpp
+006f74b0	annotated	CEffect::Unlink	tag in src/object/client/CEffect.cpp
 006f75f0	override	CEffect::SetEmittersFlag400000	
 006f76c0	annotated	CEffect::LinkToHead	tag in src/object/client/CEffect.cpp
 006f7850	annotated	CEffect::DetachModel	tag in src/object/client/CEffect.cpp
+006f7870	annotated	CEffect::SetEmission	tag in src/object/client/CEffect.cpp
+006f78b0	annotated	CEffect::Stop	tag in src/object/client/CEffect.cpp
+006f7900	annotated	CEffect::Start	tag in src/object/client/CEffect.cpp
 006f7a60	annotated	CMath::SinCos	tag in lib/typhoon/tempest/math/CMath.cpp
+006f7fd0	annotated	CEffect::AttachToOwner	tag in src/object/client/CEffect.cpp
+006f8040	annotated	CEffect::Sub6f8040	tag in src/object/client/CEffect.cpp
 006fc360	annotated	TrajectorySphereListHit	tag in src/object/client/UnitMissileTrajectory_C.cpp
 006ff6a0	annotated	C2Vector::NormalizeUnchecked	tag in lib/typhoon/tempest/vector/C2Vector.cpp
 00703cb0	annotated	CGTradeInfo::GetPlayerTradeMoney	tag in src/ui/game/CGTradeInfo.cpp

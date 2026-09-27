@@ -2822,7 +2822,7 @@ void CGUnit_C::SetAnimation(uint32_t animID, uint32_t flags) {
         return;
     }
 
-    if (this->GetObjectModel()->m_animationOwner) {
+    if (this->GetObjectModel()->m_animationHeldTime) {
         return;
     }
 
