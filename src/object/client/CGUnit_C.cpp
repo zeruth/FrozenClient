@@ -2297,8 +2297,19 @@ void CGUnit_C::SetBoneSequence(CM2Model* model, uint32_t boneId, uint32_t animID
         return;
     }
 
-    // Passenger propagation goes here (reference 0x73591d): the variation each passenger gets is
-    // this model's current one, or -1 when the sequence has fewer variations than that.
+    // PASSENGER PROPAGATION, reference 0x73591d, deliberately still out. What it does is now
+    // fully read: if this unit IS a vehicle (m_vehicle), its Vehicle.dbc row is present, it
+    // HasStateBits, and the model being animated is the unit's own, then it walks the vehicle's
+    // rider list and re-issues the same sequence to each rider that is itself riding a live
+    // vehicle. Each rider gets this model's current variation, or -1 when
+    // GetSequenceVariationCount says the sequence has fewer variations than that -- which is
+    // what the model-side wrapper FUN_008262f0 was ported for.
+    //
+    // TWO reasons it is not written. The rider list lives at vehicle +0x170 and +0x178, past
+    // every field CVehicle_C declares (it stops at m_stateBits, +0x16c), and it is an offset-
+    // linked list rather than a pointer one, so the layout has to be worked out first. And
+    // nothing in frozen constructs a CVehicle_C at all, so the walk could not run even with the
+    // layout -- it would be a loop behind a pointer that is always null.
 }
 
 // ref: FUN_00735a60
@@ -2339,7 +2350,8 @@ void CGUnit_C::SetBoneSequenceSpeed(CM2Model* model, uint32_t boneId, float spee
 
     model->SetBoneSequenceSpeed(boneId, speed);
 
-    // Passenger propagation goes here (reference 0x735d3e).
+    // Passenger propagation goes here (reference 0x735d3e), the same walk as SetBoneSequence's
+    // and blocked on the same two things -- see the longer note there.
 }
 
 // ref: FUN_00737ef0

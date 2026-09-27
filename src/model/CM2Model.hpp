@@ -414,6 +414,12 @@ class CM2Model {
         bool HasSequenceResolved(uint32_t sequenceId);
         // ref: FUN_008261b0
         int32_t GetSequenceVariationCount(M2Data* data, uint32_t sequenceId);
+
+        // ref: FUN_008262f0
+        // How many variations this model's data offers for an animation. The same question as the
+        // static overload above, asked of a model rather than of raw data, so it waits for the
+        // load first -- the answer comes out of m_data, which does not exist until then.
+        int32_t GetSequenceVariationCount(uint32_t sequenceId);
         // ref: FUN_008264b0
         int32_t HasBone(uint32_t boneId);
         // ref: FUN_008266b0

@@ -3485,6 +3485,7 @@ addr	how	frozen	evidence
 00826050	annotated	CM2Model::HasSequenceResolved	tag in src/model/CM2Model.cpp
 008260c0	annotated	CM2Model::Sub8260C0	tag in src/model/CM2Model.cpp
 008261b0	annotated	CM2Model::GetSequenceVariationCount	tag in src/model/CM2Model.cpp
+008262f0	annotated	CM2Model::GetSequenceVariationCount	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
 008264b0	annotated	CM2Model::HasBone	tag in src/model/CM2Model.cpp
 008265e0	annotated	CM2Model::SetBoneFlags	tag in src/model/CM2Model.cpp

@@ -439,10 +439,49 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
         this->m_flag8 = this->m_attachParent->m_flag8 && this->m_flag80;
         this->m_flag10000 = this->m_attachParent->m_flag10000 && this->m_flag20000;
 
-        // TODO dword174
+        // STILL MISSING: the reference also copies the parent's dword at +0x174, the field
+        // immediately before m_baseAlpha. frozen has nothing declared there and no reader for it
+        // has been traced, so adding a field would only inherit an unknown value.
     }
 
-    // TODO
+    // Fold the tint handed down by the caller into this model's current values. The BASE values
+    // are the model's own (nothing writes them yet -- the setters are unported -- so they are
+    // neutral), and the current ones are what the render reads: CM2Scene takes alpha19C as each
+    // element's alpha, and an attached child is animated with its PARENT's current values, so
+    // this is also the step that carries a tint down an attachment chain.
+    //
+    // It was missing entirely, which is why m_currentDiffuse and m_currentEmissive sat at their
+    // initial values however the caller was animated. That is invisible today -- every call site
+    // passes {1,1,1}, {0,0,0}, 1, 1 -- and stops being invisible the moment a base-tint setter
+    // lands or a chain gets more than one link.
+    //
+    // Data flag 0x4 means the model does not take a handed-down tint at all: it folds only its
+    // own base values and ignores all four arguments.
+    if (this->m_shared->m_data->flags & 0x4) {
+        this->float198 = this->m_baseAlpha;
+        this->alpha19C = this->m_baseAlphaScale * this->m_baseAlpha;
+        this->m_currentDiffuse = this->m_baseDiffuse;
+        this->m_currentEmissive = this->m_baseEmissive;
+    } else {
+        this->m_currentDiffuse = {
+            a3.x * this->m_baseDiffuse.x,
+            a3.y * this->m_baseDiffuse.y,
+            a3.z * this->m_baseDiffuse.z
+        };
+
+        this->m_currentEmissive = this->m_baseEmissive;
+
+        // Flag 0x100000 holds the model's own alpha against the one it was handed; the SCALE
+        // below is never held, which is the asymmetry the reference has and not a transcription
+        // slip -- a5 gates and a6 always multiplies.
+        this->float198 = this->m_flag100000 ? this->m_baseAlpha : a5 * this->m_baseAlpha;
+        this->alpha19C = this->m_baseAlphaScale * a6 * this->m_baseAlpha;
+
+        // And 0x80000 holds the emissive term against the handed-down one.
+        if (!this->m_flag80000) {
+            this->m_currentEmissive = this->m_currentEmissive + a4;
+        }
+    }
 
     for (int32_t i = 0; i < this->m_shared->m_data->loops.Count(); i++) {
         auto loopLength = this->m_shared->m_data->loops[i].length;
@@ -4863,6 +4902,15 @@ bool CM2Model::HasSequenceResolved(uint32_t sequenceId) {
 // ref: FUN_008261b0
 // How many variations `data` carries of one animation: the sequence the id resolves to plus every
 // hop along its variationNext chain. 0 when the id is not there.
+// ref: FUN_008262f0
+int32_t CM2Model::GetSequenceVariationCount(uint32_t sequenceId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    return CM2Model::GetSequenceVariationCount(this->m_shared->m_data, sequenceId);
+}
+
 int32_t CM2Model::GetSequenceVariationCount(M2Data* data, uint32_t sequenceId) {
     if (!this->m_loaded) {
         this->WaitForLoad(nullptr);
