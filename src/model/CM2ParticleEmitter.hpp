@@ -1,6 +1,7 @@
 #ifndef MODEL_C_M2_PARTICLE_EMITTER_HPP
 #define MODEL_C_M2_PARTICLE_EMITTER_HPP
 
+#include "tempest/spline/CBezierSpline.hpp"
 #include <cstdint>
 #include "math/Types.hpp"
 #include "model/M2Data.hpp"
@@ -658,6 +659,43 @@ class CM2ParticleEmitter {
 //
 // Its four fields are identified by the driver: FUN_008309c0 calls vtable slots [6], [7], [8] and
 // [9] with the model's width, length, latitude and longitude tracks, and those slots store here.
+// The SPLINE emitter, vtable 0x00aa2df4 -- the type 3 the factory used to leave null. It lays
+// particles along a cubic Bezier and launches them off its tangent.
+//
+// DIVERGED in how it holds the curve. The reference derives from it, installing a second vtable
+// at the emitter's +0x24c; frozen holds one as a member. The reference's layout is not
+// reproducible here anyway -- its offsets assume 32-bit pointers throughout -- and a member says
+// what the relationship is for without pretending to a binary layout frozen does not have.
+class CM2ParticleEmitterSpline : public CM2ParticleEmitter {
+    public:
+        // Member variables
+        // The curve itself: the reference's second base, at its +0x24c.
+        CBezierSpline m_curve;
+        // +0x234: the authored emission rate. The base's m_rate is this scaled by the span, so
+        // the two are not the same number and neither is redundant.
+        float m_splineRate = 0.0f;
+        // +0x238 and +0x23c: where on the curve particles start and stop, both in [0, 1].
+        float m_splineStart = 0.0f;
+        float m_splineEnd = 0.0f;
+        // +0x240: how far the launch direction may be turned off the tangent.
+        float m_spread = 0.0f;
+        // +0x244: how far along that turned direction the particle's own position is pushed, so
+        // the stream has thickness. Zero keeps it exactly on the curve.
+        float m_spreadOffset = 0.0f;
+        // +0x248: set by SetLength when the end moves, consumed by the next CreateParticle.
+        int32_t m_emitAtEnd = 0;
+
+        // Member functions
+        CM2ParticleEmitterSpline();
+
+        void SetWidth(float width) override;
+        void SetLength(float length) override;
+        void SetLatitude(float latitude) override;
+        void SetLongitude(float longitude) override;
+        void SetEmissionRate(float rate);
+        void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
+};
+
 class CM2ParticleEmitterPlane : public CM2ParticleEmitter {
     public:
         // +0x234 and +0x238: the rectangle's FULL extents. The creator multiplies each by a

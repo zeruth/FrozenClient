@@ -685,6 +685,7 @@ addr	how	frozen	evidence
 004c12b0	annotated	DataMgrSetCoord	tag in lib/common/common/DataMgr.cpp
 004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
 004c1510	callgraph	CRndSeed::CRndSeed	only unmatched callee of 0097a130=CM2ParticleEmitter::SampleSpin, 0097e150=CM2ParticleEmitter::CM2ParticleEmitter
+004c1590	annotated	M2ParticleRand01	tag in src/model/CM2ParticleEmitter.cpp
 004c15c0	annotated	M2ParticleRandSigned	tag in src/model/CM2ParticleEmitter.cpp
 004c1680	annotated	M2ParticleRandomUnitVector	tag in src/model/CM2ParticleEmitter.cpp
 004c1930	annotated	C44Matrix::Determinant	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -4606,8 +4607,13 @@ addr	how	frozen	evidence
 00981490	annotated	CM2ParticleEmitterSphere::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
 009814b0	annotated	CM2ParticleEmitterSphere::SetLength	tag in src/model/CM2ParticleEmitter.cpp
 009814d0	annotated	CM2ParticleEmitterSphere::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
+009814e0	annotated	CM2ParticleEmitterSpline::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp
 009815c0	annotated	CM2ParticleEmitterPlane::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00981950	annotated	CM2ParticleEmitterSphere::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00981c90	annotated	CM2ParticleEmitterSpline::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
+00981cd0	annotated	CM2ParticleEmitterSpline::SetLength	tag in src/model/CM2ParticleEmitter.cpp
+00981d40	annotated	CM2ParticleEmitterSpline::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
+009820f0	annotated	CM2ParticleEmitterSpline::CM2ParticleEmitterSpline	tag in src/model/CM2ParticleEmitter.cpp
 00982460	annotated	C4Quaternion::Slerp	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
 00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp

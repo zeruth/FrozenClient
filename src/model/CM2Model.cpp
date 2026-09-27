@@ -2872,9 +2872,12 @@ int32_t CM2Model::InitializeLoaded() {
         case 2:
             bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitterSphere, 1);
             break;
+        case 3:
+            bufferSize += ALIGN_SIZE(bufferSize, CM2ParticleEmitterSpline, 1);
+            break;
         default:
-            // Type 3 (0x40c in the reference, constructor 0x009820f0) is a separate hierarchy and
-            // is not ported; nothing is reserved and no emitter is built.
+            // A type the file carries that the reference has no class for either. Nothing is
+            // reserved and the factory builds nothing, which is what leaves the slot null.
             break;
         }
     }
@@ -3216,6 +3219,11 @@ int32_t CM2Model::InitializeLoaded() {
                 this->m_particleEmitters[i] = new (buffer) CM2ParticleEmitterSphere();
                 buffer += sizeof(CM2ParticleEmitterSphere);
                 break;
+            case 3:
+                buffer = ALIGN_BUFFER(buffer, start, CM2ParticleEmitterSpline);
+                this->m_particleEmitters[i] = new (buffer) CM2ParticleEmitterSpline();
+                buffer += sizeof(CM2ParticleEmitterSpline);
+                break;
             default:
                 unsupported++;
                 break;
@@ -3438,13 +3446,14 @@ int32_t CM2Model::InitializeLoaded() {
 
         if (unsupported) {
             // The reference dereferences m_particleEmitters[i] on the line after the factory
-            // without a null check, so in practice the type byte is always 1, 2 or 3 -- this only
-            // fires for type 3, whose class is unported. The slot stays null and every consumer
-            // has to tolerate that.
+            // without a null check, so in practice the type byte is always 1, 2 or 3 -- all three
+            // of which now build. This is left in place for a file carrying anything else, which
+            // the reference has no class for either; the slot stays null and every consumer has to
+            // tolerate that.
             SysMsgPrintf(SYSMSG_ERROR,
-                         "CM2Model: %u of %d particle emitters use an emitter type frozen does "
-                         "not implement (type 3, reference constructor 0x009820f0); those slots "
-                         "are null", unsupported, this->m_shared->m_data->particles.Count());
+                         "CM2Model: %u of %d particle emitters use an emitter type neither this "
+                         "client nor the reference implements; those slots are null",
+                         unsupported, this->m_shared->m_data->particles.Count());
         }
     }
 

@@ -10968,6 +10968,21 @@
   "refSize": 116,
   "status": "ported"
  },
+ "004c1590": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "M2ParticleRand01",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 42,
+  "status": "ported"
+ },
  "004c15c0": {
   "branchRatio": 1.0,
   "constOverlap": 1.0,
@@ -11540,7 +11555,7 @@
    "lib/typhoon/tempest/spline/CBezierSpline.cpp"
   ],
   "frozen": "CBezierSpline::Evaluate",
-  "frozenSize": 0,
+  "frozenSize": 795,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 66,
@@ -11555,7 +11570,7 @@
    "lib/typhoon/tempest/spline/CBezierSpline.cpp"
   ],
   "frozen": "CBezierSpline::Tangent",
-  "frozenSize": 0,
+  "frozenSize": 780,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 58,
@@ -58482,7 +58497,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 8660,
+  "frozenSize": 8724,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -72336,7 +72351,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::GroundSnapParticle",
-  "frozenSize": 0,
+  "frozenSize": 191,
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 162,
@@ -72352,7 +72367,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CreateParticle",
-  "frozenSize": 906,
+  "frozenSize": 733,
   "how": "override",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 328,
@@ -73350,6 +73365,21 @@
   "refSize": 16,
   "status": "ported"
  },
+ "009814e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::SetEmissionRate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
  "009815c0": {
   "branchRatio": 0.222,
   "constOverlap": 0.029,
@@ -73380,6 +73410,66 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 829,
+  "status": "ported"
+ },
+ "00981c90": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::SetWidth",
+  "frozenSize": 29,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 54,
+  "status": "ported"
+ },
+ "00981cd0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::SetLength",
+  "frozenSize": 86,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "00981d40": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.538,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::CreateParticle",
+  "frozenSize": 1333,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 936,
+  "status": "ported"
+ },
+ "009820f0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::CM2ParticleEmitterSpline",
+  "frozenSize": 355,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 88,
   "status": "ported"
  },
  "00982460": {

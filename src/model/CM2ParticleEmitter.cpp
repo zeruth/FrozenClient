@@ -201,6 +201,18 @@ void M2ParticleToFixed16(fixed16& out, float value) {
     out.n = static_cast<int16_t>(value * 32767.0f);
 }
 
+// ref: FUN_004c1590
+// The unsigned sibling of M2ParticleRandSigned below: the same 23 random mantissa bits pinned
+// into [1, 2) and then 1 taken off, giving [0, 1). Eight callers share it.
+float M2ParticleRand01(CRndSeed& seed) {
+    uint32_t u = CRandom::uint32(seed);
+    uint32_t bits = (u & 0x7FFFFF) | 0x3F800000;
+
+    float f;
+    memcpy(&f, &bits, sizeof(f));
+
+    return f - 1.0f;
+}
 // ref: FUN_004c15c0
 // See the declaration for why the centre is 2.0 rather than the 1.5 it looks like.
 float M2ParticleRandSigned(CRndSeed& seed) {
@@ -2741,5 +2753,177 @@ void CM2ParticleEmitter::SetZSource(float zSource) {
 
     if (fabsf(zSource) < 0.001f) {
         this->m_zSource = 0.0f;
+    }
+}
+
+// ref: FUN_009820f0
+CM2ParticleEmitterSpline::CM2ParticleEmitterSpline() {
+    this->m_emitterType = 3;
+}
+
+// ref: FUN_00981c90 -- the SetWidth slot, which on this emitter is where on the curve
+// particles START. Clamped to [0, 1] because it is a curve parameter, not an extent.
+void CM2ParticleEmitterSpline::SetWidth(float width) {
+    this->m_splineStart = width < 0.0f ? 0.0f : (width > 1.0f ? 1.0f : width);
+}
+
+// ref: FUN_00981cd0 -- the SetLength slot, where particles STOP.
+//
+// It does three things the other setters do not, and all three matter: it ignores a change
+// smaller than the epsilon, so an animated track that jitters does not retrigger anything; it
+// raises the one-shot flag so the NEXT particle is placed exactly at the end rather than lerped;
+// and it rescales the base's emission rate, because a shorter span of curve should emit
+// proportionally fewer particles.
+void CM2ParticleEmitterSpline::SetLength(float length) {
+    float clamped = length < 0.0f ? 0.0f : (length > 1.0f ? 1.0f : length);
+
+    if (fabsf(clamped - this->m_splineEnd) < 0.000001f) {
+        return;
+    }
+
+    this->m_splineEnd = clamped;
+    this->m_emitAtEnd = 1;
+    this->m_rate = this->m_splineRate * clamped;
+}
+
+// ref: FUN_009813e0 (folded with CM2ParticleEmitterPlane::SetLongitude, which writes the same
+// offset -- one-line setters the linker shares)
+void CM2ParticleEmitterSpline::SetLatitude(float latitude) {
+    this->m_spread = latitude;
+}
+
+// ref: FUN_009814d0 (folded with CM2ParticleEmitterSphere::SetLongitude)
+void CM2ParticleEmitterSpline::SetLongitude(float longitude) {
+    this->m_spreadOffset = longitude;
+}
+
+// ref: FUN_009814e0
+// This emitter OVERRIDES SetEmissionRate, where the other two inherit it, and the override drops
+// the base's "ignore a non-positive rate" guard. It keeps the authored rate of its own and
+// publishes rate * span into the base's m_rate, the same rescaling SetLength does from the other
+// side -- so whichever of the two moves, the effective rate stays proportional to the span.
+void CM2ParticleEmitterSpline::SetEmissionRate(float rate) {
+    this->m_splineRate = rate;
+    this->m_rate = rate * this->m_splineEnd;
+}
+
+// ref: FUN_00981d40
+// Put one particle on the curve.
+//
+// WHERE: a parameter lerped between the start and the end, except on the one frame after
+// SetLength moved the end -- then it is placed exactly AT the end and the flag clears, so a
+// shrinking span leaves a particle at its new tip instead of somewhere inside it.
+//
+// WHICH WAY: with no z source, the launch direction is the curve's own TANGENT there, turned by a
+// random angle up to m_spread about itself; m_spreadOffset, when set, also pushes the particle's
+// POSITION along that turned direction, so the stream has thickness rather than being a line. With
+// a z source the direction is radial from it instead, which is the base's own idiom.
+//
+// The rest is the shared tail every creator has: unless flag 0x200 keeps it in emitter space the
+// velocity goes through the placement's rotation and the position through the whole matrix, 0x40000
+// snaps it to the ground, and 0x800 adds the inherited velocity with variation.
+//
+// NOT RECOVERED, and confined to a degenerate case: at 0x00981eee the reference takes |d| of a
+// combination of the normalised tangent, compares it against 0.9, and on the GREATER side stores
+// one float into a stack slot that both paths then fall through. Which slot, and what it does to
+// the seed vector, did not survive -- Ghidra renders both arms writing 1.0. It can only matter
+// when the tangent is nearly parallel to the seed axis, which is where a rotation about it
+// degenerates. The seed is taken as (0, 0, 1) unconditionally here, and the address is recorded
+// so the guard can be read off the disassembly rather than rediscovered.
+void CM2ParticleEmitterSpline::CreateParticle(Particle& particle, float dt,
+                                              const C44Matrix& placement) {
+    particle.m_age = (M2ParticleRand01(this->m_seed) - 1.0f) * dt;
+    particle.m_randomTag = static_cast<uint16_t>(CRandom::uint32(this->m_seed));
+
+    float t;
+
+    if (!this->m_emitAtEnd) {
+        t = M2ParticleRand01(this->m_seed) * (this->m_splineEnd - this->m_splineStart)
+          + this->m_splineStart;
+    } else {
+        t = this->m_splineEnd;
+        this->m_emitAtEnd = 0;
+    }
+
+    this->m_curve.Evaluate(t, particle.m_position);
+
+    C3Vector velocity = { 0.0f, 0.0f, 0.0f };
+
+    float speed = this->RandomSpeed();
+
+    if (this->m_zSource == 0.0f) {
+        if (this->m_spread != 0.0f) {
+            C3Vector tangent;
+
+            this->m_curve.Tangent(t, tangent);
+
+            float length = sqrtf(tangent.x * tangent.x + tangent.y * tangent.y
+                               + tangent.z * tangent.z);
+
+            if (length > 0.0f) {
+                tangent.x /= length;
+                tangent.y /= length;
+                tangent.z /= length;
+            }
+
+            C3Vector seed = { 0.0f, 0.0f, 1.0f };
+
+            float angle = M2ParticleRandSigned(this->m_seed) * this->m_spread;
+
+            C33Matrix turn = C33Matrix::RotationAroundAxis(angle, tangent, true);
+
+            C3Vector direction = seed * turn;
+
+            if (this->m_spreadOffset != 0.0f) {
+                float reach = M2ParticleRand01(this->m_seed) * this->m_spreadOffset;
+
+                particle.m_position.x += direction.x * reach;
+                particle.m_position.y += direction.y * reach;
+                particle.m_position.z += direction.z * reach;
+            }
+
+            velocity.x = direction.x * speed;
+            velocity.y = direction.y * speed;
+            velocity.z = direction.z * speed;
+        }
+    } else {
+        C3Vector radial = {
+            particle.m_position.x,
+            particle.m_position.y,
+            particle.m_position.z - this->m_zSource
+        };
+
+        float length = sqrtf(radial.x * radial.x + radial.y * radial.y + radial.z * radial.z);
+        float scale = length > 0.0f ? speed / length : 0.0f;
+
+        velocity.x = radial.x * scale;
+        velocity.y = radial.y * scale;
+        velocity.z = radial.z * scale;
+    }
+
+    if (!(this->m_flags & 0x200)) {
+        particle.m_velocity.x = velocity.x * placement.a0 + velocity.y * placement.b0
+                              + velocity.z * placement.c0;
+        particle.m_velocity.y = velocity.x * placement.a1 + velocity.y * placement.b1
+                              + velocity.z * placement.c1;
+        particle.m_velocity.z = velocity.x * placement.a2 + velocity.y * placement.b2
+                              + velocity.z * placement.c2;
+
+        C3Vector moved;
+        TransformPointInPlace(moved, particle.m_position, placement);
+
+        if (this->m_flags & 0x40000) {
+            this->GroundSnapParticle(particle);
+        }
+    } else {
+        particle.m_velocity = velocity;
+    }
+
+    if (this->m_flags & 0x800) {
+        float scale = M2ParticleRandSigned(this->m_seed) * this->m_variation + 1.0f;
+
+        particle.m_velocity.x += this->m_inheritedVelocity.x * scale;
+        particle.m_velocity.y += this->m_inheritedVelocity.y * scale;
+        particle.m_velocity.z += this->m_inheritedVelocity.z * scale;
     }
 }
