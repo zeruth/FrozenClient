@@ -89,25 +89,29 @@ class IMaterial {
     public:
         virtual ~IMaterial() {}
 
-        // The reference's vtable slot 2, and the dispatch DOES reach it now. The argument list is
-        // read off the call in FUN_008a2240, which hands over seven values from the instance: the
-        // environment, the geometry, the unknown at +0x0c, the camera position, the placement
-        // matrix, the bounding sphere and the settings -- in that order.
+        // THE DECLARATION ORDER HERE IS THE VTABLE ORDER, and it is the reference's: slot 0 is the
+        // destructor, slot 1 EnsureShaders, slot 2 Draw. That was read off the three fixed-function
+        // singletons, whose vtables sit at 0x00a594cc, 0x00a594d8 and 0x00a594e4 and each hold
+        // [0] one folded destructor shared by all three, [1] the shader loader, [2] the draw. These
+        // two used to be declared the other way round, which put Draw in slot 1 -- harmless while
+        // nothing indexes the table numerically, and wrong the moment anything does.
+
+        // Load this material's shader pair, once for the whole class. The fixed-function flavours
+        // inherit the empty one, which is the whole point of them.
+        virtual void EnsureShaders() {}
+
+        // The argument list is read off the call in FUN_008a2240, which hands over seven values
+        // from the instance: the environment, the geometry, the unknown at +0x0c, the camera
+        // position, the placement matrix, the bounding sphere and the settings -- in that order.
         //
-        // The reference's body for this is FUN_008a48f0 -- 2173 bytes of device state, shader
-        // selection and constant setup. Implemented here: every override forwards to
-        // DrawShaderMaterial, which carries the port and the `Part of ref:` notes.
-        //
-        // NOT TAGGED, on purpose, and this is not an oversight to correct: the reference has
-        // four of these bodies differing only in the shader pair, and which one 008a48f0 is has
-        // not been established. See the note on 008a48f0 in overrides.json. A `// ref:` here
-        // would also be in the wrong place even once that is settled -- tags go on the
-        // definition in the .cpp, not on a declaration in a header.
+        // Each override carries its own reference body and its own tag, on the definition in the
+        // .cpp rather than here: FUN_008a48f0 is CMaterialProcWater::Draw, FUN_008a5590 and
+        // FUN_008a5900 share DrawWaterMaterial, and FUN_008a6090 is CMaterialMagma::Draw. The
+        // three fixed-function draws are NOT ported and the reason is recorded against
+        // 008a5c70, 008a5170 and 008a6350 in overrides.json -- the device implements no
+        // fixed-function stage state at all, so a port of them would draw nothing.
         virtual void Draw(CClientEnvironment*, IGeomFactory*, void*, const C3Vector&,
                           const C44Matrix*, const CAaSphere*, CMaterialSettings*) {}
-
-        // Load this material's shader pair, once for the whole class.
-        virtual void EnsureShaders() {}
 };
 
 // LiquidMaterial 1, the shader path with specular. ref: FUN_008a3f70 / FUN_008a4790

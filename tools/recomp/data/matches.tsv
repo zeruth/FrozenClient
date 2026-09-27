@@ -621,7 +621,7 @@ addr	how	frozen	evidence
 004a83a0	table	CSimpleAnimGroup_GetParent	binding "GetParent" in SimpleAnimGroupMethods ~ table 00ac1ab8
 004a8480	annotated	ScreenshotSetFormat	tag in src/gx/Device.cpp
 004a84a0	annotated	ScreenshotSetQuality	tag in src/gx/Device.cpp
-004a8570	string	ScreenshotRequest	unique "Screenshots"
+004a8570	override	ScreenshotRequest	
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
 004b5040	override	SysMsgPrintf	
 004b50a0	annotated	AsyncReadIsUnstarted	tag in src/component/Texture.cpp
