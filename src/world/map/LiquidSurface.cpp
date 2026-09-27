@@ -6,6 +6,9 @@
 #include "world/map/CChunkLiquid.hpp"
 #include <storm/Memory.hpp>
 #include <storm/Error.hpp>
+#include "world/map/CMapObjDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
+#include "util/Log.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <new>
@@ -945,8 +948,8 @@ void CMeshGeomFactory::Release() {
 }
 
 // ref: FUN_007d43e0
-void CMeshGeomFactory::SetTextureId(const uint32_t* textureId) {
-    this->m_textureId = *textureId;
+void CMeshGeomFactory::SetDiffColor(const uint32_t* diffColor) {
+    this->m_diffColor = *diffColor;
 }
 
 // ref: FUN_007d4360
@@ -1060,14 +1063,14 @@ int32_t CMeshGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf
                       0.0f, 0.0f, 1.0f, 0.0f,
                       0.0f, 0.0f, 0.0f, 1.0f);
 
-    int32_t gridVertices = WriteLiquidGridVertices(group, identity, &this->m_textureId, this->m_lvf,
+    int32_t gridVertices = WriteLiquidGridVertices(group, identity, &this->m_diffColor, this->m_lvf,
                                                    static_cast<uint32_t>(this->m_fixedLight),
                                                    this->m_seams, stride, &cursor[0], &cursor[1],
                                                    &cursor[2], &cursor[3], &cursor[4]);
 
     WriteLiquidIndices(group, this->m_seams, &indexCursor, 0);
 
-    int32_t tileVertices = EmitLiquidTiles(this->m_mapObj, group, identity, &this->m_textureId,
+    int32_t tileVertices = EmitLiquidTiles(this->m_mapObj, group, identity, &this->m_diffColor,
                                           this->m_lvf,
                                           static_cast<uint32_t>(this->m_fixedLight), stride,
                                           &cursor[0], &cursor[1], &cursor[2], &cursor[3],
@@ -2086,6 +2089,153 @@ CInstance* CInstance::Create() {
     new (instance) CInstance();
 
     return instance;
+}
+
+
+// ref: FUN_00793d20
+// Drain the pending-liquid list, building one surface per placed group and handing each to the draw
+// queue. This is the top of the map-object water chain: everything else in this file is reached
+// from here.
+//
+// IT UNLINKS EVERY ENTRY WHETHER OR NOT IT BUILDS ONE, which is what makes the list a queue rather
+// than a set -- a group that fails any gate below is simply dropped until the traversal marks it
+// visible again next frame. The unlink happens before the gates for that reason.
+//
+// The indoor decision is the interesting part, and it picks both the environment and the fixed
+// light. A group counts as OUTDOOR when either it is not flagged 0x48 or its def group is flagged 2,
+// AND its liquid type does not carry 0x200. Outdoor water then takes its vertex colour from the
+// group's material and a fixed light of 1.0; indoor water takes no colour and 0.0, leaving it lit by
+// the environment alone.
+//
+// THE TYPE REMAP applies only outdoors: a type id below 0x15 whose (id - 1) is a multiple of four
+// becomes 0x11. Those are the first entries of each of the four base families in LiquidType.dbc, so
+// the effect is that outdoor WMO water of any base family draws as one specific type rather than its
+// own -- which is why a lake seen through a doorway matches the lake outside it.
+//
+// The placement comes from the DEF, not the def group: the def group carries world-space bounds but
+// the surface needs the model-to-world matrix, and that lives on the CMapObjDef reached through the
+// def group's parent link.
+//
+// NOT WIRED IN YET, deliberately. The reference calls this from CMap::Render at 0x0079acce; frozen
+// does not call it, because the WMO half of the liquid DRAW is a separate question from the build and
+// putting surfaces on the queue before that is settled would be geometry nothing consumes. The
+// producer side is live -- CWorldScene::MarkMapObjGroupVisible now fills the list.
+//
+// One gate frozen cannot evaluate: the reference also requires DAT_00cd8610, two 16-byte records this
+// tree notes as unported. Treated as satisfied, because it reads as an "is the liquid system up"
+// check and the alternative is a permanently dead path.
+void BuildPendingMapObjSurfaces() {
+    while (CMapObjDefGroup* defGroup = CWorldScene::s_pendingLiquidGroups.Head()) {
+        CWorldScene::s_pendingLiquidGroups.UnlinkNode(defGroup);
+
+        if (!(CWorld::s_enables & 0x100)) {
+            continue;
+        }
+
+        if (defGroup->m_liquidSurface) {
+            continue;
+        }
+
+        CMapBaseObjLink* parent = defGroup->m_parentLinkList.Head();
+
+        if (!parent) {
+            continue;
+        }
+
+        auto def = static_cast<CMapObjDef*>(parent->ref);
+        CMapObj* mapObj = def->m_mapObj;
+
+        CMapObjGroup* group = mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+        // FROZEN-ONLY. The reference dereferences the group without checking, and is safe because the
+        // traversal only enqueues a group it already resolved; this guards anyway, since a group can
+        // be unloaded between being marked visible and being built.
+        if (!group) {
+            continue;
+        }
+
+        uint32_t liquidType = group->GetLiquidType();
+
+        LiquidTypeRec* typeRec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
+
+        if (!typeRec) {
+            SysMsgPrintf(SYSMSG_ERROR, "WMO: Liquid type [%d] not found, defaulting to water!",
+                         liquidType);
+
+            liquidType = 1;
+            typeRec = g_liquidTypeDB.GetRecord(1);
+
+            if (!typeRec) {
+                continue;
+            }
+        }
+
+        bool indoor = true;
+
+        if (((group->m_flags & 0x48) == 0 || (defGroup->m_flags & 2))
+                && !(typeRec->m_flags & 0x200)) {
+            indoor = false;
+
+            if (liquidType && liquidType < 0x15 && ((liquidType - 1) & 3) == 0) {
+                liquidType = 0x11;
+
+                LiquidTypeRec* remapped = g_liquidTypeDB.GetRecord(0x11);
+
+                if (remapped) {
+                    typeRec = remapped;
+                }
+            }
+        }
+
+        CClientEnvironment* environment = CreateEnvironment(indoor ? 0 : 1);
+
+        CMeshGeomFactory* factory = CMeshGeomFactory::Create(mapObj, group);
+
+        if (!factory) {
+            continue;
+        }
+
+        LiquidMaterialRec* material = g_liquidMaterialDB.GetRecord(typeRec->m_materialID);
+
+        factory->SetLvf(material && material->m_LVF == 1);
+
+        uint32_t diffColor = 0xFFFFFFFF;
+        float fixedLight = 0.0f;
+
+        if (!indoor) {
+            SMOMaterial* groupMaterial = mapObj->GetGroupLiquidMaterial(defGroup->m_groupIndex);
+
+            if (groupMaterial) {
+                diffColor = groupMaterial->diffColor;
+            }
+
+            fixedLight = 1.0f;
+        }
+
+        factory->SetDiffColor(&diffColor);
+        factory->SetFixedLight(fixedLight);
+
+        CInstance* instance = CInstance::Create();
+
+        if (!instance) {
+            factory->Release();
+
+            continue;
+        }
+
+        defGroup->m_liquidSurface = instance;
+
+        instance->m_material = GetMaterial(static_cast<int32_t>(liquidType));
+        instance->m_settings = GetMaterialSettings(static_cast<int32_t>(liquidType));
+        instance->m_environment = environment;
+        instance->m_geometry = factory;
+        instance->m_placement = def->m_placement;
+
+        instance->m_sphere.c = defGroup->m_center;
+        instance->m_sphere.r = defGroup->m_radius;
+
+        Add(instance);
+    }
 }
 
 } // namespace Liquid

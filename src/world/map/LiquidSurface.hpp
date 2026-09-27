@@ -337,6 +337,10 @@ struct LiquidSeams {
 void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t** cursor,
                         uint32_t baseVertex);
 
+// ref: FUN_00793d20
+// Build a liquid surface for every placed group waiting for one, and hand each to the draw queue.
+void BuildPendingMapObjSurfaces();
+
 // ref: FUN_007a7cc0
 // Write one vertex per position of the MLIQ grid, honouring the seam lists. Returns the total
 // written, duplicates included.
@@ -359,9 +363,13 @@ class CMeshGeomFactory : public IGeomFactory {
         // +0x10: the cached buffer pair, which the build takes off the GROUP rather than owning.
         // Still null because the build is not ported -- see the note at Build.
         void* m_bufferHolder = nullptr;
-        // +0x14: the texture, from m_materials[group->m_liquidMaterial]. The sentinel is what the
-        // allocator writes, so "no texture yet" is -1 and not zero.
-        uint32_t m_textureId = 0xFFFFFFFF;
+        // +0x14: the VERTEX COLOUR, and calling it a texture id -- as this class and
+        // docs/ref/parity-liquid.md both did -- was wrong. It comes from
+        // m_materials[group->m_liquidMaterial] at +0x1c, which SMOMaterial names diffColor, and
+        // WriteLiquidVertex writes it through the device's colour-format swizzle. A texture id would
+        // not be byte-swizzled. The 0xffffffff the allocator writes is opaque white, which is the
+        // right neutral for a colour and would be a nonsense texture.
+        uint32_t m_diffColor = 0xFFFFFFFF;
         // +0x28: the seam lists BOTH grid writers are handed. The field map called this "a block the
         // two writers share" without knowing what it held; Build passes factory + 0x28 to
         // WriteLiquidGridVertices and WriteLiquidIndices as their seams argument, which names it.
@@ -389,8 +397,8 @@ class CMeshGeomFactory : public IGeomFactory {
 
         // ref: FUN_007d43e0
         // Takes a POINTER and reads one dword through it, which is how the caller hands over the
-        // material's texture field rather than a value.
-        void SetTextureId(const uint32_t* textureId);
+        // material's diffColor rather than a value.
+        void SetDiffColor(const uint32_t* diffColor);
 
         // ref: FUN_007d4360
         void SetLvf(int32_t lvf);

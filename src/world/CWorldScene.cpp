@@ -89,6 +89,7 @@ int32_t CWorldScene::s_hasMapObjs;
 CWorldScene::ViewWindow CWorldScene::s_window;
 CWorldScene::ViewWindow CWorldScene::s_portalWindow;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) CWorldScene::s_visibleMapObjGroups;
+STORM_EXPLICIT_LIST(CMapObjDefGroup, m_liquidQueueLink) CWorldScene::s_pendingLiquidGroups;
 CMapObjDef* CWorldScene::s_visibleCallbackDef;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) CWorldScene::s_mapObjDefGroupCandidates;
 STORM_EXPLICIT_LIST(CMapEntity, m_hiddenLink) CWorldScene::s_hiddenEntities;
@@ -1301,9 +1302,11 @@ void CWorldScene::MarkMapObjGroupVisible(uint32_t groupIndex, CMapObjDef* def) {
     if (!defGroup->m_renderLink.IsLinked()) {
         CWorldScene::s_visibleMapObjGroups.LinkToTail(defGroup);
 
+        // A group carrying MLIQ joins the pending-liquid list so the liquid pass can build its
+        // surface. The link offset the TODO here was waiting on is +0xb8, recovered from the queue
+        // that drains this list and unlinks through it.
         if (group && (group->m_flags & 0x1000) && (CWorld::s_enables & 0x1000000)) {
-            // TODO the liquid list at DAT_00cdb08c, whose link offset is not recovered yet: a
-            // group with MLIQ joins it so the liquid pass can draw its surface
+            CWorldScene::s_pendingLiquidGroups.LinkToTail(defGroup);
         }
 
         C3Vector point = { 0.0f, 0.0f, 0.0f };

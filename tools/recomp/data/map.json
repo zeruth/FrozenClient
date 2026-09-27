@@ -46670,6 +46670,21 @@
   "refSize": 225,
   "status": "ported"
  },
+ "00793d20": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "BuildPendingMapObjSurfaces",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 679,
+  "status": "ported"
+ },
  "007946d0": {
   "branchRatio": 0.6,
   "constOverlap": 0.0,
@@ -46824,7 +46839,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::MarkMapObjGroupVisible",
-  "frozenSize": 680,
+  "frozenSize": 802,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 281,
@@ -52000,7 +52015,7 @@
   "files": [
    "src/world/map/LiquidSurface.cpp"
   ],
-  "frozen": "CMeshGeomFactory::SetTextureId",
+  "frozen": "CMeshGeomFactory::SetDiffColor",
   "frozenSize": 0,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",

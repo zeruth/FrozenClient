@@ -210,6 +210,12 @@ class CWorldScene {
         static int32_t s_hasMapObjs;                        // DAT_00cd8778
         // The groups the traversal found, in the order it found them (DAT_00cdb080)
         static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) s_visibleMapObjGroups;
+        // DAT_00cdb08c: placed groups whose liquid surface has not been built yet. The traversal
+        // adds a group here the first time it is seen, and the liquid pass drains the list,
+        // building one surface per entry. Its link offset is +0xb8, which is the third TSLink on
+        // CMapObjDefGroup after m_rowLink and m_renderLink -- recovered 2026-09-27 from the queue
+        // that unlinks through it, which is what the TODO here used to be waiting on.
+        static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_liquidQueueLink) s_pendingLiquidGroups;
         // The groups the def update put in reach of the frame, before the bucketing
         // spreads them over the distance rows (DAT_00cdaf48)
         static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) s_mapObjDefGroupCandidates;
