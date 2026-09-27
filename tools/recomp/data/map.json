@@ -37687,6 +37687,22 @@
   "refSize": 92,
   "status": "ported"
  },
+ "006abac0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt5ExpandAlpha",
+  "frozenSize": 339,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 317,
+  "status": "ported"
+ },
  "006ac130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37713,7 +37729,7 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "DxtExpandColorsNoAlphaMode",
-  "frozenSize": 0,
+  "frozenSize": 338,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 381,
@@ -37761,10 +37777,26 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Dxt3DecodeBlock",
-  "frozenSize": 514,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 270,
+  "status": "ported"
+ },
+ "006acf90": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.111,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt5DecodeBlock",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 327,
   "status": "ported"
  },
  "006ad380": {
@@ -37857,7 +37889,7 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt3_Argb8888",
-  "frozenSize": 293,
+  "frozenSize": 449,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
@@ -37880,8 +37912,8 @@
   "status": "stub"
  },
  "006ae680": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
+  "branchRatio": 0.667,
+  "constOverlap": 0.25,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
@@ -37889,11 +37921,11 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt5_Argb8888",
-  "frozenSize": 77,
+  "frozenSize": 605,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
  },
  "006ae6e0": {
   "branchRatio": 1.0,

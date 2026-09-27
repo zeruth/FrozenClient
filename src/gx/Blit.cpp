@@ -526,9 +526,113 @@ void Blit_Dxt35_Dxt35(const C2iVector& size, const void* in, uint32_t inStride, 
     }
 }
 
+// ref: FUN_006abac0
+// A DXT5 block's eight alpha values, from the two stored endpoints. Which rule applies depends on
+// their ORDER -- the same trick the DXT1 colour block plays: a0 > a1 gives six interpolated
+// values, and otherwise four plus the two constants 0 and 255.
+//
+// The +3 and +2 are the reference's rounding, added before the divide by 7 and by 5. Dropping
+// them would bias every interpolated alpha downwards by up to most of a step.
+static void Dxt5ExpandAlpha(unsigned char table[8]) {
+    uint32_t a0 = table[0];
+    uint32_t a1 = table[1];
+
+    if (a1 < a0) {
+        table[2] = static_cast<unsigned char>((a0 * 6 + a1 + 3) / 7);
+        table[3] = static_cast<unsigned char>((a0 * 5 + a1 * 2 + 3) / 7);
+        table[4] = static_cast<unsigned char>((a0 * 4 + a1 * 3 + 3) / 7);
+        table[5] = static_cast<unsigned char>((a0 * 3 + a1 * 4 + 3) / 7);
+        table[6] = static_cast<unsigned char>((a0 * 2 + a1 * 5 + 3) / 7);
+        table[7] = static_cast<unsigned char>((a0 + a1 * 6 + 3) / 7);
+    } else {
+        table[2] = static_cast<unsigned char>((a0 * 4 + a1 + 2) / 5);
+        table[3] = static_cast<unsigned char>((a0 * 3 + a1 * 2 + 2) / 5);
+        table[4] = static_cast<unsigned char>((a0 * 2 + a1 * 3 + 2) / 5);
+        table[5] = static_cast<unsigned char>((a0 + a1 * 4 + 2) / 5);
+        table[6] = 0;
+        table[7] = 0xFF;
+    }
+}
+
+// ref: FUN_006acf90
+// One DXT5 block into ARGB8888. Sixteen bytes again, but the alpha half is arranged differently
+// from DXT3's: two endpoint BYTES, then sixteen THREE-bit indices packed across the six bytes
+// that follow, then the same eight-byte colour block.
+//
+// Three bits do not divide a byte, so an index can straddle two of them, and the read below is the
+// reference's own way of handling that -- take the low part from one byte and the high part from
+// the next, then mask. When the index sits entirely in one byte the second term contributes
+// nothing, and for the last index the byte it reaches for is the first byte of the colour block,
+// which the mask discards. Still in bounds, and deliberate.
+//
+// The alpha needs no expansion for this target: the table is already eight bits (the reference
+// passes the identity function FUN_006abc10 here, where the DXT3 path passes `v << 4`).
+static void Dxt5DecodeBlock(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
+                            uint32_t cols, uint32_t rows) {
+    uint32_t colors[4];
+
+    DxtExpandColorsNoAlphaMode(block + 8, colors);
+
+    unsigned char alpha[8];
+
+    alpha[0] = block[0];
+    alpha[1] = block[1];
+
+    Dxt5ExpandAlpha(alpha);
+
+    for (uint32_t y = 0; y < rows; y++) {
+        uint32_t indices = block[0x0C + y];
+        auto out = reinterpret_cast<uint32_t*>(dst + y * dstStride);
+
+        for (uint32_t x = 0; x < cols; x++) {
+            uint32_t bitPos = (y * 4 + x) * 3;
+            uint32_t byteIdx = bitPos >> 3;
+            uint32_t shift = bitPos & 7;
+
+            uint32_t ai = ((static_cast<uint32_t>(block[byteIdx + 2]) >> shift)
+                        | (static_cast<uint32_t>(block[byteIdx + 3]) << (8 - shift))) & 7;
+
+            uint32_t color = colors[indices & 3];
+
+            out[x] = (color & 0x00FFFFFF) | (static_cast<uint32_t>(alpha[ai]) << 24);
+
+            indices >>= 2;
+        }
+    }
+}
 // ref: FUN_006ae680
+// Same loop as the DXT1 and DXT3 blitters, sixteen-byte blocks. See Blit_Dxt1_Argb8888 for why
+// there is one loop here where the reference has two, and no cube-map arm.
 void Blit_Dxt5_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
-    WHOA_UNIMPLEMENTED();
+    if (!s_dxtWeightsBuilt) {
+        BuildDxtWeights();
+    }
+
+    if (size.x <= 0 || size.y <= 0) {
+        return;
+    }
+
+    auto width = static_cast<uint32_t>(size.x);
+    auto height = static_cast<uint32_t>(size.y);
+
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (uint32_t y = 0; y < height; y += 4) {
+        const unsigned char* block = src;
+        uint32_t rows = height - y < 4 ? height - y : 4;
+
+        for (uint32_t x = 0; x < width; x += 4) {
+            uint32_t cols = width - x < 4 ? width - x : 4;
+
+            Dxt5DecodeBlock(block, dst + x * 4, outStride, cols, rows);
+
+            block += 16;
+        }
+
+        src += inStride;
+        dst += outStride * 4;
+    }
 }
 
 // ref: FUN_006ae620
