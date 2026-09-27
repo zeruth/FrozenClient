@@ -1668,6 +1668,88 @@ void CM2Scene::BlendBoneMatrices3x4(const C44Matrix* bones, ubyte4 weights, ubyt
 // higher than *bestHeight -- or unconditionally, with preferOther set, when best is empty or has a
 // different key. Returns the (possibly new) best candidate.
 // ref: FUN_0081d510
+// ref: FUN_0081dd50
+// Project one model's collision mesh onto the query plane, then test its triangles.
+//
+// IT IS THE COLLISION MESH, not the render geometry, and that is the whole identification. The
+// reference reads a count at +0xd8 and a pointer at +0xdc for the indices, a count at +0xe0 and a
+// pointer at +0xe4 for the vertices, off the object at m_shared + 0x150 -- and it walks those
+// vertices with a stride of TWELVE. Twelve bytes is a C3Vector, not the file's 48-byte M2Vertex,
+// which rules out M2Data::vertices immediately. Counting M2Data's fields with M2Bounds at its
+// real 28 bytes puts collisionIndices at exactly +0xd8 and collisionPositions at +0xe0, both
+// matching, and uint16 indices explain the `+ count * 2` the reference uses for the end pointer.
+// So m_shared + 0x150 is m_data and this runs against the collision hull, which is what a hit
+// test should use and why the stride was never going to be a render vertex.
+//
+// THE PROJECTION drops each world-space vertex onto the plane and keeps the height separately:
+// h is the signed distance, x and y are the point slid back along the normal by h, and z carries
+// h itself. That is exactly what m_rayProjected's declaration already described -- in-plane x, y
+// and the height above the plane -- and RayTestTriangles reads it back on that understanding.
+M2SceneRayCandidate* CM2Scene::RayTestModel(CM2Model* model, int32_t preferOther,
+                                            const C3Vector& planeNormal, float planeDist,
+                                            const C2Vector& point, M2SceneRayCandidate* candidate,
+                                            float* bestHeight, M2SceneRayCandidate* best) {
+    // FROZEN-ONLY. The reference dereferences the data straight through. CLAUDE.md's bug class:
+    // m_data is set when the async read lands but the array offsets are not patched until M2Init
+    // has run, and m_m2DataLoaded is what says so. Without this a model still streaming resolves
+    // collisionPositions to a wild pointer.
+    if (!model || !model->m_shared || !model->m_shared->m_m2DataLoaded
+        || !model->m_shared->m_data) {
+        return best;
+    }
+
+    M2Data* data = model->m_shared->m_data;
+
+    uint32_t vertexCount = data->collisionPositions.Count();
+
+    if (this->m_rayProjectedCapacity < vertexCount) {
+        if (this->m_rayProjected) {
+            SMemFree(this->m_rayProjected, "delete[]", -1, 0);
+
+            this->m_rayProjected = nullptr;
+        }
+
+        if (!this->m_rayProjectedCapacity) {
+            this->m_rayProjectedCapacity = 1;
+        }
+
+        while (this->m_rayProjectedCapacity < vertexCount) {
+            this->m_rayProjectedCapacity <<= 1;
+        }
+
+        this->m_rayProjected = static_cast<C3Vector*>(
+            SMemAlloc(sizeof(C3Vector) * this->m_rayProjectedCapacity, __FILE__, __LINE__,
+                      SMEM_FLAG_ZEROMEMORY));
+
+        if (!this->m_rayProjected) {
+            this->m_rayProjectedCapacity = 0;
+
+            return best;
+        }
+    }
+
+    for (uint32_t i = 0; i < vertexCount; i++) {
+        C3Vector v = data->collisionPositions[i] * model->matrixF4;
+
+        float h = planeNormal.x * v.x + planeNormal.y * v.y + planeNormal.z * v.z - planeDist;
+
+        this->m_rayProjected[i].x = v.x - planeNormal.x * h;
+        this->m_rayProjected[i].y = v.y - planeNormal.y * h;
+        this->m_rayProjected[i].z = h;
+    }
+
+    uint32_t indexCount = data->collisionIndices.Count();
+
+    if (!indexCount) {
+        return best;
+    }
+
+    const uint16_t* indices = &data->collisionIndices[0];
+
+    return this->RayTestTriangles(indices, indices + indexCount, 0, point, preferOther,
+                                  candidate, bestHeight, best);
+}
+
 M2SceneRayCandidate* CM2Scene::RayTestTriangles(const uint16_t* indices, const uint16_t* indicesEnd, uint32_t vertexBase, const C2Vector& point, int32_t preferOther, M2SceneRayCandidate* candidate, float* bestHeight, M2SceneRayCandidate* best) {
     const float epsilon = 1.0e-5f;
 

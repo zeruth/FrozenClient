@@ -94,6 +94,9 @@ class CM2Scene {
         uint32_t m_rayCandidateCapacity = 0;                 // +0x120
         // Section vertices projected onto the query plane: in-plane x, y and the height above it.
         C3Vector* m_rayProjected = nullptr;                  // +0x124
+        // +0x128. How many m_rayProjected holds. It only grows, doubling from one, and the old
+        // contents are not kept -- the same policy as m_rayCandidateCapacity above.
+        uint32_t m_rayProjectedCapacity = 0;                 // +0x128
 
         // +0x144: which draw passes this scene will run, one bit per M2PASS. Draw tests
         // `m_passMask & (1 << pass)` and does nothing when the bit is clear.
@@ -119,6 +122,12 @@ class CM2Scene {
         // ref: FUN_0081cf20
         int32_t RaySetup(const C3Vector& start, const C3Vector& end, float t, float* length, C3Vector* dir);
         // ref: FUN_0081d510
+        // Project one model's COLLISION mesh onto the query plane and test its triangles.
+        // ref: FUN_0081dd50
+        M2SceneRayCandidate* RayTestModel(CM2Model* model, int32_t preferOther,
+                                          const C3Vector& planeNormal, float planeDist,
+                                          const C2Vector& point, M2SceneRayCandidate* candidate,
+                                          float* bestHeight, M2SceneRayCandidate* best);
         M2SceneRayCandidate* RayTestTriangles(const uint16_t* indices, const uint16_t* indicesEnd, uint32_t vertexBase, const C2Vector& point, int32_t preferOther, M2SceneRayCandidate* candidate, float* bestHeight, M2SceneRayCandidate* best);
         // ref: FUN_0081d9c0
         void ProjectSectionVertices(CM2Model* model, M2SkinProfile* skinProfile, M2SkinSection* section, int32_t addNormal, const C3Vector& planeNormal, float planeDist);
