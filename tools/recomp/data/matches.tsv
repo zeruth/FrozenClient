@@ -2971,6 +2971,7 @@ addr	how	frozen	evidence
 007a7b00	annotated	WriteLiquidVertex	tag in src/world/map/LiquidSurface.cpp
 007a7e50	annotated	MapObjPolyFoldShortPair	tag in src/world/map/LiquidSurface.cpp
 007a7f00	annotated	MapObjPolyFoldByte	tag in src/world/map/LiquidSurface.cpp
+007a7f60	annotated	EmitLiquidTiles	tag in src/world/map/LiquidSurface.cpp
 007a8320	annotated	CMapObj::SetInstanceTransform	tag in src/world/map/CMapObjDraw.cpp
 007a8430	callorder	CWorld::GetOutdoorAmbient	same slot between linked calls in 007964a0=CWorldScene::RenderMapObjs
 007a8440	annotated	CMapObj::SetupFog	tag in src/world/map/CMapObjDraw.cpp

@@ -266,6 +266,15 @@ int32_t MapObjPolyCloseOutline(MapObjPolySet* set);
 // Park the cursor on the first edge whose flag is still zero.
 void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set);
 
+// ref: FUN_007a7f60
+// Emit the geometry for every liquid tile that carries its own, clipped to the group's portals.
+// Returns how many vertices were written.
+int32_t EmitLiquidTiles(CMapObj* mapObj, CMapObjGroup* group, const C44Matrix& matrix,
+                        const uint32_t* color, int32_t uvFromBytes, uint32_t uv2First,
+                        int32_t stride, uint8_t** positionOut, uint8_t** normalOut,
+                        uint8_t** colorOut, uint8_t** uvOut, uint8_t** uv2Out,
+                        uint16_t** indexOut, uint32_t baseVertex);
+
 // ref: FUN_007a7b00
 // Write one liquid vertex's attributes, each to its own cursor and only where that cursor exists.
 void WriteLiquidVertex(CMapObjGroup* group, const C44Matrix& matrix, const C3Vector& position,

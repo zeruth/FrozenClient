@@ -1,4 +1,5 @@
 #include "world/map/LiquidSurface.hpp"
+#include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "db/Db.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
@@ -1647,8 +1648,6 @@ void WriteLiquidVertex(CMapObjGroup* group, const C44Matrix& matrix, const C3Vec
 
         *uv2Out += stride;
     }
-
-    (void)uv2First;
 }
 
 
@@ -1716,6 +1715,161 @@ void* MapObjPolyFoldShortPair(const void* a, const void* b, float t) {
     out[1] = static_cast<uint16_t>(std::lrint(second));
 
     return slot;
+}
+
+
+// ref: FUN_007a7f60
+// The map-object water emitter, and the piece every other function in this file exists to serve. For
+// each liquid tile carrying its OWN geometry -- bit 0x80 set, the complement of the tiles
+// WriteLiquidIndices emits grid quads for -- it builds the tile's quad as a four-point outline,
+// clips that outline against the group's portal planes, and walks whatever survives into the vertex
+// and index streams.
+//
+// THAT IS WHY THERE IS A CLIPPER AT ALL. A group's water must not bleed through its doorways, so
+// each tile is cut back to the portals the group owns. The portal machinery is frozen's existing
+// SMOPortal / SMOPortalRef and the group's m_portalStart and m_portalCount, which already sat at the
+// +0x50 and +0x54 this function reads.
+//
+// The neighbour test before each clip is an optimisation, not a correctness condition: a portal is
+// only worth clipping against when the group on its far side has liquid whose grid overlaps this
+// tile's box. The box is the tile's own first and third corners, which are its min and max by
+// construction of the corner order below.
+//
+// CORNER ORDER IS (0,0), (0,1), (1,1), (1,0) -- around the quad rather than across it, which is what
+// makes the outline a ring and the first and third corners opposite. The vertex indices are built to
+// match, so corner k's index and corner k's offset always agree.
+//
+// The fold is chosen by whether the last cursor exists, which is how the two liquid vertex layouts
+// are told apart: one interpolates a single byte, the other a pair of uint16s.
+//
+// The index stream is a TRIANGLE STRIP with degenerate restarts -- a duplicate leading index, one
+// per vertex, then a duplicate trailing index. That is the same shape WriteLiquidIndices emits for
+// the shared-grid tiles, and the two agreeing is independent confirmation of the strip reading this
+// file's notes once called unresolved.
+//
+// The fold scratch is reset per tile, which is what keeps its unbounded-looking cursor safe.
+int32_t EmitLiquidTiles(CMapObj* mapObj, CMapObjGroup* group, const C44Matrix& matrix,
+                        const uint32_t* color, int32_t uvFromBytes, uint32_t uv2First,
+                        int32_t stride, uint8_t** positionOut, uint8_t** normalOut,
+                        uint8_t** colorOut, uint8_t** uvOut, uint8_t** uv2Out,
+                        uint16_t** indexOut, uint32_t baseVertex) {
+    const float kStep = 4.1666665f;
+
+    // (dx, dy) per corner, walked around the quad.
+    static const int32_t kCorner[4][2] = { { 0, 0 }, { 0, 1 }, { 1, 1 }, { 1, 0 } };
+
+    uint32_t nextVertex = baseVertex & 0xFFFF;
+    int32_t written = 0;
+
+    MapObjPolyFold fold = *uv2Out ? &MapObjPolyFoldByte : &MapObjPolyFoldShortPair;
+
+    const SMOPortalRef* refs = mapObj->m_mopr + group->m_portalStart;
+    const uint8_t* tile = group->m_liquidTiles;
+
+    MapObjPolySet set;
+
+    for (int32_t tileY = 0; tileY < static_cast<int32_t>(group->m_liquidYTiles); tileY++) {
+        for (int32_t tileX = 0; tileX < static_cast<int32_t>(group->m_liquidXTiles); tileX++, tile++) {
+            if ((*tile & 0xF) == 0xF || !(*tile & 0x80)) {
+                continue;
+            }
+
+            int32_t row = static_cast<int32_t>(group->m_liquidXVerts) * tileY;
+
+            int32_t corner[4];
+
+            corner[0] = row + tileX;
+            corner[1] = static_cast<int32_t>(group->m_liquidXVerts) + row + tileX;
+            corner[2] = corner[1] + 1;
+            corner[3] = corner[0] + 1;
+
+            MapObjPolyReset(&set);
+
+            C3Vector position[4];
+
+            for (int32_t k = 0; k < 4; k++) {
+                const uint8_t* vertex = group->m_liquidVerts + corner[k] * 8;
+
+                position[k].x = static_cast<float>(kCorner[k][0] + tileX) * kStep
+                              + group->m_liquidPos.x;
+                position[k].y = kStep * static_cast<float>(kCorner[k][1] + tileY)
+                              + group->m_liquidPos.y;
+                // The height is the second dword of the eight-byte liquid vertex.
+                position[k].z = *reinterpret_cast<const float*>(vertex + 4);
+
+                MapObjPolyAddPoint(&set, position[k], vertex);
+            }
+
+            MapObjPolyCloseOutline(&set);
+
+            for (uint32_t i = 0; i < group->m_portalCount; i++) {
+                const SMOPortalRef& ref = refs[i];
+
+                CMapObjGroup* other = mapObj->GetGroup(ref.groupIndex, 0);
+
+                if (!other) {
+                    continue;
+                }
+
+                // Only clip when the neighbour's liquid grid overlaps this tile's box.
+                float otherMaxX = static_cast<float>(other->m_liquidXTiles) * kStep
+                                + other->m_liquidPos.x;
+                float otherMaxY = kStep * static_cast<float>(other->m_liquidYTiles)
+                                + other->m_liquidPos.y;
+
+                if (other->m_liquidPos.x < position[2].x && other->m_liquidPos.y < position[2].y
+                        && !(otherMaxX < position[0].x) && !(otherMaxY < position[0].y)) {
+                    MapObjPolyClipToPlane(&set, mapObj->m_mopt[ref.portalIndex].plane, ref.side);
+                }
+            }
+
+            MapObjPolySeekUnflaggedEdge(&set);
+
+            MapObjPolyFoldReset();
+
+            bool started = false;
+
+            MapObjPolyWalk walk;
+
+            MapObjPolyBeginWalk(&walk, &set, reinterpret_cast<void*>(fold));
+
+            while (!MapObjPolyAtEnd(&walk)) {
+                C3Vector vertexPosition = { 0.0f, 0.0f, 0.0f };
+                void* value = nullptr;
+
+                MapObjPolyDeref(&walk, &vertexPosition, &value);
+
+                if (!started) {
+                    **indexOut = static_cast<uint16_t>(nextVertex);
+                    *indexOut += 1;
+
+                    started = true;
+                }
+
+                // The reference passes one more argument here that WriteLiquidVertex never reads;
+                // frozen's signature leaves it out rather than carry a parameter nothing uses.
+                WriteLiquidVertex(group, matrix, vertexPosition,
+                                  static_cast<const uint8_t*>(value), color, uvFromBytes, uv2First,
+                                  stride, positionOut, normalOut, colorOut, uvOut, uv2Out);
+
+                written++;
+
+                **indexOut = static_cast<uint16_t>(nextVertex);
+                *indexOut += 1;
+
+                nextVertex++;
+
+                MapObjPolyAdvance(&walk);
+            }
+
+            if (started) {
+                **indexOut = static_cast<uint16_t>(nextVertex - 1);
+                *indexOut += 1;
+            }
+        }
+    }
+
+    return written;
 }
 
 } // namespace Liquid

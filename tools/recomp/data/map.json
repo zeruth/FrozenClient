@@ -47433,6 +47433,21 @@
   "refSize": 87,
   "status": "ported"
  },
+ "007a7f60": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.091,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "EmitLiquidTiles",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 944,
+  "status": "ported"
+ },
  "007a8320": {
   "branchRatio": 1.0,
   "constOverlap": 0.042,
