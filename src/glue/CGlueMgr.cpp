@@ -412,25 +412,76 @@ static void GlueAutoAdvance() {
     s_throttle = 0;
 
     if (!SStrCmpI(CGlueMgr::m_currentScreen, "login", STORM_MAX_STR)) {
-        char account[64];
-        char password[64];
+        // THE LOGIN IS SENT ONCE. It used to be sent every time this ran, which is roughly twice
+        // a second for as long as the login screen is up -- and the login screen STAYS up while
+        // the realm dialog is open, because the realm list is a GlueXML dialog over it rather
+        // than a screen of its own. So a run that reached the realm list opened a fresh auth
+        // connection every half second and sat there: 64 of them to port 3724 and none to the
+        // world, with the client showing `Connecting` forever.
+        static bool s_loginSent = false;
 
-        const char* split = SStrChr(s_credentials, ':');
+        if (!s_loginSent) {
+            char account[64];
+            char password[64];
 
-        if (!split) {
+            const char* split = SStrChr(s_credentials, ':');
+
+            if (!split) {
+                return;
+            }
+
+            size_t nameLen = split - s_credentials;
+
+            if (!nameLen || nameLen >= sizeof(account)) {
+                return;
+            }
+
+            SStrCopy(account, s_credentials, nameLen + 1);
+            SStrCopy(password, split + 1, sizeof(password));
+
+            s_loginSent = true;
+
+            CGlueMgr::LoginServerLogin(account, password);
+
             return;
         }
 
-        size_t nameLen = split - s_credentials;
+        // THE REALM DIALOG IS THE OTHER HALF, and it was missing entirely: this hook knew how to
+        // log in and how to enter the world, but nothing in between, so an account whose realm was
+        // not already chosen never got past the list. Pick the realm named by FROZEN_AUTO_REALM,
+        // or the first one offered when that is unset, which is what a one-realm test server wants.
+        static const char* s_wantedRealm = getenv("FROZEN_AUTO_REALM");
 
-        if (!nameLen || nameLen >= sizeof(account)) {
-            return;
+        for (int32_t c = 0; c < CRealmList::s_categories.Count(); c++) {
+            RealmCategory* category = CRealmList::s_categories[c];
+
+            if (!category) {
+                continue;
+            }
+
+            for (uint32_t r = 0; r < category->uint14; r++) {
+                REALM_INFO* realm = ClientServices::GetRealmInfoByIndex(category->m_realms[r]);
+
+                if (!realm) {
+                    continue;
+                }
+
+                if (s_wantedRealm && *s_wantedRealm
+                    && SStrCmpI(realm->name, s_wantedRealm, STORM_MAX_STR)) {
+                    continue;
+                }
+
+                // What Script_ChangeRealm does before handing the realm over; the preferred
+                // category has to be valid or the list code has nowhere to put the choice.
+                if (CRealmList::s_preferredCategory == -1) {
+                    CRealmList::s_preferredCategory = 0;
+                }
+
+                CGlueMgr::ChangeRealm(realm);
+
+                return;
+            }
         }
-
-        SStrCopy(account, s_credentials, nameLen + 1);
-        SStrCopy(password, split + 1, sizeof(password));
-
-        CGlueMgr::LoginServerLogin(account, password);
     } else if (!SStrCmpI(CGlueMgr::m_currentScreen, "charselect", STORM_MAX_STR)) {
         // Optionally pick a character by name. An account can hold several, and the comparison
         // harness needs a specific one -- the Ebon Hold scene is only populated for the Death
