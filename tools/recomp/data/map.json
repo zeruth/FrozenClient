@@ -58201,6 +58201,22 @@
   "refSize": 251,
   "status": "ported"
  },
+ "00835f90": {
+  "branchRatio": 0.538,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "M2EnsureComboPair",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 251,
+  "status": "ported"
+ },
  "008360a0": {
   "branchRatio": 0.529,
   "constOverlap": 0.042,

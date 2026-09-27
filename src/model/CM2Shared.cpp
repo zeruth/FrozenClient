@@ -9,6 +9,7 @@
 #include "model/CM2Cache.hpp"
 #include "model/CM2Model.hpp"
 #include "model/M2Data.hpp"
+#include "model/M2Internal.hpp"
 #include "model/M2Init.hpp"
 #include "model/M2Types.hpp"
 #include "util/CStatus.hpp"
@@ -1406,6 +1407,74 @@ void CM2Shared::SubstituteSimpleShaders() {
     }
 }
 
+// ref: FUN_00835f90
+// Find a packed combo pair in a SORTED pair list, or insert it in order. Returns nothing: the
+// caller only wants the pair to be present, and the index is recovered later by
+// FixUpTextureCombos searching the finished array. That split is what makes the pass work -- the
+// arrays are rebuilt to contain every pair any batch needs, so the fixup's search can never fail,
+// which is why its "Failed to fix up texture combo!" has never fired in the retail client.
+//
+// PORTED FROM THE DISASSEMBLY, because the decompilation of this one cannot be trusted: it shows
+// the packed value arriving as an uninitialised EAX read. The machine code settles it -- 0x835f9c
+// and 0x835f9f take the pair out of AL and AH, so the compiler gave this static helper a register
+// argument no standard convention describes. frozen takes it as a normal parameter; the register
+// choice is an ABI detail with nothing to reproduce.
+//
+// Three details that a transcription from the C would have got wrong:
+//
+//   The SEARCH steps by one and the ORDERING scan steps by two. The search is looking for two
+//   consecutive entries anywhere, so every position is a candidate; the ordering scan is placing a
+//   new pair among existing pairs, so only even positions are. Both loops stop at count - 1.
+//
+//   The comparisons are UNSIGNED -- the reference uses `ja`. That matters because of the bias
+//   below: an unbiased -1 is 0xffff, the largest possible value, so "no transform" sorts to the
+//   end of the list rather than the front.
+//
+//   The count is stored back unconditionally. The reference guards it with a compare that can
+//   never be equal (count against count + 2), which is a compiler artifact and not a condition.
+//
+// `unbias` selects which array is being built. The texture pass passes 0 and takes the bytes as they
+// are; the transform pass passes 1 and undoes the plus-one shift PackTextureCombos applied, turning
+// a 0 byte back into the -1 that means no transform.
+void M2EnsureComboPair(uint16_t packed, M2ComboPairList& list, int32_t unbias) {
+    auto want0 = static_cast<int16_t>(packed & 0xFF);
+    auto want1 = static_cast<int16_t>(packed >> 8);
+
+    if (unbias) {
+        want0 = static_cast<int16_t>(want0 == 0 ? -1 : want0 - 1);
+        want1 = static_cast<int16_t>(want1 == 0 ? -1 : want1 - 1);
+    }
+
+    for (int32_t i = 0; i < list.count - 1; i++) {
+        if (list.data[i] == want0 && list.data[i + 1] == want1) {
+            return;
+        }
+    }
+
+    int32_t oldCount = list.count;
+    int32_t insertAt = oldCount;
+
+    for (int32_t i = 0; i < oldCount - 1; i += 2) {
+        auto have0 = static_cast<uint16_t>(list.data[i]);
+        auto have1 = static_cast<uint16_t>(list.data[i + 1]);
+
+        if (have0 > static_cast<uint16_t>(want0)
+                || (have0 == static_cast<uint16_t>(want0)
+                    && have1 > static_cast<uint16_t>(want1))) {
+            insertAt = i;
+
+            break;
+        }
+    }
+
+    list.count = oldCount + 2;
+
+    memmove(&list.data[insertAt + 2], &list.data[insertAt],
+            static_cast<size_t>(oldCount - insertAt) * sizeof(int16_t));
+
+    list.data[insertAt] = want0;
+    list.data[insertAt + 1] = want1;
+}
 // ref: FUN_00835e90
 // Rewrite every batch's texture-combo fields into a PACKED INTERMEDIATE form, which exists only
 // between here and FixUpTextureCombos below. Both are called by SubstituteSpecializedShaders, which
@@ -1598,17 +1667,33 @@ void CM2Shared::FixUpTextureCombos() {
 // WHAT IS LEFT, and DO NOT PORT IT FROM THE DECOMPILATION -- two of the three have C that Ghidra
 // itself flags as unreliable, so this part wants the objdump text dump instead:
 //
-//   FUN_00837250 (583 b) builds two variable-length stack arrays with ALLOCA, sized by the batch
+//   FUN_00837250 (583 b) REPLACES m_data->textureCombos and m_data->textureTransformCombos with
+//     freshly allocated arrays rebuilt to hold every pair the batches need -- it stores the new
+//     pointers at +0x84 and +0x9c and the new counts at +0x80 and +0x98 (0x8373ef, 0x83742b,
+//     0x83745e, 0x837487). That is the missing piece of the design: the rebuild is what guarantees
+//     the fixup's search succeeds.
+//
+//     AND IT DOES NOT PORT DIRECTLY, for a reason that has nothing to do with decoding it. The
+//     reference stores an absolute pointer in those slots, because M2Init converts every M2Array
+//     offset to a pointer in place. frozen deliberately does NOT do that -- see M2Data.hpp -- it
+//     keeps a signed 32-bit DELTA from the array header's own address and resolves through
+//     M2ArrayDelta, which is what makes the 64-bit build work at all. A fresh SMemAlloc block is
+//     not guaranteed to land within 2GB of the model data, so it cannot simply be pointed at.
+//
+//     Two ways out, neither started: place the allocation near the model data the way
+//     SequenceBufferPlaceNear already does for .anim buffers, or keep the rebuilt arrays as their
+//     own members on CM2Shared and have the consumers prefer them when present. The second is
+//     probably better -- it leaves the loaded model data untouched -- but it changes every reader,
+//     so it is a decision rather than a transcription.
+//
+//     It also builds two variable-length stack arrays with ALLOCA, sized by the batch
 //     count, and Ghidra prints "Unable to track spacebase fully for stack" on it -- every local it
 //     shows is suspect. It fills the two arrays for batches with textureCount > 1, walks again for
 //     batches with textureCount < 2, and finishes with an SMemAlloc, so it hands something
 //     persistent back.
 //
-//   FUN_00835f90 (251 b) is called only from there, twice, and its decompilation reads an
-//     UNINITIALISED EAX -- which means the calling convention Ghidra assumed is wrong and the real
-//     one passes a packed pair in a register. What it does is clear enough: it splits a byte pair
-//     and undoes the plus-one bias, the same convention FixUpTextureCombos uses. It has one
-//     unlinked callee of its own, FUN_00414760.
+//   FUN_00835f90 is PORTED as M2EnsureComboPair above, read off the disassembly. Its two call sites
+//     here pass (list, 0) for the textures and (list, 1) for the transforms.
 //
 // This function itself decompiles cleanly and walks the batches keeping
 // two small state machines -- the locals the decompilation calls local_c and cStack_b, each stepping
