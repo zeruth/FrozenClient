@@ -156,7 +156,13 @@ class CM2Model {
 
         // The value CM2Scene::uint14 had when this model was last animated. AnimateMT stamps it on
         // the way out and Animate() reads it to tell "already done this frame" from "needs work".
-        uint32_t m_animCounter = 0;
+        //
+        // Born -1, NOT 0, and that is the reference's value (FUN_0082be60 sets +0x3c to
+        // 0xffffffff). It matters because 0 is a counter value the scene really takes: a model
+        // created before the scene's counter first moved would compare equal and skip its own
+        // first animate. -1 is the same sentinel ForceAnimate produces, which is the other half of
+        // the evidence that it means "never".
+        uint32_t m_animCounter = -1;
 
         CM2Model** m_animatePrev = nullptr;
         CM2Model* m_animateNext = nullptr;
@@ -276,31 +282,24 @@ class CM2Model {
         // pool and nulls this, and its SMemFree names ".\M2Model.cpp" line 0xad6, which is how
         // the owning module is known rather than guessed.
         //
-        // Porting it is a multi-cycle job and should not be started piecemeal: the builders are
-        // FUN_0082be60 (855 bytes) and FUN_0082c970 (1353 bytes), the only two functions that
-        // store a non-zero value here. Do the builders first -- CM2Model::SetIndices dereferences
-        // this WITHOUT a null check, so it is only ever reached through the callers' own
-        // `if (ptr2D0)` guards (FUN_00824b70, FUN_00829e40, FUN_00832dd0), and porting the
-        // consumer alone would give frozen a function it must never call.
+        // PORTED 2026-09-26, and verified by a run: the builder is CM2Model::OptimizeVisibleGeometry
+        // (FUN_0082c970), the free is UnoptimizeVisibleGeometry (FUN_00825d70), the fill is
+        // SetIndices (FUN_00828f90), and CM2Scene selects it at three sites. SetIndices
+        // dereferences this WITHOUT a null check, which is safe only because it is reached solely
+        // through the callers' own `if (ptr2D0)` guards.
         //
-        // WHAT ACTUALLY BLOCKS THE BUILDERS, found 2026-09-26 by reading FUN_0082c970 and its
-        // free FUN_00825d70 end to end: frozen has no way to release a Gx pool or a Gx buffer.
-        // CGxDevice::PoolCreate and BufCreate exist, nothing destroys either, and there is no
-        // PoolDestroy virtual on the device -- the reference's free calls one, through vtable
-        // +0xd4. This block is rebuilt every time a model's section visibility changes, so a
-        // builder landed without the free is a GPU-memory leak on every geoset change, and the
-        // free cannot be written until the device grows the primitive in all three backends.
-        // That is the next step, and it is a gx change rather than a model one.
+        // A note here used to call FUN_0082be60 a second builder, "the only two functions that
+        // store a non-zero value here". That was wrong: FUN_0082be60 is the CM2Model constructor
+        // and it sets this slot to ZERO like every other field. FUN_0082c970 is the only builder,
+        // so the chain is complete rather than half-done.
         //
-        // Everything else the builders need is settled: the block's layout is M2OptimizedGeometry
-        // in M2Model.hpp (proven three ways, see the comment there); the merge rule is
-        // M2BatchesCanMerge; the pool is
-        // GxPoolCreate(GxPoolTarget_Index, GxPoolUsage_Static, indexCount * 2,
-        // GxPoolHintBit_Unk0, m_shared->ext) with GxBufCreate(pool, 2, indexCount, 0); the flag
-        // that picks between summing vertex counts and taking the union of the two vertex ranges
-        // is `(m_shared->m_cache->m_flags & 8) || (m_data->bones.Count() == 1 &&
-        // (m_shared->m_cache->m_flags & 0x40))`; and the build only happens at all when merging
-        // would actually reduce the batch count.
+        // What had blocked it was not in model at all: frozen could create a Gx pool and buffer
+        // and had no way to destroy either, and this block is rebuilt on every visibility change.
+        // CGxDevice::PoolDestroy, BufDestroy and the IPoolRelease virtual were added for it.
+        //
+        // Still owed: the REBASE branch of SetIndices has never run here, because this machine's
+        // CM2Cache flags always select the union-of-ranges merge; and nothing has confirmed the
+        // result on screen.
         M2OptimizedGeometry* ptr2D0 = nullptr;
         // Membership in the scene's ray query list (CM2Scene::m_rayModelList), reference +0x2d4
         // through +0x2e4. Written by the map's segment query (FUN_007a2760, not ported): the
@@ -315,31 +314,8 @@ class CM2Model {
         uint32_t m_memHandle;
 
         // Member functions
-        CM2Model()
-            : m_loaded(0)
-            , m_flag2(0)
-            , m_flag4(0)
-            , m_flag8(0)
-            , m_flag10(0)
-            , m_flag20(0)
-            , m_flag40(1)
-            , m_flag80(0)
-            , m_flag100(1)
-            , m_flag200(1)
-            , m_flag400(0)
-            , m_flag800(0)
-            , m_flag1000(0)
-            , m_flag2000(0)
-            , m_flag4000(0)
-            , m_flag8000(0)
-            , m_flag10000(0)
-            , m_flag20000(0)
-            , m_flag40000(0)
-            , m_flag80000(0)
-            , m_flag100000(0)
-            , m_flag200000(0)
-            , m_flag400000(0)
-            {};
+        // ref: FUN_0082be60
+        CM2Model();
         ~CM2Model();
         void AddRef();
         void Animate();

@@ -152,6 +152,48 @@ uint16_t CM2Model::Sub8260C0(M2Data* data, uint32_t sequenceId, int32_t a3) {
     return 0xFFFF;
 }
 
+// ref: FUN_0082be60
+// Out of line ON PURPOSE, the same reasoning as CMapBaseObj's: the reference has a real
+// constructor here -- 855 bytes of it -- and an implicit one is inlined into every creation site
+// and leaves no function to match it against.
+//
+// Only the bitfield block is listed, because the reference's own constructor is almost entirely
+// field initialisation that frozen already expresses as default member initializers. The word it
+// builds is `(flags & 0xff800340) | 0x340`, which is exactly m_flag40, m_flag100 and m_flag200
+// set and every other bit below 0x800000 clear -- what this list says.
+//
+// NOT PORTED from it: the tail installs a five-entry table of bone-blend function pointers at
+// 0x00d4118c, once, guarded on the first slot being null, and swaps in SSE variants when
+// 0x00d3fcec has bit 4. Four of the five slots take the same function (FUN_0082a210) and the
+// second takes FUN_0082a4e0. frozen calls CM2Scene::BlendBoneMatrices and BlendBoneMatrices3x4
+// directly instead of dispatching through a table, and has no SSE variants at all, so this is a
+// whole feature rather than a missing line -- what indexes the table has not been established.
+CM2Model::CM2Model()
+    : m_loaded(0)
+    , m_flag2(0)
+    , m_flag4(0)
+    , m_flag8(0)
+    , m_flag10(0)
+    , m_flag20(0)
+    , m_flag40(1)
+    , m_flag80(0)
+    , m_flag100(1)
+    , m_flag200(1)
+    , m_flag400(0)
+    , m_flag800(0)
+    , m_flag1000(0)
+    , m_flag2000(0)
+    , m_flag4000(0)
+    , m_flag8000(0)
+    , m_flag10000(0)
+    , m_flag20000(0)
+    , m_flag40000(0)
+    , m_flag80000(0)
+    , m_flag100000(0)
+    , m_flag200000(0)
+    , m_flag400000(0)
+    {}
+
 CM2Model::~CM2Model() {
     // Give back the reference Initialize took on the model this one was created against. The
     // reference does this first thing (FUN_00832640 at 0x0083264e).

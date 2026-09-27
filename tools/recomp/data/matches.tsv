@@ -3521,6 +3521,7 @@ addr	how	frozen	evidence
 0082b460	override	M2AnimateSplineTrack<M2SplineKey<C3Vector>,C3Vector>	
 0082b8a0	override	M2AnimateSplineTrack<M2SplineKey<float>,float>	
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
+0082be60	annotated	CM2Model::CM2Model	tag in src/model/CM2Model.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
 0082c970	annotated	CM2Model::OptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
