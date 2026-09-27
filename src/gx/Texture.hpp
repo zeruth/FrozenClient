@@ -19,6 +19,14 @@ uint32_t PixelFormatBitsPerPixel(PIXEL_FORMAT);
 // The byte size of one mip level of a `width` x `height` image in `format`.
 uint32_t PixelFormatLevelSize(uint32_t level, uint32_t width, uint32_t height, PIXEL_FORMAT);
 
+// The total bytes of `levelCount` mip levels of a `width` x `height` image in this format.
+uint32_t PixelFormatChainSize(uint32_t levelCount, uint32_t width, uint32_t height, PIXEL_FORMAT);
+
+// Allocate a whole mip chain and return its pointer table. The data is 16-byte ALIGNED, which is
+// the difference between this and BuildMipLevelPointers below.
+void** AllocMipChain(PIXEL_FORMAT, uint32_t width, uint32_t height, const char* fileName,
+                     int32_t lineNo);
+
 // Fill a mip pointer table IN PLACE: `levels` is the head of a buffer whose pointer table is
 // followed immediately by the level data, and each entry is pointed at its own level.
 void BuildMipLevelPointers(PIXEL_FORMAT, uint32_t width, uint32_t height, void** levels);

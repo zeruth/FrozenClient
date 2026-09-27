@@ -160,6 +160,59 @@ uint32_t PixelFormatLevelSize(uint32_t level, uint32_t width, uint32_t height,
     return (PixelFormatBitsPerPixel(format) * width * height) >> 3;
 }
 
+// ref: FUN_006ab6c0
+// Every level added up. Levels are summed from 0, so this is the whole chain down to 1x1 when
+// `levelCount` came from CalcLevelCount.
+uint32_t PixelFormatChainSize(uint32_t levelCount, uint32_t width, uint32_t height,
+                              PIXEL_FORMAT format) {
+    uint32_t total = 0;
+
+    for (uint32_t i = 0; i < levelCount; i++) {
+        total += PixelFormatLevelSize(i, width, height, format);
+    }
+
+    return total;
+}
+
+// ref: FUN_006ab760
+// One allocation holding both the pointer table and every level, with the table first.
+//
+// The ALIGNMENT is the whole point of the difference from BuildMipLevelPointers, which lays out a
+// buffer it did not allocate and packs the data straight after the table: this one rounds the data
+// start up to a 16-byte boundary, and the 0x10 added to the allocation is what pays for the slack
+// that rounding can need. A caller that mixes the two up gets levels at the wrong offsets, so they
+// are deliberately separate functions here as they are in the reference.
+//
+// DIVERGENCE, the same one BuildMipLevelPointers carries: the reference reserves `levelCount * 4`
+// for the table because its pointers are four bytes, and this uses sizeof(void*). Both the
+// allocation size and the data offset use it, so the layout stays self-consistent.
+//
+// No null check on the allocation, which is what the reference does and what CreateBlpSync and the
+// rest of this file already do -- Storm's allocator does not return null.
+void** AllocMipChain(PIXEL_FORMAT format, uint32_t width, uint32_t height, const char* fileName,
+                     int32_t lineNo) {
+    uint32_t levelCount = CalcLevelCount(width, height);
+    uint32_t chainBytes = PixelFormatChainSize(levelCount, width, height, format);
+
+    size_t tableBytes = levelCount * sizeof(void*);
+
+    auto raw = static_cast<char*>(SMemAlloc(chainBytes + 0x10 + tableBytes, fileName, lineNo, 0));
+    auto levels = reinterpret_cast<void**>(raw);
+
+    // The first 16-byte boundary at or after the end of the table.
+    auto aligned = reinterpret_cast<char*>(
+        (reinterpret_cast<uintptr_t>(raw + tableBytes) + 0xF) & ~static_cast<uintptr_t>(0xF));
+
+    size_t offset = aligned - raw;
+
+    for (uint32_t i = 0; i < levelCount; i++) {
+        levels[i] = raw + offset;
+
+        offset += PixelFormatLevelSize(i, width, height, format);
+    }
+
+    return levels;
+}
 // ref: FUN_006ab810
 // Point each entry of a mip table at its own level, where the table and the level data share ONE
 // buffer: the table comes first and the levels follow it back to back.
