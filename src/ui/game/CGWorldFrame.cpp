@@ -494,11 +494,13 @@ void CGWorldFrame::OnWorldRender() {
         // The barrier pass is FUN_00794b50, reached through the wrapper FUN_0077f980 with the float
         // at frame+0xb14; 2200 bytes of streamed quads over a model. Not ported, and it is the only
         // thing missing from this block's order.
-        // Liquid bucket 1 is NOT drawn here any more. CMap::Render drains it (a divergence already
-        // recorded at that call: the reference drains it from 0x00790a80, which is unported), and
-        // once the material draw landed, calling the stand-in here as well drew every water surface
-        // TWICE -- which for an alpha-blended surface compounds the blend rather than being
-        // invisible.
+        // Liquid bucket 1 IS drawn here, and this comment used to say the opposite of the code it sits
+        // above -- it claimed CMap::Render drains bucket 1 and that calling DrawLiquidPass here would
+        // draw every surface twice, while the call below has been there all along. CMap.cpp's comment
+        // at its own Liquid::Draw says the other thing, correctly. The code is right and always was:
+        // CMap::Render drains bucket 0 and DrawLiquidPass drains bucket 1, each exactly once, so
+        // nothing is drawn twice. Corrected rather than deleted because a note that inverts the truth
+        // invites someone to remove a call the renderer needs.
         if (CWorld::IsCameraUnderLiquid()) {
             if (scene) { scene->Draw(M2PASS_1); }
             WeatherRender();
