@@ -47068,7 +47068,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 1026,
+  "frozenSize": 1031,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 1355,
@@ -65876,7 +65876,7 @@
    "src/world/map/LiquidMaterialSettings.cpp"
   ],
   "frozen": "Liquid::UpdateProceduralTextures",
-  "frozenSize": 0,
+  "frozenSize": 256,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 329,

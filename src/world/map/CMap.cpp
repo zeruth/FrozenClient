@@ -7,6 +7,7 @@
 #include "world/map/VBBList.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
+#include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
 #include "world/map/MapLowDetail.hpp"
@@ -1468,7 +1469,13 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // TODO the passes the reference runs between the map objects and the liquid, in its order:
     // FUN_00795f80 (the map-object groups carrying group flag 0x8, drawn through FUN_007abac0 in
     // their own viewport), FUN_007968d0, FUN_00796c10 twice, and two calls to FUN_007f31c0.
-    // TODO FUN_008a2f00(): uploads two 64x8 liquid ramp textures, once each.
+    // The procedural liquid textures' one-time upload, in the reference's own position: between
+    // CWorldScene::DrawEntityShadows and BuildPendingMapObjSurfaces, at 0x0079acc9. Each of the
+    // three latches after its first upload, so this costs three compares a frame thereafter.
+    //
+    // The TODO this replaces said TWO textures; there are three -- the river and ocean depth ramps
+    // and the WMO water texture.
+    Liquid::UpdateProceduralTextures();
 
     // The map objects' water, queued into the same two buckets the terrain's goes into. This is the
     // reference's own position for it, at 0x0079acce: after the ramp textures and before the first

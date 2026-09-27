@@ -192,6 +192,13 @@ void Shutdown();
 
 void ReleaseMaterials();
 
+// Push each procedural texture's generated pixels to the device, once. Called once a frame from
+// CMap::Render, where each of the three latches after its first upload. ref: FUN_008a2f00
+void UpdateProceduralTextures();
+
+// Close the procedural texture handles and let them be made again. ref: FUN_008a2980
+void ReleaseProceduralTextures();
+
 // Drop every settings record's texture frames and open them again. ref: FUN_008a2780
 void ReloadAllLiquidTextures();
 
