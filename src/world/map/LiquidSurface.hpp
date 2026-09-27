@@ -266,6 +266,7 @@ int32_t MapObjPolyCloseOutline(MapObjPolySet* set);
 // Park the cursor on the first edge whose flag is still zero.
 void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set);
 
+
 // ref: FUN_007a7f60
 // Emit the geometry for every liquid tile that carries its own, clipped to the group's portals.
 // Returns how many vertices were written.
@@ -334,6 +335,15 @@ struct LiquidSeams {
 // the strip-versus-list question this file's own notes left open.
 void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t** cursor,
                         uint32_t baseVertex);
+
+// ref: FUN_007a7cc0
+// Write one vertex per position of the MLIQ grid, honouring the seam lists. Returns the total
+// written, duplicates included.
+int32_t WriteLiquidGridVertices(CMapObjGroup* group, const C44Matrix& matrix,
+                                const uint32_t* color, int32_t uvFromBytes, uint32_t uv2First,
+                                const LiquidSeams& seams, int32_t stride,
+                                uint8_t** positionOut, uint8_t** normalOut, uint8_t** colorOut,
+                                uint8_t** uvOut, uint8_t** uv2Out);
 
 // The map-object (WMO) half of the factory pair, vtable 0x00a404d4. Its sibling above covers
 // terrain chunks; Liquid::CInstance holds either one polymorphically.

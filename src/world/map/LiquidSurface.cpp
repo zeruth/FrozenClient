@@ -1872,4 +1872,79 @@ int32_t EmitLiquidTiles(CMapObj* mapObj, CMapObjGroup* group, const C44Matrix& m
     return written;
 }
 
+
+// ref: FUN_007a7cc0
+// The shared-grid vertex writer, companion to WriteLiquidIndices: one vertex per position of the
+// MLIQ grid, in the same row-major order those indices assume.
+//
+// A DUPLICATED ROW OR COLUMN EMITS TWO VERTICES AT THE SAME COORDINATE. The position only advances
+// once per grid index, outside the repeat, so a seam is a pair of coincident vertices -- which is
+// the whole point of one: the same place carrying different attributes on either side. That is also
+// why WriteLiquidIndices computes its row stride as m_liquidXVerts plus the duplicated column count
+// rather than the grid width.
+//
+// The height is the second dword of the eight-byte liquid vertex, and the attribute pointer handed
+// to WriteLiquidVertex is that same vertex -- so the grid path passes authored attributes straight
+// through where the tile path passes interpolated ones out of the fold scratch.
+//
+// The return is the total including duplicates, (xVerts + dupColumns) * (yVerts + dupRows), which is
+// exactly the row stride times the row count. The caller sizes its buffer from it.
+//
+// The reference is a __thiscall whose `this` it stores and never reads, and it passes
+// WriteLiquidVertex one argument that function ignores. Neither is reproduced.
+int32_t WriteLiquidGridVertices(CMapObjGroup* group, const C44Matrix& matrix,
+                                const uint32_t* color, int32_t uvFromBytes, uint32_t uv2First,
+                                const LiquidSeams& seams, int32_t stride,
+                                uint8_t** positionOut, uint8_t** normalOut, uint8_t** colorOut,
+                                uint8_t** uvOut, uint8_t** uv2Out) {
+    const float kStep = 4.1666665f;
+
+    float y = group->m_liquidPos.y;
+
+    uint32_t dupRowCursor = 0;
+
+    for (uint32_t row = 0; row < group->m_liquidYVerts; row++, y += kStep) {
+        uint32_t rowRepeat = 1;
+
+        if (dupRowCursor < seams.dupRows.Count() && seams.dupRows[dupRowCursor] == row) {
+            rowRepeat = 2;
+            dupRowCursor++;
+        }
+
+        while (rowRepeat--) {
+            float x = group->m_liquidPos.x;
+
+            uint32_t dupColumnCursor = 0;
+
+            for (uint32_t col = 0; col < group->m_liquidXVerts; col++, x += kStep) {
+                const uint8_t* vertex = group->m_liquidVerts
+                                      + (group->m_liquidXVerts * row + col) * 8;
+
+                uint32_t columnRepeat = 1;
+
+                if (dupColumnCursor < seams.dupColumns.Count()
+                        && seams.dupColumns[dupColumnCursor] == col) {
+                    columnRepeat = 2;
+                    dupColumnCursor++;
+                }
+
+                C3Vector position = {
+                    x,
+                    y,
+                    *reinterpret_cast<const float*>(vertex + 4)
+                };
+
+                while (columnRepeat--) {
+                    WriteLiquidVertex(group, matrix, position, vertex, color, uvFromBytes,
+                                      uv2First, stride, positionOut, normalOut, colorOut, uvOut,
+                                      uv2Out);
+                }
+            }
+        }
+    }
+
+    return static_cast<int32_t>((group->m_liquidXVerts + seams.dupColumns.Count())
+                                * (group->m_liquidYVerts + seams.dupRows.Count()));
+}
+
 } // namespace Liquid

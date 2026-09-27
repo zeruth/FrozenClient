@@ -47403,6 +47403,21 @@
   "refSize": 445,
   "status": "ported"
  },
+ "007a7cc0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp"
+  ],
+  "frozen": "WriteLiquidGridVertices",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 388,
+  "status": "ported"
+ },
  "007a7e50": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
