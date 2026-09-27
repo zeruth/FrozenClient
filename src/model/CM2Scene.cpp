@@ -1159,18 +1159,36 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
         // - draw callbacks
     }
 
+    // THE THREE LISTS ARE ALWAYS SORTED, opaque by SortOpaque and both transparent lists by
+    // SortTransparent. The reference does these three unconditionally, back to back, at
+    // 0x00822fcf / 0x00822fe2 / 0x00822ff5.
     M2HeapSort(CM2Scene::SortOpaque, this->array54[0].Ptr(), this->array54[0].Count(), this);
-    // The two TRANSPARENT lists go through the keying pass, which numbers their additive runs
-    // before sorting. The opaque list above does not -- the reference keys only these two, and
-    // grouping additive runs means nothing in a list that has none.
-    //
-    // The run numbers ARE read now: KeyAndSortElementList sorts with SortTransparentGrouped
-    // (FUN_0081f0e0), which takes the run number as its first key. This pass stopped being inert
-    // when that landed.
-    this->KeyAndSortElementList(1);
-    this->KeyAndSortElementList(2);
+    M2HeapSort(CM2Scene::SortTransparent, this->array54[1].Ptr(), this->array54[1].Count(), this);
+    M2HeapSort(CM2Scene::SortTransparent, this->array54[2].Ptr(), this->array54[2].Count(), this);
 
-    // TODO sort additive particles
+    // THE ADDITIVE-RUN PASS IS A GATED RE-SORT ON TOP OF THOSE, not a replacement for them. This
+    // was got wrong once and it is worth saying plainly, because the mistake was invisible in the
+    // world and wrecked the login screen: the keying pass was put here INSTEAD of the two
+    // SortTransparent calls above and run every frame, so a scene with no particles at all lost
+    // its depth sort and drew its transparent geometry in model order. On the glue screen that put
+    // the sky over the terrain -- a flat cyan wash with the foreground missing.
+    //
+    // The reference gates it on two conditions ANDed, at 0x0082300e and 0x00823014:
+    //
+    //   * bit 0x80 of the model-list head's CREATION flags -- `scene->+0x4` then `+0x4`, which is
+    //     CM2Model::m_flags. What that bit MEANS is not established and is not guessed at here;
+    //     the test is transcribed as the reference makes it. Nothing in frozen sets it today, so
+    //     this pass does not currently run -- which is correct, not broken. If a model ever asks
+    //     for the bit, the pass is already here and already right.
+    //
+    //   * more than ONE additive particle element in the scene. additiveCount is exactly that,
+    //     counted by AddParticleElement, and the comment there already said it was owed to this
+    //     sort. With nothing or one thing to group there is no run to keep contiguous, so the
+    //     depth order the sorts above produced is the better answer and is left alone.
+    if (this->m_modelList && (this->m_modelList->m_flags & 0x80) && additiveCount > 1) {
+        this->KeyAndSortElementList(1);
+        this->KeyAndSortElementList(2);
+    }
 }
 
 // Register one emitter's particles as a draw element.
