@@ -3207,11 +3207,13 @@ addr	how	frozen	evidence
 007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007cb3b0	annotated	VBBList::NewBlock	tag in src/world/map/VBBList.cpp
+007cb700	callgraph	CMapObjGroup::CMapObjGroup	only unmatched callee of 007bffe0=CMap::AllocMapObjGroup
 007cb990	annotated	VBBList::InitializeLists	tag in src/world/map/VBBList.cpp
 007cb9f0	override	VBBList::Free	
 007cbbc0	annotated	VBBList::Alloc	tag in src/world/map/VBBList.cpp
 007cbcb0	annotated	CMapObjGroup::CreateBuffers	tag in src/world/map/CMapObjGroupBuffers.cpp
 007cbd70	annotated	CMapObjGroup::FreeBuffers	tag in src/world/map/CMapObj.cpp
+007cbdc0	annotated	CMapObjGroup::AcquireLiquidBuffers	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp

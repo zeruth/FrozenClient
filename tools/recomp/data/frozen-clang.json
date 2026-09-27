@@ -205506,7 +205506,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 50
+"line": 51
 },
 "CMapObjGroup::AllocHitRecord": {
 "files": [
@@ -205527,7 +205527,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 63
+"line": 64
 },
 "CMapObjGroup::AllocHitIndices": {
 "files": [
@@ -205543,7 +205543,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 124
+"line": 125
 },
 "CMapObjGroup::AllocHitPlacement": {
 "files": [
@@ -205560,7 +205560,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 140
+"line": 141
 },
 "TriangleOutsideBox": {
 "files": [
@@ -205583,7 +205583,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 157
+"line": 158
 },
 "CMapObjGroup::QueryEnd": {
 "files": [
@@ -205599,7 +205599,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 175
+"line": 176
 },
 "CMapObjGroup::~CMapObjGroup": {
 "files": [
@@ -205614,7 +205614,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 185
+"line": 186
 },
 "CMapObjGroup::FreeQueryData": {
 "files": [
@@ -205635,7 +205635,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 189
+"line": 190
 },
 "CMapObjGroupSegmentQuery::Init": {
 "files": [
@@ -205664,7 +205664,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 211
+"line": 212
 },
 "CMapObjGroupSegmentQuery::CachedLeaf": {
 "files": [
@@ -205677,7 +205677,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 249
+"line": 250
 },
 "CMapObjGroupSegmentQuery::TestFace": {
 "files": [
@@ -205702,7 +205702,7 @@
 "stub": false,
 "lines": 56,
 "refs": [],
-"line": 254
+"line": 255
 },
 "CMapObjGroup::SegmentQueryNode": {
 "files": [
@@ -205734,7 +205734,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 312
+"line": 313
 },
 "CMapObjGroup::SegmentQueryLeaf": {
 "files": [
@@ -205752,7 +205752,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 400
+"line": 401
 },
 "CMapObjGroupDualSegmentQuery::Init": {
 "files": [
@@ -205781,7 +205781,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 427
+"line": 428
 },
 "CMapObjGroupDualSegmentQuery::CachedLeaf": {
 "files": [
@@ -205794,7 +205794,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 460
+"line": 461
 },
 "CMapObjGroupDualSegmentQuery::TestFace": {
 "files": [
@@ -205814,7 +205814,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 465
+"line": 466
 },
 "CMapObjGroupDualSegmentQuery::Results": {
 "files": [
@@ -205829,7 +205829,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 525
+"line": 526
 },
 "CMapObjGroup::DualQueryNode": {
 "files": [
@@ -205861,7 +205861,7 @@
 "stub": false,
 "lines": 83,
 "refs": [],
-"line": 566
+"line": 567
 },
 "CMapObjGroup::DualQueryLeaf": {
 "files": [
@@ -205879,7 +205879,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 651
+"line": 652
 },
 "CMapObjGroupBoxQuery::TestFace": {
 "files": [
@@ -205901,7 +205901,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 678
+"line": 679
 },
 "CMapObjGroup::BoxQueryNode": {
 "files": [
@@ -205924,7 +205924,7 @@
 "stub": false,
 "lines": 46,
 "refs": [],
-"line": 701
+"line": 702
 },
 "CMapObjGroup::BoxQueryLeaf": {
 "files": [
@@ -205941,7 +205941,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 749
+"line": 750
 },
 "CMapObjGroup::RecordHits": {
 "files": [
@@ -205963,7 +205963,7 @@
 "stub": false,
 "lines": 66,
 "refs": [],
-"line": 772
+"line": 773
 },
 "CMapObjGroup::QuerySegment": {
 "files": [
@@ -205986,7 +205986,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 840
+"line": 841
 },
 "CMapObjGroup::QuerySegmentFace": {
 "files": [
@@ -206008,7 +206008,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 872
+"line": 873
 },
 "CMapObjGroup::QuerySegmentDual": {
 "files": [
@@ -206029,7 +206029,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 901
+"line": 902
 },
 "CMapObjGroup::QueryBox": {
 "files": [
@@ -206054,7 +206054,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 922
+"line": 923
 },
 "CMapObjGroup::SampleColorAtFace": {
 "files": [
@@ -206089,7 +206089,7 @@
 "stub": false,
 "lines": 117,
 "refs": [],
-"line": 959
+"line": 960
 },
 "ClassifyCorner": {
 "files": [
@@ -206119,7 +206119,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1109
+"line": 1110
 },
 "TerrainCollectHits": {
 "files": [
@@ -206148,7 +206148,7 @@
 "stub": false,
 "lines": 92,
 "refs": [],
-"line": 1140
+"line": 1141
 },
 "MapQueryBoxChunk": {
 "files": [
@@ -206185,7 +206185,7 @@
 "stub": false,
 "lines": 65,
 "refs": [],
-"line": 1236
+"line": 1237
 },
 "MapQueryBoxTerrain": {
 "files": [
@@ -206207,7 +206207,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1306
+"line": 1307
 },
 "MapQueryBox": {
 "files": [
@@ -206225,7 +206225,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1329
+"line": 1330
 },
 "CMapObjGroup::LiquidTileCount": {
 "files": [
@@ -206243,7 +206243,27 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1373
+"line": 1374
+},
+"CMapObjGroup::AcquireLiquidBuffers": {
+"files": [
+"src/world/map/cmapobjgroup.cpp"
+],
+"callseq": [
+"GxVertexBufferFormatSize",
+"VBBList::Alloc",
+"VBBList::Alloc"
+],
+"strings": [],
+"consts": [
+"0",
+"2"
+],
+"branches": 4,
+"stub": false,
+"lines": 23,
+"refs": [],
+"line": 1415
 },
 "CMapObjGroup::VertexFormat": {
 "files": [

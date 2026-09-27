@@ -1,4 +1,5 @@
 #include "world/map/CMapObjGroup.hpp"
+#include "gx/Buffer.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
@@ -1390,4 +1391,48 @@ void CMapObjGroup::LiquidTileCount() {
     }
 
     this->m_liquidTileCount = count;
+}
+
+// ref: FUN_007cbdc0
+// Make sure the group's liquid buffer pair exists and is big enough, then hand the geometry factory
+// the holder it caches.
+//
+// EACH SLOT IS FILLED ONLY IF STILL NULL, so a second surface over the same group reuses the pair
+// rather than reallocating -- which is what makes the claim count meaningful and is why the factory
+// caches a holder at all rather than owning buffers itself.
+//
+// Clearing the CGxBuf's first ready flag is what marks a freshly taken buffer as not yet holding
+// geometry. CMeshGeomFactory::Build tests that flag and its neighbour on BOTH buffers, and skips the
+// whole rebuild when all four are set -- so this clear is what forces the first build to actually
+// run. Frozen leaves the two flags as CGxBuf's unk1C and unk1D rather than renaming them, because
+// what sets them is not yet ported and a name would be a guess.
+//
+// DIVERGENCE on the holder. The reference hands back an interior pointer, group + 0x20, and frozen's
+// layout already diverges in exactly that region -- the reference keeps the liquid vertex positions
+// in a pooled VertArray behind a pointer at +0x1c where frozen owns a TSGrowableArray. So an
+// interior offset there would name nothing. The group pointer carries the same information for every
+// use ported so far, which is as a cache key the factory compares and passes back.
+void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t vertexCount,
+                                        uint32_t indexCount, void** holderOut) {
+    if (!this->m_liquidVertexBuf) {
+        uint32_t stride = GxVertexBufferFormatSize(format);
+
+        VBBList::s_vertexList.Alloc(&this->m_liquidVertexBuf, stride, vertexCount);
+
+        if (this->m_liquidVertexBuf && this->m_liquidVertexBuf->buf) {
+            this->m_liquidVertexBuf->buf->unk1C = 0;
+        }
+    }
+
+    if (!this->m_liquidIndexBuf) {
+        VBBList::s_indexList.Alloc(&this->m_liquidIndexBuf, 2, indexCount);
+
+        if (this->m_liquidIndexBuf && this->m_liquidIndexBuf->buf) {
+            this->m_liquidIndexBuf->buf->unk1C = 0;
+        }
+    }
+
+    *holderOut = this;
+
+    this->m_liquidBufferUsers++;
 }

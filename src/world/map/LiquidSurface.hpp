@@ -361,6 +361,11 @@ class CMeshGeomFactory : public IGeomFactory {
         // +0x14: the texture, from m_materials[group->m_liquidMaterial]. The sentinel is what the
         // allocator writes, so "no texture yet" is -1 and not zero.
         uint32_t m_textureId = 0xFFFFFFFF;
+        // +0x28: the seam lists BOTH grid writers are handed. The field map called this "a block the
+        // two writers share" without knowing what it held; Build passes factory + 0x28 to
+        // WriteLiquidGridVertices and WriteLiquidIndices as their seams argument, which names it.
+        LiquidSeams m_seams;
+
         // +0x1c: whether the material's LVF is 1.
         int32_t m_lvf = 0;
         // +0x20: the fixed light the surface draws with -- 1.0 outdoors, 0.0 indoors. The caller

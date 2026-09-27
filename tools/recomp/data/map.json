@@ -47649,7 +47649,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesOutdoor",
-  "frozenSize": 2048,
+  "frozenSize": 2051,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2146,
@@ -47697,7 +47697,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatches",
-  "frozenSize": 1387,
+  "frozenSize": 1390,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 847,
@@ -47713,7 +47713,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesSplit",
-  "frozenSize": 1816,
+  "frozenSize": 1819,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 1566,
@@ -49722,14 +49722,14 @@
  "007bffe0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjGroup",
-  "frozenSize": 495,
+  "frozenSize": 132,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 75,
@@ -51191,6 +51191,19 @@
   "refSize": 361,
   "status": "ported"
  },
+ "007cb700": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "CMapObjGroup::CMapObjGroup",
+  "frozenSize": 404,
+  "how": "callgraph",
+  "module": "MapChunk.cpp",
+  "refSize": 168,
+  "status": "ported"
+ },
  "007cb990": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -51249,7 +51262,7 @@
    "src/world/map/cmapobjgroupbuffers.cpp"
   ],
   "frozen": "CMapObjGroup::CreateBuffers",
-  "frozenSize": 236,
+  "frozenSize": 239,
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 180,
@@ -51269,6 +51282,22 @@
   "how": "annotated",
   "module": "MapChunk.cpp",
   "refSize": 80,
+  "status": "ported"
+ },
+ "007cbdc0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::AcquireLiquidBuffers",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunk.cpp",
+  "refSize": 109,
   "status": "ported"
  },
  "007cbe80": {

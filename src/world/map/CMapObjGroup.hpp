@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 #define WORLD_MAP_C_MAP_OBJ_GROUP_HPP
 
+#include "gx/Types.hpp"
 #include "world/map/VBBList.hpp"
 #include <storm/Array.hpp>
 #include <storm/List.hpp>
@@ -215,6 +216,13 @@ class CMapObjGroup {
         VBBList::Block* m_vertexBuf = nullptr;   // +0x04: position, normal, colour, uv
         VBBList::Block* m_colorBuf = nullptr;    // +0x08: a second colour set, outdoor groups only
         VBBList::Block* m_indexBuf = nullptr;    // +0x0c
+
+        // +0x10 and +0x14: a SECOND buffer pair, for the group's liquid surface only, parallel to
+        // the three above and allocated out of the same VBBList. Identified from FUN_007cbdc0, which
+        // fills whichever of the two is still null and then clears the CGxBuf's ready flag through
+        // the block's buf at +0x18 -- an offset frozen's VBBList::Block already carries.
+        VBBList::Block* m_liquidVertexBuf = nullptr;
+        VBBList::Block* m_liquidIndexBuf = nullptr;
         float m_bufferIdleTime = 0.0f;           // +0x18
 
         // The liquid surface's vertex positions, built from MLIQ. The reference keeps these in a
@@ -256,6 +264,10 @@ class CMapObjGroup {
         const CImVector* m_colors2 = nullptr;    // +0x10c: the second MOCV
 
         // MLIQ: a grid of liquid heights over the group, with a flag byte per tile
+        // +0x110: how many surfaces have taken the liquid buffer pair. FUN_007cbdc0 bumps it and
+        // nothing read so far lowers it, so its only established use is as a claim count.
+        uint32_t m_liquidBufferUsers = 0;
+
         uint32_t m_liquidXVerts = 0;             // +0x114
         uint32_t m_liquidYVerts = 0;             // +0x118
         uint32_t m_liquidXTiles = 0;             // +0x11c
@@ -306,6 +318,12 @@ class CMapObjGroup {
 
         // Count the liquid tiles that render, into m_liquidTileCount. Cheap after the first call.
         void LiquidTileCount();
+
+        // ref: FUN_007cbdc0
+        // Make sure the liquid buffer pair exists, sized for this surface, and hand back the holder
+        // the geometry factory caches.
+        void AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t vertexCount,
+                                 uint32_t indexCount, void** holderOut);
         ~CMapObjGroup();
         void FreeQueryData();
 
