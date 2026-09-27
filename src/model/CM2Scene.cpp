@@ -210,9 +210,11 @@ int32_t CM2Scene::SortOpaqueGeoBatches(M2Element* elementA, M2Element* elementB)
 
     if (batchA->textureCount > 0 && batchB->textureCount > 0) {
         for (int32_t i = 0; i < std::min(batchA->textureCount, batchB->textureCount); i++) {
-            auto textureIndexA = dataA->textureCombos[batchA->textureComboIndex];
+            uint32_t comboCountA = 0;
+            auto textureIndexA = modelA->m_shared->TextureCombos(&comboCountA)[batchA->textureComboIndex];
             auto textureA = textureIndexA >= dataA->textures.Count() ? 0 : reinterpret_cast<intptr_t>(modelA->m_textures[textureIndexA]);
-            auto textureIndexB = dataB->textureCombos[batchB->textureComboIndex];
+            uint32_t comboCountB = 0;
+            auto textureIndexB = modelB->m_shared->TextureCombos(&comboCountB)[batchB->textureComboIndex];
             auto textureB = textureIndexB >= dataB->textures.Count() ? 0 : reinterpret_cast<intptr_t>(modelB->m_textures[textureIndexB]);
 
             if ((textureA - textureB) / sizeof(void*) < 0) {

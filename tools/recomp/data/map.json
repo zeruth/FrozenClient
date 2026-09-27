@@ -55437,7 +55437,7 @@
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::CreateShared",
-  "frozenSize": 516,
+  "frozenSize": 531,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 830,
@@ -55674,7 +55674,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortOpaqueGeoBatches",
-  "frozenSize": 560,
+  "frozenSize": 588,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 563,
@@ -55753,7 +55753,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::SetupTextures",
-  "frozenSize": 696,
+  "frozenSize": 697,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 452,

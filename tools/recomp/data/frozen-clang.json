@@ -58218,7 +58218,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 94
+"line": 115
 },
 "CCharacterCreation::CalcClasses": {
 "files": [
@@ -85153,9 +85153,9 @@
 "M2Array<M2Material>::operator[]",
 "M2Array<M2Material>::operator[]",
 "std::min",
-"M2Array<unsigned short>::operator[]",
+"CM2Shared::TextureCombos",
 "M2Array<M2Texture>::Count",
-"M2Array<unsigned short>::operator[]",
+"CM2Shared::TextureCombos",
 "M2Array<M2Texture>::Count"
 ],
 "strings": [],
@@ -85167,7 +85167,7 @@
 ],
 "branches": 29,
 "stub": false,
-"lines": 125,
+"lines": 127,
 "refs": [],
 "line": 117
 },
@@ -85184,7 +85184,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 243
+"line": 245
 },
 "CM2Scene::SortOpaqueRibbons": {
 "files": [
@@ -85199,7 +85199,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 248
+"line": 250
 },
 "CM2Scene::SortTransparent": {
 "files": [
@@ -85221,7 +85221,7 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 253
+"line": 255
 },
 "CM2Scene::AdvanceTime": {
 "files": [
@@ -85241,7 +85241,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 375
+"line": 377
 },
 "CM2Scene::Animate": {
 "files": [
@@ -85355,7 +85355,7 @@
 "stub": false,
 "lines": 560,
 "refs": [],
-"line": 393
+"line": 395
 },
 "CM2Scene::AddParticleElement": {
 "files": [
@@ -85385,7 +85385,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 966
+"line": 968
 },
 "CM2Scene::SetProjectionCallback": {
 "files": [
@@ -85398,7 +85398,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1033
+"line": 1035
 },
 "DestroyModel": {
 "files": [
@@ -85414,7 +85414,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1042
+"line": 1044
 },
 "CM2Scene::CreateModelFrom": {
 "files": [
@@ -85431,7 +85431,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1056
+"line": 1058
 },
 "CM2Scene::CreateModel": {
 "files": [
@@ -85455,7 +85455,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 1074
+"line": 1076
 },
 "CM2Scene::Draw": {
 "files": [
@@ -85477,7 +85477,7 @@
 "stub": false,
 "lines": 40,
 "refs": [],
-"line": 1105
+"line": 1107
 },
 "CM2Scene::DrawShadowCasters": {
 "files": [
@@ -85513,7 +85513,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 1146
+"line": 1148
 },
 "CM2Scene::SelectLights": {
 "files": [
@@ -85537,7 +85537,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1228
+"line": 1230
 },
 "CM2Scene::BeginRayQuery": {
 "files": [
@@ -85552,7 +85552,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1288
+"line": 1290
 },
 "CM2Scene::ReserveRayCandidates": {
 "files": [
@@ -85578,7 +85578,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1295
+"line": 1297
 },
 "CM2Scene::RaySetup": {
 "files": [
@@ -85599,7 +85599,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1328
+"line": 1330
 },
 "CM2Scene::BlendBoneMatrices": {
 "files": [
@@ -85624,7 +85624,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1361
+"line": 1363
 },
 "CM2Scene::BlendBoneMatrices3x4": {
 "files": [
@@ -85651,7 +85651,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1400
+"line": 1402
 },
 "CM2Scene::RayTestTriangles": {
 "files": [
@@ -85674,7 +85674,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 1431
+"line": 1433
 },
 "CM2Scene::ProjectSectionVertices": {
 "files": [
@@ -85693,7 +85693,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1473
+"line": 1475
 },
 "CM2SceneRender::Draw": {
 "files": [
@@ -86036,14 +86036,14 @@
 "callseq": [
 "GxRsSet",
 "CShaderEffect::SetTexMtx_Identity",
+"CM2Shared::TextureCombos",
+"CM2Shared::TextureTransformCombos",
 "GxRsSet",
-"M2Array<unsigned short>::operator[]",
 "M2Array<M2Texture>::Count",
 "TextureGetGxTex",
 "M2Array<M2Texture>::operator[]",
 "GxTexSetWrap",
 "GxRsSet",
-"M2Array<unsigned short>::operator[]",
 "M2Array<M2TextureTransform>::Count",
 "CShaderEffect::SetTexMtx_Identity",
 "CShaderEffect::SetTexMtx",
@@ -86061,7 +86061,7 @@
 ],
 "branches": 15,
 "stub": false,
-"lines": 79,
+"lines": 88,
 "refs": [],
 "line": 977
 },
@@ -86829,6 +86829,38 @@
 "refs": [],
 "line": 1334
 },
+"CM2Shared::TextureCombos": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::Data"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1415
+},
+"CM2Shared::TextureTransformCombos": {
+"files": [
+"src/model/cm2shared.cpp"
+],
+"callseq": [
+"M2Array<unsigned short>::Count",
+"M2Array<unsigned short>::Data"
+],
+"strings": [],
+"consts": [],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 1427
+},
 "M2EnsureComboPair": {
 "files": [
 "src/model/cm2shared.cpp"
@@ -86848,7 +86880,7 @@
 "stub": false,
 "lines": 39,
 "refs": [],
-"line": 1439
+"line": 1467
 },
 "CM2Shared::PackTextureCombos": {
 "files": [
@@ -86872,7 +86904,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1497
+"line": 1530
 },
 "CM2Shared::FixUpTextureCombos": {
 "files": [
@@ -86881,10 +86913,8 @@
 "callseq": [
 "M2Array<M2Batch>::Count",
 "M2Array<M2Batch>::operator[]",
-"M2Array<unsigned short>::Data",
-"M2Array<unsigned short>::Count",
-"M2Array<unsigned short>::Data",
-"M2Array<unsigned short>::Count",
+"CM2Shared::TextureCombos",
+"CM2Shared::TextureTransformCombos",
 "SysMsgPrintf",
 "SysMsgPrintf"
 ],
@@ -86901,9 +86931,9 @@
 ],
 "branches": 14,
 "stub": false,
-"lines": 91,
+"lines": 92,
 "refs": [],
-"line": 1554
+"line": 1587
 },
 "CM2Shared::SubstituteSpecializedShaders": {
 "files": [
@@ -86916,7 +86946,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 1710
+"line": 1744
 },
 "M2Init": {
 "files": [

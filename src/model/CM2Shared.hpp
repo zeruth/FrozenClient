@@ -50,6 +50,27 @@ class CM2Shared {
         // rewrites each batch's combo fields into a packed intermediate form and FixUpTextureCombos
         // turns them back into indices; SubstituteSpecializedShaders runs the analysis between them.
         // Neither is meaningful without the other -- see the notes at their definitions.
+        // THE COMBO ARRAYS EVERY BATCH INDEXES, and the one place to ask for them.
+        //
+        // The reference's specialized-shader pass REPLACES m_data->textureCombos and
+        // textureTransformCombos with rebuilt arrays holding every pair its merged batches need,
+        // writing raw pointers into the M2Arrays at +0x84 and +0x9c. frozen cannot do that: its
+        // M2Array holds a signed 32-bit delta from its own address rather than a pointer (see
+        // M2Data.hpp, and it is what makes the 64-bit build work), and a fresh allocation is not
+        // guaranteed to land within reach of the model data.
+        //
+        // So the rebuilt arrays live HERE instead, and everything that indexes a batch's combo
+        // fields asks through these two accessors. While the pass has not run they are null and the
+        // accessors hand back the model data's own arrays, which is what every reader used to do
+        // directly -- so this is behaviour-preserving until something fills them in.
+        uint16_t* m_rebuiltTextureCombos = nullptr;
+        uint32_t m_rebuiltTextureComboCount = 0;
+        uint16_t* m_rebuiltTextureTransformCombos = nullptr;
+        uint32_t m_rebuiltTextureTransformComboCount = 0;
+
+        uint16_t* TextureCombos(uint32_t* count);
+        uint16_t* TextureTransformCombos(uint32_t* count);
+
         void PackTextureCombos();
         void FixUpTextureCombos();
         TSList<CM2SequenceLoad, TSGetLink<CM2SequenceLoad>> m_sequenceLoads;

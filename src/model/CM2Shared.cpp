@@ -1407,6 +1407,34 @@ void CM2Shared::SubstituteSimpleShaders() {
     }
 }
 
+// The combo arrays a batch's fields index, preferring the specialized pass's rebuilt ones. Both
+// return uint16_t deliberately, even though transform entries are logically signed: every existing
+// reader compares the value against a Count() to decide whether it means "none", and an unsigned
+// -1 reads as 0xffff which fails that test exactly as intended. Casting to int16_t here would
+// change those comparisons.
+uint16_t* CM2Shared::TextureCombos(uint32_t* count) {
+    if (this->m_rebuiltTextureCombos) {
+        *count = this->m_rebuiltTextureComboCount;
+
+        return this->m_rebuiltTextureCombos;
+    }
+
+    *count = this->m_data->textureCombos.Count();
+
+    return this->m_data->textureCombos.Data();
+}
+
+uint16_t* CM2Shared::TextureTransformCombos(uint32_t* count) {
+    if (this->m_rebuiltTextureTransformCombos) {
+        *count = this->m_rebuiltTextureTransformComboCount;
+
+        return this->m_rebuiltTextureTransformCombos;
+    }
+
+    *count = this->m_data->textureTransformCombos.Count();
+
+    return this->m_data->textureTransformCombos.Data();
+}
 // ref: FUN_00835f90
 // Find a packed combo pair in a SORTED pair list, or insert it in order. Returns nothing: the
 // caller only wants the pair to be present, and the index is recovered later by
@@ -1494,6 +1522,11 @@ void M2EnsureComboPair(uint16_t packed, M2ComboPairList& list, int32_t unbias) {
 //
 // The single-texture arm resolves rather than packs: the combo field takes the looked-up VALUE and
 // the transform field takes the biased value at full width, no truncation.
+//
+// Reads m_data's arrays DIRECTLY rather than through CM2Shared::TextureCombos, and that is not an
+// oversight: this runs before the rebuild, so the authored arrays are the ones its indices refer to.
+// The accessor would give the same answer today, and would give the wrong one if a shared model ever
+// went through the pass twice.
 void CM2Shared::PackTextureCombos() {
     M2SkinProfile* profile = this->skinProfile;
 
@@ -1563,12 +1596,13 @@ void CM2Shared::FixUpTextureCombos() {
             continue;
         }
 
-        M2Data* data = this->m_data;
+        // Through the accessor, because the indices this writes have to refer to whatever the draw
+        // path will index -- the rebuilt arrays once the pass builds them.
+        uint32_t comboCount = 0;
+        uint32_t transformCount = 0;
 
-        uint16_t* combos = data->textureCombos.Data();
-        uint32_t comboCount = data->textureCombos.Count();
-        auto transformCombos = reinterpret_cast<int16_t*>(data->textureTransformCombos.Data());
-        uint32_t transformCount = data->textureTransformCombos.Count();
+        uint16_t* combos = this->TextureCombos(&comboCount);
+        auto transformCombos = reinterpret_cast<int16_t*>(this->TextureTransformCombos(&transformCount));
 
         if (batch.textureCount == 2) {
             auto wantTexture0 = static_cast<uint16_t>(batch.textureComboIndex & 0xFF);

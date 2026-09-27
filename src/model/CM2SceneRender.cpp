@@ -1012,13 +1012,22 @@ void CM2SceneRender::SetupTextures() {
         v19 = 0;
     }
 
+    // Hoisted out of the loop: one lookup per batch rather than per stage. See
+    // CM2Shared::TextureCombos for why these do not come straight off m_data any more.
+    uint32_t comboCount = 0;
+    uint32_t transformComboCount = 0;
+
+    uint16_t* textureCombos = this->m_curModel->m_shared->TextureCombos(&comboCount);
+    uint16_t* textureTransformCombos =
+        this->m_curModel->m_shared->TextureTransformCombos(&transformComboCount);
+
     for (int32_t i = 0; i < 2; i++) {
         if (i >= textureCount) {
             GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), static_cast<CGxTex*>(nullptr));
             continue;
         }
 
-        auto textureIndex = this->m_data->textureCombos[this->m_curBatch->textureComboIndex + i];
+        auto textureIndex = textureCombos[this->m_curBatch->textureComboIndex + i];
         auto textureHandle = textureIndex < this->m_data->textures.Count()
             ? this->m_curModel->m_textures[textureIndex]
             : nullptr;
@@ -1037,7 +1046,7 @@ void CM2SceneRender::SetupTextures() {
 
         GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), texture);
 
-        auto textureTransformIndex = this->m_data->textureTransformCombos[this->m_curBatch->textureTransformComboIndex + i];
+        auto textureTransformIndex = textureTransformCombos[this->m_curBatch->textureTransformComboIndex + i];
         auto stageShift = M2COMBINER_STAGE_SHIFT * (2 - (i + 1));
 
         uint32_t v21 = v19 == 0 ? i : 1;
