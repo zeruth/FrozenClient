@@ -56509,6 +56509,21 @@
   "refSize": 302,
   "status": "ported"
  },
+ "0081daf0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/model/CM2Scene.cpp"
+  ],
+  "frozen": "CM2Scene::RayTestModelGeometry",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 596,
+  "status": "ported"
+ },
  "0081dd50": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,

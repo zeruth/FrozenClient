@@ -24,6 +24,7 @@
 #include <tempest/Math.hpp>
 
 uint32_t CM2Scene::s_optFlags = 0xFFFFFFFF;
+bool CM2Scene::s_rayBlend4x4 = false;
 
 void CM2Scene::AnimateThread(void* arg) {
     // TODO
@@ -1751,30 +1752,10 @@ M2SceneRayCandidate* CM2Scene::RayTestModel(CM2Model* model, int32_t preferOther
 
     uint32_t vertexCount = data->collisionPositions.Count();
 
-    if (this->m_rayProjectedCapacity < vertexCount) {
-        if (this->m_rayProjected) {
-            SMemFree(this->m_rayProjected, "delete[]", -1, 0);
+    this->ReserveRayProjected(vertexCount);
 
-            this->m_rayProjected = nullptr;
-        }
-
-        if (!this->m_rayProjectedCapacity) {
-            this->m_rayProjectedCapacity = 1;
-        }
-
-        while (this->m_rayProjectedCapacity < vertexCount) {
-            this->m_rayProjectedCapacity <<= 1;
-        }
-
-        this->m_rayProjected = static_cast<C3Vector*>(
-            SMemAlloc(sizeof(C3Vector) * this->m_rayProjectedCapacity, __FILE__, __LINE__,
-                      SMEM_FLAG_ZEROMEMORY));
-
-        if (!this->m_rayProjected) {
-            this->m_rayProjectedCapacity = 0;
-
-            return best;
-        }
+    if (!this->m_rayProjected) {
+        return best;
     }
 
     for (uint32_t i = 0; i < vertexCount; i++) {
@@ -1797,6 +1778,151 @@ M2SceneRayCandidate* CM2Scene::RayTestModel(CM2Model* model, int32_t preferOther
 
     return this->RayTestTriangles(indices, indices + indexCount, 0, point, preferOther,
                                   candidate, bestHeight, best);
+}
+
+// Make room for `count` projected vertices, doubling from one and keeping nothing.
+//
+// The reference open-codes this in RayTestModel and again in RayTestModelGeometry. One copy is
+// the same doubling with one place to get it wrong -- a FORM divergence only; the sequence of
+// frees, the growth and the zero-fill are unchanged.
+void CM2Scene::ReserveRayProjected(uint32_t count) {
+    if (this->m_rayProjectedCapacity >= count) {
+        return;
+    }
+
+    if (this->m_rayProjected) {
+        SMemFree(this->m_rayProjected, "delete[]", -1, 0);
+
+        this->m_rayProjected = nullptr;
+    }
+
+    if (!this->m_rayProjectedCapacity) {
+        this->m_rayProjectedCapacity = 1;
+    }
+
+    while (this->m_rayProjectedCapacity < count) {
+        this->m_rayProjectedCapacity <<= 1;
+    }
+
+    this->m_rayProjected = static_cast<C3Vector*>(
+        SMemAlloc(sizeof(C3Vector) * this->m_rayProjectedCapacity, __FILE__, __LINE__,
+                  SMEM_FLAG_ZEROMEMORY));
+
+    if (!this->m_rayProjected) {
+        this->m_rayProjectedCapacity = 0;
+    }
+}
+
+// ref: FUN_0081daf0
+// Walk one model's batches, project every section that is actually visible, and test its
+// triangles. The counterpart to RayTestModel, which runs against the collision hull instead --
+// this one hits what is DRAWN, which is why every test below is a visibility test.
+//
+// A batch is skipped unless it is material layer 0 and clear of flag 0x8 -- one draw per section
+// rather than one per layer, the same rule DrawReceiverGeometry uses -- and then:
+//
+//   * ray query type 2 wants only blended materials, type 1 only opaque ones unless the material
+//     carries flag 0x20. Those are the two halves of the reference's condition, which reads as a
+//     double negative and is written here as the two cases it actually excludes.
+//   * the section must be switched on in m_skinSections, which is the geoset visibility array.
+//   * the accumulated alpha must be positive: the model's own, times the animated colour's alpha
+//     when the batch names one the file carries, times the animated texture weight when the batch
+//     has any textures. A fully transparent batch is not hittable.
+//
+// THE ALPHA CHAIN'S OFFSETS were checked rather than assumed, because two of them are inside
+// animated-state structs: M2ModelColor is 0x20 bytes and its alpha track's value lands at +0x1c,
+// M2ModelTextureWeight is 0x0c with its value at +8, and those are exactly the strides and
+// displacements the reference uses.
+//
+// WHICH BLEND a multi-bone section uses is the one thing not reproduced. The reference picks the
+// 4x4 variant on bit 4 of the global at 0x00d3fcec, which is written by FUN_0081c0d0 -- unported,
+// and NOT CM2Scene::s_optFlags, which is a different word. The flag below stands in for it so the
+// branch is present and named; nothing sets it, so the 3x4 path runs, which is the reference's
+// behaviour whenever that bit is clear.
+M2SceneRayCandidate* CM2Scene::RayTestModelGeometry(CM2Model* model, int32_t addNormal,
+                                                    const C3Vector& planeNormal, float planeDist,
+                                                    const C2Vector& point,
+                                                    M2SceneRayCandidate* candidate,
+                                                    float* bestHeight, M2SceneRayCandidate* best) {
+    // FROZEN-ONLY, the bug class CLAUDE.md names: the skin profile and the model data are set
+    // when their async reads land, and neither is usable until its loaded bit is up.
+    if (!model || !model->m_shared || !model->m_shared->m_m2DataLoaded
+        || !model->m_shared->m_skinProfileLoaded || !model->m_shared->m_data
+        || !model->m_shared->skinProfile) {
+        return best;
+    }
+
+    M2Data* data = model->m_shared->m_data;
+    M2SkinProfile* skin = model->m_shared->skinProfile;
+
+    for (uint32_t b = 0; b < skin->batches.Count(); b++) {
+        const M2Batch& batch = skin->batches[b];
+
+        if (batch.materialLayer != 0 || (batch.flags & 0x8)) {
+            continue;
+        }
+
+        if (batch.materialIndex >= data->materials.Count()) {
+            continue;
+        }
+
+        const M2Material& material = data->materials[batch.materialIndex];
+
+        if (model->m_rayQueryType == 2 && material.blendMode == 0) {
+            continue;
+        }
+
+        if (model->m_rayQueryType == 1 && material.blendMode != 0
+            && !(material.flags & 0x20)) {
+            continue;
+        }
+
+        if (!model->m_skinSections || !model->m_skinSections[batch.skinSectionIndex]) {
+            continue;
+        }
+
+        float alpha = model->alpha19C;
+
+        if (batch.colorIndex < data->colors.Count() && model->m_colors) {
+            alpha *= model->m_colors[batch.colorIndex].alphaTrack.currentValue;
+        }
+
+        if (batch.textureCount && model->m_textureWeights
+            && batch.textureWeightComboIndex < data->textureWeightCombos.Count()) {
+            uint16_t weight = data->textureWeightCombos[batch.textureWeightComboIndex];
+
+            alpha *= model->m_textureWeights[weight].weightTrack.currentValue;
+        }
+
+        if (alpha <= 0.0f) {
+            continue;
+        }
+
+        M2SkinSection& section = skin->skinSections[batch.skinSectionIndex];
+
+        this->ReserveRayProjected(section.vertexCount);
+
+        if (!this->m_rayProjected) {
+            return best;
+        }
+
+        if (section.boneInfluences == 1) {
+            this->ProjectSectionVertices(model, skin, &section, addNormal, planeNormal, planeDist);
+        } else if (!CM2Scene::s_rayBlend4x4) {
+            this->ProjectSectionVerticesBlended3x4(model, skin, &section, addNormal, planeNormal,
+                                                   planeDist);
+        } else {
+            this->ProjectSectionVerticesBlended4x4(model, skin, &section, addNormal, planeNormal,
+                                                   planeDist);
+        }
+
+        const uint16_t* indices = &skin->indices[0] + section.indexStart;
+
+        best = this->RayTestTriangles(indices, indices + section.indexCount, section.vertexStart,
+                                      point, addNormal, candidate, bestHeight, best);
+    }
+
+    return best;
 }
 
 // ref: FUN_0081d510

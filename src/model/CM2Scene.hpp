@@ -30,6 +30,11 @@ class CM2Scene {
     public:
         // Static variables
         static uint32_t s_optFlags;
+        // Stands in for bit 4 of the reference's global at 0x00d3fcec, which chooses the full bone
+        // blend over the 3x4 one in the ray path. That global is written by FUN_0081c0d0, which is
+        // unported, so nothing sets this and the 3x4 path runs -- the reference's own behaviour
+        // whenever the bit is clear. It is NOT s_optFlags above; that is a different word.
+        static bool s_rayBlend4x4;
 
         // Static functions
         static void AnimateThread(void* arg);
@@ -124,6 +129,18 @@ class CM2Scene {
         // ref: FUN_0081cf20
         int32_t RaySetup(const C3Vector& start, const C3Vector& end, float t, float* length, C3Vector* dir);
         // ref: FUN_0081d510
+        // Make room for `count` projected vertices. The reference open-codes this in each of its
+        // ray functions; one copy is the same doubling with one place to get it wrong.
+        void ReserveRayProjected(uint32_t count);
+
+        // Walk one model's visible BATCHES, project each section and test its triangles.
+        // ref: FUN_0081daf0
+        M2SceneRayCandidate* RayTestModelGeometry(CM2Model* model, int32_t addNormal,
+                                                  const C3Vector& planeNormal, float planeDist,
+                                                  const C2Vector& point,
+                                                  M2SceneRayCandidate* candidate,
+                                                  float* bestHeight, M2SceneRayCandidate* best);
+
         // Project one model's COLLISION mesh onto the query plane and test its triangles.
         // ref: FUN_0081dd50
         M2SceneRayCandidate* RayTestModel(CM2Model* model, int32_t preferOther,
