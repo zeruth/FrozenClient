@@ -2807,6 +2807,14 @@ void CM2ParticleEmitterSpline::SetEmissionRate(float rate) {
     this->m_rate = rate * this->m_splineEnd;
 }
 
+// ref: FUN_00981500
+// Fifteen bytes in the reference, and it only forwards -- but it is the one call that makes the
+// difference between an emitter that rides its authored path and one that spawns everything at
+// the model's origin, so it is worth naming rather than inlining.
+void CM2ParticleEmitterSpline::SetSplinePoints(const C3Vector* points, uint32_t count) {
+    this->m_curve.SetPoints(points, count);
+}
+
 // ref: FUN_00981d40
 // Put one particle on the curve.
 //

@@ -3436,6 +3436,16 @@ int32_t CM2Model::InitializeLoaded() {
                     emitter->m_flags |= 0x200000;
                 }
 
+                // A TYPE 3 EMITTER RIDES A CURVE, and the curve is in the file: the reference
+                // tests the type byte and passes M2Particle's spline array straight through
+                // (0x008340c9, reading the count and data at the record's +0x1c0 and +0x1c4).
+                // Without this the emitter builds but has no path, and every particle is born at
+                // the model's origin.
+                if (file.emitterType == 3 && file.spline.Count()) {
+                    static_cast<CM2ParticleEmitterSpline*>(emitter)
+                        ->SetSplinePoints(&file.spline[0], file.spline.Count());
+                }
+
                 emitter->SetTextureGrid(file.rows, file.cols);
 
                 if (file.flags & 0x10000) {

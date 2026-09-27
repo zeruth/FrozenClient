@@ -125,6 +125,49 @@ def load_reference():
 MODULE_STRING = re.compile(r'^(?:\.\\|\.\./|\.\./\.\./|\.\.\\)*(?:[\w.-]+[\\/])*([A-Za-z0-9_]+\.(?:cpp|c|h|inl))$')
 
 
+# Hand-confirmed module ranges, which WIN over the assert-anchor guess inside them.
+#
+# The anchor heuristic below is right most of the time and badly wrong in the deserts: a region
+# with no assert string of its own inherits the nearest PRECEDING one, however far back it is.
+# ComSatSoundIOSoundEngine.cpp is the worst of them, collecting 1,134 functions across
+# 0x00887b70..0x008bfe30, and every one of them is flagged moduleSure=False -- the tool already
+# knows it is guessing there. Nothing in the report acted on that flag, so a whole subsystem could
+# sit under a sound module and never be noticed.
+#
+# A range goes here only with evidence that names the file, and the evidence goes in the comment.
+# Ranges are half-open, [start, end).
+MODULE_RANGES = [
+    # The LIQUID subsystem: water, ocean, magma and slime -- their material bank, the four material
+    # classes and their draws, the procedural textures and the wave manager. 116 functions.
+    #
+    # Evidence, all from the reference's own RTTI descriptor strings inside the range: every class
+    # named in it is in the `Liquid` namespace -- .?AVCInstance@Liquid@@ (0x008a1b00),
+    # .?AVCMaterialSettings@Liquid@@ (0x008a2380), then the whole material family at
+    # 0x008a4280..0x008a48d0: CMaterialProcWater, CMaterialProcWaterFFP, CMaterialWater,
+    # CMaterialWaterNoSpec, CMaterialWaterFFP, CMaterialMagma and CMaterialMagmaFFP. The shader
+    # names it loads agree (vsLiquidWater, psLiquidProcWater%s, vsLiquidMagma at
+    # 0x008a3e00..0x008a4190), and so do its two log messages, 'Material Bank: Liquid type [%d] not
+    # found, defaulting to water' and the matching 'Settings Bank:' one.
+    #
+    # The BOUNDARIES are object-file gaps rather than guesses. Below the start, 0x008a09ba is
+    # nvapi_QueryInterface and the video-hardware probe around it ends at 0x008a103c, with a hole to
+    # 0x008a1310 where the liquid setters begin. Above the end, 0x008a6350 is the last liquid
+    # function and 0x008a65d0 is `DBFilesClient\\Spell.dbc`, the first of ~200 DBC table loaders --
+    # a different object file by any reading.
+    #
+    # Named from the namespace, because the range carries no assert string at all: that is the whole
+    # reason it was mis-filed. If a `Liquid.cpp` assert ever turns up elsewhere the two merge, which
+    # is the right outcome.
+    (0x008a1300, 0x008a65d0, 'Liquid.cpp'),
+]
+
+# The next candidate, left out deliberately rather than forgotten: 0x008a65d0..0x008bfe80 is the DBC
+# table block, 380 functions of the same desert, every one carrying its own `DBFilesClient\\*.dbc`
+# string. It wants to merge with the existing DBClient.cpp bucket rather than take a new name, and
+# that needs the DBClient.cpp anchor's own span checked first. It is not on the render surface, so
+# it does not block anything.
+
+
 def assign_modules(refs):
     """Module = the source file the reference's own asserts name. The linker lays each object's
     functions out contiguously, so the nearest preceding assert anchor names the file with good
@@ -150,6 +193,13 @@ def assign_modules(refs):
         nxt = anchors[i + 1][1] if i + 1 < len(anchors) else mod
         r['module'] = mod
         r['moduleSure'] = (nxt == mod) or anchors[i][0] == a
+    # A hand-confirmed range beats the anchor guess, and is sure by construction.
+    for lo, hi, mod in MODULE_RANGES:
+        for a in addrs:
+            if lo <= a < hi:
+                r = refs['%08x' % a]
+                r['module'] = mod
+                r['moduleSure'] = True
     return len(anchors)
 
 
@@ -189,6 +239,16 @@ RENDER_MODULES = {
     # functions of which only 41 were already mapped. That is the honest direction -- the work was
     # always outstanding and simply was not being counted.
     'blp.cpp', 'tga.cpp', 'CGxDeviceD3d.cpp', 'EffectGlow.cpp', 'Lightning.cpp',
+    #
+    # Added 2026-09-27. Liquid.cpp is not an assert anchor -- it is a MODULE_RANGES entry, added in
+    # the same change because the whole liquid subsystem was being counted as
+    # ComSatSoundIOSoundEngine.cpp and so was invisible to this set. Every water surface, waterfall,
+    # lava pool and slime in the world draws through it, which puts it here without argument.
+    #
+    # It moves the render-surface percentage DOWN: 116 reference functions in, only part of them
+    # mapped. That is the honest direction, the same as the blp.cpp/tga.cpp note above -- the work
+    # was always outstanding and was simply being counted against a sound module instead.
+    'Liquid.cpp',
     #
     # Deliberately still OUT, so the next reader does not add them as more of the same: the font
     # stack (GxuFontMiscClasses.cpp, GxuFontUtil.cpp, CSimpleFont.cpp), CSimpleRender.cpp and the

@@ -10293,6 +10293,22 @@
   "refSize": 210,
   "status": "ported"
  },
+ "004b6f30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetProcedural",
+  "frozenSize": 216,
+  "how": "override",
+  "module": "Texture.cpp",
+  "refSize": 99,
+  "status": "ported"
+ },
  "004b6fa0": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -10866,7 +10882,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "Profile.cpp",
   "refSize": 36,
@@ -11145,7 +11161,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 533,
@@ -11167,7 +11183,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 140,
@@ -11189,7 +11205,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 93,
@@ -11592,6 +11608,21 @@
   "refSize": 245,
   "status": "ported"
  },
+ "004c4d50": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/spline/CBezierSpline.cpp"
+  ],
+  "frozen": "CBezierSpline::SetPoints",
+  "frozenSize": 319,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
  "004c4df0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -11656,7 +11687,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 232,
@@ -15444,7 +15475,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 137,
@@ -32020,7 +32051,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1578,
+  "frozenSize": 1610,
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 84,
@@ -58497,7 +58528,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 8724,
+  "frozenSize": 8740,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 5663,
@@ -65409,7 +65440,7 @@
   "frozen": "ComponentTextureLevelCallback",
   "frozenSize": 3,
   "how": "cvar",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 3,
   "status": "ported"
  },
@@ -65425,8 +65456,24 @@
   "frozen": "Liquid::CInstance::AddRef",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 5,
+  "status": "ported"
+ },
+ "008a1750": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::TextureScaleMultiplier",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "Liquid.cpp",
+  "refSize": 7,
   "status": "ported"
  },
  "008a1760": {
@@ -65441,7 +65488,7 @@
   "frozen": "Liquid::ProcWaterSuffix",
   "frozenSize": 0,
   "how": "callorder",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -65457,7 +65504,7 @@
   "frozen": "Liquid::CInstance::CInstance",
   "frozenSize": 239,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 122,
   "status": "ported"
  },
@@ -65473,7 +65520,7 @@
   "frozen": "Liquid::CInstance::Release",
   "frozenSize": 130,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 60,
   "status": "ported"
  },
@@ -65489,7 +65536,7 @@
   "frozen": "Liquid::CInstance::Create",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 37,
   "status": "ported"
  },
@@ -65505,7 +65552,7 @@
   "frozen": "Liquid::CMaterialSettings::GetFrame",
   "frozenSize": 479,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 481,
   "status": "ported"
  },
@@ -65521,7 +65568,7 @@
   "frozen": "Liquid::ReleaseMaterials",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 68,
   "status": "ported"
  },
@@ -65537,7 +65584,7 @@
   "frozen": "Liquid::GetMaterial",
   "frozenSize": 743,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 285,
   "status": "ported"
  },
@@ -65553,7 +65600,7 @@
   "frozen": "Liquid::Add",
   "frozenSize": 261,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 53,
   "status": "ported"
  },
@@ -65569,7 +65616,7 @@
   "frozen": "Liquid::Draw",
   "frozenSize": 809,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 313,
   "status": "ported"
  },
@@ -65577,7 +65624,7 @@
   "branchRatio": 0.3,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -65585,7 +65632,7 @@
   "frozen": "Liquid::CMaterialSettings::LoadTextures",
   "frozenSize": 1021,
   "how": "string",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 809,
   "status": "ported"
  },
@@ -65601,7 +65648,7 @@
   "frozen": "Liquid::CMaterialSettings::LoadFromDbc",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 304,
   "status": "ported"
  },
@@ -65617,7 +65664,7 @@
   "frozen": "Liquid::GetMaterialSettings",
   "frozenSize": 1097,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 132,
   "status": "ported"
  },
@@ -65633,8 +65680,24 @@
   "frozen": "Liquid::WmoWaterGenerate",
   "frozenSize": 680,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 297,
+  "status": "ported"
+ },
+ "008a2bf0": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.038,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::DepthGradientGenerate",
+  "frozenSize": 903,
+  "how": "override",
+  "module": "Liquid.cpp",
+  "refSize": 555,
   "status": "ported"
  },
  "008a2e20": {
@@ -65649,7 +65712,7 @@
   "frozen": "Liquid::ProceduralLiquidTexture",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 213,
   "status": "ported"
  },
@@ -65665,7 +65728,7 @@
   "frozen": "CMapLiquidData::CMapLiquidData",
   "frozenSize": 12,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 15,
   "status": "ported"
  },
@@ -65681,7 +65744,7 @@
   "frozen": "CMapLiquidData::HasLiquid",
   "frozenSize": 9,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 9,
   "status": "verified"
  },
@@ -65697,7 +65760,7 @@
   "frozen": "CMapLiquidData::Chunk",
   "frozenSize": 20,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 25,
   "status": "verified"
  },
@@ -65713,7 +65776,7 @@
   "frozen": "CMapLiquidData::Layer",
   "frozenSize": 21,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 24,
   "status": "verified"
  },
@@ -65729,7 +65792,7 @@
   "frozen": "CMapLiquidData::FishableMask",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 46,
   "status": "ported"
  },
@@ -65745,7 +65808,7 @@
   "frozen": "CMapLiquidData::DeepMask",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 48,
   "status": "ported"
  },
@@ -65761,7 +65824,7 @@
   "frozen": "CMapLiquidData::ExistsMask",
   "frozenSize": 20,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 31,
   "status": "ported"
  },
@@ -65777,7 +65840,7 @@
   "frozen": "Liquid::CVertexDataMH2O::GetHeight",
   "frozenSize": 45,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 40,
   "status": "verified"
  },
@@ -65793,7 +65856,7 @@
   "frozen": "Liquid::CVertexDataMH2O::GetDepth",
   "frozenSize": 76,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 76,
   "status": "ported"
  },
@@ -65809,7 +65872,7 @@
   "frozen": "Liquid::CVertexDataMH2O::GetCoord",
   "frozenSize": 42,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 43,
   "status": "ported"
  },
@@ -65825,7 +65888,7 @@
   "frozen": "Liquid::CVertexDataMCLQ::CVertexDataMCLQ",
   "frozenSize": 29,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 27,
   "status": "ported"
  },
@@ -65841,7 +65904,7 @@
   "frozen": "Liquid::CVertexDataMCLQ::GetHeight",
   "frozenSize": 31,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 29,
   "status": "ported"
  },
@@ -65857,7 +65920,7 @@
   "frozen": "Liquid::CVertexDataMCLQ::GetDepth",
   "frozenSize": 31,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 35,
   "status": "ported"
  },
@@ -65873,7 +65936,7 @@
   "frozen": "Liquid::CVertexDataMCLQ::GetCoord",
   "frozenSize": 26,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 33,
   "status": "ported"
  },
@@ -65889,7 +65952,7 @@
   "frozen": "Liquid::CVertexDataMH2O::CVertexDataMH2O",
   "frozenSize": 68,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 50,
   "status": "verified"
  },
@@ -65905,7 +65968,7 @@
   "frozen": "Liquid::SetupTransforms",
   "frozenSize": 398,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 448,
   "status": "ported"
  },
@@ -65921,7 +65984,7 @@
   "frozen": "Liquid::MagmaScrollMatrix",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 355,
   "status": "ported"
  },
@@ -65937,7 +66000,7 @@
   "frozen": "Liquid::SetupWaveA",
   "frozenSize": 219,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 235,
   "status": "ported"
  },
@@ -65953,7 +66016,7 @@
   "frozen": "Liquid::SetupWaveB",
   "frozenSize": 226,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 245,
   "status": "ported"
  },
@@ -65969,7 +66032,7 @@
   "frozen": "Liquid::SetupWaveConstants",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 151,
   "status": "ported"
  },
@@ -65983,9 +66046,9 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::SetupLightConstants",
-  "frozenSize": 492,
+  "frozenSize": 809,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 974,
   "status": "ported"
  },
@@ -66001,7 +66064,7 @@
   "frozen": "Liquid::SetupSunConstants",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 266,
   "status": "ported"
  },
@@ -66017,7 +66080,7 @@
   "frozen": "Liquid::DrawWaterMaterial",
   "frozenSize": 949,
   "how": "callgraph",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 55,
   "status": "ported"
  },
@@ -66033,7 +66096,7 @@
   "frozen": "Liquid::CMaterialProcWater::EnsureShaders",
   "frozenSize": 238,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 184,
   "status": "ported"
  },
@@ -66049,7 +66112,7 @@
   "frozen": "Liquid::CMaterialWater::EnsureShaders",
   "frozenSize": 134,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 102,
   "status": "ported"
  },
@@ -66065,7 +66128,7 @@
   "frozen": "Liquid::CMaterialWaterNoSpec::EnsureShaders",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 102,
   "status": "ported"
  },
@@ -66081,8 +66144,24 @@
   "frozen": "Liquid::CMaterialMagma::EnsureShaders",
   "frozenSize": 134,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 102,
+  "status": "ported"
+ },
+ "008a48f0": {
+  "branchRatio": 0.259,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::DrawProcWaterMaterial",
+  "frozenSize": 2011,
+  "how": "override",
+  "module": "Liquid.cpp",
+  "refSize": 2173,
   "status": "ported"
  },
  "008a5590": {
@@ -66097,7 +66176,7 @@
   "frozen": "Liquid::CMaterialWater::Draw",
   "frozenSize": 25,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 878,
   "status": "ported"
  },
@@ -66113,7 +66192,7 @@
   "frozen": "Liquid::CMaterialWaterNoSpec::Draw",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 878,
   "status": "ported"
  },
@@ -66121,7 +66200,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.022,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.812,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -66129,7 +66208,7 @@
   "frozen": "Liquid::CMaterialMagma::Draw",
   "frozenSize": 921,
   "how": "annotated",
-  "module": "ComSatSoundIOSoundEngine.cpp",
+  "module": "Liquid.cpp",
   "refSize": 695,
   "status": "ported"
  },
@@ -73378,6 +73457,21 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 28,
+  "status": "ported"
+ },
+ "00981500": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::SetSplinePoints",
+  "frozenSize": 12,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 15,
   "status": "ported"
  },
  "009815c0": {

@@ -693,6 +693,9 @@ class CM2ParticleEmitterSpline : public CM2ParticleEmitter {
         void SetLatitude(float latitude) override;
         void SetLongitude(float longitude) override;
         void SetEmissionRate(float rate);
+        // Hand the emitter the curve its particles ride, straight out of the model file.
+        // ref: FUN_00981500
+        void SetSplinePoints(const C3Vector* points, uint32_t count);
         void CreateParticle(Particle& particle, float dt, const C44Matrix& placement) override;
 };
 

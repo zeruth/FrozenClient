@@ -7,6 +7,7 @@
 #include <cstring>
 #include "gx/Transform.hpp"
 #include "model/CM2Lighting.hpp"
+#include "model/CM2Light.hpp"
 #include "world/CWorld.hpp"
 #include "world/map/LiquidSurface.hpp"
 #include "gx/CGxBatch.hpp"
@@ -534,12 +535,12 @@ CGxShader* s_psProcWater[1];
 //   vertex  c34       sun ambient, w 1                    0x00d44ec8
 //   vertex  c35       sun diffuse, w 1                    0x00d44ed8
 //   vertex  c36       sun specular, w 6                   0x00d44ee8
-//   vertex  c37..c45  three local lights, 3 each          0x00d44ef8   NOT FILLED YET
-//   vertex  c46       three wave phases (FUN_008a3620)    0x00d44f88   NOT FILLED YET
-//   vertex  c47       three wave phases (FUN_008a3710)    0x00d44f98   NOT FILLED YET
-//   vertex  c48..c50  per-wave, from FUN_008a3620         0x00d44fa8   NOT FILLED YET
-//   vertex  c51,c52   reciprocals, one per wave           0x00d44fd8   NOT FILLED YET
-//   vertex  c53..c55  per-wave, from FUN_008a3710         0x00d44ff8   NOT FILLED YET
+//   vertex  c37..c45  three local lights, 3 each          0x00d44ef8
+//   vertex  c46       three wave phases (FUN_008a3620)    0x00d44f88
+//   vertex  c47       three wave phases (FUN_008a3710)    0x00d44f98
+//   vertex  c48..c50  per-wave, from FUN_008a3620         0x00d44fa8
+//   vertex  c51,c52   reciprocals, one per wave           0x00d44fd8
+//   vertex  c53..c55  per-wave, from FUN_008a3710         0x00d44ff8
 //   pixel   c0..c3    the model-view-projection           0x00b24120
 //   pixel   c4        the fog colour, w 1                 0x00b24160
 //   pixel   c5        the camera position, w 1            0x00b24170
@@ -547,15 +548,16 @@ CGxShader* s_psProcWater[1];
 //   pixel   c7        sun ambient, w 0                    0x00d44c58
 //   pixel   c8        sun diffuse, w 0                    0x00d44c68
 //   pixel   c9        sun specular, w 50                  0x00d44c78
-//   pixel   c10..c11  stage floats 11..17 (FUN_008a3810)  0x00d44c88   NOT FILLED YET
+//   pixel   c10..c11  stage floats 11..17 (FUN_008a3810)  0x00d44c88
 //
 // There are no gaps left in that map: every register is accounted for, and FUN_008a3810 turns out to
 // write pixel c10 and c11 from stage floats 11..17, which is the last seven of the eighteen.
 //
-// What is still unfilled is the three local-light registers and the wave animation. The wave half
-// needs Liquid::CWaveManager -- the shared singleton the surface holds at +0x0c, which nothing
-// frozen creates yet -- so those registers would take the reference's own zero-fill values today
-// and the animation would be inert either way. See CInstance::m_waveManager.
+// NOTHING IS LEFT UNFILLED. This paragraph used to say the local lights and the whole wave animation
+// were still zero, and both have since landed -- the waves through GetWaveManager and SetupWaves,
+// the lights in SetupLightConstants -- so the claim outlived its truth by two cycles. It is recorded
+// rather than deleted because a register map that says a range is dead is the kind of note that
+// stops the next reader looking, and this one was wrong.
 
 namespace {
 
@@ -566,6 +568,14 @@ const uint32_t VS_PROJECTION = 0;
 const uint32_t VS_FOG = 4;
 const uint32_t VS_WORLD_VIEW = 5;
 const uint32_t VS_SUN_DIR = 33;
+const uint32_t VS_LOCAL_LIGHT = 37;  // 37..45, THREE registers a light
+// How many of CM2Lighting's four kept lights reach the water. The reference's loop advances its
+// destination offset by 0x30 a light and refuses to begin an iteration once that offset has
+// reached 0x90, so the fourth light never gets a register however near it is.
+const uint32_t VS_LOCAL_LIGHT_COUNT = 3;
+// 0.0039215689 at 0x00a45564, which is 1/255: the light colour is held as bytes widened into
+// floats and the shader wants it normalised.
+const float LIGHT_COLOR_SCALE = 0.0039215689f;
 const uint32_t VS_WAVE_PHASE_A = 46;
 const uint32_t VS_WAVE_PHASE_B = 47;
 const uint32_t VS_WAVE_A = 48;        // 48,49,50, one per wave
@@ -672,18 +682,54 @@ void SetupLightConstants(const CM2Lighting& lighting) {
     // 6 is the reference's own constant at 0x009e8cf8, presumably the specular power.
     StoreVector(&s_constants.vs[VS_SUN_DIR + 3], lighting.m_sunSpecular, 6.0f);
 
-    // TODO the three local lights, at c37..c45, three registers each:
+    // The three local lights, at c37..c45, three registers each:
     //
     //   +0  the light's m_pos brought through the same rotation, w 1
-    //   +1  its m_dirColor times 1/255 (the 0.0039215689 at 0x00a45564), w 1
+    //   +1  its m_dirColor times 1/255, w 1
     //   +2  its three attenuations -- constant, linear, quadratic
     //
-    // The reference reads the light's FIRST vector (+0x0c, m_pos) and rotates it. Rotating a
-    // position rather than a direction only makes sense if it is already camera-relative, and
-    // CM2Lighting keeps both m_pos and the m_posCameraSpace that CameraSpace() fills -- so which
-    // one belongs here is not settled, and guessing would put torchlight in the wrong place. The
-    // loop also stops after THREE lights, not four: its guard breaks once the destination offset
-    // passes 0x8f.
+    // WHICH VECTOR IS ROTATED was the open question that held this back, and it is settled. The
+    // reference reads the light's +0x0c -- m_pos, not the m_posCameraSpace at +0x18 -- and puts it
+    // through the same rotation as the sun with NO camera subtraction. Rotating a world position
+    // looked wrong enough to be a misread, so it was checked against the OTHER consumer of these
+    // same lights, CShaderEffect::ComputeLocalLights (FUN_00872900): that one branches on whether
+    // it was handed a camera position, subtracting it from +0x0c when it was (0x008729de) and
+    // reading the cached camera-space vector at +0x18 when it was not (0x00872a3c). The reference
+    // therefore distinguishes the two vectors deliberately, and this path takes the first one
+    // unsubtracted. Ported as measured rather than as it ought to be.
+    //
+    // A LIGHT SHORT OF THE THREE LEAVES ITS REGISTERS ALONE, which is the reference's behaviour
+    // and not an oversight here: nothing zeroes c37..c45 on the way in, so a frame with one light
+    // leaves the other two holding the previous frame's values. Matched, because a liquid surface
+    // lit by a torch that has gone out is a reference behaviour and diverging from it silently is
+    // worse than reproducing it.
+
+    uint32_t lights = lighting.m_lightCount < VS_LOCAL_LIGHT_COUNT
+                   ? lighting.m_lightCount
+                   : VS_LOCAL_LIGHT_COUNT;
+
+    for (uint32_t i = 0; i < lights; i++) {
+        CM2Light* light = lighting.m_lights[i];
+
+        // FROZEN-ONLY. The reference dereferences the slot without a check, trusting m_lightCount
+        // to count only filled ones. Keeping the guard costs a compare and turns a would-be crash
+        // into a dark surface.
+        if (!light) {
+            continue;
+        }
+
+        uint32_t reg = VS_LOCAL_LIGHT + i * 3;
+
+        StoreVector(&s_constants.vs[reg], light->m_pos * rotation, 1.0f);
+        StoreVector(&s_constants.vs[reg + 1], light->m_dirColor * LIGHT_COLOR_SCALE, 1.0f);
+
+        // The w of the attenuation register is the one slot of the nine the reference never
+        // writes, so it keeps whatever was already there. frozen's constant block is a
+        // zero-initialised static that nothing else touches, which is the same value.
+        s_constants.vs[reg + 2].x = light->m_constantAttenuation;
+        s_constants.vs[reg + 2].y = light->m_linearAttenuation;
+        s_constants.vs[reg + 2].z = light->m_quadraticAttenuation;
+    }
 
     // Fog. Linear, and the two coefficients are what the program multiplies the depth by; the
     // reference's multiplier at 0x00d4300c is a global set to exactly 1.0 by the shader system's

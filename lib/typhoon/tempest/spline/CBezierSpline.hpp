@@ -56,7 +56,11 @@ class CBezierSpline {
         uint32_t m_pointCount = 0;
 
         // Member functions
-        virtual ~CBezierSpline() {}
+        virtual ~CBezierSpline();
+
+        // Take a copy of `count` control points. Anything past the first INLINE_POINTS goes on
+        // the heap. ref: FUN_004c4d50 through FUN_004c3830
+        void SetPoints(const C3Vector* points, uint32_t count);
 
         // How many chained cubic segments the control points make up.
         uint32_t SegmentCount() const;

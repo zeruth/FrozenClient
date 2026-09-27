@@ -643,6 +643,7 @@ addr	how	frozen	evidence
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
 004b6c50	annotated	TextureIncreasePriority	tag in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
+004b6f30	override	TextureCacheGetProcedural	
 004b6fa0	override	TextureCacheGetTexture	
 004b7020	override	TextureCacheGetTexture	
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
@@ -723,6 +724,7 @@ addr	how	frozen	evidence
 004c4880	annotated	CBezierSpline::Evaluate	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
 004c4930	annotated	CBezierSpline::Tangent	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
 004c4b80	override	CWorld::GetTickTimeSec	
+004c4d50	annotated	CBezierSpline::SetPoints	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
 004c4df0	annotated	C2Vector::operator=	tag in lib/typhoon/tempest/vector/C2Vector.cpp
 004c51b0	annotated	C33Matrix::C33Matrix	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5230	annotated	C33Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
@@ -4111,6 +4113,7 @@ addr	how	frozen	evidence
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a1700	annotated	Liquid::CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
+008a1750	override	Liquid::TextureScaleMultiplier	
 008a1760	callorder	Liquid::ProcWaterSuffix	same slot between linked calls in 008a3e00=Liquid::CMaterialProcWater::EnsureShaders
 008a1a40	annotated	Liquid::CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
 008a1ac0	annotated	Liquid::CInstance::Release	tag in src/world/map/LiquidSurface.cpp
@@ -4124,6 +4127,7 @@ addr	how	frozen	evidence
 008a27c0	annotated	Liquid::CMaterialSettings::LoadFromDbc	tag in src/world/map/LiquidMaterialSettings.cpp
 008a28f0	annotated	Liquid::GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2ac0	annotated	Liquid::WmoWaterGenerate	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2bf0	override	Liquid::DepthGradientGenerate	
 008a2e20	annotated	Liquid::ProceduralLiquidTexture	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3050	annotated	CMapLiquidData::CMapLiquidData	tag in src/world/map/CMapLiquidData.cpp
 008a3060	annotated	CMapLiquidData::HasLiquid	tag in src/world/map/CMapLiquidData.cpp
@@ -4152,6 +4156,7 @@ addr	how	frozen	evidence
 008a3f70	annotated	Liquid::CMaterialWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a4070	annotated	Liquid::CMaterialWaterNoSpec::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a4190	annotated	Liquid::CMaterialMagma::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
+008a48f0	override	Liquid::DrawProcWaterMaterial	
 008a5590	annotated	Liquid::CMaterialWater::Draw	tag in src/world/map/LiquidMaterialSettings.cpp
 008a5900	annotated	Liquid::CMaterialWaterNoSpec::Draw	tag in src/world/map/LiquidMaterialSettings.cpp
 008a6090	annotated	Liquid::CMaterialMagma::Draw	tag in src/world/map/LiquidMaterialSettings.cpp
@@ -4608,6 +4613,7 @@ addr	how	frozen	evidence
 009814b0	annotated	CM2ParticleEmitterSphere::SetLength	tag in src/model/CM2ParticleEmitter.cpp
 009814d0	annotated	CM2ParticleEmitterSphere::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
 009814e0	annotated	CM2ParticleEmitterSpline::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp
+00981500	annotated	CM2ParticleEmitterSpline::SetSplinePoints	tag in src/model/CM2ParticleEmitter.cpp
 009815c0	annotated	CM2ParticleEmitterPlane::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00981950	annotated	CM2ParticleEmitterSphere::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00981c90	annotated	CM2ParticleEmitterSpline::SetWidth	tag in src/model/CM2ParticleEmitter.cpp

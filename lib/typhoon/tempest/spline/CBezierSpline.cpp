@@ -1,6 +1,7 @@
 #include "tempest/spline/CBezierSpline.hpp"
 
 #include <cmath>
+#include <storm/Memory.hpp>
 
 namespace {
 
@@ -23,6 +24,67 @@ const float BEZIER_DERIVATIVE_BASIS[4][3] = {
     {  3.0f,   0.0f,  0.0f }
 };
 
+}
+
+CBezierSpline::~CBezierSpline() {
+    if (this->m_overflow) {
+        SMemFree(this->m_overflow, __FILE__, __LINE__, 0);
+
+        this->m_overflow = nullptr;
+    }
+}
+
+// ref: FUN_004c4d50, reached through FUN_004c3830
+// Copy the control points in, spilling past the inline block onto the heap.
+//
+// The reference works in SEGMENTS rather than points: it stores count / 3, grows a second array
+// when that exceeds 25, and copies segments * 3 + 1 points. For well-formed input the two agree --
+// a curve of s chained cubics is authored with exactly 3s + 1 points, so segments * 3 + 1 is the
+// count it was handed. Storing the count as given is the same thing without the round trip, and it
+// is what this class's own evaluator reads back (it divides by three to get the segments again).
+//
+// The second array the reference grows alongside the points is NOT reproduced: it is indexed by
+// segment and the evaluator never touches it, so what it caches is unestablished. Its pointer is
+// the emitter's +0x400, the other of the two the deleting destructor frees.
+void CBezierSpline::SetPoints(const C3Vector* points, uint32_t count) {
+    if (this->m_overflow) {
+        SMemFree(this->m_overflow, __FILE__, __LINE__, 0);
+
+        this->m_overflow = nullptr;
+    }
+
+    this->m_pointCount = 0;
+
+    if (!points || !count) {
+        return;
+    }
+
+    uint32_t inlineCount = count < CBezierSpline::INLINE_POINTS
+                         ? count
+                         : CBezierSpline::INLINE_POINTS;
+
+    for (uint32_t i = 0; i < inlineCount; i++) {
+        this->m_points[i] = points[i];
+    }
+
+    if (count > CBezierSpline::INLINE_POINTS) {
+        uint32_t spill = count - CBezierSpline::INLINE_POINTS;
+
+        this->m_overflow = static_cast<C3Vector*>(
+            SMemAlloc(sizeof(C3Vector) * spill, __FILE__, __LINE__, 0));
+
+        if (!this->m_overflow) {
+            this->m_pointCount = inlineCount;
+
+            return;
+        }
+
+        for (uint32_t i = 0; i < spill; i++) {
+            this->m_overflow[i] = points[CBezierSpline::INLINE_POINTS + i];
+        }
+    }
+
+    this->m_pointCount = count;
 }
 
 uint32_t CBezierSpline::SegmentCount() const {

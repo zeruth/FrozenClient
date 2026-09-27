@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 13:27 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 14:07 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,22 +8,22 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26946 | 5.35M |
-| mapped to a frozen function | 4687 (+6) (17.4%) | 1009.7k (18.4%) |
-| &nbsp;&nbsp;ported | 4008 (+6) | 833.3k |
+| mapped to a frozen function | 4693 (=) (17.4%) | 1012.6k (18.5%) |
+| &nbsp;&nbsp;ported | 4014 (=) | 836.2k |
 | &nbsp;&nbsp;stub (unimplemented body) | 573 (=) | 123.1k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2449 (+4) (9.1%)** | **343.1k (6.3%)** |
-| unmapped | 22259 | 4.37M |
-| world spine (reachable from OnFrameRender) | 5381, mapped 1612 (+1) (30.0%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1635 (+1) (28.9%) | |
-| **render surface** (the modules that draw the world) | **4773, mapped 1141 (+1) (23.9%)** | |
-| frozen functions (src/, from PDB + source) | 13958, stubs 1638 | |
+| **faithful** (linked, not stub, call order >= 80%) | **2450 (=) (9.1%)** | **343.1k (6.3%)** |
+| unmapped | 22253 | 4.36M |
+| world spine (reachable from OnFrameRender) | 5381, mapped 1614 (=) (30.0%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1637 (=) (29.0%) | |
+| **render surface** (the modules that draw the world) | **4882, mapped 1192 (+49) (24.4%)** | |
+| frozen functions (src/, from PDB + source) | 13961, stubs 1638 | |
 
-Match evidence: annotated 2421, callgraph 254, callorder 111, cvar 31, handler 29, order 143, override 356, sticky 18, string 304, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2423, callgraph 254, callorder 111, cvar 31, handler 29, order 143, override 360, sticky 18, string 304, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-27 13:18 -- mapped 4681, ported 4002, stub 573, spine mapped 1611.
+Previous run: 2026-09-27 14:02 -- mapped 4693, ported 4014, stub 573, spine mapped 1614.
 
 ## Lua API coverage (binding tables)
 
@@ -133,8 +133,8 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1250 | 271.0k | 5 (0.4%) | 0.4% | 0 | 0 | 71 |
 | OggDecompress.cpp | 1504 | 260.7k | 20 (1.3%) | 1.0% | 2 | 0 | 476 |
-| ComSatSoundIOSoundEngine.cpp | 958 | 184.0k | 110 (11.5%) | 5.2% | 0 | 5 | 93 |
 | Unit_C.cpp | 703 | 182.2k | 96 (13.7%) | 9.8% | 0 | 0 | 292 |
+| ComSatSoundIOSoundEngine.cpp | 849 | 165.2k | 64 (7.5%) | 0.3% | 0 | 0 | 52 |
 | Player_C.cpp | 728 | 146.7k | 58 (8.0%) | 9.5% | 0 | 0 | 156 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
 | M2Scene.cpp | 277 | 99.5k | 193 (69.7%) | 72.0% | 4 | 0 | 210 |
@@ -160,7 +160,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ScriptEvents.cpp | 225 | 46.9k | 171 (76.0%) | 72.7% | 27 | 0 | 26 |
 | LFGInfo.cpp | 225 | 46.5k | 21 (9.3%) | 7.4% | 3 | 0 | 6 |
 | M2Shared.cpp | 65 | 45.9k | 27 (41.5%) | 52.6% | 0 | 0 | 19 |
-| CSimpleHyperlinkedFrame.cpp | 195 | 45.6k | 104 (53.3%) | 62.9% | 0 | 0 | 119 |
+| CSimpleHyperlinkedFrame.cpp | 195 | 45.6k | 105 (53.8%) | 63.0% | 0 | 0 | 119 |
 | ScanDLLGlue.cpp | 183 | 44.9k | 25 (13.7%) | 13.5% | 3 | 0 | 41 |
 | CSimpleHTML.cpp | 364 | 44.4k | 208 (57.1%) | 63.2% | 6 | 2 | 0 |
 | fmod_codec_it.cpp | 57 | 42.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -176,7 +176,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | MapChunk.cpp | 126 | 36.5k | 67 (53.2%) | 61.2% | 0 | 1 | 82 |
 | ConsoleVar.cpp | 242 | 36.1k | 96 (39.7%) | 35.0% | 2 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 9 | 1 | 4 |
-| TextureBlob.cpp | 212 | 34.4k | 60 (28.3%) | 35.0% | 0 | 0 | 83 |
+| TextureBlob.cpp | 212 | 34.4k | 61 (28.8%) | 35.2% | 0 | 0 | 83 |
 | AchievementInfo.cpp | 178 | 33.6k | 69 (38.8%) | 32.7% | 55 | 0 | 0 |
 | Calendar.cpp | 108 | 32.1k | 19 (17.6%) | 16.7% | 18 | 0 | 0 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -202,7 +202,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_channel_openal.cpp | 52 | 23.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 52 (43.3%) | 46.7% | 15 | 0 | 0 |
 | PetNameCache.cpp | 117 | 22.5k | 4 (3.4%) | 3.1% | 0 | 0 | 35 |
-| Texture.cpp | 145 | 22.1k | 43 (29.7%) | 30.0% | 5 | 0 | 74 |
+| Texture.cpp | 145 | 22.1k | 44 (30.3%) | 30.4% | 5 | 0 | 74 |
 | ObjectEffect.cpp | 81 | 20.5k | 13 (16.0%) | 5.4% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 1 (1.1%) | 0.1% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
@@ -213,6 +213,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | BattlenetLogin.cpp | 111 | 19.4k | 1 (0.9%) | 0.0% | 0 | 0 | 0 |
 | TaxiMapFrame.cpp | 97 | 19.4k | 9 (9.3%) | 6.4% | 2 | 0 | 2 |
 | Profile.cpp | 126 | 18.9k | 13 (10.3%) | 6.4% | 0 | 0 | 26 |
+| Liquid.cpp | 109 | 18.8k | 49 (45.0%) | 63.1% | 0 | 5 | 41 |
 | DressUpModelFrame.cpp | 115 | 18.6k | 15 (13.0%) | 14.9% | 9 | 0 | 6 |
 | KnowledgeBase.cpp | 119 | 17.8k | 2 (1.7%) | 0.1% | 1 | 0 | 0 |
 | MailInfo.cpp | 77 | 17.8k | 13 (16.9%) | 6.2% | 2 | 0 | 7 |
@@ -625,6 +626,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
 | 00795400 | `CWorldScene::UpdateCamera` | 56% | 19 | 30 | 8 | 8 | 0% | 2291 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
+| 008a48f0 | `Liquid::DrawProcWaterMaterial` | 56% | 52 | 41 | 27 | 7 | 6% | 2173 |
 | 007a9380 | `CMapObjGroup::DrawBatchesOutdoor` | 60% | 62 | 55 | 53 | 29 | 6% | 2146 |
 | 0079e7c0 | `CMap::MapMemInitialize` | 79% | 45 | 24 | 21 | 10 | 11% | 2068 |
 | 004e3cd0 | `CCharacterSelection::ShowCharacter` | 35% | 37 | 7 | 49 | 5 | 0% | 2058 |
@@ -645,7 +647,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 00839ef0 | `M2Init` | 100% | 6 | 89 | 63 | 129 | 0% | 1368 |
 | 0079a870 | `CMap::Render` | 40% | 54 | 38 | 24 | 13 | 0% | 1355 |
 | 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
-| 0082c970 | `CM2Model::OptimizeVisibleGeometry` | 89% | 9 | 15 | 46 | 19 | 2% | 1353 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -726,9 +727,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-27 07:45 | 4647 (17.2%) | 2412 (9.0%) | 573 | 1593/5381 | 2924/2964 | 1380 |
-| 2026-09-27 07:54 | 4649 (17.3%) | 2414 (9.0%) | 573 | 1593/5381 | 2924/2964 | 1380 |
-| 2026-09-27 08:09 | 4651 (17.3%) | 2415 (9.0%) | 573 | 1593/5381 | 2924/2964 | 1380 |
 | 2026-09-27 08:22 | 4653 (17.3%) | 2416 (9.0%) | 573 | 1595/5381 | 2924/2964 | 1380 |
 | 2026-09-27 08:28 | 4655 (17.3%) | 2418 (9.0%) | 573 | 1597/5381 | 2924/2964 | 1380 |
 | 2026-09-27 08:35 | 4657 (17.3%) | 2419 (9.0%) | 573 | 1599/5381 | 2924/2964 | 1380 |
@@ -751,6 +749,9 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 13:11 | 4678 (17.4%) | 2444 (9.1%) | 573 | 1611/5381 | 2924/2964 | 1380 |
 | 2026-09-27 13:18 | 4681 (17.4%) | 2445 (9.1%) | 573 | 1611/5381 | 2924/2964 | 1380 |
 | 2026-09-27 13:27 | 4687 (17.4%) | 2449 (9.1%) | 573 | 1612/5381 | 2924/2964 | 1380 |
+| 2026-09-27 13:41 | 4689 (17.4%) | 2449 (9.1%) | 573 | 1613/5381 | 2924/2964 | 1380 |
+| 2026-09-27 14:02 | 4693 (17.4%) | 2450 (9.1%) | 573 | 1614/5381 | 2924/2964 | 1380 |
+| 2026-09-27 14:07 | 4693 (17.4%) | 2450 (9.1%) | 573 | 1614/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 
