@@ -197509,7 +197509,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 63
+"line": 65
 },
 "Liquid::CWaveManager::RecordDwords": {
 "files": [
@@ -197522,7 +197522,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 65
+"line": 67
 },
 "DrawChunkUnsupported": {
 "files": [
@@ -209051,7 +209051,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 129
+"line": 131
 },
 "Liquid::IGeomFactory::AddRef": {
 "files": [
@@ -209847,6 +209847,29 @@
 "lines": 9,
 "refs": [],
 "line": 1361
+},
+"Liquid::MapObjPolyClipToPlane": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"fabs",
+"fabs",
+"fabs"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.1920929e-07f",
+"2"
+],
+"branches": 14,
+"stub": false,
+"lines": 130,
+"refs": [],
+"line": 1402
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

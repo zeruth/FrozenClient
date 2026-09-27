@@ -1367,4 +1367,167 @@ void MapObjPolyDeref(const MapObjPolyWalk* walk, C3Vector* position, int32_t* va
 
     *value = MapObjPolyEval(set, index, static_cast<MapObjPolyFold>(walk->callback));
 }
+
+// ref: FUN_007d9470
+// Clip the outline against one plane, in place. This is the piece that makes the whole structure a
+// Sutherland-Hodgman clipper, and it is the last of the ten.
+//
+// For each edge still in play it classifies both endpoints by signed distance, then:
+//
+//   both strictly inside -- nothing to do;
+//   both strictly outside -- FLAG THE EDGE, which retires it from this and every later pass;
+//   straddling -- append an interpolated point and remember enough to re-stitch the boundary.
+//
+// EXACTLY TWO CROSSINGS ARE EXPECTED, which is what a plane does to a convex ring, and the failure
+// handling is the interesting part: anything else rolls the appended points back by subtracting the
+// crossing count from pointCount and returns without touching the edges. So a degenerate outline is
+// left exactly as it was rather than half-clipped. The early break at three crossings exists to keep
+// that rollback small, not to salvage the pass.
+//
+// THE RE-STITCH keeps the inside vertex and replaces the outside one. If the edge's `from` was the
+// inside end its `to` is repointed at the new point, and the new point's inEdge becomes that edge
+// while its outEdge becomes the closing edge; if `from` was outside, both roles swap. The closing
+// edge then runs from the point born on the from-inside crossing to the one born on the other, which
+// is what preserves the ring's winding.
+//
+// The distance memo is keyed on a generation counter bumped on entry, so a point shared by two edges
+// is classified once per pass. The reference accesses that counter as an INT in one comparison and as
+// a FLOAT in the other -- the same slot, the same bit pattern, and the values are small integers so
+// bitwise equality holds either way. frozen keeps it an int32_t throughout, which is equivalent and
+// does not invite a denormal into the comparison.
+//
+// The epsilon is the reference's own, from 0x009ea624: 1.1920929e-07, which is FLT_EPSILON. An edge
+// whose two distances sum below it is treated as touching rather than crossing, so no degenerate
+// point is appended.
+void MapObjPolyClipToPlane(MapObjPolySet* set, const C4Plane& plane, int32_t side) {
+    const float kEpsilon = 1.1920929e-07f;
+
+    set->generation++;
+
+    int32_t crossings = 0;
+
+    // Per crossing: which edge straddled, the point it produced, and whether that edge's `from` was
+    // the inside end.
+    int32_t straddled[2] = { 0, 0 };
+    int32_t created[2] = { 0, 0 };
+    int32_t fromWasInside[2] = { 0, 0 };
+
+    // The two created points, filed by which crossing they came from, for the closing edge.
+    int32_t bornFromInside = 0;
+    int32_t bornFromOutside = 0;
+
+    for (int32_t e = 0; e < set->edgeCount; e++) {
+        MapObjPolyEdge* edge = &set->edges[e];
+
+        if (edge->flag) {
+            continue;
+        }
+
+        MapObjPolyPoint* a = &set->points[edge->from];
+        MapObjPolyPoint* b = &set->points[edge->to];
+
+        if (a->stamp != set->generation) {
+            a->planeDistance = (plane.n.x * a->position.x + plane.n.y * a->position.y
+                                + plane.n.z * a->position.z + plane.d) * static_cast<float>(side);
+            a->stamp = set->generation;
+        }
+
+        if (b->stamp != set->generation) {
+            b->planeDistance = (plane.n.x * b->position.x + plane.n.y * b->position.y
+                                + plane.n.z * b->position.z + plane.d) * static_cast<float>(side);
+            b->stamp = set->generation;
+        }
+
+        // Both strictly inside: the edge survives untouched. Written as the reference writes it --
+        // NOT (both > 0) -- so a NaN distance falls through to the straddle test rather than here.
+        if (a->planeDistance > 0.0f && b->planeDistance > 0.0f) {
+            continue;
+        }
+
+        if (!(a->planeDistance >= 0.0f) && !(b->planeDistance >= 0.0f)) {
+            edge->flag = 1;
+
+            continue;
+        }
+
+        float sum = std::fabs(b->planeDistance) + std::fabs(a->planeDistance);
+
+        if (sum < kEpsilon) {
+            continue;
+        }
+
+        crossings++;
+
+        if (crossings > 2) {
+            break;
+        }
+
+        float t = std::fabs(a->planeDistance) / sum;
+
+        int32_t aInside = a->planeDistance >= 0.0f ? 1 : 0;
+        int32_t slot = crossings - 1;
+
+        int32_t index = set->pointCount;
+
+        straddled[slot] = e;
+        created[slot] = index;
+        fromWasInside[slot] = aInside;
+
+        if (aInside) {
+            bornFromInside = index;
+        } else {
+            bornFromOutside = index;
+        }
+
+        MapObjPolyPoint* np = &set->points[index];
+
+        np->position.x = a->position.x + (b->position.x - a->position.x) * t;
+        np->position.y = a->position.y + (b->position.y - a->position.y) * t;
+        np->position.z = a->position.z + (b->position.z - a->position.z) * t;
+
+        // Its value interpolates the two endpoints, computed on first read rather than now.
+        np->value = 0;
+        np->childA = edge->from;
+        np->childB = edge->to;
+        np->operand = t;
+
+        if (aInside) {
+            np->inEdge = e;
+            np->outEdge = set->edgeCount;
+        } else {
+            np->outEdge = e;
+            np->inEdge = set->edgeCount;
+        }
+
+        np->stamp = set->generation;
+        np->planeDistance = 0.0f;
+
+        set->pointCount++;
+    }
+
+    if (crossings != 2) {
+        set->pointCount -= crossings;
+
+        return;
+    }
+
+    for (int32_t i = 0; i < 2; i++) {
+        MapObjPolyEdge* edge = &set->edges[straddled[i]];
+
+        if (fromWasInside[i]) {
+            edge->to = created[i];
+        } else {
+            edge->from = created[i];
+        }
+    }
+
+    MapObjPolyEdge* closing = &set->edges[set->edgeCount];
+
+    closing->from = bornFromInside;
+    closing->to = bornFromOutside;
+    closing->flag = 0;
+
+    set->edgeCount++;
+}
+
 } // namespace Liquid

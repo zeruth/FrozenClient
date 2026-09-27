@@ -6,6 +6,8 @@
 #include "gx/CGxBatch.hpp"
 #include "gx/buffer/Types.hpp"
 #include <tempest/Sphere.hpp>
+#include <tempest/Plane.hpp>
+
 #include <cstddef>
 #include <cstdint>
 
@@ -251,6 +253,10 @@ int32_t MapObjPolyCloseOutline(MapObjPolySet* set);
 // ref: FUN_007d92f0
 // Park the cursor on the first edge whose flag is still zero.
 void MapObjPolySeekUnflaggedEdge(MapObjPolySet* set);
+
+// ref: FUN_007d9470
+// Clip the outline against one plane, in place. `side` flips which half-space is kept.
+void MapObjPolyClipToPlane(MapObjPolySet* set, const C4Plane& plane, int32_t side);
 
 // ref: FUN_007d91f0
 // Evaluate one point's value, memoising into it and recursing through the two it interpolates.
