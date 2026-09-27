@@ -3536,6 +3536,7 @@ addr	how	frozen	evidence
 0081f8c0	annotated	DestroyModel	tag in src/model/CM2Scene.cpp
 0081f8f0	annotated	CM2Scene::CreateModel	tag in src/model/CM2Scene.cpp
 0081f970	annotated	CM2Scene::CreateModelFrom	tag in src/model/CM2Scene.cpp
+0081f9e0	annotated	CM2Scene::KeyAndSortElementList	tag in src/model/CM2Scene.cpp
 0081fb10	override	CM2SceneRender::SetupLighting	
 0081fe90	override	CM2SceneRender::SetupMaterial	
 008203b0	override	CM2SceneRender::DrawBatch	

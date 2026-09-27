@@ -38,6 +38,8 @@ class CM2Scene {
         static int32_t SortOpaqueGeoBatches(M2Element* elementA, M2Element* elementB);
         static int32_t SortOpaqueParticles(M2Element* elementA, M2Element* elementB);
         static int32_t SortOpaqueRibbons(M2Element* elementA, M2Element* elementB);
+        // Number one list's additive runs, then sort it. ref: FUN_0081f9e0
+        void KeyAndSortElementList(uint32_t listIndex);
         static int32_t SortTransparent(uint32_t a, uint32_t b, const void* userArg);
 
         // Member variables

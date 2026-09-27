@@ -252,6 +252,101 @@ int32_t CM2Scene::SortOpaqueRibbons(M2Element* elementA, M2Element* elementB) {
     return 0;
 }
 
+// The blend each M2 blend index draws with, in a TRANSPARENT list. DAT_00a453cc.
+//
+// It is not the same map as M2ParticleBlendToGx: this one sends 0, 1 and 2 all to GxBlend_Alpha
+// where that one distinguishes opaque, alpha-key and alpha. In a transparent list the distinction
+// cannot arise -- an opaque element was filed in the opaque list -- so the collapse is free, and
+// the only question ever asked of this table is whether the entry is additive.
+//
+// The reference's table repeats this run of seven at indices 7..13. Nothing here indexes past 6,
+// because an M2 blend mode is 0..6, and what the second half is for is not established.
+static const uint32_t M2_TRANSPARENT_BLEND[7] = {
+    GxBlend_Alpha, GxBlend_Alpha, GxBlend_Alpha, GxBlend_NoAlphaAdd,
+    GxBlend_Add, GxBlend_Mod, GxBlend_Mod2x
+};
+
+static bool M2BlendIsAdditive(uint32_t blendIndex) {
+    if (blendIndex >= 7) {
+        return false;
+    }
+
+    uint32_t gxBlend = M2_TRANSPARENT_BLEND[blendIndex];
+
+    return gxBlend == GxBlend_Add || gxBlend == GxBlend_NoAlphaAdd;
+}
+
+// ref: FUN_0081f9e0
+// Give every element of one list its additive-run number, then sort the list.
+//
+// The run number is the point of the pass: walking in order, every element takes the next number
+// EXCEPT one whose blend is additive and whose predecessor's was too, which keeps the number it
+// already had. A stretch of additive elements therefore shares one number and sorts as a unit,
+// which is what stops the finer keys from interleaving it with the blends on either side.
+//
+// Where the blend comes from depends on the element's kind: a batch element reads its material,
+// a ribbon reads the first material of its ribbon record, and a particle asks its emitter.
+//
+// DIVERGED, in one branch and narrowly. For a particle the reference chooses between asking the
+// emitter and forcing blend index 4 outright, on a flag it reads two indirections off its own
+// argument; which object that is did not survive the decompilation, so this always asks the
+// emitter. The two arms agree whenever the particle's own blend is additive -- index 4 is Add --
+// and differ only for a non-additive particle, which the forced arm would group as if it were
+// additive. Recorded rather than guessed at, because the gate is one dereference away from being
+// readable and a wrong guess here reorders particles silently.
+void CM2Scene::KeyAndSortElementList(uint32_t listIndex) {
+    TSGrowableArray<uint32_t>& list = this->array54[listIndex];
+
+    uint32_t count = list.Count();
+    uint32_t run = 0;
+    bool inAdditiveRun = false;
+
+    for (uint32_t i = 0; i < count; i++) {
+        M2Element& element = this->m_elements[list[i]];
+
+        M2Data* data = element.model->m_shared->m_data;
+
+        uint32_t blendIndex = 0;
+
+        switch (element.type) {
+        case 0:
+        case 1:
+        case 2:
+            blendIndex = data->materials[element.batch->materialIndex].blendMode;
+            break;
+
+        case 3: {
+            M2Ribbon& ribbon = data->ribbons[element.index];
+
+            blendIndex = data->materials[ribbon.materialIndices[0]].blendMode;
+            break;
+        }
+
+        case 4:
+            blendIndex = element.emitter
+                       ? M2BlendIndexFromGx(element.emitter->m_blendMode)
+                       : 0;
+            break;
+
+        default:
+            break;
+        }
+
+        if (M2BlendIsAdditive(blendIndex)) {
+            if (!inAdditiveRun) {
+                inAdditiveRun = true;
+                run++;
+            }
+        } else {
+            inAdditiveRun = false;
+            run++;
+        }
+
+        element.additiveRun = run;
+    }
+
+    M2HeapSort(CM2Scene::SortTransparent, list.Ptr(), count, this);
+}
 int32_t CM2Scene::SortTransparent(uint32_t a, uint32_t b, const void* userArg) {
     auto elements = static_cast<const CM2Scene*>(userArg)->m_elements.Ptr();
     auto elementA = const_cast<M2Element*>(&elements[a]);
@@ -947,8 +1042,16 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     }
 
     M2HeapSort(CM2Scene::SortOpaque, this->array54[0].Ptr(), this->array54[0].Count(), this);
-    M2HeapSort(CM2Scene::SortTransparent, this->array54[1].Ptr(), this->array54[1].Count(), this);
-    M2HeapSort(CM2Scene::SortTransparent, this->array54[2].Ptr(), this->array54[2].Count(), this);
+    // The two TRANSPARENT lists go through the keying pass, which numbers their additive runs
+    // before sorting. The opaque list above does not -- the reference keys only these two, and
+    // grouping additive runs means nothing in a list that has none.
+    //
+    // STILL TO COME: the reference sorts these with FUN_0081f0e0, which takes the run number as
+    // its FIRST key and only then falls through to SortTransparent, with a particle-specific tail
+    // of its own. Until that lands the run numbers are computed and not yet read, so this pass is
+    // inert by design rather than by accident.
+    this->KeyAndSortElementList(1);
+    this->KeyAndSortElementList(2);
 
     // TODO sort additive particles
 }

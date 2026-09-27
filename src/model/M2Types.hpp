@@ -130,19 +130,28 @@ struct M2Element {
     uint32_t vertexPermute;
     uint32_t pixelPermute;
 
-    // +0x34, +0x38, +0x3c and +0x40 in the reference. Their MEANING is not established and is not
-    // guessed at here; they are named for their offsets, which is the idiom this codebase already
-    // uses for the same situation (CM2Model carries uint74, float88, uint90, float198, matrixB4
-    // and ptr2D0 on exactly this basis).
+    // +0x34, +0x38 and +0x3c in the reference. Their MEANING is not established and is not guessed
+    // at here; they are named for their offsets, which is the idiom this codebase already uses for
+    // the same situation (CM2Model carries uint74, float88, uint90, float198, matrixB4 and ptr2D0
+    // on exactly this basis).
     //
     // What IS known is what the particle element builder writes at 0x821999: dword34 and dword38
-    // are set to -1, dword3c to 0, and dword40 is left alone. There is no second writer to read
-    // them off -- the batch element path inlines its own allocation instead of calling
-    // FUN_00821670, which has exactly one caller.
+    // are set to -1 and dword3c to 0.
     uint32_t dword34;
     uint32_t dword38;
     uint32_t dword3c;
-    uint32_t dword40;
+
+    // +0x40, AND IT IS NO LONGER AN UNKNOWN. This comment used to say there was no second writer
+    // to read these off; FUN_0081f9e0 is that writer, and it is now
+    // CM2Scene::KeyAndSortElementList below.
+    //
+    // It is a RUN INDEX over consecutive ADDITIVE elements. The keying pass walks a sorted list in
+    // order, maps each element's blend onto a GxBlend, and increments a counter for every element
+    // EXCEPT one that continues a run of additive blends -- so a stretch of additive elements all
+    // carry the same number and everything else gets its own. FUN_0081f0e0 then sorts on this
+    // first, which is what keeps an additive run together instead of letting the per-element keys
+    // interleave it with the blends around it.
+    uint32_t additiveRun;
 
     // DIVERGENCE, and a deliberate one. A particle element has to carry its emitter, and the
     // reference does that by reusing `index` above -- which frozen cannot, because that slot is
