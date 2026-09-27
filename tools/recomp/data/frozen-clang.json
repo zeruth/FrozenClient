@@ -197524,7 +197524,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 65
+"line": 66
 },
 "Liquid::CWaveManager::RecordDwords": {
 "files": [
@@ -197537,7 +197537,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 67
+"line": 68
 },
 "DrawChunkUnsupported": {
 "files": [
@@ -209157,7 +209157,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 131
+"line": 132
 },
 "Liquid::IGeomFactory::AddRef": {
 "files": [
@@ -210163,6 +210163,45 @@
 "lines": 50,
 "refs": [],
 "line": 1992
+},
+"Liquid::CInstance::CInstance": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"C44Matrix::C44Matrix",
+"C44Matrix::operator="
+],
+"strings": [],
+"consts": [
+"0.0f",
+"1.0f"
+],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 2060
+},
+"Liquid::CInstance::Create": {
+"files": [
+"src/world/map/liquidsurface.cpp"
+],
+"callseq": [
+"SMemAlloc",
+"Liquid::CInstance::CInstance"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\liquidsurface.cpp"
+],
+"consts": [
+"0"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 2079
 },
 "Liquid::CVertexDataMCLQ::CVertexDataMCLQ": {
 "files": [

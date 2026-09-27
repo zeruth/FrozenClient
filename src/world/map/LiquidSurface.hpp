@@ -56,6 +56,7 @@ class CWaveManager {
         // The unfaded copy Update works on; m_wavesB is this with the amplitude scaled by the fade.
         float m_working[WAVE_COUNT][8] = {};
 
+
         void AddRef();
         // Vtable slot 2, which is why CInstance releases this through a different slot than the
         // per-surface objects beside it.
@@ -480,6 +481,13 @@ class CInstance {
         // CreateSurface drops when it is done. A surface with no layers left frees itself.
         uint32_t m_refCount = 1;
 
+        // ref: FUN_008a1a40
+        // Zero everything, identity placement, one reference.
+        CInstance();
+
+        // ref: FUN_008a1b00
+        // Allocate one and construct it.
+        static CInstance* Create();
         void AddRef();
         void Release();
 };

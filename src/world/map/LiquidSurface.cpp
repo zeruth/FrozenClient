@@ -2044,4 +2044,48 @@ int32_t WriteLiquidGridVertices(CMapObjGroup* group, const C44Matrix& matrix,
                                 * (group->m_liquidYVerts + seams.dupRows.Count()));
 }
 
+
+// ref: FUN_008a1a40
+// The instance's constructor: every pointer null, the placement IDENTITY, the sphere zeroed and one
+// reference held.
+//
+// Most of it is already expressed by this class's in-class initialisers, so the body only does what
+// they cannot -- the matrix and the sphere, neither of which has a default. It is written out rather
+// than left implicit because the reference keeps it as a real function that its allocator calls, and
+// an implicit constructor would leave nothing for the map to bind.
+//
+// The identity is how the 1.0f writes in the reference were recognised: they land at indices 5, 10,
+// 15 and 20, a stride of five dwords, which is the diagonal of a 4x4 starting at +0x14 -- exactly
+// where this class already declares m_placement.
+CInstance::CInstance() {
+    this->m_placement = C44Matrix(1.0f, 0.0f, 0.0f, 0.0f,
+                                  0.0f, 1.0f, 0.0f, 0.0f,
+                                  0.0f, 0.0f, 1.0f, 0.0f,
+                                  0.0f, 0.0f, 0.0f, 1.0f);
+
+    this->m_sphere.c.x = 0.0f;
+    this->m_sphere.c.y = 0.0f;
+    this->m_sphere.c.z = 0.0f;
+    this->m_sphere.r = 0.0f;
+}
+
+// ref: FUN_008a1b00
+// Allocate an instance and construct it, or hand back null when the allocation fails -- the reference
+// only constructs on a non-null block and this keeps that order.
+//
+// DIVERGENCE, the same one every allocation in this file carries: the reference takes the block from
+// CDataAllocator::GetData under the RTTI name ".?AVCInstance@Liquid@@" and frozen has no
+// CDataAllocator, so this uses SMemAlloc as its siblings here do.
+CInstance* CInstance::Create() {
+    auto instance = static_cast<CInstance*>(SMemAlloc(sizeof(CInstance), __FILE__, __LINE__, 0));
+
+    if (!instance) {
+        return nullptr;
+    }
+
+    new (instance) CInstance();
+
+    return instance;
+}
+
 } // namespace Liquid

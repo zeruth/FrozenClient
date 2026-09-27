@@ -4095,7 +4095,9 @@ addr	how	frozen	evidence
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a1700	annotated	CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
+008a1a40	annotated	CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
 008a1ac0	annotated	CInstance::Release	tag in src/world/map/LiquidSurface.cpp
+008a1b00	annotated	CInstance::Create	tag in src/world/map/LiquidSurface.cpp
 008a1d60	annotated	CMaterialSettings::GetFrame	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1f50	annotated	ReleaseMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1fa0	annotated	GetMaterial	tag in src/world/map/LiquidMaterialSettings.cpp
