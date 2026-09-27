@@ -12,6 +12,7 @@
 #include "model/M2Init.hpp"
 #include "model/M2Types.hpp"
 #include "util/CStatus.hpp"
+#include "util/Log.hpp"
 #include "util/SFile.hpp"
 #include <cstdint>
 #include <cstring>
@@ -1405,53 +1406,206 @@ void CM2Shared::SubstituteSimpleShaders() {
     }
 }
 
-// FUN_00837680, mapped 2026-09-27 and deliberately still empty. READ THIS BEFORE PORTING IT: the
-// port is not hard, but landing it a piece at a time puts WRONG TEXTURES ON EVERY MODEL, and the
-// stub being empty is currently what keeps frozen self-consistent.
+// ref: FUN_00835e90
+// Rewrite every batch's texture-combo fields into a PACKED INTERMEDIATE form, which exists only
+// between here and FixUpTextureCombos below. Both are called by SubstituteSpecializedShaders, which
+// does its analysis in between while the fields are packed -- so the packed form never reaches the
+// draw path, and porting this WITHOUT the fixup would leave batches holding values that
+// CM2SceneRender::SetupTextures would then use as indices. That is the whole reason these two land
+// together.
 //
-// The chain is four functions, all in this module, each with exactly one caller -- its parent:
+// Why pack at all: the analysis needs to compare two batches' texture and transform selections
+// directly, and comparing them through two levels of lookup table is what the packing removes. A
+// two-texture batch's pair becomes one uint16 holding a byte each, which is why it compares the
+// packed field against a single byte of another batch.
 //
-//     FUN_00837680  957 bytes  this function
-//       FUN_00835e90  251      the batch combo packer, decoded below
-//       FUN_00837250  583      not yet read
-//       FUN_008374a0  463      not yet read; carries "Failed to fix up texture com..."
+// The transform bias is the subtle part. A combo entry of -1 means "no transform", and -1 does not
+// survive being truncated to a byte, so every entry is shifted up by one and 0 becomes the sentinel.
+// FixUpTextureCombos undoes exactly this.
 //
-// WHAT FUN_00835e90 DOES. It walks skinProfile->batches and REWRITES two fields of every batch IN
-// PLACE, replacing lookup indices with resolved values:
+// The single-texture arm resolves rather than packs: the combo field takes the looked-up VALUE and
+// the transform field takes the biased value at full width, no truncation.
+void CM2Shared::PackTextureCombos() {
+    M2SkinProfile* profile = this->skinProfile;
+
+    for (uint32_t i = 0; i < profile->batches.Count(); i++) {
+        M2Batch& batch = profile->batches[i];
+        M2Data* data = this->m_data;
+
+        auto transformCombos = reinterpret_cast<int16_t*>(data->textureTransformCombos.Data());
+
+        if (batch.textureCount == 2) {
+            uint16_t* combo = &data->textureCombos[batch.textureComboIndex];
+
+            int16_t t0 = transformCombos[batch.textureTransformComboIndex];
+            int16_t t1 = transformCombos[batch.textureTransformComboIndex + 1];
+
+            auto b0 = static_cast<uint8_t>(t0 == -1 ? 0 : t0 + 1);
+            auto b1 = static_cast<uint8_t>(t1 == -1 ? 0 : t1 + 1);
+
+            batch.textureComboIndex = static_cast<uint16_t>(
+                static_cast<uint8_t>(combo[0]) | (static_cast<uint8_t>(combo[1]) << 8));
+            batch.textureTransformComboIndex = static_cast<uint16_t>(b0 | (b1 << 8));
+        } else {
+            int16_t t = transformCombos[batch.textureTransformComboIndex];
+
+            batch.textureComboIndex = data->textureCombos[batch.textureComboIndex];
+            batch.textureTransformComboIndex = static_cast<uint16_t>(t == -1 ? 0 : t + 1);
+        }
+    }
+}
+
+// ref: FUN_008374a0
+// Turn the packed fields back into INDICES, which is what leaves the batches usable by the draw
+// path again. The reference's own error string, "Failed to fix up texture combo!", is what names
+// this function.
 //
-//   textureCount == 2: textureComboIndex becomes the low bytes of textureCombos[idx] and
-//     textureCombos[idx + 1] packed as a byte pair, and textureTransformComboIndex becomes the
-//     matching pair out of textureTransformCombos -- each biased so that -1 becomes 0 and anything
-//     else becomes itself plus one, which is how "no transform" survives being packed into a byte.
+// It searches rather than computes, and that is the point: the analysis between the two passes may
+// have changed which textures a batch selects, so the pair it now wants may sit somewhere else in
+// textureCombos entirely. A two-texture batch looks for two CONSECUTIVE entries matching its two
+// packed bytes and takes the index of the first; the transforms are searched the same way after the
+// plus-one bias is undone.
 //
-//   otherwise: textureComboIndex becomes textureCombos[idx] outright, and
-//     textureTransformComboIndex takes the same plus-one bias on its single entry.
+// ONE BATCH PER MATERIAL. The walk skips any batch whose materialIndex repeats the previous one's,
+// so a run of batches sharing a material is fixed up once -- which is consistent with the analysis
+// pass, whose merging works within a material.
 //
-// Every offset in it lands on a field this tree already names, which is how the decode is known to
-// be right: batch +0x0e/+0x10/+0x16 are textureCount, textureComboIndex and
-// textureTransformComboIndex; m_data +0x84 and +0x9c are the DATA pointers of textureCombos and
-// textureTransformCombos (their M2Array counts sit at +0x80 and +0x98); skinProfile +0x24 and +0x28
-// are the batches array's count and data; and this class's +0x150 and +0x170 are m_data and
-// skinProfile.
+// The single-texture arm cannot fail, and the reference not reporting an error there is correct
+// rather than an oversight: the value it looks for was taken OUT of this array by the packer, so it
+// is present by construction. Its search still walks to the end and would yield an out-of-range
+// index if it somehow missed, exactly as the reference does.
 //
-// THE HAZARD. After that pass a batch no longer holds an index, and FOUR places in frozen read
-// those two fields as indices:
+// DIVERGENCE, small and deliberate: the reference guards its pair searches with `count != 1` and
+// then loops while `j < count - 1` on an unsigned, so a count of ZERO underflows and runs away.
+// frozen's `j + 1 < count` is identical for every count of 1 or more and simply does nothing at
+// zero. Unreachable either way -- a two-texture batch's pair has to have come from somewhere.
 //
-//     CM2SceneRender.cpp  m_data->textureCombos[m_curBatch->textureComboIndex + i]
-//     CM2SceneRender.cpp  m_data->textureTransformCombos[...textureTransformComboIndex + i]
-//     CM2Scene.cpp        dataA->textureCombos[batchA->textureComboIndex]   (x2, in one sort)
+// The report goes through SysMsgPrintf. The reference's logger is FUN_005eeb70, which in the retail
+// build is one byte of `ret`, so this message has never actually been printed by the real client.
+void CM2Shared::FixUpTextureCombos() {
+    M2SkinProfile* profile = this->skinProfile;
+
+    uint32_t lastMaterialIndex = 0xFFFFFFFF;
+
+    for (uint32_t i = 0; i < profile->batches.Count(); i++) {
+        M2Batch& batch = profile->batches[i];
+
+        if (batch.materialIndex == lastMaterialIndex) {
+            continue;
+        }
+
+        M2Data* data = this->m_data;
+
+        uint16_t* combos = data->textureCombos.Data();
+        uint32_t comboCount = data->textureCombos.Count();
+        auto transformCombos = reinterpret_cast<int16_t*>(data->textureTransformCombos.Data());
+        uint32_t transformCount = data->textureTransformCombos.Count();
+
+        if (batch.textureCount == 2) {
+            auto wantTexture0 = static_cast<uint16_t>(batch.textureComboIndex & 0xFF);
+            auto wantTexture1 = static_cast<uint16_t>(batch.textureComboIndex >> 8);
+
+            uint16_t found = 0;
+            bool matched = false;
+
+            for (uint32_t j = 0; j + 1 < comboCount; j++) {
+                if (combos[j] == wantTexture0 && combos[j + 1] == wantTexture1) {
+                    found = static_cast<uint16_t>(j);
+                    matched = true;
+
+                    break;
+                }
+            }
+
+            if (!matched) {
+                SysMsgPrintf(SYSMSG_ERROR, "Failed to fix up texture combo!");
+            }
+
+            batch.textureComboIndex = found;
+
+            auto lo = static_cast<uint8_t>(batch.textureTransformComboIndex & 0xFF);
+            auto hi = static_cast<uint8_t>(batch.textureTransformComboIndex >> 8);
+
+            auto wantTransform0 = static_cast<int16_t>(lo == 0 ? -1 : lo - 1);
+            auto wantTransform1 = static_cast<int16_t>(hi == 0 ? -1 : hi - 1);
+
+            uint16_t transformFound = 0;
+            bool transformMatched = false;
+
+            for (uint32_t j = 0; j + 1 < transformCount; j++) {
+                if (transformCombos[j] == wantTransform0
+                        && transformCombos[j + 1] == wantTransform1) {
+                    transformFound = static_cast<uint16_t>(j);
+                    transformMatched = true;
+
+                    break;
+                }
+            }
+
+            if (!transformMatched) {
+                SysMsgPrintf(SYSMSG_ERROR, "Failed to fix up texture combo!");
+            }
+
+            batch.textureTransformComboIndex = transformFound;
+        } else {
+            uint32_t j = 0;
+
+            while (j < comboCount && combos[j] != batch.textureComboIndex) {
+                j++;
+            }
+
+            batch.textureComboIndex = static_cast<uint16_t>(j);
+
+            auto wantTransform = static_cast<int16_t>(
+                batch.textureTransformComboIndex == 0
+                    ? -1
+                    : batch.textureTransformComboIndex - 1);
+
+            uint32_t k = 0;
+
+            while (k < transformCount && transformCombos[k] != wantTransform) {
+                k++;
+            }
+
+            batch.textureTransformComboIndex = static_cast<uint16_t>(k);
+        }
+
+        lastMaterialIndex = batch.materialIndex;
+    }
+}
+// FUN_00837680, mapped 2026-09-27 and still empty -- but for a smaller reason than the note that
+// used to sit here claimed, and that note was wrong in a way worth recording.
 //
-// Port the packer alone and all four index the combo arrays with a texture index instead of a combo
-// index, so every model draws with whatever texture happens to live at that slot. That is the same
-// failure the ribbon index-stride bug produced, arrived at from the other direction, and a clean
-// build says nothing about it.
+// It said the texture-combo packer could not land without also rewriting the four places in frozen
+// that read textureComboIndex and textureTransformComboIndex as indices, because the packer leaves
+// them holding packed values. The first half was right and the conclusion was not. Reading
+// FUN_008374a0 settled it: THE PACKED FORM IS AN INTERMEDIATE that exists only inside this
+// function.
 //
-// So this lands as ONE change or not at all: the three helpers, this parent, and all four consumers
-// switched to the substituted form together -- the two-texture case reading the packed bytes rather
-// than indexing, and the transform case undoing the plus-one bias. It also has to run exactly once
-// per shared model, which InitializeLoaded already guarantees by calling this from one place.
+//     PackTextureCombos    (FUN_00835e90, 251 b)  indices -> packed byte pairs
+//     the analysis          (this function)        compares and merges while they are packed
+//     FixUpTextureCombos   (FUN_008374a0, 463 b)  packed byte pairs -> indices again
 //
-// Returning without doing anything is the correct resting state meanwhile, because frozen's
-// consumers and its un-substituted batches agree with each other.
+// By the time this returns the batches hold indices, so CM2SceneRender::SetupTextures and the
+// CM2Scene comparator need no change at all -- and the reference's own SetupTextures (FUN_0081f450)
+// confirms it, reading textureCombos[textureComboIndex + i] unconditionally. The shader bit 0x8000
+// it tests does not select a different combo layout; it only forces the stage count to one.
+//
+// Both ends are PORTED now, and they were safe to land as a pair because nothing calls either while
+// this function stays empty. The fixup searches for its pair rather than computing it, which is what
+// makes the round trip lossless even when the analysis in between changed a batch's selection.
+//
+// WHAT IS LEFT: this function and FUN_00837250 (583 b, unread). This one walks the batches keeping
+// two small state machines -- the locals the decompilation calls local_c and cStack_b, each stepping
+// through 0, 1 and 3 -- and on a match writes batch->shader to 0x8000 on one batch and 0x8001 on the
+// batch it remembered, which is how a pair of batches becomes one specialized two-stage draw. It
+// also clears shader bits with `&= 0xff8f` when a batch's material has no blend mode. The gate at
+// the top is worth keeping in mind: it returns immediately unless skinProfile->indices.Count() is
+// non-zero AND at least one batch has a non-zero materialLayer, so single-layer models never reach
+// the packer at all.
+//
+// Returning without doing anything stays correct meanwhile: frozen's consumers and its
+// un-substituted batches agree with each other, and the models this would touch simply draw with
+// their authored per-layer batches instead of merged specialized ones.
 void CM2Shared::SubstituteSpecializedShaders() {
 }

@@ -3647,6 +3647,7 @@ addr	how	frozen	evidence
 00835c70	override	M2Init	
 00835df0	override	M2Init	
 00835e40	override	M2Init	
+00835e90	annotated	CM2Shared::PackTextureCombos	tag in src/model/CM2Shared.cpp
 008360a0	annotated	CM2Shared::SetIndices	tag in src/model/CM2Shared.cpp
 008362b0	annotated	CM2Shared::SetVertices	tag in src/model/CM2Shared.cpp
 00836600	string	CM2Shared::CreateSimpleEffect	unique "Combiners_Add"
@@ -3663,6 +3664,7 @@ addr	how	frozen	evidence
 008370a0	override	M2Init	
 00837130	override	M2Init	
 008371c0	override	M2Init	
+008374a0	annotated	CM2Shared::FixUpTextureCombos	tag in src/model/CM2Shared.cpp
 00837680	override	CM2Shared::SubstituteSpecializedShaders	
 00837a40	override	CM2Shared::InitializeSkinProfile	
 00837ee0	override	M2Init	

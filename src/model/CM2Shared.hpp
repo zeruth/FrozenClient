@@ -45,6 +45,13 @@ class CM2Shared {
         // sequence-loaded callback (m_flag10) the drain is deferred to that callback via m_flag20
         // instead of freeing the record it is standing on.
         void CancelSequenceLoads();
+
+        // The two halves of the specialized-shader pass's texture-combo handling. PackTextureCombos
+        // rewrites each batch's combo fields into a packed intermediate form and FixUpTextureCombos
+        // turns them back into indices; SubstituteSpecializedShaders runs the analysis between them.
+        // Neither is meaningful without the other -- see the notes at their definitions.
+        void PackTextureCombos();
+        void FixUpTextureCombos();
         TSList<CM2SequenceLoad, TSGetLink<CM2SequenceLoad>> m_sequenceLoads;
         void** m_sequenceBuffers = nullptr;   // one .anim buffer per loaded sequence, freed with the shared
         uint32_t m_sequenceBufferCount = 0;
