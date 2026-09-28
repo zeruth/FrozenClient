@@ -2570,6 +2570,7 @@ addr	how	frozen	evidence
 00714e80	annotated	IsMovementAnimation	tag in src/object/client/CGUnit_C.cpp
 00714f90	annotated	CGUnit_C::GetRangedReadyAnimation	tag in src/object/client/CGUnit_C.cpp
 007150d0	annotated	AaBoxUnion	tag in lib/typhoon/tempest/box/CAaBox.cpp
+00715130	override	CAaBox::GrowToInclude	
 007151f0	annotated	IsMovementAckWithValueOpcode	tag in src/object/client/CGUnit_C.cpp
 007152b0	annotated	ReadPackedMovementOffset	tag in src/object/client/CGUnit_C.cpp
 007153e0	annotated	CGUnit_C::GetCreatureFamily	tag in src/object/client/CGUnit_C.cpp
@@ -3610,6 +3611,7 @@ addr	how	frozen	evidence
 008251b0	annotated	CM2Model::SetLoadedCallback	tag in src/model/CM2Model.cpp
 008251d0	callgraph	TSBaseArray<CharacterSelectionDisplay>::operator[]	only unmatched callee of 004e2e70=CCharacterSelection::SetFacing
 00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
+00825750	override	CM2Model::GetWorldBounds	
 00825d70	annotated	CM2Model::UnoptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 00825ee0	annotated	CM2Model::HasSequence	tag in src/model/CM2Model.cpp

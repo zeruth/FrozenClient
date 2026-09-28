@@ -139,9 +139,7 @@ CAaBox AaBoxUnion(const CAaBox& a, const CAaBox& b) {
     return out;
 }
 
-// NOT TAGGED, deliberately -- see overrides.json 00715130. This IS that function, but it sits in
-// a library with no caller yet, so the linker drops it and a tag would bind nothing and warn on
-// every run. FUN_00825750, the model world-bounds function, is what will call it.
+// ref: FUN_00715130
 // Grow this box to contain `other`.
 //
 // It writes the union into THIS and returns it as well, which looks redundant until you see the

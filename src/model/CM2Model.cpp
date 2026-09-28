@@ -6635,3 +6635,91 @@ void M2BuildBasisFromAxis(float* basis, const float* axis) {
     basis[9] = axis[1];
     basis[10] = axis[2];
 }
+
+// ref: FUN_00825750
+// The model's bounding box in world space.
+//
+// Which box it starts from depends on whether the model has PARTICLES. With particles it takes
+// the model's own global box, which is already conservative enough to hold them. Without, it
+// takes the tighter box authored on the current SEQUENCE and unions the ribbons into that.
+//
+// The placement is the model's own matrix, or -- when it hangs off a parent -- its attachment
+// matrix taken back out of the scene's view, which is what m_scene->m_viewInv is doing here.
+//
+// The sequence index comes from the FIRST bone: the reference reads a uint16 at bones + 0x48,
+// and M2ModelBoneSeq is 0x24 bytes, so that is m_bones[0].sequence.uint8. The box is then
+// sequences[index].bounds.extent -- M2Sequence is 0x40 bytes with bounds at +0x20, which is
+// exactly the reference's index * 0x40 + 0x20.
+//
+// AN AUTHORED BOX THAT IS INVERTED IS LEFT ALONE, untransformed, and still used. That is the
+// reference's behaviour and not an oversight of this port: TransformBox on an inverted box would
+// produce something worse than the sentinel it already is.
+//
+// THE PARTICLE LOOP BELOW IS DEAD TWICE OVER and is reproduced anyway. It only runs when the
+// model has no particles, so the count it iterates is zero; and it grows a box that was already
+// copied out a few lines earlier, so even if it ran the result would be discarded. Both are true
+// of the reference, checked in the disassembly at 0x0082577b where the branch on the particle
+// count jumps INTO this path. Tidying it away would be a port that stopped matching, and it is
+// also the only caller CAaBox::GrowToInclude has.
+CAaBox* CM2Model::GetWorldBounds(CAaBox* out) {
+    if (!this->m_loaded || !this->m_flag8000) {
+        out->b = { FLT_MAX, FLT_MAX, FLT_MAX };
+        out->t = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+        return out;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    C44Matrix placement = this->m_attachParent
+        ? this->matrixF4 * this->m_scene->m_viewInv
+        : this->matrixB4;
+
+    if (data->particles.Count() != 0) {
+        *out = TransformBox(data->bounds.extent, placement);
+
+        return out;
+    }
+
+    const CAaBox& authored =
+        data->sequences[this->m_bones[0].sequence.uint8].bounds.extent;
+
+    CAaBox accumulated = authored;
+
+    if (!AaBoxIsInverted(authored)) {
+        accumulated = TransformBox(authored, placement);
+    }
+
+    // The box the ribbons are unioned into, taken BEFORE the particle loop -- which is what makes
+    // that loop's result unreachable in the reference too.
+    CAaBox result = accumulated;
+
+    for (uint32_t i = 0; i < data->particles.Count(); i++) {
+        CM2ParticleEmitter* emitter = this->m_particleEmitters[i];
+
+        if (emitter && (emitter->m_flags & 0x200)) {
+            accumulated.GrowToInclude(*emitter->GetBounds());
+        }
+    }
+
+    for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+        CM2Ribbon* ribbon = this->m_ribbonEmitters[i];
+
+        if (!ribbon) {
+            continue;
+        }
+
+        // Component by component, as the reference writes it out rather than calling the box
+        // helper it used for the particles.
+        result.b.x = result.b.x < ribbon->m_boundsMin.x ? result.b.x : ribbon->m_boundsMin.x;
+        result.b.y = result.b.y < ribbon->m_boundsMin.y ? result.b.y : ribbon->m_boundsMin.y;
+        result.b.z = result.b.z < ribbon->m_boundsMin.z ? result.b.z : ribbon->m_boundsMin.z;
+        result.t.x = result.t.x < ribbon->m_boundsMax.x ? ribbon->m_boundsMax.x : result.t.x;
+        result.t.y = result.t.y < ribbon->m_boundsMax.y ? ribbon->m_boundsMax.y : result.t.y;
+        result.t.z = result.t.z < ribbon->m_boundsMax.z ? ribbon->m_boundsMax.z : result.t.z;
+    }
+
+    *out = result;
+
+    return out;
+}

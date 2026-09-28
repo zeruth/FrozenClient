@@ -37453,7 +37453,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 150
+"line": 148
 },
 "MinAxis": {
 "files": [
@@ -83276,6 +83276,43 @@
 "lines": 33,
 "refs": [],
 "line": 6605
+},
+"CM2Model::GetWorldBounds": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"C3Vector::C3Vector",
+"C3Vector::operator=",
+"operator*",
+"C44Matrix::C44Matrix",
+"M2Array<M2Particle>::Count",
+"TransformBox",
+"CAaBox::operator=",
+"M2Array<M2Sequence>::operator[]",
+"CAaBox::CAaBox",
+"AaBoxIsInverted",
+"TransformBox",
+"CAaBox::operator=",
+"CAaBox::CAaBox",
+"M2Array<M2Particle>::Count",
+"CM2ParticleEmitter::GetBounds",
+"CAaBox::GrowToInclude",
+"M2Array<M2Ribbon>::Count",
+"CAaBox::operator="
+],
+"strings": [],
+"consts": [
+"0",
+"0x200"
+],
+"branches": 14,
+"stub": false,
+"lines": 62,
+"refs": [],
+"line": 6664
 },
 "M2ParticleFlushDenormals": {
 "files": [

@@ -41049,6 +41049,22 @@
   "refSize": 93,
   "status": "ported"
  },
+ "00715130": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "CAaBox::GrowToInclude",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "GameObject_C.cpp",
+  "refSize": 106,
+  "status": "ported"
+ },
  "007151f0": {
   "branchRatio": 0.067,
   "constOverlap": 1.0,
@@ -57695,6 +57711,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 413,
+  "status": "ported"
+ },
+ "00825750": {
+  "branchRatio": 0.824,
+  "constOverlap": 0.022,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetWorldBounds",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 767,
   "status": "ported"
  },
  "00825d70": {

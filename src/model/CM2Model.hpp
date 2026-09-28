@@ -431,6 +431,11 @@ class CM2Model {
         void SetupLighting();
         void SetVisible(int32_t visible);
         void SetWorldTransform(const C3Vector& position, float orientation, float scale);
+
+        // The model's bounding box in world space, written into `out` and returned. An
+        // INVERTED box when the model is not loaded or has no placement yet.
+        // ref: FUN_00825750
+        CAaBox* GetWorldBounds(CAaBox* out);
         void SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas);
         void Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId);
         // ref: FUN_008269c0
