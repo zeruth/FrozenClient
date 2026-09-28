@@ -5,6 +5,8 @@
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
 #include "gx/shader/CShaderEffectManager.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Device.hpp"
 #include <common/ObjectAlloc.hpp>
 #include "async/AsyncFileRead.hpp"
 #include <tempest/Box.hpp>
@@ -1356,4 +1358,56 @@ bool CMapObj::SegmentVsPortals(uint32_t groupIndex, const C3Segment& segment, fl
     }
 
     return found;
+}
+
+// The map's own light, all four constants read out of .rdata rather than guessed: the direction
+// is 1/sqrt(3) on each axis (the 3.0 is a DOUBLE at 0x00a0e148, which is why the reference takes
+// a square root at runtime for what is a constant), the ambient is 0.33 (0x00a14acc) and the
+// diffuse 0.75 (0x009e9ee4). Specular is black and the attenuation is left at CGxLight's own
+// defaults, which are the reference constructor's.
+static const float MAP_LIGHT_AMBIENT = 0.33f;
+static const float MAP_LIGHT_DIFFUSE = 0.75f;
+
+// ref: FUN_007a8800
+// Put the device into the single-light state the map object passes draw under.
+//
+// One directional light down (1,1,1), lights 1 through 3 off, lighting enabled. It exists because
+// the device's light slots are shared: CM2Lighting fills them per model, so anything drawing after
+// a model would otherwise inherit whatever that model left switched on.
+//
+// CGxLight's constructor is the reference's FUN_00683fb0 -- frozen's struct already carries its
+// defaults, which is why only the four fields the reference overwrites are set here.
+//
+// LightEnable(0, 1) IS CALLED TWICE, and that is the reference rather than a slip in the reading:
+// the binary emits the call at 0x007a88d3 and again at 0x007a88e2. It is idempotent, and it is
+// reproduced because a port that quietly tidies it is a port that stopped matching.
+//
+// The reference's tail is RsSet(GxRs_Lighting, 1) written out by hand -- it tests the device's
+// context word at +0xf58, compares the app render state at +0x28f4 + 0x108 (which is state 11,
+// 0x18 bytes apiece) against 1, and calls IRsDirty(0xb) before storing. frozen's RsSet does all
+// three, context check included, so the one call stands in for the whole block.
+void SetDefaultDirectionalLight() {
+    CGxLight light;
+
+    // Bit 0: set by the application. Left directional, so bit 1 stays clear.
+    light.m_flags |= 0x1;
+
+    float axis = 1.0f / sqrtf(3.0f);
+
+    light.m_posOrDir = { axis, axis, axis };
+    light.m_ambient = { MAP_LIGHT_AMBIENT, MAP_LIGHT_AMBIENT, MAP_LIGHT_AMBIENT };
+    light.m_diffuse = { MAP_LIGHT_DIFFUSE, MAP_LIGHT_DIFFUSE, MAP_LIGHT_DIFFUSE };
+    light.m_specular = { 0.0f, 0.0f, 0.0f };
+
+    C3Vector origin = { 0.0f, 0.0f, 0.0f };
+
+    g_theGxDevicePtr->LightSet(0, light, origin);
+    g_theGxDevicePtr->LightEnable(0, 1);
+    g_theGxDevicePtr->LightEnable(0, 1);
+
+    for (uint32_t i = 1; i < 4; i++) {
+        g_theGxDevicePtr->LightEnable(i, 0);
+    }
+
+    g_theGxDevicePtr->RsSet(GxRs_Lighting, 1);
 }

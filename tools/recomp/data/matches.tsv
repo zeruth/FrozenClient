@@ -2989,6 +2989,7 @@ addr	how	frozen	evidence
 007a84d0	annotated	CMapObj::SelectShaders	tag in src/world/map/CMapObjDraw.cpp
 007a8520	annotated	CMapObj::UpdateMaterialColors	tag in src/world/map/CMapObj.cpp
 007a85e0	annotated	CMapObj::ProjectPortal	tag in src/world/map/CMapObjDraw.cpp
+007a8800	override	SetDefaultDirectionalLight	
 007a8940	annotated	CMapObj::SetMaterialColor	tag in src/world/map/CMapObjDraw.cpp
 007a8a60	annotated	CShaderEffect::LocalLights::Clear	tag in src/gx/shader/CShaderEffect.cpp
 007a8b10	annotated	CMapObj::SetupLighting	tag in src/world/map/CMapObjDraw.cpp

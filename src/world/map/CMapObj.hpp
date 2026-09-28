@@ -466,4 +466,8 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void ReadGroup(uint32_t index);
 };
 
+// Put the device into the fixed single-light state the map object passes draw under: light 0 a
+// directional one down (1,1,1), lights 1..3 off, lighting enabled. ref: FUN_007a8800
+void SetDefaultDirectionalLight();
+
 #endif
