@@ -147,6 +147,11 @@ class CM2Scene {
         void* RayQuery(const C3Vector& start, const C3Vector& end, float* fraction,
                        int32_t allowSecondPass);
 
+        // The same cast restricted to ray-type 3 models and tested against their COLLISION
+        // mesh triangle by triangle. Broad phase runs in the scene's view space; the narrow
+        // phase puts the ray into each model's own. ref: FUN_0081e110
+        void* RayQueryCollision(const C3Vector& start, const C3Vector& end, float* fraction);
+
         uint32_t CollectRayCandidates(const C3Vector& start, const C3Vector& dir, float length,
                                       int32_t requireAnimated);
 

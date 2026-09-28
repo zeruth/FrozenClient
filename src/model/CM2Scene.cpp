@@ -12,6 +12,9 @@
 #include "model/CM2Model.hpp"
 #include "model/CM2SceneRender.hpp"
 #include "model/CM2ParticleEmitter.hpp"
+#include <tempest/Ray.hpp>
+#include <tempest/Intersect.hpp>
+#include <tempest/Matrix.hpp>
 #include "model/CM2Ribbon.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Internal.hpp"
@@ -2363,4 +2366,130 @@ void CM2Scene::ProjectSectionVerticesBlended4x4(CM2Model* model, M2SkinProfile* 
         dst->z = d;
         dst++;
     }
+}
+
+// How far off a triangle's plane still counts as on it, for the collision cast. DAT_00a32b48.
+static const float RAY_COLLISION_EPSILON = 1.0e-6f;
+
+// ref: FUN_0081e110
+// Cast a ray at the scene's ray-type 3 models and return the owner of the nearest one hit.
+//
+// A sibling of RayQuery above rather than a variant of it, and it differs in both phases.
+//
+// BROAD PHASE IN VIEW SPACE. RayQuery collects candidates in world space; this one puts the ray
+// through m_view first -- the start through the whole matrix, the direction through its rotation
+// alone, and the length scaled by the length of the matrix's first row. It also asks for
+// candidates WITHOUT requiring them to be animated, where RayQuery passes 1.
+//
+// NARROW PHASE AGAINST THE COLLISION MESH, one triangle at a time, with the ray moved into the
+// model's own space through the inverse of its matrixB4 -- the matrix SetWorldTransform writes.
+// Note this is NOT how CM2Scene::RayTestModel does it: that one transforms the collision VERTICES
+// out by matrixF4 and leaves the ray alone. Two reference functions, two different matrices and
+// two different directions of travel; neither is a simplification of the other.
+//
+// The parameter is a FRACTION of the segment in and out, so the hit distance is scaled back by
+// the ray length before it is stored. The break is the usual near-to-far one: the candidates are
+// sorted by entry distance, so the first whose entry is at or past the best hit ends the walk.
+void* CM2Scene::RayQueryCollision(const C3Vector& start, const C3Vector& end, float* fraction) {
+    C3Vector dir = { 0.0f, 0.0f, 0.0f };
+    float length = 0.0f;
+
+    if (!this->RaySetup(start, end, *fraction, &length, &dir)) {
+        return nullptr;
+    }
+
+    this->ReserveRayCandidates();
+
+    C3Vector viewStart = start * this->m_view;
+
+    // The rotation only: a direction has no translation to pick up.
+    C33Matrix rot(this->m_view);
+
+    C3Vector viewDir = {
+        rot.a0 * dir.x + rot.b0 * dir.y + rot.c0 * dir.z,
+        rot.a1 * dir.x + rot.b1 * dir.y + rot.c1 * dir.z,
+        rot.a2 * dir.x + rot.b2 * dir.y + rot.c2 * dir.z,
+    };
+
+    // The matrix's own scale, taken off its first row, so the length arrives in view units too.
+    float scale = sqrtf(this->m_view.a0 * this->m_view.a0
+                      + this->m_view.a1 * this->m_view.a1
+                      + this->m_view.a2 * this->m_view.a2);
+
+    uint32_t count = this->CollectRayCandidates(viewStart, viewDir, scale * length, 0);
+
+    M2HeapSort(CM2Scene::SortRayCandidates, this->m_rayCandidateOrder, count,
+               this->m_rayCandidates);
+
+    M2SceneRayCandidate* best = nullptr;
+
+    float limit = *fraction < 1.0f ? length * *fraction : length;
+
+    for (uint32_t i = 0; i < count; i++) {
+        M2SceneRayCandidate* candidate = &this->m_rayCandidates[this->m_rayCandidateOrder[i]];
+
+        if (limit <= candidate->tNear) {
+            break;
+        }
+
+        CM2Model* model = candidate->model;
+
+        if (model->m_rayQueryType != 3) {
+            continue;
+        }
+
+        auto data = model->m_shared->m_data;
+
+        C44Matrix inverse = model->matrixB4.Inverse(model->matrixB4.Determinant());
+
+        C3Vector localStart = start * inverse;
+        C3Vector localEnd = end * inverse;
+
+        C3Vector delta = { localEnd.x - localStart.x,
+                           localEnd.y - localStart.y,
+                           localEnd.z - localStart.z };
+
+        // One over the local segment's length: it turns a distance along the NORMALISED local
+        // direction back into a fraction of the segment, which is what the comparison wants.
+        float invLocalLength = 1.0f / sqrtf(delta.x * delta.x
+                                          + delta.y * delta.y
+                                          + delta.z * delta.z);
+
+        C3Ray ray;
+        ray.origin = localStart;
+        ray.dir = { delta.x * invLocalLength,
+                    delta.y * invLocalLength,
+                    delta.z * invLocalLength };
+
+        for (uint32_t t = 0; t + 2 < data->collisionIndices.Count(); t += 3) {
+            float hit = 0.0f;
+
+            if (!IntersectRayTriangle(ray, data->collisionPositions.Data(),
+                                     &data->collisionIndices[t], &hit, nullptr,
+                                     RAY_COLLISION_EPSILON)) {
+                continue;
+            }
+
+            if (hit < 0.0f) {
+                continue;
+            }
+
+            float along = hit * invLocalLength * length;
+
+            if (along <= limit) {
+                best = candidate;
+                limit = along;
+            }
+        }
+    }
+
+    this->m_flags &= ~0x2u;
+
+    if (!best) {
+        return nullptr;
+    }
+
+    *fraction = limit / length;
+
+    return best->model->m_rayOwner;
 }
