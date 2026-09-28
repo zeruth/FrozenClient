@@ -135,7 +135,10 @@ class CMapChunk : public CMapBaseObj {
         TSLink<CMapChunk> m_frameLink;       // +0xbc: CMap::s_frameChunkList, emptied every update, or a row's occluder list
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_entityLinkList;     // +0xc4: owners released on destroy
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_mapObjDefLinkList;  // +0xd0: owners released on destroy
-        STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_linkListDc;         // +0xdc
+        // Everything standing ON this chunk. LinkEntityToChunks (FUN_007c2040) files an entity
+        // or a doodad def here for every chunk its box covers, so a chunk can reach the things
+        // resting on it without searching. Named by its writer 2026-09-27; it was m_linkListDc.
+        STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_groundedLinkList;   // +0xdc
         STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) m_linkListE8;         // +0xe8
         // TODO +0xf4: list of SI2SoundHandle (freed with FUN_007c3330 on destroy)
         STORM_EXPLICIT_LIST(CChunkLiquid, m_chunkLink) m_liquidList;        // +0x100

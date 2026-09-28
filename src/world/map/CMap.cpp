@@ -2101,21 +2101,30 @@ void CMap::UpdateAreaChunks(int32_t update, CMapArea* area, const int32_t* rect,
 }
 
 // ref: FUN_007c1ff0
-// Files a placed object under a WMO group: entities go on the group's entity list (at the head
-// when the entity carries flag 0x2), doodad defs on its doodad list; any other kind gets the link
-// on the owner's side only.
+// Files a placed object under a WMO group: entities go on the group's entity list, doodad defs
+// on its doodad list; any other kind gets the link on the owner's side only.
+//
+// BOTH ENDS WERE BACKWARDS here until 2026-09-27, and the comment stated the inverted rule as
+// if it were the intent. The disassembly at 0x007c1ff0 is unambiguous: `testb $0x2, 0x7c(%esi)`
+// then `je` to the LinkToHead call, so flag 0x2 CLEAR is the head case and SET is the tail one;
+// and the doodad-def arm at 0x007c202a falls into that same LinkToHead rather than the tail.
+// Its neighbour FUN_007c2040 (LinkEntityToChunks) uses the identical shape, which is what
+// brought this to light.
+//
+// List ends are not cosmetic: these lists are walked in order by the per-chunk and per-group
+// passes, so the wrong end reverses the order things are visited in.
 void CMap::LinkToMapObjDefGroup(CMapBaseObj* owner, CMapObjDefGroup* group) {
     auto link = CMap::AllocBaseObjLink(owner);
     link->ref = group;
 
     if (owner->m_type & CMapBaseObj::Type_Entity) {
         if (static_cast<CMapEntity*>(owner)->m_flags7c & 0x2) {
-            group->m_entityLinkList.LinkToHead(link);
-        } else {
             group->m_entityLinkList.LinkToTail(link);
+        } else {
+            group->m_entityLinkList.LinkToHead(link);
         }
     } else if (owner->m_type & CMapBaseObj::Type_DoodadDef) {
-        group->m_doodadDefLinkList.LinkToTail(link);
+        group->m_doodadDefLinkList.LinkToHead(link);
     }
 }
 

@@ -51,7 +51,7 @@ CMapChunk::CMapChunk() {
 CMapChunk::~CMapChunk() {
     this->m_liquidList.UnlinkAll();
     this->m_linkListE8.UnlinkAll();
-    this->m_linkListDc.UnlinkAll();
+    this->m_groundedLinkList.UnlinkAll();
     this->m_mapObjDefLinkList.UnlinkAll();
     this->m_entityLinkList.UnlinkAll();
     this->m_frameLink.Unlink();
@@ -143,8 +143,8 @@ void CMapChunk::Destroy() {
         link = next;
     }
 
-    for (auto link = this->m_linkListDc.Head(); link; ) {
-        auto next = this->m_linkListDc.Next(link);
+    for (auto link = this->m_groundedLinkList.Head(); link; ) {
+        auto next = this->m_groundedLinkList.Next(link);
         CMap::FreeBaseObjLink(link);
         link = next;
     }

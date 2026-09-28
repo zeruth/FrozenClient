@@ -202435,9 +202435,9 @@
 ],
 "callseq": [
 "CMap::AllocBaseObjLink",
-"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToHead",
 "TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail",
-"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail"
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToHead",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToHead"
 ],
 "strings": [],
 "consts": [
@@ -202447,7 +202447,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 2107
+"line": 2116
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -202462,7 +202462,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2125
+"line": 2134
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -202491,7 +202491,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 2141
+"line": 2150
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -202510,7 +202510,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 2199
+"line": 2208
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -202529,7 +202529,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 2222
+"line": 2231
 },
 "CMapArea::CMapArea": {
 "files": [
@@ -208821,7 +208821,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 21
+"line": 22
 },
 "ClassifyEntityInterior": {
 "files": [
@@ -208841,7 +208841,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 119
+"line": 120
 },
 "QueryDefGroupSegment": {
 "files": [
@@ -208869,7 +208869,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 159
+"line": 160
 },
 "QueryDefSegment": {
 "files": [
@@ -208898,7 +208898,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 250
+"line": 251
 },
 "QueryMapObjDefSegment": {
 "files": [
@@ -208930,7 +208930,7 @@
 "stub": false,
 "lines": 64,
 "refs": [],
-"line": 320
+"line": 321
 },
 "QueryEntityMapObj": {
 "files": [
@@ -208955,27 +208955,51 @@
 "stub": false,
 "lines": 73,
 "refs": [],
-"line": 421
+"line": 422
+},
+"ChunkIndexFrom": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"roundf"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 506
 },
 "LinkEntityToChunks": {
 "files": [
 "src/world/map/cmapstaticentity.cpp"
 ],
 "callseq": [
-"__acrt_iob_func",
-"fprintf"
+"ChunkIndexFrom",
+"ChunkIndexFrom",
+"ChunkIndexFrom",
+"ChunkIndexFrom",
+"CMap::GetLoadedArea",
+"CMap::AllocBaseObjLink",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToTail",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToHead",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::LinkToHead"
 ],
-"strings": [
-"Function not yet implemented: %s in %s (line %i)\n",
-"LinkEntityToChunks",
-"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapstaticentity.cpp"
+"strings": [],
+"consts": [
+"0x2",
+"0x3f",
+"0xf",
+"16",
+"4"
 ],
-"consts": [],
-"branches": 2,
-"stub": true,
-"lines": 3,
+"branches": 8,
+"stub": false,
+"lines": 52,
 "refs": [],
-"line": 510
+"line": 531
 },
 "ResolveEntityGround": {
 "files": [
@@ -209009,7 +209033,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 544
+"line": 614
 },
 "DetailDoodad::ReleaseBuffers": {
 "files": [

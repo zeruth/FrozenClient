@@ -137,7 +137,8 @@ void QueryEntityMapObj(CMapStaticEntity* entity, C3Vector* start, C3Vector* end,
                        const C3Vector& point, uint32_t* outInterior, uint32_t* outHit,
                        SMapObjHit* collision, SMapObjHit* render);
 
-// STUB. Link the entity to every terrain chunk its box covers. ref: FUN_007c2040
+// Link the entity to every terrain chunk its box covers, so each chunk can reach the things
+// resting on it. ref: FUN_007c2040
 bool LinkEntityToChunks(CMapStaticEntity* entity);
 
 // Work out what a placed entity is standing on and hook it up to it: its ground type, the

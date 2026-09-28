@@ -4,6 +4,7 @@
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMapArea.hpp"
 #include "world/map/CMap.hpp"
 #include "util/Unimplemented.hpp"
 #include "model/CM2Model.hpp"
@@ -494,21 +495,90 @@ void QueryEntityMapObj(CMapStaticEntity* entity, C3Vector* start, C3Vector* end,
     }
 }
 
+// The map's half extent (DAT_009e2acc), how many CHUNKS a yard is (DAT_00a40310) and the rounding
+// bias (DAT_00aeedec). The scale is the coarse one: a chunk is 33.33 yards, where the cell
+// addressing in CMap.cpp works eight times finer. Same shape as that addressing otherwise.
+static const float CHUNK_MAP_HALF_EXTENT = 17066.666015625f;
+static const float CHUNKS_PER_YARD = 0.03f;
+static const float CHUNK_ROUND_BIAS = 0.5f;
+
+// A world coordinate to a chunk index on that axis, the reference's own conversion.
+static int32_t ChunkIndexFrom(float v) {
+    return static_cast<int32_t>(
+        roundf(-(v - CHUNK_MAP_HALF_EXTENT) * CHUNKS_PER_YARD - CHUNK_ROUND_BIAS));
+}
+
 // ref: FUN_007c2040
-// STUB. Links the entity to every terrain chunk its box overlaps, so each chunk knows to visit it.
+// Links the entity to every terrain chunk its box covers, so a chunk can reach the things resting
+// on it without searching. Ported 2026-09-27, replacing the stub left when the two list inserts
+// under it were still unidentified.
 //
-// Identified and not implemented. The reference walks the area grid across the entity's box
-// (+0x48..+0x5c), and for each loaded chunk whose own height at +0x54 is at or below the box top it
-// allocates a CMap::AllocBaseObjLink -- which frozen has -- and pushes it onto one of two lists
-// chosen by the entity's type and m_flags7c bit 1, then sets m_flags bit 2.
+// The walk is over CHUNKS, not cells: the box's four horizontal corners become chunk indices at
+// 0.03 per yard, and every chunk in that rectangle whose FLOOR is at or below the box's top is
+// linked. That last test is what keeps a thing on a hilltop from being filed under the valley
+// chunks its box happens to span.
 //
-// WHAT IS MISSING is only those two pushes: FUN_006ded60 and FUN_007b5020, generic list inserts
-// with 251 and 120 callers between them. They are worth identifying as a seeding job of their own
-// rather than guessed at here, because getting either wrong would corrupt a list every chunk walks.
-// Until then this reports once and does nothing, and nothing calls it yet: ResolveEntityGround is
-// itself unwired, so this is dead rather than a live hole.
+// WHICH END of the chunk's list depends on what is being filed, and this is the same shape as
+// CMap::LinkToMapObjDefGroup next door -- which is how that function's two inverted ends were found
+// and fixed in this same change. An entity goes to the tail when m_flags7c carries 0x2 and the head
+// otherwise; a doodad def always goes to the head; anything else is not filed at all, and the link
+// stays on the owner's side only.
+//
+// FROZEN DIVERGENCE, same one as QueryEntityMapObj: the reference returns immediately when
+// DAT_00cf08f4 is set, the flag a global-WMO map raises when its def is created. frozen tracks no
+// such flag. A map with no ADT grid has no loaded areas, so the walk below finds nothing and
+// returns false by itself -- the same answer by a longer route.
 bool LinkEntityToChunks(CMapStaticEntity* entity) {
-    WHOA_UNIMPLEMENTED(false);
+    const CAaBox& box = entity->m_bounds;
+
+    // Larger coordinates give smaller indices, so the box's MAX corner starts each range.
+    int32_t rowStart = ChunkIndexFrom(box.t.x);
+    int32_t rowEnd = ChunkIndexFrom(box.b.x);
+    int32_t colStart = ChunkIndexFrom(box.t.y);
+    int32_t colEnd = ChunkIndexFrom(box.b.y);
+
+    bool linked = false;
+
+    for (int32_t row = rowStart; row <= rowEnd; row++) {
+        for (int32_t col = colStart; col <= colEnd; col++) {
+            // The reference indexes s_areaGrid inline and tests the async object itself, which is
+            // exactly what GetLoadedArea does; one call here against none there.
+            CMapArea* area = CMap::GetLoadedArea((col >> 4) & 0x3f, (row >> 4) & 0x3f);
+
+            if (!area) {
+                continue;
+            }
+
+            CMapChunk* chunk = area->m_chunks[(row & 0xf) * 16 + (col & 0xf)];
+
+            if (!chunk) {
+                continue;
+            }
+
+            // The chunk's floor against the entity's ceiling.
+            if (!(chunk->m_bounds.b.z <= box.t.z)) {
+                continue;
+            }
+
+            auto link = CMap::AllocBaseObjLink(entity);
+            link->ref = chunk;
+
+            if (entity->m_type & CMapBaseObj::Type_Entity) {
+                if (entity->m_flags7c & 0x2) {
+                    chunk->m_groundedLinkList.LinkToTail(link);
+                } else {
+                    chunk->m_groundedLinkList.LinkToHead(link);
+                }
+            } else if (entity->m_type & CMapBaseObj::Type_DoodadDef) {
+                chunk->m_groundedLinkList.LinkToHead(link);
+            }
+
+            entity->m_flags |= CMapBaseObj::Flag_Exterior;
+            linked = true;
+        }
+    }
+
+    return linked;
 }
 
 // How far above the collision centre the ground probe starts (DAT_009e3004) and how far below it

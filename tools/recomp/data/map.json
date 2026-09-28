@@ -50630,10 +50630,10 @@
   "status": "ported"
  },
  "007c2040": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.125,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapStaticEntity.cpp",
    "src/world/map/cmapstaticentity.cpp"
@@ -50643,7 +50643,7 @@
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 28,
-  "status": "stub"
+  "status": "ported"
  },
  "007c21e0": {
   "branchRatio": 1.0,
