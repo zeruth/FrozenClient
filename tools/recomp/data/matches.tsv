@@ -2797,6 +2797,7 @@ addr	how	frozen	evidence
 0076e720	override	SStrChrR	
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 00497500=CSimpleAnim::GetScriptByName
+0076ea40	override	SStrCmp	
 0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 004d7f60=CGlueMgr::SetCurrentAccount
 0076eda0	annotated	SStrCopyUTF8	tag in lib/squall/storm/String.cpp
 0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
@@ -2818,7 +2819,7 @@ addr	how	frozen	evidence
 0076f770	annotated	SStrStrI	tag in lib/squall/storm/String.cpp
 0076f9e0	override	SStrDupA	
 0076fb80	override	SStrToFloat	
-00770260	sticky	SCreateThread	held from the previous run, where it was sticky
+00770260	callgraph	SCreateThread	only unmatched callee of 00774740=SThread::Create
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
@@ -2829,7 +2830,7 @@ addr	how	frozen	evidence
 00774630	order	SCritSect::~SCritSect	definition order between SCritSect::SCritSect and SCritSect::Enter in lib/squall/storm/thread/SCritSect.cpp
 00774640	override	SCritSect::Enter	
 00774650	callgraph	SCritSect::Leave	only unmatched callee of 004b9970=AsyncFileReadUnlockQueue, 004b9ea0=AsyncFileReadCancel, 004bad80=AsyncFileReadIsBusy
-00774740	callorder	SThread::Create	same slot between linked calls in 00469320=WowConnectionNet::Start
+00774740	callgraph	SThread::Create	only unmatched callee of 00469320=WowConnectionNet::Start
 007750d0	annotated	PathRootLength	tag in lib/squall/storm/Log.cpp
 00775140	annotated	FlushLog	tag in lib/squall/storm/Log.cpp
 00775190	annotated	LockLog	tag in lib/squall/storm/Log.cpp
@@ -4043,6 +4044,7 @@ addr	how	frozen	evidence
 00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
 00869630	annotated	OsGuiGetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
+0086ae20	override	OsGetAsyncTimeMs	
 0086af90	override	OsGetCpuidInfo	
 0086b240	annotated	OsGetProcessorCount	tag in src/util/win/OsSystem.cpp
 0086b280	callgraph	OsSleep	only unmatched callee of 004b9de0=AsyncFileReadDestroyObject

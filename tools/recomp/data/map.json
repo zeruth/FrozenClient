@@ -725,7 +725,7 @@
   "branchRatio": 0.083,
   "constOverlap": 0.095,
   "faithful": false,
-  "fidelity": 0.288,
+  "fidelity": 0.308,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -1111,7 +1111,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.5,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.625,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -1127,7 +1127,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.625,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -18491,8 +18491,8 @@
  "00516210": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -18507,8 +18507,8 @@
  "00516280": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -18523,8 +18523,8 @@
  "005162e0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -18571,8 +18571,8 @@
  "005164b0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -18779,8 +18779,8 @@
  "00516b90": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
@@ -22811,7 +22811,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
@@ -22842,8 +22842,8 @@
  "00549cd0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
@@ -22875,7 +22875,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/BattlefieldInfoScript.cpp",
    "src/ui/game/battlefieldinfoscript.cpp"
@@ -24962,7 +24962,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
@@ -25170,7 +25170,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/RaidInfoScript.cpp",
    "src/ui/game/raidinfoscript.cpp"
@@ -31724,7 +31724,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/ui/InputControl.cpp",
    "src/ui/inputcontrol.cpp"
@@ -32097,8 +32097,8 @@
  "006081f0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/ScriptFunctionsSystem.cpp",
    "src/ui/scriptfunctionssystem.cpp"
@@ -34098,7 +34098,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.65,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34114,7 +34114,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.632,
+  "fidelity": 0.684,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -43501,7 +43501,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.5,
   "files": [
    "src/console/CVar.cpp",
    "src/console/cvar.cpp"
@@ -43629,7 +43629,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.2,
+  "fidelity": 0.25,
   "files": [
    "src/console/CVar.cpp",
    "src/console/cvar.cpp"
@@ -44692,6 +44692,23 @@
   "refSize": 27,
   "status": "ported"
  },
+ "0076ea40": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/squall/storm/String.cpp",
+   "lib/squall/storm/string.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp"
+  ],
+  "frozen": "SStrCmp",
+  "frozenSize": 48,
+  "how": "override",
+  "module": "ConsoleVar.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
  "0076ed20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -45056,7 +45073,7 @@
   ],
   "frozen": "SCreateThread",
   "frozenSize": 0,
-  "how": "sticky",
+  "how": "callgraph",
   "module": "SThread.cpp",
   "refSize": 37,
   "status": "ported"
@@ -45233,7 +45250,7 @@
   ],
   "frozen": "SThread::Create",
   "frozenSize": 50,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "SCmd.cpp",
   "refSize": 47,
   "status": "ported"
@@ -64346,6 +64363,22 @@
   "refSize": 88,
   "status": "ported"
  },
+ "0086ae20": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/common/common/Time.cpp",
+   "lib/common/common/time.cpp"
+  ],
+  "frozen": "OsGetAsyncTimeMs",
+  "frozenSize": 17,
+  "how": "override",
+  "module": "lmemPool.cpp",
+  "refSize": 11,
+  "status": "ported"
+ },
  "0086af90": {
   "branchRatio": 1.0,
   "constOverlap": 0.034,
@@ -66028,8 +66061,8 @@
  "008a1d60": {
   "branchRatio": 0.55,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -66572,8 +66605,8 @@
  "008a34b0": {
   "branchRatio": 0.571,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -66588,8 +66621,8 @@
  "008a3620": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -66604,8 +66637,8 @@
  "008a3710": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"

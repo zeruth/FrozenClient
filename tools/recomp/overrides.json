@@ -1493,8 +1493,9 @@
     "note": "Releases a handle through its owner's vtable slot +8 and zeroes the caller's handle; 122 callers. No Frozen counterpart identified -- the owning type is not pinned down, so which of Frozen's release helpers this is cannot be settled from the body alone."
   },
   "0076ea40": {
-    "status": "unlinked",
-    "note": "Length-limited string compare returning 0 on equal, 122 callers. Whether it folds case is hidden inside FUN_0076e8d0, which is called once per string per iteration and whose out-parameters Ghidra lost, so SStrCmp and SStrCmpI cannot be told apart from this body."
+    "status": "ported",
+    "frozen": "SStrCmp",
+    "note": "SStrCmp, the length-limited string compare. Linked 2026-09-27 by settling the question the previous note left open. That note said: \"Whether it folds case is hidden inside FUN_0076e8d0, which is called once per string per iteration and whose out-parameters Ghidra lost, so SStrCmp and SStrCmpI cannot be told apart from this body.\" That was the right call on the evidence then, and the way to settle it is to read FUN_0076e8d0 rather than the caller. FUN_0076e8d0 IS A UTF-8 DECODER AND FOLDS NOTHING. It takes the lead byte, looks its length class up in the table at DAT_00a39618, and accumulates continuation bytes with a shift of six per step, bailing on a premature terminator. There is no tolower, no 0x20, no case table anywhere in its 330 bytes. So the compare above it is case-SENSITIVE: SStrCmp, not SStrCmpI. IMPLEMENTATION DIVERGES and that is expected: frozen's SStrCmp delegates to the CRT where the reference decodes UTF-8 by hand, so the two call sequences have nothing in common and recall on this pair will stay low. That is the measurement being honest about two implementations of one contract. Worth linking anyway for the fidelity it lifts across its callers."
   },
   "005ac090": {
     "frozen": "Script_PickupAction",
@@ -2262,8 +2263,9 @@
     "note": "Windows build is call-for-call. On 64-bit POSIX (Android) it diverges on purpose: when the .anim buffer from SequenceBufferAlloc lands out of 32-bit reach of the model data (the keyframe M2Arrays hold a 32-bit delta into it), it is swapped for one mmap'd near the model (SequenceBufferPlaceNear). Android's allocator keeps allocation sizes in regions gigabytes apart, so without this the delta overflowed and tripped the delta assertion (2026-09-24)."
   },
   "0086ae20": {
-    "status": "unlinked",
-    "note": "The millisecond clock getter (11 bytes, 446 callers, calls FUN_0086adc0), not frozen's PushSecondsUntil, a GameScript-local Lua helper the callgraph matcher parked here. Ports read it as OsGetAsyncTimeMs. Corrected 2026-09-25."
+    "status": "ported",
+    "frozen": "OsGetAsyncTimeMs",
+    "note": "OsGetAsyncTimeMs. Linked 2026-09-27; the 2026-09-25 entry had already read it as this and left the status alone, so only the status changed. THE REJECTION IT WAS WRITTEN FOR STILL STANDS: it is NOT frozen's PushSecondsUntil, a GameScript-local Lua helper the callgraph matcher parked here. Eleven bytes and 446 CALLERS -- the most-called unlinked leaf in the binary, which is why it arrived at the top of every `--next --helpers` run. It forwards to FUN_0086adc0, a clock that picks its source from a MODE word at +8: QueryPerformanceCounter when that reads 2, GetTickCount otherwise, then a 64-bit divide (FUN_0088b9f6) to milliseconds. frozen's OsGetAsyncTimeMs is GetTickCount() on Windows, which is the reference's DEFAULT path exactly. The divergence is the mode-2 branch: frozen has no clock object and no mode, and its OsGetAsyncTimeMsPrecise carries an explicit `TODO QueryPerformanceCounter implementation` and forwards to the coarse one. That matters more than it looks -- GetTickCount steps about 15.6ms, which is longer than a frame at 60fps -- so the precise path is worth closing on its own merits. It is recorded here rather than done now because introducing the clock object touches lib/common and every timing path in the client, which is its own change with its own run."
   },
   "006b0970": {
     "frozen": "ClientServices::Connection",
@@ -3500,5 +3502,13 @@
     "status": "ported",
     "frozen": "CM2Model::GetWorldBounds",
     "note": "CM2Model::GetWorldBounds. Ported 2026-09-27 from the analysis recorded here the cycle before. Which box it starts from depends on whether the model has PARTICLES: with them it takes the model's global box, which is already conservative enough to hold them; without, the tighter box authored on the current sequence, with the ribbons unioned in. The placement is matrixB4, or matrixF4 taken back out of the scene's view (m_scene->m_viewInv) when the model hangs off a parent. Offsets all confirmed rather than guessed: the sequence index is m_bones[0].sequence.uint8 (a uint16 at bones + 0x48, and M2ModelBoneSeq is 0x24 bytes so `sequence` sits at bone +0x40), and the box is sequences[index].bounds.extent (M2Sequence is 0x40 with bounds at +0x20, matching the reference's index * 0x40 + 0x20). TWO QUIRKS REPRODUCED. An authored box that is INVERTED is left untransformed and still used -- TransformBox on one would produce something worse than the sentinel it already is. And the particle loop is dead twice over: it only runs when the model has no particles (the branch at 0x0082577b jumps into this path on a zero count), and it grows a box that was already copied out a few lines earlier, so even if it ran the result would be discarded. Both are the reference's, and that loop is also the only caller CAaBox::GrowToInclude has."
+  },
+  "00461b00": {
+    "status": "excluded",
+    "note": "Nine-byte forwarding thunk with 100 callers, straight into FUN_004270f0 and onward to FUN_0042d440, all inside the Ogg/Vorbis decoder. Third-party library code frozen does not reimplement, so it leaves the denominator under CLAUDE.md's CRT/fmod rule. Excluded 2026-09-27 while clearing the top of the seeds queue."
+  },
+  "0076e8d0": {
+    "status": "unlinked",
+    "note": "The UTF-8 codepoint decoder behind SStrCmp (FUN_0076ea40). 330 bytes, two callers. It reads the lead byte, looks its length class up in the byte table at DAT_00a39618, then accumulates each continuation byte with a shift of six, returning zero if the string ends mid-sequence. It writes the codepoint through an out-parameter, which is the part Ghidra drops -- reading the caller alone makes it look like the compare has no operands. Recorded 2026-09-27 mainly as EVIDENCE: it folds no case, which is what settles FUN_0076ea40 as SStrCmp rather than SStrCmpI. Not ported -- frozen's string layer leans on the CRT and has no hand-rolled UTF-8 decoder to bind this to."
   }
 }
