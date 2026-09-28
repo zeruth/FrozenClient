@@ -179,6 +179,37 @@ MODULE_RANGES = [
     # percentage goes UP slightly as a result, and that is the honest direction: they were never
     # render surface and counting them made the remaining work look larger than it is.
     (0x004fb6a0, 0x004fd260, 'ChatFrame.cpp'),
+
+    # The SOUND ENGINE, 409 functions, which the render surface was counting as
+    # ShaderEffectManager.cpp. Same shape as the ChatFrame entry above and the same fix.
+    #
+    # The evidence is the densest of any range here: 301 separate references to the assert string
+    # `.\\SoundEngine.cpp` (0x00a4f170) land between 0x00878068 and 0x0087f772, and NO other
+    # module's assert string appears anywhere between ShaderEffectManager's last at 0x00876dd8 and
+    # ComSatSoundIOSoundEngine's at 0x00887c92. The names inside agree -- SESound::Log_Write is the
+    # first function in it.
+    #
+    # The START is an object-file gap and not a guess: 348 bytes of padding at 0x00877cb4, by far
+    # the largest in the region, ending exactly at 0x00877e10. The END is the start of
+    # ComSatSoundIOSoundEngine's own function. Between 0x0087f772 and there the block carries no
+    # anchors of its own; it is claimed on the absence of anyone else's, which is weaker than the
+    # lower two thirds but is the same reasoning the Liquid.cpp range rests on.
+    (0x00877e10, 0x00887b70, 'SoundEngine.cpp'),
+
+    # SOUND INTERFACE 2, 155 functions, which the render surface was counting as TextureBlob.cpp.
+    #
+    # Six assert strings from five files of the same family are spread evenly through it --
+    # SoundInterface2.cpp at 0x004c5d72, ZoneSounds at 0x004c9201, AdvancedKitProperties at
+    # 0x004ca265, Internal at 0x004cc237 and DSP at 0x004cdfb0 -- with nothing from any other
+    # module in between. SI2::StopOrFadeOut at 0x004c6390 sits inside it and was the function that
+    # gave this away: it came up the --fix queue as a TextureBlob.cpp render port to repair.
+    #
+    # The START is the function holding the first of those anchors; the END is where the last one's
+    # function ends (0x004cdf70 + 707) and the next begins. The stretch BELOW 0x004c5d60, back to
+    # TextureBlob's own anchor at 0x004c0faf, is deliberately left alone: there is no object-file
+    # gap worth the name down there (the largest is 36 bytes) and no evidence either way, so it
+    # keeps the attribution it has rather than taking a guessed one.
+    (0x004c5d60, 0x004ce250, 'SoundInterface2.cpp'),
 ]
 
 # The next candidate, left out deliberately rather than forgotten: 0x008a65d0..0x008bfe80 is the DBC

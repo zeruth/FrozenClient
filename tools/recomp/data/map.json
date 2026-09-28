@@ -11838,7 +11838,7 @@
   "frozen": "SI2::StopOrFadeOut",
   "frozenSize": 0,
   "how": "callgraph",
-  "module": "TextureBlob.cpp",
+  "module": "SoundInterface2.cpp",
   "refSize": 128,
   "status": "ported"
  },
@@ -11854,7 +11854,7 @@
   "frozen": "SI2::PlaySoundKit",
   "frozenSize": 1113,
   "how": "string",
-  "module": "TextureBlob.cpp",
+  "module": "SoundInterface2.cpp",
   "refSize": 1787,
   "status": "ported"
  },
@@ -11870,7 +11870,7 @@
   "frozen": "SI2::PlayUISound",
   "frozenSize": 598,
   "how": "string",
-  "module": "TextureBlob.cpp",
+  "module": "SoundInterface2.cpp",
   "refSize": 179,
   "status": "ported"
  },
@@ -11886,7 +11886,7 @@
   "frozen": "SI2::GetSoundKitDef",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "SoundInterface2ZoneSounds.cpp",
+  "module": "SoundInterface2.cpp",
   "refSize": 33,
   "status": "ported"
  },
@@ -11902,7 +11902,7 @@
   "frozen": "SI2::GetSoundKitID",
   "frozenSize": 37,
   "how": "callgraph",
-  "module": "SoundInterface2Internal.cpp",
+  "module": "SoundInterface2.cpp",
   "refSize": 30,
   "status": "ported"
  },
@@ -65259,7 +65259,7 @@
   "frozen": "SESound::Log_Write",
   "frozenSize": 308,
   "how": "callorder",
-  "module": "ShaderEffectManager.cpp",
+  "module": "SoundEngine.cpp",
   "refSize": 501,
   "status": "ported"
  },

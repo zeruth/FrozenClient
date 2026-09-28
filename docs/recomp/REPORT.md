@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 20:48 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 20:56 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -16,8 +16,8 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | unmapped | 22214 | 4.35M |
 | world spine (reachable from OnFrameRender) | 5381, mapped 1638 (=) (30.4%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5648, mapped 1661 (=) (29.4%) | |
-| **render surface** (the modules that draw the world) | **4827, mapped 1225 (=) (25.4%)** | |
-| of which the module is an anchor GUESS | 3104 (64.3%) | |
+| **render surface** (the modules that draw the world) | **4780, mapped 1221 (-4) (25.5%)** | |
+| of which the module is an anchor GUESS | 3057 (64.0%) | |
 | frozen functions (src/, from PDB + source) | 14004, stubs 1638 | |
 
 Match evidence: annotated 2448, callgraph 254, callorder 111, cvar 31, handler 29, order 144, override 371, sticky 19, string 305, table 1020. Module anchors: 1479 assert strings.
@@ -150,7 +150,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | WorldParam.cpp | 179 | 63.0k | 66 (36.9%) | 39.2% | 3 | 4 | 110 |
 | fmod_systemi.cpp | 222 | 62.1k | 0 (0.0%) | 0.0% | 0 | 0 | 99 |
 | InputControl.cpp | 284 | 61.3k | 42 (14.8%) | 20.0% | 11 | 0 | 113 |
-| SoundEngine.cpp | 406 | 59.7k | 33 (8.1%) | 18.7% | 0 | 0 | 58 |
+| SoundEngine.cpp | 407 | 60.2k | 34 (8.4%) | 19.4% | 0 | 0 | 59 |
 | SEvt.cpp | 242 | 59.1k | 39 (16.1%) | 11.1% | 7 | 0 | 111 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | SpellBookFrame.cpp | 245 | 56.9k | 41 (16.7%) | 12.1% | 8 | 0 | 14 |
@@ -176,10 +176,10 @@ Module = the source file named by the reference's own assert strings near the fu
 | MapChunk.cpp | 126 | 36.5k | 67 (53.2%) | 61.2% | 0 | 1 | 82 |
 | ConsoleVar.cpp | 242 | 36.1k | 96 (39.7%) | 35.0% | 2 | 0 | 68 |
 | CSimpleFrameScript.cpp | 242 | 35.7k | 206 (85.1%) | 88.9% | 9 | 1 | 4 |
-| TextureBlob.cpp | 212 | 34.4k | 61 (28.8%) | 35.2% | 0 | 0 | 83 |
 | AchievementInfo.cpp | 178 | 33.6k | 69 (38.8%) | 32.7% | 55 | 0 | 0 |
 | Calendar.cpp | 108 | 32.1k | 19 (17.6%) | 16.7% | 18 | 0 | 0 |
 | TextureCache.cpp | 195 | 31.8k | 39 (20.0%) | 17.0% | 1 | 0 | 72 |
+| SoundInterface2.cpp | 155 | 31.6k | 5 (3.2%) | 6.7% | 0 | 0 | 33 |
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | XMLTree.cpp | 183 | 31.0k | 89 (48.6%) | 52.6% | 5 | 0 | 30 |
 | MapChunkLiquid.cpp | 76 | 30.8k | 41 (53.9%) | 56.0% | 0 | 2 | 46 |
@@ -194,7 +194,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | CSimpleRender.cpp | 166 | 26.6k | 44 (26.5%) | 34.5% | 2 | 0 | 50 |
 | UnitCombatLog_C.cpp | 105 | 26.1k | 5 (4.8%) | 3.7% | 0 | 0 | 32 |
 | CSimpleFrame.cpp | 143 | 25.8k | 24 (16.8%) | 24.5% | 2 | 0 | 35 |
-| SoundInterface2Internal.cpp | 139 | 25.2k | 17 (12.2%) | 18.0% | 3 | 0 | 13 |
 | GossipInfo.cpp | 169 | 24.9k | 24 (14.2%) | 9.1% | 6 | 0 | 3 |
 | PaperDollInfoFrame.cpp | 110 | 24.9k | 38 (34.5%) | 30.4% | 12 | 0 | 8 |
 | CSimpleAnim.cpp | 141 | 24.4k | 52 (36.9%) | 58.9% | 2 | 2 | 7 |
@@ -204,6 +203,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | BattlefieldInfo.cpp | 120 | 22.7k | 52 (43.3%) | 46.7% | 15 | 0 | 0 |
 | PetNameCache.cpp | 117 | 22.5k | 4 (3.4%) | 3.1% | 0 | 0 | 35 |
 | Texture.cpp | 145 | 22.1k | 44 (30.3%) | 30.4% | 5 | 0 | 74 |
+| TextureBlob.cpp | 166 | 22.0k | 58 (34.9%) | 45.7% | 0 | 0 | 74 |
 | ObjectEffect.cpp | 81 | 20.5k | 13 (16.0%) | 5.4% | 0 | 0 | 33 |
 | FriendList.cpp | 92 | 20.5k | 1 (1.1%) | 0.1% | 0 | 0 | 0 |
 | CSimpleEditBox.cpp | 94 | 20.4k | 17 (18.1%) | 20.9% | 0 | 0 | 0 |
@@ -219,6 +219,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | KnowledgeBase.cpp | 119 | 17.8k | 2 (1.7%) | 0.1% | 1 | 0 | 0 |
 | MailInfo.cpp | 77 | 17.8k | 13 (16.9%) | 6.2% | 2 | 0 | 7 |
 | AddOns.cpp | 98 | 17.5k | 9 (9.2%) | 0.9% | 0 | 0 | 7 |
+| SoundInterface2Internal.cpp | 97 | 17.4k | 16 (16.5%) | 25.9% | 3 | 0 | 11 |
 | DeclinedWords.cpp | 72 | 17.4k | 33 (45.8%) | 55.9% | 4 | 0 | 32 |
 | OsClipboard.cpp | 74 | 16.8k | 37 (50.0%) | 40.2% | 0 | 0 | 45 |
 | QuestTextParser.cpp | 87 | 16.5k | 13 (14.9%) | 4.9% | 1 | 0 | 33 |
@@ -253,7 +254,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | aSfxDsp.cpp | 48 | 12.1k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | EvtSched.cpp | 69 | 11.7k | 3 (4.3%) | 7.8% | 0 | 0 | 29 |
 | UIBindings.cpp | 59 | 11.5k | 23 (39.0%) | 43.6% | 8 | 0 | 4 |
-| SoundInterface2ZoneSounds.cpp | 67 | 11.5k | 1 (1.5%) | 0.3% | 0 | 0 | 22 |
 | CSimpleMessageScrollFrame.cpp | 75 | 11.4k | 11 (14.7%) | 13.2% | 0 | 0 | 0 |
 | fmod_codec_mpeg.cpp | 43 | 11.3k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | ContainerFrame.cpp | 32 | 11.2k | 10 (31.2%) | 28.8% | 0 | 0 | 0 |
@@ -324,7 +324,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | ArenaTeamInfo.cpp | 33 | 4.3k | 2 (6.1%) | 2.6% | 0 | 0 | 2 |
 | CSimpleMessageFrame.cpp | 29 | 4.2k | 2 (6.9%) | 3.5% | 0 | 0 | 0 |
 | OsTcp.cpp | 23 | 4.2k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
-| ShaderEffectManager.cpp | 24 | 4.1k | 10 (41.7%) | 61.7% | 0 | 0 | 3 |
 | OsVersionHash.cpp | 19 | 4.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CharacterComponent.cpp | 11 | 4.0k | 1 (9.1%) | 28.8% | 0 | 0 | 5 |
 | RCString.cpp | 46 | 4.0k | 5 (10.9%) | 11.2% | 0 | 0 | 17 |
@@ -336,6 +335,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | TumorManager.cpp | 44 | 3.8k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | CGxDeviceD3d.cpp | 15 | 3.8k | 1 (6.7%) | 5.1% | 0 | 0 | 0 |
 | fmod_output_software.cpp | 14 | 3.7k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
+| ShaderEffectManager.cpp | 23 | 3.6k | 9 (39.1%) | 56.5% | 0 | 0 | 2 |
 | DynamicObject_C.cpp | 25 | 3.6k | 1 (4.0%) | 1.4% | 0 | 0 | 0 |
 | ModelBlob.cpp | 28 | 3.5k | 0 (0.0%) | 0.0% | 0 | 0 | 3 |
 | Tumor.cpp | 58 | 3.5k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -752,7 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 20:21 | 4730 (17.6%) | 2477 (9.2%) | 573 | 1636/5381 | 2924/2964 | 1380 |
 | 2026-09-27 20:30 | 4732 (17.6%) | 2478 (9.2%) | 574 | 1638/5381 | 2924/2964 | 1380 |
 | 2026-09-27 20:48 | 4732 (17.6%) | 2479 (9.2%) | 573 | 1638/5381 | 2924/2964 | 1380 |
-| 2026-09-27 20:48 | 4732 (17.6%) | 2479 (9.2%) | 573 | 1638/5381 | 2924/2964 | 1380 |
+| 2026-09-27 20:56 | 4732 (17.6%) | 2479 (9.2%) | 573 | 1638/5381 | 2924/2964 | 1380 |
 
 ## How to move a row
 
