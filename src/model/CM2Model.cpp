@@ -5128,6 +5128,22 @@ void CM2Model::SetVisible(int32_t visible) {
     }
 }
 
+// ref: FUN_0082dd80
+// The model's world placement: identity, spin about Z, scale, then drop the position into the
+// translation row. m_flag8000 marks the matrix dirty for whatever consumes it next.
+//
+// PARTIAL, and the missing half is BILLBOARDING. The reference takes two more arguments than
+// this: a direction vector and a billboard type, the type defaulting to the model's own
+// m_shared->m_data flags word (+0x10) when the caller passes -1. With (type & 3) == 1 it goes on
+// to build an orthonormal basis into the same matrix -- cross product, C3Vector::Normalize,
+// cross again, normalize again, the standard right/up/forward construction -- so the model faces
+// the direction it was handed instead of keeping its authored orientation. The other values of
+// the low two bits take their own branches, and M2BuildBasisFromAxis (which frozen already has,
+// unused) is what one of them calls.
+//
+// Adding it means threading two arguments through seven call sites, so it is left whole rather
+// than half-done here. What stands is correct for a model that does not billboard, which is
+// every model whose data flags leave those bits clear.
 void CM2Model::SetWorldTransform(const C3Vector& position, float orientation, float scale) {
     this->matrixB4.Identity();
     this->matrixB4.RotateAroundZ(orientation);

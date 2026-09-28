@@ -14043,8 +14043,8 @@
  "004e0160": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -57604,38 +57604,6 @@
   "refSize": 234,
   "status": "ported"
  },
- "008250b0": {
-  "branchRatio": 0.182,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/model/CM2Model.cpp",
-   "src/model/cm2model.cpp"
-  ],
-  "frozen": "CM2Model::ApplySequencePlayBack",
-  "frozenSize": 305,
-  "how": "order",
-  "module": "M2Scene.cpp",
-  "refSize": 152,
-  "status": "ported"
- },
- "00825150": {
-  "branchRatio": 1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/model/CM2Model.cpp",
-   "src/model/cm2model.cpp"
-  ],
-  "frozen": "CM2Model::SetLightingCallback",
-  "frozenSize": 15,
-  "how": "order",
-  "module": "M2Scene.cpp",
-  "refSize": 32,
-  "status": "ported"
- },
  "00825170": {
   "branchRatio": 0.75,
   "constOverlap": 0.333,
@@ -57669,16 +57637,13 @@
   "status": "ported"
  },
  "008251d0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [
-   "src/model/CM2Model.cpp",
-   "src/model/cm2model.cpp"
-  ],
-  "frozen": "CM2Model::SetWorldTransform",
-  "frozenSize": 138,
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSBaseArray<CharacterSelectionDisplay>::operator[]",
+  "frozenSize": 145,
   "how": "callgraph",
   "module": "M2Scene.cpp",
   "refSize": 134,
@@ -58604,6 +58569,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 531,
+  "status": "ported"
+ },
+ "0082dd80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetWorldTransform",
+  "frozenSize": 138,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 819,
   "status": "ported"
  },
  "0082e140": {

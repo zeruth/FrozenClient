@@ -711,7 +711,7 @@ addr	how	frozen	evidence
 004c3290	annotated	C44Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3300	annotated	C44Matrix::RotateAroundX	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3340	annotated	C44Matrix::RotateAroundY	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
-004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 007bf460=CMap::CreateMapObjDef
+004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 007bf460=CMap::CreateMapObjDef, 0082dd80=CM2Model::SetWorldTransform
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3420	annotated	C3Vector::NormalizeUnchecked	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3460	callgraph	CGMinimapFrame::GetPingOffset	only unmatched callee of 0057efe0=CGMinimapFrame_GetPingPosition
@@ -3604,11 +3604,9 @@ addr	how	frozen	evidence
 00824ed0	annotated	CM2Model::Release	tag in src/model/CM2Model.cpp
 00824f00	override	CM2Model::IsLoaded	
 00824fc0	annotated	CM2Model::IsDrawable	tag in src/model/CM2Model.cpp
-008250b0	order	CM2Model::ApplySequencePlayBack	definition order between CM2Model::Release and CM2Model::SetLoadedCallback in src/model/CM2Model.cpp
-00825150	order	CM2Model::SetLightingCallback	definition order between CM2Model::Release and CM2Model::SetLoadedCallback in src/model/CM2Model.cpp
 00825170	callgraph	CM2Model::UpdateLoaded	only unmatched callee of 008251b0=CM2Model::SetLoadedCallback
 008251b0	annotated	CM2Model::SetLoadedCallback	tag in src/model/CM2Model.cpp
-008251d0	callgraph	CM2Model::SetWorldTransform	only unmatched callee of 004e0160=CCharacterCreation::SetFacing, 004e2e70=CCharacterSelection::SetFacing
+008251d0	callgraph	TSBaseArray<CharacterSelectionDisplay>::operator[]	only unmatched callee of 004e2e70=CCharacterSelection::SetFacing
 00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
 00825d70	annotated	CM2Model::UnoptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
@@ -3668,6 +3666,7 @@ addr	how	frozen	evidence
 0082c970	annotated	CM2Model::OptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
 0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp
+0082dd80	annotated	CM2Model::SetWorldTransform	tag in src/model/CM2Model.cpp
 0082e140	annotated	CM2Model::AnimateMTSimple	tag in src/model/CM2Model.cpp
 0082e550	annotated	CM2Model::AnimateAttachmentsMT	tag in src/model/CM2Model.cpp
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
