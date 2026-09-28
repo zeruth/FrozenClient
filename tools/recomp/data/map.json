@@ -50645,6 +50645,38 @@
   "refSize": 362,
   "status": "verified"
  },
+ "007c25d0": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.062,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "QueryDefSegment",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapMem.cpp",
+  "refSize": 299,
+  "status": "ported"
+ },
+ "007c2700": {
+  "branchRatio": 0.609,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "QueryMapObjDefSegment",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapMem.cpp",
+  "refSize": 486,
+  "status": "ported"
+ },
  "007c2ff0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,

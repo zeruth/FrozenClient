@@ -11,6 +11,7 @@
 class CM2Model;
 class CMapObjDef;
 class CMapObjDefGroup;
+class CMapChunk;
 
 class CMapStaticEntity : public CMapBaseObj {
     public:
@@ -108,6 +109,18 @@ struct SMapObjHit {
 // leaves through. Both records are updated in place. ref: FUN_007c1dc0
 void QueryDefGroupSegment(CMapObjDef* def, CMapObjDefGroup* defGroup, const C3Vector& start,
                           const C3Vector& end, SMapObjHit* collision, SMapObjHit* render);
+
+// One placed building's answer to a segment, over all of its groups. The two record arrays
+// hold TWO entries each and this picks which by a flag on the def. False only when the def has
+// no root yet. ref: FUN_007c25d0
+bool QueryDefSegment(CMapObjDef* def, const C3Vector& start, const C3Vector& end,
+                     const C3Vector& point, SMapObjHit* collision, SMapObjHit* render);
+
+// The whole segment query over placed buildings: one terrain chunk's worth when a chunk is
+// given, every placed building when it is null. Both arrays must hold TWO records. False when
+// nothing was hit at all. ref: FUN_007c2700
+bool QueryMapObjDefSegment(const C3Vector& start, const C3Vector& end, const C3Vector& point,
+                           SMapObjHit* collision, SMapObjHit* render, CMapChunk* chunk);
 
 // Which side of a building's wall a placed entity ended up on, and its floor light if it
 // ended up inside. A free function in the reference too -- it returns with a plain `ret`,

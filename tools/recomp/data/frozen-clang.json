@@ -208821,7 +208821,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 18
+"line": 19
 },
 "ClassifyEntityInterior": {
 "files": [
@@ -208841,7 +208841,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 116
+"line": 117
 },
 "QueryDefGroupSegment": {
 "files": [
@@ -208869,7 +208869,68 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 156
+"line": 157
+},
+"QueryDefSegment": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"operator*",
+"operator*",
+"operator*",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Head",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Next",
+"CMapObj::GroupFlags",
+"CMapObj::SegmentVsGroupBounds",
+"CMapObj::PointInGroupBox",
+"QueryDefGroupSegment"
+],
+"strings": [],
+"consts": [
+"0",
+"0x400",
+"0x410080",
+"0x8",
+"1"
+],
+"branches": 7,
+"stub": false,
+"lines": 48,
+"refs": [],
+"line": 248
+},
+"QueryMapObjDefSegment": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Head",
+"TSList<CMapBaseObjLink,TSGetExplicitLink<CMapBaseObjLink> >::Next",
+"CMapObjDef::SegmentVsBounds",
+"QueryDefSegment",
+"TSHashTable<CMapObjDef,HASHKEY_NONE>::Head",
+"TSHashTable<CMapObjDef,HASHKEY_NONE>::Next",
+"CMapObjDef::SegmentVsBounds",
+"QueryDefSegment",
+"SMapObjHit::operator=",
+"SMapObjHit::operator=",
+"SMapObjHit::operator=",
+"SMapObjHit::operator="
+],
+"strings": [],
+"consts": [
+"0",
+"0x20",
+"0xffff",
+"1",
+"2"
+],
+"branches": 14,
+"stub": false,
+"lines": 64,
+"refs": [],
+"line": 318
 },
 "DetailDoodad::ReleaseBuffers": {
 "files": [

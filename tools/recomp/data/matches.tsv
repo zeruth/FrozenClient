@@ -3168,6 +3168,8 @@ addr	how	frozen	evidence
 007c1dc0	override	QueryDefGroupSegment	
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
 007c21e0	annotated	CMapDoodadDef::CMapDoodadDef	tag in src/world/map/CMapDoodadDef.cpp
+007c25d0	override	QueryDefSegment	
+007c2700	override	QueryMapObjDefSegment	
 007c2ff0	annotated	CMap::AsyncLoadCleanup	tag in src/world/map/CMap.cpp
 007c30b0	annotated	CMapArea::GrowTextures	tag in src/world/map/CMapArea.cpp
 007c3370	annotated	CMapChunk::Destroy	tag in src/world/map/CMapChunk.cpp

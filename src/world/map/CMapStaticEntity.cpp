@@ -3,6 +3,7 @@
 #include "world/map/CMapObjDef.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObjGroup.hpp"
+#include "world/map/CMapChunk.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
@@ -225,4 +226,157 @@ void QueryDefGroupSegment(CMapObjDef* def, CMapObjDefGroup* defGroup, const C3Ve
     if (targetGroup) {
         collision->interior = (targetGroup->m_flags & 0x8) ? 0 : 1;
     }
+}
+
+// ref: FUN_007c25d0
+// One placed building's answer to a segment, over all of its groups.
+//
+// Everything below the transform is in the building's own space: all three points are brought in
+// through the def's inverse placement once, and nothing is transformed back, because the hit
+// records carry a distance along the segment rather than a position.
+//
+// WHICH RECORD gets written is chosen by the def's m_flags bit 0x400, and the two record arrays
+// hold two entries each for exactly that reason. Note the polarity: bit SET writes entry 0, bit
+// CLEAR writes entry 1. Its sibling walk QuerySegmentMapObjs (FUN_007d59b0) uses the OPPOSITE
+// convention for the same flag, and both were read off their own disassembly rather than assumed
+// from each other -- do not "fix" either to match the other.
+//
+// The per-group gate is three tests. The group must be a room (none of 0x410080 -- exterior,
+// skybox and the rest), the segment must reach its bounds, and then a point test that only
+// sometimes applies: an exterior group with the def's 0x400 clear is taken on the bounds alone,
+// while everything else has to contain the third point outright.
+bool QueryDefSegment(CMapObjDef* def, const C3Vector& start, const C3Vector& end,
+                     const C3Vector& point, SMapObjHit* collision, SMapObjHit* render) {
+    CMapObj* mapObj = def->m_mapObj;
+
+    if (!mapObj) {
+        return false;
+    }
+
+    C3Vector localStart = start * def->m_inversePlacement;
+    C3Vector localEnd = end * def->m_inversePlacement;
+    C3Vector localPoint = point * def->m_inversePlacement;
+
+    uint32_t interiorOnly = def->m_flags & 0x400;
+    uint32_t slot = interiorOnly ? 0 : 1;
+
+    for (auto link = def->m_defGroupLinkList.Head(); link;
+         link = def->m_defGroupLinkList.Next(link)) {
+        auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+        if (!defGroup) {
+            continue;
+        }
+
+        uint32_t groupIndex = defGroup->m_groupIndex;
+        uint32_t flags = mapObj->GroupFlags(groupIndex);
+
+        // Exterior, skybox and the rest: a group with any of these is not a room.
+        if (flags & 0x410080) {
+            continue;
+        }
+
+        if (!mapObj->SegmentVsGroupBounds(localStart, localEnd, groupIndex)) {
+            continue;
+        }
+
+        // MOGP bit 3 is Exterior. An exterior group is taken on its bounds alone, but only while
+        // the def is not asking for interiors; anything else has to contain the point.
+        bool exterior = (flags & 0x8) != 0;
+
+        if (!(!interiorOnly && exterior) && !mapObj->PointInGroupBox(localPoint, groupIndex)) {
+            continue;
+        }
+
+        QueryDefGroupSegment(def, defGroup, localStart, localEnd, &collision[slot],
+                             &render[slot]);
+    }
+
+    return true;
+}
+
+// ref: FUN_007c2700
+// The whole segment query over placed buildings.
+//
+// Two ways in. With a chunk, only the buildings that chunk holds a link to are asked, which is how
+// a query with a known location avoids the world. With none, every placed building in
+// CMapObjDef::s_uniqueIds is asked. Both skip a def carrying m_flags 0x20 and reject the rest on
+// the MODF box before opening one up.
+//
+// BOTH ARRAYS HOLD TWO RECORDS, and everything after the walk is about reconciling the four. They
+// start empty at a distance of 1.05 -- past the end of the segment, so any real hit beats them --
+// and then, in this order:
+//
+//   1. a collision slot that found nothing takes the render slot's hit outright;
+//   2. if slot 0 is still empty, slot 1 slides down into it in BOTH arrays and slot 1 is
+//      emptied -- and if slot 1 was empty too, nothing was hit anywhere and it returns false;
+//   3. a render slot that found nothing takes the collision hit with its face forced to 0xffff.
+//
+// Step 3 is the one worth not "tidying": the face is deliberately made to read as 'not a real
+// polygon', because the record is standing in for a render hit that never happened rather than
+// reporting one.
+bool QueryMapObjDefSegment(const C3Vector& start, const C3Vector& end, const C3Vector& point,
+                           SMapObjHit* collision, SMapObjHit* render, CMapChunk* chunk) {
+    for (uint32_t i = 0; i < 2; i++) {
+        collision[i].def = nullptr;
+        collision[i].distance = PORTAL_SEARCH_LIMIT;
+        render[i].def = nullptr;
+        render[i].distance = PORTAL_SEARCH_LIMIT;
+    }
+
+    if (chunk) {
+        for (auto link = chunk->m_mapObjDefLinkList.Head(); link;
+             link = chunk->m_mapObjDefLinkList.Next(link)) {
+            auto def = static_cast<CMapObjDef*>(link->owner);
+
+            if (!def || (def->m_flags & 0x20)) {
+                continue;
+            }
+
+            if (!def->SegmentVsBounds(start, end)) {
+                continue;
+            }
+
+            QueryDefSegment(def, start, end, point, collision, render);
+        }
+    } else {
+        for (auto def = CMapObjDef::s_uniqueIds.Head(); def;
+             def = CMapObjDef::s_uniqueIds.Next(def)) {
+            if (def->m_flags & 0x20) {
+                continue;
+            }
+
+            if (!def->SegmentVsBounds(start, end)) {
+                continue;
+            }
+
+            QueryDefSegment(def, start, end, point, collision, render);
+        }
+    }
+
+    for (uint32_t i = 0; i < 2; i++) {
+        if (!collision[i].def && render[i].def) {
+            collision[i] = render[i];
+        }
+    }
+
+    if (!collision[0].def) {
+        if (!collision[1].def) {
+            return false;
+        }
+
+        collision[0] = collision[1];
+        render[0] = render[1];
+        collision[1].def = nullptr;
+        render[1].def = nullptr;
+    }
+
+    for (uint32_t i = 0; i < 2; i++) {
+        if (!render[i].def) {
+            render[i] = collision[i];
+            render[i].face = 0xffff;
+        }
+    }
+
+    return true;
 }
