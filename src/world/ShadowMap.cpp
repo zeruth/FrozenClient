@@ -149,6 +149,26 @@ int32_t ShadowMapSetQuality(int32_t quality) {
     return 1;
 }
 
+// ref: FUN_00874240
+// Free every shadow target so the next render step allocates them again.
+//
+// The reference closes three texture handles -- the map at DAT_00d43148 and the lit and unlit
+// variants at DAT_00d43250 and DAT_00d43254 -- and then walks three filter ring entries of
+// 0x3c bytes each, closing two handles in every one. frozen renders a single map with an
+// explicit depth surface and builds no filter chain, so MapShadowReleaseTargets covers all of
+// the textures that actually exist here.
+//
+// NOT PORTED, and it is the interesting half: the reference ends by registering
+// ShadowMapDeviceRestore through the device's vtable slot 0x80, so releasing the targets is
+// also what arms the hook that will ask for the next release. frozen has no device-restore
+// callback registry at all -- ShadowMapDeviceRestore is defined and called from nowhere -- so
+// after a real device reset the targets here are stale and nothing asks for them again. That
+// wants the registry, not a call, and is left as a gap rather than faked with a direct call
+// that would run at the wrong time.
+void ShadowMapReleaseTargets() {
+    MapShadowReleaseTargets();
+}
+
 // ref: FUN_00873fe0
 // The device-restore hook: after a reset every target is gone, so ask for the realloc.
 void ShadowMapDeviceRestore() {

@@ -127,6 +127,65 @@ bool EnsureTargets() {
     return true;
 }
 
+} // namespace
+
+// frozen's half of ShadowMapReleaseTargets (ref FUN_00874240), which the realloc latch calls
+// before rebuilding. The reference closes three textures -- the map and the lit and unlit
+// variants -- plus two handles in each of three filter ring entries; frozen renders one map
+// with an explicit depth surface and builds no filter chain, so these two are all of it.
+//
+// s_allocFailed is cleared as well. It is a latch that stops a failed allocation being retried
+// every frame, and a device reset is exactly the event that can make the allocation start
+// working, so keeping it set across a release would turn one bad frame into a dead feature.
+void MapShadowReleaseTargets() {
+    if (s_colorTex) {
+        GxTexDestroy(s_colorTex);
+        s_colorTex = nullptr;
+    }
+
+    if (s_depthTex) {
+        GxTexDestroy(s_depthTex);
+        s_depthTex = nullptr;
+    }
+
+    s_allocFailed = false;
+    s_rendered = false;
+}
+
+// ref: FUN_007bb830
+// Clear one shadow target pair to white through a viewport rectangle.
+//
+// The order is the reference's and it matters: DEPTH is bound first and COLOUR second, because
+// binding a colour target resets the viewport, so the rectangle has to be set after the last
+// bind rather than before the first. Then the viewport is restored from what the device had,
+// and only the COLOUR target is put back -- the reference never restores the depth one here,
+// which is a real asymmetry and not a transcription slip: its caller binds a depth surface per
+// map and the colour target is the one shared with the frame.
+//
+// White is 'nothing casts here': a sampled depth of 1.0 is further than any real surface.
+void MapShadowClearTarget(CGxTex* color, CGxTex* depth, const float* viewport) {
+    CGxTex* savedColor = nullptr;
+    GxRenderTargetGet(GxBuffers_Color, savedColor);
+
+    // The device's current viewport, to be put back after the clear.
+    float saved[6];
+    GxXformViewport(saved[0], saved[1], saved[2], saved[3], saved[4], saved[5]);
+
+    GxRenderTargetSet(GxBuffers_Depth, depth, 0);
+    GxRenderTargetSet(GxBuffers_Color, color, 0);
+
+    GxXformSetViewport(viewport[0], viewport[1], viewport[2], viewport[3], 0.0f, 1.0f);
+
+    CImVector white = { 0xFF, 0xFF, 0xFF, 0xFF };
+    GxSceneClear(0x3, white);
+
+    GxXformSetViewport(saved[0], saved[1], saved[2], saved[3], saved[4], saved[5]);
+
+    GxRenderTargetSet(GxBuffers_Color, savedColor, 0);
+}
+
+namespace {
+
 C3Vector Normalize(const C3Vector& v) {
     float len = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 
@@ -469,6 +528,26 @@ C3Vector MapShadowFocus() {
 // MapShadowBegin / DrawShadowCasters / MapShadowEnd (the draw), so this calls four things where the
 // reference calls one. The filter chain after it (FUN_008750b0) has no counterpart at all.
 void MapShadowRender() {
+    // THE REALLOC LATCH, and the reason every line below it was dead code until 2026-09-27.
+    //
+    // ShadowMapSetQuality raises g_shadowMapRealloc to say 'the targets are the wrong size now',
+    // and ShadowMapGetQuality reports 0 while it is up so the frame that changes the setting
+    // draws unshadowed instead of sampling a stale map. Nothing in frozen ever lowered it again.
+    // So the first time anything set the quality the latch went up and stayed up, the getter
+    // returned 0 for the rest of the process, and this function, ShadowMapBindTerrain,
+    // ShadowMapBindMapObj and ShadowMapBindScene all returned at their first line forever.
+    //
+    // The reference clears it here, at the top of its render step (FUN_00875f80), after doing the
+    // reallocation the latch was asking for: free the targets, allocate them again, drop the
+    // flag. This is that, and it has to stay ABOVE the quality check -- the check is the thing
+    // the latch suppresses, so a clear underneath it would never run.
+    if (g_shadowMapRealloc) {
+        MapShadowReleaseTargets();
+        EnsureTargets();
+
+        g_shadowMapRealloc = 0;
+    }
+
     if (ShadowMapGetQuality() <= 0) {
         return;
     }

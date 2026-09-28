@@ -3121,6 +3121,7 @@ addr	how	frozen	evidence
 007bb3e0	annotated	MapShadowFocus	tag in src/world/MapShadow.cpp
 007bb570	annotated	MapShadowRender	tag in src/world/MapShadow.cpp
 007bb670	annotated	MapShadowSetupPlane	tag in src/world/MapShadow.cpp
+007bb830	annotated	MapShadowClearTarget	tag in src/world/MapShadow.cpp
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
@@ -4089,6 +4090,7 @@ addr	how	frozen	evidence
 00874010	annotated	ShadowMapSetIntensity	tag in src/world/ShadowMap.cpp
 008740d0	annotated	ShadowMapQualitySupported	tag in src/world/ShadowMap.cpp
 00874210	annotated	ShadowMapSetQuality	tag in src/world/ShadowMap.cpp
+00874240	annotated	ShadowMapReleaseTargets	tag in src/world/ShadowMap.cpp
 008744e0	annotated	ShadowMapBindScene	tag in src/world/ShadowMap.cpp
 008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp

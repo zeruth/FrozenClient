@@ -137,6 +137,40 @@ MODULE_STRING = re.compile(r'^(?:\.\\|\.\./|\.\./\.\./|\.\.\\)*(?:[\w.-]+[\\/])*
 # A range goes here only with evidence that names the file, and the evidence goes in the comment.
 # Ranges are half-open, [start, end).
 MODULE_RANGES = [
+    # The SHADER EFFECT system and the CASCADED SHADOW MAP, 92 functions between them, both of
+    # which the render surface was counting as OsClipboard.cpp -- the Win32 clipboard.
+    #
+    # OsClipboard.cpp is real and it is TINY: two functions, 0x008726f0 and 0x008727c0, both
+    # carrying the assert string '.\W32\OsClipboard.cpp'. It is the nearest confirmed anchor
+    # below a kilobyte and a half of graphics code, so the bucket swallowed all of it.
+    #
+    # THE LOWER BOUNDARY IS EXACT: OsClipboard's second function ends at 0x008727de and
+    # 0x008727e0 is the next one. No guessing at a padding run.
+    #
+    # ShaderEffect.cpp is named from its own class, which the decompilation already recovers by
+    # name across the range: CShaderEffect::SetFixedFunc, ComputeLocalLights,
+    # SetWorldViewConstants, UpdateProjMatrix, InitShaderSystem, InitEffect, PixelPermute,
+    # SetCurrent, SetShaders, SetShadersForGeometry, SetLightEnabled, SetFogParams, SetFogEnabled,
+    # the three SetTexMtx variants, SetDiffuse, SetEmissive, SetAlphaRef and SetLocalLighting.
+    # Nineteen functions of one class in address order is not an anchor guess.
+    #
+    # ShadowMap.cpp likewise: ExtShadowQualityAbsoluteMax, ShadowMapQualityName, GetQuality,
+    # DeviceRestore, GetShaderLevel, SetIntensity, QualitySupported, SetQuality, ReleaseTargets,
+    # BindScene, BindMapObj, BindTerrain, SetLightDirection and EnsureTargets. frozen's
+    # ShadowMap.hpp already recorded the guess 'reference module around FUN_00872ce0..FUN_00876d90'
+    # and it was half right -- the upper half of that span is this, the lower half is
+    # ShaderEffect.cpp, and the tail past 0x00876530 is ShaderEffectManager.cpp, which HAS its own
+    # confirmed anchor at 0x00876d90.
+    #
+    # THE SPLIT BETWEEN THEM is 0x00873f50, where ExtShadowQualityAbsoluteMax starts. Below it
+    # 0x00873f30 is a five-field clear that reads as a CShaderEffect helper; above it every named
+    # function is a ShadowMap one. That is the weakest of the three boundaries here, and it moves
+    # two functions between two sets that are both in RENDER_MODULES, so nothing depends on it.
+    #
+    # Both were invisible to the render surface before this, which is why the map shadow map could
+    # sit entirely dead for weeks without the report having anywhere to say so.
+    (0x008727e0, 0x00873f50, 'ShaderEffect.cpp'),
+    (0x00873f50, 0x00876530, 'ShadowMap.cpp'),
     # The LIQUID subsystem: water, ocean, magma and slime -- their material bank, the four material
     # classes and their draws, the procedural textures and the wave manager. 116 functions.
     #
@@ -268,6 +302,13 @@ RENDER_MODULES = {
     'Map.cpp', 'MapChunk.cpp', 'MapChunkLiquid.cpp', 'MapMem.cpp', 'MapLoad.cpp', 'MapArea.cpp',
     'MapObj.cpp', 'MapObjRead.cpp', 'MapObjGroup.cpp', 'DetailDoodad.cpp', 'WorldParam.cpp',
     'MapWeather.cpp', 'DayNight.cpp', 'Sky.cpp', 'MapShadow.cpp',
+    #
+    # Added 2026-09-27, both MODULE_RANGES entries rather than assert anchors: the shader effect
+    # system every world pass sets its programs and constants through, and the cascaded shadow
+    # map. They were being counted as the Win32 clipboard, so neither has ever appeared in the
+    # --render queue -- which is how frozen's whole map-shadow path came to be dead code without
+    # the report registering it.
+    'ShaderEffect.cpp', 'ShadowMap.cpp',
     # entities and their models
     'M2Scene.cpp', 'M2Shared.cpp', 'M2Model.cpp', 'ModelBlob.cpp', 'CharacterModelBase.cpp',
     'Unit_C.cpp', 'Player_C.cpp', 'GameObject_C.cpp', 'UnitMissileTrajectory_C.cpp',

@@ -36629,7 +36629,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "GxTexDestroy",
-  "frozenSize": 0,
+  "frozenSize": 20,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 25,
@@ -49863,7 +49863,7 @@
   "status": "ported"
  },
  "007bb570": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.6,
@@ -49872,7 +49872,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowRender",
-  "frozenSize": 716,
+  "frozenSize": 1246,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 248,
@@ -49892,6 +49892,22 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 448,
+  "status": "ported"
+ },
+ "007bb830": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowClearTarget",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 402,
   "status": "ported"
  },
  "007bd450": {
@@ -64634,7 +64650,7 @@
   "frozen": "CShaderEffect::SetFixedFunc",
   "frozenSize": 62,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 59,
   "status": "ported"
  },
@@ -64650,7 +64666,7 @@
   "frozen": "CShaderEffect::ComputeLocalLights",
   "frozenSize": 411,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 453,
   "status": "ported"
  },
@@ -64666,7 +64682,7 @@
   "frozen": "CShaderEffect::SetWorldViewConstants",
   "frozenSize": 129,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 266,
   "status": "ported"
  },
@@ -64682,7 +64698,7 @@
   "frozen": "CShaderEffect::UpdateProjMatrix",
   "frozenSize": 61,
   "how": "override",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 197,
   "status": "ported"
  },
@@ -64698,7 +64714,7 @@
   "frozen": "CShaderEffect::InitShaderSystem",
   "frozenSize": 65,
   "how": "callorder",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 73,
   "status": "ported"
  },
@@ -64714,7 +64730,7 @@
   "frozen": "CShaderEffect::InitEffect",
   "frozenSize": 203,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 169,
   "status": "ported"
  },
@@ -64730,7 +64746,7 @@
   "frozen": "CShaderEffect::PixelPermute",
   "frozenSize": 49,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 87,
   "status": "ported"
  },
@@ -64746,7 +64762,7 @@
   "frozen": "CShaderEffect::SetCurrent",
   "frozenSize": 8,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 196,
   "status": "ported"
  },
@@ -64762,7 +64778,7 @@
   "frozen": "CShaderEffect::SetShaders",
   "frozenSize": 188,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 251,
   "status": "ported"
  },
@@ -64778,7 +64794,7 @@
   "frozen": "CShaderEffect::SetShadersForGeometry",
   "frozenSize": 271,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 84,
   "status": "ported"
  },
@@ -64794,7 +64810,7 @@
   "frozen": "CShaderEffect::SetLightEnabled",
   "frozenSize": 28,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 67,
   "status": "ported"
  },
@@ -64810,7 +64826,7 @@
   "frozen": "CShaderEffect::SetFogParams",
   "frozenSize": 302,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 379,
   "status": "ported"
  },
@@ -64826,7 +64842,7 @@
   "frozen": "CShaderEffect::SetFogEnabled",
   "frozenSize": 217,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 226,
   "status": "ported"
  },
@@ -64842,7 +64858,7 @@
   "frozen": "CShaderEffect::SetTexMtx_Identity",
   "frozenSize": 97,
   "how": "override",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 206,
   "status": "ported"
  },
@@ -64858,7 +64874,7 @@
   "frozen": "CShaderEffect::SetTexMtx_SphereMap",
   "frozenSize": 97,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 206,
   "status": "ported"
  },
@@ -64874,7 +64890,7 @@
   "frozen": "CShaderEffect::SetTexMtx",
   "frozenSize": 158,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 257,
   "status": "ported"
  },
@@ -64890,7 +64906,7 @@
   "frozen": "CShaderEffect::SetDiffuse",
   "frozenSize": 59,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 331,
   "status": "ported"
  },
@@ -64906,7 +64922,7 @@
   "frozen": "CShaderEffect::SetEmissive",
   "frozenSize": 59,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 331,
   "status": "ported"
  },
@@ -64922,7 +64938,7 @@
   "frozen": "CShaderEffect::SetAlphaRef",
   "frozenSize": 67,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 122,
   "status": "ported"
  },
@@ -64938,7 +64954,7 @@
   "frozen": "CShaderEffect::SetLocalLighting",
   "frozenSize": 498,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 562,
   "status": "ported"
  },
@@ -64954,7 +64970,7 @@
   "frozen": "CMapObj::SetAlphaRefForBlendMode",
   "frozenSize": 75,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShaderEffect.cpp",
   "refSize": 67,
   "status": "ported"
  },
@@ -64970,7 +64986,7 @@
   "frozen": "ExtShadowQualityAbsoluteMax",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -64986,7 +65002,7 @@
   "frozen": "ShadowMapQualityName",
   "frozenSize": 28,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 27,
   "status": "ported"
  },
@@ -65002,7 +65018,7 @@
   "frozen": "ShadowMapGetQuality",
   "frozenSize": 18,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 18,
   "status": "ported"
  },
@@ -65018,7 +65034,7 @@
   "frozen": "ShadowMapDeviceRestore",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 11,
   "status": "ported"
  },
@@ -65034,7 +65050,7 @@
   "frozen": "ShadowMapGetShaderLevel",
   "frozenSize": 30,
   "how": "override",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 25,
   "status": "ported"
  },
@@ -65050,7 +65066,7 @@
   "frozen": "ShadowMapSetIntensity",
   "frozenSize": 15,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 22,
   "status": "ported"
  },
@@ -65066,7 +65082,7 @@
   "frozen": "ShadowMapQualitySupported",
   "frozenSize": 344,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 242,
   "status": "ported"
  },
@@ -65082,8 +65098,24 @@
   "frozen": "ShadowMapSetQuality",
   "frozenSize": 308,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 44,
+  "status": "ported"
+ },
+ "00874240": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapReleaseTargets",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 152,
   "status": "ported"
  },
  "008744e0": {
@@ -65098,7 +65130,7 @@
   "frozen": "ShadowMapBindScene",
   "frozenSize": 461,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 238,
   "status": "ported"
  },
@@ -65114,7 +65146,7 @@
   "frozen": "ShadowMapBindMapObj",
   "frozenSize": 122,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 136,
   "status": "ported"
  },
@@ -65130,7 +65162,7 @@
   "frozen": "ShadowMapBindTerrain",
   "frozenSize": 440,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 247,
   "status": "ported"
  },
@@ -65146,7 +65178,7 @@
   "frozen": "ShadowMapSetLightDirection",
   "frozenSize": 328,
   "how": "annotated",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 287,
   "status": "ported"
  },
@@ -65160,9 +65192,9 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "EnsureTargets",
-  "frozenSize": 0,
+  "frozenSize": 420,
   "how": "string",
-  "module": "OsClipboard.cpp",
+  "module": "ShadowMap.cpp",
   "refSize": 591,
   "status": "ported"
  },

@@ -44,6 +44,15 @@ C3Vector MapShadowLightDirection();
 // ref: FUN_007bb3e0
 C3Vector MapShadowFocus();
 
+// Release both render targets so the next frame allocates them again. This is frozen's half of
+// ShadowMapReleaseTargets: the reference frees three textures plus three filter pairs, and
+// frozen only has these two.
+void MapShadowReleaseTargets();
+
+// Clear one shadow target pair to white through a viewport rectangle, restoring the colour
+// target and the viewport afterwards. ref: FUN_007bb830
+void MapShadowClearTarget(CGxTex* color, CGxTex* depth, const float* viewport);
+
 // The per-frame driver: direction, focus, intensity, render. ref: FUN_007bb570
 void MapShadowRender();
 

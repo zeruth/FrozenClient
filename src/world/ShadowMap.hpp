@@ -54,6 +54,10 @@ int32_t ShadowMapQualitySupported(int32_t quality);
 // Take a new quality if the device supports it, and ask for a target realloc. ref: FUN_00874210
 int32_t ShadowMapSetQuality(int32_t quality);
 
+// Free every shadow target so the next render step allocates them again, and re-arm the
+// device-restore hook. ref: FUN_00874240
+void ShadowMapReleaseTargets();
+
 // After a device reset every target is gone: ask for the realloc. ref: FUN_00873fe0
 void ShadowMapDeviceRestore();
 
