@@ -2285,18 +2285,27 @@ void CM2Model::FreeExternalResources() {
         }
     }
 
-    // STILL MISSING, and named rather than left as a bare TODO. The reference finishes with two
-    // more passes over arrays frozen has but does not release here:
+    // Every ribbon emitter owns six TSGrowableArrays and a set of texture handles, and it is
+    // placement-new'd into the pooled buffer -- so nothing destructs it unless we do, exactly as
+    // for the particle emitters. Nothing did: this loop did not exist and the teardown block for
+    // m_ribbons is still commented out below, so every ribbon leaked all seven.
     //
-    //   ribbons   (+0x2bc, count m_data->ribbons)   -- FUN_00980590 on each, then the slot
-    //                                                  nulled; that callee is unidentified.
-    //   particles (+0x2c4, count m_data->particles) -- the emitter's own virtual at vtable +0x14,
-    //                                                  then the slot nulled. frozen's destructor
-    //                                                  runs ~CM2ParticleEmitter instead, which is
-    //                                                  a different thing at a different time.
-    //
-    // Both want their subsystem's release path settled first; the counts and offsets above are
-    // what a port needs and are read off the reference at 0x00824d30.
+    // The reference calls the destructor here too, through its deleting-destructor thunk, and
+    // nulls the slot after. Nulling is what makes a second FreeExternalResources safe.
+    if (this->m_ribbonEmitters) {
+        for (int32_t i = 0; i < this->m_shared->m_data->ribbons.Count(); i++) {
+            if (this->m_ribbonEmitters[i]) {
+                this->m_ribbonEmitters[i]->~CM2Ribbon();
+                this->m_ribbonEmitters[i] = nullptr;
+            }
+        }
+    }
+
+    // STILL MISSING, named rather than left as a bare TODO: the particle pass (+0x2c4, count
+    // m_data->particles) calls the emitter's own virtual at vtable +0x14 and nulls the slot.
+    // frozen's destructor runs ~CM2ParticleEmitter instead, which is a different thing at a
+    // different time -- settling which of the two is right wants the emitter's vtable mapped
+    // first. Offsets read off the reference at 0x00824d30.
 }
 
 void CM2Model::FreeInternalResources() {

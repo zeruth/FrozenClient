@@ -3707,7 +3707,7 @@ addr	how	frozen	evidence
 008355d0	annotated	CM2Lighting::GetSunlight	tag in src/model/CM2Lighting.cpp
 00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
-008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights
+008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights, 00824d30=CM2Model::FreeExternalResources
 00835750	annotated	CM2Lighting::SetupGxFog	tag in src/model/CM2Lighting.cpp
 00835970	annotated	CM2Shared::AddRef	tag in src/model/CM2Shared.cpp
 008359c0	annotated	CM2Shared::CallbackWhenLoaded	tag in src/model/CM2Shared.cpp
@@ -4627,6 +4627,7 @@ addr	how	frozen	evidence
 0097f630	annotated	CM2Ribbon::SetGravity	tag in src/model/CM2Ribbon.cpp
 0097f640	annotated	CM2Ribbon::IsEmpty	tag in src/model/CM2Ribbon.cpp
 0097f700	annotated	CM2Ribbon::BuildControlPoints	tag in src/model/CM2Ribbon.cpp
+0097f900	annotated	CM2Ribbon::ReleaseTextures	tag in src/model/CM2Ribbon.cpp
 0097f940	annotated	CM2Ribbon::SetPosition	tag in src/model/CM2Ribbon.cpp
 0097fb60	annotated	CM2Ribbon::SetColor	tag in src/model/CM2Ribbon.cpp
 0097fba0	annotated	CM2Ribbon::SetAlpha	tag in src/model/CM2Ribbon.cpp
@@ -4635,6 +4636,7 @@ addr	how	frozen	evidence
 0097fe50	annotated	CM2Ribbon::CountVertices	tag in src/model/CM2Ribbon.cpp
 0097fef0	annotated	CM2Ribbon::EmitSegment	tag in src/model/CM2Ribbon.cpp
 00980090	annotated	CM2Ribbon::Update	tag in src/model/CM2Ribbon.cpp
+00980590	annotated	CM2Ribbon::~CM2Ribbon	tag in src/model/CM2Ribbon.cpp
 00980630	annotated	CM2Ribbon::CM2Ribbon	tag in src/model/CM2Ribbon.cpp
 009808a0	annotated	CM2Ribbon::Initialize	tag in src/model/CM2Ribbon.cpp
 00980b70	annotated	CM2Ribbon::Draw	tag in src/model/CM2Ribbon.cpp

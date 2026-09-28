@@ -226,6 +226,13 @@ class CM2Ribbon {
         //
         // The argument order is the reference's. `textureRect` is the sub-rectangle of the texture
         // the grid divides up, as (u0, v0, u1, v1).
+        // Close every texture handle the ribbon holds. Tagged on the definition in the .cpp.
+        void ReleaseTextures();
+
+        // The ribbon's emitters live in CM2Model's pooled buffer, so this is called
+        // EXPLICITLY by CM2Model::FreeExternalResources rather than by a delete.
+        ~CM2Ribbon();
+
         void Initialize(float edgesPerSecond, float edgeLifetime, CImVector color,
                         const TSGrowableArray<HTEXTURE>& textures,
                         const TSGrowableArray<Material>& materials,

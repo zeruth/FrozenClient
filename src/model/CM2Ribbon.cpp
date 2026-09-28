@@ -775,3 +775,36 @@ uint32_t CM2Ribbon::CountVertices() const {
 
     return (this->m_segmentAges.Count() - tail + head) * 2;
 }
+
+// ref: FUN_0097f900
+// Close every texture handle the ribbon is holding.
+//
+// Freeing m_textures alone would release the ARRAY and leak every handle in it -- the array's
+// element type is HTEXTURE, and a handle is a reference the texture cache is still counting.
+void CM2Ribbon::ReleaseTextures() {
+    for (uint32_t i = 0; i < this->m_textures.Count(); i++) {
+        if (this->m_textures[i]) {
+            HandleClose(this->m_textures[i]);
+        }
+    }
+}
+
+// ref: FUN_00980590
+// The ribbon's own teardown, and it is a DESTRUCTOR rather than a named release: the reference's
+// 0x00980b50 is the thirty-byte deleting-destructor thunk that wraps this body, and its other
+// caller destructs the emitters in place out of CM2Model's pooled buffer -- the same explicit
+// call frozen already makes for CM2ParticleEmitter.
+//
+// The reference SMemFrees six arrays here, one per TSGrowableArray on this class. Those are
+// member destructors in frozen, so they do not appear as calls -- what does NOT happen by itself
+// is the texture handles, which is why ReleaseTextures runs first.
+//
+// Nothing had ever destructed a ribbon emitter: CM2Model's teardown had its ribbon block commented
+// out, so every ribbon on every model leaked its six arrays and all of its texture handles.
+CM2Ribbon::~CM2Ribbon() {
+    this->ReleaseTextures();
+
+    // Bit 1 down, as the reference leaves it. Pointless on an object that is dying, and kept
+    // because the reference's own destructor does it -- the flag word outlives nothing here.
+    this->m_flags &= ~0x2u;
+}

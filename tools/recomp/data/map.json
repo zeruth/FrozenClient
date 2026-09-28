@@ -57525,16 +57525,16 @@
   "status": "ported"
  },
  "00824d30": {
-  "branchRatio": 0.579,
+  "branchRatio": 0.737,
   "constOverlap": 0.0,
   "faithful": true,
-  "fidelity": 0.8,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::FreeExternalResources",
-  "frozenSize": 388,
+  "frozenSize": 479,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 376,
@@ -73692,6 +73692,22 @@
   "refSize": 499,
   "status": "ported"
  },
+ "0097f900": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::ReleaseTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 54,
+  "status": "ported"
+ },
  "0097f940": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -73818,6 +73834,22 @@
   "how": "annotated",
   "module": "CSimpleHyperlinkedFrame.cpp",
   "refSize": 1149,
+  "status": "ported"
+ },
+ "00980590": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.143,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::~CM2Ribbon",
+  "frozenSize": 178,
+  "how": "annotated",
+  "module": "CSimpleHyperlinkedFrame.cpp",
+  "refSize": 158,
   "status": "ported"
  },
  "00980630": {
