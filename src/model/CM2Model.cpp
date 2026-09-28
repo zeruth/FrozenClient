@@ -6806,3 +6806,121 @@ void CM2Model::AnimateAlphasOnly() {
         }
     }
 }
+
+// ref: FUN_00823d50
+// Append one caster, or drop it when the array is full.
+//
+// Dropping silently is the reference's behaviour, not an omission here: the list is a fixed
+// allocation and the walk above can offer more batches than it holds.
+void M2ShadowCasterList::Add(CM2Model* model, uint32_t batchIndex) {
+    if (this->count >= this->capacity) {
+        return;
+    }
+
+    this->data[this->count].model = model;
+    this->data[this->count].batchIndex = batchIndex;
+    this->data[this->count].one = 1;
+
+    this->count++;
+}
+
+// How opaque a batch has to be before it is worth a shadow: DAT_009edce0.
+//
+// This is NOT the 0.99999 that decides which draw pass a batch belongs to. The two answer
+// different questions -- 0.99999 is 'does this need sorting', 0.55 is 'does this block enough
+// light to matter' -- and reusing the first for the second is what makes frozen's current
+// shadow pass drop every partially transparent caster. See docs/ref/parity-shadows.md.
+static const float SHADOW_CASTER_MIN_ALPHA = 0.55f;
+
+// ref: FUN_00834660
+// Collect this model's shadow-casting batches, then recurse into everything attached to it.
+//
+// The two lists are chosen per batch by its shader field: zero goes to the first, anything else
+// to the second. Callers allocate them adjacent and hand the base in, which is how the reference
+// passes p and p + 0xc.
+//
+// A model that has not finished loading is forced through InitializeLoaded first, but only when
+// it actually can be: it needs the streaming bit in its CREATION flags and both the m2 data and
+// the skin profile already in. Then AnimateAlphasOnly brings the alphas up to date, which is the
+// whole reason that function exists -- the gate below is the only thing that reads them.
+void CM2Model::CollectShadowCasters(M2ShadowCasterList* lists) {
+    if (!this->m_loaded) {
+        if (!(this->m_flags & 0x20)) {
+            return;
+        }
+
+        if (!this->m_shared->m_m2DataLoaded || !this->m_shared->m_skinProfileLoaded) {
+            return;
+        }
+
+        this->InitializeLoaded();
+    }
+
+    this->AnimateAlphasOnly();
+
+    auto data = this->m_shared->m_data;
+    auto skin = this->m_shared->skinProfile;
+
+    // THE OPTIMIZED-GEOMETRY BRANCH IS NOT WRITTEN. The reference takes its batches from ptr2D0
+    // when that is set, and skips the skin-section test below because the optimized list is
+    // already filtered. frozen never builds ptr2D0 -- M2OptimizedGeometry is a forward
+    // declaration with no definition, so it cannot even be dereferenced here -- and every other
+    // path in this file takes the unoptimized branch for the same reason. Whoever lands that
+    // type lands this branch with it.
+    if (this->ptr2D0 || !skin) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < skin->batches.Count(); i++) {
+        M2Batch& batch = skin->batches[i];
+
+        // Only in the unoptimized path: the section this batch draws has to be present.
+        if (!this->m_skinSections[batch.skinSectionIndex]) {
+            continue;
+        }
+
+        // Read as a SIGNED short, which is how the reference compares it.
+        if (static_cast<int16_t>(batch.shader) == static_cast<int16_t>(0x8000)) {
+            continue;
+        }
+
+        if (batch.flags & 0x4) {
+            continue;
+        }
+
+        // Base layer only.
+        if (batch.materialLayer != 0) {
+            continue;
+        }
+
+        M2Material& material = data->materials[batch.materialIndex];
+
+        if (material.flags & 0x40) {
+            continue;
+        }
+
+        // Either the material says so outright, or its blend mode is one that occludes.
+        if (!(material.flags & 0x80) && material.blendMode != 0 && material.blendMode != 1) {
+            continue;
+        }
+
+        float alpha = this->alpha19C;
+
+        if (batch.colorIndex < data->colors.Count()) {
+            alpha *= this->m_colors[batch.colorIndex].alphaTrack.currentValue;
+        }
+
+        if (batch.textureCount != 0) {
+            uint16_t weight = data->textureWeightCombos[batch.textureWeightComboIndex];
+            alpha *= this->m_textureWeights[weight].weightTrack.currentValue;
+        }
+
+        if (alpha >= SHADOW_CASTER_MIN_ALPHA) {
+            lists[batch.shader == 0 ? 0 : 1].Add(this, i);
+        }
+    }
+
+    for (CM2Model* attached = this->m_attachList; attached; attached = attached->m_attachNext) {
+        attached->CollectShadowCasters(lists);
+    }
+}

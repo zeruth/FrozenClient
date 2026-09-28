@@ -21,6 +21,7 @@ struct M2ModelAttachment;
 struct M2Batch;
 struct M2SkinSection;
 struct M2OptimizedGeometry;
+struct M2ShadowCasterList;
 struct M2ModelBone;
 struct M2ModelBoneSeq;
 struct M2ModelCamera;
@@ -376,6 +377,10 @@ class CM2Model {
         // Bring only the ALPHAS up to date -- colour alphas and texture weights -- or fall back
         // to the full Animate when this model cannot take the short path. ref: FUN_00831990
         void AnimateAlphasOnly();
+
+        // Collect this model's shadow-casting batches into the two lists, then recurse into
+        // everything attached to it. ref: FUN_00834660
+        void CollectShadowCasters(M2ShadowCasterList* lists);
         // ref: FUN_006f1d20
         // Animate, then matrixF4 carried through the scene's inverse view: this frame's placement
         // of the model in world space.

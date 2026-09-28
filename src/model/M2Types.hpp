@@ -109,6 +109,35 @@ class CM2ParticleEmitter;
 //   `// TODO sort additive particles` the tail of CM2Scene::Animate still owes.
 //
 //   +0x20 and +0x3c still have no writer in anything read, and stay unnamed.
+// One batch the shadow-caster pass kept: which model it belongs to and which of its batches.
+//
+// The reference stores a third dword, always 1, which is why its element is 12 bytes; it is
+// carried here so the record means the same thing, and because nothing has yet been seen
+// READING it -- dropping a field on that basis would be a guess.
+//
+// NO SIZE ASSERT: the reference packs this into 12 bytes with a 32-bit pointer and frozen is
+// 64-bit, so it measures 16. Nothing reads it from a file or steps it by a baked stride.
+struct M2ShadowCaster {
+    CM2Model* model = nullptr;
+    uint32_t batchIndex = 0;
+    uint32_t one = 1;
+};
+
+// A fixed-capacity collector of those. The reference keeps TWO of these adjacent in one
+// 24-byte block and picks between them by the batch's shader field, so callers allocate them
+// as an array of two and hand the base in.
+//
+// It never grows: Add SILENTLY DROPS a caster once the array is full, which is the
+// reference's own behaviour and worth keeping visible rather than turning into an assert.
+struct M2ShadowCasterList {
+    M2ShadowCaster* data = nullptr;
+    uint32_t count = 0;
+    uint32_t capacity = 0;
+
+    // ref: FUN_00823d50
+    void Add(CM2Model* model, uint32_t batchIndex);
+};
+
 struct M2Element {
     int32_t type;
     CM2Model* model;

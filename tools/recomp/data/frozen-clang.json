@@ -83349,6 +83349,52 @@
 "refs": [],
 "line": 6745
 },
+"M2ShadowCasterList::Add": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 6815
+},
+"CM2Model::CollectShadowCasters": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"CM2Model::InitializeLoaded",
+"CM2Model::AnimateAlphasOnly",
+"M2Array<M2Batch>::Count",
+"M2Array<M2Batch>::operator[]",
+"M2Array<M2Material>::operator[]",
+"M2Array<M2Color>::Count",
+"M2Array<unsigned short>::operator[]",
+"M2ShadowCasterList::Add",
+"CM2Model::CollectShadowCasters"
+],
+"strings": [],
+"consts": [
+"0",
+"0x20",
+"0x4",
+"0x40",
+"0x80",
+"0x8000",
+"1"
+],
+"branches": 16,
+"stub": false,
+"lines": 81,
+"refs": [],
+"line": 6846
+},
 "M2ParticleFlushDenormals": {
 "files": [
 "src/model/cm2particleemitter.cpp"
