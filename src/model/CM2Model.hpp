@@ -372,6 +372,10 @@ class CM2Model {
         ~CM2Model();
         void AddRef();
         void Animate();
+
+        // Bring only the ALPHAS up to date -- colour alphas and texture weights -- or fall back
+        // to the full Animate when this model cannot take the short path. ref: FUN_00831990
+        void AnimateAlphasOnly();
         // ref: FUN_006f1d20
         // Animate, then matrixF4 carried through the scene's inverse view: this frame's placement
         // of the model in world space.

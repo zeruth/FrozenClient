@@ -58514,7 +58514,7 @@
 "stub": false,
 "lines": 1,
 "refs": [],
-"line": 127
+"line": 137
 },
 "CCharacterCreation::CalcClasses": {
 "files": [
@@ -83313,6 +83313,41 @@
 "lines": 62,
 "refs": [],
 "line": 6664
+},
+"CM2Model::AnimateAlphasOnly": {
+"files": [
+"src/model/cm2model.cpp"
+],
+"callseq": [
+"CM2Model::Animate",
+"operator*",
+"C44Matrix::operator=",
+"M2Array<M2Color>::Count",
+"M2Array<M2Color>::operator[]",
+"M2Array<M2SequenceTimes>::Count",
+"M2Array<M2SequenceTimes>::Count",
+"M2Array<M2SequenceTimes>::operator[]",
+"M2Array<unsigned int>::Count",
+"M2AnimateTrack",
+"M2Array<M2TextureWeight>::Count",
+"M2Array<M2TextureWeight>::operator[]",
+"M2Array<M2SequenceTimes>::Count",
+"M2Array<M2SequenceTimes>::Count",
+"M2Array<M2SequenceTimes>::operator[]",
+"M2Array<unsigned int>::Count",
+"M2AnimateTrack"
+],
+"strings": [],
+"consts": [
+"0",
+"1",
+"1.0f"
+],
+"branches": 6,
+"stub": false,
+"lines": 64,
+"refs": [],
+"line": 6745
 },
 "M2ParticleFlushDenormals": {
 "files": [

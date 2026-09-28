@@ -6723,3 +6723,86 @@ CAaBox* CM2Model::GetWorldBounds(CAaBox* out) {
 
     return out;
 }
+
+// ref: FUN_00831990
+// Bring only the ALPHAS up to date: the colour alpha tracks and the texture weight tracks.
+//
+// It exists for one caller, the batch collection walk, and that walk does exactly one thing with
+// the result -- multiplies model alpha by texture weight by colour alpha and tests the product
+// against a threshold. Animating anything else would be wasted, so this is AnimateMTSimple with
+// everything but the alphas removed.
+//
+// IT DOES NOT STAMP m_animCounter. The early-out reads it, and nothing here writes it back, so
+// this runs again on every call until a full animate pass stamps the frame. That is the
+// reference's own shape -- its tail ends at the second loop with no store -- and it is left
+// alone: the two track loops are idempotent within a frame, so the cost is work rather than a
+// wrong answer.
+//
+// The fall-back condition has two terms and both are reproduced. An attached model goes through
+// the full Animate because its matrix depends on its parent's; so does any model whose shared
+// data carries a non-zero uint198. What that field means is not identified -- see the note on it
+// in CM2Shared.hpp -- but it is zero in practice, so this path is the live one.
+void CM2Model::AnimateAlphasOnly() {
+    // Already animated for this frame of the scene.
+    if (this->m_animCounter == this->m_scene->uint14) {
+        return;
+    }
+
+    if (this->m_attachParent || this->m_shared->uint198) {
+        this->Animate();
+
+        return;
+    }
+
+    // The same assignment AnimateMTSimple makes, operand order included.
+    this->matrixF4 = this->matrixB4 * this->m_scene->m_view;
+
+    auto data = this->m_shared->m_data;
+
+    this->alpha19C = this->m_baseAlphaScale * this->m_baseAlpha;
+
+    // The colour records' ALPHA track, not their colour one: the reference reads the track at
+    // M2Color +0x14 and writes M2ModelColor +0x14, and M2Track is 0x14 bytes, so that is alphaTrack
+    // in both.
+    for (int32_t i = 0; i < data->colors.Count(); i++) {
+        auto& color = data->colors[i];
+        auto& modelColor = this->m_colors[i];
+
+        auto& alphaTrack = color.alphaTrack;
+
+        if (
+            alphaTrack.sequenceTimes.Count() > 1
+            || (alphaTrack.sequenceTimes.Count() == 1 && alphaTrack.sequenceTimes[0].times.Count() > this->uint90)
+        ) {
+            float defaultValue = 1.0f;
+            M2AnimateTrack<fixed16, float>(
+                this,
+                this->m_bones,
+                color.alphaTrack,
+                modelColor.alphaTrack,
+                defaultValue
+            );
+        }
+    }
+
+    for (int32_t i = 0; i < data->textureWeights.Count(); i++) {
+        auto& textureWeight = data->textureWeights[i];
+        auto& modelTextureWeight = this->m_textureWeights[i];
+
+        auto& weightTrack = textureWeight.weightTrack;
+
+        if (
+            weightTrack.sequenceTimes.Count() > 1
+            || (weightTrack.sequenceTimes.Count() == 1 && weightTrack.sequenceTimes[0].times.Count() > this->uint90)
+        ) {
+            float defaultValue = 1.0f;
+            M2AnimateTrack<fixed16, float>(
+                this,
+                this->m_bones,
+                textureWeight.weightTrack,
+                modelTextureWeight.weightTrack,
+                defaultValue
+            );
+        }
+    }
+}

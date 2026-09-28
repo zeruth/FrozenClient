@@ -56531,7 +56531,7 @@
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::CreateShared",
-  "frozenSize": 531,
+  "frozenSize": 535,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 830,
@@ -58842,6 +58842,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 235,
+  "status": "ported"
+ },
+ "00831990": {
+  "branchRatio": 0.462,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateAlphasOnly",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "M2Scene.cpp",
+  "refSize": 340,
   "status": "ported"
  },
  "00831af0": {
