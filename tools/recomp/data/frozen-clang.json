@@ -70617,17 +70617,22 @@
 "IDirect3DTexture9::GetSurfaceLevel",
 "IDirect3DDevice9::SetDepthStencilSurface",
 "IDirect3DDevice9::SetRenderTarget",
+"CRect::CRect",
+"CGxDevice::DeviceSetCurWindow",
+"CGxDevice::DeviceSetCurWindow",
 "IDirect3DSurface9::Release"
 ],
 "strings": [
 "IRenderTargetSet: rebuilt texture, handle now %p\n"
 ],
 "consts": [
-"0"
+"0",
+"0.0f",
+"1"
 ],
-"branches": 8,
+"branches": 9,
 "stub": false,
-"lines": 32,
+"lines": 62,
 "refs": [],
 "line": 2536
 },
@@ -70689,7 +70694,7 @@
 "stub": false,
 "lines": 80,
 "refs": [],
-"line": 2584
+"line": 2614
 },
 "CGxDeviceD3d::IRenderTargetDump": {
 "files": [
@@ -70756,7 +70761,7 @@
 "stub": false,
 "lines": 107,
 "refs": [],
-"line": 2665
+"line": 2695
 },
 "CGxDeviceD3d::ITexMarkAsUpdated": {
 "files": [
@@ -70773,7 +70778,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 2773
+"line": 2803
 },
 "CGxDeviceD3d::ITexUpload": {
 "files": [
@@ -70818,7 +70823,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 2791
+"line": 2821
 },
 "CGxDeviceD3d::IXformSetProjection": {
 "files": [
@@ -70846,7 +70851,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 2910
+"line": 2940
 },
 "CGxDeviceD3d::IXformSetViewport": {
 "files": [
@@ -70868,7 +70873,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 2956
+"line": 2986
 },
 "CGxDeviceD3d::PoolSizeSet": {
 "files": [
@@ -70887,7 +70892,7 @@
 "stub": false,
 "lines": 30,
 "refs": [],
-"line": 2995
+"line": 3025
 },
 "CGxDeviceD3d::SceneClear": {
 "files": [
@@ -70912,7 +70917,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 3026
+"line": 3056
 },
 "CGxDeviceD3d::ScenePresent": {
 "files": [
@@ -70941,7 +70946,7 @@
 "stub": false,
 "lines": 42,
 "refs": [],
-"line": 3050
+"line": 3080
 },
 "CGxDeviceD3d::ShaderCreate": {
 "files": [
@@ -70960,7 +70965,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 3093
+"line": 3123
 },
 "CGxDeviceD3d::StereoEnabled": {
 "files": [
@@ -70975,7 +70980,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 3101
+"line": 3131
 },
 "CGxDeviceD3d::XformSetProjection": {
 "files": [
@@ -70991,7 +70996,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 3106
+"line": 3136
 },
 "GxDevCreate": {
 "files": [
@@ -83376,7 +83381,7 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 11,
+"lines": 14,
 "refs": [],
 "line": 6815
 },
@@ -83409,7 +83414,7 @@
 "stub": false,
 "lines": 81,
 "refs": [],
-"line": 6846
+"line": 6849
 },
 "M2ParticleFlushDenormals": {
 "files": [
@@ -85885,7 +85890,7 @@
 "refs": [
 "0081f330"
 ],
-"line": 95
+"line": 97
 },
 "CM2Scene::AnimateThread": {
 "files": [
@@ -86386,14 +86391,32 @@
 "operator*",
 "C4Vector::C4Vector",
 "GxShaderConstantsSet",
+"TSGrowableArray<unsigned int>::TSGrowableArray",
+"TSBaseArray<M2Element>::Count",
+"TSBaseArray<M2Element>::operator[]",
+"M2Array<M2Material>::Count",
+"M2Array<M2Material>::operator[]",
+"TSGrowableArray<unsigned int>::New",
 "CM2SceneRender::CM2SceneRender",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
 "TSBaseArray<unsigned int>::Count",
 "__acrt_iob_func",
 "fprintf",
-"CM2SceneRender::Draw"
+"CShaderEffect::SetAlphaRef",
+"TSBaseArray<unsigned int>::Count",
+"CM2SceneRender::Draw",
+"CShaderEffect::SetAlphaRef",
+"TSBaseArray<unsigned int>::Count",
+"CM2SceneRender::Draw",
+"TSBaseArray<unsigned int>::Count",
+"TSBaseArray<unsigned int>::Count",
+"__acrt_iob_func",
+"fprintf"
 ],
 "strings": [
-"MapShadow: caster pass submitting %u opaque model batches\n",
+"MapShadow: %u of %u caster batches reached GxDraw; effect %p shaders %d\n",
+"MapShadow: caster pass %u + %u batches at alpha >= 0.55 (opaque pass would give %u)\n",
 "ShadowMap",
 "ShadowMapSL",
 "ShadowMapShadowMapSL"
@@ -86401,13 +86424,20 @@
 "consts": [
 "0",
 "0.0f",
+"0.501960814f",
+"0.55f",
+"0x4",
+"0x40",
+"0x80",
+"0x8000",
 "1",
 "1.0f",
+"2",
 "4000.0f"
 ],
-"branches": 4,
+"branches": 17,
 "stub": false,
-"lines": 54,
+"lines": 150,
 "refs": [],
 "line": 1390
 },
@@ -86433,7 +86463,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1472
+"line": 1568
 },
 "CM2Scene::BeginRayQuery": {
 "files": [
@@ -86448,7 +86478,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1532
+"line": 1628
 },
 "CM2Scene::SortRayCandidates": {
 "files": [
@@ -86464,7 +86494,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1553
+"line": 1649
 },
 "CM2Scene::ReserveRayCandidates": {
 "files": [
@@ -86490,7 +86520,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1589
+"line": 1685
 },
 "CM2Scene::RaySetup": {
 "files": [
@@ -86511,7 +86541,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1622
+"line": 1718
 },
 "CM2Scene::BlendBoneMatrices": {
 "files": [
@@ -86536,7 +86566,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1655
+"line": 1751
 },
 "CM2Scene::BlendBoneMatrices3x4": {
 "files": [
@@ -86563,7 +86593,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1694
+"line": 1790
 },
 "CM2Scene::RayTestModel": {
 "files": [
@@ -86586,7 +86616,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 1741
+"line": 1837
 },
 "CM2Scene::ReserveRayProjected": {
 "files": [
@@ -86608,7 +86638,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1791
+"line": 1887
 },
 "CM2Scene::CollectRayCandidates": {
 "files": [
@@ -86638,7 +86668,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 1853
+"line": 1949
 },
 "CM2Scene::RayQuery": {
 "files": [
@@ -86666,7 +86696,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 1998
+"line": 2094
 },
 "CM2Scene::RayTestModelGeometry": {
 "files": [
@@ -86701,7 +86731,7 @@
 "stub": false,
 "lines": 81,
 "refs": [],
-"line": 2111
+"line": 2207
 },
 "CM2Scene::RayTestTriangles": {
 "files": [
@@ -86724,7 +86754,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 2198
+"line": 2294
 },
 "CM2Scene::ProjectSectionVertices": {
 "files": [
@@ -86743,7 +86773,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 2240
+"line": 2336
 },
 "CM2Scene::ProjectSectionVerticesBlended3x4": {
 "files": [
@@ -86767,7 +86797,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 2280
+"line": 2376
 },
 "CM2Scene::ProjectSectionVerticesBlended4x4": {
 "files": [
@@ -86791,7 +86821,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 2332
+"line": 2428
 },
 "CM2Scene::RayQueryCollision": {
 "files": [
@@ -86835,7 +86865,7 @@
 "stub": false,
 "lines": 103,
 "refs": [],
-"line": 2393
+"line": 2489
 },
 "CM2SceneRender::Draw": {
 "files": [
@@ -86885,7 +86915,7 @@
 "stub": false,
 "lines": 174,
 "refs": [],
-"line": 76
+"line": 77
 },
 "CM2SceneRender::DrawBatch": {
 "files": [
@@ -86912,6 +86942,7 @@
 "CM2Model::SetIndices",
 "CM2Shared::SetIndices",
 "CM2SceneRender::SetBatchVertices",
+"CShaderEffect::SetShadersForGeometry",
 "CShaderEffect::SetShaders",
 "CGxBatch::CGxBatch",
 "GxDraw"
@@ -86926,11 +86957,11 @@
 "3",
 "31"
 ],
-"branches": 9,
+"branches": 11,
 "stub": false,
-"lines": 88,
+"lines": 110,
 "refs": [],
-"line": 251
+"line": 252
 },
 "CM2SceneRender::DrawBatchDoodad": {
 "files": [
@@ -86943,7 +86974,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 414
+"line": 437
 },
 "CM2SceneRender::DrawBatchProj": {
 "files": [
@@ -86956,7 +86987,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 418
+"line": 441
 },
 "CM2SceneRender::DrawCallback": {
 "files": [
@@ -86969,7 +87000,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 422
+"line": 445
 },
 "CM2SceneRender::SetupParticleTransform": {
 "files": [
@@ -86988,7 +87019,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 522
+"line": 545
 },
 "CM2SceneRender::DrawParticle": {
 "files": [
@@ -87026,7 +87057,7 @@
 "stub": false,
 "lines": 121,
 "refs": [],
-"line": 563
+"line": 586
 },
 "CM2SceneRender::DrawRibbon": {
 "files": [
@@ -87057,7 +87088,7 @@
 "stub": false,
 "lines": 47,
 "refs": [],
-"line": 697
+"line": 720
 },
 "CM2SceneRender::SetBatchVertices": {
 "files": [
@@ -87074,7 +87105,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 746
+"line": 769
 },
 "CM2SceneRender::SetupLighting": {
 "files": [
@@ -87114,7 +87145,7 @@
 "stub": false,
 "lines": 77,
 "refs": [],
-"line": 785
+"line": 808
 },
 "CM2SceneRender::SetupMaterial": {
 "files": [
@@ -87169,7 +87200,7 @@
 "stub": false,
 "lines": 113,
 "refs": [],
-"line": 863
+"line": 886
 },
 "CM2SceneRender::SetupTextures": {
 "files": [
@@ -87205,7 +87236,7 @@
 "stub": false,
 "lines": 88,
 "refs": [],
-"line": 977
+"line": 1000
 },
 "CM2Shared::LoadCanceledCallback": {
 "files": [

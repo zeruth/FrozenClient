@@ -71,6 +71,7 @@ int32_t CM2SceneRender::s_shadedList[M2BLEND_COUNT] = {
 };
 
 const C44Matrix* CM2SceneRender::s_shadowCasterRebase = nullptr;
+uint32_t CM2SceneRender::s_shadowCasterDrawn = 0;
 CShaderEffect* CM2SceneRender::s_shadowCasterEffect = nullptr;
 
 void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, uint32_t count) {
@@ -315,7 +316,22 @@ void CM2SceneRender::DrawBatch() {
     int32_t v9 = this->m_curModel->m_shared->m_data->bones.count == 1 && this->m_cache->m_flags & 0x40;
     this->SetBatchVertices(v9);
 
-    CShaderEffect::SetShaders(this->m_curElement->vertexPermute, this->m_curElement->pixelPermute);
+    if (CM2SceneRender::s_shadowCasterEffect) {
+        // THE CASTER PASS SELECTS ITS SHADER BY GEOMETRY, NOT BY THE MATERIAL. The element's
+        // vertexPermute and pixelPermute were computed for the effect it draws with in the visible
+        // pass -- Model2 -- and using them here indexes the SHADOW MAP library at those numbers,
+        // which are different programs. Both libraries have permutations at those indices, so
+        // nothing fails and nothing complains: 2332 of 2332 batches reached GxDraw and the map came
+        // back the white it was cleared to.
+        //
+        // The reference never does this. FUN_0082da40 calls CShaderEffect::SetShadersForGeometry(0)
+        // for each of the two caster lists, and FUN_00829ba0 calls it again per batch, so the
+        // permutation comes from bone influences, light state and shadow mode -- never from the
+        // material. Passing 0 is the reference's own argument at both sites.
+        CShaderEffect::SetShadersForGeometry(0);
+    } else {
+        CShaderEffect::SetShaders(this->m_curElement->vertexPermute, this->m_curElement->pixelPermute);
+    }
 
     if (CShaderEffect::s_enableShaders) {
         auto skinSection = this->m_curSkinSection;
@@ -328,6 +344,13 @@ void CM2SceneRender::DrawBatch() {
         batch.m_minIndex = skinSection->vertexStart;
         batch.m_maxIndex = skinSection->vertexStart + skinSection->vertexCount - 1;
 
+
+        // Counted so that DrawShadowCasters can say how many submitted batches actually reached
+        // a draw. A caster pass that submits thousands and draws none reads identically in the
+        // log to one that works, and that is exactly the state this was in until 2026-09-28.
+        if (CM2SceneRender::s_shadowCasterEffect) {
+            CM2SceneRender::s_shadowCasterDrawn++;
+        }
 
         GxDraw(&batch, 1);
     } else if (v9) {

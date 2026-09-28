@@ -111,16 +111,19 @@ class CM2ParticleEmitter;
 //   +0x20 and +0x3c still have no writer in anything read, and stay unnamed.
 // One batch the shadow-caster pass kept: which model it belongs to and which of its batches.
 //
-// The reference stores a third dword, always 1, which is why its element is 12 bytes; it is
-// carried here so the record means the same thing, and because nothing has yet been seen
-// READING it -- dropping a field on that basis would be a guess.
+// The third dword is a RUN LENGTH, and the note here used to say nothing read it. FUN_00829e40
+// reads it twice: it advances the list cursor by it (`i += entry[8]`) and it tests it against 1
+// to decide whether the model's vertex and index streams have to be rebound. So a value above 1
+// means this entry stands for that many consecutive casters sharing one geometry setup -- the
+// merged-batch path -- and the collector writing a constant 1 is the unmerged case, not a
+// placeholder. Corrected 2026-09-28.
 //
 // NO SIZE ASSERT: the reference packs this into 12 bytes with a 32-bit pointer and frozen is
 // 64-bit, so it measures 16. Nothing reads it from a file or steps it by a baked stride.
 struct M2ShadowCaster {
     CM2Model* model = nullptr;
     uint32_t batchIndex = 0;
-    uint32_t one = 1;
+    uint32_t mergeCount = 1;
 };
 
 // A fixed-capacity collector of those. The reference keeps TWO of these adjacent in one

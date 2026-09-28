@@ -6819,7 +6819,10 @@ void M2ShadowCasterList::Add(CM2Model* model, uint32_t batchIndex) {
 
     this->data[this->count].model = model;
     this->data[this->count].batchIndex = batchIndex;
-    this->data[this->count].one = 1;
+
+    // One caster, one entry: the run length is only above 1 on the merged-geometry path, which
+    // this walk does not build. See the note on the field in M2Types.hpp.
+    this->data[this->count].mergeCount = 1;
 
     this->count++;
 }

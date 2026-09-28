@@ -56666,7 +56666,7 @@
   "status": "ported"
  },
  "0081cab0": {
-  "branchRatio": 0.25,
+  "branchRatio": 0.059,
   "constOverlap": -1.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -56675,7 +56675,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::DrawShadowCasters",
-  "frozenSize": 366,
+  "frozenSize": 812,
   "how": "order",
   "module": "XMLTree.cpp",
   "refSize": 15,
@@ -57222,7 +57222,7 @@
   "status": "faithful"
  },
  "008203b0": {
-  "branchRatio": 0.562,
+  "branchRatio": 0.688,
   "constOverlap": 0.047,
   "faithful": true,
   "fidelity": 1.0,
@@ -57231,7 +57231,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawBatch",
-  "frozenSize": 968,
+  "frozenSize": 1115,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 869,

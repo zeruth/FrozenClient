@@ -1421,20 +1421,116 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
     CM2SceneRender::s_shadowCasterEffect = effect;
     CM2SceneRender::s_shadowCasterRebase = &rebase;
 
+    // THE CASTER SET IS NOT THE OPAQUE PASS. It used to be: this submitted array54[M2PASS_0],
+    // and a batch only reaches pass 0 at alpha >= 0.99999. The reference does not reuse a draw
+    // pass at all -- CM2Model::CollectShadowCasters (FUN_00834660) walks every model's batches
+    // and keeps those at alpha >= 0.55, so the whole band of partial transparency cast a shadow
+    // there and nothing here: a unit fading in or out, a stealthing rogue, any animated alpha
+    // track part-way through its curve. The two thresholds answer different questions -- 0.99999
+    // is 'does this need sorting', 0.55 is 'does this block enough light to matter'.
+    //
+    // THE GATE IS THE REFERENCE'S, THE MECHANISM IS FROZEN'S, and that is a deliberate trade.
+    // The reference walks models and collects (model, batch) pairs into two lists, then draws
+    // them through an INSTANCED path (FUN_0082da40 -> FUN_00829e40 -> FUN_00829ba0) that packs
+    // bone matrices for several casters into one constant upload. frozen has no instanced model
+    // draw, so rebuilding that path would mean inventing most of it. What it does have is
+    // m_elements -- one entry per drawable batch, carrying the model, the batch, the resolved
+    // skin section and the SAME alpha product the reference tests -- already built this frame.
+    // Filtering that with the reference's own gate selects the identical set of batches and
+    // reuses a draw path that works. CollectShadowCasters stays as the faithful transcription of
+    // the walk, for whoever lands the instanced path.
+    //
+    // The two lists split on the batch's shader field, and they are NOT drawn the same way: the
+    // reference gives list 0 an alpha ref of 0 and list 1 an alpha ref of 0.50196 (DAT_00a45568,
+    // which is 128/255). Drawing both at one alpha ref was a second, smaller defect hidden
+    // behind the first.
+    static const float CASTER_MIN_ALPHA = 0.55f;          // DAT_009edce0
+    static const float CASTER_ALPHA_REF = 0.501960814f;   // DAT_00a45568, 128/255
+
+    TSGrowableArray<uint32_t> casterLists[2];
+
+    for (uint32_t i = 0; i < this->m_elements.Count(); i++) {
+        M2Element* element = &this->m_elements[i];
+
+        // Batch elements only. Particles are type 4 and ribbons type 3, and neither has a batch.
+        if (element->type > 2 || !element->batch || !element->model) {
+            continue;
+        }
+
+        M2Batch* batch = element->batch;
+
+        // Read as a SIGNED short, which is how the reference compares it.
+        if (static_cast<int16_t>(batch->shader) == static_cast<int16_t>(0x8000)) {
+            continue;
+        }
+
+        if (batch->flags & 0x4) {
+            continue;
+        }
+
+        // Base layer only.
+        if (batch->materialLayer != 0) {
+            continue;
+        }
+
+        auto data = element->model->m_shared ? element->model->m_shared->m_data : nullptr;
+
+        if (!data || batch->materialIndex >= data->materials.Count()) {
+            continue;
+        }
+
+        M2Material& material = data->materials[batch->materialIndex];
+
+        if (material.flags & 0x40) {
+            continue;
+        }
+
+        // Either the material says so outright, or its blend mode is one that occludes.
+        if (!(material.flags & 0x80) && material.blendMode != 0 && material.blendMode != 1) {
+            continue;
+        }
+
+        if (element->alpha < CASTER_MIN_ALPHA) {
+            continue;
+        }
+
+        *casterLists[batch->shader == 0 ? 0 : 1].New() = i;
+    }
+
     CM2SceneRender render(this);
-    uint32_t casters = this->array54[M2PASS_0].Count();
 
     // Whether the map has any content at all is answerable without reading the texture back: if
     // nothing is submitted, the map is the white it was cleared to. Reported once so a run says
-    // plainly whether shadows are being cast.
+    // plainly whether shadows are being cast, and against what the opaque pass would have given.
     static bool reported = false;
 
     if (!reported) {
         reported = true;
-        fprintf(stderr, "MapShadow: caster pass submitting %u opaque model batches\n", casters);
+        fprintf(
+            stderr,
+            "MapShadow: caster pass %u + %u batches at alpha >= 0.55 (opaque pass would give %u)\n",
+            casterLists[0].Count(), casterLists[1].Count(), this->array54[M2PASS_0].Count());
     }
 
-    render.Draw(M2PASS_0, this->m_elements.m_data, this->array54[M2PASS_0].m_data, casters);
+    CShaderEffect::SetAlphaRef(0.0f);
+    render.Draw(M2PASS_0, this->m_elements.m_data, casterLists[0].m_data, casterLists[0].Count());
+
+    CShaderEffect::SetAlphaRef(CASTER_ALPHA_REF);
+    render.Draw(M2PASS_0, this->m_elements.m_data, casterLists[1].m_data, casterLists[1].Count());
+
+    // How many of the submitted batches actually reached a draw call. A caster pass that
+    // submits thousands and draws none looks identical, from the log, to one that works.
+    static bool drawnReported = false;
+
+    if (!drawnReported) {
+        drawnReported = true;
+        fprintf(
+            stderr,
+            "MapShadow: %u of %u caster batches reached GxDraw; effect %p shaders %d\n",
+            CM2SceneRender::s_shadowCasterDrawn,
+            casterLists[0].Count() + casterLists[1].Count(),
+            static_cast<void*>(effect), CShaderEffect::s_enableShaders ? 1 : 0);
+    }
 
     CM2SceneRender::s_shadowCasterEffect = nullptr;
     CM2SceneRender::s_shadowCasterRebase = nullptr;

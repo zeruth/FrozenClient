@@ -2559,6 +2559,36 @@ void CGxDeviceD3d::IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t pl
         this->m_d3dDevice->SetDepthStencilSurface(surface ? surface : this->m_defDepthSurface);
     } else {
         this->m_d3dDevice->SetRenderTarget(0, surface ? surface : this->m_defColorSurface);
+
+        // THE CURRENT WINDOW RECT FOLLOWS THE COLOUR TARGET, and nothing here used to move it.
+        //
+        // IXformSetViewport turns the normalized viewport into pixels by scaling it by
+        // DeviceCurWindow(), so while that still reported the BACK BUFFER a full 0..1 viewport on a
+        // 1024x1024 shadow map covered 1024x768 of it. The bottom quarter of the map was never
+        // cleared and never drawn into -- visible as an exact 1024x256 band of zeroes in a dump of
+        // it, which is how this was found rather than reasoned about.
+        //
+        // A zero there is the NEAREST possible depth, so every lookup landing in that band reads
+        // 'something is right in front of the light' and shadows everything. It is not a cosmetic
+        // quarter of a texture.
+        //
+        // Restoring the default window on unbind is the other half: leaving the map's size in place
+        // would shrink the next frame's viewport to the top-left of the back buffer.
+        if (texId) {
+            CRect targetRect;
+            targetRect.minX = 0.0f;
+            targetRect.minY = 0.0f;
+            targetRect.maxX = static_cast<float>(texId->m_width);
+            targetRect.maxY = static_cast<float>(texId->m_height);
+
+            this->DeviceSetCurWindow(targetRect);
+        } else {
+            this->DeviceSetCurWindow(this->m_defWindowRect);
+        }
+
+        // The viewport is expressed against the rect that just changed, so it has to be pushed
+        // again even though its own values did not move.
+        this->intF6C = 1;
     }
 
     if (surface) {

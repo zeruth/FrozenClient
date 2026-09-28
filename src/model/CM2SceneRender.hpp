@@ -37,6 +37,8 @@ class CM2SceneRender {
         // rebasing on the CPU covers the unskinned ones too, at the cost of one matrix multiply
         // per bone per caster.
         static const C44Matrix* s_shadowCasterRebase;
+        // Batches that actually reached GxDraw in caster mode, reported once per run.
+        static uint32_t s_shadowCasterDrawn;
         static CShaderEffect* s_shadowCasterEffect;
 
         // Member variables
