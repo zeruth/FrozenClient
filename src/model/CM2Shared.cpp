@@ -94,50 +94,6 @@ void M2SkinFileName(const char* modelPath, uint32_t profile, char* out) {
     sprintf(&out[strlen(out)], "%02d.skin", profile);
 }
 
-// The .anim buffer is 16-byte aligned: 16 spare bytes, the pad size kept in the byte before the
-// data so the free can recover the allocation.
-//
-// This tag used to name BOTH 0083de50 and 0083de90, which was wrong: 0083de90 is the matching FREE
-// and it is tagged on SequenceBufferFree below. Caught 2026-09-23 by a fidelity diff on
-// CM2Model::~CM2Model, which showed the reference calling 0083de90 twice in a destructor.
-// ref: FUN_0083de50
-void* SequenceBufferAlloc(uint32_t size, const char* file, int32_t line) {
-    auto raw = static_cast<uint8_t*>(SMemAlloc(size + 16, file, line, 0));
-
-    if (!raw) {
-        return nullptr;
-    }
-
-    uint32_t pad = 16 - (reinterpret_cast<uintptr_t>(raw) & 0xF);
-    raw[pad - 1] = static_cast<uint8_t>(pad);
-
-    return raw + pad;
-}
-
-// The reference also bails when the recovered base comes out as null, which cannot happen for a
-// pointer this allocator returned; frozen leaves that check out.
-// ref: FUN_0083de90
-void SequenceBufferFree(void* buffer) {
-    if (!buffer) {
-        return;
-    }
-
-    auto data = static_cast<uint8_t*>(buffer);
-    uint8_t pad = data[-1];
-
-#if !defined(WHOA_SYSTEM_WIN)
-    // A pad of 0 never comes out of SequenceBufferAlloc (it is 1..16); it marks a buffer that
-    // SequenceBufferPlaceNear mapped, whose header holds the mapping's length
-    if (pad == 0) {
-        uint64_t length;
-        memcpy(&length, data - 32, sizeof(length));
-        munmap(data - 32, static_cast<size_t>(length));
-        return;
-    }
-#endif
-
-    SMemFree(data - pad, "delete[]", -1, 0);
-}
 
 #if !defined(WHOA_SYSTEM_WIN)
 // Frozen only, for 64-bit builds. The keyframe arrays of an external sequence live in the model
@@ -211,6 +167,60 @@ void* SequenceBufferPlaceNear(uint32_t size, const void* modelData, uint32_t mod
 #endif
 
 } // namespace
+
+// MOVED OUT OF THE ANONYMOUS NAMESPACE 2026-09-27. These two had internal linkage, which is the
+// whole reason CM2Model allocated the bone matrices, the texture matrices and each bone's own
+// matrix with a plain SMemAlloc instead -- three comments there say so, one of them naming the
+// fix: 'closing it means exporting the alloc/free pair out of the anonymous namespace in
+// CM2Shared.cpp where they currently live'. This is that export.
+//
+// THE PAIR MUST STAY A PAIR. Alloc hands back an INTERIOR pointer (raw + pad) with the pad size
+// in the byte behind it, so SMemFree on one of its results frees the wrong address. Every switch
+// of one site has to switch its matching free in the same change.
+// The .anim buffer is 16-byte aligned: 16 spare bytes, the pad size kept in the byte before the
+// data so the free can recover the allocation.
+//
+// This tag used to name BOTH 0083de50 and 0083de90, which was wrong: 0083de90 is the matching FREE
+// and it is tagged on SequenceBufferFree below. Caught 2026-09-23 by a fidelity diff on
+// CM2Model::~CM2Model, which showed the reference calling 0083de90 twice in a destructor.
+// ref: FUN_0083de50
+void* SequenceBufferAlloc(uint32_t size, const char* file, int32_t line) {
+    auto raw = static_cast<uint8_t*>(SMemAlloc(size + 16, file, line, 0));
+
+    if (!raw) {
+        return nullptr;
+    }
+
+    uint32_t pad = 16 - (reinterpret_cast<uintptr_t>(raw) & 0xF);
+    raw[pad - 1] = static_cast<uint8_t>(pad);
+
+    return raw + pad;
+}
+
+// The reference also bails when the recovered base comes out as null, which cannot happen for a
+// pointer this allocator returned; frozen leaves that check out.
+// ref: FUN_0083de90
+void SequenceBufferFree(void* buffer) {
+    if (!buffer) {
+        return;
+    }
+
+    auto data = static_cast<uint8_t*>(buffer);
+    uint8_t pad = data[-1];
+
+#if !defined(WHOA_SYSTEM_WIN)
+    // A pad of 0 never comes out of SequenceBufferAlloc (it is 1..16); it marks a buffer that
+    // SequenceBufferPlaceNear mapped, whose header holds the mapping's length
+    if (pad == 0) {
+        uint64_t length;
+        memcpy(&length, data - 32, sizeof(length));
+        munmap(data - 32, static_cast<size_t>(length));
+        return;
+    }
+#endif
+
+    SMemFree(data - pad, "delete[]", -1, 0);
+}
 
 // ref: FUN_0083da10
 CM2SequenceLoad* CM2Shared::LoadSequence(uint16_t sequenceIndex) {
@@ -441,9 +451,6 @@ void CM2Shared::SkinProfileLoadedCallback(void* arg) {
     shared->asyncObject = nullptr;
 }
 
-namespace {
-void SequenceBufferFree(void* buffer);
-}
 
 // ref: FUN_0083d5b0
 CM2Shared::~CM2Shared() {

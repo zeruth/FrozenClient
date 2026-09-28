@@ -2233,7 +2233,22 @@ void CM2Model::FreeExternalResources() {
         return;
     }
 
-    // TODO
+    // Every bone that SetBoneMatrix ever wrote to owns a C44Matrix of its own, outside the pooled
+    // block. NOTHING FREED THEM until 2026-09-27: 64 bytes per posed bone per model, on every unit
+    // that despawns. The reference frees them right here and first, walking the bone array at its
+    // 0xac stride and releasing the pointer at +0x88 -- which is where frozen's field gets its
+    // name. Found by following the fidelity diff on this function, which sat at 0.20 because it
+    // was missing exactly this call.
+    //
+    // Nulling as we go is frozen's own: the reference leaves the pointers dangling and relies on
+    // its loaded flag to keep anyone from looking again, while SetBoneMatrix here tests the
+    // pointer before allocating, so a model reloaded after this would hand out freed memory.
+    if (this->m_bones) {
+        for (int32_t i = 0; i < this->m_shared->m_data->bones.Count(); i++) {
+            SequenceBufferFree(this->m_bones[i].matrix88);
+            this->m_bones[i].matrix88 = nullptr;
+        }
+    }
 
     if (this->m_textures) {
         for (int32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
@@ -2321,23 +2336,22 @@ void CM2Model::FreeInternalResources() {
     }
 
     // The two matrix arrays are NOT part of the pooled internal-resources block: InitializeLoaded
-    // allocates each with its own SMemAlloc. Nothing freed them, so every model destroyed leaked
-    // 64 bytes per bone plus 64 per texture transform -- a few kilobytes for a character, on every
-    // unit that despawns and every model the character screen builds and throws away.
+    // allocates each on its own. Nothing freed them, so every model destroyed leaked 64 bytes per
+    // bone plus 64 per texture transform -- a few kilobytes for a character, on every unit that
+    // despawns and every model the character screen builds and throws away. Fixed 2026-09-23.
     //
-    // Found on 2026-09-23 by following the fidelity diff on CM2Model::InitializeLoaded, where the
-    // reference calls SequenceBufferAlloc twice and frozen calls SMemAlloc. That is a second,
-    // separate divergence and it stands: the reference's allocator returns 16-byte-aligned memory
-    // for exactly these two arrays, while frozen's SMemAlloc aligns to 8. Nothing here uses SSE on
-    // them, so it is not a correctness problem, and closing it means exporting the alloc/free pair
-    // out of the anonymous namespace in CM2Shared.cpp where they currently live.
+    // The allocator divergence that note used to describe is CLOSED as of 2026-09-27. Both arrays
+    // now go through SequenceBufferAlloc/Free, as the reference does, so they are 16-byte aligned
+    // rather than 8. The pair used to have internal linkage in CM2Shared.cpp and is now declared
+    // in its header. Do NOT put SMemFree back on either of these: Alloc returns an interior
+    // pointer and only its own Free can recover the base.
     if (this->m_boneMatrices) {
-        SMemFree(this->m_boneMatrices, __FILE__, __LINE__, 0);
+        SequenceBufferFree(this->m_boneMatrices);
         this->m_boneMatrices = nullptr;
     }
 
     if (this->m_textureMatrices) {
-        SMemFree(this->m_textureMatrices, __FILE__, __LINE__, 0);
+        SequenceBufferFree(this->m_textureMatrices);
         this->m_textureMatrices = nullptr;
     }
 
@@ -2902,7 +2916,7 @@ int32_t CM2Model::InitializeLoaded() {
         }
 
         // TODO use A16 allocator
-        this->m_boneMatrices = static_cast<C44Matrix*>(SMemAlloc(sizeof(C44Matrix) * this->m_shared->m_data->bones.Count(), __FILE__, __LINE__, 0));
+        this->m_boneMatrices = static_cast<C44Matrix*>(SequenceBufferAlloc(sizeof(C44Matrix) * this->m_shared->m_data->bones.Count(), __FILE__, __LINE__));
 
         for (int32_t i = 0; i < this->m_shared->m_data->bones.Count(); i++) {
             new (&this->m_boneMatrices[i]) C44Matrix();
@@ -2986,7 +3000,7 @@ int32_t CM2Model::InitializeLoaded() {
         }
 
         // TODO use A16 allocator
-        this->m_textureMatrices = static_cast<C44Matrix*>(SMemAlloc(sizeof(C44Matrix) * this->m_shared->m_data->textureTransforms.Count(), __FILE__, __LINE__, 0x0));
+        this->m_textureMatrices = static_cast<C44Matrix*>(SequenceBufferAlloc(sizeof(C44Matrix) * this->m_shared->m_data->textureTransforms.Count(), __FILE__, __LINE__));
     }
 
     if (this->m_shared->m_data->attachments.Count()) {
@@ -6188,15 +6202,14 @@ void CM2Model::SetBoneMatrix(uint32_t boneId, const C44Matrix& matrix) {
     M2ModelBone& bone = this->m_bones[boneIndex];
 
     if (!bone.matrix88) {
-        // DIVERGENCE, and the same one InitializeLoaded already takes a few hundred lines up: the
-        // reference allocates this through SequenceBufferAlloc and frozen calls SMemAlloc. That
-        // allocator is a 16-byte-ALIGNING wrapper, and it lives in an anonymous namespace in
-        // CM2Shared.cpp, so it has internal linkage and is not reachable from here. Prising it out
-        // for one caller is more churn than the difference is worth, because frozen's C44Matrix
-        // arithmetic is all scalar -- nothing here requires the alignment the wrapper exists to
-        // provide. If SSE matrix paths ever land, this is one of the places to revisit.
+        // Through SequenceBufferAlloc as the reference does, since 2026-09-27 -- the note that
+        // used to stand here called the pair unreachable from this file, which was true until it
+        // was moved out of CM2Shared.cpp's anonymous namespace.
+        //
+        // FreeExternalResources is what releases this, one per bone. That loop did not exist
+        // until the same change, so every bone this ran for leaked its 64 bytes.
         bone.matrix88 = static_cast<C44Matrix*>(
-            SMemAlloc(sizeof(C44Matrix), __FILE__, __LINE__, 0));
+            SequenceBufferAlloc(sizeof(C44Matrix), __FILE__, __LINE__));
 
         if (!bone.matrix88) {
             return;

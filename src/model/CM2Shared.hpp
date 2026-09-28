@@ -19,6 +19,14 @@ struct M2SkinProfile;
 struct M2SkinSection;
 class SFile;
 
+// The 16-byte-aligning allocator the reference uses for the .anim buffer and for every matrix
+// CM2Model keeps outside its pooled block. Alloc returns an INTERIOR pointer with the pad size
+// in the byte before it, so only SequenceBufferFree can free one -- never SMemFree.
+// ref: FUN_0083de50
+void* SequenceBufferAlloc(uint32_t size, const char* file, int32_t line);
+// ref: FUN_0083de90
+void SequenceBufferFree(void* buffer);
+
 class CM2Shared {
     public:
         // Static functions
