@@ -59,7 +59,6 @@ addr	how	frozen	evidence
 004080e0	annotated	GxXformView	tag in src/gx/Transform.cpp
 00408240	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 00408270	annotated	C3VectorStackArray::Init	tag in lib/typhoon/tempest/vector/C3Vector.cpp
-00408490	callgraph	CGxDevice::RsPush	only unmatched callee of 00409670=GxRsPush
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 00408c30	callorder	GxRsSetAlphaRef	same slot between linked calls in 007e4480=ShadowProjectBlob

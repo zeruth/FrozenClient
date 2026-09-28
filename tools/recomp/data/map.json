@@ -963,22 +963,6 @@
   "refSize": 198,
   "status": "ported"
  },
- "00408490": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/CGxDevice.cpp",
-   "src/gx/cgxdevice.cpp"
-  ],
-  "frozen": "CGxDevice::RsPush",
-  "frozenSize": 153,
-  "how": "callgraph",
-  "module": "Client.cpp",
-  "refSize": 135,
-  "status": "diverged"
- },
  "00408520": {
   "branchRatio": 0.5,
   "constOverlap": 0.143,
@@ -37260,7 +37244,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -37353,7 +37337,7 @@
   "branchRatio": 0.214,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
