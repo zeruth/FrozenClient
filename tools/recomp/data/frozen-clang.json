@@ -37418,6 +37418,43 @@
 "refs": [],
 "line": 116
 },
+"AaBoxUnion": {
+"files": [
+"lib/typhoon/tempest/box/caabox.cpp"
+],
+"callseq": [
+"C3Vector::Max",
+"C3Vector::Min",
+"CAaBox::CAaBox",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"CAaBox::CAaBox"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 11,
+"refs": [],
+"line": 130
+},
+"CAaBox::GrowToInclude": {
+"files": [
+"lib/typhoon/tempest/box/caabox.cpp"
+],
+"callseq": [
+"AaBoxUnion",
+"CAaBox::operator=",
+"CAaBox::CAaBox"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 150
+},
 "MinAxis": {
 "files": [
 "lib/typhoon/tempest/colorconvert.cpp"

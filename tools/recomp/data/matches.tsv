@@ -2569,6 +2569,7 @@ addr	how	frozen	evidence
 00714dd0	annotated	CGUnit_C::GetReadyWeaponAnimation	tag in src/object/client/CGUnit_C.cpp
 00714e80	annotated	IsMovementAnimation	tag in src/object/client/CGUnit_C.cpp
 00714f90	annotated	CGUnit_C::GetRangedReadyAnimation	tag in src/object/client/CGUnit_C.cpp
+007150d0	annotated	AaBoxUnion	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007151f0	annotated	IsMovementAckWithValueOpcode	tag in src/object/client/CGUnit_C.cpp
 007152b0	annotated	ReadPackedMovementOffset	tag in src/object/client/CGUnit_C.cpp
 007153e0	annotated	CGUnit_C::GetCreatureFamily	tag in src/object/client/CGUnit_C.cpp

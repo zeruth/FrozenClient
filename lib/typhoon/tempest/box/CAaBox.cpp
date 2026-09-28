@@ -120,3 +120,37 @@ int32_t AaBoxIsInverted(const CAaBox& box) {
 
     return 0;
 }
+
+// ref: FUN_007150d0
+// The smallest box containing both.
+//
+// The MAXIMA are taken first and the minima second, which is the order the reference calls
+// C3Vector::Max and C3Vector::Min in. It makes no difference to the answer and every difference
+// to reading the two side by side.
+CAaBox AaBoxUnion(const CAaBox& a, const CAaBox& b) {
+    C3Vector top = C3Vector::Max(a.t, b.t);
+    C3Vector bottom = C3Vector::Min(a.b, b.b);
+
+    CAaBox out;
+
+    out.b = bottom;
+    out.t = top;
+
+    return out;
+}
+
+// NOT TAGGED, deliberately -- see overrides.json 00715130. This IS that function, but it sits in
+// a library with no caller yet, so the linker drops it and a tag would bind nothing and warn on
+// every run. FUN_00825750, the model world-bounds function, is what will call it.
+// Grow this box to contain `other`.
+//
+// It writes the union into THIS and returns it as well, which looks redundant until you see the
+// reference do exactly that -- one store into the object, one into the hidden return slot. Its
+// seventeen callers use it both ways, so neither half is dead.
+CAaBox CAaBox::GrowToInclude(const CAaBox& other) {
+    CAaBox merged = AaBoxUnion(*this, other);
+
+    *this = merged;
+
+    return merged;
+}

@@ -19,6 +19,11 @@ class CAaBox {
     // Collapse the box onto one point: both corners become p.
     void SetPoint(const C3Vector& p);
 
+    // Grow this box to also contain `other`, and hand the result back as well. Both, because
+    // the reference writes the union into `this` AND into its return slot -- its seventeen
+    // callers use it either way. Tagged on the definition in the .cpp.
+    CAaBox GrowToInclude(const CAaBox& other);
+
     // ref: FUN_005fecb0
     // Both corners scaled about the origin.
     void Scale(float s);
@@ -40,6 +45,10 @@ class CAaBox {
 // row, then each of the three rows contributes its min and max to each axis -- the standard AABB
 // transform, which is tighter than transforming the eight corners and cheaper than both.
 CAaBox TransformBox(const CAaBox& box, const C44Matrix& m);
+
+// The smallest box containing both: min of the minima, max of the maxima.
+// ref: FUN_007150d0
+CAaBox AaBoxUnion(const CAaBox& a, const CAaBox& b);
 
 // ref: FUN_007fa140
 // The box a sphere fits in: the centre less the radius on each axis, and plus it.
