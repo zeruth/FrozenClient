@@ -789,6 +789,16 @@ void CM2Ribbon::ReleaseTextures() {
     }
 }
 
+// NOT COUNTED AS RENDER SURFACE, and that is a measurement artifact rather than a judgement about
+// this code. Both this and ReleaseTextures are filed under CSimpleHyperlinkedFrame.cpp, whose assert
+// anchor at 0x00978ad0 runs on for 48KB and swallows the whole ribbon cluster -- the same
+// "anchor collects unrelated code" shape recomp.py already documents for CreepTendril.cpp.
+//
+// Deliberately NOT fixed with a MODULE_RANGES entry, because the evidence is not there: the ribbon
+// cluster's largest object-file gap is 20 bytes, which is no boundary at all, and its RTTI strings
+// (.?AUCRibbonMat@@, .?AUCGxVertexPCT0@@) are referenced from descriptor structures rather than from
+// code, so they cannot bracket a range the way SoundEngine.cpp's 301 assert references did. Guessing
+// a boundary to move a number is what that mechanism exists to avoid.
 // ref: FUN_00980590
 // The ribbon's own teardown, and it is a DESTRUCTOR rather than a named release: the reference's
 // 0x00980b50 is the thirty-byte deleting-destructor thunk that wraps this body, and its other
