@@ -1,4 +1,5 @@
 #include "world/map/CMap.hpp"
+#include <cstdio>
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "world/ShadowMap.hpp"
@@ -106,8 +107,8 @@ int32_t CMap::s_loading;
 int32_t CMap::s_streamingMode;
 
 CGxShader* CMap::s_terrainVertexShaders[0x80];
-CGxShader* CMap::s_terrain2PixelShaders[0x60];
-CGxShader* CMap::s_terrain2PcfPixelShaders[0x20];
+CGxShader* CMap::s_terrain3PixelShaders[0x60];
+CGxShader* CMap::s_terrain2PixelShaders[0x20];
 CGxShader* CMap::s_terrainPixelShaders[3];
 CGxShader* CMap::s_terrainEnvPixelShader[1];
 CGxShader* CMap::s_terrain1PixelShaders[0x20];
@@ -294,26 +295,50 @@ CGxShader* CMap::GetTerrainVertexShader(int32_t lights, int32_t layers, int32_t 
 CGxShader* CMap::GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t flag80) {
     layers = layers - 1;
 
+    // The unshadowed answer, kept because it is also the fallback below.
+    CGxShader* unshadowed = CMap::s_terrain1PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 4) * 2];
+
+    CGxShader* shader = nullptr;
+
     switch (shadowLevel) {
     case 0:
-        return CMap::s_terrain1PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 4) * 2];
+        return unshadowed;
 
     case 1:
+        if (GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_ps_2_0 && GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_arbfp1) {
+            shader = CMap::s_terrain3PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 0xc) * 2];
+        } else {
+            shader = CMap::s_terrain2PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 4) * 2];
+        }
+
         break;
 
     case 2:
     case 3:
-        return CMap::s_terrain2PixelShaders[specular - 8 + layers * 2 + (shadowLevel * 4 + (twoChunk + flag80 * 2) * 0xc) * 2];
+        shader = CMap::s_terrain3PixelShaders[specular - 8 + layers * 2 + (shadowLevel * 4 + (twoChunk + flag80 * 2) * 0xc) * 2];
+
+        break;
 
     default:
         return nullptr;
     }
 
-    if (GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_ps_2_0 && GxCaps().m_shaderTargets[GxSh_Pixel] != GxShPS_arbfp1) {
-        return CMap::s_terrain2PixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 0xc) * 2];
+    // DIVERGENCE, deliberate, and the reason it is here rather than in a comment on the caller:
+    // the reference returns whatever is in the slot and trusts that the shadowed sets loaded,
+    // because in the reference they always do. frozen asks the archives for them too, but if a
+    // .bls is missing or fails its profile fallback the slot is null, and a null pixel shader
+    // does not draw untextured terrain -- it draws NO TERRAIN AT ALL. That is exactly what
+    // happened on 2026-09-27: releasing the shadow realloc latch raised the shader level to 2
+    // for the first time, these arrays were never loaded by anything, and the world lost its
+    // ground.
+    //
+    // Degrading to the unshadowed shader loses the shadows and keeps the terrain, which is the
+    // right way round for a missing asset. It is not a substitute for loading them.
+    if (!shader || !shader->Valid()) {
+        return unshadowed;
     }
 
-    return CMap::s_terrain2PcfPixelShaders[specular + (layers + (twoChunk + flag80 * 2) * 4) * 2];
+    return shader;
 }
 
 // ref: FUN_0079e4b0
@@ -335,6 +360,86 @@ CGxShader* CMap::GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env) {
 // (FUN_007afee0, FUN_007cb990, FUN_007b2760, FUN_007a03c0, FUN_0079e3c0, FUN_0079e4f0), the
 // liquid vertex buffer list (FUN_007d58b0) and the final capability flag (FUN_0086b9a0) are not
 // ported yet.
+// ref: FUN_0079e4f0
+// Load the two shadow-mapped terrain pixel shader sets, replacing whatever is already there.
+//
+// Called from MapMemInitialize and again from CWorldParam::HwPCFCallback, because which of the
+// two names each set is loaded from depends on whether hardware PCF is on: the _pcf variants
+// sample a real depth texture with the hardware's own comparison, the plain ones do the
+// comparison in the shader against an R32F map. Changing that setting has to reload them, which
+// is why this releases before it creates rather than filling in the gaps.
+//
+// WITHOUT THIS EVERY SHADOWED TERRAIN DRAW HAS NO PIXEL SHADER. Nothing in frozen called it
+// before 2026-09-27 -- the arrays were declared, documented as 'loaded by the shadow map
+// system, which is not ported', and left null. See the fallback in GetTerrainPixelShader.
+void CMap::CreateTerrainShadowShaders() {
+    // ORDERING GUARD, and frozen needs it where the reference does not. CWorldParam::Initialize
+    // registers hwPCF with a default of "1", and CVar::Register runs the callback as part of
+    // registration -- so HwPCFCallback fires, sees the flag change, and asks for a reload long
+    // before MapMemInitialize has a device to load through. Returning here makes
+    // MapMemInitialize's own call the first real one, which is the order the reference ends up in
+    // anyway.
+    if (!g_theGxDevicePtr) {
+        return;
+    }
+
+    for (int32_t i = 0; i < 0x20; i++) {
+        if (CMap::s_terrain2PixelShaders[i]) {
+            g_theGxDevicePtr->ShaderDestroy(&CMap::s_terrain2PixelShaders[i]);
+        }
+    }
+
+    for (int32_t i = 0; i < 0x60; i++) {
+        if (CMap::s_terrain3PixelShaders[i]) {
+            g_theGxDevicePtr->ShaderDestroy(&CMap::s_terrain3PixelShaders[i]);
+        }
+    }
+
+    int32_t pcf = CShaderEffect::s_usePcfFiltering;
+
+    g_theGxDevicePtr->ShaderCreate(
+        CMap::s_terrain2PixelShaders, GxSh_Pixel, "Shaders\\Pixel",
+        pcf ? "Terrain2_pcf" : "Terrain2", 0x20);
+
+    g_theGxDevicePtr->ShaderCreate(
+        CMap::s_terrain3PixelShaders, GxSh_Pixel, "Shaders\\Pixel",
+        pcf ? "Terrain3_pcf" : "Terrain3", 0x60);
+
+    // Whether the archives actually carry these is not answerable from the source, and a set that
+    // silently fails to load is what left the world with no ground in the first place. Counted and
+    // reported so that a run answers it instead of a reading of the code.
+    int32_t valid2 = 0;
+    int32_t valid3 = 0;
+
+    for (int32_t i = 0; i < 0x20; i++) {
+        if (CMap::s_terrain2PixelShaders[i] && CMap::s_terrain2PixelShaders[i]->Valid()) {
+            valid2++;
+        }
+    }
+
+    for (int32_t i = 0; i < 0x60; i++) {
+        if (CMap::s_terrain3PixelShaders[i] && CMap::s_terrain3PixelShaders[i]->Valid()) {
+            valid3++;
+        }
+    }
+
+    fprintf(
+        stderr,
+        "CMap: shadowed terrain pixel shaders, pcf=%d: %s %d/32 valid, %s %d/96 valid\n",
+        pcf,
+        pcf ? "Terrain2_pcf" : "Terrain2", valid2,
+        pcf ? "Terrain3_pcf" : "Terrain3", valid3);
+}
+
+// ref: FUN_0079e7c0
+// Everything the map subsystem allocates once: the terrain shader sets, the low-detail index
+// pool and buffer, then the object heaps.
+//
+// TAGGED EXPLICITLY because the string matcher got it wrong the moment the Terrain2 and Terrain3
+// names landed here. It bound this to FUN_007a2c60 -- a MapObj.cpp function whose only
+// qualification is that it also carries a string beginning 'Terrain' -- while the real body is
+// FUN_0079e7c0, 2068 bytes of exactly these allocations, and its call to
+// CreateTerrainShadowShaders sits at 0x0079e979.
 void CMap::MapMemInitialize() {
     CMapChunk::Initialize();
 
@@ -361,6 +466,10 @@ void CMap::MapMemInitialize() {
     CMap::s_terrainEnvPixelShader[0] = nullptr;
     for (int32_t i = 0; i < 0x20; i++) {
         CMap::s_terrain1PixelShaders[i] = nullptr;
+        CMap::s_terrain2PixelShaders[i] = nullptr;
+    }
+    for (int32_t i = 0; i < 0x60; i++) {
+        CMap::s_terrain3PixelShaders[i] = nullptr;
     }
     for (int32_t i = 0; i < 8; i++) {
         CMap::s_terrain1wPixelShaders[i] = nullptr;
@@ -402,6 +511,10 @@ void CMap::MapMemInitialize() {
     }
 
     g_theGxDevicePtr->ShaderCreate(CMap::s_terrainShadowMapPixelShader, GxSh_Pixel, "Shaders\\Pixel", "TerrainSM", 1);
+
+    // The shadowed sets, which the reference loads from right here (its call to FUN_0079e4f0 is
+    // at 0x0079e979, inside MapMemInitialize).
+    CMap::CreateTerrainShadowShaders();
 
     CMap::s_lowDetailIndexPool = g_theGxDevicePtr->PoolCreate(GxPoolTarget_Index, GxPoolUsage_Dynamic, 0x1800, GxPoolHintBit_Unk0, "CMap::lowDetailIndexPool");
     CMap::s_lowDetailIndexBuf = g_theGxDevicePtr->BufCreate(CMap::s_lowDetailIndexPool, 2, 0xc00, 0);

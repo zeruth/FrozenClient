@@ -18214,7 +18214,7 @@
   "how": "override",
   "module": "GameUI.cpp",
   "refSize": 172,
-  "status": "stub"
+  "status": "ported"
  },
  "00515750": {
   "branchRatio": 0.0,
@@ -22789,7 +22789,7 @@
   "how": "override",
   "module": "SpellBookFrame.cpp",
   "refSize": 112,
-  "status": "stub"
+  "status": "ported"
  },
  "00549b40": {
   "branchRatio": 0.0,
@@ -25196,7 +25196,7 @@
   "how": "override",
   "module": "RaidInfo.cpp",
   "refSize": 388,
-  "status": "stub"
+  "status": "ported"
  },
  "005743b0": {
   "branchRatio": 0.3,
@@ -45676,7 +45676,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.419,
+  "fidelity": 0.452,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
@@ -46217,20 +46217,20 @@
   "status": "stub"
  },
  "0078e070": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/world/CWorldParam.cpp",
    "src/world/cworldparam.cpp"
   ],
   "frozen": "CWorldParam::HwPCFCallback",
-  "frozenSize": 3,
-  "how": "cvar",
+  "frozenSize": 140,
+  "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 149,
-  "status": "stub"
+  "status": "ported"
  },
  "0078e110": {
   "branchRatio": 0.0,
@@ -47206,8 +47206,24 @@
   "refSize": 49,
   "status": "ported"
  },
+ "0079e4f0": {
+  "branchRatio": 0.462,
+  "constOverlap": 0.5,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::CreateTerrainShadowShaders",
+  "frozenSize": 442,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 204,
+  "status": "ported"
+ },
  "0079e5c0": {
-  "branchRatio": 0.6,
+  "branchRatio": 0.5,
   "constOverlap": 0.2,
   "faithful": true,
   "fidelity": 1.0,
@@ -47216,7 +47232,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetTerrainPixelShader",
-  "frozenSize": 280,
+  "frozenSize": 226,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 195,
@@ -47255,16 +47271,16 @@
   "status": "ported"
  },
  "0079e7c0": {
-  "branchRatio": 0.476,
-  "constOverlap": 0.114,
+  "branchRatio": 0.619,
+  "constOverlap": 0.023,
   "faithful": false,
-  "fidelity": 0.786,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
-  "frozen": "CMap::MapMemInitialize",
-  "frozenSize": 1363,
+  "frozen": "CMap::CreateTerrainShadowShaders",
+  "frozenSize": 442,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2068,
@@ -47364,6 +47380,22 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 151,
+  "status": "ported"
+ },
+ "007a2c60": {
+  "branchRatio": 0.458,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::MapMemInitialize",
+  "frozenSize": 1495,
+  "how": "string",
+  "module": "Map.cpp",
+  "refSize": 1122,
   "status": "ported"
  },
  "007a6140": {
@@ -64670,6 +64702,22 @@
   "refSize": 453,
   "status": "ported"
  },
+ "00872ad0": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetPcfFiltering",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "ShaderEffect.cpp",
+  "refSize": 40,
+  "status": "ported"
+ },
  "00872b00": {
   "branchRatio": 1.0,
   "constOverlap": 0.025,
@@ -65032,7 +65080,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapDeviceRestore",
-  "frozenSize": 0,
+  "frozenSize": 11,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 11,

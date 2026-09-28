@@ -58,6 +58,11 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         // Static functions
         static void ComputeLocalLights(LocalLights* localLights, uint32_t localLightsCount, CM2Light** lights, const C3Vector* a4);
         static void InitShaderSystem(int32_t enableShaders, int32_t usePcf);
+
+        // Turn hardware PCF filtering on or off after startup. It stays off unless shaders are
+        // enabled at all, which is the same condition InitShaderSystem applies.
+        // ref: FUN_00872ad0
+        static void SetPcfFiltering(int32_t usePcf);
         static void SetAlphaRef(float alphaRef);
         static void SetDiffuse(const C4Vector& diffuse);
         static void SetEmissive(const C4Vector& emissive);

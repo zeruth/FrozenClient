@@ -76776,6 +76776,22 @@
 "refs": [],
 "line": 145
 },
+"CShaderEffect::SetPcfFiltering": {
+"files": [
+"src/gx/shader/cshadereffect.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"1"
+],
+"branches": 1,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 159
+},
 "CShaderEffect::SetAlphaRef": {
 "files": [
 "src/gx/shader/cshadereffect.cpp"
@@ -76794,7 +76810,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 154
+"line": 164
 },
 "PackMaterialColor": {
 "files": [
@@ -76818,7 +76834,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 169
+"line": 179
 },
 "CShaderEffect::SetDiffuse": {
 "files": [
@@ -76838,7 +76854,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 187
+"line": 197
 },
 "CShaderEffect::SetEmissive": {
 "files": [
@@ -76858,7 +76874,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 197
+"line": 207
 },
 "CShaderEffect::SetFogEnabled": {
 "files": [
@@ -76885,7 +76901,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 207
+"line": 217
 },
 "CShaderEffect::SetFogParams": {
 "files": [
@@ -76910,7 +76926,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 225
+"line": 235
 },
 "CShaderEffect::SetLightEnabled": {
 "files": [
@@ -76925,7 +76941,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 254
+"line": 264
 },
 "CShaderEffect::SetLocalLighting": {
 "files": [
@@ -76964,7 +76980,7 @@
 "stub": false,
 "lines": 51,
 "refs": [],
-"line": 263
+"line": 273
 },
 "CShaderEffect::PixelPermute": {
 "files": [
@@ -76981,7 +76997,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 325
+"line": 335
 },
 "CShaderEffect::SetShadersForGeometry": {
 "files": [
@@ -77004,7 +77020,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 343
+"line": 353
 },
 "CShaderEffect::SetWorldViewConstants": {
 "files": [
@@ -77028,7 +77044,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 361
+"line": 371
 },
 "CShaderEffect::SetShaders": {
 "files": [
@@ -77053,7 +77069,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 383
+"line": 393
 },
 "CShaderEffect::SetTexMtx": {
 "files": [
@@ -77071,7 +77087,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 406
+"line": 416
 },
 "CShaderEffect::SetTexMtx_Identity": {
 "files": [
@@ -77091,7 +77107,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 422
+"line": 432
 },
 "CShaderEffect::SetTexMtx_SphereMap": {
 "files": [
@@ -77111,7 +77127,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 438
+"line": 448
 },
 "CShaderEffect::UpdateProjMatrix": {
 "files": [
@@ -77131,7 +77147,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 453
+"line": 463
 },
 "CShaderEffect::InitEffect": {
 "files": [
@@ -77156,7 +77172,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 465
+"line": 475
 },
 "CShaderEffect::SetFixedFunc": {
 "files": [
@@ -77171,7 +77187,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 481
+"line": 491
 },
 "CShaderEffect::SetCurrent": {
 "files": [
@@ -77184,7 +77200,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 491
+"line": 501
 },
 "OpFromName": {
 "files": [
@@ -197840,7 +197856,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 48
+"line": 54
 },
 "CWorldParam::BaseMipCallback": {
 "files": [
@@ -197853,7 +197869,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 56
+"line": 62
 },
 "CWorldParam::BSPCacheCallback": {
 "files": [
@@ -197866,7 +197882,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 61
+"line": 67
 },
 "CWorldParam::EnvironmentDetailCallback": {
 "files": [
@@ -197886,7 +197902,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 67
+"line": 73
 },
 "CWorldParam::ExtShadowQualityCallback": {
 "files": [
@@ -197905,7 +197921,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 86
+"line": 92
 },
 "CWorldParam::FarClipCallback": {
 "files": [
@@ -197921,7 +197937,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 100
+"line": 106
 },
 "CWorldParam::FarClipOverrideCallback": {
 "files": [
@@ -197941,7 +197957,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 107
+"line": 113
 },
 "CWorldParam::FootstepBiasCallback": {
 "files": [
@@ -197954,7 +197970,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 117
+"line": 123
 },
 "CWorldParam::GroundEffectDensityCallback": {
 "files": [
@@ -197967,7 +197983,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 122
+"line": 128
 },
 "CWorldParam::GroundEffectDistCallback": {
 "files": [
@@ -197980,7 +197996,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 127
+"line": 133
 },
 "CWorldParam::HorizonFarClipScaleCallback": {
 "files": [
@@ -198000,7 +198016,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 133
+"line": 139
 },
 "CWorldParam::HorizonNearClipScaleCallback": {
 "files": [
@@ -198020,20 +198036,36 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 146
+"line": 152
 },
 "CWorldParam::HwPCFCallback": {
 "files": [
 "src/world/cworldparam.cpp"
 ],
-"callseq": [],
-"strings": [],
-"consts": [],
-"branches": 0,
-"stub": true,
-"lines": 4,
+"callseq": [
+"SStrToInt",
+"ConsoleWrite",
+"GxCaps",
+"ConsoleWrite",
+"ConsoleWrite",
+"CShaderEffect::SetPcfFiltering",
+"ShadowMapDeviceRestore",
+"CMap::CreateTerrainShadowShaders"
+],
+"strings": [
+"Hardware PCF disabled.",
+"Hardware PCF enabled.",
+"Hardware PCF not supported by this graphics card."
+],
+"consts": [
+"0",
+"1"
+],
+"branches": 3,
+"stub": false,
+"lines": 27,
 "refs": [],
-"line": 158
+"line": 177
 },
 "CWorldParam::SkyCloudLODCallback": {
 "files": [
@@ -198046,7 +198078,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 163
+"line": 205
 },
 "CWorldParam::ViolenceLevelCallback": {
 "files": [
@@ -198059,7 +198091,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 169
+"line": 211
 },
 "CWorldParam::Initialize": {
 "files": [
@@ -198196,7 +198228,7 @@
 "stub": false,
 "lines": 424,
 "refs": [],
-"line": 175
+"line": 217
 },
 "CWorldParam::LodCallback": {
 "files": [
@@ -198209,7 +198241,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 600
+"line": 642
 },
 "CWorldParam::MapObjLightLODCallback": {
 "files": [
@@ -198229,7 +198261,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 606
+"line": 648
 },
 "CWorldParam::MapShadowsCallback": {
 "files": [
@@ -198249,7 +198281,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 621
+"line": 663
 },
 "CWorldParam::MaxLightsCallback": {
 "files": [
@@ -198270,7 +198302,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 636
+"line": 678
 },
 "CWorldParam::NearClipCallback": {
 "files": [
@@ -198286,7 +198318,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 651
+"line": 693
 },
 "CWorldParam::ObjectFadeCallback": {
 "files": [
@@ -198306,7 +198338,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 658
+"line": 700
 },
 "CWorldParam::ObjectFadeZFillCallback": {
 "files": [
@@ -198326,7 +198358,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 673
+"line": 715
 },
 "CWorldParam::OcclusionCallback": {
 "files": [
@@ -198346,7 +198378,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 688
+"line": 730
 },
 "CWorldParam::ParticleDensityCallback": {
 "files": [
@@ -198368,7 +198400,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 701
+"line": 743
 },
 "CWorldParam::ProjectedTexturesCallback": {
 "files": [
@@ -198388,7 +198420,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 716
+"line": 758
 },
 "CWorldParam::ShadowLevelCallback": {
 "files": [
@@ -198410,7 +198442,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 731
+"line": 773
 },
 "CWorldParam::ShowFootprintsCallback": {
 "files": [
@@ -198430,7 +198462,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 744
+"line": 786
 },
 "CWorldParam::SpecularCallback": {
 "files": [
@@ -198443,7 +198475,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 758
+"line": 800
 },
 "CWorldParam::TerrainAlphaBitDepthCallback": {
 "files": [
@@ -198456,7 +198488,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 763
+"line": 805
 },
 "CWorldParam::TextureCacheSizeCallback": {
 "files": [
@@ -198469,7 +198501,7 @@
 "stub": true,
 "lines": 4,
 "refs": [],
-"line": 768
+"line": 810
 },
 "CWorldParam::TextureLodBiasCallback": {
 "files": [
@@ -198490,7 +198522,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 774
+"line": 816
 },
 "CWorldParam::WaterLODCallback": {
 "files": [
@@ -198510,7 +198542,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 789
+"line": 831
 },
 "CWorldParam::WorldPoolUsageCallback": {
 "files": [
@@ -198533,7 +198565,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 802
+"line": 844
 },
 "Liquid::CMaterialSettings::GetInt": {
 "files": [
@@ -201003,7 +201035,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 147
+"line": 148
 },
 "CMap::Load": {
 "files": [
@@ -201033,7 +201065,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 161
+"line": 162
 },
 "CMap::LoadWdt": {
 "files": [
@@ -201070,7 +201102,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 203
+"line": 204
 },
 "CMap::LoadSettings": {
 "files": [
@@ -201098,7 +201130,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 236
+"line": 237
 },
 "CMap::SetTerrainShaderLevel": {
 "files": [
@@ -201113,7 +201145,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 275
+"line": 276
 },
 "CMap::GetTerrainVertexShader": {
 "files": [
@@ -201130,7 +201162,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 283
+"line": 284
 },
 "CMap::GetTerrainPixelShader": {
 "files": [
@@ -201138,7 +201170,8 @@
 ],
 "callseq": [
 "GxCaps",
-"GxCaps"
+"GxCaps",
+"CGxShader::Valid"
 ],
 "strings": [],
 "consts": [
@@ -201150,11 +201183,11 @@
 "4",
 "8"
 ],
-"branches": 5,
+"branches": 6,
 "stub": false,
-"lines": 24,
+"lines": 48,
 "refs": [],
-"line": 294
+"line": 295
 },
 "CMap::GetTerrain0PixelShader": {
 "files": [
@@ -201171,7 +201204,40 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 320
+"line": 345
+},
+"CMap::CreateTerrainShadowShaders": {
+"files": [
+"src/world/map/cmap.cpp"
+],
+"callseq": [
+"CGxDevice::ShaderDestroy",
+"CGxDevice::ShaderDestroy",
+"CGxDevice::ShaderCreate",
+"CGxDevice::ShaderCreate",
+"CGxShader::Valid",
+"CGxShader::Valid",
+"__acrt_iob_func",
+"fprintf"
+],
+"strings": [
+"CMap: shadowed terrain pixel shaders, pcf=%d: %s %d/32 valid, %s %d/96 valid\n",
+"Shaders\\Pixel",
+"Terrain2",
+"Terrain2_pcf",
+"Terrain3",
+"Terrain3_pcf"
+],
+"consts": [
+"0",
+"0x20",
+"0x60"
+],
+"branches": 13,
+"stub": false,
+"lines": 58,
+"refs": [],
+"line": 375
 },
 "CMap::MapMemInitialize": {
 "files": [
@@ -201199,6 +201265,7 @@
 "CGxDevice::ShaderCreate",
 "CGxDevice::ShaderCreate",
 "CGxDevice::ShaderCreate",
+"CMap::CreateTerrainShadowShaders",
 "CGxDevice::PoolCreate",
 "CGxDevice::BufCreate",
 "CMap::MapMemInitializeHeaps"
@@ -201222,6 +201289,7 @@
 "0",
 "0x1800",
 "0x20",
+"0x60",
 "0x80",
 "0xc00",
 "1",
@@ -201234,11 +201302,11 @@
 "7",
 "8"
 ],
-"branches": 10,
+"branches": 11,
 "stub": false,
-"lines": 77,
+"lines": 85,
 "refs": [],
-"line": 338
+"line": 443
 },
 "CMap::MapMemInitializeHeaps": {
 "files": [
@@ -201306,7 +201374,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 416
+"line": 529
 },
 "CMap::MapMemAlloc": {
 "files": [
@@ -201325,7 +201393,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 444
+"line": 557
 },
 "CMap::MapMemFree": {
 "files": [
@@ -201344,7 +201412,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 449
+"line": 562
 },
 "CMap::UnlinkDoodadDef": {
 "files": [
@@ -201361,7 +201429,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 454
+"line": 567
 },
 "CMap::AllocMapObj": {
 "files": [
@@ -201377,7 +201445,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 462
+"line": 575
 },
 "CMap::FreeMapObj": {
 "files": [
@@ -201394,7 +201462,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 477
+"line": 590
 },
 "CMap::AllocMapObjGroup": {
 "files": [
@@ -201410,7 +201478,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 486
+"line": 599
 },
 "CMap::FreeMapObjGroup": {
 "files": [
@@ -201427,7 +201495,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 501
+"line": 614
 },
 "CMap::FreeArea": {
 "files": [
@@ -201444,7 +201512,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 510
+"line": 623
 },
 "CMap::FreeAreaMed": {
 "files": [
@@ -201461,7 +201529,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 519
+"line": 632
 },
 "CMap::FreeChunk": {
 "files": [
@@ -201478,7 +201546,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 528
+"line": 641
 },
 "CMap::AllocDoodadDef": {
 "files": [
@@ -201494,7 +201562,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 537
+"line": 650
 },
 "CMap::FreeDoodadDef": {
 "files": [
@@ -201517,7 +201585,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 552
+"line": 665
 },
 "CMap::FreeEntity": {
 "files": [
@@ -201534,7 +201602,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 565
+"line": 678
 },
 "CMap::FreeLight": {
 "files": [
@@ -201550,7 +201618,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 575
+"line": 688
 },
 "CMap::FreeMapObjDefGroup": {
 "files": [
@@ -201567,7 +201635,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 582
+"line": 695
 },
 "CMap::AllocMapObjDef": {
 "files": [
@@ -201583,7 +201651,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 591
+"line": 704
 },
 "CMap::FreeMapObjDef": {
 "files": [
@@ -201611,7 +201679,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 606
+"line": 719
 },
 "CMap::UnlinkMapObjDef": {
 "files": [
@@ -201628,7 +201696,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 645
+"line": 758
 },
 "CMap::FreeChunkLiquid": {
 "files": [
@@ -201645,7 +201713,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 653
+"line": 766
 },
 "CMap::AllocRenderChunk": {
 "files": [
@@ -201666,7 +201734,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 666
+"line": 779
 },
 "CMap::FreeRenderChunk": {
 "files": [
@@ -201683,7 +201751,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 685
+"line": 798
 },
 "CMap::AllocEntity": {
 "files": [
@@ -201701,7 +201769,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 692
+"line": 805
 },
 "CMap::AllocBaseObjLink": {
 "files": [
@@ -201719,7 +201787,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 716
+"line": 829
 },
 "CMap::AllocArea": {
 "files": [
@@ -201737,7 +201805,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 744
+"line": 857
 },
 "CMap::AllocChunk": {
 "files": [
@@ -201755,7 +201823,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 761
+"line": 874
 },
 "CMap::AllocLight": {
 "files": [
@@ -201773,7 +201841,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 778
+"line": 891
 },
 "CMap::AllocMapObjDefGroup": {
 "files": [
@@ -201791,7 +201859,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 795
+"line": 908
 },
 "CMap::ChunkAt": {
 "files": [
@@ -201814,7 +201882,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 819
+"line": 932
 },
 "CMap::GetTerrainType": {
 "files": [
@@ -201841,7 +201909,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 865
+"line": 978
 },
 "CMap::GetTerrainHeight": {
 "files": [
@@ -201865,7 +201933,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 931
+"line": 1044
 },
 "CMap::GetTerrainLiquid": {
 "files": [
@@ -201897,7 +201965,7 @@
 "stub": false,
 "lines": 58,
 "refs": [],
-"line": 964
+"line": 1077
 },
 "CMap::UpdatePendingEntities": {
 "files": [
@@ -201920,7 +201988,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1031
+"line": 1144
 },
 "CMap::ForEachDoodadModel": {
 "files": [
@@ -201941,7 +202009,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1067
+"line": 1180
 },
 "CMap::BucketEntities": {
 "files": [
@@ -201960,7 +202028,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1107
+"line": 1220
 },
 "CMap::AllocChunkLiquid": {
 "files": [
@@ -201978,7 +202046,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1124
+"line": 1237
 },
 "CMap::FreeBaseObjLink": {
 "files": [
@@ -201996,7 +202064,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1141
+"line": 1254
 },
 "CMap::AllocAreaLow": {
 "files": [
@@ -202012,7 +202080,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1155
+"line": 1268
 },
 "CMap::FreeAreaLowObject": {
 "files": [
@@ -202028,7 +202096,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1170
+"line": 1283
 },
 "CMap::FreeAreaLow": {
 "files": [
@@ -202043,7 +202111,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1176
+"line": 1289
 },
 "CMap::CreateArea": {
 "files": [
@@ -202064,7 +202132,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1187
+"line": 1300
 },
 "CMap::UnloadArea": {
 "files": [
@@ -202082,7 +202150,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1216
+"line": 1329
 },
 "CMap::DestroyChunk": {
 "files": [
@@ -202098,7 +202166,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1223
+"line": 1336
 },
 "CMap::AreaDistanceSq": {
 "files": [
@@ -202111,7 +202179,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1230
+"line": 1343
 },
 "CMap::SafeOpen": {
 "files": [
@@ -202133,7 +202201,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1254
+"line": 1367
 },
 "CMap::SafeRead": {
 "files": [
@@ -202157,7 +202225,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1267
+"line": 1380
 },
 "CMap::AsyncLoadCleanup": {
 "files": [
@@ -202173,7 +202241,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 1283
+"line": 1396
 },
 "CMap::LoadTexture": {
 "files": [
@@ -202194,7 +202262,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1294
+"line": 1407
 },
 "CMap::Update": {
 "files": [
@@ -202217,7 +202285,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1315
+"line": 1428
 },
 "CMap::UnloadAll": {
 "files": [
@@ -202238,7 +202306,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1342
+"line": 1455
 },
 "CMap::ClearFrameChunkList": {
 "files": [
@@ -202255,7 +202323,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1360
+"line": 1473
 },
 "CMap::UpdateFrameLiquids": {
 "files": [
@@ -202275,7 +202343,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 1374
+"line": 1487
 },
 "CMap::Render": {
 "files": [
@@ -202347,7 +202415,7 @@
 "stub": false,
 "lines": 234,
 "refs": [],
-"line": 1395
+"line": 1508
 },
 "CMap::AgeRenderChunks": {
 "files": [
@@ -202368,7 +202436,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1633
+"line": 1746
 },
 "CMap::InitializeRenderChunks": {
 "files": [
@@ -202390,7 +202458,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1660
+"line": 1773
 },
 "CMap::AllocBufEntry": {
 "files": [
@@ -202423,7 +202491,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 1682
+"line": 1795
 },
 "CMap::RecycleBufBlocks": {
 "files": [
@@ -202448,7 +202516,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1760
+"line": 1873
 },
 "CMap::CreateRenderChunkPools": {
 "files": [
@@ -202483,7 +202551,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1792
+"line": 1905
 },
 "CMap::DestroyRenderChunkPools": {
 "files": [
@@ -202501,7 +202569,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1828
+"line": 1941
 },
 "CMap::FreeBufBlocks": {
 "files": [
@@ -202528,7 +202596,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1848
+"line": 1961
 },
 "CMap::ReleaseAllBufEntries": {
 "files": [
@@ -202545,7 +202613,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1883
+"line": 1996
 },
 "CMap::SetupChunkLighting": {
 "files": [
@@ -202568,7 +202636,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1896
+"line": 2009
 },
 "CMap::UpdateDetailDoodads": {
 "files": [
@@ -202581,7 +202649,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1905
+"line": 2018
 },
 "CompareAreaDistance": {
 "files": [
@@ -202598,7 +202666,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1910
+"line": 2023
 },
 "CMap::UpdateAreas": {
 "files": [
@@ -202644,7 +202712,7 @@
 "stub": false,
 "lines": 122,
 "refs": [],
-"line": 1943
+"line": 2056
 },
 "CMap::UpdateAreaChunks": {
 "files": [
@@ -202670,7 +202738,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 2069
+"line": 2182
 },
 "CMap::LinkToMapObjDefGroup": {
 "files": [
@@ -202690,7 +202758,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 2116
+"line": 2229
 },
 "CMap::GetLoadedArea": {
 "files": [
@@ -202705,7 +202773,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2134
+"line": 2247
 },
 "CMap::BuildBspLeafCache": {
 "files": [
@@ -202734,7 +202802,7 @@
 "stub": false,
 "lines": 54,
 "refs": [],
-"line": 2150
+"line": 2263
 },
 "CMap::AddCellSpanY": {
 "files": [
@@ -202753,7 +202821,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 2208
+"line": 2321
 },
 "CMap::AddCellSpanX": {
 "files": [
@@ -202772,7 +202840,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 2231
+"line": 2344
 },
 "CMapArea::CMapArea": {
 "files": [

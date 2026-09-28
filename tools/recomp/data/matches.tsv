@@ -2891,7 +2891,7 @@ addr	how	frozen	evidence
 0078ded0	annotated	CWorldParam::MapObjLightLODCallback	tag in src/world/CWorldParam.cpp
 0078df00	cvar	CWorldParam::BaseMipCallback	callback of CVar::Register("baseMip") on both sides
 0078df90	cvar	CWorldParam::BSPCacheCallback	callback of CVar::Register("bspcache") on both sides
-0078e070	cvar	CWorldParam::HwPCFCallback	callback of CVar::Register("hwPCF") on both sides
+0078e070	annotated	CWorldParam::HwPCFCallback	tag in src/world/CWorldParam.cpp
 0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
 0078e400	string	CWorldParam::Initialize	unique "0.125"
 0078f370	annotated	CAaBox::Intersects	tag in lib/typhoon/tempest/box/CAaBox.cpp
@@ -2953,16 +2953,18 @@ addr	how	frozen	evidence
 0079b870	override	Liquid::LiquidTypeBlock	
 0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
+0079e4f0	annotated	CMap::CreateTerrainShadowShaders	tag in src/world/map/CMap.cpp
 0079e5c0	annotated	CMap::GetTerrainPixelShader	tag in src/world/map/CMap.cpp
 0079e6a0	annotated	CMap::UnlinkMapObjDef	tag in src/world/map/CMap.cpp
 0079e780	annotated	CMap::ReleaseAllBufEntries	tag in src/world/map/CMap.cpp
-0079e7c0	annotated	CMap::MapMemInitialize	tag in src/world/map/CMap.cpp
+0079e7c0	annotated	CMap::CreateTerrainShadowShaders	tag in src/world/map/CMap.cpp
 007a0530	annotated	CMap::GetTerrainType	tag in src/world/map/CMap.cpp
 007a0820	annotated	CMap::GetTerrainLiquid	tag in src/world/map/CMap.cpp
 007a0d60	override	CMapEntity::FloorLight	
 007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
 007a20e0	annotated	CMap::AddCellSpanY	tag in src/world/map/CMap.cpp
 007a2180	annotated	CMap::AddCellSpanX	tag in src/world/map/CMap.cpp
+007a2c60	string	CMap::MapMemInitialize	score 0.50 shared Terrain
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007a61d0	annotated	ClassifyCorner	tag in src/world/map/CMapObjGroup.cpp
@@ -4063,6 +4065,7 @@ addr	how	frozen	evidence
 0086d6d0	annotated	OsTlsGetValue	tag in lib/common/common/thread/OsTls.cpp
 008728c0	annotated	CShaderEffect::SetFixedFunc	tag in src/gx/shader/CShaderEffect.cpp
 00872900	annotated	CShaderEffect::ComputeLocalLights	tag in src/gx/shader/CShaderEffect.cpp
+00872ad0	annotated	CShaderEffect::SetPcfFiltering	tag in src/gx/shader/CShaderEffect.cpp
 00872b00	annotated	CShaderEffect::SetWorldViewConstants	tag in src/gx/shader/CShaderEffect.cpp
 00872c10	override	CShaderEffect::UpdateProjMatrix	
 00872ce0	callorder	CShaderEffect::InitShaderSystem	same slot between linked calls in 00780f50=CWorld::Initialize

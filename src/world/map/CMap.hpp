@@ -146,11 +146,15 @@ class CMap {
         static CGxShader* s_terrain1PixelShaders[0x20];   // DAT_00ce0408: Terrain1, up to 32
         static CGxShader* s_terrain1wPixelShaders[8];     // DAT_00ce0428: Terrain1w / Terrain1w_1..4
         static CGxShader* s_terrainShadowMapPixelShader[1]; // DAT_00ce0000: TerrainSM
-        // The shadow-mapped terrain pixel shaders (DAT_00ce0208 / DAT_00ce0388: Terrain2, Terrain3
-        // and their _pcf variants), loaded by the shadow map system (FUN_0079e7c0's caller), which
-        // is not ported: every entry is null, so the shadow levels fall through to no shader
-        static CGxShader* s_terrain2PixelShaders[0x60];
-        static CGxShader* s_terrain2PcfPixelShaders[0x20];
+        // The shadow-mapped terrain pixel shaders, loaded by CreateTerrainShadowShaders.
+        //
+        // THE NAMES USED TO BE THE WRONG WAY ROUND and it cost a debugging session, so they say
+        // what each array actually holds. The 0x60-entry one is DAT_00ce0208 and it is loaded with
+        // Terrain3 (or Terrain3_pcf); the 0x20-entry one is DAT_00ce0388 and it is loaded with
+        // Terrain2 (or Terrain2_pcf). Reading the reference's indexing the other way round selects
+        // a set that is a third of the size and mostly null.
+        static CGxShader* s_terrain3PixelShaders[0x60];   // DAT_00ce0208: Terrain3 / Terrain3_pcf
+        static CGxShader* s_terrain2PixelShaders[0x20];   // DAT_00ce0388: Terrain2 / Terrain2_pcf
         // The map's .wdl: the low-detail height grid per tile and the far-away buildings.
         static CMapLowDetail s_lowDetail;
         static CGxPool* s_lowDetailIndexPool;             // DAT_00cdfffc
@@ -196,6 +200,10 @@ class CMap {
         static CGxShader* GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env);
         static CGxShader* GetTerrainVertexShader(int32_t lights, int32_t layers, int32_t specular, int32_t color, int32_t chunkSpecular, int32_t shadow);
         static CGxShader* GetTerrainPixelShader(int32_t twoChunk, int32_t layers, int32_t shadowLevel, int32_t specular, int32_t flag80);
+        // Load the two shadow-mapped terrain pixel shader sets, replacing any already loaded.
+        // ref: FUN_0079e4f0
+        static void CreateTerrainShadowShaders();
+
         static void MapMemInitialize();
         static void Update(int32_t update);
         static void Render(const C3Vector& cameraPos, float dt);

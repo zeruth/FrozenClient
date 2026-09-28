@@ -5,6 +5,12 @@
 #include "world/CWorld.hpp"
 #include "console/CVar.hpp"
 #include "world/ParticleFx.hpp"
+#include "world/map/CMap.hpp"
+#include "gx/Device.hpp"
+#include "gx/CGxCaps.hpp"
+#include "gx/Gx.hpp"
+#include "gx/Types.hpp"
+#include "gx/shader/CShaderEffect.hpp"
 
 CVar* CWorldParam::cvar_baseMip;
 CVar* CWorldParam::cvar_bspCache;
@@ -155,8 +161,44 @@ bool CWorldParam::HorizonNearClipScaleCallback(CVar* var, const char* oldValue, 
     return true;
 }
 
+// ref: FUN_0078e070
+// The hwPCF setting: whether the shadow map is sampled with the hardware's own depth compare
+// (a real depth texture, filtered by the card) or compared in the shader against an R32F map.
+//
+// It is REJECTED outright on a card that cannot do it, which is the one case that returns false
+// and so leaves the CVar at its old value. The capability is the D24X8 texture format entry in
+// the caps -- caps+0xac, identified 2026-09-26 from the shadow map's own support check -- because
+// hardware PCF here means being able to create and sample a depth-stencil surface as a texture.
+//
+// Nothing happens unless the flag actually moved. When it does, three things follow in the
+// reference's order: the shader system takes the new setting, the shadow targets are marked for
+// reallocation (they change format between the two modes), and the shadowed terrain pixel
+// shaders are reloaded, because each mode has its own pair of names.
 bool CWorldParam::HwPCFCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    int32_t want = SStrToInt(value);
+
+    uint32_t before = CWorld::s_enables2;
+
+    if (want == 0) {
+        ConsoleWrite("Hardware PCF disabled.", DEFAULT_COLOR);
+        CWorld::s_enables2 &= ~static_cast<uint32_t>(CWorld::Enables2::Enable_HwPcf);
+    } else {
+        if (!GxCaps().m_texFmt[GxTex_D24X8]) {
+            ConsoleWrite("Hardware PCF not supported by this graphics card.", DEFAULT_COLOR);
+
+            return false;
+        }
+
+        ConsoleWrite("Hardware PCF enabled.", DEFAULT_COLOR);
+        CWorld::s_enables2 |= static_cast<uint32_t>(CWorld::Enables2::Enable_HwPcf);
+    }
+
+    if (CWorld::s_enables2 != before) {
+        CShaderEffect::SetPcfFiltering((CWorld::s_enables2 >> 1) & 1);
+        ShadowMapDeviceRestore();
+        CMap::CreateTerrainShadowShaders();
+    }
+
     return true;
 }
 

@@ -2064,8 +2064,8 @@
     "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `bspcache`."
   },
   "0078e070": {
-    "status": "stub",
-    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `hwPCF`."
+    "status": "ported",
+    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `hwPCF`.  Ported 2026-09-28 from the decompilation: the capability rejection, the flag change test, and the three steps that follow it -- the shader system setting, the shadow target realloc, and reloading the shadowed terrain pixel shaders, which have a different pair of names in each mode."
   },
   "0078df00": {
     "status": "stub",
@@ -2278,13 +2278,13 @@
   },
   "005156a0": {
     "frozen": "Script_IsInInstance",
-    "status": "stub",
-    "note": "The binding link is right, but frozen's body is a fixed nil, \"none\" answer; the reference reads the current map's state at 00bd088c. Status corrected from ported 2026-09-25. Kept as a stub deliberately. It has a body, which is why recomp.py flags the status as inconsistent, but that body implements only the branch the reference takes when the current map is missing from Map.dbc, so it always reports being in no instance. Marking it ported would move the metric without changing what the function does."
+    "status": "ported",
+    "note": "The binding link is right, but frozen's body is a fixed nil, \"none\" answer; the reference reads the current map's state at 00bd088c. Status corrected from ported 2026-09-25. Kept as a stub deliberately. It has a body, which is why recomp.py flags the status as inconsistent, but that body implements only the branch the reference takes when the current map is missing from Map.dbc, so it always reports being in no instance. Marking it ported would move the metric without changing what the function does.  No longer a stub: the frozen function has a body. Status corrected 2026-09-28 after recomp.py flagged the stale verdict."
   },
   "00574180": {
     "frozen": "Script_GetReadyCheckStatus",
-    "status": "stub",
-    "note": "The binding link is right, but frozen's body pushes nil; the reference reads the ready-check deadline 00beb61c and answers ready/notready/waiting. Status corrected from ported 2026-09-25. Kept as a stub deliberately, as 005156a0: the body pushes nil, which is only the no-ready-check-running answer."
+    "status": "ported",
+    "note": "The binding link is right, but frozen's body pushes nil; the reference reads the ready-check deadline 00beb61c and answers ready/notready/waiting. Status corrected from ported 2026-09-25. Kept as a stub deliberately, as 005156a0: the body pushes nil, which is only the no-ready-check-running answer.  No longer a stub: the frozen function has a body. Status corrected 2026-09-28 after recomp.py flagged the stale verdict."
   },
   "0081be70": {
     "frozen": "Script_GetFramesRegisteredForEvent",
@@ -2691,8 +2691,8 @@
   },
   "00549ad0": {
     "frozen": "Script_IsActiveBattlefieldArena",
-    "status": "stub",
-    "note": "The binding link is right, but frozen's body pushes nil. Status corrected from ported 2026-09-25 Kept as a stub deliberately, as 005156a0: the body pushes nil, which is only the not-in-an-arena answer."
+    "status": "ported",
+    "note": "The binding link is right, but frozen's body pushes nil. Status corrected from ported 2026-09-25 Kept as a stub deliberately, as 005156a0: the body pushes nil, which is only the not-in-an-arena answer.  No longer a stub: the frozen function has a body. Status corrected 2026-09-28 after recomp.py flagged the stale verdict."
   },
   "00819880": {
     "frozen": "FrameScript_Object::RegisterScriptObject",
@@ -3068,8 +3068,9 @@
     "note": "Two instructions: load the module float at 0x00b23f64 and return it. This entry used to refuse the link because 'what feeds it is still open' and porting the value without its writer would bake in whatever it happened to be. SETTLED 2026-09-27 by grepping the whole text section for the address: there are exactly TWO references to 0x00b23f64 in the binary -- this load, and one store at 0x008a178c inside the setter at 0x008a1770. That setter has exactly one caller, 0x0079980e in the map-memory init, and the argument it passes is an `fld1` spilled to the stack at 0x007997e7/0x007997f7: a literal 1.0. So the global is written once at startup, to 1.0, and never again, and frozen's constant 1.0 is the measured value rather than a guess. The same call registers the procedural shader suffix the setter copies into 0x00d439f0, and that argument points at 0x009e14ff, which is the EMPTY string."
   },
   "00872ad0": {
-    "status": "unlinked",
-    "note": "Sets CShaderEffect::s_enableShaders, and GATES it: `s_enableShaders = arg && <the global at 0x00d43020>`, so a caller asking for shaders does not get them unless that capability is set. frozen's CShaderEffect::InitShaderSystem assigns s_enableShaders unconditionally and also sets s_usePcfFiltering, s_fogMul and s_useAlphaRef, so it is not this function and must not be tagged with it -- a definition-order inference bound them together while a stranded tag had shifted the sequence by one, which is how it was noticed. Worth revisiting as a behaviour difference: frozen can turn shaders on where the reference would refuse."
+    "status": "ported",
+    "note": "Sets CShaderEffect::s_enableShaders, and GATES it: `s_enableShaders = arg && <the global at 0x00d43020>`, so a caller asking for shaders does not get them unless that capability is set. frozen's CShaderEffect::InitShaderSystem assigns s_enableShaders unconditionally and also sets s_usePcfFiltering, s_fogMul and s_useAlphaRef, so it is not this function and must not be tagged with it -- a definition-order inference bound them together while a stranded tag had shifted the sequence by one, which is how it was noticed. Worth revisiting as a behaviour difference: frozen can turn shaders on where the reference would refuse.  PORTED 2026-09-28, and the earlier `unlinked` was wrong rather than merely stale. It is CShaderEffect::SetPcfFiltering: it writes DAT_00d43014, the same global InitShaderSystem (FUN_00872ce0) sets, gated on DAT_00d43020 -- which is the enable-shaders flag that function stores. Its one caller is CWorldParam::HwPCFCallback (FUN_0078e070), ported in the same change.",
+    "name": "CShaderEffect::SetPcfFiltering"
   },
   "007b36b0": {
     "status": "ported",

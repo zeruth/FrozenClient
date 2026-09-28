@@ -150,6 +150,16 @@ void CShaderEffect::InitShaderSystem(int32_t enableShaders, int32_t usePcf) {
     CShaderEffect::s_useAlphaRef = GxCaps().int130;
 }
 
+// ref: FUN_00872ad0
+// Turn hardware PCF filtering on or off after startup.
+//
+// The reference tests the enable-shaders flag it stored in InitShaderSystem, not the argument
+// alone: asking for PCF on a device with shaders off leaves it off. Its two branches write the
+// same global from opposite sides of one compare, which is why this reads as one expression.
+void CShaderEffect::SetPcfFiltering(int32_t usePcf) {
+    CShaderEffect::s_usePcfFiltering = usePcf && CShaderEffect::s_enableShaders ? 1 : 0;
+}
+
 // ref: FUN_00873ba0
 void CShaderEffect::SetAlphaRef(float alphaRef) {
     CShaderEffect::s_fogColorAlphaRef.w = alphaRef;
