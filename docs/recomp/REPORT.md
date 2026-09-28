@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-27 21:03 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-27 21:07 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,19 +8,19 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26943 | 5.35M |
-| mapped to a frozen function | 4731 (=) (17.6%) | 1021.2k (18.6%) |
-| &nbsp;&nbsp;ported | 4052 (=) | 844.9k |
+| mapped to a frozen function | 4730 (-1) (17.6%) | 1020.6k (18.6%) |
+| &nbsp;&nbsp;ported | 4051 (-1) | 844.3k |
 | &nbsp;&nbsp;stub (unimplemented body) | 573 (=) | 123.1k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
 | **faithful** (linked, not stub, call order >= 80%) | **2479 (=) (9.2%)** | **350.9k (6.4%)** |
-| unmapped | 22212 | 4.35M |
-| world spine (reachable from OnFrameRender) | 5378, mapped 1637 (=) (30.4%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5645, mapped 1660 (=) (29.4%) | |
-| **render surface** (the modules that draw the world) | **4780, mapped 1221 (=) (25.5%)** | |
+| unmapped | 22213 | 4.36M |
+| world spine (reachable from OnFrameRender) | 5378, mapped 1636 (-1) (30.4%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5645, mapped 1659 (-1) (29.4%) | |
+| **render surface** (the modules that draw the world) | **4780, mapped 1220 (-1) (25.5%)** | |
 | of which the module is an anchor GUESS | 3057 (64.0%) | |
 | frozen functions (src/, from PDB + source) | 14004, stubs 1638 | |
 
-Match evidence: annotated 2448, callgraph 253, callorder 111, cvar 31, handler 29, order 144, override 371, sticky 19, string 305, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2448, callgraph 252, callorder 111, cvar 31, handler 29, order 144, override 371, sticky 19, string 305, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
@@ -134,7 +134,7 @@ Module = the source file named by the reference's own assert strings near the fu
 |---|---:|---:|---:|---:|---:|---:|---:|
 | DBClient.cpp | 1250 | 271.0k | 5 (0.4%) | 0.4% | 0 | 0 | 71 |
 | OggDecompress.cpp | 1504 | 260.7k | 20 (1.3%) | 1.0% | 2 | 0 | 476 |
-| Unit_C.cpp | 703 | 182.2k | 96 (13.7%) | 9.8% | 0 | 0 | 292 |
+| Unit_C.cpp | 703 | 182.2k | 95 (13.5%) | 9.5% | 0 | 0 | 292 |
 | ComSatSoundIOSoundEngine.cpp | 849 | 165.2k | 64 (7.5%) | 0.3% | 0 | 0 | 52 |
 | Player_C.cpp | 728 | 146.7k | 59 (8.1%) | 9.7% | 0 | 0 | 156 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
@@ -378,6 +378,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0067d770 | DBCache.cpp | 448 | 200 | examined -- see overrides.json | .?AUDBCACHECALLBACK@@ |
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
+| 0072a000 | Unit_C.cpp | 651 | 69 | examined -- see overrides.json | .\Unit_C.cpp, UNKNOWNOBJECT |
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
 | 008d67d0 | fmod_systemi.cpp | 7647 | 4 | examined -- see overrides.json | ..\..\src\fmod_systemi.cpp, TITLE |
@@ -413,7 +414,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 005210d0 | GameUI.cpp | 1560 | 8 |  | .\GameUI.cpp, itemenchant |
 | 007293d0 | Unit_C.cpp | 351 | 38 |  |  |
 | 008df810 | fmod_systemi.cpp? | 617 | 21 |  |  |
-| 00682400 | DBCache.cpp? | 897 | 14 |  |  |
 
 ## Next to port: unmapped, anywhere
 
@@ -429,6 +429,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00745230 | Unit_C.cpp? | 2889 | 29 |  |  |
 | 006f61d0 | ObjectEffect.cpp | 579 | 125 |  |  |
 | 00695fd0 | CGxDeviceD3d9Ex.cpp? | 24484 | 1 |  |  |
+| 0072a000 | Unit_C.cpp | 651 | 69 | examined -- see overrides.json | .\Unit_C.cpp, UNKNOWNOBJECT |
 | 0093cd10 | fmod_output_dsound.cpp? | 2731 | 15 |  |  |
 | 005dd5a0 | TradeSkillFrame.cpp | 2894 | 14 |  | .PBVSkillLineAbilityRec@@, .\TradeSkillFrame.cpp |
 | 00519280 | GameUI.cpp | 513 | 83 |  | .\GameUI.cpp, INTERFACESOUND_CURSORDROPOBJECT |
@@ -461,7 +462,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0041d770 | OggDecompress.cpp | 199 | 103 |  |  |
 | 00708c20 | Item_C.cpp | 1998 | 9 |  | .\Item_C.cpp, SPELL_FAILED_NO_CHARGES_REMAIN |
 | 00473340 | framing.c? | 194 | 100 |  |  |
-| 00897c90 | ComSatSoundIOSoundEngine.cpp? | 766 | 24 |  |  |
 
 ## Mapped but stubbed (WHOA_UNIMPLEMENTED)
 
@@ -752,7 +752,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-27 20:48 | 4732 (17.6%) | 2479 (9.2%) | 573 | 1638/5381 | 2924/2964 | 1380 |
 | 2026-09-27 20:56 | 4732 (17.6%) | 2479 (9.2%) | 573 | 1638/5381 | 2924/2964 | 1380 |
 | 2026-09-27 21:02 | 4731 (17.6%) | 2479 (9.2%) | 573 | 1637/5378 | 2924/2964 | 1380 |
-| 2026-09-27 21:03 | 4731 (17.6%) | 2479 (9.2%) | 573 | 1637/5378 | 2924/2964 | 1380 |
+| 2026-09-27 21:07 | 4730 (17.6%) | 2479 (9.2%) | 573 | 1636/5378 | 2924/2964 | 1380 |
 
 ## How to move a row
 

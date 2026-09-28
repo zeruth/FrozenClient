@@ -42553,27 +42553,11 @@
   "refSize": 406,
   "status": "ported"
  },
- "0072a000": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/object/client/CGObject.cpp",
-   "src/object/client/cgobject.cpp"
-  ],
-  "frozen": "CGObject::GetType",
-  "frozenSize": 8,
-  "how": "callgraph",
-  "module": "Unit_C.cpp",
-  "refSize": 651,
-  "status": "ported"
- },
  "0072d940": {
   "branchRatio": 0.24,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.0,
   "files": [
    "src/object/client/CGUnit_C.cpp",
    "src/object/client/cgunit_c.cpp"

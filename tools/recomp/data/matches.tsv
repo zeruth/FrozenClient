@@ -2664,7 +2664,6 @@ addr	how	frozen	evidence
 00724280	annotated	CGUnit_C::GetLootAnimation	tag in src/object/client/CGUnit_C.cpp
 00724330	annotated	CGUnit_C::GetSpellCastAnimation	tag in src/object/client/CGUnit_C.cpp
 00724500	annotated	CGUnit_C::ChooseAnimation	tag in src/object/client/CGUnit_C.cpp
-0072a000	callgraph	CGObject::GetType	only unmatched callee of 0072d940=CGUnit_C::RefreshDataPointers
 0072d940	string	CGUnit_C::RefreshDataPointers	unique "Error, NO creature display records found"
 007300a0	handler	ReceiveAuraUpdate	SetMessageHandler(SMSG_AURA_UPDATE) on both sides
 00735820	override	CGUnit_C::SetBoneSequence	
