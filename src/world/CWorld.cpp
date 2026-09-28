@@ -1,4 +1,5 @@
 #include "model/CM2Lighting.hpp"
+#include <cstdlib>
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
 #include "world/map/CMapEntity.hpp"

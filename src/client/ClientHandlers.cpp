@@ -1,4 +1,6 @@
 #include "client/ClientHandlers.hpp"
+#include <cstdio>
+#include <cstdlib>
 #include "Client.hpp"
 #include "console/Console.hpp"
 #include "db/Db.hpp"
@@ -352,6 +354,49 @@ int32_t ReceiveNewTimeSpeed(void* param, NETMESSAGE msgId, uint32_t time, CDataS
     WowTime newTime;
     WowTime::WowDecodeTime(encodedTime, &newTime);
     newTime.m_holidayOffset = holidayOffset;
+
+    // DEBUG HOOK, frozen's own and no part of the reference: FROZEN_FORCE_TIME pins the game clock
+    // to an hour of the day, e.g. FROZEN_FORCE_TIME=12 for noon or 6.5 for half past six.
+    //
+    // It is applied HERE, to the time the server sends, rather than in any of the three places that
+    // read the clock. Those three -- the outdoor light interpolation, CWorld::GetDayProgress and the
+    // sky band lookup -- each call g_clientGameTime.GetHourAndMinutes() for themselves, so hooking
+    // one of them brightens a third of the scene and leaves the rest at whatever time it really is.
+    // That is exactly what happened on the first attempt: the sky animation moved to noon and the
+    // world stayed at one in the morning.
+    //
+    // The clock follows the SERVER, which follows real time, so without this an automated run can
+    // only ever see whatever time of day it happens to be -- and everything lit by the sun is
+    // indistinguishable from broken at night. Four verification runs in a row landed after midnight.
+    //
+    // Read once. Unset or unparseable leaves the server's time alone.
+    static float s_forcedHours = -1.0f;
+    static bool s_checked = false;
+
+    if (!s_checked) {
+        s_checked = true;
+
+        const char* want = getenv("FROZEN_FORCE_TIME");
+
+        if (want && *want) {
+            char* end = nullptr;
+            float hours = strtof(want, &end);
+
+            if (end != want && hours >= 0.0f && hours < 24.0f) {
+                s_forcedHours = hours;
+            } else {
+                fprintf(stderr, "FROZEN_FORCE_TIME=%s is not an hour in [0, 24); ignored\n", want);
+            }
+        }
+    }
+
+    if (s_forcedHours >= 0.0f) {
+        int32_t minutes = static_cast<int32_t>(s_forcedHours * 60.0f) % 1440;
+        newTime.SetHourAndMinutes(minutes);
+
+        fprintf(stderr, "FROZEN_FORCE_TIME: game clock pinned to %02d:%02d\n",
+                minutes / 60, minutes % 60);
+    }
 
     g_clientGameTime.GameTimeSetTime(newTime, true);
 
