@@ -716,6 +716,56 @@ has to reproduce anything: `FUN_007e4370` sets world and view to identity and th
 gathered geometry with the projection as a texture transform. Re-porting means porting that walk, not
 reviving the re-draw.
 
+## 2026-09-27: the map shadow map casts from the WRONG SET, and the reference has a whole
+## mechanism frozen replaced with a shortcut
+
+Found while tracing what `FUN_00834660` was for. It is worth writing down because the shortcut
+looks harmless and is not.
+
+**What frozen does.** `MapShadowRender` calls `CM2Scene::DrawShadowCasters`, which submits
+`array54[M2PASS_0]` -- the scene's OPAQUE pass element list -- straight to
+`CM2SceneRender::Draw`. It never builds a caster set of its own.
+
+**What that list actually contains.** A batch lands in pass 0 only when its blend mode is 0 or 1
+AND its alpha is effectively 1. `CM2Scene.cpp:849` is the gate:
+
+```cpp
+if (layerMaterial->blendMode > 1 || (v221 = 0, alpha < 0.99998999f)) {
+    v221 = 1;
+}
+```
+
+and the ribbon and particle gathers use the same 0.99999 threshold a few hundred lines down.
+
+**What the reference does instead.** It does not reuse a draw pass at all. `FUN_00834660` walks
+every model's batches itself and keeps a batch when
+
+    alpha19C * textureWeight * colourAlpha  >=  0.55        (DAT_009edce0)
+
+filing each survivor into one of two adjacent 12-byte `{data, count, capacity}` collectors,
+chosen by the short at batch +2. `FUN_00823d50` is the append. Its callers are `FUN_007bb9d0`,
+`FUN_007bc490` and `FUN_007bc890`, and `CM2Model::AnimateAlphasOnly` (FUN_00831990, ported
+2026-09-27) exists solely to bring the alphas up to date before that product is computed.
+
+**The consequence, stated exactly.** A batch whose alpha sits between 0.55 and 0.99999 casts a
+shadow in the reference and casts NOTHING in frozen. That is the entire band of partial
+transparency: a unit fading in or out, a stealthing rogue, anything with an animated alpha track
+part-way through its curve, and any material authored at less than full opacity. They all lose
+their shadow here and keep it there.
+
+It also explains why the reference bothers with a separate collector when it already has draw
+passes: the opaque pass is the wrong set. 0.99999 is a question about whether something needs
+sorting; 0.55 is a question about whether it blocks enough light to be worth a shadow. Reusing
+the first to answer the second is the bug.
+
+**Fixing it means porting that chain**, which is the one thing that makes the collector type
+worth having -- see the overrides entries on 00834660 and 00823d50. Until then the divergence is
+recorded here rather than in a comment nobody reads, because it is a behaviour difference and not
+a transcription choice.
+
+NOT OBSERVED ON SCREEN. This is read out of both codebases, not seen: it predicts that a fading
+model loses its shadow abruptly rather than gradually, which is what a run should look for.
+
 ## The receiver walk, read but not ported (FUN_007e3e80)
 
 This is the one function between the ported chain and shadows on screen. Read 2026-09-26 from the
