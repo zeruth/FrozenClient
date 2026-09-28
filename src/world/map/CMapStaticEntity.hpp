@@ -58,6 +58,12 @@ class CMapStaticEntity : public CMapBaseObj {
         // reached on, so a thing straddling two chunks is visited once.
         TSLink<CMapStaticEntity> m_rowLink;      // +0xa8
         int32_t m_frameStamp = 0;                // +0xb0
+        // What the entity is standing on, as a GroundEffectTexture terrain type when it is on
+        // open terrain or a WMO material's ground type when it is on a building. 0xFFFFFFFF
+        // until placement resolves it, and only resolved at all for a Type_Entity. The map's
+        // own segment query branches on this, so an entity whose placement never ran reads as
+        // standing on nothing rather than on the default surface.
+        int32_t m_groundType = -1;               // +0xb8
         // Frozen's own, beside the reference's: CMap::ForEachDoodadModel needs a mark of
         // its own so it and the traversal do not answer each other's dedupe.
         int32_t m_walkStamp = 0;                 // diverged
@@ -121,6 +127,22 @@ bool QueryDefSegment(CMapObjDef* def, const C3Vector& start, const C3Vector& end
 // nothing was hit at all. ref: FUN_007c2700
 bool QueryMapObjDefSegment(const C3Vector& start, const C3Vector& end, const C3Vector& point,
                            SMapObjHit* collision, SMapObjHit* render, CMapChunk* chunk);
+
+// What a placed entity is standing in, if anything: runs the building query for it, discards a
+// building the terrain sits in front of, and falls back to a straight probe from the entity's
+// collision centre when nothing answered. `start` and `end` are REWRITTEN on that fallback.
+// outInterior receives the winning record's interior flag, outHit whether anything was found.
+// ref: FUN_007c28f0
+void QueryEntityMapObj(CMapStaticEntity* entity, C3Vector* start, C3Vector* end,
+                       const C3Vector& point, uint32_t* outInterior, uint32_t* outHit,
+                       SMapObjHit* collision, SMapObjHit* render);
+
+// STUB. Link the entity to every terrain chunk its box covers. ref: FUN_007c2040
+bool LinkEntityToChunks(CMapStaticEntity* entity);
+
+// Work out what a placed entity is standing on and hook it up to it: its ground type, the
+// building groups it is inside, and its floor light. ref: FUN_007c2a70
+void ResolveEntityGround(CMapStaticEntity* entity);
 
 // Which side of a building's wall a placed entity ended up on, and its floor light if it
 // ended up inside. A free function in the reference too -- it returns with a plain `ret`,

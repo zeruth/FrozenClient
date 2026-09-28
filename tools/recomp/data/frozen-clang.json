@@ -208821,7 +208821,7 @@
 "stub": false,
 "lines": 76,
 "refs": [],
-"line": 19
+"line": 21
 },
 "ClassifyEntityInterior": {
 "files": [
@@ -208841,7 +208841,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 117
+"line": 119
 },
 "QueryDefGroupSegment": {
 "files": [
@@ -208869,7 +208869,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 157
+"line": 159
 },
 "QueryDefSegment": {
 "files": [
@@ -208898,7 +208898,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 248
+"line": 250
 },
 "QueryMapObjDefSegment": {
 "files": [
@@ -208930,7 +208930,86 @@
 "stub": false,
 "lines": 64,
 "refs": [],
-"line": 318
+"line": 320
+},
+"QueryEntityMapObj": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"CMap::GetTerrainHeight",
+"QueryMapObjDefSegment",
+"C3Vector::operator=",
+"C3Vector::operator=",
+"QueryMapObjDefSegment"
+],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"0x2000",
+"1",
+"2.0f"
+],
+"branches": 11,
+"stub": false,
+"lines": 73,
+"refs": [],
+"line": 421
+},
+"LinkEntityToChunks": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"__acrt_iob_func",
+"fprintf"
+],
+"strings": [
+"Function not yet implemented: %s in %s (line %i)\n",
+"LinkEntityToChunks",
+"c:\\users\\tyler\\runicworld-client\\src\\world\\map\\cmapstaticentity.cpp"
+],
+"consts": [],
+"branches": 2,
+"stub": true,
+"lines": 3,
+"refs": [],
+"line": 510
+},
+"ResolveEntityGround": {
+"files": [
+"src/world/map/cmapstaticentity.cpp"
+],
+"callseq": [
+"C3Vector::C3Vector",
+"C3Vector::C3Vector",
+"SMapObjHit::SMapObjHit",
+"SMapObjHit::SMapObjHit",
+"QueryEntityMapObj",
+"LinkEntityToChunks",
+"CMap::GetTerrainType",
+"CMap::LinkToMapObjDefGroup",
+"CMap::LinkToMapObjDefGroup",
+"CMapObjDef::GetPolyGroundType",
+"C3Vector::C3Vector",
+"ClassifyEntityInterior"
+],
+"strings": [],
+"consts": [
+"0",
+"0x1",
+"0x200",
+"0x200u",
+"0x4",
+"1",
+"2"
+],
+"branches": 8,
+"stub": false,
+"lines": 67,
+"refs": [],
+"line": 544
 },
 "DetailDoodad::ReleaseBuffers": {
 "files": [

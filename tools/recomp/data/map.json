@@ -47311,7 +47311,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 247,
+  "frozenSize": 262,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -50629,6 +50629,22 @@
   "refSize": 69,
   "status": "ported"
  },
+ "007c2040": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "LinkEntityToChunks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 28,
+  "status": "stub"
+ },
  "007c21e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -50639,7 +50655,7 @@
    "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapDoodadDef::CMapDoodadDef",
-  "frozenSize": 241,
+  "frozenSize": 256,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 362,
@@ -50675,6 +50691,38 @@
   "how": "override",
   "module": "MapMem.cpp",
   "refSize": 486,
+  "status": "ported"
+ },
+ "007c28f0": {
+  "branchRatio": 0.846,
+  "constOverlap": 0.062,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "QueryEntityMapObj",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapMem.cpp",
+  "refSize": 375,
+  "status": "ported"
+ },
+ "007c2a70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.034,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "ResolveEntityGround",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "MapMem.cpp",
+  "refSize": 369,
   "status": "ported"
  },
  "007c2ff0": {

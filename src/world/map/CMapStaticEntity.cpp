@@ -4,6 +4,8 @@
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMap.hpp"
+#include "util/Unimplemented.hpp"
 #include "model/CM2Model.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
@@ -379,4 +381,230 @@ bool QueryMapObjDefSegment(const C3Vector& start, const C3Vector& end, const C3V
     }
 
     return true;
+}
+
+// The height a point gets when no terrain answered: DAT_00a3e6e4, and far above anything, so the
+// distance computed from it lands outside every record and discards nothing.
+static const float NO_TERRAIN_HEIGHT = 100000.0f;
+
+// How far the fallback probe reaches UP from the entity's collision centre (DAT_009ea080), and the
+// reciprocal that turns a height difference into a fraction of it (DAT_009e1134). They are a pair:
+// the probe is a thousand yards long, so a distance along it and a height over a thousand are the
+// same number and can be compared directly.
+static const float FALLBACK_PROBE_RISE = 1000.0f;
+static const float PROBE_FRACTION_SCALE = 0.001f;
+
+// ref: FUN_007c28f0
+// What a placed entity is standing in.
+//
+// Three steps. Ask the buildings along the segment; if the terrain turned out to be in FRONT of
+// what they found, throw that away, because a thing standing on a hillside outside a wall is not
+// inside the building behind it. And if neither the terrain nor a building answered, probe straight
+// up a thousand yards from the entity's collision centre and ask again -- casting UP is how being
+// indoors is decided, since what matters is whether there is a room's geometry overhead.
+//
+// THE TERRAIN CHUNK IS NOT KEPT, and the reference makes that easy to misread: it passes the
+// address of one stack slot as GetTerrainHeight's out-chunk AND then stores the function's return
+// value into the same slot, so the chunk is overwritten by the bool before anything reads it. What
+// the rest of the function tests is only whether terrain answered. Reproduced as a discarded
+// out-parameter rather than as a pointer that is secretly a flag.
+//
+// The two discard tests are `!(fraction > distance)` rather than `fraction < distance`. The
+// reference's x87 pair only keeps the record when the terrain is strictly further, so an equal
+// distance -- or a NaN from a degenerate segment -- discards it. A plain `<` would keep both.
+//
+// FROZEN DIVERGENCE, deliberate: the reference skips the terrain query entirely when DAT_00cf08f4
+// is set, which is the flag a global-WMO map raises when its def is created (0x007bfca7). frozen
+// has no such flag. Leaving the query in is equivalent where it matters, because a map with no ADT
+// grid has no loaded area and GetTerrainHeight already answers false -- but it is not provably
+// equivalent for a map that had both, so it is recorded rather than called identical.
+void QueryEntityMapObj(CMapStaticEntity* entity, C3Vector* start, C3Vector* end,
+                       const C3Vector& point, uint32_t* outInterior, uint32_t* outHit,
+                       SMapObjHit* collision, SMapObjHit* render) {
+    collision[0].def = nullptr;
+    render[0].def = nullptr;
+    collision[1].def = nullptr;
+    render[1].def = nullptr;
+
+    float terrainHeight = NO_TERRAIN_HEIGHT;
+    float terrainFraction = 2.0f;
+
+    // Written by the call and then thrown away, exactly as the reference throws it away.
+    CMapChunk* terrainChunk = nullptr;
+
+    bool terrainFound = CMap::GetTerrainHeight(*start, &terrainHeight, &terrainChunk);
+
+    terrainFraction = (start->z - terrainHeight) * PROBE_FRACTION_SCALE;
+
+    if (terrainFraction < 0.0f) {
+        terrainFound = false;
+    }
+
+    bool hit = false;
+
+    if (!(entity->m_flags & 0x2000)) {
+        hit = QueryMapObjDefSegment(*start, *end, point, collision, render, nullptr);
+    }
+
+    if (!terrainFound && !hit) {
+        *start = entity->m_collisionCenter;
+        *end = entity->m_collisionCenter;
+        end->z += FALLBACK_PROBE_RISE;
+
+        // The retry's answer is discarded; what matters is what it left in the records.
+        QueryMapObjDefSegment(*start, *end, point, collision, render, nullptr);
+    }
+
+    if (entity->m_flags7c & 0x2000) {
+        collision[1].def = nullptr;
+        render[1].def = nullptr;
+    }
+
+    if (terrainFound) {
+        if (!(terrainFraction > collision[0].distance)) {
+            collision[0].def = nullptr;
+            render[0].def = nullptr;
+        }
+
+        if (!(terrainFraction > collision[1].distance)) {
+            collision[1].def = nullptr;
+            render[1].def = nullptr;
+        }
+    }
+
+    *outInterior = 0;
+    *outHit = 0;
+
+    if (collision[0].def) {
+        *outHit = 1;
+    }
+
+    if (collision[1].def) {
+        *outHit = 1;
+    }
+
+    if (collision[0].def) {
+        *outInterior = collision[0].interior;
+
+        return;
+    }
+
+    if (collision[1].def) {
+        *outInterior = collision[1].interior;
+    }
+}
+
+// ref: FUN_007c2040
+// STUB. Links the entity to every terrain chunk its box overlaps, so each chunk knows to visit it.
+//
+// Identified and not implemented. The reference walks the area grid across the entity's box
+// (+0x48..+0x5c), and for each loaded chunk whose own height at +0x54 is at or below the box top it
+// allocates a CMap::AllocBaseObjLink -- which frozen has -- and pushes it onto one of two lists
+// chosen by the entity's type and m_flags7c bit 1, then sets m_flags bit 2.
+//
+// WHAT IS MISSING is only those two pushes: FUN_006ded60 and FUN_007b5020, generic list inserts
+// with 251 and 120 callers between them. They are worth identifying as a seeding job of their own
+// rather than guessed at here, because getting either wrong would corrupt a list every chunk walks.
+// Until then this reports once and does nothing, and nothing calls it yet: ResolveEntityGround is
+// itself unwired, so this is dead rather than a live hole.
+bool LinkEntityToChunks(CMapStaticEntity* entity) {
+    WHOA_UNIMPLEMENTED(false);
+}
+
+// How far above the collision centre the ground probe starts (DAT_009e3004) and how far below it
+// reaches (DAT_009ea080). The same two constants the portal epsilon and the fallback probe use.
+static const float GROUND_PROBE_RISE = 0.1f;
+static const float GROUND_PROBE_DROP = 1000.0f;
+
+// ref: FUN_007c2a70
+// What a placed entity is standing on, and everything that follows from knowing it.
+//
+// It drops a probe from just above the entity's collision centre to a thousand yards below and asks
+// QueryEntityMapObj what is there. Two outcomes:
+//
+// NOTHING -- open terrain. The entity is linked to the chunks it covers and, if it is a Type_Entity,
+// its ground type comes from CMap::GetTerrainType at its m_position. m_flags loses bit 0x200.
+//
+// A BUILDING. Each collision record's group is linked through CMap::LinkToMapObjDefGroup, the ground
+// type comes from the WMO material under the face instead, and m_flags gains 0x200. If the query
+// also said the surface was interior, m_flags7c gains bit 0 and the floor light is taken through
+// ClassifyEntityInterior -- and that path RETURNS EARLY, so it is the one case where m_flags does
+// not gain bit 2.
+//
+// The record slot is chosen from the RENDER array (slot 0 when it holds a def, else slot 1) while
+// the links are made from the COLLISION array. That is not a slip in the reading: the two arrays
+// are filled by different halves of the BSP query and the reference uses each for what it knows.
+//
+// ONE ODDITY KEPT AS-IS. The point handed to ClassifyEntityInterior is
+// `center.z - (end.z - start.z) * t`, and since the probe points DOWN that term is negative, so the
+// point ends up ABOVE the centre rather than at the hit. The disassembly at 0x007c2bcb is an
+// `fsubr` and leaves no room for doubt about the sign. It reads like a sign slip in the original,
+// but it is what the client shipped and the floor-light path is measured against it, so it is
+// reproduced rather than corrected. Revisit only with a run that shows the lighting is wrong.
+void ResolveEntityGround(CMapStaticEntity* entity) {
+    C3Vector start = { entity->m_collisionCenter.x, entity->m_collisionCenter.y,
+                       entity->m_collisionCenter.z + GROUND_PROBE_RISE };
+    C3Vector end = { entity->m_collisionCenter.x, entity->m_collisionCenter.y,
+                     entity->m_collisionCenter.z - GROUND_PROBE_DROP };
+
+    uint32_t interior = 0;
+    uint32_t hit = 0;
+
+    SMapObjHit collision[2];
+    SMapObjHit render[2];
+
+    QueryEntityMapObj(entity, &start, &end, start, &interior, &hit, collision, render);
+
+    // The type is read BEFORE anything below can change it, as the reference reads it.
+    bool isEntity = (entity->m_type & CMapBaseObj::Type_Entity) != 0;
+
+    int32_t groundType = -1;
+    uint32_t flags;
+
+    if (!hit) {
+        LinkEntityToChunks(entity);
+
+        if (isEntity) {
+            if (!CMap::GetTerrainType(entity->m_position, &groundType)) {
+                groundType = -1;
+            }
+
+            entity->m_groundType = groundType;
+        }
+
+        flags = entity->m_flags & ~0x200u;
+    } else {
+        uint32_t slot = render[0].def ? 0 : 1;
+
+        if (collision[0].def) {
+            CMap::LinkToMapObjDefGroup(entity, collision[0].defGroup);
+        }
+
+        if (collision[1].def) {
+            CMap::LinkToMapObjDefGroup(entity, collision[1].defGroup);
+        }
+
+        if (isEntity && render[slot].def && render[slot].defGroup) {
+            entity->m_groundType = static_cast<int32_t>(render[slot].def->GetPolyGroundType(
+                render[slot].defGroup->m_groupIndex, render[slot].face));
+        }
+
+        entity->m_flags |= 0x200;
+        flags = entity->m_flags;
+
+        if (interior) {
+            entity->m_flags7c |= 0x1;
+
+            C3Vector point = { entity->m_collisionCenter.x, entity->m_collisionCenter.y,
+                               entity->m_collisionCenter.z
+                                   - (end.z - start.z) * render[slot].distance };
+
+            ClassifyEntityInterior(entity, render[slot].def, render[slot].defGroup,
+                                   render[slot].face, point);
+
+            return;
+        }
+    }
+
+    entity->m_flags = flags | 0x4;
 }
