@@ -57525,16 +57525,16 @@
   "status": "ported"
  },
  "00824d30": {
-  "branchRatio": 0.316,
+  "branchRatio": 0.579,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.4,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::FreeExternalResources",
-  "frozenSize": 0,
+  "frozenSize": 388,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 376,
@@ -58856,7 +58856,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 1109,
+  "frozenSize": 949,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 498,

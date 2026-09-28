@@ -2260,7 +2260,43 @@ void CM2Model::FreeExternalResources() {
         }
     }
 
-    // TODO
+    // Switch the model's own lights OFF before it goes. This is not bookkeeping: CM2Light::Unlink
+    // is what takes the light out of the scene's list, and SetVisible is the only thing that calls
+    // it. Without this a despawned model left its lights linked and lighting the scene.
+    //
+    // Safe on a model being torn down either way -- SetVisible returns early when the state is
+    // already what was asked for, and only touches the scene list when m_scene is still set.
+    if (this->m_lights) {
+        for (int32_t i = 0; i < this->m_shared->m_data->lights.Count(); i++) {
+            this->m_lights[i].light.SetVisible(0);
+        }
+    }
+
+    // Each camera holds a handle of its own, closed here as the textures are above. The reference
+    // walks this array at a 0x38 stride and closes the handle at +0x34, which is where
+    // M2ModelCamera::m_camera sits once its three tracks are counted.
+    if (this->m_cameras) {
+        for (int32_t i = 0; i < this->m_shared->m_data->cameras.Count(); i++) {
+            auto camera = this->m_cameras[i].m_camera;
+
+            if (camera) {
+                HandleClose(camera);
+            }
+        }
+    }
+
+    // STILL MISSING, and named rather than left as a bare TODO. The reference finishes with two
+    // more passes over arrays frozen has but does not release here:
+    //
+    //   ribbons   (+0x2bc, count m_data->ribbons)   -- FUN_00980590 on each, then the slot
+    //                                                  nulled; that callee is unidentified.
+    //   particles (+0x2c4, count m_data->particles) -- the emitter's own virtual at vtable +0x14,
+    //                                                  then the slot nulled. frozen's destructor
+    //                                                  runs ~CM2ParticleEmitter instead, which is
+    //                                                  a different thing at a different time.
+    //
+    // Both want their subsystem's release path settled first; the counts and offsets above are
+    // what a port needs and are read off the reference at 0x00824d30.
 }
 
 void CM2Model::FreeInternalResources() {
