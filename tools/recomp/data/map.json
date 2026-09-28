@@ -25644,6 +25644,22 @@
   "refSize": 187,
   "status": "ported"
  },
+ "0057e4f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/RenderTarget.cpp",
+   "src/gx/rendertarget.cpp"
+  ],
+  "frozen": "GxRenderTargetSet",
+  "frozenSize": 20,
+  "how": "annotated",
+  "module": "MinimapFrame.cpp",
+  "refSize": 77,
+  "status": "ported"
+ },
  "0057e980": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
@@ -49904,7 +49920,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowRender",
-  "frozenSize": 1246,
+  "frozenSize": 1256,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 248,
@@ -65166,8 +65182,24 @@
   "refSize": 152,
   "status": "ported"
  },
+ "008742e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBuildPcfTaps",
+  "frozenSize": 334,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 511,
+  "status": "ported"
+ },
  "008744e0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.667,
   "constOverlap": 0.333,
   "faithful": false,
   "fidelity": 0.0,
@@ -65176,7 +65208,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindScene",
-  "frozenSize": 461,
+  "frozenSize": 337,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 238,
@@ -65199,7 +65231,7 @@
   "status": "ported"
  },
  "00874660": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.667,
   "constOverlap": 0.286,
   "faithful": false,
   "fidelity": 0.125,
@@ -65208,7 +65240,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindTerrain",
-  "frozenSize": 440,
+  "frozenSize": 288,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 247,
@@ -65240,7 +65272,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "EnsureTargets",
-  "frozenSize": 420,
+  "frozenSize": 417,
   "how": "string",
   "module": "ShadowMap.cpp",
   "refSize": 591,

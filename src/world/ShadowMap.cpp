@@ -10,6 +10,8 @@
 #include "world/MapShadow.hpp"
 
 int32_t g_shadowMapQuality = 0;
+int32_t g_shadowMapSize = 1024;
+float g_shadowMapPcfTaps[8][4] = { { 0.0f, 0.0f, 0.0f, 0.0f } };
 int32_t g_shadowMapRealloc = 0;
 float g_shadowMapFogScale = 1.0f;
 
@@ -252,9 +254,17 @@ static void ShadowMapLightMatrices(float out[12][4]) {
     }
 }
 
-// The PCF kernel, DAT_00d431d0: eight taps whose .xy are texel offsets already divided by the map
-// size, .zw always zero. The table is docs/ref/parity-shadowmap.md section 6d, read off the image.
-static const float s_pcfTaps[8][2] = {
+// The PCF kernel in TEXELS, before the map-size scale. Every one of these sixteen values was
+// read out of the reference's .rdata on 2026-09-28 rather than off an image, and they agree with
+// what was there: 0.8, -0.2, 0.2, 1.0, -0.6, 0.6, -1.0, -0.4 against -1.0, -0.8, -0.6, -0.4,
+// -0.2, 0.2, -0.4, -0.6.
+//
+// THE SCALE IS THE WHOLE POINT and it was missing. FUN_008742e0 multiplies every one of these by
+// 1 / mapSize before the shader ever sees them, so a tap of 1.0 is ONE TEXEL. frozen uploaded the
+// raw table, where 1.0 is the entire shadow map -- a kernel eight taps wide across 1024 texels
+// instead of across one. The comment here even said 'already divided by the map size'; nothing
+// divided them.
+static const float s_pcfTapsTexels[8][2] = {
     {  0.8f, -1.0f },
     { -0.2f, -0.8f },
     {  0.2f, -0.6f },
@@ -264,6 +274,32 @@ static const float s_pcfTaps[8][2] = {
     { -1.0f, -0.4f },
     { -0.4f, -0.6f },
 };
+
+// The map size the quality asks for: 2048 at quality 2 and at anything above 3, 1024 otherwise.
+//
+// Read off the head of FUN_00875d30, where the compare order makes it look stranger than it is --
+// `if (3 < quality || (size = 1024, quality == 2)) size = 2048` assigns the default inside the
+// condition, so quality 2 takes 2048 and quality 3 keeps the 1024 it was just given.
+void ShadowMapUpdateSize() {
+    g_shadowMapSize = (g_shadowMapQuality > 3 || g_shadowMapQuality == 2) ? 0x800 : 0x400;
+}
+
+// ref: FUN_008742e0
+// Rebuild the PCF kernel for the current map size: each texel offset divided by the edge, .zw
+// zero. The reference keeps the reciprocal itself at DAT_00d43200, which is also the fourth
+// tap's x -- the two overlap in memory because that tap's offset is exactly one texel.
+//
+// It runs from the reallocation path, because that is the only thing that changes the size.
+void ShadowMapBuildPcfTaps() {
+    float inv = g_shadowMapSize ? 1.0f / static_cast<float>(g_shadowMapSize) : 0.0f;
+
+    for (int32_t i = 0; i < 8; i++) {
+        g_shadowMapPcfTaps[i][0] = s_pcfTapsTexels[i][0] * inv;
+        g_shadowMapPcfTaps[i][1] = s_pcfTapsTexels[i][1] * inv;
+        g_shadowMapPcfTaps[i][2] = 0.0f;
+        g_shadowMapPcfTaps[i][3] = 0.0f;
+    }
+}
 
 // ref: FUN_00874660, called from FUN_00798da0 at 0x00799139
 // What the terrain pass binds to sample the shadow map: the world -> shadow-texture matrices at
@@ -285,15 +321,8 @@ void ShadowMapBindTerrain() {
     float vertexConstants[12][4];
     ShadowMapLightMatrices(vertexConstants);
 
-    float pixelConstants[8][4] = {};
-
-    for (int32_t i = 0; i < 8; i++) {
-        pixelConstants[i][0] = s_pcfTaps[i][0];
-        pixelConstants[i][1] = s_pcfTaps[i][1];
-    }
-
     g_theGxDevicePtr->ShaderConstantsSet(GxSh_Vertex, 0x25, &vertexConstants[0][0], 12);
-    g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 3, &pixelConstants[0][0], 8);
+    g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 3, &g_shadowMapPcfTaps[0][0], 8);
     g_theGxDevicePtr->RsSet(GxRs_Texture5, shadowMap);
 }
 
@@ -338,12 +367,6 @@ void ShadowMapBindScene() {
     float vertexConstants[12][4];
     ShadowMapLightMatrices(vertexConstants);
 
-    float taps[8][4] = {};
-
-    for (int32_t i = 0; i < 8; i++) {
-        taps[i][0] = s_pcfTaps[i][0];
-        taps[i][1] = s_pcfTaps[i][1];
-    }
 
     // The fourth component is zero, which is what FUN_00875c10 stores at DAT_00d43198 next to the
     // direction: the reference's constant is a full register whose w it clears every time.
@@ -353,7 +376,7 @@ void ShadowMapBindScene() {
 
     g_theGxDevicePtr->ShaderConstantsSet(GxSh_Vertex, 0xe0, &vertexConstants[0][0], 12);
     g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 4, lightDir, 1);
-    g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 5, &taps[0][0], 8);
+    g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 5, &g_shadowMapPcfTaps[0][0], 8);
 
     if (quality > 2) {
         // TODO the three filter textures into stages 5..7, from the ring buffers at DAT_00d43290,

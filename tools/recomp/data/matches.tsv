@@ -1599,6 +1599,7 @@ addr	how	frozen	evidence
 0057e100	annotated	CGMinimapFrame_SetPlayerTexture	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e1c0	annotated	CGMinimapFrame_SetPlayerTextureHeight	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057e280	annotated	CGMinimapFrame_SetPlayerTextureWidth	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057e4f0	annotated	GxRenderTargetSet	tag in src/gx/RenderTarget.cpp
 0057e980	annotated	CGMinimapFrame::GetNumOtherTrackingTypes	tag in src/ui/game/CGMinimapFrame.cpp
 0057ea30	annotated	CGMinimapFrame::SetTrackingSpell	tag in src/ui/game/CGMinimapFrame.cpp
 0057eb00	annotated	CGMinimapFrame::GetOtherTrackingType	tag in src/ui/game/CGMinimapFrame.cpp
@@ -4094,6 +4095,7 @@ addr	how	frozen	evidence
 008740d0	annotated	ShadowMapQualitySupported	tag in src/world/ShadowMap.cpp
 00874210	annotated	ShadowMapSetQuality	tag in src/world/ShadowMap.cpp
 00874240	annotated	ShadowMapReleaseTargets	tag in src/world/ShadowMap.cpp
+008742e0	annotated	ShadowMapBuildPcfTaps	tag in src/world/ShadowMap.cpp
 008744e0	annotated	ShadowMapBindScene	tag in src/world/ShadowMap.cpp
 008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp

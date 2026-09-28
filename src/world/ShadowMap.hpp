@@ -15,6 +15,20 @@ extern int32_t g_shadowMapRealloc;
 // The fog scale the terrain fog constant is multiplied by (DAT_00d4300c)
 extern float g_shadowMapFogScale;
 
+// The shadow map's edge in texels (DAT_00d43150). NOT a constant: the reference picks it from
+// the quality, and two of the seven levels ask for 2048 rather than 1024.
+extern int32_t g_shadowMapSize;
+
+// Take the map size the current quality asks for. ref: the head of FUN_00875d30
+void ShadowMapUpdateSize();
+
+// The PCF kernel the shadowed shaders sample with (DAT_00d431d0): eight taps, .xy the offset
+// in TEXTURE units -- the texel offset divided by the map size -- and .zw always zero.
+extern float g_shadowMapPcfTaps[8][4];
+
+// Rebuild the kernel for the current map size. ref: FUN_008742e0
+void ShadowMapBuildPcfTaps();
+
 // The quality in effect: 0 while a reallocation is pending
 int32_t ShadowMapGetQuality();
 // The terrain shader permutation for the quality in effect: 0 unshadowed, 1..3 the shadowed sets

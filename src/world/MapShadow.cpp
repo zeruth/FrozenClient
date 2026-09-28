@@ -44,6 +44,10 @@ const float SHADOW_FAR = 4000.0f;
 const float SHADOW_BACK = 2000.0f;   // how far back along the light the eye sits
 const float SHADOW_BIAS = -0.1f;
 const float SHADOW_DEPTH_SCALE = 1.0f / SHADOW_FAR;
+// The DEFAULT map edge. The size in force is g_shadowMapSize, which ShadowMapUpdateSize takes
+// from the quality -- two of the seven levels ask for 2048. This constant is what the quality
+// is what every tier but those two asks for, and what the compare harness
+// reports as the nominal size.
 const int32_t SHADOW_SIZE = 1024;
 
 } // namespace (reopened below)
@@ -105,25 +109,28 @@ bool EnsureTargets() {
     // 40 yard box must read the border, not wrap around to the far side of the map.
     CGxTexFlags flags(GxTex_Linear, 1, 1, 0, 0, 1, 0);
 
+    // The size the quality asks for, not a constant -- see ShadowMapUpdateSize.
+    int32_t size = g_shadowMapSize;
+
     int32_t ok = GxTexCreate(
-        GxTex_2d, SHADOW_SIZE, SHADOW_SIZE, 1, GxTex_R32F, GxTex_R32F,
+        GxTex_2d, size, size, 1, GxTex_R32F, GxTex_R32F,
         flags, nullptr, ShadowTargetCallback, "ShadowCache", s_colorTex);
 
     if (ok) {
         ok = GxTexCreate(
-            GxTex_2d, SHADOW_SIZE, SHADOW_SIZE, 1, GxTex_D24X8, GxTex_D24X8,
+            GxTex_2d, size, size, 1, GxTex_D24X8, GxTex_D24X8,
             flags, nullptr, ShadowTargetCallback, "ShadowCacheDepth", s_depthTex);
     }
 
     if (!ok || !s_colorTex || !s_depthTex) {
-        fprintf(stderr, "MapShadow: target allocation FAILED (%dx%d)\n", SHADOW_SIZE, SHADOW_SIZE);
+        fprintf(stderr, "MapShadow: target allocation FAILED (%dx%d)\n", size, size);
         s_allocFailed = true;
         s_colorTex = nullptr;
         s_depthTex = nullptr;
         return false;
     }
 
-    fprintf(stderr, "MapShadow: targets allocated %dx%d (R32F + D24X8)\n", SHADOW_SIZE, SHADOW_SIZE);
+    fprintf(stderr, "MapShadow: targets allocated %dx%d (R32F + D24X8)\n", size, size);
     return true;
 }
 
@@ -298,8 +305,8 @@ void MapShadowSetup(const C3Vector& focus) {
     remap.a0 = 0.5f;
     remap.b1 = -0.5f;
     remap.c2 = SHADOW_DEPTH_SCALE;
-    remap.d0 = 0.5f + 0.5f / static_cast<float>(SHADOW_SIZE);
-    remap.d1 = 0.5f + 0.5f / static_cast<float>(SHADOW_SIZE);
+    remap.d0 = 0.5f + 0.5f / static_cast<float>(g_shadowMapSize);
+    remap.d1 = 0.5f + 0.5f / static_cast<float>(g_shadowMapSize);
     remap.d2 = 0.0f;
 
     s_texMatrix = vp * remap;
@@ -313,7 +320,7 @@ void MapShadowSetup(const C3Vector& focus) {
         float v = focus.x * s_texMatrix.a1 + focus.y * s_texMatrix.b1 + focus.z * s_texMatrix.c1 + s_texMatrix.d1;
         float d = focus.x * s_texMatrix.a2 + focus.y * s_texMatrix.b2 + focus.z * s_texMatrix.c2 + s_texMatrix.d2;
 
-        float halfTexel = 0.5f / static_cast<float>(SHADOW_SIZE);
+        float halfTexel = 0.5f / static_cast<float>(g_shadowMapSize);
         bool ok = fabsf(u - 0.5f) < halfTexel * 2.0f
                && fabsf(v - 0.5f) < halfTexel * 2.0f
                && fabsf(d - 0.5f) < 0.001f;
@@ -338,7 +345,7 @@ const C44Matrix& MapShadowTexMatrix() {
 }
 
 int32_t MapShadowSize() {
-    return SHADOW_SIZE;
+    return g_shadowMapSize;
 }
 
 
@@ -543,6 +550,13 @@ void MapShadowRender() {
     // the latch suppresses, so a clear underneath it would never run.
     if (g_shadowMapRealloc) {
         MapShadowReleaseTargets();
+
+        // Both in the reference's order and for the reference's reason: the size comes from the
+        // quality and the PCF kernel is expressed in units of it, so the kernel has to be rebuilt
+        // whenever the size can have moved. EnsureTargets does the first two before it allocates.
+        ShadowMapUpdateSize();
+        ShadowMapBuildPcfTaps();
+
         EnsureTargets();
 
         g_shadowMapRealloc = 0;

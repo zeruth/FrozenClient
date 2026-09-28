@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-09-28 00:21 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-09-28 00:33 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,23 +8,23 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26942 | 5.35M |
-| mapped to a frozen function | 4746 (+1) (17.6%) | 1.00M (18.7%) |
-| &nbsp;&nbsp;ported | 4071 (+1) | 850.7k |
+| mapped to a frozen function | 4748 (-1) (17.6%) | 1.00M (18.7%) |
+| &nbsp;&nbsp;ported | 4073 (-1) | 851.3k |
 | &nbsp;&nbsp;stub (unimplemented body) | 569 (=) | 122.3k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2500 (+2) (9.3%)** | **355.8k (6.5%)** |
-| unmapped | 22196 | 4.35M |
-| world spine (reachable from OnFrameRender) | 5378, mapped 1646 (=) (30.6%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5645, mapped 1669 (=) (29.6%) | |
-| **render surface** (the modules that draw the world) | **4838, mapped 1266 (+1) (26.2%)** | |
+| **faithful** (linked, not stub, call order >= 80%) | **2501 (=) (9.3%)** | **356.3k (6.5%)** |
+| unmapped | 22194 | 4.35M |
+| world spine (reachable from OnFrameRender) | 5378, mapped 1648 (-1) (30.6%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5645, mapped 1671 (-1) (29.6%) | |
+| **render surface** (the modules that draw the world) | **4838, mapped 1267 (-1) (26.2%)** | |
 | of which the module is an anchor GUESS | 3057 (63.2%) | |
-| frozen functions (src/, from PDB + source) | 14021, stubs 1637 | |
+| frozen functions (src/, from PDB + source) | 14023, stubs 1637 | |
 
-Match evidence: annotated 2458, callgraph 254, callorder 110, cvar 30, handler 29, order 142, override 379, sticky 18, string 306, table 1020. Module anchors: 1479 assert strings.
+Match evidence: annotated 2460, callgraph 254, callorder 110, cvar 30, handler 29, order 142, override 379, sticky 18, string 306, table 1020. Module anchors: 1479 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-09-28 00:20 -- mapped 4745, ported 4070, stub 569, spine mapped 1646.
+Previous run: 2026-09-28 00:31 -- mapped 4749, ported 4074, stub 569, spine mapped 1649.
 
 ## Lua API coverage (binding tables)
 
@@ -183,7 +183,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_output_openal.cpp | 57 | 31.2k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | XMLTree.cpp | 183 | 31.0k | 89 (48.6%) | 52.6% | 5 | 0 | 30 |
 | MapChunkLiquid.cpp | 76 | 30.8k | 41 (53.9%) | 56.0% | 0 | 2 | 46 |
-| MinimapFrame.cpp | 76 | 30.8k | 22 (28.9%) | 18.2% | 0 | 0 | 1 |
+| MinimapFrame.cpp | 76 | 30.8k | 23 (30.3%) | 18.4% | 0 | 0 | 1 |
 | UnitMissileTrajectory_C.cpp | 93 | 30.6k | 4 (4.3%) | 1.4% | 0 | 0 | 57 |
 | Client.cpp | 166 | 30.5k | 59 (35.5%) | 39.5% | 10 | 0 | 29 |
 | CGlueMgr.cpp | 182 | 28.8k | 94 (51.6%) | 57.0% | 24 | 0 | 1 |
@@ -266,7 +266,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_s3m.cpp | 14 | 9.7k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | fmod_codec.cpp | 43 | 9.2k | 0 (0.0%) | 0.0% | 0 | 0 | 9 |
 | fmod_codec_fsb.cpp | 18 | 9.2k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
-| ShadowMap.cpp | 31 | 9.0k | 14 (45.2%) | 22.2% | 0 | 0 | 17 |
+| ShadowMap.cpp | 31 | 9.0k | 15 (48.4%) | 27.7% | 0 | 0 | 17 |
 | WardenClient.cpp | 62 | 8.9k | 3 (4.8%) | 11.8% | 2 | 0 | 0 |
 | TradeFrame.cpp | 43 | 8.8k | 12 (27.9%) | 26.8% | 6 | 0 | 5 |
 | vorbisfile.c | 23 | 8.6k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
@@ -600,9 +600,9 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `statement` | lib/lua-5.1 | 2204 | vendor/lua-5.1.3/src/lparser.c |
 | `ValidateNameInternal` | glue | 2189 | src/glue/Character.cpp |
 | `PlayerNameRenderWorldText` | ui | 2162 | src/ui/game/PlayerName.cpp |
+| `MapShadowSetup` | world | 2112 | src/world/MapShadow.cpp |
 | `explode` | lib/stormlib-9.31 | 2099 | lib/squall/vendor/stormlib-9.31/src/pklib/explode.c |
 | `BZ2_compressBlock` | lib/stormlib-9.31 | 2096 | lib/squall/vendor/stormlib-9.31/src/bzip2/compress.c |
-| `MapShadowSetup` | world | 2074 | src/world/MapShadow.cpp |
 
 ## Linked ports with the lowest call-order fidelity
 
@@ -730,8 +730,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-27 20:56 | 4732 (17.6%) | 2479 (9.2%) | 573 | 1638/5381 | 2924/2964 | 1380 |
-| 2026-09-27 21:02 | 4731 (17.6%) | 2479 (9.2%) | 573 | 1637/5378 | 2924/2964 | 1380 |
 | 2026-09-27 21:07 | 4730 (17.6%) | 2479 (9.2%) | 573 | 1636/5378 | 2924/2964 | 1380 |
 | 2026-09-27 21:19 | 4730 (17.6%) | 2480 (9.2%) | 573 | 1636/5378 | 2924/2964 | 1380 |
 | 2026-09-27 21:26 | 4730 (17.6%) | 2481 (9.2%) | 573 | 1636/5378 | 2924/2964 | 1380 |
@@ -755,6 +753,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-09-28 00:17 | 4745 (17.6%) | 2498 (9.3%) | 573 | 1646/5378 | 2924/2964 | 1380 |
 | 2026-09-28 00:20 | 4745 (17.6%) | 2498 (9.3%) | 569 | 1646/5378 | 2924/2964 | 1380 |
 | 2026-09-28 00:21 | 4746 (17.6%) | 2500 (9.3%) | 569 | 1646/5378 | 2924/2964 | 1380 |
+| 2026-09-28 00:31 | 4749 (17.6%) | 2501 (9.3%) | 569 | 1649/5378 | 2924/2964 | 1380 |
+| 2026-09-28 00:33 | 4748 (17.6%) | 2501 (9.3%) | 569 | 1648/5378 | 2924/2964 | 1380 |
 
 ## How to move a row
 

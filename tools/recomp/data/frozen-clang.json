@@ -76375,7 +76375,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 8
+"line": 21
 },
 "GxRenderTargetDump": {
 "files": [
@@ -76390,7 +76390,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 12
+"line": 25
 },
 "AutoScreenshotCheck": {
 "files": [
@@ -212748,7 +212748,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 88
+"line": 92
 },
 "EnsureTargets": {
 "files": [
@@ -212777,9 +212777,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 34,
+"lines": 37,
 "refs": [],
-"line": 95
+"line": 99
 },
 "MapShadowReleaseTargets": {
 "files": [
@@ -212795,7 +212795,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 140
+"line": 147
 },
 "MapShadowClearTarget": {
 "files": [
@@ -212830,7 +212830,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 166
+"line": 173
 },
 "Normalize": {
 "files": [
@@ -212851,7 +212851,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 189
+"line": 196
 },
 "Cross": {
 "files": [
@@ -212866,7 +212866,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 199
+"line": 206
 },
 "Dot": {
 "files": [
@@ -212879,7 +212879,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 203
+"line": 210
 },
 "MapShadowLightDirection": {
 "files": [
@@ -212902,7 +212902,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 227
+"line": 234
 },
 "MapShadowSetup": {
 "files": [
@@ -212954,7 +212954,7 @@
 "stub": false,
 "lines": 87,
 "refs": [],
-"line": 240
+"line": 247
 },
 "MapShadowProjection": {
 "files": [
@@ -212967,7 +212967,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 328
+"line": 335
 },
 "MapShadowLightView": {
 "files": [
@@ -212980,7 +212980,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 332
+"line": 339
 },
 "MapShadowTexMatrix": {
 "files": [
@@ -212993,7 +212993,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 336
+"line": 343
 },
 "MapShadowSize": {
 "files": [
@@ -213006,7 +213006,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 340
+"line": 347
 },
 "MapShadowBegin": {
 "files": [
@@ -213054,7 +213054,7 @@
 "stub": false,
 "lines": 60,
 "refs": [],
-"line": 345
+"line": 352
 },
 "MapShadowEnd": {
 "files": [
@@ -213090,7 +213090,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 406
+"line": 413
 },
 "MapShadowTexture": {
 "files": [
@@ -213103,7 +213103,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 434
+"line": 441
 },
 "MapShadowRequestDump": {
 "files": [
@@ -213121,7 +213121,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 438
+"line": 445
 },
 "MapShadowSetupPlane": {
 "files": [
@@ -213150,7 +213150,7 @@
 "stub": false,
 "lines": 34,
 "refs": [],
-"line": 465
+"line": 472
 },
 "MapShadowFocus": {
 "files": [
@@ -213174,7 +213174,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 505
+"line": 512
 },
 "MapShadowRender": {
 "files": [
@@ -213182,6 +213182,8 @@
 ],
 "callseq": [
 "MapShadowReleaseTargets",
+"ShadowMapUpdateSize",
+"ShadowMapBuildPcfTaps",
 "EnsureTargets",
 "ShadowMapGetQuality",
 "MapShadowLightDirection",
@@ -213202,9 +213204,9 @@
 ],
 "branches": 4,
 "stub": false,
-"lines": 48,
+"lines": 55,
 "refs": [],
-"line": 530
+"line": 537
 },
 "Fold": {
 "files": [
@@ -214457,7 +214459,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 21
+"line": 23
 },
 "ShadowMapGetShaderLevel": {
 "files": [
@@ -214472,7 +214474,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 26
+"line": 28
 },
 "ShadowMapQualityName": {
 "files": [
@@ -214496,7 +214498,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 34
+"line": 36
 },
 "ShadowMapQualitySupported": {
 "files": [
@@ -214521,7 +214523,7 @@
 "stub": false,
 "lines": 72,
 "refs": [],
-"line": 64
+"line": 66
 },
 "ShadowMapSetQuality": {
 "files": [
@@ -214539,7 +214541,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 141
+"line": 143
 },
 "ShadowMapReleaseTargets": {
 "files": [
@@ -214554,7 +214556,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 168
+"line": 170
 },
 "ShadowMapDeviceRestore": {
 "files": [
@@ -214569,7 +214571,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 174
+"line": 176
 },
 "ShadowMapSetLightDirection": {
 "files": [
@@ -214592,7 +214594,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 191
+"line": 193
 },
 "ShadowMapSetIntensity": {
 "files": [
@@ -214605,7 +214607,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 224
+"line": 226
 },
 "ShadowMapLightMatrices": {
 "files": [
@@ -214629,7 +214631,46 @@
 "stub": false,
 "lines": 18,
 "refs": [],
-"line": 236
+"line": 238
+},
+"ShadowMapUpdateSize": {
+"files": [
+"src/world/shadowmap.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0x400",
+"0x800",
+"2",
+"3"
+],
+"branches": 1,
+"stub": false,
+"lines": 3,
+"refs": [],
+"line": 283
+},
+"ShadowMapBuildPcfTaps": {
+"files": [
+"src/world/shadowmap.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [
+"0",
+"0.0f",
+"1",
+"1.0f",
+"2",
+"3",
+"8"
+],
+"branches": 2,
+"stub": false,
+"lines": 10,
+"refs": [],
+"line": 293
 },
 "ShadowMapBindTerrain": {
 "files": [
@@ -214646,17 +214687,16 @@
 "consts": [
 "0",
 "0x25",
-"1",
 "12",
 "3",
 "4",
 "8"
 ],
-"branches": 3,
+"branches": 2,
 "stub": false,
-"lines": 25,
+"lines": 18,
 "refs": [],
-"line": 274
+"line": 310
 },
 "ShadowMapBindMapObj": {
 "files": [
@@ -214677,7 +214717,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 311
+"line": 340
 },
 "ShadowMapBindScene": {
 "files": [
@@ -214701,11 +214741,11 @@
 "5",
 "8"
 ],
-"branches": 3,
+"branches": 2,
 "stub": false,
-"lines": 33,
+"lines": 27,
 "refs": [],
-"line": 331
+"line": 360
 },
 "WeatherDensityCallback": {
 "files": [
