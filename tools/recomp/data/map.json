@@ -59355,10 +59355,10 @@
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.629,
+  "branchRatio": 0.659,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.712,
+  "fidelity": 0.788,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"

@@ -3833,6 +3833,18 @@ int32_t CM2Model::InitializeLoaded() {
 
     // Process model attachments that occurred during load
 
+    // 0x00833fd0..0x0083402f. Bit 0x10: the shared model has two or more instances, unless this
+    // one was created from a source model that does not carry the bit itself.
+    this->m_flag10 = (this->m_shared->uint194 >= 2 && !(this->model30 && !this->model30->m_flag10)) ? 1 : 0;
+
+    // The source model has served its purpose -- its skin sections, textures and particle colours
+    // were copied above -- so the reference drops its reference to it here. Release is the
+    // reference's own decrement-destroy-free (FUN_00824ed0); inlined there, called here.
+    if (this->model30) {
+        this->model30->Release();
+        this->model30 = nullptr;
+    }
+
     CM2Model* attachNext = nullptr;
     for (auto attachModel = this->m_attachList; attachModel; attachModel = attachNext) {
         attachNext = attachModel->m_attachNext;
@@ -3852,7 +3864,50 @@ int32_t CM2Model::InitializeLoaded() {
 
     // TODO
 
+    // Bit 0x1000, the cut-down animate path (AnimateMTSimple): one bone with nothing on it that
+    // needs the full bone pass (no rotation or scale animation 0x280, no billboard 0x78), one
+    // sequence, and none of lights, cameras, ribbons, particles or colours. Nothing set this bit
+    // before, so AnimateMTSimple -- ported, and faithful -- could never be chosen.
+    {
+        auto data = this->m_shared->m_data;
+
+        if (data->bones.Count() == 1 && data->sequences.Count() == 1
+                && !(data->bones[0].flags & 0x280) && !(data->bones[0].flags & 0x78)
+                && !data->lights.Count() && !data->cameras.Count() && !data->ribbons.Count()
+                && !data->particles.Count() && !data->colors.Count()) {
+            this->m_flag1000 = 1;
+        }
+    }
+
+    // (flags & ~0x2) | 0x801: loaded, mid-initialise (0x800, cleared at the end), not pending.
     this->m_loaded = 1;
+    this->m_flag800 = 1;
+    this->m_flag2 = 0;
+
+    // Start the model on its stand animation. The fallback resolves id 0 through
+    // AnimationData.dbc; if the model has the resolved animation it plays id 0 (which the
+    // bone-sequence setter resolves again), and if not, the first sequence the model carries.
+    //
+    // The reference has a block between these two that waits on the shared model's async reads
+    // and re-enters InitializeLoaded -- gated on the loaded bit being CLEAR, the line after the
+    // bit is set, so it is unreachable there as it would be here. Left out.
+    {
+        M2SequenceFallback fallback;
+        this->Sub826350(fallback, 0);
+
+        uint32_t sequenceId = CM2Model::Sub825E00(this->m_shared->m_data, fallback.uint0)
+            ? 0
+            : this->m_shared->m_data->sequences[0].id;
+
+        this->SetBoneSequence(0xFFFFFFFF, sequenceId, 0xFFFFFFFF, 0, 1.0f, 0, 1);
+    }
+
+    // Bit 0x400000: the model has something to report per frame -- a sequence-done listener,
+    // more than one sequence, or an event listener with events to fire.
+    if (this->m_sequenceDoneCallback || this->m_shared->m_data->sequences.Count() > 1
+            || (this->m_animEventCallback && this->m_shared->m_data->events.Count())) {
+        this->m_flag400000 = 1;
+    }
 
     uint32_t savedTime = this->m_scene->m_time;
 
