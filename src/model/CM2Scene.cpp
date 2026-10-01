@@ -1577,10 +1577,14 @@ void CM2Scene::SelectLights(CM2Lighting* lighting) {
     const C3Vector& c = lighting->sphere4.c;
     float r = lighting->sphere4.r;
 
-    int32_t xMin = static_cast<int32_t>((c.x - r) * 0.05f - 0.5f) & 0x3f;
-    int32_t xMax = static_cast<int32_t>((c.x + r) * 0.05f + 0.5f) & 0x3f;
-    int32_t yMin = static_cast<int32_t>((c.y - r) * 0.05f - 0.5f) & 0x3f;
-    int32_t yMax = static_cast<int32_t>((c.y + r) * 0.05f + 0.5f) & 0x3f;
+    //
+    // FLOOR, not truncation: each bound goes through FUN_0088ce30, the C runtime's floor, before
+    // the cast. Truncation rounds toward zero, so for the negative half of the world -- which is
+    // most of it -- every bound landed one cell high and the sweep missed the low edge's lights.
+    int32_t xMin = static_cast<int32_t>(floorf((c.x - r) * 0.05f - 0.5f)) & 0x3f;
+    int32_t xMax = static_cast<int32_t>(floorf((c.x + r) * 0.05f + 0.5f)) & 0x3f;
+    int32_t yMin = static_cast<int32_t>(floorf((c.y - r) * 0.05f - 0.5f)) & 0x3f;
+    int32_t yMax = static_cast<int32_t>(floorf((c.y + r) * 0.05f + 0.5f)) & 0x3f;
 
     // Both loops are do-while and both wrap, so a sphere straddling the fold still sweeps the
     // cells on each side of it instead of walking the whole grid backwards.
@@ -1597,12 +1601,15 @@ void CM2Scene::SelectLights(CM2Lighting* lighting) {
                 // pointer, so reading it afterwards would walk into a cleared node.
                 CM2Light* next = light->m_lightNext;
 
-                if (!light->m_scene || light->m_updateStamp == this->uint14) {
-                    lighting->AddLight(light);
-                } else {
+                // Written with the cull first because that is the order the reference's code is
+                // laid out in (the SetVisible call precedes the AddLight in the binary); the
+                // condition is the same one inverted.
+                if (light->m_scene && light->m_updateStamp != this->uint14) {
                     // Nobody drove this light this frame, so it belongs to a model that stopped
                     // animating. The reference culls it here rather than anywhere else.
                     light->SetVisible(0);
+                } else {
+                    lighting->AddLight(light);
                 }
 
                 light = next;

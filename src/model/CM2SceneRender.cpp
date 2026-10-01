@@ -1077,12 +1077,12 @@ void CM2SceneRender::SetupTextures() {
     uint16_t* textureTransformCombos =
         this->m_curModel->m_shared->TextureTransformCombos(&transformComboCount);
 
-    for (int32_t i = 0; i < 2; i++) {
-        if (i >= textureCount) {
-            GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), static_cast<CGxTex*>(nullptr));
-            continue;
-        }
+    // The reference's shape (0x0081f4c9..0x0081f60b): every stage the batch NAMES, however many
+    // that is, then the stages below two left empty. Frozen walked exactly two and blanked the
+    // extras inside the loop, which would also have dropped a third or fourth texture.
+    uint32_t i = 0;
 
+    for (; i < textureCount; i++) {
         auto textureIndex = textureCombos[this->m_curBatch->textureComboIndex + i];
         auto textureHandle = textureIndex < this->m_data->textures.Count()
             ? this->m_curModel->m_textures[textureIndex]
@@ -1103,18 +1103,23 @@ void CM2SceneRender::SetupTextures() {
         GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), texture);
 
         auto textureTransformIndex = textureTransformCombos[this->m_curBatch->textureTransformComboIndex + i];
-        auto stageShift = M2COMBINER_STAGE_SHIFT * (2 - (i + 1));
+
+        // The stage's combiner nibble: shift 4 for the first stage, 0 for the second. The
+        // reference keeps the shift in a byte it decrements by four, masked to five bits.
+        uint32_t stageShift = (4u - 4u * i) & 0x1f;
 
         uint32_t v21 = v19 == 0 ? i : 1;
 
-        if (this->m_curBatch->shader & 0x8000 || !((this->m_curBatch->shader >> stageShift) & M2COMBINER_ENVMAP)) {
-            if (textureTransformIndex >= this->m_data->textureTransforms.Count()) {
-                CShaderEffect::SetTexMtx_Identity(v21);
-            } else {
-                CShaderEffect::SetTexMtx(this->m_curModel->m_textureMatrices[textureTransformIndex], v21);
-            }
-        } else {
+        if (!(this->m_curBatch->shader & 0x8000) && ((this->m_curBatch->shader >> stageShift) & M2COMBINER_ENVMAP)) {
             CShaderEffect::SetTexMtx_SphereMap(v21);
+        } else if (textureTransformIndex < this->m_data->textureTransforms.Count()) {
+            CShaderEffect::SetTexMtx(this->m_curModel->m_textureMatrices[textureTransformIndex], v21);
+        } else {
+            CShaderEffect::SetTexMtx_Identity(v21);
         }
+    }
+
+    for (; i < 2; i++) {
+        GxRsSet(static_cast<EGxRenderState>(GxRs_Texture0 + i), static_cast<CGxTex*>(nullptr));
     }
 }

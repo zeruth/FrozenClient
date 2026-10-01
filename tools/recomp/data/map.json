@@ -57242,8 +57242,8 @@
  "0081e400": {
   "branchRatio": 0.778,
   "constOverlap": 0.071,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -57353,8 +57353,8 @@
  "0081f450": {
   "branchRatio": 0.882,
   "constOverlap": 0.1,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"

@@ -86785,8 +86785,12 @@
 ],
 "callseq": [
 "CM2Lighting::AddLight",
-"CM2Lighting::AddLight",
-"CM2Light::SetVisible"
+"floorf",
+"floorf",
+"floorf",
+"floorf",
+"CM2Light::SetVisible",
+"CM2Lighting::AddLight"
 ],
 "strings": [],
 "consts": [
@@ -86799,7 +86803,7 @@
 ],
 "branches": 7,
 "stub": false,
-"lines": 57,
+"lines": 64,
 "refs": [],
 "line": 1568
 },
@@ -86816,7 +86820,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1628
+"line": 1635
 },
 "CM2Scene::SortRayCandidates": {
 "files": [
@@ -86832,7 +86836,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1649
+"line": 1656
 },
 "CM2Scene::ReserveRayCandidates": {
 "files": [
@@ -86858,7 +86862,7 @@
 "stub": false,
 "lines": 28,
 "refs": [],
-"line": 1685
+"line": 1692
 },
 "CM2Scene::RaySetup": {
 "files": [
@@ -86879,7 +86883,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 1718
+"line": 1725
 },
 "CM2Scene::BlendBoneMatrices": {
 "files": [
@@ -86904,7 +86908,7 @@
 "stub": false,
 "lines": 35,
 "refs": [],
-"line": 1751
+"line": 1758
 },
 "CM2Scene::BlendBoneMatrices3x4": {
 "files": [
@@ -86931,7 +86935,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1790
+"line": 1797
 },
 "CM2Scene::RayTestModel": {
 "files": [
@@ -86954,7 +86958,7 @@
 "stub": false,
 "lines": 41,
 "refs": [],
-"line": 1837
+"line": 1844
 },
 "CM2Scene::ReserveRayProjected": {
 "files": [
@@ -86976,7 +86980,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1887
+"line": 1894
 },
 "CM2Scene::CollectRayCandidates": {
 "files": [
@@ -87006,7 +87010,7 @@
 "stub": false,
 "lines": 118,
 "refs": [],
-"line": 1949
+"line": 1956
 },
 "CM2Scene::RayQuery": {
 "files": [
@@ -87034,7 +87038,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 2094
+"line": 2101
 },
 "CM2Scene::RayTestModelGeometry": {
 "files": [
@@ -87069,7 +87073,7 @@
 "stub": false,
 "lines": 81,
 "refs": [],
-"line": 2207
+"line": 2214
 },
 "CM2Scene::RayTestTriangles": {
 "files": [
@@ -87092,7 +87096,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 2294
+"line": 2301
 },
 "CM2Scene::ProjectSectionVertices": {
 "files": [
@@ -87111,7 +87115,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 2336
+"line": 2343
 },
 "CM2Scene::ProjectSectionVerticesBlended3x4": {
 "files": [
@@ -87135,7 +87139,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 2376
+"line": 2383
 },
 "CM2Scene::ProjectSectionVerticesBlended4x4": {
 "files": [
@@ -87159,7 +87163,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 2428
+"line": 2435
 },
 "CM2Scene::RayQueryCollision": {
 "files": [
@@ -87203,7 +87207,7 @@
 "stub": false,
 "lines": 103,
 "refs": [],
-"line": 2489
+"line": 2496
 },
 "CM2SceneRender::Draw": {
 "files": [
@@ -87558,30 +87562,32 @@
 "CShaderEffect::SetTexMtx_Identity",
 "CM2Shared::TextureCombos",
 "CM2Shared::TextureTransformCombos",
-"GxRsSet",
 "M2Array<M2Texture>::Count",
 "TextureGetGxTex",
 "M2Array<M2Texture>::operator[]",
 "GxTexSetWrap",
 "GxRsSet",
+"CShaderEffect::SetTexMtx_SphereMap",
 "M2Array<M2TextureTransform>::Count",
-"CShaderEffect::SetTexMtx_Identity",
 "CShaderEffect::SetTexMtx",
-"CShaderEffect::SetTexMtx_SphereMap"
+"CShaderEffect::SetTexMtx_Identity",
+"GxRsSet"
 ],
 "strings": [],
 "consts": [
 "0",
 "0x1",
+"0x1f",
 "0x2",
 "0x4000",
 "0x8000",
 "1",
-"2"
+"2",
+"4u"
 ],
 "branches": 15,
 "stub": false,
-"lines": 88,
+"lines": 93,
 "refs": [],
 "line": 1033
 },
