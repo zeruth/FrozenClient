@@ -790,9 +790,12 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             }
         }
 
-        if (boneFlags & (0x80 | 0x200)) {
-            C44Matrix boneLocalMatrix;
+        // The bone's own rotation and scale, before its parent. Hoisted out of the branch below
+        // because the spherical billboard (case 0x8 further down) reads its rows; it stays the
+        // identity when the bone has neither (flags & 0x280 == 0), which is what that case tests.
+        C44Matrix boneLocalMatrix;
 
+        if (boneFlags & (0x80 | 0x200)) {
             if (bone.rotationTrack.sequenceTimes.Count()) {
                 auto& rotationTrack = bone.rotationTrack;
 
@@ -861,84 +864,105 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             this->m_boneMatrices[i] = *boneParentMatrix;
         }
 
-        // BOTH BILLBOARD BRANCHES BELOW ARE REASONED, NOT PORTED. They were worked out from what
-        // a glow sprite ought to look like -- the comment below still says so -- and CLAUDE.md is
-        // explicit that guessing an implementation from what the screen looks like is how the
-        // graphics bugs got in.
+        // THE BILLBOARD, 0x82ff3d..0x830250. An earlier note here said the reference's AnimateMT
+        // does no billboarding and that the two branches standing here were reasoned from what a
+        // glow sprite should look like. The second half was true and the first was not: the
+        // reference switches on (boneFlags & 0x78) right here, through a jump table at 0x83096c.
+        // This is that switch, transcribed from the disassembly -- the decompiler loses which row
+        // each C3Vector::Normalize acts on, and the asm settles all twelve.
         //
-        // AND THE REFERENCE'S AnimateMT DOES NO BILLBOARDING AT ALL. It tests boneFlags bits 0,
-        // 1 and 2 and nothing else: there is no test of 0x8, 0x10, 0x20 or 0x40 anywhere in the
-        // function. So this is not a port that drifted, it is reasoned code standing in a
-        // function whose reference counterpart has no such branch. WHERE the reference
-        // billboards, if it does, is not established -- find that before touching this.
-        //
-        // (An earlier note here pointed at 0x82f930..0x8302c0 and called that the reference's
-        // billboard. It is not; see the TODO above, which is what that region actually is.)
-        if (boneFlags & 0x8) {
-            // Spherical billboard. The bone matrix is already in view space (its parent chain roots
-            // at matrixF4 = model x view), so replacing its rotation with the view axes makes the
-            // geometry face the screen from any camera angle -- exactly what a glow/flare sprite
-            // needs. Keep the animated per-axis scale (row lengths) and the view-space position;
-            // drop only the orientation, mapping the sprite's local X/Y onto camera right/up like the
-            // reference does. Non-billboard bones are untouched.
+        // Before the switch: the three row lengths, and the bone's pivot carried through the
+        // matrix. After it, whatever the case did: rescale the rows by those lengths and put the
+        // translation back so the pivot lands where it did. A combination of bits takes the
+        // jump table's default and skips straight to that tail, rescaling an unchanged matrix;
+        // that is the reference's behaviour and is kept.
+        if (boneFlags & 0x78) {
             C44Matrix& m = this->m_boneMatrices[i];
 
-            float sx = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
-            float sy = sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2);
-            float sz = sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
+            C3Vector& rowA = *reinterpret_cast<C3Vector*>(&m.a0);
+            C3Vector& rowB = *reinterpret_cast<C3Vector*>(&m.b0);
+            C3Vector& rowC = *reinterpret_cast<C3Vector*>(&m.c0);
 
-            m.a0 = sx;   m.a1 = 0.0f; m.a2 = 0.0f;
-            m.b0 = 0.0f; m.b1 = sy;   m.b2 = 0.0f;
-            m.c0 = 0.0f; m.c1 = 0.0f; m.c2 = sz;
-        } else if (boneFlags & (0x10 | 0x20 | 0x40)) {
-            // Cylindrical billboard: keep one axis locked (e.g. a candle flame stays vertical) and
-            // spin the geometry around it to face the screen. Still in view space, so the locked
-            // axis is its own row and "toward the screen" is view +Z. By cyclic order the locked
-            // axis is the sprite's up, the next axis its width (right), the third its normal:
-            // lockX -> up=X,right=Y,normal=Z ; lockY -> up=Y,right=Z,normal=X ; lockZ -> up=Z,right=X,normal=Y.
-            C44Matrix& m = this->m_boneMatrices[i];
+            C3Vector lengths = {
+                sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2),
+                sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2),
+                sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2)
+            };
 
-            float ux, uy, uz;
-            if (boneFlags & 0x10) { ux = m.a0; uy = m.a1; uz = m.a2; }
-            else if (boneFlags & 0x20) { ux = m.b0; uy = m.b1; uz = m.b2; }
-            else { ux = m.c0; uy = m.c1; uz = m.c2; }
+            C3Vector pivotPlaced = bone.pivot * m;
 
-            float ul = sqrtf(ux * ux + uy * uy + uz * uz);
+            switch (boneFlags & 0x78) {
+                // Spherical: face the camera. With a local rotation, its rows re-axed as
+                // (y, z, -x) and normalised; without one, the fixed frame (0,0,-1) (1,0,0) (0,1,0).
+                case 0x8:
+                    if (boneFlags & (0x80 | 0x200)) {
+                        rowA = { boneLocalMatrix.a1, boneLocalMatrix.a2, -boneLocalMatrix.a0 };
+                        rowA.Normalize();
+                        rowB = { boneLocalMatrix.b1, boneLocalMatrix.b2, -boneLocalMatrix.b0 };
+                        rowB.Normalize();
+                        rowC = { boneLocalMatrix.c1, boneLocalMatrix.c2, -boneLocalMatrix.c0 };
+                        rowC.Normalize();
+                    } else {
+                        rowA = { 0.0f, 0.0f, -1.0f };
+                        rowB = { 1.0f, 0.0f, 0.0f };
+                        rowC = { 0.0f, 1.0f, 0.0f };
+                    }
 
-            if (ul > 1e-6f) {
-                ux /= ul; uy /= ul; uz /= ul; // normalized locked (up) axis
+                    break;
 
-                // right = normalize(cross(up, viewZ)), viewZ = (0,0,1): a horizontal screen axis
-                // perpendicular to up. If up is parallel to the view direction, pick any horizontal.
-                float rx = uy, ry = -ux, rz = 0.0f;
-                float rl = sqrtf(rx * rx + ry * ry + rz * rz);
+                // Cylindrical about X: keep row A, turn row B into A's perpendicular in the
+                // view's XY plane, and row C is B x A.
+                case 0x10:
+                    rowA.Normalize();
+                    rowB = { rowA.y, -rowA.x, 0.0f };
+                    rowB.Normalize();
+                    rowC = {
+                        rowA.z * rowB.y - rowB.z * rowA.y,
+                        rowA.x * rowB.z - rowB.x * rowA.z,
+                        rowB.x * rowA.y - rowA.x * rowB.y
+                    };
 
-                if (rl < 1e-6f) { rx = 1.0f; ry = 0.0f; rz = 0.0f; rl = 1.0f; }
+                    break;
 
-                rx /= rl; ry /= rl; rz /= rl;
+                // Cylindrical about Y: keep row B, row A becomes its perpendicular, row C = B x A.
+                case 0x20:
+                    rowB.Normalize();
+                    rowA = { -rowB.y, rowB.x, 0.0f };
+                    rowA.Normalize();
+                    rowC = {
+                        rowA.z * rowB.y - rowB.z * rowA.y,
+                        rowA.x * rowB.z - rowB.x * rowA.z,
+                        rowB.x * rowA.y - rowA.x * rowB.y
+                    };
 
-                // normal = cross(up, right) -> keeps X x Y = Z (right handed) and faces the screen
-                float nx = uy * rz - uz * ry;
-                float ny = uz * rx - ux * rz;
-                float nz = ux * ry - uy * rx;
+                    break;
 
-                if (boneFlags & 0x10) {        // lock X: right -> Y row, normal -> Z row
-                    float rs = sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2);
-                    float ns = sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
-                    m.b0 = rx * rs; m.b1 = ry * rs; m.b2 = rz * rs;
-                    m.c0 = nx * ns; m.c1 = ny * ns; m.c2 = nz * ns;
-                } else if (boneFlags & 0x20) { // lock Y: right -> Z row, normal -> X row
-                    float rs = sqrtf(m.c0 * m.c0 + m.c1 * m.c1 + m.c2 * m.c2);
-                    float ns = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
-                    m.c0 = rx * rs; m.c1 = ry * rs; m.c2 = rz * rs;
-                    m.a0 = nx * ns; m.a1 = ny * ns; m.a2 = nz * ns;
-                } else {                       // lock Z: right -> X row, normal -> Y row
-                    float rs = sqrtf(m.a0 * m.a0 + m.a1 * m.a1 + m.a2 * m.a2);
-                    float ns = sqrtf(m.b0 * m.b0 + m.b1 * m.b1 + m.b2 * m.b2);
-                    m.a0 = rx * rs; m.a1 = ry * rs; m.a2 = rz * rs;
-                    m.b0 = nx * ns; m.b1 = ny * ns; m.b2 = nz * ns;
-                }
+                // Cylindrical about Z: keep row C, row B becomes its perpendicular, row A = C x B.
+                case 0x40:
+                    rowC.Normalize();
+                    rowB = { rowC.y, -rowC.x, 0.0f };
+                    rowB.Normalize();
+                    rowA = {
+                        rowC.y * rowB.z - rowC.z * rowB.y,
+                        rowB.x * rowC.z - rowB.z * rowC.x,
+                        rowB.y * rowC.x - rowB.x * rowC.y
+                    };
+
+                    break;
+
+                default:
+                    break;
             }
+
+            m.Scale(lengths);
+
+            m.d0 = pivotPlaced.x - (bone.pivot.x * m.a0 + bone.pivot.y * m.b0 + bone.pivot.z * m.c0);
+            m.d1 = pivotPlaced.y - (bone.pivot.x * m.a1 + bone.pivot.y * m.b1 + bone.pivot.z * m.c1);
+            m.d2 = pivotPlaced.z - (bone.pivot.x * m.a2 + bone.pivot.y * m.b2 + bone.pivot.z * m.c2);
+            m.a3 = 0.0f;
+            m.b3 = 0.0f;
+            m.c3 = 0.0f;
+            m.d3 = 1.0f;
         }
 
         // TODO
