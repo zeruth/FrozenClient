@@ -1018,8 +1018,8 @@
   },
   "00832640": {
     "frozen": "CM2Model::~CM2Model",
-    "status": "ported",
-    "note": "498 bytes, recursive (child models), frees through ObjectFree; the destructor CM2Model::Release calls before ObjectFree"
+    "status": "faithful",
+    "note": "498 bytes, recursive (child models), frees through ObjectFree; the destructor CM2Model::Release calls before ObjectFree FAITHFUL BY HAND VERDICT 2026-10-01: call order 100% once the tail was completed (the deferred-call queue freed with any texture handle a queued replacement held, UnoptimizeVisibleGeometry, and the bone and texture matrices freed here rather than in FreeInternalResources). Held off the measured faithful only by the branch check (0.33): the reference unlinks the model from five intrusive lists inline, an if on each prev and next pointer, where frozen calls one small Unlink helper per list, and releases attachments through DetachFromParent rather than its inlined body. Every branch is in those helpers; the source-level count cannot see into them."
   },
   "004d3100": {
     "frozen": "ObjectFree",

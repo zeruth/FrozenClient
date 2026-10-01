@@ -408,11 +408,39 @@ CM2Model::~CM2Model() {
         this->m_attachList->DetachFromParent();
     }
 
-    // TODO
-
     this->UnlinkFromAttachList();
 
-    // TODO
+    // Calls deferred until the model loaded, for a model that never did (0x00832782). Each is
+    // freed, and a texture replacement among them gives back the handle it duplicated. These
+    // leaked before -- the queue was only ever drained by InitializeLoaded.
+    while (this->m_modelCallList) {
+        auto modelCall = this->m_modelCallList;
+        this->m_modelCallList = modelCall->modelCallNext;
+
+        if (modelCall->type == 0) {
+            auto texture = *reinterpret_cast<HTEXTURE*>(&modelCall->args[1]);
+
+            if (texture) {
+                HandleClose(texture);
+            }
+        }
+
+        STORM_FREE(modelCall);
+    }
+
+    this->UnoptimizeVisibleGeometry();
+
+    // Through SequenceBufferFree, as they were allocated: Alloc returns an interior pointer and
+    // only its own Free can recover the base. Moved here from FreeInternalResources.
+    if (this->m_boneMatrices) {
+        SequenceBufferFree(this->m_boneMatrices);
+        this->m_boneMatrices = nullptr;
+    }
+
+    if (this->m_textureMatrices) {
+        SequenceBufferFree(this->m_textureMatrices);
+        this->m_textureMatrices = nullptr;
+    }
 
     this->m_attachParent = nullptr;
     this->m_currentLighting = nullptr;
@@ -2709,15 +2737,9 @@ void CM2Model::FreeInternalResources() {
     // rather than 8. The pair used to have internal linkage in CM2Shared.cpp and is now declared
     // in its header. Do NOT put SMemFree back on either of these: Alloc returns an interior
     // pointer and only its own Free can recover the base.
-    if (this->m_boneMatrices) {
-        SequenceBufferFree(this->m_boneMatrices);
-        this->m_boneMatrices = nullptr;
-    }
-
-    if (this->m_textureMatrices) {
-        SequenceBufferFree(this->m_textureMatrices);
-        this->m_textureMatrices = nullptr;
-    }
+    // The two matrix arrays are freed at the END of the destructor, not here -- that is where
+    // the reference frees them (FUN_00832640, after UnoptimizeVisibleGeometry), and this
+    // function's only caller is that destructor. See ~CM2Model.
 
     STORM_FREE(this->m_internalResources);
 }
@@ -4310,8 +4332,18 @@ int32_t CM2Model::IsDrawable(int32_t a2, int32_t a3) {
         this->m_flag2 = 1;
     }
 
-    if (!this->m_flag200 && a3) {
-        // TODO
+    // With a3, everything attached to this model has to be drawable too (0x00825058): each
+    // attached child is asked the same question, recursively, and the answer is cached in 0x200
+    // once they all are. Without this a parent drew while a helm or weapon on it was still
+    // waiting on its textures.
+    if (a3 && !this->m_flag200) {
+        for (auto attached = this->m_attachList; attached; attached = attached->m_attachNext) {
+            if (!attached->IsDrawable(a2, 1)) {
+                return 0;
+            }
+        }
+
+        this->m_flag200 = 1;
     }
 
     return 1;

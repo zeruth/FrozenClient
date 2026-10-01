@@ -58007,10 +58007,10 @@
   "status": "ported"
  },
  "00824fc0": {
-  "branchRatio": 0.438,
+  "branchRatio": 0.562,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.8,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -58939,7 +58939,7 @@
   "status": "ported"
  },
  "0082c1c0": {
-  "branchRatio": 0.765,
+  "branchRatio": 0.867,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
@@ -59339,10 +59339,10 @@
   "status": "ported"
  },
  "00832640": {
-  "branchRatio": 0.125,
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.643,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -59352,7 +59352,7 @@
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 498,
-  "status": "ported"
+  "status": "faithful"
  },
  "00832840": {
   "branchRatio": 0.765,
