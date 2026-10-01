@@ -1021,6 +1021,16 @@ void CM2ParticleEmitter::SetColors(const uint8_t* start, const uint8_t* mid, con
     this->m_colorOverride[2].z = static_cast<float>(end[0]);
 }
 
+// ref: FUN_00978c40
+// The particle half of CM2Model::ReplaceTexture. Same null handling as the ribbon's.
+void CM2ParticleEmitter::ReplaceTexture(HTEXTURE texture) {
+    if (this->m_texture) {
+        HandleClose(this->m_texture);
+    }
+
+    this->m_texture = texture ? HandleDuplicate(texture) : nullptr;
+}
+
 // ref: FUN_00978dd0
 // How much of the emitter's own movement a particle inherits, as a straight line in the emitter's
 // speed through the record's two follow points. Two points closer together in speed than 2^-22

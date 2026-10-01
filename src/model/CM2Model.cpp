@@ -4234,9 +4234,19 @@ int32_t CM2Model::InitializeLoaded() {
 // long time -- would corrupt rendering if followed. Established 2026-09-27 by walking the chain
 // instead of trusting it:
 //
-//   DrawBatchDoodad loops on element +0x1c as its INSTANCE COUNT. The gather in CM2Scene::Animate
-//   never writes that slot -- it writes [1] through [6] and [9] through [0xc], and nothing else.
-//   Checked by listing every element store in the function.
+//   DrawBatchDoodad loops on element +0x1c as its INSTANCE COUNT. CORRECTED 2026-10-01: an
+//   earlier reading said nothing in CM2Scene::Animate writes that slot. Its per-element GATHER
+//   does not, but Animate's TAIL does (0x00821c8c..0x00821dc0 in the corpus rendering): when the
+//   scene's doodad index list (+0x44..+0x50) holds two or more entries it hashes each element
+//   (FUN_0081cc50: model, batch index, the lighting's fog range, fog colour, sun diffuse and
+//   ambient, the batch's colour, the model's current diffuse, emissive and the float at +0x1b8,
+//   folded by 19) into a 251-slot table at 0x00d40da0, resolving collisions with FUN_0081e5c0 (the
+//   same fields compared in that order, memcmp on each vector), writes the slot to element +0x20,
+//   heap-sorts by +0x20 (FUN_0081ea90), and then walks the runs: a run of one becomes an ordinary
+//   opaque element through ComputeElementShaders, a longer run writes its LENGTH to the head's
+//   +0x1c. The merge prep pass below is a second writer, not the only one. Still blocked on one
+//   unknown: the float at model +0x1b8, which frozen's layout does not carry (it has a pointer
+//   there).
 //
 //   What does write it is the MERGE PREP PASS, FUN_00832dd0, mapped further down this file: it
 //   sorts the batch references and collapses runs of mergeable ones, and the collapsed count is
@@ -4920,53 +4930,80 @@ uint32_t CM2Model::Release() {
 
 // ref: FUN_00825260
 void CM2Model::ReplaceTexture(uint32_t textureId, HTEXTURE texture) {
-    // Waiting for load
+    // The reference tests the loaded bit first and queues the call at the END (0x825385), the
+    // reverse of the order this had; same behaviour, the reference's shape.
+    if (this->m_loaded) {
+        // Replace textures
 
-    if (!this->m_loaded) {
-        auto modelCall = STORM_NEW(CM2ModelCall);
+        for (int32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
+            // Only replace if texture IDs match
+            if (this->m_shared->m_data->textures[i].textureId != textureId) {
+                continue;
+            };
 
-        modelCall->type = 0;
-        modelCall->modelCallNext = nullptr;
-        modelCall->time = this->m_scene->m_time;
-        modelCall->args[0] = textureId;
-        *reinterpret_cast<HTEXTURE*>(&modelCall->args[1]) = texture ? HandleDuplicate(texture) : nullptr;
+            auto currentTexture = this->m_textures[i];
 
-        *this->m_modelCallTail = modelCall;
-        this->m_modelCallTail = &modelCall->modelCallNext;
+            if (currentTexture) {
+                HandleClose(currentTexture);
+            }
+
+            if (texture) {
+                this->m_textures[i] = HandleDuplicate(texture);
+
+                auto gxTexture = TextureGetGxTex(this->m_textures[i], 0, nullptr);
+
+                if (!gxTexture) {
+                    this->m_flag2 = 0;
+                }
+            } else {
+                this->m_textures[i] = nullptr;
+            }
+        }
+
+        // The same swap reaches the model's effects (0x8252fd..0x825375): every ribbon, which
+        // matches the id against its own texture list, and every particle emitter whose record's
+        // texture carries the id. Both were TODOs, so a replaceable texture on a model never reached
+        // its trails or particles.
+        auto data = this->m_shared->m_data;
+
+        if (this->m_ribbonEmitters) {
+            for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+                if (this->m_ribbonEmitters[i]) {
+                    this->m_ribbonEmitters[i]->ReplaceTexture(textureId, texture);
+                }
+            }
+        }
+
+        if (this->m_particleEmitters) {
+            for (uint32_t i = 0; i < data->particles.Count(); i++) {
+                uint16_t textureIndex = data->particles[i].textureIndex;
+
+                if (textureIndex < data->textures.Count()
+                        && data->textures[textureIndex].textureId == textureId
+                        && this->m_particleEmitters[i]) {
+                    this->m_particleEmitters[i]->ReplaceTexture(texture);
+                }
+            }
+        }
+
+        // A model with its own textures no longer looks like its siblings: drop the shared-
+        // instance bit (0x825375, `& ~0x10`).
+        this->m_flag10 = 0;
 
         return;
     }
 
-    // Replace textures
+    // Not loaded yet: queue it as model call 0.
+    auto modelCall = STORM_NEW(CM2ModelCall);
 
-    for (int32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
-        // Only replace if texture IDs match
-        if (this->m_shared->m_data->textures[i].textureId != textureId) {
-            continue;
-        };
+    modelCall->type = 0;
+    modelCall->modelCallNext = nullptr;
+    modelCall->time = this->m_scene->m_time;
+    modelCall->args[0] = textureId;
+    *reinterpret_cast<HTEXTURE*>(&modelCall->args[1]) = texture ? HandleDuplicate(texture) : nullptr;
 
-        auto currentTexture = this->m_textures[i];
-
-        if (currentTexture) {
-            HandleClose(currentTexture);
-        }
-
-        if (texture) {
-            this->m_textures[i] = HandleDuplicate(texture);
-
-            auto gxTexture = TextureGetGxTex(this->m_textures[i], 0, nullptr);
-
-            if (!gxTexture) {
-                this->m_flag2 = 0;
-            }
-        } else {
-            this->m_textures[i] = nullptr;
-        }
-    }
-
-    // TODO replace ribbon textures
-
-    // TODO replace particle textures
+    *this->m_modelCallTail = modelCall;
+    this->m_modelCallTail = &modelCall->modelCallNext;
 }
 
 // ref: FUN_00823f10

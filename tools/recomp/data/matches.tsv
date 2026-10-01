@@ -126,7 +126,7 @@ addr	how	frozen	evidence
 0047be50	sticky	SUniSPutUTF8	held from the previous run, where it was sticky
 0047bf30	override	HandleClose	
 0047bf50	override	HandleCreate	
-0047bf70	callgraph	HandleDuplicate	only unmatched callee of 00978bf0=CM2ParticleEmitter::SetMaterial
+0047bf70	callgraph	HandleDuplicate	only unmatched callee of 00825260=CM2Model::ReplaceTexture, 00978bf0=CM2ParticleEmitter::SetMaterial, 00978c40=CM2ParticleEmitter::ReplaceTexture
 0047bf90	override	CoordinateSetAspectRatio	
 0047bfe0	override	CoordinateGetAspectCompensation	
 0047bff0	annotated	NDCToDDC	tag in src/gx/Coordinate.cpp
@@ -4606,6 +4606,7 @@ addr	how	frozen	evidence
 00978b70	annotated	M2ParticleFlushDenormals	tag in src/model/CM2ParticleEmitter.cpp
 00978be0	annotated	CM2ParticleEmitter::GetBounds	tag in src/model/CM2ParticleEmitter.cpp
 00978bf0	annotated	CM2ParticleEmitter::SetMaterial	tag in src/model/CM2ParticleEmitter.cpp
+00978c40	annotated	CM2ParticleEmitter::ReplaceTexture	tag in src/model/CM2ParticleEmitter.cpp
 00978c70	annotated	CM2ParticleEmitter::SetTextureGrid	tag in src/model/CM2ParticleEmitter.cpp
 00978d00	annotated	CM2ParticleEmitter::SetHeadTail	tag in src/model/CM2ParticleEmitter.cpp
 00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
@@ -4666,6 +4667,7 @@ addr	how	frozen	evidence
 0097f700	annotated	CM2Ribbon::BuildControlPoints	tag in src/model/CM2Ribbon.cpp
 0097f900	annotated	CM2Ribbon::ReleaseTextures	tag in src/model/CM2Ribbon.cpp
 0097f940	annotated	CM2Ribbon::SetPosition	tag in src/model/CM2Ribbon.cpp
+0097fad0	annotated	CM2Ribbon::ReplaceTexture	tag in src/model/CM2Ribbon.cpp
 0097fb60	annotated	CM2Ribbon::SetColor	tag in src/model/CM2Ribbon.cpp
 0097fba0	annotated	CM2Ribbon::SetAlpha	tag in src/model/CM2Ribbon.cpp
 0097fbe0	annotated	CM2Ribbon::Transform	tag in src/model/CM2Ribbon.cpp

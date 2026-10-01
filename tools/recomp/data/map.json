@@ -58036,10 +58036,10 @@
   "status": "ported"
  },
  "00825260": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.929,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.429,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -73352,6 +73352,22 @@
   "refSize": 68,
   "status": "ported"
  },
+ "00978c40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::ReplaceTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 48,
+  "status": "ported"
+ },
  "00978c70": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
@@ -74310,6 +74326,22 @@
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 392,
+  "status": "ported"
+ },
+ "0097fad0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "CM2Ribbon::ReplaceTexture",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 132,
   "status": "ported"
  },
  "0097fb60": {

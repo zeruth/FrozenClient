@@ -462,6 +462,8 @@ class CM2ParticleEmitter {
         // The follow ramp: the line through (speed1, scale1) and (speed2, scale2), stored as
         // m_followBase + m_followScale * speed. ref: FUN_00978dd0
         void SetFollow(float speed1, float scale1, float speed2, float scale2);
+        // Swap the emitter's texture for `texture`. ref: FUN_00978c40
+        void ReplaceTexture(HTEXTURE texture);
         // The exact inverse, each float rounded back to a byte.
         void GetColors(uint8_t* start, uint8_t* mid, uint8_t* end) const;
 

@@ -188,6 +188,11 @@ class CM2Ribbon {
         // the textures array whose count the destructor reads at m_data + 0x50.
         TSGrowableArray<Material> m_materials;
         TSGrowableArray<HTEXTURE> m_textures;
+        // CORRECTED 2026-10-01: the reference stores the texture TYPE here, not the record's
+        // address -- the fill at 0x833912 is `movl (%edx,%ecx)`, a load, and ReplaceTexture
+        // (FUN_0097fad0) compares the element directly against a texture id. Frozen keeps the
+        // record pointer, which carries the same id in its first field, so the comparison goes
+        // through it; nothing else reads this array as an address in the reference.
         TSGrowableArray<M2Texture*> m_textureRecords;
         // +0x144: a flat colour, white at construction.
         CImVector m_color = {};
@@ -294,6 +299,9 @@ class CM2Ribbon {
         void SetAlpha(float alpha);
 
         void SetGravity(float gravity);
+        // Swap every texture slot whose type is `textureId` for `texture`; returns how many.
+        // ref: FUN_0097fad0
+        uint32_t ReplaceTexture(uint32_t textureId, HTEXTURE texture);
 
         // Set or clear flag 0x4, and drop flag 0x1 with it when clearing.
         void SetAbove(int32_t above);

@@ -27,10 +27,10 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-01 18:40) | at completion |
+| | 2026-10-01 start | now (2026-10-01 18:50) | at completion |
 |---|---|---|---|
-| render surface linked | 1,267 / 4,838 (26%) | 1,442 / 5,390 (27%) | 5,390 |
-| render surface faithful | not measured | 914 (17%) | 5,390 |
+| render surface linked | 1,267 / 4,838 (26%) | 1,444 / 5,390 (27%) | 5,390 |
+| render surface faithful | not measured | 917 (17%) | 5,390 |
 | render surface stubs | 20 | 32 | 0 |
 | empty functions with live render call sites | 37 | 37 | 0 |
 | render surface attributed by anchor guess | 63% | 49% | low |
@@ -102,7 +102,7 @@ hangs off `CM2Model`.
   callers], `CM2Scene::Animate` [67%], ~~`CM2Model::AnimateMT` [16%]~~ (faithful 2026-10-01), ~~`AnimateMTSimple` [75%]~~ (faithful 2026-10-01),
   ~~`SetWorldTransform` [17%]~~ (faithful 2026-10-01), `CM2SceneRender::Draw` [86%], `SetupLighting` [56%],
   `SetupTextures` [67%], `SelectLights` [67%], `CM2Lighting::SetupGxFog` [33%],
-  `ReplaceTexture` [43%], `OptimizeVisibleGeometry` [89%].
+  ~~`ReplaceTexture` [43%]~~ (faithful 2026-10-01), `OptimizeVisibleGeometry` [89%].
 - **Stubs with live callers:** `DrawBatchDoodad`, `DrawBatchProj` (`FUN_00829aa0`, plus
   installing the projection callback `FUN_0077f500` from world init), `SubstituteSpecializedShaders`
   (`FUN_00837680`), the second geometry builder `FUN_0082be60`.
@@ -249,3 +249,4 @@ stubs, then live empty functions.
 | 2026-10-01 18:11 | 1,442 / 5,390 | 913 | 32 | 37 | phase 1: `InitializeLoaded` 64% -> 71%. Its particle-emitter setup did the reference's work in a different order; reordered to the reference's sequence (initial track values, flag bits, head/tail, material bits, texture grid and animation, `SetMaterial`, track pointers, inherited colours, twinkle and motion constants, follow ramp, spline), checked line-for-line to add and drop nothing else. `SetFollow` (`FUN_00978dd0`) ported: nothing had ever set the follow ramp, so every particle inherited none of its emitter's movement. And a FIX TO ITERATION 5: the reference starts every particle record visible (state +0x80 = 1) at the end of this loop; frozen did not, and since the track pass now gates emission on that value, an emitter with no visibility track would never have emitted. Still unported here: the two spawned models (`FUN_00978b30`, `FUN_0097aeb0`) and the precompiled ramp (`FUN_0097d370`). Not installed: `Frozen.exe` was running |
 | 2026-10-01 18:15 | 1,442 / 5,390 | 913 | 32 | 37 | phase 1: `InitializeLoaded` 71% -> 79%. The stretch between the emitters and the deferred-call replay was mostly absent. Ported: the instance-count bit 0x10; releasing the source model (`model30`), which frozen never let go of; the cut-down-animate bit 0x1000 -- nothing set it, so `AnimateMTSimple`, ported and faithful, was never chosen for a one-bone model; the state bits (0x800 set across the replay, 0x2 cleared); STARTING THE MODEL ON ITS STAND ANIMATION, which frozen left to whatever owner happened to set a sequence; and the per-frame report bit 0x400000. The reference's async-wait-and-reenter block is unreachable (gated on the loaded bit the line after setting it) and is left out with a note. Left in this function: the ribbon setup's static tables and `FUN_0082dac0`, the emitter constructor order, the spawned models, the ramp, and calling `SetRibbonFlag8` from the replay. Not installed: `Frozen.exe` was running |
 | 2026-10-01 18:40 | 1,442 / 5,390 | 914 | 32 | 37 | **REGRESSION FIXED: exploding geometry.** d3b7704b set the 0x1000 bit, so one-bone models (most doodads) took `AnimateMTSimple` for the first time -- and frozen's port of it never wrote the bone matrices, so those models drew through whatever the bone buffer held. Reproduced on screen. The reference copies `matrixF4` into bone 0 at 0x82e495, after advancing bone 0's primary sequence; both now ported. The fidelity score had passed the function at 100% call order because that copy is the compiler's matrix assignment, which is excluded from the comparison -- the gap was invisible to the measure. `AnimateMTSimple` now faithful. LESSON for the rest of the roadmap: a port that turns on a code path nothing exercised before is where the deferred-verification cost lands first |
+| 2026-10-01 18:50 | 1,444 / 5,390 | 917 | 32 | 37 | phase 1: `ReplaceTexture` 43% -> 100%, faithful. A replaceable texture now reaches a model's ribbons (`CM2Ribbon::ReplaceTexture`, `FUN_0097fad0`) and particle emitters (`CM2ParticleEmitter::ReplaceTexture`, `FUN_00978c40`) -- both were TODOs -- and the model drops its shared-instance bit afterwards, as the reference does. Corrected on the way: the ribbon's third texture array holds texture TYPE ids, not record addresses (the fill at 0x833912 is a load), so frozen compares through its record pointers. `CM2Scene::Animate`'s missing doodad-grouping tail is now decoded and written into the note at `IsBatchDoodadCompatible`, which had wrongly said nothing in `Animate` writes the instance count; the port waits on one unidentified model field (+0x1b8) and on a path that is dead until the doodad chain lands, so it was not guessed at. Client linked 4,769 -> 4,771, faithful 2,531 -> 2,534 |

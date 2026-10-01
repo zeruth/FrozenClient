@@ -818,3 +818,29 @@ CM2Ribbon::~CM2Ribbon() {
     // because the reference's own destructor does it -- the flag word outlives nothing here.
     this->m_flags &= ~0x2u;
 }
+
+// ref: FUN_0097fad0
+// The ribbon half of CM2Model::ReplaceTexture: every texture slot whose type matches is closed
+// and re-pointed at the replacement, and the count of slots swapped is returned (the reference's
+// caller discards it). The reference duplicates even a null handle; frozen's HandleDuplicate
+// does not take null, so a null replacement clears the slot instead -- the same end state.
+uint32_t CM2Ribbon::ReplaceTexture(uint32_t textureId, HTEXTURE texture) {
+    uint32_t replaced = 0;
+
+    for (uint32_t i = 0; i < this->m_textureRecords.Count(); i++) {
+        M2Texture* record = this->m_textureRecords[i];
+
+        if (!record || record->textureId != textureId || i >= this->m_textures.Count()) {
+            continue;
+        }
+
+        if (this->m_textures[i]) {
+            HandleClose(this->m_textures[i]);
+        }
+
+        this->m_textures[i] = texture ? HandleDuplicate(texture) : nullptr;
+        replaced++;
+    }
+
+    return replaced;
+}
