@@ -30,6 +30,8 @@ void GxXformWorld(C44Matrix&);
 
 void GxXformViewport(float&, float&, float&, float&, float&, float&);
 
+void GxXformViewProj(C44Matrix&);
+
 void GxXformViewProjNativeTranspose(C44Matrix&);
 
 void GxuXformCreateLookAtSgCompat(const C3Vector& eye, const C3Vector& center, const C3Vector& up, C44Matrix& dst);

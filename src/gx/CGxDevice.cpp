@@ -658,13 +658,16 @@ void CGxDevice::IRsDirty(EGxRenderState which) {
     }
 }
 
+// The reference grows the dirty list with an inlined SetCount(count + 1) and then writes the new
+// slot, rather than New(); same result, kept in the same shape.
 void CGxDevice::IRsForceUpdate() {
     for (int32_t which = 0; which < GxRenderStates_Last; which++) {
         auto& rs = this->m_appRenderStates[which];
         auto& hs = this->m_hwRenderStates[which];
 
-        auto ds = this->m_dirtyStates.New();
-        *ds = static_cast<EGxRenderState>(which);
+        uint32_t index = this->m_dirtyStates.Count();
+        this->m_dirtyStates.SetCount(index + 1);
+        this->m_dirtyStates[index] = static_cast<EGxRenderState>(which);
 
         rs.m_dirty = 1;
 
@@ -676,16 +679,19 @@ void CGxDevice::IRsForceUpdate() {
     }
 }
 
+// Grows the dirty list through SetCount (FUN_00685180, out of line in the reference) and then
+// writes the slot, as the reference does.
 void CGxDevice::IRsForceUpdate(EGxRenderState which) {
     if (!this->m_context) {
         return;
     }
 
+    uint32_t index = this->m_dirtyStates.Count();
+    this->m_dirtyStates.SetCount(index + 1);
+    this->m_dirtyStates[index] = which;
+
     auto& rs = this->m_appRenderStates[which];
     auto& hs = this->m_hwRenderStates[which];
-
-    auto ds = this->m_dirtyStates.New();
-    *ds = which;
 
     rs.m_dirty = 1;
 
@@ -1799,11 +1805,16 @@ void CGxDevice::XformSetProjection(const C44Matrix& matrix) {
     this->m_projection = matrix;
 }
 
+// ref: FUN_00689050
+// A texgen built from the camera (modes 1 and 2) has to be rebuilt when the view moves, so every
+// such stage is forced back through ISetTexGen. The reference walks TexGen0 to TexGen7 inclusive
+// and tests (mode - 1) as unsigned, so mode 0 does not qualify. This used to stop one stage short
+// and compare signed, which also forced every mode-0 stage.
 void CGxDevice::XformSetView(const C44Matrix& matrix) {
     this->m_xforms[GxXform_View].Top() = matrix;
 
-    for (int32_t i = GxRs_TexGen0; i < GxRs_TexGen7; i++) {
-        if (static_cast<int32_t>(this->m_appRenderStates[i].m_value) - 1 <= 1) {
+    for (int32_t i = GxRs_TexGen0; i <= GxRs_TexGen7; i++) {
+        if (static_cast<uint32_t>(this->m_appRenderStates[i].m_value) - 1 <= 1) {
             this->IRsForceUpdate(static_cast<EGxRenderState>(i));
         }
     }

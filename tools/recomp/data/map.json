@@ -25662,17 +25662,17 @@
   "status": "ported"
  },
  "0057c340": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/gx/Shader.cpp",
-   "src/gx/shader.cpp"
+   "src/gx/CGxMatrixStack.cpp",
+   "src/gx/cgxmatrixstack.cpp"
   ],
-  "frozen": "GxShaderConstantsSet",
-  "frozenSize": 42,
-  "how": "callgraph",
+  "frozen": "CGxMatrixStack::SetIdentity",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 87,
   "status": "ported"
@@ -36839,10 +36839,10 @@
   ],
   "frozen": "CGxDevice::XformSetViewport",
   "frozenSize": 143,
-  "how": "callgraph",
+  "how": "override",
   "module": "DBCache.cpp",
   "refSize": 183,
-  "status": "ported"
+  "status": "faithful"
  },
  "00681a20": {
   "branchRatio": 1.0,
@@ -36925,10 +36925,10 @@
   "status": "ported"
  },
  "00681f60": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.889,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Transform.cpp",
    "src/gx/transform.cpp"
@@ -36943,15 +36943,15 @@
  "00682130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Transform.cpp",
    "src/gx/transform.cpp"
   ],
-  "frozen": "GxXformSet",
-  "frozenSize": 17,
-  "how": "callgraph",
+  "frozen": "GxXformViewProj",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 193,
   "status": "ported"
@@ -37369,11 +37369,24 @@
   "refSize": 306,
   "status": "ported"
  },
+ "00685130": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "TSGrowableArray<enum EGxRenderState>::New",
+  "frozenSize": 144,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
  "00685970": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -37388,8 +37401,8 @@
  "006859e0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -37415,7 +37428,7 @@
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 217,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685b50": {
   "branchRatio": 0.6,
@@ -37585,6 +37598,22 @@
   "how": "callgraph",
   "module": "CGxDevice.cpp",
   "refSize": 172,
+  "status": "ported"
+ },
+ "00689050": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::XformSetView",
+  "frozenSize": 142,
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 112,
   "status": "ported"
  },
  "00689a50": {
@@ -37857,6 +37886,22 @@
   "refSize": 331,
   "status": "ported"
  },
+ "006a43a0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "C44Matrix::Inverse",
+  "frozenSize": 96,
+  "how": "override",
+  "module": "CGxD3d9ExDevice.cpp",
+  "refSize": 35,
+  "status": "ported"
+ },
  "006a43d0": {
   "branchRatio": 0.85,
   "constOverlap": 0.029,
@@ -37890,10 +37935,10 @@
   "status": "ported"
  },
  "006a4850": {
-  "branchRatio": 0.286,
+  "branchRatio": 0.714,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -37938,10 +37983,10 @@
   "status": "ported"
  },
  "006a4af0": {
-  "branchRatio": 0.2,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.167,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38015,6 +38060,38 @@
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 181,
+  "status": "ported"
+ },
+ "006a5a30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncWorldXform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxD3d9ExDevice.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "006a5aa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSyncTexXform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxD3d9ExDevice.cpp",
+  "refSize": 453,
   "status": "ported"
  },
  "006a5c70": {
@@ -47947,7 +48024,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.571,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
@@ -65408,7 +65485,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.0,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"
@@ -65424,7 +65501,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.0,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"

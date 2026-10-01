@@ -299,6 +299,13 @@ void C44Matrix::Identity() {
     this->d3 = 1.0f;
 }
 
+// ref: FUN_006a43a0
+// The general inverse through the matrix's own determinant. Out of line in the reference, where
+// its three callers are the D3D device's two texgen builders and one more past them.
+C44Matrix C44Matrix::Inverse() const {
+    return this->Inverse(this->Determinant());
+}
+
 // ref: FUN_004c2f90
 C44Matrix C44Matrix::Inverse(float det) const {
     return this->Adjoint() * (1.0f / det);

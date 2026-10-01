@@ -266,6 +266,7 @@ class CGxDeviceD3d : public CGxDevice {
     uint32_t m_d3dColorWrite = 0xFFFFFFFF;       // +0x3e74
     // A global in the reference (DAT_00ad8f88), shared by every device.
     static uint32_t s_d3dNormalizeNormals;
+    static uint32_t s_d3dWorldIdentity;
     void ResetRsSendCaches();
     // Texture stage `tmu`'s coordinate source: coordinate set `index` for texgen mode 0, the
     // camera-space position (1-3), reflection vector (4, 6) or normal (5) otherwise.
@@ -359,6 +360,8 @@ class CGxDeviceD3d : public CGxDevice {
     void IStateSyncMaterial();
     void IStateSyncVertexPtrs();
     void IStateSyncXforms();
+    void IStateSyncWorldXform();
+    void IStateSyncTexXform(uint32_t tmu);
     void ITexCreate(CGxTex* texId);
     void ITexUpload(CGxTex* texId);
     void IXformSetProjection(const C44Matrix& matrix);

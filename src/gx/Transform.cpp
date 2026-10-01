@@ -56,9 +56,23 @@ void GxXformSetViewport(float minX, float maxX, float minY, float maxY, float mi
     minY = std::max(minY, 0.0f);
     maxY = std::min(maxY, 1.0f);
 
-    STORM_ASSERT(minX < maxX);
-    STORM_ASSERT(minY < maxY);
-    STORM_ASSERT(minZ <= maxZ);
+    // The reference validates rather than asserts: each failed check logs the values,
+    // sets ERROR_INVALID_PARAMETER and returns, leaving the viewport as it was.
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(minX < maxX);
+    STORM_VALIDATE_END_VOID;
+
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(minY < maxY);
+    STORM_VALIDATE_END_VOID;
+
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(minZ <= maxZ);
+    STORM_VALIDATE_END_VOID;
+
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(minZ >= 0.0f && maxZ <= 1.0f);
+    STORM_VALIDATE_END_VOID;
 
     g_theGxDevicePtr->XformSetViewport(minX, maxX, minY, maxY, minZ, maxZ);
 }
@@ -230,4 +244,14 @@ void GxuXformCreateProjection_SG(float fov, float aspect, float minZ, float maxZ
     float v9 = v8 * fov;
 
     GxuXformCreateProjection_Exact(v9, aspect, minZ, maxZ, dst);
+}
+
+// ref: FUN_00682130
+// The application's view-projection: the top of the view stack times the projection as the
+// application set it (+0xf88, not the native one the backend sends). The reference callers
+// build frustums from it in the world frame and the map.
+void GxXformViewProj(C44Matrix& matrix) {
+    C44Matrix view = g_theGxDevicePtr->m_xforms[GxXform_View].TopConst();
+    C44Matrix projection = g_theGxDevicePtr->m_projection;
+    matrix = view * projection;
 }

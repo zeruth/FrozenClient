@@ -1867,8 +1867,8 @@
   },
   "00685a70": {
     "frozen": "CGxDevice::IRsForceUpdate",
-    "status": "ported",
-    "note": "the void overload: IRsSync (00685b50) calls it with ECX = this and no stack argument when its force parameter is non-zero, which is exactly where frozen calls IRsForceUpdate()."
+    "status": "faithful",
+    "note": "the void overload: IRsSync (00685b50) calls it with ECX = this and no stack argument when its force parameter is non-zero, which is exactly where frozen calls IRsForceUpdate(). Hand verdict 2026-10-01: the loop now grows the dirty list by SetCount(count + 1) and writes the slot, as the reference does with SetCount inlined; the branch gate reads 0.4 only because that inlined SetCount brings its capacity and chunk-rounding branches into the reference body, while frozen calls the template."
   },
   "006a43d0": {
     "frozen": "CGxDeviceD3d::IStateSyncLights",
@@ -2041,8 +2041,9 @@
     "note": "The whole function is `leal 0x174(%ecx), %eax; retl`. This entry used to say only that it returns the object whose +0x8 and +0xc are a height and a width, identified by use rather than by a symbol; it is CGxDevice::DeviceCurWindow, and the name comes from behaviour, not position. The reference's viewport setter calls it at 0x006a521d and then computes (1.0 - viewport.y.h) * result[+0x8], which is IXformSetViewport's own (1.0 - gxViewport.y.h) * windowRect.maxY; CRect is {minY, minX, maxY, maxX}, so +0x8 is maxY and +0xc is maxX, which is also why the scissor sync scales horizontal edges by one and vertical by the other. 15 callers, so this lifts the measured fidelity of each one that gets ported. Its neighbour FUN_00682d80 returns &this->[0x164], one CRect earlier, and by elimination is DeviceDefWindow -- frozen declares m_defWindowRect immediately before m_curWindowRect. Left unlinked on purpose: that is adjacency rather than proof."
   },
   "006a43a0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed CGxDeviceD3d::IStateSyncIndexPtr for this on 2026-09-23; it is not that. It takes a stack argument (`retl $0x4`) where frozen's IStateSyncIndexPtr takes none, and it calls 004c1930 and 004c2f90 rather than the device's SetIndices. Reading it is what falsified the whole seven-link window the matcher emitted here."
+    "frozen": "C44Matrix::Inverse",
+    "status": "ported",
+    "note": "Identified 2026-10-01: the no-argument C44Matrix::Inverse, `return Inverse(Determinant())` -- this-call, one hidden return pointer (the `retl $0x4`), calling 004c1930 (Determinant) and 004c2f90 (Inverse(float)). Emitted out of line next to its first user, the D3D texgen builder ISetTexGen. It replaces the 2026-09-23 rejection of the order matcher's IStateSyncIndexPtr proposal, which was right about what this is not."
   },
   "006a3a60": {
     "status": "unlinked",
@@ -3546,5 +3547,25 @@
   "00875760": {
     "status": "unlinked",
     "note": "ShadowMapClearTargets (not ported). REJECTING a call-graph link to frozen's GxTexCreate, which is wrong: this function creates nothing. It clears every shadow target to white -- RenderTargetGet to save the colour and depth bindings, GxXformSetViewport over the whole surface, then GxSceneClear(3, 0xffffffff) for each of DAT_00d43250, DAT_00d43254 and DAT_00d43148, and at quality 3 or above for the three filter ring entries too. It early-outs below quality 3 by clearing DAT_00d4314c. Its two callers are EnsureTargets (FUN_00875d30) and the render step (FUN_00875f80). Not ported because frozen keeps ONE map and no filter chain, so the multi-target loop has nothing to iterate; MapShadowClearTarget (FUN_007bb830) is the per-target piece it would use. Read 2026-09-28."
+  },
+  "00685130": {
+    "frozen": "TSGrowableArray<enum EGxRenderState>::New",
+    "status": "ported",
+    "note": "IRsDirty growing the dirty-state list: grow to a multiple of the chunk when count + 1 exceeds capacity, then hand back the new 4-byte slot. Identified 2026-10-01 from the single caller and the element stride."
+  },
+  "00685180": {
+    "frozen": "TSGrowableArray<enum EGxRenderState>::SetCount",
+    "status": "excluded",
+    "note": "IRsForceUpdate(which) growing the dirty-state list to count + 1 before writing the slot itself; out of line in the reference, inlined into the all-states IRsForceUpdate. 4-byte elements, same allocator path as the New beside it. Identified 2026-10-01. Squall template instantiation that frozen inlines, so there is no symbol to bind; excluded rather than left for the call-graph matcher, which bound 006850e0 to CGxStateBom::operator= on 2026-10-01."
+  },
+  "006850e0": {
+    "frozen": "TSGrowableArray<CGxPushedRenderState>::New",
+    "status": "excluded",
+    "note": "IRsDirty saving a state into the pushed-state list when its stack depth changed: 0x18-byte elements, which is CGxPushedRenderState. Identified 2026-10-01. Squall template instantiation that frozen inlines, so there is no symbol to bind; excluded rather than left for the call-graph matcher, which bound 006850e0 to CGxStateBom::operator= on 2026-10-01."
+  },
+  "00681890": {
+    "frozen": "CGxDevice::XformSetViewport",
+    "status": "faithful",
+    "note": "Checked 2026-10-01 line for line against the decompilation: compare all six bounds against the stored viewport, return if equal, otherwise raise the viewport-dirty flag (+0xf6c, intF6C) and store them. The branch gate reads 0.17 only because the reference compiles the six-way equality into six x87 compare-and-branch pairs where frozen's single condition counts as one."
   }
 }

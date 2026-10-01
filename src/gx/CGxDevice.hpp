@@ -182,6 +182,11 @@ class CGxDevice {
         C44Matrix m_projection;
         C44Matrix m_projNative;
         CGxMatrixStack m_xforms[GxXforms_Last];
+        // Reference offset +0x1c10, straight after m_xforms (+0x1008 + 11 * 0x118): one stack per
+        // texture stage holding the matrix the stage's texgen mode generates. ISetTexGen writes it,
+        // IStateSyncXforms multiplies it with the application's GxXform_Tex stack and sends the
+        // product. The application never sees it.
+        CGxMatrixStack m_texGenXforms[8];
         // Reference offset +0x2934. A one-shot request flag: FUN_00682d30 sets it, each backend's
         // ScenePresent reads it just before calling the base, and the base clears it. What the
         // backends do with it has not been read, and nothing in frozen sets it yet.

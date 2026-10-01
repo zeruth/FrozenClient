@@ -1600,7 +1600,7 @@ addr	how	frozen	evidence
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057c2a0	override	C44Matrix::Identity	
 0057c2e0	annotated	TransformDirection	tag in lib/typhoon/tempest/vector/C3Vector.cpp
-0057c340	callgraph	GxShaderConstantsSet	only unmatched callee of 00873480=CShaderEffect::SetTexMtx_Identity, 00873550=CShaderEffect::SetTexMtx_SphereMap
+0057c340	annotated	CGxMatrixStack::SetIdentity	tag in src/gx/CGxMatrixStack.cpp
 0057c3a0	annotated	CGxDevice::XformPush	tag in src/gx/CGxDevice.cpp
 0057c420	annotated	GxXformPop	tag in src/gx/Transform.cpp
 0057c450	annotated	CGxDevice::XformSet	tag in src/gx/CGxDevice.cpp
@@ -2305,14 +2305,14 @@ addr	how	frozen	evidence
 00681470	annotated	GxTexDestroy	tag in src/gx/Texture.cpp
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
-00681890	callgraph	CGxDevice::XformSetViewport	only unmatched callee of 00681f60=GxXformSetViewport
+00681890	override	CGxDevice::XformSetViewport	
 00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681f20	callorder	GxTexUpdate	same slot between linked calls in 004b7bd0=PumpBlpTextureAsync, 007b9de0=CMapRenderChunk::BuildLayerAlphaTexture, 007b9ee0=CMapRenderChunk::BuildShadowTexture
 00681f60	override	GxXformSetViewport	
-00682130	callgraph	GxXformSet	only unmatched callee of 007a6e00=CMapObj::SetupPortalContext
+00682130	annotated	GxXformViewProj	tag in src/gx/Transform.cpp
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00682d20	callgraph	GxCaps	only unmatched callee of 008740d0=ShadowMapQualitySupported
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
@@ -2339,6 +2339,7 @@ addr	how	frozen	evidence
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 006848a0	annotated	CGxDevice::TexMarkForUpdate	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
+00685130	override	TSGrowableArray<enum EGxRenderState>::New	
 00685970	override	CGxDevice::IRsDirty	
 006859e0	override	CGxDevice::IRsForceUpdate	
 00685a70	override	CGxDevice::IRsForceUpdate	
@@ -2353,6 +2354,7 @@ addr	how	frozen	evidence
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00688290	callgraph	TSGrowableArray<CMapChunkBufBlock>::SetCount	only unmatched callee of 007ba3d0=CMap::FreeBufBlocks
+00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
 0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
@@ -2370,6 +2372,7 @@ addr	how	frozen	evidence
 006a4190	annotated	CGxDeviceD3d::ISetColorOp	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a41f0	annotated	CGxDeviceD3d::ISetAlphaOp	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a4250	annotated	CGxDeviceD3d::ISetMaterial	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a43a0	override	C44Matrix::Inverse	
 006a43d0	override	CGxDeviceD3d::IStateSyncLights	
 006a4700	override	CGxDeviceD3d::IStateSyncMaterial	
 006a4850	override	CGxDeviceD3d::IStateSyncXforms	
@@ -2380,6 +2383,8 @@ addr	how	frozen	evidence
 006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
 006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
 006a5940	override	CGxDeviceD3d::IStateSync	
+006a5a30	annotated	CGxDeviceD3d::IStateSyncWorldXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a5aa0	annotated	CGxDeviceD3d::IStateSyncTexXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5c70	annotated	CGxDeviceD3d::IShaderBindPixel	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a99e0	override	CGxDeviceD3d::IXformSetViewport	
 006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	

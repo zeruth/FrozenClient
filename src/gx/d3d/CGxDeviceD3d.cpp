@@ -1231,6 +1231,9 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
 }
 
 uint32_t CGxDeviceD3d::s_d3dNormalizeNormals = 0xFFFFFFFF;
+// Reference 0x00c60760: whether the world matrix last sent to D3D was the identity, so a run of
+// identity world transforms is sent once.
+uint32_t CGxDeviceD3d::s_d3dWorldIdentity = 0;
 
 void CGxDeviceD3d::ResetRsSendCaches() {
     this->m_d3dSpecularEnable = 0xFFFFFFFF;
@@ -1319,15 +1322,40 @@ void CGxDeviceD3d::ISetAlphaOp(uint32_t tmu, uint32_t op) {
 }
 
 // ref: FUN_006a4af0
-// PARTIAL: the coordinate-source half. The reference goes on, for modes 1-2 and 6, to build a
-// camera-space texgen matrix out of the device's transform stacks and mark the stage's texture
-// transform dirty; that half lands with the transform sync (IStateSyncXforms), which owns those
-// stacks. Fixed-function only -- D3D ignores both while shaders are bound.
+// Picks the stage's coordinate source, then fills the stage's texgen stack. Modes 1 and 2
+// generate in camera space, so the matrix carries them back out: the inverse view, and for mode 1
+// the inverse world as well. Mode 6 is the sphere map's scale-and-bias. Every other mode loads
+// the identity. The mode compares are signed, as the reference's are.
 void CGxDeviceD3d::ISetTexGen(uint32_t tmu, uint32_t mode) {
-    if (tmu < static_cast<uint32_t>(this->m_caps.m_numTmus)) {
-        this->ISetTexCoordIndex(tmu, mode,
-            static_cast<uint32_t>(this->m_appRenderStates[GxRs_TexCoord0 + tmu].m_value));
+    if (tmu >= static_cast<uint32_t>(this->m_caps.m_numTmus)) {
+        return;
     }
+
+    this->ISetTexCoordIndex(tmu, mode,
+        static_cast<uint32_t>(this->m_appRenderStates[GxRs_TexCoord0 + tmu].m_value));
+
+    int32_t texGen = static_cast<int32_t>(mode);
+    C44Matrix matrix;
+
+    if (texGen > 0 && texGen <= 2) {
+        matrix = this->m_xforms[GxXform_View].TopConst();
+        matrix = matrix.AffineInverse();
+
+        if (texGen == 1) {
+            matrix = matrix * this->m_xforms[GxXform_World].TopConst().Inverse();
+        }
+    } else if (texGen == 6) {
+        matrix.Identity();
+        matrix.a0 = 0.5f;
+        matrix.b1 = 0.5f;
+        matrix.d0 = 0.5f;
+        matrix.d1 = 0.5f;
+    } else {
+        this->m_texGenXforms[tmu].SetIdentity();
+        return;
+    }
+
+    this->m_texGenXforms[tmu].Top() = matrix;
 }
 
 // ref: FUN_006a4ac0
@@ -2689,6 +2717,7 @@ void CGxDeviceD3d::IStateSyncVertexPtrs() {
     }
 }
 
+// ref: FUN_006a4850
 void CGxDeviceD3d::IStateSyncXforms() {
     if (this->m_xforms[GxXform_Projection].m_dirty) {
         this->m_d3dDevice->SetTransform(D3DTS_PROJECTION, reinterpret_cast<D3DMATRIX*>(&this->m_projNative));
@@ -2700,22 +2729,87 @@ void CGxDeviceD3d::IStateSyncXforms() {
         this->m_xforms[GxXform_View].m_dirty = 0;
     }
 
-    // Both remaining blocks are FIXED-FUNCTION only, and both are inert here today. Triaged
-    // 2026-09-23 rather than ported, because porting either would be dead code.
-    //
-    // World: D3DTS_WORLD affects nothing while a vertex shader is bound, and the only thing in
-    // frozen that touches GxXform_World is CM2SceneRender, which sets it to identity and pushes
-    // and pops it around the M2 render. The reference does this at 0x006a48b2, calling 0x006a5a30
-    // when its dirty byte at +0x18cc is set.
-    //
-    // Tex: the reference loops from 0x006a48c2 over m_caps.m_numTmus -- at CGxDevice + 0x214 --
-    // sending a texture transform per stage. Nothing in frozen ever sets GxXform_Tex0 through
-    // Tex7 to anything but the identity the push/pop leaves, so the loop would send identities.
-    // That is also why tools/deaddata.py reports CGxCaps::m_numTmus as written and never read:
-    // this loop is its only consumer.
-    //
-    // Both become worth porting the day something animates texture coordinates through the Gx
-    // transform stack, or the day the fixed-function path is used for anything.
+    if (this->m_xforms[GxXform_World].m_dirty) {
+        this->IStateSyncWorldXform();
+    }
+
+    // One texture transform per stage the card has, re-sent when either the application's
+    // stack or the stage's texgen stack changed. This loop is CGxCaps::m_numTmus's only reader.
+    for (uint32_t tmu = 0; tmu < static_cast<uint32_t>(this->m_caps.m_numTmus); tmu++) {
+        if (this->m_xforms[GxXform_Tex0 + tmu].m_dirty || this->m_texGenXforms[tmu].m_dirty) {
+            this->IStateSyncTexXform(tmu);
+        }
+    }
+}
+
+// ref: FUN_006a5a30
+// Fixed-function only: D3DTS_WORLD means nothing while a vertex shader is bound. Skips the send
+// only when both this and the last world sent are identities.
+void CGxDeviceD3d::IStateSyncWorldXform() {
+    auto& world = this->m_xforms[GxXform_World];
+    uint32_t identity = world.m_flags[world.m_level] & CGxMatrixStack::F_Identity;
+
+    if (!CGxDeviceD3d::s_d3dWorldIdentity || !identity) {
+        this->m_d3dDevice->SetTransform(D3DTS_WORLD, reinterpret_cast<const D3DMATRIX*>(&world.TopConst()));
+    }
+
+    world.m_dirty = 0;
+    CGxDeviceD3d::s_d3dWorldIdentity = identity;
+}
+
+// ref: FUN_006a5aa0
+// Sends one stage's texture transform and the matching texture-transform flags. The per-stage
+// state at GxRs_Unk61 + tmu chooses the form: 0 sends the texgen matrix alone (counting three
+// coordinates unless it is the identity), 1 sends texgen times the application's matrix (two
+// coordinates when the stage has no texgen, with the translation row moved up to where D3D reads
+// it for two-component coordinates), 2 sends the product projected. Any other value disables the
+// transform. The reference reads that state through the global device; it is the same object.
+void CGxDeviceD3d::IStateSyncTexXform(uint32_t tmu) {
+    auto& texGen = this->m_texGenXforms[tmu];
+    auto& app = this->m_xforms[GxXform_Tex0 + tmu];
+    auto d3dState = static_cast<D3DTRANSFORMSTATETYPE>(D3DTS_TEXTURE0 + tmu);
+    uint32_t flags = D3DTTFF_DISABLE;
+
+    switch (static_cast<uint32_t>(this->m_appRenderStates[GxRs_Unk61 + tmu].m_value)) {
+        case 0: {
+            if (!(texGen.m_flags[texGen.m_level] & CGxMatrixStack::F_Identity)) {
+                flags = D3DTTFF_COUNT3;
+            }
+
+            this->m_d3dDevice->SetTransform(d3dState, reinterpret_cast<const D3DMATRIX*>(&texGen.TopConst()));
+            break;
+        }
+
+        case 1: {
+            C44Matrix matrix = texGen.TopConst() * app.TopConst();
+
+            if (static_cast<uint32_t>(this->m_appRenderStates[GxRs_TexGen0 + tmu].m_value) == 0) {
+                flags = D3DTTFF_COUNT2;
+                matrix.c0 = matrix.d0;
+                matrix.c1 = matrix.d1;
+            } else {
+                flags = D3DTTFF_COUNT3;
+            }
+
+            this->m_d3dDevice->SetTransform(d3dState, reinterpret_cast<const D3DMATRIX*>(&matrix));
+            break;
+        }
+
+        case 2: {
+            C44Matrix matrix = texGen.TopConst() * app.TopConst();
+            this->m_d3dDevice->SetTransform(d3dState, reinterpret_cast<const D3DMATRIX*>(&matrix));
+            flags = D3DTTFF_COUNT3 | D3DTTFF_PROJECTED;
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    this->DsSet(static_cast<EDeviceState>(Ds_TssTTF0 + tmu), flags);
+
+    app.m_dirty = 0;
+    texGen.m_dirty = 0;
 }
 
 void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
