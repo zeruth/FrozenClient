@@ -1458,12 +1458,64 @@ void CM2Model::AnimateMTSimple(const C44Matrix* view, const C3Vector& a3, const 
         ? this->matrixF4.d2 * this->matrixF4.d2 + this->matrixF4.d1 * this->matrixF4.d1 + this->matrixF4.d0 * this->matrixF4.d0
         : this->m_attachParent->float88;
 
+    uint32_t elapsedTime = 0;
+
     if (this->m_time && this->m_scene->m_time) {
+        elapsedTime = this->m_scene->m_time - this->m_time;
         this->m_time = this->m_scene->m_time;
     }
 
-    // TODO the sequence playback record the reference advances here (its own +0x94), which
-    // retimes the model's current sequence. frozen has no counterpart for that record yet.
+    // BONE 0, 0x82e3c0..0x82e4a2. The +0x94 an earlier note here called "a sequence playback
+    // record" is m_bones. A simple model has exactly one bone, and this is AnimateMT's
+    // primary-sequence step for it -- advance the clock by the elapsed time, take the frame
+    // (clamped at the end when the sequence has flag 0x1 and its end time has passed, else
+    // modulo the duration) -- followed by the line that matters most:
+    //
+    //     m_boneMatrices[0] = matrixF4
+    //
+    // The renderer reads bone matrices for every model; the reference has no separate simple
+    // draw path (nothing in the M2 render code tests 0x1000). Without this copy a one-bone
+    // model drew through whatever the bone-matrix buffer held, which is how setting the 0x1000
+    // bit in InitializeLoaded (d3b7704b) exploded every doodad on screen. The copy is the
+    // compiler's C44Matrix assignment (FUN_00407f80), excluded from the call comparison, so
+    // the fidelity score could not see it was missing.
+    if (this->m_bones && this->m_boneMatrices) {
+        M2ModelBone& modelBone = this->m_bones[0];
+
+        if (modelBone.sequence.uint8 != 0xFFFF) {
+            if (this->m_time) {
+                modelBone.sequence.uintC += elapsedTime;
+                modelBone.sequence.uint10 += elapsedTime;
+            }
+
+            uint32_t now = this->m_scene->m_time;
+            auto& sequence = data->sequences[modelBone.sequence.uint8];
+            uint32_t frame = 0;
+            bool clamped = false;
+
+            if (sequence.flags & 0x1) {
+                if (static_cast<int32_t>(modelBone.sequence.uint10 - now) <= 0) {
+                    int32_t played = static_cast<int32_t>(CMath::fuint(static_cast<float>(static_cast<int32_t>(modelBone.sequence.uint10 - modelBone.sequence.uintC)) * modelBone.sequence.float14)) + static_cast<int32_t>(modelBone.sequence.uint1C);
+
+                    frame = played < 0 ? 0 : std::min(static_cast<uint32_t>(played), sequence.duration);
+                    clamped = true;
+                } else if (static_cast<int32_t>(modelBone.sequence.uintC - now) > 0) {
+                    now = modelBone.sequence.uintC;
+                }
+            }
+
+            if (!clamped && sequence.duration) {
+                uint32_t played = CMath::fuint(static_cast<float>(static_cast<int32_t>(now - modelBone.sequence.uintC)) * modelBone.sequence.float14);
+                frame = (played + modelBone.sequence.uint1C) % sequence.duration;
+            }
+
+            modelBone.sequence.uint0 = frame;
+            modelBone.sequence.uint4 = modelBone.sequence.uint8;
+            modelBone.sequence.uint6 = 0;
+        }
+
+        this->m_boneMatrices[0] = this->matrixF4;
+    }
 
     for (int32_t i = 0; i < data->textureWeights.Count(); i++) {
         auto& textureWeight = data->textureWeights[i];

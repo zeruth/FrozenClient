@@ -27,10 +27,10 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-01 18:15) | at completion |
+| | 2026-10-01 start | now (2026-10-01 18:40) | at completion |
 |---|---|---|---|
 | render surface linked | 1,267 / 4,838 (26%) | 1,442 / 5,390 (27%) | 5,390 |
-| render surface faithful | not measured | 913 (17%) | 5,390 |
+| render surface faithful | not measured | 914 (17%) | 5,390 |
 | render surface stubs | 20 | 32 | 0 |
 | empty functions with live render call sites | 37 | 37 | 0 |
 | render surface attributed by anchor guess | 63% | 49% | low |
@@ -99,7 +99,7 @@ functions in the client. Closing it first also stabilises the matchers for every
 hangs off `CM2Model`.
 
 - **Roots** (`--fix`, fidelity in brackets): `CM2Model::InitializeLoaded` [58% -> 79%, 5.6 KB, 42
-  callers], `CM2Scene::Animate` [67%], ~~`CM2Model::AnimateMT` [16%]~~ (faithful 2026-10-01), `AnimateMTSimple` [75%],
+  callers], `CM2Scene::Animate` [67%], ~~`CM2Model::AnimateMT` [16%]~~ (faithful 2026-10-01), ~~`AnimateMTSimple` [75%]~~ (faithful 2026-10-01),
   ~~`SetWorldTransform` [17%]~~ (faithful 2026-10-01), `CM2SceneRender::Draw` [86%], `SetupLighting` [56%],
   `SetupTextures` [67%], `SelectLights` [67%], `CM2Lighting::SetupGxFog` [33%],
   `ReplaceTexture` [43%], `OptimizeVisibleGeometry` [89%].
@@ -248,3 +248,4 @@ stubs, then live empty functions.
 | 2026-10-01 18:05 | 1,441 / 5,390 | 912 | 32 | 37 | phase 1: **`AnimateMT` is faithful** -- 98% call order, branch ratio 0.57. The last pieces: the SECONDARY sequence's bookkeeping, which did not exist (nothing advanced the sequence a blend fades out of, and nothing ever expired it, so every blend sampled a stuck time and never ended -- its flag test is 0x80 where the primary's is 0x1); the `SetBoneMatrix` override applied on bone flag 0x80 (`*= matrix88`); the blend-weight fallback (a parentless bone other than bone 0 takes bone 0's weight); and the no-rotation-track TODO closed as the identity it already was. From 16% at the start of the day, almost all of it real behaviour: ribbon and particle tracks, billboarding, parent inheritance and secondary-sequence timing. Installed this time. Client faithful 2,528 -> 2,529 |
 | 2026-10-01 18:11 | 1,442 / 5,390 | 913 | 32 | 37 | phase 1: `InitializeLoaded` 64% -> 71%. Its particle-emitter setup did the reference's work in a different order; reordered to the reference's sequence (initial track values, flag bits, head/tail, material bits, texture grid and animation, `SetMaterial`, track pointers, inherited colours, twinkle and motion constants, follow ramp, spline), checked line-for-line to add and drop nothing else. `SetFollow` (`FUN_00978dd0`) ported: nothing had ever set the follow ramp, so every particle inherited none of its emitter's movement. And a FIX TO ITERATION 5: the reference starts every particle record visible (state +0x80 = 1) at the end of this loop; frozen did not, and since the track pass now gates emission on that value, an emitter with no visibility track would never have emitted. Still unported here: the two spawned models (`FUN_00978b30`, `FUN_0097aeb0`) and the precompiled ramp (`FUN_0097d370`). Not installed: `Frozen.exe` was running |
 | 2026-10-01 18:15 | 1,442 / 5,390 | 913 | 32 | 37 | phase 1: `InitializeLoaded` 71% -> 79%. The stretch between the emitters and the deferred-call replay was mostly absent. Ported: the instance-count bit 0x10; releasing the source model (`model30`), which frozen never let go of; the cut-down-animate bit 0x1000 -- nothing set it, so `AnimateMTSimple`, ported and faithful, was never chosen for a one-bone model; the state bits (0x800 set across the replay, 0x2 cleared); STARTING THE MODEL ON ITS STAND ANIMATION, which frozen left to whatever owner happened to set a sequence; and the per-frame report bit 0x400000. The reference's async-wait-and-reenter block is unreachable (gated on the loaded bit the line after setting it) and is left out with a note. Left in this function: the ribbon setup's static tables and `FUN_0082dac0`, the emitter constructor order, the spawned models, the ramp, and calling `SetRibbonFlag8` from the replay. Not installed: `Frozen.exe` was running |
+| 2026-10-01 18:40 | 1,442 / 5,390 | 914 | 32 | 37 | **REGRESSION FIXED: exploding geometry.** d3b7704b set the 0x1000 bit, so one-bone models (most doodads) took `AnimateMTSimple` for the first time -- and frozen's port of it never wrote the bone matrices, so those models drew through whatever the bone buffer held. Reproduced on screen. The reference copies `matrixF4` into bone 0 at 0x82e495, after advancing bone 0's primary sequence; both now ported. The fidelity score had passed the function at 100% call order because that copy is the compiler's matrix assignment, which is excluded from the comparison -- the gap was invisible to the measure. `AnimateMTSimple` now faithful. LESSON for the rest of the roadmap: a port that turns on a code path nothing exercised before is where the deferred-verification cost lands first |
