@@ -201,7 +201,25 @@ enum EGxRenderState {
     GxRs_PointSprite = 83,
     GxRs_Unk84 = 84,
     GxRs_ColorMaterial = 85,
-    GxRenderStates_Last = 86
+    GxRenderStates_Last = 86,
+
+    // Names for states this enum carried by number, established 2026-10-01 from what
+    // CGxDeviceD3d::IRsSendToHw (FUN_006a4c30) does with them. Aliases rather than renames so
+    // existing users of the numbered names keep compiling.
+    //
+    // 69..76: each texture stage's coordinate set -- D3DTSS_TEXCOORDINDEX, combined with that
+    // stage's texgen mode. IRsInit defaults them to 0, 1, 2 ... which is the identity mapping.
+    GxRs_TexCoord0 = GxRs_Unk69,
+    GxRs_TexCoord1 = GxRs_Unk70,
+    GxRs_TexCoord2 = GxRs_Unk71,
+    GxRs_TexCoord3 = GxRs_Unk72,
+    GxRs_TexCoord4 = GxRs_Unk73,
+    GxRs_TexCoord5 = GxRs_Unk74,
+    GxRs_TexCoord6 = GxRs_Unk75,
+    GxRs_TexCoord7 = GxRs_Unk76,
+    // 84: the constant blend colour, D3DRS_BLENDFACTOR, as a grey level 0..1. The
+    // GxBlend_ConstantAlpha mode blends with it.
+    GxRs_BlendFactor = GxRs_Unk84,
 };
 
 enum EGxShPS {

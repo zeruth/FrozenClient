@@ -256,6 +256,31 @@ class CGxDeviceD3d : public CGxDevice {
     // which agrees with D3D's own default, so unlike the material sources above there is no
     // first-sync gap here.
     uint32_t m_d3dClipPlaneEnable = 0;
+    // IRsSendToHw's own render-state caches, beside m_deviceStates the way the reference keeps
+    // them beside its DsSet array (+0x3e60 onward). All start at the 0xFFFFFFFF sentinel so the
+    // first value is always sent, and are reset with m_deviceStates.
+    uint32_t m_d3dSpecularEnable = 0xFFFFFFFF;  // +0x3e7c
+    // (D3DRS_LIGHTING's cache, +0x3e78, is m_d3dLighting below, shared with IStateSyncLights.)
+    uint32_t m_d3dFogEnable = 0xFFFFFFFF;       // +0x3e6c
+    uint32_t m_d3dPointScaleEnable = 0xFFFFFFFF; // +0x3e98
+    // A global in the reference (DAT_00ad8f88), shared by every device.
+    static uint32_t s_d3dNormalizeNormals;
+    void ResetRsSendCaches();
+    // Texture stage `tmu`'s coordinate source: coordinate set `index` for texgen mode 0, the
+    // camera-space position (1-3), reflection vector (4, 6) or normal (5) otherwise.
+    // ref: FUN_006a4100
+    void ISetTexCoordIndex(uint32_t tmu, uint32_t texGen, uint32_t index);
+    // The fixed-function material. ref: FUN_006a4250
+    void ISetMaterial(uint32_t diffuse, uint32_t emissive, uint32_t specular, float power);
+    // A stage's colour and alpha combiners from a Gx texture op. ref: FUN_006a4190, FUN_006a41f0
+    void ISetColorOp(uint32_t tmu, uint32_t op);
+    void ISetAlphaOp(uint32_t tmu, uint32_t op);
+    // A stage's texgen mode and its coordinate set. ref: FUN_006a4af0, FUN_006a4ac0
+    void ISetTexGen(uint32_t tmu, uint32_t mode);
+    void ISetTexCoord(uint32_t tmu, uint32_t index);
+    // +0x3e9c: whether each fixed-function stage currently has a texture. With no pixel shader
+    // bound, a stage without one has its combiners disabled.
+    uint8_t m_stageTextured[8] = {};
     // The hardware side of D3DRS_LIGHTING (+0x3e78) and D3DRS_AMBIENT (+0x3e5c). Both start at
     // zero, matching D3D's own defaults for the first and not for the second -- D3DRS_AMBIENT
     // defaults to 0 too, so there is no first-sync gap on either.

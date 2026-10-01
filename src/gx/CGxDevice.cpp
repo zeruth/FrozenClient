@@ -759,56 +759,56 @@ void CGxDevice::IRsInit() {
     this->m_appRenderStates[GxRs_AlphaOp0].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen0].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk61].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk69].m_value             = 0;
+    this->m_appRenderStates[GxRs_TexCoord0].m_value            = 0;
 
     this->m_appRenderStates[GxRs_Texture1].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp1].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp1].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen1].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk62].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk70].m_value             = 1;
+    this->m_appRenderStates[GxRs_TexCoord1].m_value            = 1;
 
     this->m_appRenderStates[GxRs_Texture2].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp2].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp2].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen2].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk63].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk71].m_value             = 2;
+    this->m_appRenderStates[GxRs_TexCoord2].m_value            = 2;
 
     this->m_appRenderStates[GxRs_Texture3].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp3].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp3].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen3].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk64].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk72].m_value             = 3;
+    this->m_appRenderStates[GxRs_TexCoord3].m_value            = 3;
 
     this->m_appRenderStates[GxRs_Texture4].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp4].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp4].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen4].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk65].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk73].m_value             = 4;
+    this->m_appRenderStates[GxRs_TexCoord4].m_value            = 4;
 
     this->m_appRenderStates[GxRs_Texture5].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp5].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp5].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen5].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk66].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk74].m_value             = 5;
+    this->m_appRenderStates[GxRs_TexCoord5].m_value            = 5;
 
     this->m_appRenderStates[GxRs_Texture6].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp6].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp6].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen6].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk67].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk75].m_value             = 6;
+    this->m_appRenderStates[GxRs_TexCoord6].m_value            = 6;
 
     this->m_appRenderStates[GxRs_Texture7].m_value          = nullptr;
     this->m_appRenderStates[GxRs_ColorOp7].m_value          = 0;
     this->m_appRenderStates[GxRs_AlphaOp7].m_value          = 0;
     this->m_appRenderStates[GxRs_TexGen7].m_value           = 0;
     this->m_appRenderStates[GxRs_Unk68].m_value             = 0;
-    this->m_appRenderStates[GxRs_Unk76].m_value             = 7;
+    this->m_appRenderStates[GxRs_TexCoord7].m_value            = 7;
 
     this->m_appRenderStates[GxRs_Texture8].m_value          = nullptr;
     this->m_appRenderStates[GxRs_Texture9].m_value          = nullptr;
@@ -828,7 +828,7 @@ void CGxDevice::IRsInit() {
     this->m_appRenderStates[GxRs_PointScaleMax].m_value     = 1.0f;
     this->m_appRenderStates[GxRs_PointSprite].m_value       = 0;
 
-    this->m_appRenderStates[GxRs_Unk84].m_value             = 0.0f;
+    this->m_appRenderStates[GxRs_BlendFactor].m_value            = 0.0f;
     this->m_appRenderStates[GxRs_ColorMaterial].m_value     = 0;
 }
 

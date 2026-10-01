@@ -27,10 +27,10 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-01 19:45) | at completion |
+| | 2026-10-01 start | now (2026-10-01 20:30) | at completion |
 |---|---|---|---|
-| render surface linked | 1,267 / 4,838 (26%) | 1,446 / 5,390 (27%) | 5,390 |
-| render surface faithful | not measured | 924 (17%) | 5,390 |
+| render surface linked | 1,267 / 4,838 (26%) | 1,457 / 5,390 (27%) | 5,390 |
+| render surface faithful | not measured | 932 (17%) | 5,390 |
 | render surface stubs | 20 | 32 | 0 |
 | empty functions with live render call sites | 37 | 37 | 0 |
 | render surface attributed by anchor guess | 63% | 49% | low |
@@ -183,6 +183,25 @@ the reference's. `RsPop` and `TextureCreate` already score 100%, so the pattern 
 
 Exit: every texture, effect and device module at 100% linked, no stubs.
 
+## Phase 3a: the D3D9 per-frame device path (moved ahead of entities, 2026-10-01)
+
+Pulled forward by decision: every draw ends in the device, so a wrong state there is wrong on
+every pixel, and the measure under-reports it -- the device is reached by virtual calls the spine
+walk does not follow, most of the "unlinked device" bytes are the reference's OpenGL backend
+(0x69xxxx; out of scope on Windows), and frozen's device was written from whoa's design rather
+than ported. The real D3D9 surface is ~150 functions / 40 KB at 0x6a0000..0x6ac000 plus the weak
+core. In order:
+
+1. ~~`IRsSendToHw` (`FUN_006a4c30`) in full~~ (2026-10-01, 77 cases; the four tables verified byte
+   for byte; see the progress log). Left: its texgen matrix half, which belongs to item 3.
+2. `DsSet` (`FUN_006a3c40`) completed. It is the reference's state/sampler cache and frozen's enum
+   already mirrors its indices exactly; the body handles a handful and says `// TODO handle other
+   device states`, so colour ops, texture-coordinate index, the extra sampler states (anisotropy,
+   mip bias, max mip level) and point scale are cached but never SENT.
+3. Transform sync and viewport: `IStateSyncXforms` [0%], `GxXformSet` [0%], `GxXformSetViewport`
+   [20%], and dirty tracking `IRsDirty` [0%], `IRsForceUpdate` [0%].
+4. Texture creation and upload in the D3D9 texture file (0x6a7xxx..0x6aaxxx).
+
 ## Phase 4: entities (1,779 unlinked)
 
 Half of everything left, last because it is the largest and the least anchored, and because
@@ -253,3 +272,4 @@ stubs, then live empty functions.
 | 2026-10-01 19:15 | 1,446 / 5,390 | 920 | 32 | 37 | phase 1, **the liquid plane, end to end.** Nothing in frozen ever told a model which side of the water it was on. The reference does it from the map: its world lighting callback (`FUN_00780cd0`) calls the placement object's `SelectUnderwater` (vtable slot 2), which for a doodad (`FUN_007c23f0`, now `CMapDoodadDef::SelectUnderwater`) asks the building's group liquid or the terrain liquid once, caches the answer, and applies it (`FUN_007c10c0`, now `CMapStaticEntity::ApplyWaterSide`): above only, below only, or straddling with the plane z = surface. `CM2Lighting::CameraSpace` now carries that plane into camera space (it moved only the lights) and marks the lighting done. `CM2SceneRender::SetupLighting` then does what it was missing: clips a straddling model against the plane -- through `matrix0` into clip space on a D3D-convention device with shaders, negated on pass 2 -- and publishes the element's `dword3c` for the shader selector. Frozen's stand-in lighting callback is kept (no `SelectLights` override is ported, so the reference's object branch would strip doodads of light); only the slot-2 call is added, and map doodads now pass their def as the callback argument. `TransformVector4` moved to tempest so the world and the model share the reference's one function. **This switches on a path nothing exercised before** -- doodads at a water line now clip against it, and submerged ones join the below-water list -- so it is the first place to look if a doodad near water renders wrongly. Client linked 4,771 -> 4,773, faithful 2,534 -> 2,537 |
 | 2026-10-01 19:30 | 1,446 / 5,390 | 922 | 32 | 37 | phase 1: `CM2Scene::SelectLights` and `CM2SceneRender::SetupTextures` faithful. **A real lighting bug in the first**: the point-light grid bounds go through the C runtime's `floor` (`FUN_0088ce30`) in the reference and were truncated in frozen, which rounds toward zero -- so across the negative half of the world every sweep started a cell high and missed the low edge's lights. The second now walks every texture stage the batch names and then blanks the rest below two, where it walked exactly two and would have dropped a third or fourth texture; its texture-matrix branch is in the reference's order. Client faithful 2,537 -> 2,539 |
 | 2026-10-01 19:45 | 1,446 / 5,390 | 924 | 32 | 37 | phase 1: `CM2Model::IsDrawable` and `~CM2Model` faithful. `IsDrawable` now requires everything ATTACHED to a model -- helm, weapons -- to be drawable too, cached in bit 0x200, where it reported the parent ready while an attachment's textures were still loading. The destructor's tail was three leaks: the deferred-call queue of a model destroyed before it loaded (and any texture handle a queued replacement held), the optimised geometry's GPU index buffer and pool (`UnoptimizeVisibleGeometry` was never called on destroy), and the two matrix frees now sit where the reference has them. Destructor faithful by hand verdict: 100% call order, the branch count reads low only because frozen's per-list unlink helpers hold the branches the reference inlines. Client faithful 2,539 -> 2,541 |
+| 2026-10-01 20:30 | 1,457 / 5,390 | 932 | 32 | 37 | **phase 3a, item 1: `IRsSendToHw`.** The reference's D3D9 render-state translator has 77 cases; frozen's had ~33. The four lookup tables (source and destination blend, depth compare, cull) were checked byte for byte against the binary -- all match, so the existing cases were right. Added: the fixed-function material and specular enable, normalise-normals, lighting under its master-enable bit, fog now under its master-enable bit and cached (it bypassed both), per-stage colour and alpha combiners, texgen's coordinate half, per-stage texture-coordinate index (frozen's `Unk69`-`76`, now named `GxRs_TexCoord0`-`7`), point size / scaling / min / max / sprites, and the constant blend factor (`Unk84`, now `GxRs_BlendFactor`) -- which `GxBlend_ConstantAlpha` blends with and which was never set. Structured as the reference's helpers, each tagged; `ISetTexture`, `IShaderBindPixel` and `IShaderBindVertex` identified and given their fixed-function stage bookkeeping. **The fixed-function states are cached but not yet sent: `DsSet` has no case for them -- item 2.** Client linked 4,773 -> 4,784, faithful 2,542 -> 2,549 |

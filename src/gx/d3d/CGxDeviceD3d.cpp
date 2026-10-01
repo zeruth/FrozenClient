@@ -1248,6 +1248,7 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     this->IReleaseD3dPools(a2);
 
     memset(this->m_deviceStates, 0xFF, sizeof(this->m_deviceStates));
+    this->ResetRsSendCaches();
 
     if (this->m_defColorSurface) {
         this->m_defColorSurface->Release();
@@ -1266,6 +1267,114 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     }
 }
 
+uint32_t CGxDeviceD3d::s_d3dNormalizeNormals = 0xFFFFFFFF;
+
+void CGxDeviceD3d::ResetRsSendCaches() {
+    this->m_d3dSpecularEnable = 0xFFFFFFFF;
+    this->m_d3dLighting = 0xFFFFFFFF;
+    this->m_d3dFogEnable = 0xFFFFFFFF;
+    this->m_d3dPointScaleEnable = 0xFFFFFFFF;
+    CGxDeviceD3d::s_d3dNormalizeNormals = 0xFFFFFFFF;
+}
+
+// ref: FUN_006a4100
+void CGxDeviceD3d::ISetTexCoordIndex(uint32_t tmu, uint32_t texGen, uint32_t index) {
+    auto state = static_cast<EDeviceState>(Ds_TssTexCoordIndex0 + tmu);
+
+    switch (texGen) {
+        case 0:
+            this->DsSet(state, index);
+            break;
+        case 1:
+        case 2:
+        case 3:
+            this->DsSet(state, tmu | D3DTSS_TCI_CAMERASPACEPOSITION);
+            break;
+        case 4:
+        case 6:
+            this->DsSet(state, tmu | D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR);
+            break;
+        case 5:
+            this->DsSet(state, tmu | D3DTSS_TCI_CAMERASPACENORMAL);
+            break;
+        default:
+            break;
+    }
+}
+
+// The colour and alpha combiner of a fixed-function stage: an op and its two arguments per
+// texture op, out of the reference's tables at 0x00a2f9cc (op) and 0x00a2f9e4 (argument pairs),
+// verified against the binary 2026-10-01. Ignored by D3D while shaders are bound.
+static const uint32_t s_texOp[] = {
+    D3DTOP_MODULATE, D3DTOP_MODULATE2X, D3DTOP_ADD, D3DTOP_SELECTARG2, D3DTOP_BLENDCURRENTALPHA,
+    D3DTOP_BLENDDIFFUSEALPHA
+};
+
+static const uint32_t s_texArgs[][2] = {
+    { D3DTA_TEXTURE, D3DTA_CURRENT }, { D3DTA_TEXTURE, D3DTA_CURRENT }, { D3DTA_TEXTURE, D3DTA_CURRENT },
+    { D3DTA_TEXTURE, D3DTA_CURRENT }, { D3DTA_CURRENT, D3DTA_TEXTURE }, { D3DTA_TEXTURE, D3DTA_CURRENT }
+};
+
+static void UnpackD3dColor(D3DCOLORVALUE& out, uint32_t argb) {
+    // 1/255 is the reference's own constant at 0x00a2f960.
+    out.r = static_cast<float>((argb >> 16) & 0xFF) * 0.003921568859368563f;
+    out.g = static_cast<float>((argb >> 8) & 0xFF) * 0.003921568859368563f;
+    out.b = static_cast<float>(argb & 0xFF) * 0.003921568859368563f;
+    out.a = static_cast<float>(argb >> 24) * 0.003921568859368563f;
+}
+
+// ref: FUN_006a4250
+void CGxDeviceD3d::ISetMaterial(uint32_t diffuse, uint32_t emissive, uint32_t specular, float power) {
+    D3DMATERIAL9 material;
+
+    UnpackD3dColor(material.Diffuse, diffuse);
+    material.Ambient = material.Diffuse;
+    UnpackD3dColor(material.Emissive, emissive);
+    UnpackD3dColor(material.Specular, specular);
+    material.Power = power;
+
+    this->m_d3dDevice->SetMaterial(&material);
+}
+
+// ref: FUN_006a4190
+void CGxDeviceD3d::ISetColorOp(uint32_t tmu, uint32_t op) {
+    if (tmu < static_cast<uint32_t>(this->m_caps.m_numTmus) && op < 6) {
+        this->DsSet(static_cast<EDeviceState>(Ds_TssColorOp0 + tmu), s_texOp[op]);
+        this->DsSet(static_cast<EDeviceState>(Ds_TssColorArg10 + tmu), s_texArgs[op][0]);
+        this->DsSet(static_cast<EDeviceState>(Ds_TssColorArg20 + tmu), s_texArgs[op][1]);
+    }
+}
+
+// ref: FUN_006a41f0
+void CGxDeviceD3d::ISetAlphaOp(uint32_t tmu, uint32_t op) {
+    if (tmu < static_cast<uint32_t>(this->m_caps.m_numTmus) && op < 6) {
+        this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaOp0 + tmu), s_texOp[op]);
+        this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaArg10 + tmu), s_texArgs[op][0]);
+        this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaArg20 + tmu), s_texArgs[op][1]);
+    }
+}
+
+// ref: FUN_006a4af0
+// PARTIAL: the coordinate-source half. The reference goes on, for modes 1-2 and 6, to build a
+// camera-space texgen matrix out of the device's transform stacks and mark the stage's texture
+// transform dirty; that half lands with the transform sync (IStateSyncXforms), which owns those
+// stacks. Fixed-function only -- D3D ignores both while shaders are bound.
+void CGxDeviceD3d::ISetTexGen(uint32_t tmu, uint32_t mode) {
+    if (tmu < static_cast<uint32_t>(this->m_caps.m_numTmus)) {
+        this->ISetTexCoordIndex(tmu, mode,
+            static_cast<uint32_t>(this->m_appRenderStates[GxRs_TexCoord0 + tmu].m_value));
+    }
+}
+
+// ref: FUN_006a4ac0
+void CGxDeviceD3d::ISetTexCoord(uint32_t tmu, uint32_t index) {
+    if (tmu < static_cast<uint32_t>(this->m_caps.m_numTmus)) {
+        this->ISetTexCoordIndex(tmu,
+            static_cast<uint32_t>(this->m_appRenderStates[GxRs_TexGen0 + tmu].m_value), index);
+    }
+}
+
+// ref: FUN_006a4c30
 void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
     auto state = &this->m_appRenderStates[which];
 
@@ -1453,9 +1562,19 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
         break;
     }
 
+    // Gated by the master enable (0x2) and cached at +0x3e6c, as the reference does it; frozen
+    // sent the app value straight through until 2026-10-01.
     case GxRs_Fog: {
-        auto fogEnable = static_cast<uint32_t>(state->m_value) != 0;
-        this->m_d3dDevice->SetRenderState(D3DRS_FOGENABLE, fogEnable);
+        uint32_t fogEnable = 0;
+
+        if (this->MasterEnable(GxMasterEnable_Fog)) {
+            fogEnable = static_cast<uint32_t>(state->m_value) != 0 ? 1 : 0;
+        }
+
+        if (this->m_d3dFogEnable != fogEnable) {
+            this->m_d3dDevice->SetRenderState(D3DRS_FOGENABLE, fogEnable);
+            this->m_d3dFogEnable = fogEnable;
+        }
 
         break;
     }
@@ -1514,6 +1633,172 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
         auto shader = static_cast<CGxShader*>(static_cast<void*>(state->m_value));
         this->IShaderBindPixel(shader);
 
+        break;
+    }
+
+    // 2026-10-01: the cases below complete the reference's switch (FUN_006a4c30, 77 cases).
+
+    // The fixed-function material, sent whole whenever any of its four states changes, and
+    // all four marked clean together. Specular is enabled only for a positive exponent and a
+    // non-black specular colour.
+    case GxRs_MatDiffuse:
+    case GxRs_MatEmissive:
+    case GxRs_MatSpecular:
+    case GxRs_MatSpecularExp: {
+        auto& rs = this->m_appRenderStates;
+
+        this->ISetMaterial(
+            static_cast<uint32_t>(rs[GxRs_MatDiffuse].m_value),
+            static_cast<uint32_t>(rs[GxRs_MatEmissive].m_value),
+            static_cast<uint32_t>(rs[GxRs_MatSpecular].m_value),
+            static_cast<float>(rs[GxRs_MatSpecularExp].m_value));
+
+        rs[GxRs_MatDiffuse].m_dirty = 0;
+        rs[GxRs_MatEmissive].m_dirty = 0;
+        rs[GxRs_MatSpecular].m_dirty = 0;
+        rs[GxRs_MatSpecularExp].m_dirty = 0;
+
+        uint32_t specular = (static_cast<float>(rs[GxRs_MatSpecularExp].m_value) > 0.0f
+            && static_cast<uint32_t>(rs[GxRs_MatSpecular].m_value) != 0) ? 1 : 0;
+
+        if (this->m_d3dSpecularEnable != specular) {
+            this->m_d3dDevice->SetRenderState(D3DRS_SPECULARENABLE, specular);
+            this->m_d3dSpecularEnable = specular;
+        }
+
+        break;
+    }
+
+    case GxRs_NormalizeNormals: {
+        auto normalize = static_cast<uint32_t>(state->m_value);
+
+        if (CGxDeviceD3d::s_d3dNormalizeNormals != normalize) {
+            this->m_d3dDevice->SetRenderState(D3DRS_NORMALIZENORMALS, normalize);
+            CGxDeviceD3d::s_d3dNormalizeNormals = normalize;
+        }
+
+        break;
+    }
+
+    // Off whenever the master enable says so, whatever the app asked for.
+    case GxRs_Lighting: {
+        uint32_t lighting = 0;
+
+        if (this->MasterEnable(GxMasterEnable_Lighting)) {
+            lighting = static_cast<uint32_t>(state->m_value) != 0 ? 1 : 0;
+        }
+
+        if (this->m_d3dLighting != lighting) {
+            this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, lighting);
+            this->m_d3dLighting = lighting;
+        }
+
+        break;
+    }
+
+    case GxRs_ColorOp0:
+    case GxRs_ColorOp1:
+    case GxRs_ColorOp2:
+    case GxRs_ColorOp3:
+    case GxRs_ColorOp4:
+    case GxRs_ColorOp5:
+    case GxRs_ColorOp6:
+    case GxRs_ColorOp7: {
+        this->ISetColorOp(which - GxRs_ColorOp0, static_cast<uint32_t>(state->m_value));
+        break;
+    }
+
+    case GxRs_AlphaOp0:
+    case GxRs_AlphaOp1:
+    case GxRs_AlphaOp2:
+    case GxRs_AlphaOp3:
+    case GxRs_AlphaOp4:
+    case GxRs_AlphaOp5:
+    case GxRs_AlphaOp6:
+    case GxRs_AlphaOp7: {
+        this->ISetAlphaOp(which - GxRs_AlphaOp0, static_cast<uint32_t>(state->m_value));
+        break;
+    }
+
+    case GxRs_TexGen0:
+    case GxRs_TexGen1:
+    case GxRs_TexGen2:
+    case GxRs_TexGen3:
+    case GxRs_TexGen4:
+    case GxRs_TexGen5:
+    case GxRs_TexGen6:
+    case GxRs_TexGen7: {
+        this->ISetTexGen(which - GxRs_TexGen0, static_cast<uint32_t>(state->m_value));
+        break;
+    }
+
+    case GxRs_TexCoord0:
+    case GxRs_TexCoord1:
+    case GxRs_TexCoord2:
+    case GxRs_TexCoord3:
+    case GxRs_TexCoord4:
+    case GxRs_TexCoord5:
+    case GxRs_TexCoord6:
+    case GxRs_TexCoord7: {
+        this->ISetTexCoord(which - GxRs_TexCoord0, static_cast<uint32_t>(state->m_value));
+        break;
+    }
+
+    // Point size, in pixels. With attenuation on (the coefficients differ from (1, 0, 0)) it is
+    // divided by the viewport's pixel height, which is what D3D's scaled size expects.
+    case GxRs_PointScale: {
+        float size = static_cast<float>(state->m_value);
+        auto& attenuation = this->m_appRenderStates[GxRs_PointScaleAttenuation].m_value;
+
+        if (attenuation.m_data.f[0] != 1.0f || attenuation.m_data.f[1] != 0.0f || attenuation.m_data.f[2] != 0.0f) {
+            float height = this->DeviceCurWindow().maxY;
+            size = size / ((1.0f - this->m_viewport.y.l) * height - (1.0f - this->m_viewport.y.h) * height);
+        }
+
+        this->m_d3dDevice->SetRenderState(D3DRS_POINTSIZE, *reinterpret_cast<DWORD*>(&size));
+
+        break;
+    }
+
+    case GxRs_PointScaleAttenuation: {
+        auto& v = state->m_value.m_data;
+        uint32_t enable = (v.f[0] != 1.0f || v.f[1] != 0.0f || v.f[2] != 0.0f) ? 1 : 0;
+
+        if (this->m_d3dPointScaleEnable != enable) {
+            this->m_d3dDevice->SetRenderState(D3DRS_POINTSCALEENABLE, enable);
+            this->m_d3dPointScaleEnable = enable;
+        }
+
+        if (enable) {
+            this->DsSet(Ds_PointScaleA, v.u[0]);
+            this->DsSet(Ds_PointScaleB, v.u[1]);
+            this->DsSet(Ds_PointScaleC, v.u[2]);
+        }
+
+        break;
+    }
+
+    case GxRs_PointScaleMin: {
+        float size = static_cast<float>(state->m_value);
+        this->m_d3dDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *reinterpret_cast<DWORD*>(&size));
+        break;
+    }
+
+    case GxRs_PointScaleMax: {
+        float size = static_cast<float>(state->m_value);
+        this->m_d3dDevice->SetRenderState(D3DRS_POINTSIZE_MAX, *reinterpret_cast<DWORD*>(&size));
+        break;
+    }
+
+    case GxRs_PointSprite: {
+        this->m_d3dDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, static_cast<float>(state->m_value) != 0.0f);
+        break;
+    }
+
+    // The constant blend colour, a grey: one byte, rounded from 0..1, in all four channels.
+    case GxRs_BlendFactor: {
+        uint32_t grey = static_cast<uint32_t>(static_cast<int32_t>(roundf(static_cast<float>(state->m_value) * 255.0f))) & 0xFF;
+        this->m_d3dDevice->SetRenderState(D3DRS_BLENDFACTOR, (((grey << 8) | grey) << 8 | grey) << 8 | grey);
         break;
     }
 
@@ -1724,6 +2009,7 @@ void CGxDeviceD3d::ISetPresentParms(D3DPRESENT_PARAMETERS& d3dpp, const CGxForma
     }
 }
 
+// ref: FUN_006a4900
 void CGxDeviceD3d::ISetTexture(uint32_t tmu, CGxTex* texId) {
     if (tmu > 15) {
         return;
@@ -1746,14 +2032,28 @@ void CGxDeviceD3d::ISetTexture(uint32_t tmu, CGxTex* texId) {
         // Max anisotropy
         this->DsSet(static_cast<EDeviceState>(Ds_TssMaxAnisotropy0 + tmu), texId->m_flags.m_maxAnisotropy);
 
+        // A stage that gains a texture with no pixel shader bound gets the app's combiners back.
         if (tmu < 8) {
-            // TODO FFP
+            if (!this->m_appRenderStates[GxRs_PixelShader].m_value.m_data.p && !this->m_stageTextured[tmu]) {
+                this->ISetColorOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_value));
+                this->ISetAlphaOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_value));
+                this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_dirty = 0;
+                this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_dirty = 0;
+            }
+
+            this->m_stageTextured[tmu] = 1;
         }
     } else {
         this->m_d3dDevice->SetTexture(tmu, nullptr);
 
+        // And one that loses it has them disabled.
         if (tmu < 8) {
-            // TODO FFP
+            if (!this->m_appRenderStates[GxRs_PixelShader].m_value.m_data.p && this->m_stageTextured[tmu]) {
+                this->DsSet(static_cast<EDeviceState>(Ds_TssColorOp0 + tmu), D3DTOP_DISABLE);
+                this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaOp0 + tmu), D3DTOP_DISABLE);
+            }
+
+            this->m_stageTextured[tmu] = 0;
         }
     }
 }
@@ -1772,11 +2072,25 @@ void CGxDeviceD3d::ISetVertexBuffer(uint32_t stream, LPDIRECT3DVERTEXBUFFER9 buf
     }
 }
 
+// ref: FUN_006a5c70
 void CGxDeviceD3d::IShaderBindPixel(CGxShader* shader) {
     if (!shader) {
         this->m_d3dDevice->SetPixelShader(nullptr);
 
-        // TODO FFP handling
+        // Back to fixed function: every stage without a texture has its combiners disabled, every
+        // stage with one gets the app's back, and the op states are marked clean.
+        for (uint32_t tmu = 0; tmu < 8; tmu++) {
+            if (!this->m_stageTextured[tmu]) {
+                this->DsSet(static_cast<EDeviceState>(Ds_TssColorOp0 + tmu), D3DTOP_DISABLE);
+                this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaOp0 + tmu), D3DTOP_DISABLE);
+            } else {
+                this->ISetColorOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_value));
+                this->ISetAlphaOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_value));
+            }
+
+            this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_dirty = 0;
+            this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_dirty = 0;
+        }
 
         return;
     }
@@ -1789,6 +2103,7 @@ void CGxDeviceD3d::IShaderBindPixel(CGxShader* shader) {
     this->m_d3dDevice->SetPixelShader(d3dShader);
 }
 
+// ref: FUN_006aa2f0
 void CGxDeviceD3d::IShaderBindVertex(CGxShader* shader) {
     if (!shader) {
         this->m_d3dDevice->SetVertexShader(nullptr);

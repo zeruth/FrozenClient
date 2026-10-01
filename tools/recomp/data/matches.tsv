@@ -2366,14 +2366,25 @@ addr	how	frozen	evidence
 006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
 006a39e0	override	CGxDeviceD3d::ISetVertexBuffer	
 006a3c40	annotated	CGxDeviceD3d::DsSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a4100	annotated	CGxDeviceD3d::ISetTexCoordIndex	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a4190	annotated	CGxDeviceD3d::ISetColorOp	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a41f0	annotated	CGxDeviceD3d::ISetAlphaOp	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a4250	annotated	CGxDeviceD3d::ISetMaterial	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a43d0	override	CGxDeviceD3d::IStateSyncLights	
 006a4700	override	CGxDeviceD3d::IStateSyncMaterial	
 006a4850	override	CGxDeviceD3d::IStateSyncXforms	
+006a4900	annotated	CGxDeviceD3d::ISetTexture	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a4ac0	annotated	CGxDeviceD3d::ISetTexCoord	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a4af0	annotated	CGxDeviceD3d::ISetTexGen	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a4c30	annotated	CGxDeviceD3d::IRsSendToHw	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
 006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
 006a5940	override	CGxDeviceD3d::IStateSync	
+006a5c70	annotated	CGxDeviceD3d::IShaderBindPixel	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a99e0	override	CGxDeviceD3d::IXformSetViewport	
 006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	
+006aa0d0	callgraph	CGxDeviceD3d::IShaderCreateVertex	only unmatched callee of 006aa2f0=CGxDeviceD3d::IShaderBindVertex
+006aa2f0	annotated	CGxDeviceD3d::IShaderBindVertex	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006aa350	annotated	TgaFile::ColorMapEntryBytes	tag in src/gx/texture/TgaFile.cpp
 006aa380	annotated	TgaFile::ColorMapBytes	tag in src/gx/texture/TgaFile.cpp
 006aa3b0	annotated	TgaFile::ValidateColorDepth	tag in src/gx/texture/TgaFile.cpp
