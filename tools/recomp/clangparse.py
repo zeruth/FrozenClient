@@ -33,7 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 OUT = os.path.join(DATA, 'frozen-clang.json')
 CACHE = os.path.join(DATA, 'clang-cache.json')
-CACHE_VERSION = 10  # bump when the walk changes so cached entries are re-parsed
+CACHE_VERSION = 11  # 11: function-template calls keyed by instantiation (2026-10-01).  # bump when the walk changes so cached entries are re-parsed
 # the `// ref: FUN_xxxxxxxx` tag above a definition (same rule as recomp.py's REF_TAG_RE)
 #
 # NOTE this matches anywhere in a comment, not just on a line of its own. Writing the tag verbatim
@@ -151,6 +151,28 @@ def instantiated_name(call, ref):
     TSBaseArray<unsigned int>::operator[] rather than the pattern TSBaseArray::operator[]. The
     arguments come from the object the call is made on (or the constructed type), so a call from
     inside template code, where they are still dependent, keeps the pattern name."""
+    # A FUNCTION template specialisation (M2AnimateTrack<C3Vector,C3Vector>) carries its own
+    # template arguments. Added 2026-10-01: without this every call to the M2AnimateTrack family
+    # was keyed by the bare pattern name, which matches none of the five instantiations the PDB
+    # holds and the reference links to, so AnimateMT -- thirteen of whose reference calls are
+    # those instantiations -- scored 16% while making every one of them.
+    try:
+        fn = ref.get_num_template_arguments()
+    except Exception:
+        fn = -1
+    if ref.kind in (K.FUNCTION_DECL, K.CXX_METHOD) and fn is not None and fn > 0:
+        args = []
+        for i in range(fn):
+            a = ref.get_template_argument_type(i)
+            if a is None or a.kind in (ci.TypeKind.INVALID, ci.TypeKind.UNEXPOSED):
+                args = None
+                break
+            args.append(msvc_type(a))
+        if args:
+            name = '%s<%s>' % (qualified(ref), ','.join(args))
+            while '>>' in name:
+                name = name.replace('>>', '> >')
+            return name
     # libclang resolves the call to the member of the implicit specialisation, whose parent is a
     # plain class cursor carrying the instantiated type (TSBaseArray<unsigned int>); from inside the
     # pattern the parent is the CLASS_TEMPLATE and the arguments are still dependent

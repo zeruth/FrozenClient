@@ -358,15 +358,21 @@ addr	how	frozen	evidence
 004980d0	override	CSimpleScaleAnim::GetScale	
 004980f0	annotated	CSimpleScaleAnim::OnApply	tag in src/ui/simple/CSimpleAnimTypes.cpp
 00498150	annotated	CSimpleScaleAnim::OnUnapply	tag in src/ui/simple/CSimpleAnimTypes.cpp
+00498260	sticky	CSimplePathAnim::GetMaxOrder	held from the previous run, where it was sticky
 004982e0	annotated	CSimpleAlphaAnim::SetChange	tag in src/ui/simple/CSimpleAnimTypes.cpp
 00498330	annotated	CSimpleAlphaAnim::OnApply	tag in src/ui/simple/CSimpleAnimTypes.cpp
+00498580	sticky	CSimpleAnimGroup::Finish	held from the previous run, where it was sticky
+004985a0	sticky	GroupThis	held from the previous run, where it was sticky
 004985f0	annotated	CSimpleAnim::Advance	tag in src/ui/simple/CSimpleAnim.cpp
 004987e0	annotated	CSimpleControlPoint::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
+00498a40	sticky	CSimpleAnimGroup::GetMaxOrder	held from the previous run, where it was sticky
 00498d50	annotated	CSimpleAnim::OnUpdate	tag in src/ui/simple/CSimpleAnim.cpp
 0049a060	annotated	CSimpleAnimGroup::LoadXML	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049a8f0	annotated	CSimpleAnimGroup::Play	tag in src/ui/simple/CSimpleAnimGroup.cpp
+0049aab0	sticky	CSimpleAnimGroup::Pause	held from the previous run, where it was sticky
 0049ab60	annotated	CSimpleAnimGroup::OnAnimationFinished	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049ad80	annotated	CSimpleAnim::Play	tag in src/ui/simple/CSimpleAnim.cpp
+0049b0f0	sticky	CSimpleAnimGroup::Stop	held from the previous run, where it was sticky
 0049b470	annotated	CSimpleAnimGroup::AdvanceOrder	tag in src/ui/simple/CSimpleAnimGroup.cpp
 0049b810	annotated	CSimpleAnim::LoadXML	tag in src/ui/simple/CSimpleAnim.cpp
 0049bb00	annotated	CSimpleTranslationAnim::LoadXML	tag in src/ui/simple/CSimpleAnimTypes.cpp
@@ -536,6 +542,7 @@ addr	how	frozen	evidence
 004a4ab0	annotated	CSimpleFont_SetJustifyH	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4b00	annotated	CSimpleFont_SetJustifyV	tag in src/ui/simple/CSimpleFontScript.cpp
 004a4b50	annotated	CSimpleFont_SetIndentedWordWrap	tag in src/ui/simple/CSimpleFontScript.cpp
+004a4ba0	sticky	AnimName	held from the previous run, where it was sticky
 004a4f40	annotated	CSimpleAnim_Play	tag in src/ui/simple/CSimpleAnimScript.cpp
 004a4f80	table	CSimpleAnim_Pause	binding "Pause" in SimpleAnimMethods ~ table 00ac18e0
 004a4fc0	table	CSimpleAnim_Stop	binding "Stop" in SimpleAnimMethods ~ table 00ac18e0
@@ -681,6 +688,8 @@ addr	how	frozen	evidence
 004bec40	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004bec70	annotated	GxXformProjection	tag in src/gx/Transform.cpp
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004bf770	callgraph	CCamera::CCamera	only unmatched callee of 004bfca0=CameraCreate
+004bfca0	annotated	CameraCreate	tag in src/gx/Camera.cpp
 004c1220	callgraph	DataMgrGetCoord	only unmatched callee of 004c12b0=DataMgrSetCoord
 004c12b0	annotated	DataMgrSetCoord	tag in lib/common/common/DataMgr.cpp
 004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
@@ -3463,6 +3472,7 @@ addr	how	frozen	evidence
 00814e40	override	StringToFrameStrata	
 00814e90	callgraph	FrameStrataToString	only unmatched callee of 0049e830=CSimpleFrame_GetFrameStrata
 00814ed0	override	StringToFramePoint	
+00814f20	sticky	FramePointToString	held from the previous run, where it was sticky
 00814f60	callgraph	StringToDrawLayer	only unmatched callee of 0048bf30=CSimpleTexture_SetDrawLayer
 00814fb0	annotated	DrawLayerToString	tag in src/ui/Util.cpp
 00814ff0	callgraph	StringToBlendMode	only unmatched callee of 0048c040=CSimpleTexture_SetBlendMode
@@ -3473,6 +3483,11 @@ addr	how	frozen	evidence
 00815160	annotated	OrientationToString	tag in src/ui/Util.cpp
 008151a0	annotated	StringToFontFlags	tag in src/ui/Util.cpp
 008151e0	annotated	FontFlagsToString	tag in src/ui/Util.cpp
+008152a0	sticky	AnimLoopTypeFromName	held from the previous run, where it was sticky
+008152f0	sticky	AnimLoopTypeName	held from the previous run, where it was sticky
+00815330	sticky	AnimLoopStateName	held from the previous run, where it was sticky
+00815370	sticky	AnimCurveFromName	held from the previous run, where it was sticky
+008153c0	sticky	AnimCurveName	held from the previous run, where it was sticky
 008154e0	override	StringToBOOL	
 00815500	override	StringToBOOL	
 00815600	string	LoadXML_Value	unique "AbsValue"
@@ -3617,6 +3632,7 @@ addr	how	frozen	evidence
 008251b0	annotated	CM2Model::SetLoadedCallback	tag in src/model/CM2Model.cpp
 008251d0	callgraph	TSBaseArray<CharacterSelectionDisplay>::operator[]	only unmatched callee of 004e2e70=CCharacterSelection::SetFacing
 00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
+00825410	annotated	CM2Model::SetParticleColors	tag in src/model/CM2Model.cpp
 00825750	override	CM2Model::GetWorldBounds	
 00825d70	annotated	CM2Model::UnoptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
@@ -4610,6 +4626,8 @@ addr	how	frozen	evidence
 0097a2e0	annotated	CM2ParticleEmitter::SetupVertexCursor	tag in src/model/CM2ParticleEmitter.cpp
 0097a390	annotated	CM2ParticleEmitter::SetupDrawBasis	tag in src/model/CM2ParticleEmitter.cpp
 0097a580	annotated	CM2ParticleEmitter::SubmitDraw	tag in src/model/CM2ParticleEmitter.cpp
+0097a990	annotated	CM2ParticleEmitter::SetColors	tag in src/model/CM2ParticleEmitter.cpp
+0097ab10	annotated	CM2ParticleEmitter::GetColors	tag in src/model/CM2ParticleEmitter.cpp
 0097ac00	annotated	CM2ParticleEmitter::SetTwinkleScale	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
 0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp

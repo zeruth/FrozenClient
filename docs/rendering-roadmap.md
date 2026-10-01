@@ -27,10 +27,10 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-01 17:25) | at completion |
+| | 2026-10-01 start | now (2026-10-01 17:45) | at completion |
 |---|---|---|---|
 | render surface linked | 1,267 / 4,838 (26%) | 1,439 / 5,390 (27%) | 5,390 |
-| render surface faithful | not measured | 907 (17%) | 5,390 |
+| render surface faithful | not measured | 909 (17%) | 5,390 |
 | render surface stubs | 20 | 32 | 0 |
 | empty functions with live render call sites | 37 | 37 | 0 |
 | render surface attributed by anchor guess | 63% | 49% | low |
@@ -85,8 +85,12 @@ The loop in CLAUDE.md, minus the run: `recomp.py`, `--next`, port, build, `clang
   and stay under their neighbour.
 - ~~Make the report print render-surface faithful and stub counts as a line of their own.~~
   **Done 2026-10-01:** the totals table has the line and `history.jsonl` carries both columns.
-- Strike the inventory rows that cite `Terrain.cpp` (deleted 2026-09-26) and retire
-  `parity-depth.md`, which points entirely into deleted code, so no cycle is planned from them.
+- ~~Strike the inventory rows that cite `Terrain.cpp` (deleted 2026-09-26) and retire
+  `parity-depth.md`, which points entirely into deleted code, so no cycle is planned from them.~~
+  **Done 2026-10-01:** both carry a banner under the title saying what is stale and pointing
+  here. The inventory's reference addresses are still right, so it was marked rather than cut.
+
+**Phase 0 is closed.**
 
 ## Phase 1: models (157 unlinked, the unfaithful roots)
 
@@ -237,3 +241,4 @@ stubs, then live empty functions.
 | 2026-10-01 17:05 | 1,398 / 5,327 | 869 | 32 | 37 | phase 0: `anchors.py` recovered 239 dropped anchors, 19 modules joined the set, the report prints faithful/stub for the surface; linked and faithful totals unchanged (4,748 / 2,502), so the jump is denominator, not ports |
 | 2026-10-01 17:14 | 1,398 / 5,327 | 870 | 32 | 37 | phase 1: `CM2Model::SetWorldTransform` 17% -> 92%, faithful. The missing half was not billboarding as its comment said: it is the tilt onto a surface normal (header flags bits 0 and 1) and the per-sequence blend into that tilt (sequence flags 2 / 4 / 8), which is how a creature settles onto the slope it dies on. Callers pass no axis yet, so straight-up is the default and nothing on screen changes until phase 4 threads the ground normal through. Client faithful 2,502 -> 2,503 |
 | 2026-10-01 17:25 | 1,439 / 5,390 | 907 | 32 | 37 | phase 1: the ParticleColor.dbc override end to end -- `CM2ParticleEmitter::SetColors` / `GetColors` (`FUN_0097a990` / `FUN_0097ab10`), `CM2Model::SetParticleColors` (`FUN_00825410`) with model call 11, and the model30 inheritance in `InitializeLoaded` (58% -> 64%); `CameraCreate` tagged (`FUN_004bfca0`); the `M2ModelParticle` constructor's +0x81 and +0x85 corrected to start at 1, its address excluded as compiler-emitted. Then a ruler fix: `MODULE_RANGES` now gives `[0x978ad0, 0x97d370)` to `ParticleSystem2.cpp`, where 42 linked particle functions had been counted as a UI frame. Client linked 4,748 -> 4,753, faithful 2,503 -> 2,506; surface faithful +37, almost all from the range |
+| 2026-10-01 17:45 | 1,439 / 5,390 | 909 | 32 | 37 | ruler, no ports: `clangparse.py` keyed every call to a FUNCTION template by its bare name, so calls to the five `M2AnimateTrack` instantiations the PDB carries never matched the reference's links to them. It now spells the instantiation the way the PDB does, and `recomp.py` folds an instantiation back to its bare name where the reference links the bare one (the `M2Init` family) so nothing that matched stops matching. `AnimateMT` 16% -> 48%, `AnimateMTSimple` 75% -> 100% (held off faithful by its branch check), `AnimateTextureTransformsMT` and `AnimateAttachmentsMT` now faithful. Client linked 4,753 -> 4,766, faithful 2,506 -> 2,526; no function lost faithful. Phase 0's last item closed: stale banners on the render inventory and `parity-depth.md` |

@@ -5733,6 +5733,22 @@
   "refSize": 152,
   "status": "ported"
  },
+ "00498260": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "CSimplePathAnim::GetMaxOrder",
+  "frozenSize": 119,
+  "how": "sticky",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 29,
+  "status": "ported"
+ },
  "004982e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -5763,6 +5779,38 @@
   "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 63,
+  "status": "ported"
+ },
+ "00498580": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::Finish",
+  "frozenSize": 11,
+  "how": "sticky",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 26,
+  "status": "ported"
+ },
+ "004985a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp"
+  ],
+  "frozen": "GroupThis",
+  "frozenSize": 0,
+  "how": "sticky",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 71,
   "status": "ported"
  },
  "004985f0": {
@@ -5797,6 +5845,22 @@
   "refSize": 451,
   "status": "ported"
  },
+ "00498a40": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::GetMaxOrder",
+  "frozenSize": 94,
+  "how": "sticky",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 42,
+  "status": "ported"
+ },
  "00498d50": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
@@ -5817,7 +5881,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.037,
   "faithful": false,
-  "fidelity": 0.474,
+  "fidelity": 0.491,
   "files": [
    "src/ui/simple/CSimpleAnimGroup.cpp",
    "src/ui/simple/csimpleanimgroup.cpp"
@@ -5843,6 +5907,22 @@
   "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 443,
+  "status": "ported"
+ },
+ "0049aab0": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::Pause",
+  "frozenSize": 83,
+  "how": "sticky",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 167,
   "status": "ported"
  },
  "0049ab60": {
@@ -5875,6 +5955,22 @@
   "how": "annotated",
   "module": "CSimpleAnim.cpp",
   "refSize": 62,
+  "status": "ported"
+ },
+ "0049b0f0": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "CSimpleAnimGroup::Stop",
+  "frozenSize": 119,
+  "how": "sticky",
+  "module": "CSimpleAnim.cpp",
+  "refSize": 207,
   "status": "ported"
  },
  "0049b470": {
@@ -5960,8 +6056,8 @@
  "0049bf00": {
   "branchRatio": 0.889,
   "constOverlap": 0.143,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleAnimTypes.cpp",
    "src/ui/simple/csimpleanimtypes.cpp"
@@ -6329,7 +6425,7 @@
   "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.583,
   "files": [
    "src/ui/CScriptRegionScript.cpp",
    "src/ui/cscriptregionscript.cpp"
@@ -8581,6 +8677,24 @@
   "refSize": 79,
   "status": "ported"
  },
+ "004a4ba0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimScript.cpp",
+   "src/ui/simple/CSimpleAnimTypesScript.cpp",
+   "src/ui/simple/csimpleanimscript.cpp",
+   "src/ui/simple/csimpleanimtypesscript.cpp"
+  ],
+  "frozen": "AnimName",
+  "frozenSize": 0,
+  "how": "sticky",
+  "module": "CSimpleFrameScript.cpp",
+  "refSize": 132,
+  "status": "ported"
+ },
  "004a4f40": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -9113,7 +9227,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9128,8 +9242,8 @@
  "004a62c0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9209,7 +9323,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9224,8 +9338,8 @@
  "004a65d0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9353,7 +9467,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.833,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9369,7 +9483,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9385,7 +9499,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/ui/simple/CSimpleAnimTypesScript.cpp",
    "src/ui/simple/csimpleanimtypesscript.cpp"
@@ -9448,8 +9562,8 @@
  "004a6ee0": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9464,8 +9578,8 @@
  "004a6f20": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9480,8 +9594,8 @@
  "004a6f60": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9577,7 +9691,7 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.833,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9592,8 +9706,8 @@
  "004a71f0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9608,8 +9722,8 @@
  "004a7240": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9624,8 +9738,8 @@
  "004a7290": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -9641,7 +9755,7 @@
   "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.364,
   "files": [
    "src/ui/simple/CSimpleAnimScript.cpp",
    "src/ui/simple/csimpleanimscript.cpp"
@@ -55384,6 +55498,22 @@
   "refSize": 74,
   "status": "ported"
  },
+ "00814f20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/Util.cpp",
+   "src/ui/util.cpp"
+  ],
+  "frozen": "FramePointToString",
+  "frozenSize": 23,
+  "how": "sticky",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
  "00814f60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -55542,6 +55672,86 @@
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 87,
+  "status": "ported"
+ },
+ "008152a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "AnimLoopTypeFromName",
+  "frozenSize": 87,
+  "how": "sticky",
+  "module": "XMLTree.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "008152f0": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "AnimLoopTypeName",
+  "frozenSize": 28,
+  "how": "sticky",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "00815330": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimGroup.cpp",
+   "src/ui/simple/csimpleanimgroup.cpp"
+  ],
+  "frozen": "AnimLoopStateName",
+  "frozenSize": 28,
+  "how": "sticky",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "00815370": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "AnimCurveFromName",
+  "frozenSize": 87,
+  "how": "sticky",
+  "module": "XMLTree.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "008153c0": {
+  "branchRatio": 0.5,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleAnimTypes.cpp",
+   "src/ui/simple/csimpleanimtypes.cpp"
+  ],
+  "frozen": "AnimCurveName",
+  "frozenSize": 28,
+  "how": "sticky",
+  "module": "XMLTree.cpp",
+  "refSize": 43,
   "status": "ported"
  },
  "008154e0": {
@@ -58766,8 +58976,8 @@
  "0082d6f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.7,
+  "faithful": true,
+  "fidelity": 0.9,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -58799,7 +59009,7 @@
   "branchRatio": 0.424,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -58814,8 +59024,8 @@
  "0082e550": {
   "branchRatio": 0.583,
   "constOverlap": 0.038,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -58831,7 +59041,7 @@
   "branchRatio": 0.382,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.159,
+  "fidelity": 0.477,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -58975,7 +59185,7 @@
   "branchRatio": 0.462,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"

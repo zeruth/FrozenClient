@@ -1,5 +1,12 @@
 # World render completeness inventory (3.3.5a 12340 vs frozen)
 
+> **Stale in part, 2026-10-01.** `src/world/Terrain.cpp` was deleted on 2026-09-26 (commit
+> 89225cb1) after the map was replaced by ports of the reference's own chunk, streaming, liquid
+> and doodad code. The 24 references to it below describe the stand-in renderer that no longer
+> exists: read those rows as history, not as the current frozen location. The reference
+> addresses in every row are still right. Plan from `docs/rendering-roadmap.md` and the recomp
+> report rather than from the status column here.
+
 ## Verification (2026-09-14, second pass)
 
 Every row below that claims **ported** or **stand-in** was re-checked by reading the frozen source as

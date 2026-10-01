@@ -1,5 +1,11 @@
 # Depth-buffer / z-fighting parity: 3.3.5a reference vs frozen
 
+> **Retired 2026-10-01.** Every frozen file:line reference in this document points into
+> `src/world/Terrain.cpp`, deleted on 2026-09-26 (commit 89225cb1). The reference findings
+> (depth format, near/far, the polygon-offset decal rule) stand and are summarised under
+> "Settled" in CLAUDE.md; the per-item task list does not. Do not plan from it: the open depth
+> work is tracked in `docs/rendering-roadmap.md` (phase 2, the terrain and liquid passes).
+
 Program: **RunicWorldGame.exe** (Win 3.3.5a build 12340, stripped, image base 0x400000) in the
 Ghidra project `C:\Users\tyler\tools\ghidra-projects\RunicWorld`. Raw dumps captured for this doc:
 `win-strrefs-depth.txt`, `win-decomp-depth1.txt`, `win-decomp-depth2.txt`, `win-decomp-depth3.txt`,

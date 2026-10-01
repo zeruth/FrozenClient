@@ -703,6 +703,7 @@ def overlay_clang(src):
 
 
 TEMPLATE_ARGS_RE = re.compile(r'^([\w:]+)(<.+>)::([^:]+)$')
+FUNC_TEMPLATE_RE = re.compile(r'^([\w:]+)<.+>$')
 
 
 def expand_inlined(callseq, frozen, inlined, depth=0):
@@ -712,6 +713,20 @@ def expand_inlined(callseq, frozen, inlined, depth=0):
         if c in frozen:
             out.append(c)
             continue
+        # A FUNCTION template instantiation (M2Init<M2Sequence>) that has no PDB symbol of its own
+        # was inlined or folded into the pattern's key. clangparse spells these with their
+        # arguments since 2026-10-01 so the instantiations the PDB DOES carry -- the
+        # M2AnimateTrack family -- resolve; the rest fall back to the bare name, which is exactly
+        # what the parser produced before, so no call that matched before can stop matching.
+        fm = FUNC_TEMPLATE_RE.match(c)
+        if fm and c not in inlined:
+            base = fm.group(1)
+            if base in frozen:
+                out.append(base)
+                continue
+            if base in inlined and depth < 3:
+                out.extend(expand_inlined(inlined[base], frozen, inlined, depth + 1))
+                continue
         pattern, args = c, ''
         m = TEMPLATE_ARGS_RE.match(c)
         if m and c not in inlined:
@@ -886,6 +901,23 @@ def expand_inlined_calls(wseq, rset, frozen, _memo=None):
     return [t for c in wseq for t in one(c, 0)]
 
 
+def fold_instantiations(wseq, rset):
+    """A call to a FUNCTION template instantiation (M2Init<C3Vector>) stands for its bare name
+    (M2Init) when the reference side calls the bare name and never the instantiation. The map
+    links the reference's own instantiations either way -- the M2AnimateTrack family by full
+    name, the M2Init family to the bare `M2Init` -- and clangparse spells the call with its
+    arguments since 2026-10-01; this keeps the two spellings from disagreeing about the same
+    call. Evidence-gated like expand_inlined_calls, so it cannot manufacture a match."""
+    out = []
+    for c in wseq:
+        if c not in rset:
+            fm = FUNC_TEMPLATE_RE.match(c)
+            if fm and fm.group(1) in rset:
+                c = fm.group(1)
+        out.append(c)
+    return out
+
+
 def fidelity(refs, frozen, m, addr):
     """How much of the reference's call sequence the port reproduces, in order: LCS of the two call
     sequences over the longer one, with reference callees translated through the map. 1.0 means every
@@ -897,6 +929,7 @@ def fidelity(refs, frozen, m, addr):
     if not rseq:
         return 1.0 if not frozen[name]['stub'] else 0.0
     wseq = expand_inlined_calls(wseq, set(rseq), frozen)
+    wseq = fold_instantiations(wseq, set(rseq))
     # Recall of the reference's sequence: extra calls on the frozen side (helpers the reference
     # compiler inlined, constructors) do not count against it; missing or reordered ones do.
     return lcs_len(rseq, wseq) / float(len(rseq))
@@ -910,6 +943,7 @@ def precision(refs, frozen, m, addr):
     wseq = frozen_seq(frozen, name)
     if not wseq:
         return 1.0
+    wseq = fold_instantiations(wseq, set(rseq))
     return lcs_len(rseq, wseq) / float(len(wseq))
 
 
@@ -1985,7 +2019,7 @@ def diff_seq(target, refs, frozen, m):
         return
     name = m[a][0]
     rseq = ref_seq(refs, m, a)
-    wseq = expand_inlined_calls(frozen_seq(frozen, name), set(rseq), frozen)
+    wseq = fold_instantiations(expand_inlined_calls(frozen_seq(frozen, name), set(rseq), frozen), set(rseq))
     n, k = len(rseq), len(wseq)
     L = [[0] * (k + 1) for _ in range(n + 1)]
     for i in range(n - 1, -1, -1):
