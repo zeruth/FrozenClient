@@ -781,7 +781,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator+",
-  "frozenSize": 36,
+  "frozenSize": 101,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 38,
@@ -10866,7 +10866,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "Profile.cpp",
   "refSize": 36,
@@ -11124,7 +11124,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator+",
-  "frozenSize": 36,
+  "frozenSize": 101,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 155,
@@ -11146,7 +11146,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 533,
@@ -11168,7 +11168,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 140,
@@ -11190,7 +11190,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 93,
@@ -11676,7 +11676,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 232,
@@ -14050,7 +14050,7 @@
    "src/glue/ccharactercreation.cpp"
   ],
   "frozen": "CCharacterCreation::SetFacing",
-  "frozenSize": 71,
+  "frozenSize": 88,
   "how": "callgraph",
   "module": "RealmList.cpp",
   "refSize": 71,
@@ -14562,7 +14562,7 @@
    "src/glue/ccharacterselection.cpp"
   ],
   "frozen": "CCharacterSelection::SetFacing",
-  "frozenSize": 120,
+  "frozenSize": 137,
   "how": "callgraph",
   "module": "CharacterCreation.cpp",
   "refSize": 115,
@@ -14738,7 +14738,7 @@
    "src/glue/ccharacterselection.cpp"
   ],
   "frozen": "CCharacterSelection::ShowCharacter",
-  "frozenSize": 338,
+  "frozenSize": 355,
   "how": "callgraph",
   "module": "CharacterCreation.cpp",
   "refSize": 2058,
@@ -15464,7 +15464,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "ComponentUtils.cpp",
   "refSize": 137,
@@ -15752,7 +15752,7 @@
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldUpdate",
-  "frozenSize": 696,
+  "frozenSize": 732,
   "how": "override",
   "module": "WorldFrame.cpp",
   "refSize": 1493,
@@ -32056,7 +32056,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "operator*",
-  "frozenSize": 1610,
+  "frozenSize": 1660,
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 84,
@@ -54390,7 +54390,7 @@
    "src/world/daynight.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3678,
+  "frozenSize": 3704,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 823,
@@ -54406,7 +54406,7 @@
    "src/world/daynight.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3678,
+  "frozenSize": 3704,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
@@ -57647,7 +57647,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "M2BuildBasisFromAxis",
-  "frozenSize": 0,
+  "frozenSize": 350,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 228,
@@ -58733,16 +58733,16 @@
   "status": "ported"
  },
  "0082dd80": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.167,
+  "branchRatio": 0.938,
+  "constOverlap": 0.021,
+  "faithful": true,
+  "fidelity": 0.917,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetWorldTransform",
-  "frozenSize": 138,
+  "frozenSize": 1107,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 819,

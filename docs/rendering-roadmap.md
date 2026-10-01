@@ -233,3 +233,4 @@ stubs, then live empty functions.
 |---|---|---|---|---|---|
 | 2026-10-01 start | 1,267 / 4,838 | n/a | 20 | 37 | baseline from the 16:29 report |
 | 2026-10-01 17:05 | 1,398 / 5,327 | 869 | 32 | 37 | phase 0: `anchors.py` recovered 239 dropped anchors, 19 modules joined the set, the report prints faithful/stub for the surface; linked and faithful totals unchanged (4,748 / 2,502), so the jump is denominator, not ports |
+| 2026-10-01 17:14 | 1,398 / 5,327 | 870 | 32 | 37 | phase 1: `CM2Model::SetWorldTransform` 17% -> 92%, faithful. The missing half was not billboarding as its comment said: it is the tilt onto a surface normal (header flags bits 0 and 1) and the per-sequence blend into that tilt (sequence flags 2 / 4 / 8), which is how a creature settles onto the slope it dies on. Callers pass no axis yet, so straight-up is the default and nothing on screen changes until phase 4 threads the ground normal through. Client faithful 2,502 -> 2,503 |

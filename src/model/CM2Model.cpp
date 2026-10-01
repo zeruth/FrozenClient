@@ -5129,28 +5129,132 @@ void CM2Model::SetVisible(int32_t visible) {
 }
 
 // ref: FUN_0082dd80
-// The model's world placement: identity, spin about Z, scale, then drop the position into the
-// translation row. m_flag8000 marks the matrix dirty for whatever consumes it next.
+// The model's world placement: identity, spin about Z, drop the position into the translation
+// row, TILT the frame onto `axis` when the model asks for it, blend that tilt in over the
+// current sequence when the sequence asks for it, then scale. m_flag8000 marks the matrix dirty
+// for whatever consumes it next.
 //
-// PARTIAL, and the missing half is BILLBOARDING. The reference takes two more arguments than
-// this: a direction vector and a billboard type, the type defaulting to the model's own
-// m_shared->m_data flags word (+0x10) when the caller passes -1. With (type & 3) == 1 it goes on
-// to build an orthonormal basis into the same matrix -- cross product, C3Vector::Normalize,
-// cross again, normalize again, the standard right/up/forward construction -- so the model faces
-// the direction it was handed instead of keeping its authored orientation. The other values of
-// the low two bits take their own branches, and M2BuildBasisFromAxis (which frozen already has,
-// unused) is what one of them calls.
+// `axis` is the surface normal the model stands on and `tilt` the M2 header's flags word, which
+// the reference takes as -1 to mean "the model's own" (m_shared->m_data->flags, +0x10 of the
+// data). Bits 0 and 1 are the header's tilt-X / tilt-Y flags:
+//   (tilt & 3) == 1  rebuild the basis by hand: the second row is the spun X axis turned a
+//                    quarter turn in the plane, the first is that crossed with the axis, the
+//                    third is the two crossed again, each normalised as it is made;
+//   (tilt & 3) == 3  M2BuildBasisFromAxis, the same construction with the axis as the third row.
 //
-// Adding it means threading two arguments through seven call sites, so it is left whole rather
-// than half-done here. What stands is correct for a model that does not billboard, which is
-// every model whose data flags leave those bits clear.
-void CM2Model::SetWorldTransform(const C3Vector& position, float orientation, float scale) {
+// The blend is the part that was missing and is not billboarding at all. Once the model is
+// loaded, the primary bone's sequence is read and, by the sequence's own flags (bits 1..3):
+//   2 or 4   t is the fraction of the sequence played, clamped to [0, 1]; 4 runs it backwards;
+//   8        t is 1;
+//   other    no blend.
+// With t > 0 the matrix becomes (1 - t) * the matrix as built above plus t * a copy of the
+// UN-tilted matrix with M2BuildBasisFromAxis applied, which is how a creature settles onto the
+// slope it dies on over the length of its death sequence rather than snapping to it.
+//
+// The fraction is fint(currentTime / speed) over half the sequence's length in time, with a
+// negative currentTime read as unsigned (the 2^32 at 0x009e23ac); speed 0 counts as the end.
+//
+// Frozen's callers do not pass an axis yet (the reference hands in the ground normal from the
+// placement chain, which is phase 4 work), so a null axis stands for straight up. With (0, 0, 1)
+// both tilt constructions reproduce the spin exactly and the blend is between two equal
+// matrices, so what stood before is what every caller still gets. Scale is applied last, where
+// the reference applies it; it only touches the 3x3, so the order never mattered to the result.
+void CM2Model::SetWorldTransform(const C3Vector& position, float orientation, float scale, const C3Vector* axis, uint32_t tilt) {
+    static const C3Vector up = { 0.0f, 0.0f, 1.0f };
+
+    if (!axis) {
+        axis = &up;
+    }
+
     this->matrixB4.Identity();
     this->matrixB4.RotateAroundZ(orientation);
-    this->matrixB4.Scale(scale);
     this->matrixB4.d0 = position.x;
     this->matrixB4.d1 = position.y;
     this->matrixB4.d2 = position.z;
+
+    // Taken before the tilt: the blend below lerps towards THIS, with its own basis built on it.
+    C44Matrix untilted = this->matrixB4;
+
+    if (tilt == 0xFFFFFFFF) {
+        tilt = this->m_shared->m_data->flags;
+    }
+
+    if ((tilt & 3) == 1) {
+        C3Vector b = { -this->matrixB4.a1, this->matrixB4.a0, 0.0f };
+        b.Normalize();
+
+        C3Vector a = {
+            b.y * axis->z - axis->y * b.z,
+            axis->x * b.z - b.x * axis->z,
+            axis->y * b.x - axis->x * b.y
+        };
+        a.Normalize();
+
+        C3Vector c = {
+            a.y * b.z - b.y * a.z,
+            b.x * a.z - b.z * a.x,
+            b.y * a.x - a.y * b.x
+        };
+
+        this->matrixB4.a0 = a.x;
+        this->matrixB4.a1 = a.y;
+        this->matrixB4.a2 = a.z;
+        this->matrixB4.b0 = b.x;
+        this->matrixB4.b1 = b.y;
+        this->matrixB4.b2 = b.z;
+        this->matrixB4.c0 = c.x;
+        this->matrixB4.c1 = c.y;
+        this->matrixB4.c2 = c.z;
+    } else if ((tilt & 3) == 3) {
+        M2BuildBasisFromAxis(reinterpret_cast<float*>(&this->matrixB4), reinterpret_cast<const float*>(axis));
+    }
+
+    if (this->m_loaded) {
+        M2BoneSequenceState state;
+
+        if (this->GetBoneSequenceState(0xFFFFFFFF, &state) && state.uint90 != 0xFFFFFFFF) {
+            M2SequenceInfo info;
+            memset(&info, 0, sizeof(info));
+            this->GetSequenceInfo(state.uint90, static_cast<int32_t>(state.uint94), info);
+
+            uint32_t mode = info.flags & 0xE;
+            float t = 0.0f;
+            bool blend = false;
+
+            if (mode == 2 || mode == 4) {
+                if (state.speed == 0.0f) {
+                    t = 1.0f;
+                } else if (state.speed > 0.0f) {
+                    float time = static_cast<float>(state.currentTime);
+
+                    if (state.currentTime < 0) {
+                        time += 4294967296.0f;
+                    }
+
+                    int32_t played = CMath::fint(time / state.speed);
+                    float fraction = static_cast<float>(played) / static_cast<float>((state.endTime - state.startTime) >> 1);
+
+                    t = fraction < 0.0f ? 0.0f : (fraction < 1.0f ? fraction : 1.0f);
+                }
+
+                if (info.flags & 4) {
+                    t = 1.0f - t;
+                }
+
+                blend = t > 0.0f;
+            } else if (mode == 8) {
+                t = 1.0f;
+                blend = true;
+            }
+
+            if (blend) {
+                M2BuildBasisFromAxis(reinterpret_cast<float*>(&untilted), reinterpret_cast<const float*>(axis));
+                this->matrixB4 = (this->matrixB4 * (1.0f - t)) + (untilted * t);
+            }
+        }
+    }
+
+    this->matrixB4.Scale(scale);
 
     this->m_flag8000 = 1;
 }

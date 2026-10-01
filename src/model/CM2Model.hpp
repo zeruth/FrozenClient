@@ -439,7 +439,7 @@ class CM2Model {
         void SetupBoneSequence(uint16_t sequenceIndex, M2SequenceFallback fallback, uint32_t a4, float a5, M2ModelBoneSeq* boneSequence);
         void SetupLighting();
         void SetVisible(int32_t visible);
-        void SetWorldTransform(const C3Vector& position, float orientation, float scale);
+        void SetWorldTransform(const C3Vector& position, float orientation, float scale, const C3Vector* axis = nullptr, uint32_t tilt = 0xFFFFFFFF);
 
         // The model's bounding box in world space, written into `out` and returned. An
         // INVERTED box when the model is not loaded or has no placement yet.
