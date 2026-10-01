@@ -497,6 +497,11 @@
     "status": "excluded",
     "note": "3-byte 'return ecx' identity"
   },
+  "00824a00": {
+    "frozen": "",
+    "status": "excluded",
+    "note": "The M2ModelParticle constructor: zero the ten tracks (32 dwords), then +0x80 = 0, +0x81 = 1, +0x85 = 1, +0x86 = 0. frozen expresses it as the struct's default member initialisers and lets the compiler emit the constructor inline at its one site (InitializeLoaded's placement new), so there is no function in frozen's binary for a tag to bind to -- excluded on the same grounds as C44Matrix::operator= (00407f80). The behaviour is ported: the initialisers were corrected 2026-10-01 to start +0x81 and +0x85 at 1 as the reference does, where frozen had both at 0."
+  },
   "00407f80": {
     "frozen": "",
     "status": "excluded",

@@ -5,6 +5,7 @@
 #include <common/Handle.hpp>
 #include <storm/Error.hpp>
 
+// ref: FUN_004bfca0
 HCAMERA CameraCreate() {
     auto m = SMemAlloc(sizeof(CCamera), __FILE__, __LINE__, 0x0);
     auto camera = new (m) CCamera();

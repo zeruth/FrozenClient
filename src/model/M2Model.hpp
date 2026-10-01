@@ -161,11 +161,15 @@ struct M2ModelParticle {
     // +0x80: the emitter ran this frame. The driver only refreshes the tracks above when this is
     // set or the model has never animated, so a culled emitter keeps its last values.
     uint8_t enabled = 0;
+    // +0x81: written to 1 by the constructor (FUN_00824a00, which zeroes the ten tracks and
+    // then sets exactly +0x80 = 0, +0x81 = 1, +0x85 = 1, +0x86 = 0). No reader identified yet;
+    // carried so the record starts the way the reference starts it.
+    uint8_t uint81 = 1;
     // +0x84: the emission rate is live. Clear means the driver hands the emitter a rate of zero
-    // rather than the animated one.
+    // rather than the animated one. The constructor leaves it alone.
     uint8_t rateActive = 0;
-    // +0x85: the emitter is placed and stepped this frame.
-    uint8_t active = 0;
+    // +0x85: the emitter is placed and stepped this frame. Born SET, per the constructor.
+    uint8_t active = 1;
     // +0x86: burst latch, for emitters with M2Particle flag 0x8000. The driver raises the
     // emitter's own 0x40 bit on the frame this goes from clear to set, so a burst fires once
     // rather than every frame it stays enabled.

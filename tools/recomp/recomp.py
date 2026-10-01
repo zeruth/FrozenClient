@@ -170,6 +170,16 @@ MODULE_RANGES = [
     #
     # Both were invisible to the render surface before this, which is why the map shadow map could
     # sit entirely dead for weeks without the report having anywhere to say so.
+    # The M2 PARTICLE EMITTER, 101 functions, which the render surface was counting as
+    # CSimpleHyperlinkedFrame.cpp -- a UI chat-link frame. That file's last assert-carrying
+    # function is 0x00978a10, and 0x00978aa0 (43 bytes) calls it, so it is the frame's too; the
+    # very next function, 0x00978ad0, is M2ParticleToFixed16, and from there to the
+    # ParticleSystem2.cpp anchor at 0x0097d370 every linked function is CM2ParticleEmitter or an
+    # M2PartTrack helper (42 of them on 2026-10-01: SetMaterial, SetTextureGrid, SetHeadTail,
+    # SampleColor, CreateParticle, SubmitDraw, SetColors, WriteParticleVertices ...). Both
+    # boundaries are exact. Found 2026-10-01 when porting SetColors moved faithful but not the
+    # render surface's faithful count.
+    (0x00978ad0, 0x0097d370, 'ParticleSystem2.cpp'),
     (0x008727e0, 0x00873f50, 'ShaderEffect.cpp'),
     (0x00873f50, 0x00876530, 'ShadowMap.cpp'),
     # The LIQUID subsystem: water, ocean, magma and slime -- their material bank, the four material

@@ -456,6 +456,11 @@ class CM2ParticleEmitter {
         // Turn texture animation on, if the tile grid has more than one cell to animate over.
         // ref: FUN_00978e30
         void SetTextureAnimated(int32_t animated);
+        // The ParticleColor.dbc override: three colours that replace the colour track's three keys.
+        // Each argument points at a CImVector's bytes, b g r in memory, and lands as r g b floats.
+        void SetColors(const uint8_t* start, const uint8_t* mid, const uint8_t* end);
+        // The exact inverse, each float rounded back to a byte.
+        void GetColors(uint8_t* start, uint8_t* mid, uint8_t* end) const;
 
         // Drive the emitter for one frame: measure the camera distance, place this emitter and
         // its children, derive what the particles inherit from the emitter's own motion, and

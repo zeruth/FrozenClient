@@ -27,15 +27,15 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-01 17:05) | at completion |
+| | 2026-10-01 start | now (2026-10-01 17:25) | at completion |
 |---|---|---|---|
-| render surface linked | 1,267 / 4,838 (26%) | 1,398 / 5,327 (26%) | 5,327 |
-| render surface faithful | not measured | 869 (16%) | 5,327 |
+| render surface linked | 1,267 / 4,838 (26%) | 1,439 / 5,390 (27%) | 5,390 |
+| render surface faithful | not measured | 907 (17%) | 5,390 |
 | render surface stubs | 20 | 32 | 0 |
 | empty functions with live render call sites | 37 | 37 | 0 |
-| render surface attributed by anchor guess | 63% | 50% | low |
+| render surface attributed by anchor guess | 63% | 49% | low |
 
-The 3,929 unlinked functions by area (module names as the report's anchors give them):
+The 3,951 unlinked functions by area (module names as the report's anchors give them):
 
 | area | unlinked | share |
 |---|---:|---:|
@@ -43,7 +43,7 @@ The 3,929 unlinked functions by area (module names as the report's anchors give 
 | map streaming and the world layer (`Map`, `MapMem`, `MapChunkLiquid`, `DetailDoodad`, `WorldParam`, `World`, `WorldScene`, `WorldFrame`, `Camera`, `MapWeather`, `WorldText`) | 678 | 17% |
 | textures, decoders, effects (`Texture*`, `blp`, `tga`, `FFXEffects`, `EffectGlow`, `PassGlow`, `Lightning`, `ShaderEffectManager`) | 576 | 15% |
 | graphics device (`CGxDevice`, `CGxDeviceD3d`, `CGxD3dDevice`, `CGxD3d9ExDevice`, `CGxDeviceD3d9Ex`, texture paths) | 343 | 9% |
-| models (`M2Scene`, `M2Model`, `M2Shared`, `M2Cache`, `M2Light`, `ParticleSystem2`, `CharacterModelBase`, `ModelBlob`, `GfxSingletonManager`) | 223 | 6% |
+| models (`M2Scene`, `M2Model`, `M2Shared`, `M2Cache`, `M2Light`, `ParticleSystem2`, `CharacterModelBase`, `ModelBlob`, `GfxSingletonManager`) | 245 | 6% |
 | map geometry (`MapChunk`, `MapLoad`, `MapArea`, `MapObj`, `MapObjGroup`, `MapObjRead`, `AaBsp`, `MapLowDetail`) | 179 | 5% |
 | liquid, shadow map, shader effects (`Liquid`, `ShadowMap`, `MapShadow`, `ShaderEffect`) | 84 | 2% |
 
@@ -103,7 +103,9 @@ hangs off `CM2Model`.
   installing the projection callback `FUN_0077f500` from world init), `SubstituteSpecializedShaders`
   (`FUN_00837680`), the second geometry builder `FUN_0082be60`.
 - **Particles** (`parity-particles.md`): shader permutation selector `FUN_00873160` /
-  `FUN_00872de0`, `ParticleColor.dbc` override `FUN_0097a990`, ramp fast path `FUN_00979d60`,
+  `FUN_00872de0`, ~~`ParticleColor.dbc` override `FUN_0097a990`~~ (done 2026-10-01 with its
+  getter, the model-level setter `FUN_00825410` and model call 11, and the model30 inheritance
+  in `InitializeLoaded`; the ramp half waits on the fast path), ramp fast path `FUN_00979d60`,
   the type-3 emitter `0x009820f0`, the spawned-model pass `FUN_0097e8d0`. Retire
   `ParticleFx.cpp` once the runtime is wired, so only the ported sim runs.
 - **Ribbons** (`parity-ribbons.md`, nothing ported): `CRibbonEmitter` `FUN_009808a0` /
@@ -220,7 +222,7 @@ Exit: 100%.
 Phase 0 is one cycle. Phases 1 to 4 run in that order, each closed before the next so the
 matchers stop guessing; `--fix` and `--helpers` batches are interleaved throughout because they
 are the cheapest links there are. The late-September loops linked 150 to 350 functions on a good
-day of cycles, so 3,929 links is on the order of fifteen to twenty-five such days, and the
+day of cycles, so 3,951 links is on the order of fifteen to twenty-five such days, and the
 fidelity work on the roots is on top of that. Everything above is a reference address or a frozen
 name on purpose: the next cycle starts at `--next 20 --fix --render`, and this page says why.
 
@@ -234,3 +236,4 @@ stubs, then live empty functions.
 | 2026-10-01 start | 1,267 / 4,838 | n/a | 20 | 37 | baseline from the 16:29 report |
 | 2026-10-01 17:05 | 1,398 / 5,327 | 869 | 32 | 37 | phase 0: `anchors.py` recovered 239 dropped anchors, 19 modules joined the set, the report prints faithful/stub for the surface; linked and faithful totals unchanged (4,748 / 2,502), so the jump is denominator, not ports |
 | 2026-10-01 17:14 | 1,398 / 5,327 | 870 | 32 | 37 | phase 1: `CM2Model::SetWorldTransform` 17% -> 92%, faithful. The missing half was not billboarding as its comment said: it is the tilt onto a surface normal (header flags bits 0 and 1) and the per-sequence blend into that tilt (sequence flags 2 / 4 / 8), which is how a creature settles onto the slope it dies on. Callers pass no axis yet, so straight-up is the default and nothing on screen changes until phase 4 threads the ground normal through. Client faithful 2,502 -> 2,503 |
+| 2026-10-01 17:25 | 1,439 / 5,390 | 907 | 32 | 37 | phase 1: the ParticleColor.dbc override end to end -- `CM2ParticleEmitter::SetColors` / `GetColors` (`FUN_0097a990` / `FUN_0097ab10`), `CM2Model::SetParticleColors` (`FUN_00825410`) with model call 11, and the model30 inheritance in `InitializeLoaded` (58% -> 64%); `CameraCreate` tagged (`FUN_004bfca0`); the `M2ModelParticle` constructor's +0x81 and +0x85 corrected to start at 1, its address excluded as compiler-emitted. Then a ruler fix: `MODULE_RANGES` now gives `[0x978ad0, 0x97d370)` to `ParticleSystem2.cpp`, where 42 linked particle functions had been counted as a UI frame. Client linked 4,748 -> 4,753, faithful 2,503 -> 2,506; surface faithful +37, almost all from the range |

@@ -3487,6 +3487,24 @@ int32_t CM2Model::InitializeLoaded() {
                 emitter->m_headCellTrack = &file.headCellTrack;
                 emitter->m_tailCellTrack = &file.tailCellTrack;
 
+                // The ParticleColor.dbc override is inherited: when this model was created
+                // from another (model30) whose emitter at the same index carries flag 0x10,
+                // read that emitter's three colours back out and set them here (0x833f94:
+                // GetColors on the source, SetColors on this one).
+                // The array null check is frozen's: the reference indexes model30's array
+                // unguarded, and here a source that has not finished loading has none.
+                if (this->model30 && this->model30->m_particleEmitters && this->model30->m_particleEmitters[i]
+                    && (this->model30->m_particleEmitters[i]->m_flags & 0x10)) {
+                    CImVector start = {};
+                    CImVector mid = {};
+                    CImVector end = {};
+
+                    this->model30->m_particleEmitters[i]->GetColors(
+                        reinterpret_cast<uint8_t*>(&start), reinterpret_cast<uint8_t*>(&mid), reinterpret_cast<uint8_t*>(&end));
+                    emitter->SetColors(
+                        reinterpret_cast<const uint8_t*>(&start), reinterpret_cast<const uint8_t*>(&mid), reinterpret_cast<const uint8_t*>(&end));
+                }
+
                 if (file.flags & 0x2) {
                     emitter->m_flags |= 0x20;
                 }
@@ -3666,8 +3684,13 @@ int32_t CM2Model::InitializeLoaded() {
             }
 
             case 11: {
-                // FUN_00825410() -- 205 bytes, 3 callers, takes NO arguments off the call. Blocked
-                // on FUN_0097a990.
+                this->SetParticleColors(
+                    modelCall->args[0],
+                    *reinterpret_cast<CImVector*>(&modelCall->args[1]),
+                    *reinterpret_cast<CImVector*>(&modelCall->args[2]),
+                    *reinterpret_cast<CImVector*>(&modelCall->args[3])
+                );
+
                 break;
             }
 
@@ -6670,6 +6693,52 @@ void CM2Model::SetParticleEmission(int32_t enable) {
             emitter->m_flags |= 0x2;
         } else {
             emitter->m_flags &= ~0x2u;
+        }
+    }
+}
+
+// ref: FUN_00825410
+// Hand the ParticleColor.dbc colours to every emitter whose particle record carries
+// `colorIndex` (M2Particle +0x2a). Not loaded yet: queue it as model call 11 with the index and
+// the three colours by value, the reference's 0x50-byte call block at M2Model.cpp line 0x819.
+// Loaded: walk the particle records, and for each match call the emitter's SetColors.
+//
+// The reference walks the RECORDS (stride 0x1dc) and calls the setter on an emitter it reaches
+// through a pointer the decompiler drops; the emitter is the one at the same index, which is
+// how every other per-record walk in this file pairs them.
+void CM2Model::SetParticleColors(uint32_t colorIndex, CImVector start, CImVector mid, CImVector end) {
+    if (!this->m_loaded) {
+        auto modelCall = STORM_NEW(CM2ModelCall);
+
+        modelCall->type = 11;
+        modelCall->modelCallNext = nullptr;
+        modelCall->time = this->m_scene->m_time;
+        modelCall->args[0] = colorIndex;
+        *reinterpret_cast<CImVector*>(&modelCall->args[1]) = start;
+        *reinterpret_cast<CImVector*>(&modelCall->args[2]) = mid;
+        *reinterpret_cast<CImVector*>(&modelCall->args[3]) = end;
+
+        *this->m_modelCallTail = modelCall;
+        this->m_modelCallTail = &modelCall->modelCallNext;
+
+        return;
+    }
+
+    auto data = this->m_shared->m_data;
+    uint32_t count = data->particles.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (data->particles[i].colorIndex != colorIndex) {
+            continue;
+        }
+
+        auto emitter = this->m_particleEmitters[i];
+
+        if (emitter) {
+            emitter->SetColors(
+                reinterpret_cast<const uint8_t*>(&start),
+                reinterpret_cast<const uint8_t*>(&mid),
+                reinterpret_cast<const uint8_t*>(&end));
         }
     }
 }

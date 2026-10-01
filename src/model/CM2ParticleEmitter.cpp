@@ -995,6 +995,46 @@ void CM2ParticleEmitter::SetTextureGrid(uint32_t rows, uint32_t cols) {
     this->m_cellHeight = 1.0f / static_cast<float>(rows);
 }
 
+// ref: FUN_0097a990
+// The ParticleColor.dbc override. The three bytes of each colour arrive b g r (a CImVector's
+// layout) and are stored r g b as 0..255 floats in m_colorOverride, which SampleColor reads in
+// place of the track's three keys once flag 0x10 is up.
+//
+// The reference goes on, under flag 0x1000000, to rewrite the PRECOMPILED RAMP at +0x11c with
+// the same colours and their differences (bytes at +0 / +0x2c, dword deltas at +4..+0xc and
+// +0x30..+0x38). frozen has neither the ramp nor the flag -- the fast path FUN_00979d60 that
+// builds and reads it is unported, see docs/ref/parity-particles.md -- so that branch cannot be
+// taken here and is left out rather than written against a field that does not exist. When the
+// ramp lands, this is the second place it has to be written.
+void CM2ParticleEmitter::SetColors(const uint8_t* start, const uint8_t* mid, const uint8_t* end) {
+    this->m_colorOverride[0].x = static_cast<float>(start[2]);
+    this->m_colorOverride[0].y = static_cast<float>(start[1]);
+    this->m_colorOverride[0].z = static_cast<float>(start[0]);
+    this->m_colorOverride[1].x = static_cast<float>(mid[2]);
+    this->m_colorOverride[1].y = static_cast<float>(mid[1]);
+    this->m_colorOverride[1].z = static_cast<float>(mid[0]);
+    this->m_colorOverride[2].x = static_cast<float>(end[2]);
+    this->m_colorOverride[2].y = static_cast<float>(end[1]);
+
+    this->m_flags |= 0x10;
+
+    this->m_colorOverride[2].z = static_cast<float>(end[0]);
+}
+
+// ref: FUN_0097ab10
+// The inverse of SetColors, float back to byte through round-to-nearest, b g r out.
+void CM2ParticleEmitter::GetColors(uint8_t* start, uint8_t* mid, uint8_t* end) const {
+    start[2] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[0].x)));
+    start[1] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[0].y)));
+    start[0] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[0].z)));
+    mid[2] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[1].x)));
+    mid[1] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[1].y)));
+    mid[0] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[1].z)));
+    end[2] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[2].x)));
+    end[1] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[2].y)));
+    end[0] = static_cast<uint8_t>(static_cast<int32_t>(roundf(this->m_colorOverride[2].z)));
+}
+
 // Turn texture animation on.
 //
 // The guard is the point: a grid with one cell has nothing to animate over, and asking for

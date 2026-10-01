@@ -547,6 +547,9 @@ class CM2Model {
         HCAMERA GetCameraById(uint32_t cameraId);
         // ref: FUN_008279f0
         void SetParticleEmission(int32_t enable);
+        // The ParticleColor.dbc override for every emitter whose record carries `colorIndex`:
+        // three CImVectors, deferred as model call 11 until the model is loaded.
+        void SetParticleColors(uint32_t colorIndex, CImVector start, CImVector mid, CImVector end);
 
         // Set or clear flag 8 on every ribbon emitter. Deferred as a model call when the model is
         // not loaded yet, exactly as SetParticleEmission defers its own.

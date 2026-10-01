@@ -10904,6 +10904,37 @@
   "refSize": 57,
   "status": "ported"
  },
+ "004bf770": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/ccamera.hpp"
+  ],
+  "frozen": "CCamera::CCamera",
+  "frozenSize": 847,
+  "how": "callgraph",
+  "module": "Profile.cpp",
+  "refSize": 734,
+  "status": "ported"
+ },
+ "004bfca0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Camera.cpp",
+   "src/gx/camera.cpp"
+  ],
+  "frozen": "CameraCreate",
+  "frozenSize": 50,
+  "how": "annotated",
+  "module": "Profile.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
  "004c1220": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
@@ -57810,6 +57841,22 @@
   "refSize": 413,
   "status": "ported"
  },
+ "00825410": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::SetParticleColors",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 205,
+  "status": "ported"
+ },
  "00825750": {
   "branchRatio": 0.824,
   "constOverlap": 0.022,
@@ -58806,7 +58853,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateParticleEmitter",
-  "frozenSize": 1226,
+  "frozenSize": 1258,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 1011,
@@ -59069,16 +59116,16 @@
   "status": "ported"
  },
  "00832ea0": {
-  "branchRatio": 0.624,
+  "branchRatio": 0.629,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.582,
+  "fidelity": 0.636,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 8740,
+  "frozenSize": 9108,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 5663,
@@ -73014,7 +73061,7 @@
   "frozen": "M2ParticleToFixed16",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 92,
   "status": "ported"
  },
@@ -73030,7 +73077,7 @@
   "frozen": "M2ParticleFlushDenormals",
   "frozenSize": 89,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 104,
   "status": "ported"
  },
@@ -73046,7 +73093,7 @@
   "frozen": "CM2ParticleEmitter::GetBounds",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 7,
   "status": "ported"
  },
@@ -73062,7 +73109,7 @@
   "frozen": "CM2ParticleEmitter::SetMaterial",
   "frozenSize": 73,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 68,
   "status": "ported"
  },
@@ -73078,7 +73125,7 @@
   "frozen": "CM2ParticleEmitter::SetTextureGrid",
   "frozenSize": 162,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 135,
   "status": "ported"
  },
@@ -73094,7 +73141,7 @@
   "frozen": "CM2ParticleEmitter::SetHeadTail",
   "frozenSize": 149,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 147,
   "status": "ported"
  },
@@ -73110,7 +73157,7 @@
   "frozen": "CM2ParticleEmitter::SetZSource",
   "frozenSize": 39,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 39,
   "status": "ported"
  },
@@ -73126,7 +73173,7 @@
   "frozen": "CM2ParticleEmitter::SetTextureAnimated",
   "frozenSize": 44,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 55,
   "status": "ported"
  },
@@ -73142,7 +73189,7 @@
   "frozen": "M2ParticleIndexBufferCreate",
   "frozenSize": 110,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 112,
   "status": "ported"
  },
@@ -73158,7 +73205,7 @@
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
   "frozenSize": 655,
   "how": "override",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 123,
   "status": "diverged"
  },
@@ -73174,7 +73221,7 @@
   "frozen": "CM2ParticleEmitter::RandomSpeed",
   "frozenSize": 100,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 83,
   "status": "ported"
  },
@@ -73190,7 +73237,7 @@
   "frozen": "M2PartTrackFindKey",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 128,
   "status": "ported"
  },
@@ -73206,7 +73253,7 @@
   "frozen": "M2PartTrackRatio",
   "frozenSize": 428,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 196,
   "status": "ported"
  },
@@ -73222,7 +73269,7 @@
   "frozen": "M2PartTrackEval2",
   "frozenSize": 178,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 108,
   "status": "ported"
  },
@@ -73238,7 +73285,7 @@
   "frozen": "M2PartTrackEvalAlpha",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 107,
   "status": "ported"
  },
@@ -73254,7 +73301,7 @@
   "frozen": "M2PartTrackEvalCell",
   "frozenSize": 135,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 100,
   "status": "ported"
  },
@@ -73270,7 +73317,7 @@
   "frozen": "CM2ParticleEmitter::SampleColor",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 357,
   "status": "ported"
  },
@@ -73286,7 +73333,7 @@
   "frozen": "CM2ParticleEmitter::GroundSnapParticle",
   "frozenSize": 191,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 162,
   "status": "ported"
  },
@@ -73302,7 +73349,7 @@
   "frozen": "CM2ParticleEmitter::CreateParticle",
   "frozenSize": 733,
   "how": "override",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 328,
   "status": "diverged"
  },
@@ -73318,7 +73365,7 @@
   "frozen": "CM2ParticleEmitter::IntegrateParticle",
   "frozenSize": 695,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 425,
   "status": "ported"
  },
@@ -73334,7 +73381,7 @@
   "frozen": "CM2ParticleEmitter::SampleAppearance",
   "frozenSize": 1086,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 666,
   "status": "ported"
  },
@@ -73350,7 +73397,7 @@
   "frozen": "CM2ParticleEmitter::SampleSpin",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 292,
   "status": "ported"
  },
@@ -73366,7 +73413,7 @@
   "frozen": "M2ParticleIndexBufferFill",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 116,
   "status": "ported"
  },
@@ -73382,7 +73429,7 @@
   "frozen": "CM2ParticleEmitter::SetupVertexCursor",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 175,
   "status": "ported"
  },
@@ -73398,7 +73445,7 @@
   "frozen": "CM2ParticleEmitter::SetupDrawBasis",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 488,
   "status": "ported"
  },
@@ -73414,8 +73461,40 @@
   "frozen": "CM2ParticleEmitter::SubmitDraw",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 233,
+  "status": "ported"
+ },
+ "0097a990": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.059,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetColors",
+  "frozenSize": 182,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 369,
+  "status": "ported"
+ },
+ "0097ab10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::GetColors",
+  "frozenSize": 221,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 227,
   "status": "ported"
  },
  "0097ac00": {
@@ -73430,7 +73509,7 @@
   "frozen": "CM2ParticleEmitter::SetTwinkleScale",
   "frozenSize": 26,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 29,
   "status": "ported"
  },
@@ -73446,7 +73525,7 @@
   "frozen": "CM2ParticleEmitter::Place",
   "frozenSize": 260,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 143,
   "status": "ported"
  },
@@ -73462,7 +73541,7 @@
   "frozen": "CM2ParticleEmitter::Substep",
   "frozenSize": 1122,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 322,
   "status": "ported"
  },
@@ -73478,7 +73557,7 @@
   "frozen": "CM2ParticleEmitter::Transform",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 256,
   "status": "ported"
  },
@@ -73494,7 +73573,7 @@
   "frozen": "CM2ParticleEmitter::HasLiveParticles",
   "frozenSize": 88,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 12,
   "status": "ported"
  },
@@ -73510,7 +73589,7 @@
   "frozen": "CM2ParticleEmitter::CountSpawnedModels",
   "frozenSize": 94,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 52,
   "status": "ported"
  },
@@ -73526,7 +73605,7 @@
   "frozen": "CM2ParticleEmitter::FindSpawnedModel",
   "frozenSize": 164,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 98,
   "status": "ported"
  },
@@ -73542,7 +73621,7 @@
   "frozen": "CM2ParticleEmitter::CountBatchedEmitters",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 79,
   "status": "ported"
  },
@@ -73558,7 +73637,7 @@
   "frozen": "CM2ParticleEmitter::CountTriangles",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 76,
   "status": "ported"
  },
@@ -73574,7 +73653,7 @@
   "frozen": "CM2ParticleEmitter::SetEmissionRate",
   "frozenSize": 17,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 41,
   "status": "ported"
  },
@@ -73590,7 +73669,7 @@
   "frozen": "CM2ParticleEmitter::IntegrateModelParticle",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 195,
   "status": "ported"
  },
@@ -73606,7 +73685,7 @@
   "frozen": "CM2ParticleEmitter::WriteParticleVertices",
   "frozenSize": 6523,
   "how": "annotated",
-  "module": "CSimpleHyperlinkedFrame.cpp",
+  "module": "ParticleSystem2.cpp",
   "refSize": 5350,
   "status": "ported"
  },
