@@ -1021,6 +1021,24 @@ void CM2ParticleEmitter::SetColors(const uint8_t* start, const uint8_t* mid, con
     this->m_colorOverride[2].z = static_cast<float>(end[0]);
 }
 
+// ref: FUN_00978dd0
+// How much of the emitter's own movement a particle inherits, as a straight line in the emitter's
+// speed through the record's two follow points. Two points closer together in speed than 2^-22
+// (0x009ea27c) define no line, and the ramp is zero.
+void CM2ParticleEmitter::SetFollow(float speed1, float scale1, float speed2, float scale2) {
+    if (fabsf(speed2 - speed1) >= 0.00000023841858f) {
+        float slope = (scale2 - scale1) / (speed2 - speed1);
+
+        this->m_followScale = slope;
+        this->m_followBase = scale1 - slope * speed1;
+
+        return;
+    }
+
+    this->m_followScale = 0.0f;
+    this->m_followBase = 0.0f;
+}
+
 // ref: FUN_0097ab10
 // The inverse of SetColors, float back to byte through round-to-nearest, b g r out.
 void CM2ParticleEmitter::GetColors(uint8_t* start, uint8_t* mid, uint8_t* end) const {

@@ -3562,30 +3562,17 @@ int32_t CM2Model::InitializeLoaded() {
             if (emitter) {
                 const M2Particle& file = this->m_shared->m_data->particles[i];
 
+                // REORDERED 2026-10-01 to the reference's sequence (0x00833b..0x0083404x): the
+                // per-track initial values, the flag bits, head/tail, the material bits, the
+                // texture grid and animation, SetMaterial, the track pointers, the inherited
+                // colours, twinkle and the motion constants, the follow ramp, the spline. Not
+                // ported yet: the two spawned models (FUN_00978b30, FUN_0097aeb0) and the
+                // precompiled ramp (FUN_0097d370), which waits on the fast path.
+
                 // 0x833bde, the first thing the reference does with a freshly built emitter:
                 // clear the emit-enable bit the constructor did not set. Emission needs
                 // (flags & 3) == 3, and the driver raises this one per frame.
                 emitter->m_flags &= ~0x1u;
-
-                // The material, from the same block at 0x833e08. The flags word is seeded
-                // with 0x7 and then two of its bits are taken from the file's flags INVERTED --
-                // the reference does it with an xor-and-xor dance that amounts to
-                // `bit = !(file.flags & mask)`.
-                uint32_t materialFlags = 0x7;
-
-                uint32_t blendMode = M2ParticleBlendToGx(file.blendMode, materialFlags);
-
-                materialFlags = (materialFlags & ~0x1u) | ((file.flags & 0x1) ? 0 : 0x1);
-                materialFlags = (materialFlags & ~0x2u) | ((file.flags & 0x8) ? 0 : 0x2);
-
-                // Through the setter the reference uses, rather than writing the fields: it
-                // also takes the texture reference, which DrawParticle needs.
-                HTEXTURE texture = this->m_shared->textures
-                    && file.textureIndex < this->m_shared->m_data->textures.Count()
-                        ? this->m_shared->textures[file.textureIndex]
-                        : nullptr;
-
-                emitter->SetMaterial(blendMode, materialFlags, texture);
 
                 // Seed the emitter from each track's FIRST value, so it has something sensible
                 // before the driver animates it. Guarded on the sequence actually having keys:
@@ -3652,10 +3639,6 @@ int32_t CM2Model::InitializeLoaded() {
                     emitter->SetZSource(file.zsourceTrack.sequenceKeys[0].keys[0]);
                 }
 
-                // Which quads each particle draws, and the tail's length.
-                emitter->SetHeadTail(file.flags & 0x20000, file.flags & 0x40000,
-                                     file.tailLength, file.flags & 0x400);
-
                 // The file flags, mapped onto the emitter's. None of these were being set, and
                 // every one is read by code ported earlier this session: 0x200 is emitter space,
                 // 0x800 is drag, 0x2000 is interpolated placement, 0x40000 is ground snap,
@@ -3717,32 +3700,43 @@ int32_t CM2Model::InitializeLoaded() {
                     emitter->m_flags |= 0x800000;
                 }
 
-                // The scalar parameters, straight out of the record. m_drag, m_wind, m_windTime
-                // and m_velocitySampleScale are read by IntegrateParticle and Update and had
-                // never been written by anything -- so drag, wind and the inherited-velocity
-                // scale have all been silently zero however carefully those were ported.
-                emitter->m_twinkleFps = file.twinkleFPS;
-                emitter->m_twinkleOnOff = file.twinkleOnOff;
-                emitter->SetTwinkleScale(file.twinkleScale);
+                // Which quads each particle draws, and the tail's length.
+                emitter->SetHeadTail(file.flags & 0x20000, file.flags & 0x40000,
+                                     file.tailLength, file.flags & 0x400);
 
-                emitter->m_velocitySampleScale = file.ivelScale;
-                emitter->m_drag = file.drag;
+                if (file.flags & 0x2) {
+                    emitter->m_flags |= 0x20;
+                }
 
-                emitter->m_initialSpin = file.initialSpin;
-                emitter->m_initialSpinVariation = file.initialSpinVariation;
-                emitter->m_spin = file.spin;
-                emitter->m_spinVariation = file.spinVariation;
+                if (file.flags & 0x4) {
+                    emitter->m_flags |= 0x200000;
+                }
 
-                // The tumble box becomes three (min, span) pairs.
-                emitter->m_tumble[0].min = file.tumble.b.x;
-                emitter->m_tumble[0].span = file.tumble.t.x - file.tumble.b.x;
-                emitter->m_tumble[1].min = file.tumble.b.y;
-                emitter->m_tumble[1].span = file.tumble.t.y - file.tumble.b.y;
-                emitter->m_tumble[2].min = file.tumble.b.z;
-                emitter->m_tumble[2].span = file.tumble.t.z - file.tumble.b.z;
+                emitter->SetTextureGrid(file.rows, file.cols);
 
-                emitter->m_wind = file.windVector;
-                emitter->m_windTime = file.windTime;
+                if (file.flags & 0x10000) {
+                    emitter->SetTextureAnimated(1);
+                }
+
+                // The material, from the same block at 0x833e08. The flags word is seeded
+                // with 0x7 and then two of its bits are taken from the file's flags INVERTED --
+                // the reference does it with an xor-and-xor dance that amounts to
+                // `bit = !(file.flags & mask)`.
+                uint32_t materialFlags = 0x7;
+
+                uint32_t blendMode = M2ParticleBlendToGx(file.blendMode, materialFlags);
+
+                materialFlags = (materialFlags & ~0x1u) | ((file.flags & 0x1) ? 0 : 0x1);
+                materialFlags = (materialFlags & ~0x2u) | ((file.flags & 0x8) ? 0 : 0x2);
+
+                // Through the setter the reference uses, rather than writing the fields: it
+                // also takes the texture reference, which DrawParticle needs.
+                HTEXTURE texture = this->m_shared->textures
+                    && file.textureIndex < this->m_shared->m_data->textures.Count()
+                        ? this->m_shared->textures[file.textureIndex]
+                        : nullptr;
+
+                emitter->SetMaterial(blendMode, materialFlags, texture);
 
                 // The part-tracks the emitter samples per particle, cached as pointers into the
                 // model data. None of these were being set, so the ground snap silently did
@@ -3772,13 +3766,37 @@ int32_t CM2Model::InitializeLoaded() {
                         reinterpret_cast<const uint8_t*>(&start), reinterpret_cast<const uint8_t*>(&mid), reinterpret_cast<const uint8_t*>(&end));
                 }
 
-                if (file.flags & 0x2) {
-                    emitter->m_flags |= 0x20;
-                }
+                // The scalar parameters, straight out of the record. m_drag, m_wind, m_windTime
+                // and m_velocitySampleScale are read by IntegrateParticle and Update and had
+                // never been written by anything -- so drag, wind and the inherited-velocity
+                // scale have all been silently zero however carefully those were ported.
+                emitter->m_twinkleFps = file.twinkleFPS;
+                emitter->m_twinkleOnOff = file.twinkleOnOff;
+                emitter->SetTwinkleScale(file.twinkleScale);
 
-                if (file.flags & 0x4) {
-                    emitter->m_flags |= 0x200000;
-                }
+                emitter->m_velocitySampleScale = file.ivelScale;
+                emitter->m_drag = file.drag;
+
+                emitter->m_initialSpin = file.initialSpin;
+                emitter->m_initialSpinVariation = file.initialSpinVariation;
+                emitter->m_spin = file.spin;
+                emitter->m_spinVariation = file.spinVariation;
+
+                // The tumble box becomes three (min, span) pairs.
+                emitter->m_tumble[0].min = file.tumble.b.x;
+                emitter->m_tumble[0].span = file.tumble.t.x - file.tumble.b.x;
+                emitter->m_tumble[1].min = file.tumble.b.y;
+                emitter->m_tumble[1].span = file.tumble.t.y - file.tumble.b.y;
+                emitter->m_tumble[2].min = file.tumble.b.z;
+                emitter->m_tumble[2].span = file.tumble.t.z - file.tumble.b.z;
+
+                emitter->m_wind = file.windVector;
+                emitter->m_windTime = file.windTime;
+
+                // ref: 0x00833f8c -- FUN_00978dd0, the follow ramp from the record's two
+                // follow points. Nothing set m_followBase / m_followScale before, so every
+                // emitter carried zero of its own movement into its particles.
+                emitter->SetFollow(file.followSpeed1, file.followScale1, file.followSpeed2, file.followScale2);
 
                 // A TYPE 3 EMITTER RIDES A CURVE, and the curve is in the file: the reference
                 // tests the type byte and passes M2Particle's spline array straight through
@@ -3789,13 +3807,13 @@ int32_t CM2Model::InitializeLoaded() {
                     static_cast<CM2ParticleEmitterSpline*>(emitter)
                         ->SetSplinePoints(&file.spline[0], file.spline.Count());
                 }
-
-                emitter->SetTextureGrid(file.rows, file.cols);
-
-                if (file.flags & 0x10000) {
-                    emitter->SetTextureAnimated(1);
-                }
             }
+
+            // Every record starts VISIBLE: the reference writes 1 to the state's +0x80 -- the
+            // visibility track's current value -- at the bottom of this loop. Without it a
+            // particle with no visibility track would never emit, because the track pass
+            // (FUN_0082d2f0) leaves the value alone when there is no track to animate.
+            this->m_particles[i].visibilityTrack.currentValue = 1;
         }
 
         if (unsupported) {

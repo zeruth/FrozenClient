@@ -59358,7 +59358,7 @@
   "branchRatio": 0.629,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.636,
+  "fidelity": 0.712,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -73398,6 +73398,22 @@
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 39,
+  "status": "ported"
+ },
+ "00978dd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetFollow",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 84,
   "status": "ported"
  },
  "00978e30": {

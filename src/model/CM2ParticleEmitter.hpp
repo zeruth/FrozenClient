@@ -459,6 +459,9 @@ class CM2ParticleEmitter {
         // The ParticleColor.dbc override: three colours that replace the colour track's three keys.
         // Each argument points at a CImVector's bytes, b g r in memory, and lands as r g b floats.
         void SetColors(const uint8_t* start, const uint8_t* mid, const uint8_t* end);
+        // The follow ramp: the line through (speed1, scale1) and (speed2, scale2), stored as
+        // m_followBase + m_followScale * speed. ref: FUN_00978dd0
+        void SetFollow(float speed1, float scale1, float speed2, float scale2);
         // The exact inverse, each float rounded back to a byte.
         void GetColors(uint8_t* start, uint8_t* mid, uint8_t* end) const;
 
