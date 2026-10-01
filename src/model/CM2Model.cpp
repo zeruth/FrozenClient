@@ -763,30 +763,105 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
 
         C44Matrix* boneParentMatrix;
 
+        // The parent as this bone sees it: the parent's matrix, or a copy rebuilt by the
+        // inheritance variants below.
+        C44Matrix inheritedParent;
+
         if (bone.parentIndex == 0xFFFF) {
             boneParentMatrix = &this->matrixF4;
         } else {
             boneParentMatrix = &this->m_boneMatrices[bone.parentIndex];
 
+            // THE PARENT-INHERITANCE VARIANTS, 0x82f843..0x82fc25, transcribed from the
+            // disassembly. The parent's matrix is copied aside, its 3x3 rebuilt against the
+            // model's own placement (matrixF4) by (boneFlags & 6), its translation by bit 0, and
+            // the copy stands as this bone's parent for the rest of the transform:
+            //
+            //   6  the three rows are matrixF4's verbatim
+            //   4  each row is matrixF4's row rescaled to the parent row's length -- or left at
+            //      matrixF4's length when that row's squared length is at or below 1e-5
+            //      (0x009ea558)
+            //   2  each parent row normalised, then scaled to matrixF4's row length
+            //   bit 0  the translation is matrixF4's; otherwise it is recomputed so the bone's
+            //          pivot lands where the unmodified parent put it
+            //
+            // An earlier note held this back because which variant means "ignore rotation" and
+            // which "ignore scale" was not certain. A transcription does not need the names: the
+            // arithmetic is the same either way. By the arithmetic, 2 keeps the parent's rotation
+            // and takes the model's scale, 4 keeps the parent's scale and takes the model's
+            // rotation, and 6 takes both from the model.
             if (boneFlags & (0x1 | 0x2 | 0x4)) {
-                // NOT PORTED: the ignore-parent-transform branch, 0x82f843..0x82fc2e.
-                //
-                // The bone's own world matrix is copied aside, and then bits 1 and 2 select
-                // between three variants through `boneFlags & 6`:
-                //
-                //   2  0x82faa9  normalises the copy's three rows, then combines with matrixF4
-                //   4  0x82f8ff  each row becomes the matching matrixF4 row rescaled to the
-                //                copy's row length, or left alone when that row is shorter
-                //                than 1e-5 (0x009ea558)
-                //   6  0x82f8ac  the three matrixF4 rows verbatim
-                //
-                // and bit 0 is handled separately at 0x82fb69: the translation comes from
-                // matrixF4's row 3 instead of being transformed.
-                //
-                // The twelve C3Vector::Normalize calls --diff reports missing are all in here.
-                // The gate and the selector are certain; which variant means "ignore rotation"
-                // and which "ignore scale" is NOT yet certain, and porting bone math on a
-                // reading that is only nearly right would be worse than leaving the branch out.
+                inheritedParent = *boneParentMatrix;
+
+                C3Vector pivotPlaced = bone.pivot * inheritedParent;
+
+                C3Vector* rows[3] = {
+                    reinterpret_cast<C3Vector*>(&inheritedParent.a0),
+                    reinterpret_cast<C3Vector*>(&inheritedParent.b0),
+                    reinterpret_cast<C3Vector*>(&inheritedParent.c0)
+                };
+
+                const C3Vector* model[3] = {
+                    reinterpret_cast<const C3Vector*>(&this->matrixF4.a0),
+                    reinterpret_cast<const C3Vector*>(&this->matrixF4.b0),
+                    reinterpret_cast<const C3Vector*>(&this->matrixF4.c0)
+                };
+
+                switch (boneFlags & 0x6) {
+                    case 0x2:
+                        rows[0]->Normalize();
+                        rows[1]->Normalize();
+                        rows[2]->Normalize();
+
+                        for (int32_t r = 0; r < 3; r++) {
+                            const C3Vector& f = *model[r];
+                            float length = sqrtf(f.x * f.x + f.y * f.y + f.z * f.z);
+
+                            *rows[r] = *rows[r] * length;
+                        }
+
+                        break;
+
+                    case 0x4:
+                        for (int32_t r = 0; r < 3; r++) {
+                            const C3Vector& f = *model[r];
+                            const C3Vector& c = *rows[r];
+                            float modelSq = f.x * f.x + f.y * f.y + f.z * f.z;
+                            float factor = 1.0f;
+
+                            if (modelSq > 0.00001f) {
+                                factor = sqrtf((c.x * c.x + c.y * c.y + c.z * c.z) / modelSq);
+                            }
+
+                            *rows[r] = f * factor;
+                        }
+
+                        break;
+
+                    case 0x6:
+                        *rows[0] = *model[0];
+                        *rows[1] = *model[1];
+                        *rows[2] = *model[2];
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if (boneFlags & 0x1) {
+                    inheritedParent.d0 = this->matrixF4.d0;
+                    inheritedParent.d1 = this->matrixF4.d1;
+                    inheritedParent.d2 = this->matrixF4.d2;
+                } else {
+                    const C3Vector& P = bone.pivot;
+
+                    inheritedParent.d0 = pivotPlaced.x - (P.x * inheritedParent.a0 + P.y * inheritedParent.b0 + P.z * inheritedParent.c0);
+                    inheritedParent.d1 = pivotPlaced.y - (P.x * inheritedParent.a1 + P.y * inheritedParent.b1 + P.z * inheritedParent.c1);
+                    inheritedParent.d2 = pivotPlaced.z - (P.x * inheritedParent.a2 + P.y * inheritedParent.b2 + P.z * inheritedParent.c2);
+                }
+
+                boneParentMatrix = &inheritedParent;
             }
         }
 

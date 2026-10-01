@@ -59067,10 +59067,10 @@
   "status": "ported"
  },
  "0082f0f0": {
-  "branchRatio": 0.434,
+  "branchRatio": 0.48,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.886,
+  "fidelity": 0.955,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
