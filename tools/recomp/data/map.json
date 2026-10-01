@@ -58861,6 +58861,19 @@
   "refSize": 679,
   "status": "ported"
  },
+ "0082bb50": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "M2AnimateTrack<unsigned short,unsigned short>",
+  "frozenSize": 308,
+  "how": "override",
+  "module": "M2Model.cpp",
+  "refSize": 206,
+  "status": "faithful"
+ },
  "0082bd60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -58973,6 +58986,22 @@
   "refSize": 706,
   "status": "ported"
  },
+ "0082d2f0": {
+  "branchRatio": 0.415,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AnimateParticleTracks",
+  "frozenSize": 1065,
+  "how": "override",
+  "module": "M2Model.cpp",
+  "refSize": 1006,
+  "status": "faithful"
+ },
  "0082d6f0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -59038,16 +59067,16 @@
   "status": "ported"
  },
  "0082f0f0": {
-  "branchRatio": 0.382,
+  "branchRatio": 0.447,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.477,
+  "fidelity": 0.636,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5103,
+  "frozenSize": 5751,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 6267,
@@ -59335,7 +59364,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 9108,
+  "frozenSize": 9140,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 5663,

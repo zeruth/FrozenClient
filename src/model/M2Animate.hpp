@@ -42,6 +42,12 @@ void M2InterpolateLinear(fixed16 startValue, fixed16 endValue, float ratio, floa
     value = static_cast<float>(startValue) + (ratio * (static_cast<float>(endValue) - static_cast<float>(startValue)));
 }
 
+// The 16-bit track (a ribbon's texture slot) does not interpolate: FUN_0082bb50, the reference's
+// M2AnimateTrack<unsigned short,unsigned short>, stores the key at the cursor on both track types.
+inline void M2InterpolateLinear(uint16_t startValue, uint16_t, float, uint16_t& value) {
+    value = startValue;
+}
+
 void M2InterpolateLinear(uint8_t startValue, uint8_t endValue, float ratio, uint8_t& value) {
     value = startValue + (ratio * (endValue - startValue));
 }
@@ -256,7 +262,14 @@ template<class T>
 inline void M2BlendValue(T&, const T&, float) {
 }
 
+// Out of line on purpose: the reference keeps one function per instantiation (FUN_00828680,
+// 0082b0a0, 0082b270, 0082bb50, ...), and frozen's compiler had already kept five of the six out
+// of line on its own. The sixth, <uint16_t, uint16_t>, has one call site and was inlined into it,
+// leaving nothing for its reference function to link to.
 template<class T1, class T2>
+#if defined(_MSC_VER)
+__declspec(noinline)
+#endif
 void M2AnimateTrack(CM2Model* model, M2ModelBone* modelBone, const M2Track<T1>& track, M2ModelTrack<T2>& modelTrack, const T2& defaultValue) {
     // Both of these have to be checked before anything is indexed.
     //

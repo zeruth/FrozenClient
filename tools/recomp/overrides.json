@@ -497,10 +497,20 @@
     "status": "excluded",
     "note": "3-byte 'return ecx' identity"
   },
+  "0082d2f0": {
+    "frozen": "CM2Model::AnimateParticleTracks",
+    "status": "faithful",
+    "note": "The emitters' track pass, ported 2026-10-01 from the decompilation and called from AnimateMT's tail where the reference calls it. Call order 100%: the visibility track, then the ten float tracks, each behind the same gate, in the reference's order, plus HasLiveParticles. Held off the measured `faithful` by the branch check alone (frozen 0.415 of the reference's count): the gate `count > 1 || (count == 1 && times > frame)` appears eleven times inline in the reference and once, as M2TrackLive, in frozen, so the source counts one `if` where the binary has three branches. Every branch is present; the check cannot see through the helper. Hand verdict for that reason only."
+  },
+  "0082bb50": {
+    "frozen": "M2AnimateTrack<unsigned short,unsigned short>",
+    "status": "faithful",
+    "note": "The 16-bit instantiation of M2AnimateTrack: element stride 2, the key at the cursor stored on both track types (no interpolation), and the secondary walk's FindKey whose value is discarded -- the same shape as the 1-byte one (0082b270, M2AnimateTrack<unsigned char,unsigned char>). Its one caller is AnimateMT's ribbon pass, for the texture-slot track. Left unlinked on 2026-09-26 because frozen then had no 16-bit instantiation and the nearest widened to float; the ribbon pass ported 2026-10-01 instantiates M2AnimateTrack<uint16_t, uint16_t> with a non-interpolating M2InterpolateLinear overload, so the two are now the same function. EARLIER READING, kept for its evidence (it was this entry, status unlinked): One more member of the M2AnimateTrack family (the block runs 00828680, 0082b0a0, 0082b270, 0082b340, 0082b460, 0082b8a0, 0082bb50), and the one instantiation frozen does NOT have: its element stride is 2 AND it stores 2 bytes into the model track, so both T1 and T2 are 16-bit. Like the unsigned char one it does not interpolate -- the trackType != 0 path stores the same key as trackType == 0. frozen's nearest instantiation is M2AnimateTrack<fixed16,float>, which is a different function: it WIDENS to a 4-byte float. Deliberately left unlinked rather than pinned to that, because a tag is a claim that the two ARE the same function. It becomes linkable if a caller is ever found that wants a raw 16-bit track value. Status `faithful` is a hand verdict, as on its five siblings: the clang inventory has no body for a template instantiation, so the call-order score is 0% and cannot move."
+  },
   "00824a00": {
     "frozen": "",
     "status": "excluded",
-    "note": "The M2ModelParticle constructor: zero the ten tracks (32 dwords), then +0x80 = 0, +0x81 = 1, +0x85 = 1, +0x86 = 0. frozen expresses it as the struct's default member initialisers and lets the compiler emit the constructor inline at its one site (InitializeLoaded's placement new), so there is no function in frozen's binary for a tag to bind to -- excluded on the same grounds as C44Matrix::operator= (00407f80). The behaviour is ported: the initialisers were corrected 2026-10-01 to start +0x81 and +0x85 at 1 as the reference does, where frozen had both at 0."
+    "note": "The M2ModelParticle constructor: zero the ten tracks (32 dwords), then +0x80 = 0, +0x84 = 1, +0x85 = 1, +0x86 = 0 (the second write is a dword index, 0x21, so +0x84 -- an earlier note read it as +0x81). +0x78..+0x80 is the visibility track, whose current value is the +0x80 byte. frozen expresses it as the struct's default member initialisers and lets the compiler emit the constructor inline at its one site (InitializeLoaded's placement new), so there is no function in frozen's binary for a tag to bind to -- excluded on the same grounds as C44Matrix::operator= (00407f80). The behaviour is ported: the initialisers were corrected 2026-10-01 to start rateActive (+0x84) and active (+0x85) at 1 as the reference does."
   },
   "00407f80": {
     "frozen": "",
@@ -3331,10 +3341,6 @@
   "0082b8a0": {
     "frozen": "M2AnimateSplineTrack<M2SplineKey<float>,float>",
     "note": "The float SPLINE instantiation -- key stride 0xc, M2SplineKey<float>'s three floats, with the same trackType 1/2/3 switch and the same secondary blend as the C3Vector one at 0082b460. The family sits in one contiguous block with the two the map already had -- 00828680 is M2AnimateTrack<M2CompQuat,C4Quaternion> and 0082b0a0 is M2AnimateTrack<C3Vector,C3Vector> -- and every member takes the same five arguments (model, bone, track, modelTrack, defaultValue) and reads the same bone offsets: the primary sequence at +0x40, the secondary at +0x64, the blend weight at +0xa8."
-  },
-  "0082bb50": {
-    "status": "unlinked",
-    "note": "One more member of the M2AnimateTrack family (the block runs 00828680, 0082b0a0, 0082b270, 0082b340, 0082b460, 0082b8a0, 0082bb50), and the one instantiation frozen does NOT have: its element stride is 2 AND it stores 2 bytes into the model track, so both T1 and T2 are 16-bit. Like the unsigned char one it does not interpolate -- the trackType != 0 path stores the same key as trackType == 0. frozen's nearest instantiation is M2AnimateTrack<fixed16,float>, which is a different function: it WIDENS to a 4-byte float. Deliberately left unlinked rather than pinned to that, because a tag is a claim that the two ARE the same function. It becomes linkable if a caller is ever found that wants a raw 16-bit track value."
   },
   "0053c430": {
     "status": "unlinked",

@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-10-01 17:43 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-10-01 17:52 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26941 | 5.35M |
-| mapped to a frozen function | 4766 (=) (17.7%) | 1.01M (18.8%) |
-| &nbsp;&nbsp;ported | 4091 (=) | 853.8k |
+| mapped to a frozen function | 4768 (=) (17.7%) | 1.01M (18.8%) |
+| &nbsp;&nbsp;ported | 4093 (=) | 855.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 569 (=) | 122.3k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2526 (=) (9.4%)** | **360.4k (6.6%)** |
-| unmapped | 22175 | 4.35M |
-| world spine (reachable from OnFrameRender) | 5377, mapped 1653 (=) (30.7%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5644, mapped 1676 (=) (29.7%) | |
-| **render surface** (the modules that draw the world) | **5390, mapped 1439 (=) (26.7%)** | |
-| &nbsp;&nbsp;of which faithful / stub | 909 (=) (16.9%) / 32 (=) | |
+| **faithful** (linked, not stub, call order >= 80%) | **2528 (+2) (9.4%)** | **361.6k (6.6%)** |
+| unmapped | 22173 | 4.35M |
+| world spine (reachable from OnFrameRender) | 5377, mapped 1655 (=) (30.8%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5644, mapped 1678 (=) (29.7%) | |
+| **render surface** (the modules that draw the world) | **5390, mapped 1441 (=) (26.7%)** | |
+| &nbsp;&nbsp;of which faithful / stub | 911 (+2) (16.9%) / 32 (=) | |
 | of which the module is an anchor GUESS | 2643 (49.0%) | |
-| frozen functions (src/, from PDB + source) | 14027, stubs 1637 | |
+| frozen functions (src/, from PDB + source) | 14029, stubs 1637 | |
 
-Match evidence: annotated 2464, callgraph 255, callorder 110, cvar 30, handler 29, order 142, override 379, sticky 31, string 306, table 1020. Module anchors: 1718 assert strings.
+Match evidence: annotated 2464, callgraph 255, callorder 110, cvar 30, handler 29, order 142, override 381, sticky 31, string 306, table 1020. Module anchors: 1718 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-10-01 17:42 -- mapped 4766, ported 4091, stub 569, spine mapped 1653.
+Previous run: 2026-10-01 17:51 -- mapped 4768, ported 4093, stub 569, spine mapped 1655.
 
 ## Lua API coverage (binding tables)
 
@@ -146,7 +146,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | lmemPool.cpp | 342 | 80.2k | 79 (23.1%) | 32.1% | 0 | 0 | 107 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
 | CGxD3dDevice.cpp | 106 | 63.6k | 5 (4.7%) | 8.6% | 0 | 0 | 0 |
-| M2Model.cpp | 163 | 61.7k | 113 (69.3%) | 72.4% | 1 | 0 | 136 |
+| M2Model.cpp | 163 | 61.7k | 115 (70.6%) | 74.3% | 1 | 0 | 136 |
 | Map.cpp | 150 | 60.8k | 52 (34.7%) | 37.5% | 0 | 1 | 88 |
 | SoundEngine.cpp | 407 | 60.2k | 34 (8.4%) | 19.4% | 0 | 0 | 59 |
 | CreepTendril.cpp | 1415 | 58.5k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
@@ -621,7 +621,7 @@ Either the port added behaviour the reference does not have, or the link is simp
 | `Rebuild` | object | 3317 | src/object/client/SpellBook.cpp |
 | `VlcDequantH263IntraBlock` | m4vh263dec | 3168 | vendor/m4vh263dec/src/vlc_dequant.cpp |
 | `H263_Deblock` | m4vh263dec | 3153 | vendor/m4vh263dec/src/post_filter.cpp |
-| `ParticleFxUpdateModel` | world | 3054 | src/world/ParticleFx.cpp |
+| `ParticleFxUpdateModel` | world | 3038 | src/world/ParticleFx.cpp |
 | `ChrRacesRec::Read` | db | 2957 | src/db/rec/ChrRacesRec.cpp |
 | `MapRec::Read` | db | 2780 | src/db/rec/MapRec.cpp |
 | `GetPredAdvancedBy1x1` | m4vh263dec | 2737 | vendor/m4vh263dec/src/get_pred_adv_b_add.cpp |
@@ -655,7 +655,7 @@ The port exists but does not make the calls the reference makes, in the order it
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | 006277f0 | `TooltipSetItemInfo` | 23% | 604 | 54 | 797 | 37 | 4% | 24814 |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | 97% | 192 | 229 | 4 | 0 | 40% | 6776 |
-| 0082f0f0 | `CM2Model::AnimateMT` | 48% | 47 | 49 | 152 | 58 | 2% | 6267 |
+| 0082f0f0 | `CM2Model::AnimateMT` | 64% | 47 | 62 | 152 | 68 | 2% | 6267 |
 | 0087c710 | `SESound::Init` | 11% | 230 | 41 | 83 | 5 | 2% | 6078 |
 | 00832ea0 | `CM2Model::InitializeLoaded` | 64% | 71 | 85 | 170 | 107 | 8% | 5663 |
 | 00821a20 | `CM2Scene::Animate` | 67% | 54 | 46 | 219 | 63 | 8% | 5621 |
@@ -773,9 +773,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-09-27 22:50 | 4737 (17.6%) | 2496 (9.3%) | 573 | 1643/5378 | 2924/2964 | 1380 |
-| 2026-09-27 22:54 | 4738 (17.6%) | 2496 (9.3%) | 573 | 1644/5378 | 2924/2964 | 1380 |
-| 2026-09-27 23:00 | 4738 (17.6%) | 2496 (9.3%) | 573 | 1644/5378 | 2924/2964 | 1380 |
 | 2026-09-27 23:11 | 4739 (17.6%) | 2496 (9.3%) | 573 | 1644/5378 | 2924/2964 | 1380 |
 | 2026-09-27 23:30 | 4741 (17.6%) | 2498 (9.3%) | 573 | 1644/5378 | 2924/2964 | 1380 |
 | 2026-09-27 23:44 | 4743 (17.6%) | 2498 (9.3%) | 573 | 1645/5378 | 2924/2964 | 1380 |
@@ -797,7 +794,10 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-10-01 17:31 | 4753 (17.6%) | 2506 (9.3%) | 569 | 1653/5377 | 2924/2964 | 1380 |
 | 2026-10-01 17:40 | 4766 (17.7%) | 2523 (9.4%) | 569 | 1653/5377 | 2924/2964 | 1380 |
 | 2026-10-01 17:42 | 4766 (17.7%) | 2526 (9.4%) | 569 | 1653/5377 | 2924/2964 | 1380 |
-| 2026-10-01 17:43 | 4766 (17.7%) | 2526 (9.4%) | 569 | 1653/5377 | 2924/2964 | 1380 |
+| 2026-10-01 17:49 | 4767 (17.7%) | 2526 (9.4%) | 569 | 1654/5377 | 2924/2964 | 1380 |
+| 2026-10-01 17:50 | 4767 (17.7%) | 2526 (9.4%) | 569 | 1654/5377 | 2924/2964 | 1380 |
+| 2026-10-01 17:51 | 4768 (17.7%) | 2526 (9.4%) | 569 | 1655/5377 | 2924/2964 | 1380 |
+| 2026-10-01 17:52 | 4768 (17.7%) | 2528 (9.4%) | 569 | 1655/5377 | 2924/2964 | 1380 |
 
 ## How to move a row
 

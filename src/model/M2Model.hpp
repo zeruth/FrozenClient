@@ -158,17 +158,19 @@ struct M2ModelParticle {
     M2ModelTrack<float> lengthTrack;
     M2ModelTrack<float> zsourceTrack;
 
-    // +0x80: the emitter ran this frame. The driver only refreshes the tracks above when this is
-    // set or the model has never animated, so a culled emitter keeps its last values.
-    uint8_t enabled = 0;
-    // +0x81: written to 1 by the constructor (FUN_00824a00, which zeroes the ten tracks and
-    // then sets exactly +0x80 = 0, +0x81 = 1, +0x85 = 1, +0x86 = 0). No reader identified yet;
-    // carried so the record starts the way the reference starts it.
-    uint8_t uint81 = 1;
-    // +0x84: the emission rate is live. Clear means the driver hands the emitter a rate of zero
-    // rather than the animated one. The constructor leaves it alone.
-    uint8_t rateActive = 0;
-    // +0x85: the emitter is placed and stepped this frame. Born SET, per the constructor.
+    // +0x78: the emitter's VISIBILITY track, M2Particle's last track (+0x1c8). A byte track is
+    // twelve bytes, so its current value sits at +0x80 -- which an earlier pass named `enabled`
+    // and read as a separate flag. It is the same byte: FUN_0082d2f0 animates the track into
+    // +0x78 and reads +0x80 straight after. The driver only refreshes the ten tracks above when
+    // it is set or the model has never animated, so a hidden emitter keeps its last values.
+    //
+    // The constructor (FUN_00824a00) zeroes +0x00..+0x7f -- the ten tracks and this one's two
+    // cursors -- then writes +0x80 = 0, +0x84 = 1, +0x85 = 1, +0x86 = 0.
+    M2ModelTrack<uint8_t> visibilityTrack = { 0, 0, 0 };
+    // +0x84: the emission rate is live -- visible AND the emitter's own 0x2 (emission on). Clear
+    // means the driver hands the emitter a rate of zero rather than the animated one.
+    uint8_t rateActive = 1;
+    // +0x85: the emitter is placed and stepped this frame: emitting, or still has live particles.
     uint8_t active = 1;
     // +0x86: burst latch, for emitters with M2Particle flag 0x8000. The driver raises the
     // emitter's own 0x40 bit on the frame this goes from clear to set, so a burst fires once

@@ -590,6 +590,14 @@ void CM2Model::AnimateCamerasST() {
     }
 }
 
+// The "does this track carry anything for the current frame" gate every animate pass uses: more
+// than one sequence's keys, or one sequence whose times reach past the model's frame cursor.
+template<class T>
+static bool M2TrackLive(const M2Track<T>& track, uint32_t frame) {
+    return track.sequenceTimes.Count() > 1
+        || (track.sequenceTimes.Count() == 1 && track.sequenceTimes[0].times.Count() > frame);
+}
+
 // ref: FUN_0082f0f0
 void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vector& a4, float a5, float a6) {
     if (!this->m_loaded) {
@@ -1150,9 +1158,58 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
         }
     }
 
+    // The ribbons' track pass (0x0082fdxx, the loop over M2Data +0x120 with records 0xb0 apart
+    // and state 0x50 apart). This was missing outright: the ribbon driver further down forwarded
+    // M2ModelRibbon's values on the understanding that this pass had filled them, and nothing
+    // did, so every ribbon ran on its constructor defaults. Visibility defaults to 1 and alpha to
+    // 1.0; the rest to 0. The texture slot is the 16-bit instantiation, FUN_0082bb50.
+    if (this->m_ribbons) {
+        auto data = this->m_shared->m_data;
+
+        for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+            const M2Ribbon& ribbon = data->ribbons[i];
+            M2ModelRibbon& state = this->m_ribbons[i];
+
+            // Frozen-only guard, as in the particle pass: the reference indexes m_bones unchecked.
+            M2ModelBone* bone = ribbon.boneIndex < data->bones.Count() ? &this->m_bones[ribbon.boneIndex] : nullptr;
+
+            if (M2TrackLive(ribbon.visibilityTrack, this->uint90)) {
+                uint8_t visible = 1;
+                M2AnimateTrack<uint8_t, uint8_t>(this, bone, ribbon.visibilityTrack, state.visibilityTrack, visible);
+            }
+
+            if (M2TrackLive(ribbon.colorTrack, this->uint90)) {
+                C3Vector black = { 0.0f, 0.0f, 0.0f };
+                M2AnimateTrack<C3Vector, C3Vector>(this, bone, ribbon.colorTrack, state.colorTrack, black);
+            }
+
+            if (M2TrackLive(ribbon.alphaTrack, this->uint90)) {
+                float opaque = 1.0f;
+                M2AnimateTrack<fixed16, float>(this, bone, ribbon.alphaTrack, state.alphaTrack, opaque);
+            }
+
+            if (M2TrackLive(ribbon.heightAboveTrack, this->uint90)) {
+                float zero = 0.0f;
+                M2AnimateTrack<float, float>(this, bone, ribbon.heightAboveTrack, state.heightAboveTrack, zero);
+            }
+
+            if (M2TrackLive(ribbon.heightBelowTrack, this->uint90)) {
+                float zero = 0.0f;
+                M2AnimateTrack<float, float>(this, bone, ribbon.heightBelowTrack, state.heightBelowTrack, zero);
+            }
+
+            if (M2TrackLive(ribbon.textureSlotTrack, this->uint90)) {
+                uint16_t first = 0;
+                M2AnimateTrack<uint16_t, uint16_t>(this, bone, ribbon.textureSlotTrack, state.textureSlotTrack, first);
+            }
+        }
+    }
+
     this->m_flag400 = 0;
 
-    // TODO particles
+    if (this->m_shared->m_data->particles.Count() && this->m_particles) {
+        this->AnimateParticleTracks();
+    }
 
     if (this->m_attachments || this->m_attachList) {
         this->AnimateAttachmentsMT();
@@ -1336,7 +1393,7 @@ void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
         } else {
             emitter->m_flags &= ~0x1u;
         }
-    } else if (!runtime.enabled || runtime.emissionRateTrack.currentValue <= 0.0f) {
+    } else if (!runtime.visibilityTrack.currentValue || runtime.emissionRateTrack.currentValue <= 0.0f) {
         runtime.burstLatch = 0;
     } else {
         // A burst fires on the EDGE, not while held: the emitter's 0x40 is raised only on the
@@ -1356,7 +1413,7 @@ void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
 
     // A culled emitter keeps last frame's values; a model that has never animated gets them
     // anyway, which is what seeds an emitter on its first frame.
-    if (runtime.enabled || this->uint90 == 0) {
+    if (runtime.visibilityTrack.currentValue || this->uint90 == 0) {
         if (M2ParticleTrackDrives(file.speedTrack, this->uint90)) {
             emitter->m_speed = runtime.speedTrack.currentValue;
         }
@@ -1474,39 +1531,75 @@ void CM2Model::AnimateParticleEmitter(float dt, int32_t index) {
     }
 }
 
+// ref: FUN_0082d2f0
+// The emitters' track pass, called from the end of AnimateMT when the model has particles.
+// Per emitter: animate the visibility track (default visible), derive the two gates the driver
+// reads -- rateActive is visible AND the emitter's own emission bit 0x2, active is rateActive OR
+// particles still alive -- OR active into the model's 0x400 bit, and only then, if visible or the
+// model has never animated, animate the ten float tracks. Every default is 0; the stand-in this
+// replaces used 1.0 for speed and life and set the gates without the visibility track at all,
+// and nothing called it.
+//
+// The bone is the record's boneIndex into m_bones with no check in the reference; frozen keeps
+// the out-of-range guard its other emitter code carries, passing no bone (the default value).
 void CM2Model::AnimateParticleTracks() {
-    if (!this->m_particles || !this->m_shared || !this->m_shared->m_data) {
-        return;
-    }
+    auto data = this->m_shared->m_data;
 
-    for (int32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
-        auto& particle = this->m_shared->m_data->particles[i];
-        auto& modelParticle = this->m_particles[i];
+    for (uint32_t i = 0; i < data->particles.Count(); i++) {
+        const M2Particle& particle = data->particles[i];
+        M2ModelParticle& state = this->m_particles[i];
+        CM2ParticleEmitter* emitter = this->m_particleEmitters[i];
 
-        auto bone = particle.boneIndex < this->m_shared->m_data->bones.Count()
-            ? &this->m_bones[particle.boneIndex]
-            : nullptr;
+        M2ModelBone* bone = particle.boneIndex < data->bones.Count() ? &this->m_bones[particle.boneIndex] : nullptr;
 
-        // speed and life default to 1.0, not 0.0: an emitter whose track carries no keys still
-        // emits, and a particle with no speed and no lifespan is not a particle. Both defaults are
-        // carried over from the stand-in sampler this replaces; the reference's own have not been
-        // read yet.
-        M2AnimateTrack<float, float>(this, bone, particle.speedTrack, modelParticle.speedTrack, 1.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.variationTrack, modelParticle.variationTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.latitudeTrack, modelParticle.latitudeTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.longitudeTrack, modelParticle.longitudeTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.gravityTrack, modelParticle.gravityTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.lifeTrack, modelParticle.lifeTrack, 1.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.emissionRateTrack, modelParticle.emissionRateTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.widthTrack, modelParticle.widthTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.lengthTrack, modelParticle.lengthTrack, 0.0f);
-        M2AnimateTrack<float, float>(this, bone, particle.zsourceTrack, modelParticle.zsourceTrack, 0.0f);
+        if (M2TrackLive(particle.visibilityTrack, this->uint90)) {
+            uint8_t visible = 1;
+            M2AnimateTrack<uint8_t, uint8_t>(this, bone, particle.visibilityTrack, state.visibilityTrack, visible);
+        }
 
-        // The gates the reference's driver latches and reads: whether the emitter ran at all, and
-        // whether it is handed the animated rate or zero.
-        modelParticle.enabled = 1;
-        modelParticle.rateActive = modelParticle.emissionRateTrack.currentValue > 0.0f ? 1 : 0;
-        modelParticle.active = this->m_flag10000 || this->m_flag20000 ? 1 : 0;
+        state.rateActive = (state.visibilityTrack.currentValue && emitter && (emitter->m_flags & 0x2)) ? 1 : 0;
+        state.active = (state.rateActive || (emitter && emitter->HasLiveParticles())) ? 1 : 0;
+
+        if (state.active) {
+            this->m_flag400 = 1;
+        }
+
+        if (!state.visibilityTrack.currentValue && this->uint90 != 0) {
+            continue;
+        }
+
+        const float zero = 0.0f;
+
+        if (M2TrackLive(particle.speedTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.speedTrack, state.speedTrack, zero);
+        }
+        if (M2TrackLive(particle.variationTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.variationTrack, state.variationTrack, zero);
+        }
+        if (M2TrackLive(particle.latitudeTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.latitudeTrack, state.latitudeTrack, zero);
+        }
+        if (M2TrackLive(particle.longitudeTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.longitudeTrack, state.longitudeTrack, zero);
+        }
+        if (M2TrackLive(particle.gravityTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.gravityTrack, state.gravityTrack, zero);
+        }
+        if (M2TrackLive(particle.lifeTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.lifeTrack, state.lifeTrack, zero);
+        }
+        if (M2TrackLive(particle.emissionRateTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.emissionRateTrack, state.emissionRateTrack, zero);
+        }
+        if (M2TrackLive(particle.widthTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.widthTrack, state.widthTrack, zero);
+        }
+        if (M2TrackLive(particle.lengthTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.lengthTrack, state.lengthTrack, zero);
+        }
+        if (M2TrackLive(particle.zsourceTrack, this->uint90)) {
+            M2AnimateTrack<float, float>(this, bone, particle.zsourceTrack, state.zsourceTrack, zero);
+        }
     }
 }
 
