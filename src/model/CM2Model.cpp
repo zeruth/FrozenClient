@@ -739,6 +739,71 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
             modelBone.sequence.uint6 = i;
         }
 
+        // The SECONDARY sequence, the one a blend fades out of (0x82f53c..0x82f6ff). Missing until
+        // 2026-10-01: nothing advanced it, so M2AnimateTrack's blend sampled the secondary at a
+        // frozen time and nothing ever expired it. The same bookkeeping as the primary above, with
+        // three differences the reference makes: a sequence with no secondary inherits the
+        // parent's, or the primary's own on bone 0, or bone 0's; the clamp-at-end test reads
+        // sequence flag 0x80 where the primary reads 0x1; and once the scene clock passes the
+        // blend's end (uint9C) the slot is cleared, ending the blend.
+        {
+            M2ModelBoneSeq& second = modelBone.secondarySequence;
+
+            if (second.uint8 == 0xFFFF) {
+                if (bone.parentIndex < this->m_shared->m_data->bones.Count()) {
+                    second.uint0 = this->m_bones[bone.parentIndex].secondarySequence.uint0;
+                    second.uint4 = this->m_bones[bone.parentIndex].secondarySequence.uint4;
+                } else if (i == 0) {
+                    second.uint0 = modelBone.sequence.uint0;
+                    second.uint4 = modelBone.sequence.uint4;
+                } else {
+                    second.uint0 = this->m_bones[0].secondarySequence.uint0;
+                    second.uint4 = this->m_bones[0].secondarySequence.uint4;
+                }
+            } else {
+                if (this->m_time) {
+                    second.uintC += elapsedTime;
+                    second.uint10 += elapsedTime;
+                }
+
+                uint32_t now = this->m_scene->m_time;
+                auto& sequence = this->m_shared->m_data->sequences[second.uint8];
+                uint32_t frame = 0;
+                bool clampAtEnd = false;
+
+                if (sequence.flags & 0x80) {
+                    // The end time is still ahead: play on, from no earlier than the start.
+                    if (second.uint10 != now && static_cast<int32_t>(second.uint10 - now) >= 0) {
+                        if (second.uintC != now && static_cast<int32_t>(second.uintC - now) >= 0) {
+                            now = second.uintC;
+                        }
+                    } else {
+                        clampAtEnd = true;
+                    }
+                }
+
+                if (clampAtEnd) {
+                    int32_t played = static_cast<int32_t>(CMath::fuint(static_cast<float>(static_cast<int32_t>(second.uint10 - second.uintC)) * second.float14)) + static_cast<int32_t>(second.uint1C);
+
+                    if (played < 0) {
+                        frame = 0;
+                    } else {
+                        frame = std::min(static_cast<uint32_t>(played), sequence.duration);
+                    }
+                } else if (sequence.duration) {
+                    uint32_t played = CMath::fuint(static_cast<float>(static_cast<int32_t>(now - second.uintC)) * second.float14);
+                    frame = (played + second.uint1C) % sequence.duration;
+                }
+
+                second.uint0 = frame;
+                second.uint4 = second.uint8;
+
+                if (static_cast<int32_t>(this->m_scene->m_time - modelBone.uint9C) >= 0) {
+                    second.uint8 = 0xFFFF;
+                }
+            }
+        }
+
         // How far this bone has blended from its secondary sequence into its primary one.
         // Ported 2026-09-24; this was a bare TODO, and with it the weight stayed zero and
         // M2AnimateTrack's blend had nothing to work from, so every animation transition
@@ -746,10 +811,14 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
         if (modelBone.sequence.uint8 == 0xFFFF && modelBone.secondarySequence.uint8 == 0xFFFF) {
             // No sequence on either slot: inherit, so a whole unanimated subtree fades
             // with whatever is driving its root rather than snapping against it.
+            // Parent's weight; bone 0 with no parent gets 0; any other parentless bone takes
+            // bone 0's (0x82f72c..0x82f74f).
             if (bone.parentIndex < this->m_shared->m_data->bones.Count()) {
                 modelBone.floatA8 = this->m_bones[bone.parentIndex].floatA8;
-            } else {
+            } else if (i == 0) {
                 modelBone.floatA8 = 0.0f;
+            } else {
+                modelBone.floatA8 = this->m_bones[0].floatA8;
             }
         } else if (modelBone.sequence.uint0 == modelBone.secondarySequence.uint0
                 && modelBone.sequence.uint4 == modelBone.secondarySequence.uint4) {
@@ -883,9 +952,11 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
                 }
 
                 boneLocalMatrix = C44Matrix(modelBone.rotationTrack.currentValue);
-            } else {
-                // TODO
             }
+
+            // No rotation track: the reference writes the identity into its local matrix here
+            // (0x82fc53, the diagonal from one st(0) of 1.0 and every other slot zero), which is
+            // what boneLocalMatrix was constructed as -- so there is nothing to do.
 
             if (bone.scaleTrack.sequenceTimes.Count()) {
                 auto& scaleTrack = bone.scaleTrack;
@@ -901,8 +972,12 @@ void CM2Model::AnimateMT(const C44Matrix* view, const C3Vector& a3, const C3Vect
                 boneLocalMatrix.Scale(modelBone.scaleTrack.currentValue);
             }
 
-            // TODO
-            // conditional involving bone flags and a matrix member of M2ModelBone
+            // An externally supplied matrix for this bone (SetBoneMatrix), applied when the bone
+            // carries flag 0x80 -- the reference tests the flags' low byte as a SIGNED char, so
+            // `< 0` is bit 7 -- and the matrix exists. After the scale, before the translation.
+            if ((boneFlags & 0x80) && modelBone.matrix88) {
+                boneLocalMatrix *= *modelBone.matrix88;
+            }
 
             C3Vector translation;
 

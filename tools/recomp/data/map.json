@@ -59067,16 +59067,16 @@
   "status": "ported"
  },
  "0082f0f0": {
-  "branchRatio": 0.48,
+  "branchRatio": 0.566,
   "constOverlap": 0.021,
-  "faithful": false,
-  "fidelity": 0.955,
+  "faithful": true,
+  "fidelity": 0.977,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMT",
-  "frozenSize": 5596,
+  "frozenSize": 7324,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 6267,
