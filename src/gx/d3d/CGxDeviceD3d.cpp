@@ -676,163 +676,126 @@ void CGxDeviceD3d::DsSet(EDeviceState state, uint32_t val) {
         return;
     }
 
-    switch (state) {
-    // TODO handle other device states
+    // COMPLETED 2026-10-01 from FUN_006a3c40. The enum already mirrored the reference's indices
+    // one for one, but this switch sent only the blend factors, the three filters, U/V wrap and
+    // nine render states; everything else -- max anisotropy, texture-transform flags, the
+    // coordinate index, the stage combiners and their arguments, the material sources, ambient,
+    // fog, lighting, specular, clip planes and point scale -- was cached here and never sent.
+    if (state >= Ds_TssMagFilter0 && state <= Ds_TssMagFilter15) {
+        this->m_d3dDevice->SetSamplerState(state - Ds_TssMagFilter0, D3DSAMP_MAGFILTER, val);
+    } else if (state >= Ds_TssMinFilter0 && state <= Ds_TssMinFilter15) {
+        this->m_d3dDevice->SetSamplerState(state - Ds_TssMinFilter0, D3DSAMP_MINFILTER, val);
+    } else if (state >= Ds_TssMipFilter0 && state <= Ds_TssMipFilter15) {
+        this->m_d3dDevice->SetSamplerState(state - Ds_TssMipFilter0, D3DSAMP_MIPFILTER, val);
+    } else if (state >= Ds_TssWrapU0 && state <= Ds_TssWrapU15) {
+        this->m_d3dDevice->SetSamplerState(state - Ds_TssWrapU0, D3DSAMP_ADDRESSU, val);
+    } else if (state >= Ds_TssWrapV0 && state <= Ds_TssWrapV15) {
+        this->m_d3dDevice->SetSamplerState(state - Ds_TssWrapV0, D3DSAMP_ADDRESSV, val);
+    } else if (state >= Ds_TssTTF0 && state <= Ds_TssTTF7) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssTTF0, D3DTSS_TEXTURETRANSFORMFLAGS, val);
+    } else if (state >= Ds_TssMaxAnisotropy0 && state <= Ds_TssMaxAnisotropy15) {
+        this->m_d3dDevice->SetSamplerState(state - Ds_TssMaxAnisotropy0, D3DSAMP_MAXANISOTROPY, val);
+    } else if (state >= Ds_TssTexCoordIndex0 && state <= Ds_TssTexCoordIndex7) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssTexCoordIndex0, D3DTSS_TEXCOORDINDEX, val);
+    } else if (state >= Ds_TssColorOp0 && state <= Ds_TssColorOp7) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssColorOp0, D3DTSS_COLOROP, val);
+    } else if (state >= Ds_TssAlphaOp0 && state <= Ds_TssAlphaOp7) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssAlphaOp0, D3DTSS_ALPHAOP, val);
+    } else if (state >= Ds_TssColorArg10 && state <= Ds_TssColorArg17) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssColorArg10, D3DTSS_COLORARG1, val);
+    } else if (state >= Ds_TssColorArg20 && state <= Ds_TssColorArg27) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssColorArg20, D3DTSS_COLORARG2, val);
+    } else if (state >= Ds_TssAlphaArg10 && state <= Ds_TssAlphaArg17) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssAlphaArg10, D3DTSS_ALPHAARG1, val);
+    } else if (state >= Ds_TssAlphaArg20 && state <= Ds_TssAlphaArg27) {
+        this->m_d3dDevice->SetTextureStageState(state - Ds_TssAlphaArg20, D3DTSS_ALPHAARG2, val);
+    } else {
+        switch (state) {
+            case Ds_SrcBlend:
+                this->m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, val);
+                break;
+            case Ds_DstBlend:
+                this->m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, val);
+                break;
+            case Ds_AmbientMaterialSource:
+                this->m_d3dDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, val);
+                break;
+            case Ds_DiffuseMaterialSource:
+                this->m_d3dDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, val);
+                break;
+            case Ds_SpecularMaterialSource:
+                this->m_d3dDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE, val);
+                break;
+            case Ds_EmissiveMaterialSource:
+                this->m_d3dDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE, val);
+                break;
+            case Ds_Ambient:
+                this->m_d3dDevice->SetRenderState(D3DRS_AMBIENT, val);
+                break;
+            case Ds_AlphaBlendEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, val);
+                break;
+            case Ds_AlphaTestEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, val);
+                break;
+            case Ds_AlphaRef:
+                this->m_d3dDevice->SetRenderState(D3DRS_ALPHAREF, val);
+                break;
+            case Ds_FogEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_FOGENABLE, val);
+                break;
+            case Ds_ZWriteEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, val);
+                break;
+            case Ds_ColorWriteEnable: {
+                // Takes the Gx channel mask (red 1, blue 2, green 4, alpha 8) and remaps it.
+                uint32_t mask = (val & 0x1) ? D3DCOLORWRITEENABLE_RED : 0;
 
-    case Ds_SrcBlend: {
-        this->m_d3dDevice->SetRenderState(D3DRS_SRCBLEND, val);
-        break;
-    }
+                if (val & 0x4) {
+                    mask |= D3DCOLORWRITEENABLE_GREEN;
+                }
 
-    case Ds_DstBlend: {
-        this->m_d3dDevice->SetRenderState(D3DRS_DESTBLEND, val);
-        break;
-    }
+                if (val & 0x2) {
+                    mask |= D3DCOLORWRITEENABLE_BLUE;
+                }
 
-    case Ds_TssMagFilter0:
-    case Ds_TssMagFilter1:
-    case Ds_TssMagFilter2:
-    case Ds_TssMagFilter3:
-    case Ds_TssMagFilter4:
-    case Ds_TssMagFilter5:
-    case Ds_TssMagFilter6:
-    case Ds_TssMagFilter7:
-    case Ds_TssMagFilter8:
-    case Ds_TssMagFilter9:
-    case Ds_TssMagFilter10:
-    case Ds_TssMagFilter11:
-    case Ds_TssMagFilter12:
-    case Ds_TssMagFilter13:
-    case Ds_TssMagFilter14:
-    case Ds_TssMagFilter15: {
-        auto tmu = state - Ds_TssMagFilter0;
-        this->m_d3dDevice->SetSamplerState(tmu, D3DSAMP_MAGFILTER, val);
+                if (val & 0x8) {
+                    mask |= D3DCOLORWRITEENABLE_ALPHA;
+                }
 
-        break;
-    }
-
-    case Ds_TssMinFilter0:
-    case Ds_TssMinFilter1:
-    case Ds_TssMinFilter2:
-    case Ds_TssMinFilter3:
-    case Ds_TssMinFilter4:
-    case Ds_TssMinFilter5:
-    case Ds_TssMinFilter6:
-    case Ds_TssMinFilter7:
-    case Ds_TssMinFilter8:
-    case Ds_TssMinFilter9:
-    case Ds_TssMinFilter10:
-    case Ds_TssMinFilter11:
-    case Ds_TssMinFilter12:
-    case Ds_TssMinFilter13:
-    case Ds_TssMinFilter14:
-    case Ds_TssMinFilter15: {
-        auto tmu = state - Ds_TssMinFilter0;
-        this->m_d3dDevice->SetSamplerState(tmu, D3DSAMP_MINFILTER, val);
-
-        break;
-    }
-
-    case Ds_TssMipFilter0:
-    case Ds_TssMipFilter1:
-    case Ds_TssMipFilter2:
-    case Ds_TssMipFilter3:
-    case Ds_TssMipFilter4:
-    case Ds_TssMipFilter5:
-    case Ds_TssMipFilter6:
-    case Ds_TssMipFilter7:
-    case Ds_TssMipFilter8:
-    case Ds_TssMipFilter9:
-    case Ds_TssMipFilter10:
-    case Ds_TssMipFilter11:
-    case Ds_TssMipFilter12:
-    case Ds_TssMipFilter13:
-    case Ds_TssMipFilter14:
-    case Ds_TssMipFilter15: {
-        auto tmu = state - Ds_TssMipFilter0;
-        this->m_d3dDevice->SetSamplerState(tmu, D3DSAMP_MIPFILTER, val);
-
-        break;
-    }
-
-    case Ds_TssWrapU0:
-    case Ds_TssWrapU1:
-    case Ds_TssWrapU2:
-    case Ds_TssWrapU3:
-    case Ds_TssWrapU4:
-    case Ds_TssWrapU5:
-    case Ds_TssWrapU6:
-    case Ds_TssWrapU7:
-    case Ds_TssWrapU8:
-    case Ds_TssWrapU9:
-    case Ds_TssWrapU10:
-    case Ds_TssWrapU11:
-    case Ds_TssWrapU12:
-    case Ds_TssWrapU13:
-    case Ds_TssWrapU14:
-    case Ds_TssWrapU15: {
-        auto tmu = state - Ds_TssWrapU0;
-        this->m_d3dDevice->SetSamplerState(tmu, D3DSAMP_ADDRESSU, val);
-
-        break;
-    }
-
-    case Ds_TssWrapV0:
-    case Ds_TssWrapV1:
-    case Ds_TssWrapV2:
-    case Ds_TssWrapV3:
-    case Ds_TssWrapV4:
-    case Ds_TssWrapV5:
-    case Ds_TssWrapV6:
-    case Ds_TssWrapV7:
-    case Ds_TssWrapV8:
-    case Ds_TssWrapV9:
-    case Ds_TssWrapV10:
-    case Ds_TssWrapV11:
-    case Ds_TssWrapV12:
-    case Ds_TssWrapV13:
-    case Ds_TssWrapV14:
-    case Ds_TssWrapV15: {
-        auto tmu = state - Ds_TssWrapV0;
-        this->m_d3dDevice->SetSamplerState(tmu, D3DSAMP_ADDRESSV, val);
-
-        break;
-    }
-
-    case Ds_AlphaBlendEnable: {
-        this->m_d3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, val);
-        break;
-    }
-
-    case Ds_AlphaTestEnable: {
-        this->m_d3dDevice->SetRenderState(D3DRS_ALPHATESTENABLE, val);
-        break;
-    }
-
-    case Ds_ColorWriteEnable: {
-        this->m_d3dDevice->SetRenderState(D3DRS_COLORWRITEENABLE, val);
-        break;
-    }
-
-    case Ds_AlphaRef: {
-        this->m_d3dDevice->SetRenderState(D3DRS_ALPHAREF, val);
-        break;
-    }
-
-    case Ds_ZWriteEnable: {
-        this->m_d3dDevice->SetRenderState(D3DRS_ZWRITEENABLE, val);
-        break;
-    }
-
-    case Ds_CullMode: {
-        this->m_d3dDevice->SetRenderState(D3DRS_CULLMODE, val);
-        break;
-    }
-
-    case Ds_ZFunc: {
-        this->m_d3dDevice->SetRenderState(D3DRS_ZFUNC, val);
-        break;
-    }
+                this->m_d3dDevice->SetRenderState(D3DRS_COLORWRITEENABLE, mask);
+                break;
+            }
+            case Ds_Lighting:
+                this->m_d3dDevice->SetRenderState(D3DRS_LIGHTING, val);
+                break;
+            case Ds_SpecularEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_SPECULARENABLE, val);
+                break;
+            case Ds_CullMode:
+                this->m_d3dDevice->SetRenderState(D3DRS_CULLMODE, val);
+                break;
+            case Ds_ClipPlaneEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, val);
+                break;
+            case Ds_ZFunc:
+                this->m_d3dDevice->SetRenderState(D3DRS_ZFUNC, val);
+                break;
+            case Ds_PointScaleA:
+                this->m_d3dDevice->SetRenderState(D3DRS_POINTSCALE_A, val);
+                break;
+            case Ds_PointScaleB:
+                this->m_d3dDevice->SetRenderState(D3DRS_POINTSCALE_B, val);
+                break;
+            case Ds_PointScaleC:
+                this->m_d3dDevice->SetRenderState(D3DRS_POINTSCALE_C, val);
+                break;
+            case Ds_PointScaleEnable:
+                this->m_d3dDevice->SetRenderState(D3DRS_POINTSCALEENABLE, val);
+                break;
+            default:
+                break;
+        }
     }
 
     this->m_deviceStates[state] = val;
@@ -1274,6 +1237,7 @@ void CGxDeviceD3d::ResetRsSendCaches() {
     this->m_d3dLighting = 0xFFFFFFFF;
     this->m_d3dFogEnable = 0xFFFFFFFF;
     this->m_d3dPointScaleEnable = 0xFFFFFFFF;
+    this->m_d3dColorWrite = 0xFFFFFFFF;
     CGxDeviceD3d::s_d3dNormalizeNormals = 0xFFFFFFFF;
 }
 
@@ -1472,7 +1436,12 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
             mask |= D3DCOLORWRITEENABLE_ALPHA;
         }
 
-        this->DsSet(Ds_ColorWriteEnable, mask);
+        // Sent directly with its own cache, as the reference does at +0x3e74; DsSet's slot for
+        // this state takes the Gx mask instead and remaps it itself.
+        if (this->m_d3dColorWrite != mask) {
+            this->m_d3dDevice->SetRenderState(D3DRS_COLORWRITEENABLE, mask);
+            this->m_d3dColorWrite = mask;
+        }
 
         break;
     }

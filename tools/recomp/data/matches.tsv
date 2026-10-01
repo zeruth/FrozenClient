@@ -2365,7 +2365,7 @@ addr	how	frozen	evidence
 006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
 006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
 006a39e0	override	CGxDeviceD3d::ISetVertexBuffer	
-006a3c40	annotated	CGxDeviceD3d::DsSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a3c40	override	CGxDeviceD3d::DsSet	
 006a4100	annotated	CGxDeviceD3d::ISetTexCoordIndex	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a4190	annotated	CGxDeviceD3d::ISetColorOp	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a41f0	annotated	CGxDeviceD3d::ISetAlphaOp	tag in src/gx/d3d/CGxDeviceD3d.cpp

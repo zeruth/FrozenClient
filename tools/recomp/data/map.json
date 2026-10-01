@@ -37778,7 +37778,7 @@
   "status": "ported"
  },
  "006a3c40": {
-  "branchRatio": 0.067,
+  "branchRatio": 0.146,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
@@ -37788,10 +37788,10 @@
   ],
   "frozen": "CGxDeviceD3d::DsSet",
   "frozenSize": 582,
-  "how": "annotated",
+  "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 873,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a4100": {
   "branchRatio": 0.143,
@@ -37954,7 +37954,7 @@
   "status": "ported"
  },
  "006a4c30": {
-  "branchRatio": 0.369,
+  "branchRatio": 0.365,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.643,

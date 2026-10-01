@@ -263,6 +263,7 @@ class CGxDeviceD3d : public CGxDevice {
     // (D3DRS_LIGHTING's cache, +0x3e78, is m_d3dLighting below, shared with IStateSyncLights.)
     uint32_t m_d3dFogEnable = 0xFFFFFFFF;       // +0x3e6c
     uint32_t m_d3dPointScaleEnable = 0xFFFFFFFF; // +0x3e98
+    uint32_t m_d3dColorWrite = 0xFFFFFFFF;       // +0x3e74
     // A global in the reference (DAT_00ad8f88), shared by every device.
     static uint32_t s_d3dNormalizeNormals;
     void ResetRsSendCaches();
