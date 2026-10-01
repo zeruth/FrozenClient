@@ -27,10 +27,10 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-01 17:59) | at completion |
+| | 2026-10-01 start | now (2026-10-01 18:05) | at completion |
 |---|---|---|---|
 | render surface linked | 1,267 / 4,838 (26%) | 1,441 / 5,390 (27%) | 5,390 |
-| render surface faithful | not measured | 911 (17%) | 5,390 |
+| render surface faithful | not measured | 912 (17%) | 5,390 |
 | render surface stubs | 20 | 32 | 0 |
 | empty functions with live render call sites | 37 | 37 | 0 |
 | render surface attributed by anchor guess | 63% | 49% | low |
@@ -99,8 +99,8 @@ functions in the client. Closing it first also stabilises the matchers for every
 hangs off `CM2Model`.
 
 - **Roots** (`--fix`, fidelity in brackets): `CM2Model::InitializeLoaded` [58%, 5.6 KB, 42
-  callers], `CM2Scene::Animate` [67%], `CM2Model::AnimateMT` [16%], `AnimateMTSimple` [75%],
-  `SetWorldTransform` [17%], `CM2SceneRender::Draw` [86%], `SetupLighting` [56%],
+  callers], `CM2Scene::Animate` [67%], ~~`CM2Model::AnimateMT` [16%]~~ (faithful 2026-10-01), `AnimateMTSimple` [75%],
+  ~~`SetWorldTransform` [17%]~~ (faithful 2026-10-01), `CM2SceneRender::Draw` [86%], `SetupLighting` [56%],
   `SetupTextures` [67%], `SelectLights` [67%], `CM2Lighting::SetupGxFog` [33%],
   `ReplaceTexture` [43%], `OptimizeVisibleGeometry` [89%].
 - **Stubs with live callers:** `DrawBatchDoodad`, `DrawBatchProj` (`FUN_00829aa0`, plus
@@ -245,3 +245,4 @@ stubs, then live empty functions.
 | 2026-10-01 17:52 | 1,441 / 5,390 | 911 | 32 | 37 | phase 1: `AnimateMT` 48% -> 64%, from two passes that were missing outright. The RIBBON track pass did not exist -- the ribbon driver forwarded colour, alpha, heights and texture slot from state nothing animated, so every ribbon ran on its constructor defaults. The PARTICLE track pass existed as `AnimateParticleTracks` with no caller; it is now the port of `FUN_0082d2f0` (visibility track, the rate/active gates from the emitter's own bits and live particles, the model's 0x400 bit, then the ten tracks, all defaulting to 0 where the stand-in guessed 1.0) and runs from `AnimateMT`'s tail. Found on the way: frozen's particle `enabled` byte was the visibility track's value, and the constructor's second write is +0x84 not +0x81. The 16-bit `M2AnimateTrack` (`FUN_0082bb50`) now exists and links, kept out of line like its siblings. Two hand verdicts recorded with reasons. Client linked 4,766 -> 4,768, faithful 2,526 -> 2,528 |
 | 2026-10-01 17:55 | 1,441 / 5,390 | 911 | 32 | 37 | phase 1: `AnimateMT` 64% -> 89% call order. The bone BILLBOARD is now the reference's: a switch on `boneFlags & 0x78` at 0x82ff3d (spherical 0x8; cylindrical about X, Y, Z for 0x10 / 0x20 / 0x40), transcribed from the disassembly because the decompiler drops which row each `C3Vector::Normalize` acts on, then the reference's rescale by the original row lengths and pivot-preserving translation. It replaces two branches reasoned from what a glow sprite should look like, which a comment defended by claiming the reference does no billboarding there -- the jump table says otherwise. No totals moved: `AnimateMT` is held off faithful only by its branch check (0.43 of the reference's), most of which is the one block still unported, the parent-inheritance variants for `boneFlags & 7`. That is next |
 | 2026-10-01 17:59 | 1,441 / 5,390 | 911 | 32 | 37 | phase 1: `AnimateMT` 89% -> 96% call order, branch ratio 0.43 -> 0.48 (the faithful bar is 0.5). The parent-inheritance variants (0x82f843..0x82fc25) ported from the disassembly: the parent's matrix copied and its 3x3 rebuilt against the model placement by `boneFlags & 6` (2 = parent rotation with model scale, 4 = model rotation with parent scale, 6 = both from the model), translation from the model on bit 0 or else recomputed to hold the pivot. It had been held back over not knowing which variant meant what; the arithmetic does not need the names. Two TODOs remain in the bone transform: the `*= +0x88` matrix on flag 0x80, and the no-rotation-track branch. Not installed: `Frozen.exe` was running, so `build/dist` still has the previous build |
+| 2026-10-01 18:05 | 1,441 / 5,390 | 912 | 32 | 37 | phase 1: **`AnimateMT` is faithful** -- 98% call order, branch ratio 0.57. The last pieces: the SECONDARY sequence's bookkeeping, which did not exist (nothing advanced the sequence a blend fades out of, and nothing ever expired it, so every blend sampled a stuck time and never ended -- its flag test is 0x80 where the primary's is 0x1); the `SetBoneMatrix` override applied on bone flag 0x80 (`*= matrix88`); the blend-weight fallback (a parentless bone other than bone 0 takes bone 0's weight); and the no-rotation-track TODO closed as the identity it already was. From 16% at the start of the day, almost all of it real behaviour: ribbon and particle tracks, billboarding, parent inheritance and secondary-sequence timing. Installed this time. Client faithful 2,528 -> 2,529 |
