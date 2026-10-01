@@ -199,6 +199,43 @@ void CM2Lighting::CameraSpace() {
 
         light->m_posCameraSpace = light->m_pos * this->m_scene->m_view;
     }
+
+    // The LIQUID PLANE, when the model straddles a surface (0x60, both water sides): a point on
+    // the plane (-d along the normal), the normal turned by the view's 3x3 and renormalised, the
+    // point carried through the whole view, and d recomputed from the two. Missing until
+    // 2026-10-01, which left the plane in world space while everything that reads it -- the
+    // scene's water-side test and SetupLighting's clip plane -- works in camera space.
+    if ((this->m_flags & 0x60) == 0x60) {
+        const C44Matrix& view = this->m_scene->m_view;
+        C4Plane& plane = this->m_liquidPlane;
+
+        C3Vector point = { plane.n.x * -plane.d, plane.n.y * -plane.d, plane.n.z * -plane.d };
+
+        C3Vector n = {
+            plane.n.x * view.a0 + view.b0 * plane.n.y + view.c0 * plane.n.z,
+            view.b1 * plane.n.y + view.c1 * plane.n.z + view.a1 * plane.n.x,
+            view.b2 * plane.n.y + view.c2 * plane.n.z + view.a2 * plane.n.x
+        };
+
+        plane.n = n;
+
+        float lengthSq = plane.n.x * plane.n.x + plane.n.y * plane.n.y + plane.n.z * plane.n.z;
+
+        if (0.00000023841858f < lengthSq) {
+            float inv = 1.0f / sqrtf(lengthSq);
+
+            plane.n.x = plane.n.x * inv;
+            plane.n.y = inv * plane.n.y;
+            plane.n.z = inv * plane.n.z;
+        }
+
+        C3Vector placed = point * view;
+
+        plane.d = -(plane.n.x * placed.x + placed.y * plane.n.y + placed.z * plane.n.z);
+    }
+
+    // Done for this frame: Initialize clears the flags again.
+    this->m_flags |= 0x1;
 }
 
 // `memset(this, 0, 0xd4)`, then the scene at +0x0, `|= 0x20` into the flags at +0x14, and the

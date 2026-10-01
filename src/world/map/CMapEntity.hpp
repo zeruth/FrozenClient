@@ -38,10 +38,9 @@ class CMapEntity : public CMapStaticEntity {
         CImVector m_ambientTarget = { 0xFF, 0x00, 0x00, 0x00 };
         float m_dirLightScaleTarget = 0.0f;
         // TODO
-        // Reference +0x80 and +0xbc, reported by CWorld::GetObjectFloor while m_flags7c has 0x20
-        // set; +0x80 is a height its callers compare against a z. Named by offset until the
-        // placement code that writes them is ported.
-        float m_field80 = 0.0f;
+        // Reference +0xbc, reported by CWorld::GetObjectFloor beside the liquid height while
+        // m_flags7c has 0x20 set. (+0x80, the height, moved to CMapStaticEntity::m_liquidHeight
+        // on 2026-10-01: the doodad def uses the same offset, so it belongs to the base.)
         uint16_t m_fieldBC = 0;
         // TODO
 

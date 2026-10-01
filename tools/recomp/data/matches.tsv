@@ -707,7 +707,7 @@ addr	how	frozen	evidence
 004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c2120	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
-004c2270	annotated	TransformVector4	tag in src/world/CWorldScene.cpp
+004c2270	annotated	TransformVector4	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2300	annotated	TransformPointInPlace	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c2370	annotated	C44Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c23d0	annotated	C44Matrix::Transpose	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -3176,6 +3176,7 @@ addr	how	frozen	evidence
 007c0a90	annotated	CMap::AllocAreaLow	tag in src/world/map/CMap.cpp
 007c0ae0	annotated	CMap::FreeAreaLowObject	tag in src/world/map/CMap.cpp
 007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
+007c10c0	annotated	CMapStaticEntity::ApplyWaterSide	tag in src/world/map/CMapDoodadDef.cpp
 007c15f0	override	ClassifyEntityInterior	
 007c1660	annotated	CMap::GetTerrainHeight	tag in src/world/map/CMap.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
@@ -3184,6 +3185,7 @@ addr	how	frozen	evidence
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
 007c2040	annotated	LinkEntityToChunks	tag in src/world/map/CMapStaticEntity.cpp
 007c21e0	annotated	CMapDoodadDef::CMapDoodadDef	tag in src/world/map/CMapDoodadDef.cpp
+007c23f0	annotated	CMapDoodadDef::SelectUnderwater	tag in src/world/map/CMapDoodadDef.cpp
 007c25d0	override	QueryDefSegment	
 007c2700	override	QueryMapObjDefSegment	
 007c28f0	override	QueryEntityMapObj	

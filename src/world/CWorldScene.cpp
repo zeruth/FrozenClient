@@ -526,14 +526,6 @@ void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const
     plane->d = -(y * inv * a.y + a.x * x * inv + a.z * z * inv);
 }
 
-// ref: FUN_004c2270
-// A row vector through a matrix
-static void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m) {
-    out->x = v.x * m.a0 + m.c0 * v.z + m.b0 * v.y + m.d0 * v.w;
-    out->y = m.c1 * v.z + m.a1 * v.x + m.b1 * v.y + m.d1 * v.w;
-    out->z = m.c2 * v.z + m.a2 * v.x + m.b2 * v.y + m.d2 * v.w;
-    out->w = m.c3 * v.z + m.a3 * v.x + m.b3 * v.y + m.d3 * v.w;
-}
 
 // ref: FUN_006bf6d0
 // The eight corners of a view frustum in the space the view matrix maps from: the clip-space

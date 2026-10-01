@@ -11347,8 +11347,8 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "src/world/CWorldScene.cpp",
-   "src/world/cworldscene.cpp"
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "TransformVector4",
   "frozenSize": 0,
@@ -50775,6 +50775,22 @@
   "refSize": 20,
   "status": "ported"
  },
+ "007c10c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapDoodadDef.cpp",
+   "src/world/map/cmapdoodaddef.cpp"
+  ],
+  "frozen": "CMapStaticEntity::ApplyWaterSide",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 129,
+  "status": "ported"
+ },
  "007c15f0": {
   "branchRatio": 0.5,
   "constOverlap": 0.125,
@@ -50902,6 +50918,22 @@
   "module": "MapMem.cpp",
   "refSize": 362,
   "status": "verified"
+ },
+ "007c23f0": {
+  "branchRatio": 0.846,
+  "constOverlap": 0.103,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/world/map/CMapDoodadDef.cpp",
+   "src/world/map/cmapdoodaddef.cpp"
+  ],
+  "frozen": "CMapDoodadDef::SelectUnderwater",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 469,
+  "status": "ported"
  },
  "007c25d0": {
   "branchRatio": 0.636,
@@ -57431,10 +57463,10 @@
   "status": "ported"
  },
  "0081fb10": {
-  "branchRatio": 0.625,
+  "branchRatio": 0.708,
   "constOverlap": 0.026,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.778,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -59611,10 +59643,10 @@
   "status": "ported"
  },
  "008350a0": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "branchRatio": 0.833,
+  "constOverlap": 0.056,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Lighting.cpp",
    "src/model/cm2lighting.cpp"

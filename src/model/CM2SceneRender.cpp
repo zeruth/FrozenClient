@@ -1,4 +1,5 @@
 #include "model/CM2SceneRender.hpp"
+#include "gx/shader/CShaderEffect.hpp"
 #include "model/CM2Ribbon.hpp"
 #include "gx/Device.hpp"
 #include "gx/Draw.hpp"
@@ -60,6 +61,7 @@ EGxBlend CM2SceneRender::s_gxBlend[M2PASS_COUNT][M2BLEND_COUNT] = {
     }
 };
 
+uint32_t CM2SceneRender::s_curElementDword3c = 0;
 int32_t CM2SceneRender::s_shadedList[M2BLEND_COUNT] = {
     1,  // M2BLEND_OPAQUE
     1,  // M2BLEND_ALPHA_KEY
@@ -814,8 +816,7 @@ void CM2SceneRender::SetupLighting() {
 
     CShaderEffect::SetLocalLighting(this->m_curLighting, this->m_curShaded, 0);
 
-    // TODO
-    // dwordD43010 = this->m_curElement->dword3C;
+    CM2SceneRender::s_curElementDword3c = this->m_curElement->dword3c;
 
     if ((this->m_curMaterial->flags & 0x2) || this->m_curLighting->m_fogScale <= 0.0f) {
         this->m_curFogMode = 0;
@@ -874,10 +875,42 @@ void CM2SceneRender::SetupLighting() {
         || this->m_curLighting != this->m_prevLighting
         || ((this->m_curElement->flags & 0x2) != (this->m_prevElement->flags & 0x2))
     ) {
+        // 0x0081fd5e..0x0081fe74. An element flagged 0x2 belongs to a model straddling a water
+        // surface: it is clipped against the lighting's liquid plane, already in camera space
+        // (CM2Lighting::CameraSpace). With shaders on, a D3D-convention device takes user clip
+        // planes in CLIP space, so the plane goes through matrix0 -- the inverse-transpose of the
+        // projection, set by Draw -- first; the reference gates that on the device's +0x1b4, a
+        // second copy of the API id that is 0 only for the legacy OpenGL device, and on
+        // DAT_00d43020, the shaders flag. The pass that draws what is under the surface (2)
+        // keeps the other side, so the plane is negated there.
         if (this->m_curElement->flags & 0x2) {
-            // TODO
-            // - enable clip plane mask for liquid plane
-        } else  {
+            C4Vector plane = {
+                this->m_curLighting->m_liquidPlane.n.x,
+                this->m_curLighting->m_liquidPlane.n.y,
+                this->m_curLighting->m_liquidPlane.n.z,
+                this->m_curLighting->m_liquidPlane.d
+            };
+
+            if (g_theGxDevicePtr->m_api != GxApi_OpenGl && CShaderEffect::s_enableShaders) {
+                C4Vector clip;
+                TransformVector4(&clip, plane, this->matrix0);
+                plane = clip;
+            }
+
+            if (this->m_curPass == 2) {
+                plane.x = -plane.x;
+                plane.y = -plane.y;
+                plane.z = -plane.z;
+                plane.w = -plane.w;
+            }
+
+            C4Plane clipPlane;
+            clipPlane.n = { plane.x, plane.y, plane.z };
+            clipPlane.d = plane.w;
+
+            g_theGxDevicePtr->ClipPlaneSet(0, &clipPlane);
+            GxRsSet(GxRs_ClipPlaneMask, 1);
+        } else {
             GxRsSet(GxRs_ClipPlaneMask, 0);
         }
     }

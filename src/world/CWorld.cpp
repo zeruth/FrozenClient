@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include "world/map/CMapBaseObj.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/CWorldScene.hpp"
 #include <tempest/ColorConvert.hpp>
@@ -783,7 +784,7 @@ int32_t CWorld::GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* he
     auto entity = reinterpret_cast<CMapEntity*>(object);
 
     if (entity && (entity->m_flags7c & 0x20)) {
-        *height = entity->m_field80;
+        *height = entity->m_liquidHeight;
         *fieldBC = entity->m_fieldBC;
         *a4 = 0;
 
@@ -1048,7 +1049,19 @@ void CWorld::SetFarClip(float farClip) {
 // range), FUN_00982970, FUN_00834ab0, FUN_004e2730 and FUN_00834940.
 //
 // TODO the day/night cycle's light; until then every world model gets a fixed sun
+// PARTLY the reference's FUN_00780cd0 (World.cpp), which the map installs on every placed
+// model with the placement object as `arg`. With an object the reference fogs from the
+// day/night state, then calls the object's SelectLights (vtable slot 1) and SelectUnderwater
+// (slot 2), and marks the lighting interior (0x8) when the object is inside a building; with
+// none it uses the outdoor sun. Frozen's lighting below is a STAND-IN for that, and stays one:
+// no SelectLights override is ported yet, so routing an object through slot 1 would strip it
+// of light. What is ported is slot 2 -- the water side, which sets lighting bits 0x20 / 0x40
+// and the liquid plane that CM2Scene::Animate and CM2SceneRender::SetupLighting read.
 void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
+    if (arg) {
+        static_cast<CMapBaseObj*>(arg)->SelectUnderwater(lighting);
+    }
+
     // Fog the model with the same data-driven distance fog the terrain and WMOs use. M2 materials
     // fog in the shader from the model's own lighting (the scene render turns the fixed-function fog
     // off), so it has to be set here or entities stay crisp against fogged terrain.

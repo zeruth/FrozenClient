@@ -75,6 +75,10 @@ C44Matrix operator*(const C44Matrix& l, float a);
 
 C44Matrix operator*(const C44Matrix& l, const C44Matrix& r);
 
+// A row vector through a matrix. Shared by the world scene's frustum and occlusion code and the
+// M2 clip plane. ref: FUN_004c2270
+void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m);
+
 // The transform that puts `eye` at the origin looking from it toward `target`, with `up`
 // deciding the roll. An eye sitting on its target, or a degenerate up, leaves the matrix
 // identity rather than producing nonsense. ref: FUN_006bfe60

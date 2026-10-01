@@ -1,4 +1,10 @@
 #include "world/map/CMapDoodadDef.hpp"
+#include "model/CM2Lighting.hpp"
+#include "world/map/CMap.hpp"
+#include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
+#include "world/map/CMapObjGroup.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapEntity.hpp"
@@ -63,4 +69,110 @@ void CMapDoodadDef::FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint1
     if (exteriorBlend) {
         this->m_interiorDirColor.a = alpha;
     }
+}
+
+// ref: FUN_007c10c0
+// Hand the cached water side to a model's lighting. With no liquid over the entity it is
+// above water only: bit 0x20 on, 0x40 off. With liquid and the top of its box above the surface
+// it straddles it: both bits, and the lighting's liquid plane is the horizontal plane at the
+// surface, (0, 0, 1, -height), which is what CM2SceneRender::SetupLighting clips a straddling
+// model against. With liquid and the whole box under it: below only, 0x40 on, 0x20 off.
+void CMapStaticEntity::ApplyWaterSide(CM2Lighting* lighting) const {
+    if (!(this->m_flags7c & 0x20)) {
+        lighting->m_flags = (lighting->m_flags & ~0x40u) | 0x20;
+
+        return;
+    }
+
+    if (this->m_flags7c & 0x40) {
+        lighting->m_flags |= 0x60;
+        lighting->m_liquidPlane.n = { 0.0f, 0.0f, 1.0f };
+        lighting->m_liquidPlane.d = -this->m_liquidHeight;
+
+        return;
+    }
+
+    lighting->m_flags = (lighting->m_flags & ~0x20u) | 0x40;
+}
+
+// ref: FUN_007c23f0
+// Which side of the water this doodad is on, worked out once and cached in m_flags7c (0x80 marks
+// it done), then applied to the model's lighting. The probe point is the doodad's position at the
+// bottom of its box.
+//
+// A doodad inside a building asks the building first: for each parent that is a placed group, the
+// group's own liquid at the point, taken into the building's space and back. A group whose file has
+// not arrived clears the done bit so the question is asked again next frame. The first parent that
+// is not a group ends the walk and the terrain is asked instead.
+//
+// "Straddling" (0x40 kept) means the surface is at or below the top of the box. On the terrain
+// branch the reference also writes 1.0 to +0x8c (m_opacity here) and clears bit 0x8; both are
+// reproduced.
+void CMapDoodadDef::SelectUnderwater(CM2Lighting* lighting) {
+    if (!(this->m_flags7c & 0x80)) {
+        this->m_flags7c = (this->m_flags7c & ~0x60u) | 0x80;
+
+        C3Vector probe = { this->m_position.x, this->m_position.y, this->m_bounds.b.z };
+
+        bool askTerrain = false;
+
+        for (auto link = this->m_parentLinkList.Head(); link; link = this->m_parentLinkList.Next(link)) {
+            auto parent = link->ref;
+
+            if (!parent || !(parent->GetType() & CMapBaseObj::Type_MapObjDefGroup)) {
+                askTerrain = true;
+                break;
+            }
+
+            auto defGroup = static_cast<CMapObjDefGroup*>(parent);
+            auto defLink = defGroup->m_parentLinkList.Head();
+            auto def = defLink ? static_cast<CMapObjDef*>(defLink->ref) : nullptr;
+            auto group = (def && def->m_mapObj) ? def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0) : nullptr;
+
+            if (!group) {
+                this->m_flags7c &= ~0x80u;
+                continue;
+            }
+
+            C3Vector local = probe * def->m_inversePlacement;
+            uint32_t liquidType = 0;
+            float height = 0.0f;
+
+            if (group->GetLiquidAt(local, &liquidType, &height)) {
+                this->m_flags7c |= 0x20;
+
+                C3Vector surface = { local.x, local.y, height };
+                this->m_liquidHeight = (surface * def->m_placement).z;
+
+                if (this->m_liquidHeight <= this->m_bounds.t.z) {
+                    this->m_flags7c |= 0x40 | 0x80;
+                } else {
+                    this->m_flags7c = (this->m_flags7c & ~0x40u) | 0x80;
+                }
+
+                this->ApplyWaterSide(lighting);
+
+                return;
+            }
+        }
+
+        if (askTerrain) {
+            this->m_flags7c |= 0x80;
+
+            uint32_t liquidType = 0;
+
+            if (CMap::GetTerrainLiquid(probe, &liquidType, &this->m_liquidHeight, 0)) {
+                uint32_t flags = this->m_flags7c;
+                this->m_opacity = 1.0f;
+
+                if (this->m_liquidHeight <= this->m_bounds.t.z) {
+                    this->m_flags7c = (flags & ~0x8u) | 0x60;
+                } else {
+                    this->m_flags7c = (flags & ~0x48u) | 0x20;
+                }
+            }
+        }
+    }
+
+    this->ApplyWaterSide(lighting);
 }

@@ -37,6 +37,8 @@ class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef
         // Vtable slot 3. Tagged on the definition in the .cpp, not here.
         void FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint16_t* face,
                         const C3Vector* point) override;
+        // Vtable slot 2 (0x00a40320). Tagged on the definition.
+        void SelectUnderwater(CM2Lighting* lighting) override;
         // TODO +0x158 onwards beyond the sound kit
         // The doodad's own sound emitter, stopped by CMap::FreeDoodadDef before the def is released.
         SOUNDKITOBJECT m_soundKit;        // +0x158

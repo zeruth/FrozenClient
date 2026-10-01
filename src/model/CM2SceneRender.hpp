@@ -25,6 +25,9 @@ class CM2SceneRender {
         static int32_t s_fogModeList[M2BLEND_COUNT];
         static EGxBlend s_gxBlend[M2PASS_COUNT][M2BLEND_COUNT];
         static int32_t s_shadedList[M2BLEND_COUNT];
+        // DAT_00d43010: the current element's dword3c, published by SetupLighting for the shader
+        // permutation selector (FUN_00872de0, which reads it at 0x872e03; not ported yet).
+        static uint32_t s_curElementDword3c;
 
         // Shadow map caster mode. When set, batches are drawn with the reference's ShadowMap /
         // ShadowMapSL effect instead of their own material effect, and the bone matrices are

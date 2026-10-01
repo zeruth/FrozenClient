@@ -54,6 +54,14 @@ class CMapStaticEntity : public CMapBaseObj {
         // FUN_007c1730 ...) keeps 0x20/0x40/0x80/0x1000/0x2000/0x8000 here. Named by offset
         // until those are ported.
         uint32_t m_flags7c = 0;                  // +0x7c
+        // +0x80: the height of the liquid surface over this entity, in world z, once
+        // SelectUnderwater has looked (m_flags7c 0x80 says it has, 0x20 that there is liquid).
+        float m_liquidHeight = 0.0f;             // +0x80
+
+        // Apply the cached water side to a model's lighting: above only (0x20), below only
+        // (0x40), or straddling the surface (both, and the plane z = m_liquidHeight).
+        // ref: FUN_007c10c0
+        void ApplyWaterSide(CM2Lighting* lighting) const;
         // Its place in the distance row the traversal put it in, and the frame it was last
         // reached on, so a thing straddling two chunks is visited once.
         TSLink<CMapStaticEntity> m_rowLink;      // +0xa8

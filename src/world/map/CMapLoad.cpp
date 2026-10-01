@@ -664,7 +664,9 @@ CMapDoodadDef* CMap::CreateDoodadDef(const char* name, const SMDDF* mddf, const 
     def->m_model = scene ? scene->CreateModel(name, 0) : nullptr;
 
     if (def->m_model) {
-        def->m_model->SetLightingCallback(&CWorld::LightingCallback, nullptr);
+        // The def is the callback's argument, as in the reference: it is what the lighting
+        // callback asks which side of the water the doodad is on.
+        def->m_model->SetLightingCallback(&CWorld::LightingCallback, static_cast<CMapBaseObj*>(def));
 
         // The placement goes to the model whole. SetWorldTransform would rebuild it from a
         // position, one angle and a scale, which is the stand-in's shape and throws away two of
