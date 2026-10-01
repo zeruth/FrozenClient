@@ -51,6 +51,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, 'data')
 REF_JSONL = os.path.join(DATA, 'ref-functions.jsonl')
+ANCHORS_JSONL = os.path.join(DATA, 'ref-anchors.jsonl')   # tools/recomp/anchors.py
 PDB_DUMP = os.path.join(DATA, 'frozen-pdb.txt')
 OVERRIDES = os.path.join(HERE, 'overrides.json')
 MAP_OUT = os.path.join(DATA, 'map.json')
@@ -258,12 +259,28 @@ def assign_modules(refs):
     functions out contiguously, so the nearest preceding assert anchor names the file with good
     odds; the flag says whether the next anchor agrees."""
     anchors = []
+    seen = set()
     for r in refs.values():
         for s in r['strings']:
             m = MODULE_STRING.match(s)
             if m:
                 anchors.append((int(r['addr'], 16), m.group(1)))
+                seen.add(r['addr'])
                 break
+    # Anchors the Ghidra export missed, recovered from the binary by tools/recomp/anchors.py:
+    # the same path strings, found through the `push imm32` that references them. On 2026-10-01
+    # that added 63 modules the export had no anchor for at all -- MapWeather.cpp, MapShadow.cpp,
+    # MapObj.cpp, MapObjGroup.cpp, WorldScene.cpp, M2Model.cpp, M2Cache.cpp, Camera.cpp,
+    # WorldFrame.cpp among them -- which until then were counted as whatever assert string came
+    # before them (the weather as the event system, the shadow map as DetailDoodad.cpp). Where
+    # both sources have an opinion they agree on all 1,476 functions, so an exported string
+    # still wins and these only fill the gaps.
+    if os.path.exists(ANCHORS_JSONL):
+        for line in open(ANCHORS_JSONL, encoding='utf-8'):
+            j = json.loads(line)
+            if j['addr'] in refs and j['addr'] not in seen:
+                anchors.append((int(j['addr'], 16), j['module']))
+                seen.add(j['addr'])
     anchors.sort()
     addrs = sorted(int(a, 16) for a in refs)
     i = 0
@@ -341,6 +358,31 @@ RENDER_MODULES = {
     # mapped. That is the honest direction, the same as the blp.cpp/tga.cpp note above -- the work
     # was always outstanding and was simply being counted against a sound module instead.
     'Liquid.cpp',
+    #
+    # Added 2026-10-01, when tools/recomp/anchors.py recovered the anchors the export had dropped
+    # and these modules became visible for the first time. WorldScene.cpp (CWorldScene: the
+    # frustum, the entity lists, the blob shadow pass) and World.cpp (CWorld::Update, the world
+    # tick that drives weather, day/night and streaming) are the two layers between the frame
+    # and the map; WorldFrame.cpp holds OnWorldRender itself; M2Cache.cpp is the model cache every
+    # entity model is fetched through; Camera.cpp is the view every pass renders from. Movement.cpp
+    # and Passenger.cpp sit beside MovementShared.cpp, which was already here, for the same
+    # reason: what a unit does between its model and its pose. Effect_C.cpp, SpellVisuals.cpp and
+    # Missile_C.cpp are the world-side effect, spell-visual and missile classes beside
+    # ObjectEffect.cpp and UnitMissileTrajectory_C.cpp. The same honest direction as every
+    # addition above: more denominator, mostly unmapped.
+    'WorldScene.cpp', 'World.cpp', 'WorldFrame.cpp', 'M2Cache.cpp', 'Camera.cpp',
+    'Movement.cpp', 'Passenger.cpp', 'Effect_C.cpp', 'SpellVisuals.cpp', 'Missile_C.cpp',
+    # The same scan split ranges that were already counted: the D3D device bodies now sit under
+    # CGxD3dDevice.cpp and CGxD3d9ExDevice.cpp rather than CGxDeviceD3d9Ex.cpp (which keeps only
+    # the window class), the M2 lights under M2Light.cpp, the particle emitters under
+    # ParticleSystem2.cpp, the FFX glow pass under PassGlow.cpp, and world text under
+    # WorldText.cpp. Three more are single-anchor claims whose RANGE holds render code even if
+    # the name does not describe all of it -- GfxSingletonManager.cpp carries the particle
+    # emitter plane and the box-vs-planes helpers, AaBsp.cpp the terrain shader selection in
+    # CMap, MapLowDetail.cpp the chunk liquid -- so they are in for what they hold; a
+    # MODULE_RANGES entry is the fix when their boundaries are read off the binary.
+    'CGxD3dDevice.cpp', 'CGxD3d9ExDevice.cpp', 'M2Light.cpp', 'ParticleSystem2.cpp',
+    'PassGlow.cpp', 'WorldText.cpp', 'GfxSingletonManager.cpp', 'AaBsp.cpp', 'MapLowDetail.cpp',
     #
     # Deliberately still OUT, so the next reader does not add them as more of the same: the font
     # stack (GxuFontMiscClasses.cpp, GxuFontUtil.cpp, CSimpleFont.cpp), CSimpleRender.cpp and the
@@ -1557,6 +1599,7 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     by_how = collections.Counter()
     fid = {}
     faithful = faithful_bytes = 0
+    faithful_set = set()
     for a in real:
         if a in m:
             st = status(a)
@@ -1568,6 +1611,7 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
             if st != 'stub' and (st in ('faithful', 'verified') or is_faithful(refs, frozen, m, a, fid[a])):
                 faithful += 1
                 faithful_bytes += real[a]['size']
+                faithful_set.add(a)
         else:
             st = 'unmapped'
         # A hand `faithful` verdict is still a PORTED function by every definition this
@@ -1630,6 +1674,10 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
                 'renderSurface': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES),
                 'renderSurfaceMapped': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and a in m),
                 'renderSurfaceUnsure': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and not r.get('moduleSure')),
+                # The completion criterion for rendering (docs/rendering-roadmap.md) is these two
+                # reaching 100% and 0 of the render surface, so they are history columns.
+                'renderSurfaceFaithful': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and a in faithful_set),
+                'renderSurfaceStub': sum(1 for a, r in real.items() if r.get('module') in RENDER_MODULES and a in m and status(a) == 'stub'),
                 'frozenFunctions': len(frozen), 'frozenStubs': sum(1 for w in frozen.values() if w['stub']),
                 'luaTotal': lua_total, 'luaHave': lua_have, 'luaStubbed': lua_stubbed}
     prev = None
@@ -1667,6 +1715,9 @@ def build_report(refs, frozen, m, overrides, anchors, ref_tables=(), pairs=(), f
     L.append('| world spine (reachable from OnFrameRender) | %d, mapped %d%s (%s) | |' % (snapshot['spine'], snapshot['spineMapped'], delta('spineMapped'), pct(snapshot['spineMapped'], snapshot['spine'])))
     L.append('| &nbsp;&nbsp;render spine (world update + map + M2 scene) | %d, mapped %d%s (%s) | |' % (snapshot['renderSpine'], snapshot['renderSpineMapped'], delta('renderSpineMapped'), pct(snapshot['renderSpineMapped'], snapshot['renderSpine'])))
     L.append('| **render surface** (the modules that draw the world) | **%d, mapped %d%s (%s)** | |' % (snapshot['renderSurface'], snapshot['renderSurfaceMapped'], delta('renderSurfaceMapped'), pct(snapshot['renderSurfaceMapped'], snapshot['renderSurface'])))
+    L.append('| &nbsp;&nbsp;of which faithful / stub | %d%s (%s) / %d%s | |' % (
+        snapshot['renderSurfaceFaithful'], delta('renderSurfaceFaithful'), pct(snapshot['renderSurfaceFaithful'], snapshot['renderSurface']),
+        snapshot['renderSurfaceStub'], delta('renderSurfaceStub')))
     # HOW MUCH OF THAT DENOMINATOR IS GUESSED. Modules come from the nearest preceding assert
     # string, so a region with none of its own inherits one from far away; `moduleSure` already
     # records when the next anchor disagrees, and nothing used to report it. It matters here more
