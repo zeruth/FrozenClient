@@ -35,6 +35,10 @@ void CursorSetItemTexture(const char* path);
 
 void CursorClearItem();
 
+// Turn a loaded item-cursor image into the cursor picture, then free it. Also called at the end
+// of every world frame.
+void CursorApplyItemImage();
+
 void CursorDestroyItemImage();
 
 // Copy the first level of `image` into the device cursor and show it.

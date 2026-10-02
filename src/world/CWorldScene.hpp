@@ -30,6 +30,7 @@ class CMapStaticEntity;
 void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const C3Vector& c);
 
 class CMapAreaLow;
+struct M2CollisionTriangle;
 
 class CWorldScene {
     public:
@@ -165,6 +166,15 @@ class CWorldScene {
         // before measuring how much of the screen the doorway covers.
         static CWFrustum s_clipFrustum;
         static int32_t s_frustumDepth;                      // DAT_00cd8798
+        // The collision debug triangles (CWorld enable 0x200000): world-space corners with their
+        // colours (DAT_00cf4938) and three indices each (DAT_00cf4948), filled by the collision
+        // queries, drawn and emptied at the end of CMap::Render.
+        struct DebugVertex {
+            C3Vector position;
+            CImVector color;
+        };
+        static TSGrowableArray<DebugVertex> s_debugVertices;
+        static TSGrowableArray<uint16_t> s_debugIndices;
         static C3Vector s_cameraPos;                        // DAT_00cd8f5c
         static C3Vector s_cameraTarget;                     // DAT_00cd8f68
         static C3Vector s_viewDir;                          // DAT_00cd8f74: unit camera-to-target
@@ -273,6 +283,12 @@ class CWorldScene {
         // The horizon: the low-detail tiles, then the far buildings' exterior groups, flat in the fog
         // colour at the back of the depth range. ref: FUN_00795f80
         static void RenderLowDetail();
+        // Queue one collision triangle for the debug pass, its corners through `transform` (the
+        // identity when null), every corner in `color`. ref: FUN_007a4c10
+        static void AddDebugTriangle(const M2CollisionTriangle& triangle, CImVector color, const C44Matrix* transform);
+        // Draw the queued collision triangles, alpha-blended and unculled, over everything.
+        // ref: FUN_007d5610
+        static void RenderDebugTriangles();
         static ViewWindow s_portalWindow;                   // DAT_00adf58c
         // The screen regions seen through portals (DAT_00cdd0e8) and seen from outside them
         // (DAT_00cdd0f8). CMap::Render fills what the first leaves uncovered, and the second, at the

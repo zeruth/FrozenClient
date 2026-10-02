@@ -63,6 +63,8 @@ C3Vector CWorldScene::s_frustumCorners[8];
 CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
 CWFrustum CWorldScene::s_clipFrustum;
 int32_t CWorldScene::s_frustumDepth;
+TSGrowableArray<CWorldScene::DebugVertex> CWorldScene::s_debugVertices;
+TSGrowableArray<uint16_t> CWorldScene::s_debugIndices;
 C3Vector CWorldScene::s_cameraPos;
 C3Vector CWorldScene::s_cameraTarget;
 C3Vector CWorldScene::s_viewDir;
@@ -665,8 +667,7 @@ int32_t CWFrustum::SphereInside(const CAaSphere& sphere) {
 // along the view and its flattened twin, the 64 row planes, the frustum corners in world space
 // (from the device's view and projection), the base frustum, its bounds and the chunk
 // rectangle they cover, and which way the target lies. Not ported yet: the portal window arrays
-// (FUN_00794190), the horizon occlusion matrix (FUN_006bfe60) and the sound listener
-// (FUN_009a81f0).
+// (FUN_00794190) and the horizon occlusion matrix (FUN_006bfe60).
 void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& cameraTarget) {
     // if (DAT_00cd8610) FUN_005eeb70(): nothing
 
@@ -799,7 +800,8 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
         CWorldScene::s_occlusionMatrix = flattened * CWorldScene::s_projMatrix;
     }
 
-    // TODO FUN_009a81f0(PushSecondsUntil()): the sound listener
+    // FUN_009a81f0(OsGetAsyncTimeMs()) ticks the object list at 0x00b2eb68 here, which nothing in
+    // the binary ever fills (see CMap::Render), so it is not ported.
 }
 
 // ref: FUN_007906c0
@@ -3500,4 +3502,63 @@ void CWorldScene::RenderLowDetail() {
     GxRsPop();
     GxXformSetViewport(minX, maxX, minY, maxY, minZ, maxZ);
     GxXformSetProjection(savedProjection);
+}
+
+// ref: FUN_007a4c10
+void CWorldScene::AddDebugTriangle(const M2CollisionTriangle& triangle, CImVector color, const C44Matrix* transform) {
+    C44Matrix identity;
+
+    if (!transform) {
+        transform = &identity;
+    }
+
+    uint32_t first = CWorldScene::s_debugVertices.Count();
+
+    for (int32_t i = 0; i < 3; i++) {
+        auto vertex = CWorldScene::s_debugVertices.New();
+        vertex->position = triangle.vertices[i] * *transform;
+        vertex->color = color;
+    }
+
+    for (uint16_t i = 0; i < 3; i++) {
+        *CWorldScene::s_debugIndices.New() = static_cast<uint16_t>(first) + i;
+    }
+}
+
+// ref: FUN_007d5610
+void CWorldScene::RenderDebugTriangles() {
+    if (CWorldScene::s_debugVertices.Count() == 0) {
+        return;
+    }
+
+    GxRsPush();
+    GxRsSet(GxRs_PolygonOffset, 1.0f);
+
+    C44Matrix toCamera;
+    C3Vector back = { -CWorldScene::s_cameraPos.x, -CWorldScene::s_cameraPos.y, -CWorldScene::s_cameraPos.z };
+    toCamera.Translate(back);
+    g_theGxDevicePtr->XformPush(GxXform_World, toCamera);
+
+    GxRsSet(GxRs_BlendingMode, GxBlend_Alpha);
+    GxRsSetAlphaRef();
+    GxRsSet(GxRs_Lighting, 0);
+    GxRsSet(GxRs_DepthWrite, 0);
+    GxRsSet(GxRs_DepthTest, 0);
+    GxRsSet(GxRs_Culling, 0);
+
+    auto vertices = CWorldScene::s_debugVertices.Ptr();
+    GxPrimVertexPtr(CWorldScene::s_debugVertices.Count(), &vertices->position, sizeof(DebugVertex), nullptr, 0,
+                    &vertices->color, sizeof(DebugVertex), nullptr, 0, nullptr, 0);
+    GxPrimIndexPtr(CWorldScene::s_debugIndices.Count(), CWorldScene::s_debugIndices.Ptr());
+
+    CGxBatch batch;
+    batch.m_primType = GxPrim_Triangles;
+    batch.m_start = 0;
+    batch.m_count = CWorldScene::s_debugIndices.Count();
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = static_cast<uint16_t>(CWorldScene::s_debugVertices.Count() - 1);
+    GxDraw(&batch, 1);
+
+    GxXformPop(GxXform_World);
+    GxRsPop();
 }

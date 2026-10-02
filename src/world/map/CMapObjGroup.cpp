@@ -1,4 +1,7 @@
 #include "world/map/CMapObjGroup.hpp"
+#include "model/CM2Model.hpp"
+#include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
 #include "world/CWFrustum.hpp"
 #include <tempest/matrix/C33Matrix.hpp>
 #include "world/map/CMapDoodadDef.hpp"
@@ -971,9 +974,31 @@ void CMapObjGroup::BoxQueryLeaf(CMapObjGroupBoxQuery& query, const CAaBspNode* n
 
 // ref: FUN_007c7ae0
 void CMapObjGroup::RecordHits(const C44Matrix* placement, void* object, uint32_t flags) {
-    // With CWorld enable 0x200000 set, the reference first draws every visited face (0x7fff0000)
-    // and every hit face (0x7f00ff00) as debug triangles through FUN_007a4c10. That debug drawer
-    // is not ported.
+    // With the collision debug enable set, every face the query marked goes to the debug pass in
+    // translucent red, and every face it hit in translucent green.
+    if (CWorld::s_enables & CWorld::Enables::Enable_200000) {
+        auto addFaces = [&](const uint16_t* list, uint32_t count, uint32_t argb) {
+            CImVector color;
+            color.value = argb;
+
+            for (uint32_t i = 0; i < count; i++) {
+                const uint16_t* tri = &this->m_indices[list[i] * 3];
+
+                M2CollisionTriangle triangle;
+                triangle.plane.n = { 0.0f, 0.0f, 1.0f };
+                triangle.plane.d = 0.0f;
+                triangle.vertices[0] = this->m_vertices[tri[0]] * *placement;
+                triangle.vertices[1] = this->m_vertices[tri[1]] * *placement;
+                triangle.vertices[2] = this->m_vertices[tri[2]] * *placement;
+                PlaneFromPoints(&triangle.plane, triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]);
+
+                CWorldScene::AddDebugTriangle(triangle, color, nullptr);
+            }
+        };
+
+        addFaces(s_collideHitFaces, s_collideHitCount, 0x7fff0000);
+        addFaces(s_hitFaces, s_hitCount, 0x7f00ff00);
+    }
 
     CMapObjGroup::s_hitFlags |= flags;
 

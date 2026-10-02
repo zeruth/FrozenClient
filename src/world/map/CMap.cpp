@@ -57,6 +57,8 @@
 #include "model/CM2Model.hpp"
 #include "util/CStatus.hpp"
 #include "world/CWorldScene.hpp"
+#include "world/MapWeather.hpp"
+#include "ui/game/Cursor.hpp"
 #include "util/SFile.hpp"
 #include <common/Time.hpp>
 #include "world/CWorld.hpp"
@@ -1882,7 +1884,11 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     GxSceneClear(0x3, clearColor);
 
-    // TODO FUN_009a80c0(); FUN_007bb670(&cameraPos): the map shadow; the M2 scene's AdvanceTime
+    // FUN_009a80c0 here walks the object list at 0x00b2eb68 (vtable 0x00aa97d4) calling each
+    // element's slot 0x10. Nothing in the binary ever adds to that list -- its only references are
+    // this, the two time ticks in CWorldScene::UpdateCamera, the teardown and its static ctor --
+    // so the walk is always empty and is not ported.
+    // TODO FUN_007bb670(&cameraPos): the map shadow; the M2 scene's AdvanceTime
     // and Animate (CGWorldFrame::OnWorldRender still does them); FUN_006fda20(); FUN_007bb570()
 
     CShaderEffect::UpdateProjMatrix();
@@ -1955,10 +1961,29 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     }
 
 
+    // The weather's particle box, offset to the camera. The reference computes it here and never
+    // reads it.
+    CAaBox weatherBounds = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+
+    if (CWorld::s_weather && CWorld::s_weather->GetEffectBounds(weatherBounds)) {
+        weatherBounds.b = weatherBounds.b + cameraPos;
+        weatherBounds.t = weatherBounds.t + cameraPos;
+    }
+
+    (void)weatherBounds;
+
     GxXformPop(GxXform_World);
     GxRsPop();
 
-    // TODO FUN_006164b0(), and the decal pass behind CWorld enable 0x200000
+    CursorApplyItemImage();
+
+    // The collision debug triangles the frame's queries collected, drawn and dropped.
+    if (CWorld::s_enables & CWorld::Enables::Enable_200000) {
+        CWorldScene::RenderDebugTriangles();
+        CWorldScene::s_debugVertices.SetCount(0);
+        CWorldScene::s_debugIndices.SetCount(0);
+    }
+
     (void)dt;
 }
 

@@ -231,7 +231,7 @@ void CursorInitialize() {
 
 // ref: FUN_006164b0
 // Turns the image just loaded for the item cursor into its 32x32 picture, then frees it.
-static void CursorApplyItemImage() {
+void CursorApplyItemImage() {
     auto image = s_itemImage;
 
     if (!image) {
