@@ -1681,6 +1681,7 @@ void CCharacterComponent::RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link) 
     }
 }
 
+// ref: FUN_004f20c0
 void CCharacterComponent::ReplaceMonsterSkin(CM2Model* model, const CreatureDisplayInfoRec* displayInfoRec, const CreatureModelDataRec* modelDataRec) {
     if (!model || !displayInfoRec || !modelDataRec) {
         return;

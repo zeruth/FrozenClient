@@ -4075,5 +4075,24 @@
   "009812b0": {
     "status": "excluded",
     "note": "The ribbon emitter singleton release called from M2Destroy. Its global 0x00dce8d0 is read here and zeroed, and written nowhere else in the binary, so this frees nothing. Identified 2026-10-02."
+  },
+  "00835950": {
+    "frozen": "CM2Shared::LoadCanceledCallback",
+    "status": "diverged",
+    "note": "The cancel callback both CancelSequenceLoads (0x0083d532) and ~CM2Shared (0x0083d5c9) pass to AsyncFileReadCancel: it destroys the object and frees its buffer (object +0x4) through SequenceBufferFree. Frozen destroys the object and leaks the buffer, because frozen allocates the model and skin buffers with SMemAlloc and only the sequence buffers with SequenceBufferAlloc, so one free path cannot serve both objects this is handed. Identified 2026-10-02."
+  },
+  "00597a80": {
+    "frozen": "CGCharacterModelBase::CreateScriptMetaTable",
+    "status": "ported",
+    "note": "Tagged 2026-10-02."
+  },
+  "00597250": {
+    "status": "excluded",
+    "note": "Releases the CGCharacterModelBase script metatable (luaL_unref of 0x00acf534) at UI teardown. Frozen keeps the metatables for the life of the Lua state and has no release for any frame type. Identified 2026-10-02."
+  },
+  "005975e0": {
+    "frozen": "CGCharacterModelBase::SetUnitModel",
+    "status": "diverged",
+    "note": "Two parts are not carried, both for want of the frozen system they call. The gate FUN_00617a60(unit, 3) belongs to the portrait renderer (PortraitButton.cpp): it defers the copy while a portrait request for the unit is pending or can be queued, and frozen has no portrait queue, so the model is copied at once. And the frame alpha is set from a CGObject_C virtual at +0xe8 (scaled by 255) that frozen has not identified, so the frame keeps its own alpha. The duplicate, attachment strip, stand sequence and finger closing are as the reference has them. Ported 2026-10-02."
   }
 }
