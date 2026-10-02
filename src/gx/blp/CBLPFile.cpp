@@ -476,6 +476,7 @@ int32_t CBLPFile::GetMipSize(PIXEL_FORMAT format, uint32_t mipLevel, uint32_t* s
     }
 }
 
+// ref: FUN_006afce0
 int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipLevel, unsigned char* data, uint32_t& stride) {
     STORM_ASSERT(this->m_inMemoryImage);
 
@@ -682,64 +683,53 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
     }
 }
 
-int32_t CBLPFile::LockChain2(const char* fileName, PIXEL_FORMAT format, MipBits*& images, uint32_t mipLevel, int32_t a6) {
+// ref: FUN_006affd0
+// Decode every level from `mipLevel` down into `images`, allocating the chain when none is
+// given. With `inPlace` set, a DXT image wanted as DXT (or an uncompressed one) is not copied
+// at all: the chain points into the loaded file, which the BLP then gives up.
+int32_t CBLPFile::LockChain2(const char* fileName, PIXEL_FORMAT format, MipBits*& images, uint32_t mipLevel, int32_t inPlace) {
     if (mipLevel && (!(this->m_header.hasMips & 0xF) || mipLevel >= this->m_numLevels)) {
         return 0;
     }
 
-    if (images) {
-        if (a6 && (this->m_header.colorEncoding == COLOR_DXT || this->m_header.colorEncoding == COLOR_3)) {
-            if (this->m_header.colorEncoding == COLOR_3 || (format != PIXEL_ARGB4444 && format != PIXEL_RGB565 && format != PIXEL_ARGB1555 && format != PIXEL_ARGB8888)) {
-                uint32_t* offset = this->m_header.mipOffsets;
+    uint32_t width = this->m_header.width >> mipLevel;
 
-                for (int32_t i = 0; *offset; offset++, i++) {
-                    void* address = static_cast<char*>(this->m_inMemoryImage) + *offset;
-                    MipBits* image = static_cast<MipBits*>(address);
-                    reinterpret_cast<MipBits**>(images)[i] = image;
-                }
+    if (width < 2) {
+        width = 1;
+    }
 
-                this->m_inMemoryImage = nullptr;
-                return 1;
-            }
-        }
+    uint32_t height = this->m_header.height >> mipLevel;
 
-        uint32_t v13 = this->m_header.height >> mipLevel;
+    if (height < 2) {
+        height = 1;
+    }
 
-        if (v13 <= 1) {
-            v13 = 1;
-        }
-
-        uint32_t v14 = this->m_header.width >> mipLevel;
-
-        if (v14 <= 1) {
-            v14 = 1;
-        }
-
-        MippedImgSet(images, format, v14, v13);
-    } else {
-        uint32_t v9 = this->m_header.height >> mipLevel;
-
-        if (v9 <= 1) {
-            v9 = 1;
-        }
-
-        uint32_t v10 = this->m_header.width >> mipLevel;
-
-        if (v10 <= 1) {
-            v10 = 1;
-        }
-
-        images = MippedImgAllocA(format, v10, v9, __FILE__, __LINE__);
+    if (!images) {
+        images = reinterpret_cast<MipBits*>(AllocMipChain(format, width, height, __FILE__, __LINE__));
 
         if (!images) {
             return 0;
         }
+    } else {
+        bool decodes = this->m_header.colorEncoding == COLOR_DXT
+            && (format == PIXEL_ARGB4444 || format == PIXEL_RGB565 || format == PIXEL_ARGB1555 || format == PIXEL_ARGB8888);
+
+        if (inPlace && (this->m_header.colorEncoding == COLOR_3 || (this->m_header.colorEncoding == COLOR_DXT && !decodes))) {
+            for (uint32_t i = 0; this->m_header.mipSizes[i]; i++) {
+                images->mip[i] = reinterpret_cast<C4Pixel*>(static_cast<char*>(this->m_inMemoryImage) + this->m_header.mipOffsets[i]);
+            }
+
+            this->m_inMemoryImage = nullptr;
+            return 1;
+        }
+
+        BuildMipLevelPointers(format, width, height, reinterpret_cast<void**>(images));
     }
 
-    MipBits** ptr = reinterpret_cast<MipBits**>(images);
+    for (uint32_t level = mipLevel, i = 0; level < this->m_numLevels; level++, i++) {
+        uint32_t stride;
 
-    for (int32_t level = mipLevel, i = 0; level < this->m_numLevels; level++, i++) {
-        if (!this->Lock2(fileName, format, level, reinterpret_cast<unsigned char*>(ptr[i]), mipLevel)) {
+        if (!this->Lock2(fileName, format, level, reinterpret_cast<unsigned char*>(images->mip[i]), stride)) {
             return 0;
         }
     }

@@ -67,6 +67,21 @@ class TgaFile {
     // do not already. No-op when the image is already the way round that was asked for.
     int32_t SetTopDown(int32_t topDown);
     void Close();
+    // Read the pixels, by image type. Flag 1 widens to 32 bits with an opaque alpha byte when
+    // the file has none; flag 2 expands a colour-mapped image into true colour.
+    int32_t ReadImage(uint32_t flags);
+    int32_t ReadColorMapped(uint32_t flags);
+    int32_t ReadUncompressed(uint32_t flags);
+    int32_t ReadRle(uint32_t flags);
+    void ExpandColorMap(uint32_t flags);
+    // Drop an 8-bit alpha channel, leaving 24-bit pixels.
+    int32_t RemoveAlphaChannel();
+    // Replace whatever alpha there is with `alpha` (one byte per pixel), or opaque when null.
+    int32_t AddAlpha(const uint8_t* alpha);
 };
+
+// Box-filters a 32-bit image down: each output pixel is its block's colour weighted by alpha
+// and the block's mean alpha, or the plain mean colour with zero alpha when the block is clear.
+void TgaDownsample(uint32_t* dst, uint32_t dstWidth, uint32_t dstHeight, const uint8_t* src, uint32_t srcWidth, uint32_t srcHeight);
 
 #endif

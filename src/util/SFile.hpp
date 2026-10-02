@@ -49,6 +49,9 @@ class SFile {
         static int32_t OpenEx(SArchive* archive, const char* filename, uint32_t flags, SFile** file);
         static int32_t Read(SFile* file, void* buffer, size_t bytestoread, size_t* bytesread, SOVERLAPPED* overlapped, TASYNCPARAMBLOCK* asyncparam);
         static int32_t SetBasePath(const char* path);
+        // Moves the read position like the Win32 call it is named for: 0 from the start, 1 from
+        // the current position, 2 from the end. Answers the new position, or -1.
+        static uint32_t SetFilePointer(SFile* file, int32_t distance, int32_t* distanceHigh, uint32_t moveMethod);
         static int32_t SetLocalePath(const char* path);
         static int32_t Unload(void* ptr);
 

@@ -2,6 +2,10 @@
 #include "gx/Blp.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
+#include "gx/blp/CBLPFile.hpp"
+#include "gx/texture/TgaFile.hpp"
+#include "util/CStatus.hpp"
+#include <storm/List.hpp>
 #include "util/Filesystem.hpp"
 #include "util/SFile.hpp"
 #include <algorithm>
@@ -619,15 +623,365 @@ CGxTex* TextureAllocGxTex(EGxTexTarget target, uint32_t width, uint32_t height, 
     return nullptr;
 }
 
+// One cached mip chain (reference CMipBitsCache, 0xc bytes).
+struct CMipBitsCache {
+    MipBits* m_data;
+    TSLink<CMipBitsCache> m_link;
+};
+
+// Spare nodes (reference 0x00ac3364), and the cached chains by shape (reference 0x00b49e88):
+// width and height of 8..256 as log2(size / 8), times the two cached format families.
+static STORM_EXPLICIT_LIST(CMipBitsCache, m_link) s_mipBitsCacheNodes;
+static STORM_EXPLICIT_LIST(CMipBitsCache, m_link) s_mipBitsCache[6 * 6 * 2];
+
+static uint32_t MipBitsCacheIndex(int32_t cache, uint32_t width, uint32_t height) {
+    uint32_t widthLog = 0;
+
+    for (uint32_t w = width >> 3; !(w & 1); w >>= 1) {
+        widthLog++;
+    }
+
+    uint32_t heightLog = 0;
+
+    for (uint32_t h = height >> 3; !(h & 1); h >>= 1) {
+        heightLog++;
+    }
+
+    return cache + (heightLog + widthLog * 6) * 2;
+}
+
+// ref: FUN_004b7220
 MipBits* TextureAllocMippedImg(PIXEL_FORMAT pixelFormat, uint32_t width, uint32_t height) {
     auto cache = s_pixelFormatToMipBitsCache[pixelFormat];
 
     if (width < 8 || height < 8 || width > 256 || height > 256 || cache == -1) {
-        return MippedImgAllocA(pixelFormat, width, height, __FILE__, __LINE__);
+        return reinterpret_cast<MipBits*>(AllocMipChain(pixelFormat, width, height, __FILE__, __LINE__));
     }
 
-    // TODO
-    return nullptr;
+    auto node = s_mipBitsCache[MipBitsCacheIndex(cache, width, height)].Head();
+
+    if (!node) {
+        return reinterpret_cast<MipBits*>(AllocMipChain(pixelFormat, width, height, __FILE__, __LINE__));
+    }
+
+    node->m_link.Unlink();
+    auto image = node->m_data;
+    node->m_data = nullptr;
+    s_mipBitsCacheNodes.LinkToTail(node);
+
+    return image;
+}
+
+// ref: FUN_004b7300
+void TextureFreeMippedImg(MipBits* image, PIXEL_FORMAT pixelFormat, uint32_t width, uint32_t height) {
+    auto cache = s_pixelFormatToMipBitsCache[pixelFormat];
+
+    if (width < 8 || height < 8 || width > 256 || height > 256 || cache == -1) {
+        if (image) {
+            SMemFree(image, __FILE__, __LINE__, 0);
+        }
+
+        return;
+    }
+
+    auto node = s_mipBitsCacheNodes.Head();
+
+    if (!node) {
+        node = s_mipBitsCacheNodes.NewNode(STORM_LIST_TAIL, 0, 0);
+        node->m_link.Unlink();
+    }
+
+    node->m_data = image;
+    s_mipBitsCache[MipBitsCacheIndex(cache, width, height)].LinkToTail(node);
+}
+
+// ref: FUN_004b5550
+// Fills the mip levels the files did not supply by filtering the last level that was loaded.
+static void TextureBuildMissingMips(uint32_t width, uint32_t height, uint32_t firstMissing, uint32_t levelCount, MipBits* images) {
+    uint32_t source = 0;
+    uint32_t sourceWidth = width;
+    uint32_t sourceHeight = height;
+
+    if (firstMissing) {
+        source = firstMissing - 1;
+        sourceWidth = width >> source;
+        sourceHeight = height >> source;
+    }
+
+    uint32_t levelWidth = width;
+    uint32_t levelHeight = height;
+
+    for (uint32_t level = 1; level < levelCount; level++) {
+        levelWidth = (levelWidth >> 1) ? levelWidth >> 1 : 1;
+        levelHeight = (levelHeight >> 1) ? levelHeight >> 1 : 1;
+
+        if (level >= firstMissing) {
+            TgaDownsample(reinterpret_cast<uint32_t*>(images->mip[level]), levelWidth, levelHeight,
+                reinterpret_cast<const uint8_t*>(images->mip[source]), sourceWidth, sourceHeight);
+        }
+    }
+}
+
+// ref: FUN_004b5a00
+// Each further level may ship as its own file ("name_mip1.tga", ...) of exactly the expected
+// size. Answers the first level that was not found.
+static uint32_t TextureLoadTgaMips(const TgaFile& base, const char* pattern, int32_t openFlag, MipBits* images) {
+    uint32_t width = base.m_header.width;
+    uint32_t height = base.m_header.height;
+
+    uint32_t level = 1;
+    int32_t remaining = CalcLevelCountFlat(width, height) - 1;
+
+    uint32_t levelWidth = width >> 1;
+    uint32_t levelHeight = height >> 1;
+
+    while (remaining != 0) {
+        remaining--;
+
+        char name[STORM_MAX_PATH];
+        SStrPrintf(name, sizeof(name), pattern, level);
+
+        if (!SFile::FileExists(name)) {
+            break;
+        }
+
+        TgaFile tga = {};
+
+        if (!tga.Open(name, openFlag) || levelWidth != tga.m_header.width || levelHeight != tga.m_header.height || !tga.ReadImage(2)) {
+            tga.Close();
+            return level;
+        }
+
+        if ((tga.m_header.imageDescriptor & 0xF) == 0) {
+            tga.AddAlpha(nullptr);
+        }
+
+        tga.SetTopDown(1);
+
+        auto src = reinterpret_cast<const uint32_t*>(tga.GetImage32());
+        auto dst = reinterpret_cast<uint8_t*>(images->mip[level]);
+        level++;
+
+        for (uint32_t i = levelHeight * levelWidth; i != 0; i--) {
+            uint32_t pixel = *src++;
+            dst[3] = static_cast<uint8_t>(pixel >> 24);
+            dst[2] = static_cast<uint8_t>(pixel >> 16);
+            dst[1] = static_cast<uint8_t>(pixel >> 8);
+            dst[0] = static_cast<uint8_t>(pixel);
+            dst += 4;
+        }
+
+        if (levelWidth > 1) {
+            levelWidth >>= 1;
+        }
+
+        if (levelHeight > 1) {
+            levelHeight >>= 1;
+        }
+
+        tga.Close();
+    }
+
+    return level;
+}
+
+// ref: FUN_004b78a0
+// A .tga is always loaded as ARGB8888, its mip chain from the _mip files and filtering.
+static int32_t TextureLoadTga(char* extension, int32_t* isOpaque, const char* filename, int32_t openFlag, MipBits** images, uint32_t* width, uint32_t* height, uint32_t* format, uint32_t* alphaBits, PIXEL_FORMAT* dataFormat) {
+    if (extension) {
+        extension[0] = 0x2E; // .tga
+        extension[1] = 0x74;
+        extension[2] = 0x67;
+        extension[3] = 0x61;
+        extension[4] = 0;
+    }
+
+    TgaFile tga = {};
+
+    if (tga.Open(filename, openFlag)) {
+        if (isOpaque) {
+            *isOpaque = (tga.m_header.imageDescriptor & 0xF) == 0;
+        }
+
+        if (tga.ReadImage(3)) {
+            tga.SetTopDown(1);
+
+            uint32_t imageWidth = tga.m_header.width;
+            uint32_t imageHeight = tga.m_header.height;
+            uint32_t levelCount = CalcLevelCountFlat(imageWidth, imageHeight);
+
+            if (!*images) {
+                *images = TextureAllocMippedImg(PIXEL_ARGB8888, imageWidth, imageHeight);
+            } else {
+                BuildMipLevelPointers(PIXEL_ARGB8888, imageWidth, imageHeight, reinterpret_cast<void**>(*images));
+            }
+
+            auto src = reinterpret_cast<const uint32_t*>(tga.GetImage32());
+            auto dst = reinterpret_cast<uint8_t*>((*images)->mip[0]);
+
+            for (uint32_t i = imageHeight * imageWidth; i != 0; i--) {
+                uint32_t pixel = *src++;
+                dst[3] = static_cast<uint8_t>(pixel >> 24);
+                dst[2] = static_cast<uint8_t>(pixel >> 16);
+                dst[1] = static_cast<uint8_t>(pixel >> 8);
+                dst[0] = static_cast<uint8_t>(pixel);
+                dst += 4;
+            }
+
+            tga.Close();
+
+            char pattern[STORM_MAX_PATH];
+            SStrCopy(pattern, filename, sizeof(pattern));
+
+            auto dot = SStrChrR(pattern, '.');
+
+            if (dot) {
+                *dot = 0;
+            }
+
+            SStrPack(pattern, "_mip%d.tga", sizeof(pattern));
+
+            uint32_t firstMissing = TextureLoadTgaMips(tga, pattern, openFlag, *images);
+            TextureBuildMissingMips(tga.m_header.width, tga.m_header.height, firstMissing, levelCount, *images);
+
+            if (width) {
+                *width = tga.m_header.width;
+            }
+
+            if (height) {
+                *height = tga.m_header.height;
+            }
+
+            if (format) {
+                *format = 2;
+            }
+
+            if (alphaBits) {
+                *alphaBits = tga.m_header.imageDescriptor & 0xF;
+            }
+
+            if (dataFormat) {
+                *dataFormat = PIXEL_ARGB8888;
+            }
+
+            tga.Close();
+            return 1;
+        }
+    }
+
+    tga.Close();
+    return 0;
+}
+
+// ref: FUN_004b8070
+// Without a format asked for, the BLP's alpha depth picks one: none RGB565, 1 bit ARGB1555,
+// otherwise ARGB4444.
+static int32_t TextureLoadBlp(char* extension, const char* filename, int32_t openFlag, MipBits** images, uint32_t* width, uint32_t* height, int32_t* isOpaque, uint32_t* alphaBits, PIXEL_FORMAT* dataFormat) {
+    if (extension) {
+        extension[0] = 0x2E; // .blp
+        extension[1] = 0x62;
+        extension[2] = 0x6C;
+        extension[3] = 0x70;
+        extension[4] = 0;
+    }
+
+    CBLPFile image;
+
+    if (!image.Open(filename, openFlag)) {
+        image.Close();
+        return 0;
+    }
+
+    uint32_t alpha = static_cast<uint8_t>(image.m_header.alphaSize);
+    uint32_t imageWidth = image.m_header.width;
+    uint32_t imageHeight = image.m_header.height;
+
+    PIXEL_FORMAT format;
+
+    if (!dataFormat || *dataFormat == PIXEL_UNSPECIFIED) {
+        format = alpha == 0 ? PIXEL_RGB565 : alpha == 1 ? PIXEL_ARGB1555 : PIXEL_ARGB4444;
+    } else {
+        format = *dataFormat;
+    }
+
+    *images = TextureAllocMippedImg(format, imageWidth, imageHeight);
+
+    if (!image.LockChain2(filename, format, *images, 0, 0)) {
+        image.Close();
+        return 0;
+    }
+
+    if (width) {
+        *width = imageWidth;
+    }
+
+    if (height) {
+        *height = imageHeight;
+    }
+
+    if (isOpaque) {
+        *isOpaque = alpha == 0;
+    }
+
+    if (alphaBits) {
+        *alphaBits = alpha;
+    }
+
+    if (dataFormat) {
+        *dataFormat = format;
+    }
+
+    image.Close();
+    return 1;
+}
+
+// ref: FUN_004b81d0
+// The extension given is ignored: the name is tried as .blp, then as .tga.
+MipBits* TextureLoadImage(const char* filename, uint32_t* width, uint32_t* height, PIXEL_FORMAT* dataFormat, int32_t* isOpaque, CStatus* status, uint32_t* alphaBits, int32_t openFlag) {
+    if (!filename || !width || !height || !dataFormat) {
+        SErrSetLastError(0x57);
+        return nullptr;
+    }
+
+    char path[STORM_MAX_PATH];
+    strcpy(path, filename);
+
+    auto slash = strrchr(path, '\\');
+
+    if (!slash) {
+        slash = strrchr(path, '/');
+    }
+
+    auto extension = strrchr(path, '.');
+
+    if (!extension || (slash && extension <= slash)) {
+        extension = path + strlen(path);
+    }
+
+    *extension = 0;
+
+    MipBits* images = nullptr;
+    uint32_t method = 1;
+
+    for (uint32_t attempt = 0; attempt < 2; attempt++) {
+        if (method == 0) {
+            TextureLoadTga(extension, isOpaque, path, openFlag, &images, width, height, nullptr, alphaBits, dataFormat);
+        } else if (method == 1) {
+            TextureLoadBlp(extension, path, openFlag, &images, width, height, isOpaque, alphaBits, dataFormat);
+        }
+
+        if (images) {
+            return images;
+        }
+
+        method = (method + 1) % 2;
+    }
+
+    if (status) {
+        status->Add(STATUS_FATAL, "Error loading texure file \"%s\": unsupported image format\n", filename);
+    }
+
+    return images;
 }
 
 // ref: FUN_00681f20

@@ -367,6 +367,23 @@ int32_t SFile::Read(SFile* file, void* buffer, size_t bytestoread, size_t* bytes
     return bytestoread == 0 || read > 0;
 }
 
+// ref: FUN_00421bb0
+// Frozen reads archives through StormLib and loose files through stdio rather than the
+// reference's own file layers, so each kind is moved with its own call.
+uint32_t SFile::SetFilePointer(SFile* file, int32_t distance, int32_t* distanceHigh, uint32_t moveMethod) {
+    if (file->m_archive) {
+        return SFileSetFilePointer(file->m_handle, distance, reinterpret_cast<LONG*>(distanceHigh), moveMethod);
+    }
+
+    int origin = moveMethod == 1 ? SEEK_CUR : moveMethod == 2 ? SEEK_END : SEEK_SET;
+
+    if (fseek(file->m_localFile, distance, origin) != 0) {
+        return 0xFFFFFFFF;
+    }
+
+    return static_cast<uint32_t>(ftell(file->m_localFile));
+}
+
 int32_t SFile::SetBasePath(const char* path) {
     SStrCopy(s_basePath, path, sizeof(s_basePath));
 

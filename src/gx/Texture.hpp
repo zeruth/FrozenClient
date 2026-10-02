@@ -76,6 +76,14 @@ CGxTex* TextureAllocGxTex(EGxTexTarget, uint32_t, uint32_t, uint32_t, EGxTexForm
 
 MipBits* TextureAllocMippedImg(PIXEL_FORMAT pixelFormat, uint32_t width, uint32_t height);
 
+// Give a mip chain back. Chains of the cached formats and sizes are kept for the next
+// TextureAllocMippedImg of the same shape; anything else is freed.
+void TextureFreeMippedImg(MipBits* image, PIXEL_FORMAT pixelFormat, uint32_t width, uint32_t height);
+
+// Read an image file into a fresh mip chain: the name's .blp first, then its .tga. A null
+// `dataFormat` or PIXEL_UNSPECIFIED lets a BLP choose from its alpha depth.
+MipBits* TextureLoadImage(const char* filename, uint32_t* width, uint32_t* height, PIXEL_FORMAT* dataFormat, int32_t* isOpaque, class CStatus* status, uint32_t* alphaBits, int32_t openFlag);
+
 HTEXTURE TextureCacheGetTexture(char*, char*, CGxTexFlags);
 
 HTEXTURE TextureCacheGetTexture(const CImVector&);
