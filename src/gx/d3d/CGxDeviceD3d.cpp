@@ -1596,55 +1596,20 @@ void CGxDeviceD3d::TexDestroy(CGxTex* texId) {
 }
 
 // ref: FUN_00690150
+// Textures, shaders and pools, then the cached device states, the default and helper surfaces,
+// the frame query and the queries, and the hardware cursor is hidden.
+//
+// Frozen used to unbind every render target, texture stage, stream and index buffer here first,
+// and log each call: the reference does neither. Its callers leave nothing of their own bound
+// (RenderTargetSet restores the default surfaces and releases the one it held), and the
+// bindings D3D keeps are the runtime's own references, which Reset clears itself.
 void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
-    static int32_t releases = 0;
-
-    // Only the first few are interesting; printing every call is what made the runaway retry loop
-    // visible in the first place (4847 calls in one session), but it floods the log after that.
-    if (++releases <= 8) {
-        fprintf(stderr, "IReleaseD3dResources call %d\n", releases);
-    }
-
-    // Unbind first. A surface that is still the device's render target or depth-stencil keeps a
-    // reference alive no matter how many times its texture is released, and Reset then fails with
-    // D3DERR_INVALIDCALL -- which is exactly what was happening: the shadow map stayed bound, the
-    // reset failed once, m_context was cleared, and the client rendered for ever without presenting.
-    if (this->m_d3dDevice) {
-        if (this->m_defColorSurface) {
-            this->m_d3dDevice->SetRenderTarget(0, this->m_defColorSurface);
-        }
-
-        this->m_d3dDevice->SetDepthStencilSurface(this->m_defDepthSurface);
-
-        // Textures hold references too; drop every stage before releasing the objects behind them.
-        for (uint32_t stage = 0; stage < 8; stage++) {
-            this->m_d3dDevice->SetTexture(stage, nullptr);
-        }
-
-        // Same for the vertex and index buffers: releasing a buffer that is still SET as a stream
-        // source or index buffer does not drop its last reference, and Reset then fails with
-        // INVALIDCALL exactly as a bound render target does. Clear the bindings, and the device's
-        // cached copies of them, so the pool release below really is the last reference.
-        for (uint32_t stream = 0; stream < 8; stream++) {
-            this->m_d3dDevice->SetStreamSource(stream, nullptr, 0, 0);
-            this->m_d3dVertexStreamBuf[stream] = nullptr;
-            this->m_d3dVertexStreamOfs[stream] = -1;
-            this->m_d3dVertexStreamStride[stream] = -1;
-        }
-
-        this->m_d3dDevice->SetIndices(nullptr);
-        this->m_d3dCurrentIndexBuf = nullptr;
-    }
-
-    // Then the textures the reset destroys, so it leaves no dangling handles, and on a full
-    // release the shaders, as the reference does in this order.
     this->IReleaseD3dTextures(a2);
     this->IReleaseD3dShaders(a2);
-
-    // TODO
-
     this->IReleaseD3dPools(a2);
 
+    // One memset in the reference (+0x3bc4, 0x2d8 bytes), which also spans the send caches
+    // frozen keeps as separate fields.
     memset(this->m_deviceStates, 0xFF, sizeof(this->m_deviceStates));
     this->ResetRsSendCaches();
 
@@ -1674,8 +1639,6 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     }
 
     this->IReleaseD3dQueries();
-
-    // TODO
 
     if (this->m_d3dDevice) {
         this->m_d3dDevice->ShowCursor(false);

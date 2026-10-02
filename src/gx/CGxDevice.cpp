@@ -10,6 +10,7 @@
 #include "gx/Texture.hpp"
 #include "gx/Transform.hpp"
 #include "event/Input.hpp"
+#include "util/OsSystem.hpp"
 #include <tempest/Matrix.hpp>
 #include <cmath>
 #include <common/Time.hpp>
@@ -593,25 +594,53 @@ int32_t CGxDevice::WinAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monit
 }
 #endif
 
+// ref: FUN_00688690
+// The reference's long run of zeroing is the member initializers here; the body keeps its calls
+// and the values that are not zero, in its order. The shader constant caches it fills with
+// FLT_MAX at the end are ShaderConstantsClear's.
 CGxDevice::CGxDevice() {
-    // TODO
-    // - implement rest of constructor
-
     this->IRsInit();
 
-    // Set default viewport
+#if defined(WHOA_SYSTEM_WIN)
+    this->m_cpuFeatures = OsGetCpuFeatures();
+#endif
+
+    // The reference zeroes the caps block here; the CGxCaps initializers do that, except for the
+    // fields whose layout is not yet matched (see CGxCaps.hpp), which keep their defaults.
+    this->m_caps.m_maxTexAnisotropy = 1;
+
     this->m_viewport.x = { 0.0f, 1.0f };
     this->m_viewport.y = { 0.0f, 1.0f };
     this->m_viewport.z = { 0.0f, 1.0f };
 
-    // Turn on all master enables
-    this->m_appMasterEnables = 511;
-    this->m_hwMasterEnables = 511;
+    this->ILightsInvalidate();
 
-    this->ShaderConstantsClear();
+    this->m_appMasterEnables = 0x1FF;
+    this->m_hwMasterEnables = 0x1FF;
 
     this->m_gammaRamp.Build(1.0f);
     this->m_desktopGammaRamp.Build(1.0f);
+
+    this->ShaderConstantsClear();
+}
+
+// ref: FUN_006890c0
+// The stream buffers and pools, then every pool still alive; the containers go with the members.
+//
+// Two things in the reference do nothing and are not reproduced: it formats an "Unfreed texture"
+// line for every texture still holding an API object and hands it to an empty function, and it
+// frees the buffers of a list at +0x276c that nothing ever fills.
+CGxDevice::~CGxDevice() {
+    this->BufDestroy(this->m_streamBufs[GxPoolTarget_Vertex]);
+    this->BufDestroy(this->m_streamBufs[GxPoolTarget_Index]);
+
+    this->PoolDestroy(this->m_vertexPool);
+    this->PoolDestroy(this->m_indexPool);
+
+    while (auto pool = this->m_poolList.Head()) {
+        pool->~CGxPool();
+        SMemFree(pool, __FILE__, __LINE__, 0x0);
+    }
 }
 
 // ref: FUN_00684070

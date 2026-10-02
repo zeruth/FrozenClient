@@ -220,6 +220,8 @@ class CGxDevice {
         CRect m_defWindowRect;
         CRect m_curWindowRect;
         EGxApi m_api = GxApis_Last;
+        // Reference +0x1b8: the processor feature word (OsGetCpuFeatures), read at construction.
+        uint32_t m_cpuFeatures = 0;
         CGxFormat m_format;
         CGxCaps m_caps;
         // Reference +0x354: the ramp the device sends. +0x954: the desktop's, read when the device
@@ -408,6 +410,7 @@ class CGxDevice {
 
         // Member functions
         CGxDevice();
+        virtual ~CGxDevice();
         const CGxCaps& Caps() const;
         uint32_t* CursorLock();
         CGxBuf* BufCreate(CGxPool*, uint32_t, uint32_t, uint32_t);
