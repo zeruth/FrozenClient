@@ -11,6 +11,10 @@ class CM2Scene;
 class CM2Lighting {
     public:
         // Member variables
+        // Member functions
+        CM2Lighting();
+
+        // Member variables
         CM2Scene* m_scene;
         CAaSphere sphere4;
         uint32_t m_flags;

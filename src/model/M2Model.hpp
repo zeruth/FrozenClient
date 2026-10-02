@@ -147,6 +147,8 @@ struct M2ModelCamera {
 // order and widens with 64-bit pointers, so this is structurally the reference's block rather than
 // byte-identical to it -- the same divergence every other M2Model* runtime struct here carries.
 struct M2ModelParticle {
+    M2ModelParticle();
+
     M2ModelTrack<float> speedTrack;
     M2ModelTrack<float> variationTrack;
     M2ModelTrack<float> latitudeTrack;

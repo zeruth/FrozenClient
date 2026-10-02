@@ -8,6 +8,28 @@
 #include "model/CM2Scene.hpp"
 #include <cstring>
 
+// ref: FUN_008248c0
+// Everything from the sphere through the sun direction cleared, the fog colour cleared, and the
+// liquid plane set to z = 0 facing up. The scene, the lights and the fog range are left for
+// Initialize, as the reference leaves them.
+CM2Lighting::CM2Lighting() {
+    this->sphere4.c = { 0.0f, 0.0f, 0.0f };
+    this->sphere4.r = 0.0f;
+    this->m_flags = 0;
+    this->vector18 = { 0.0f, 0.0f, 0.0f };
+    this->vector24 = { 0.0f, 0.0f, 0.0f };
+    this->vector30 = { 0.0f, 0.0f, 0.0f };
+    this->vector3C = { 0.0f, 0.0f, 0.0f };
+    this->vector48 = { 0.0f, 0.0f, 0.0f };
+    this->m_sunAmbient = { 0.0f, 0.0f, 0.0f };
+    this->m_sunDiffuse = { 0.0f, 0.0f, 0.0f };
+    this->m_sunSpecular = { 0.0f, 0.0f, 0.0f };
+    this->m_sunDir = { 0.0f, 0.0f, 0.0f };
+    this->m_fogColor = { 0.0f, 0.0f, 0.0f };
+    this->m_liquidPlane.n = { 0.0f, 0.0f, 1.0f };
+    this->m_liquidPlane.d = 0.0f;
+}
+
 // ref: FUN_008349e0
 // The n-th kept point light: its position, diffuse colour and attenuation triple, for the terrain
 // vertex shader constants. Fails past the kept count.

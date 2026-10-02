@@ -13,3 +13,7 @@ M2ModelBone::M2ModelBone() {
 // ref: FUN_00824980
 M2ModelLight::M2ModelLight() {
 }
+
+// ref: FUN_00824a00
+M2ModelParticle::M2ModelParticle() {
+}

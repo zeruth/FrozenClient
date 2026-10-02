@@ -431,6 +431,18 @@ class CM2Model {
         int32_t Initialize(CM2Scene* scene, CM2Shared* shared, CM2Model* a4, uint32_t flags);
         int32_t InitializeLoaded();
         int32_t IsBatchDoodadCompatible(M2Batch* batch);
+        int32_t HasLiveRibbons();
+        int32_t HasLiveParticles();
+        uint32_t GetLightCount();
+        void PrioritizeLoad(int32_t textures);
+        void IncreaseLoadPriority(int32_t textures);
+        CAaBox& GetCombinedBounds(CAaBox& bounds);
+        CAaSphere& GetCombinedSphere(CAaSphere& sphere);
+        void GetBonePivot(C3Vector& pivot, uint32_t boneId);
+        uint32_t CountVisibleBatches();
+        uint32_t CountBatchableBatches();
+        uint32_t CountTriangles();
+        int32_t PackBatchVertices(int32_t merged, M2SkinSection* section, uint32_t texCoordSet);
         int32_t IsDrawable(int32_t a2, int32_t a3);
         int32_t IsLoaded(int32_t a2, int32_t attachments);
         void LinkToCallbackListTail();

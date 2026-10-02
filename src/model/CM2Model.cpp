@@ -1,3 +1,4 @@
+#include "gx/Texture.hpp"
 #include "model/Model2.hpp"
 #include "model/CM2Model.hpp"
 #include "util/Log.hpp"
@@ -4276,6 +4277,331 @@ int32_t CM2Model::InitializeLoaded() {
 //
 //     if (this->m_currentLighting && this->m_currentLighting->m_lightCount) return 0;
 //
+// The alpha a batch draws at: the model's, by the batch's colour and texture weight when it has
+// them. The element gather in CM2Scene::Animate computes the same product.
+static float M2BatchAlpha(CM2Model* model, const M2Batch* batch) {
+    auto data = model->m_shared->m_data;
+    float alpha = model->alpha19C;
+
+    if (batch->colorIndex < data->colors.Count()) {
+        alpha *= model->m_colors[batch->colorIndex].alphaTrack.currentValue;
+    }
+
+    if (batch->textureCount) {
+        alpha *= model->m_textureWeights[data->textureWeightCombos[batch->textureWeightComboIndex]].weightTrack.currentValue;
+    }
+
+    return alpha;
+}
+
+// ref: FUN_008241d0
+// Whether any of the model's ribbons has a trail to draw.
+int32_t CM2Model::HasLiveRibbons() {
+    if (!this->m_loaded) {
+        return 0;
+    }
+
+    for (int32_t i = 0; i < static_cast<int32_t>(this->m_shared->m_data->ribbons.Count()); i++) {
+        if (!this->m_ribbonEmitters[i]->IsEmpty()) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_008242c0
+// Whether any of the model's emitters still has particles alive.
+int32_t CM2Model::HasLiveParticles() {
+    if (!this->m_loaded) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < this->m_shared->m_data->particles.Count(); i++) {
+        // Frozen-only: null for an emitter type frozen does not build.
+        auto emitter = this->m_particleEmitters ? this->m_particleEmitters[i] : nullptr;
+
+        if (emitter && emitter->HasLiveParticles()) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_00824380
+// How many local lights the model is lit by, waiting for it to load first.
+uint32_t CM2Model::GetLightCount() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    return this->m_currentLighting ? this->m_currentLighting->m_lightCount : 0;
+}
+
+// ref: FUN_008250b0
+// Moves the model file's read to the front of the queue if it is still waiting, then (when asked)
+// its textures' reads, and the same for everything attached to it.
+void CM2Model::PrioritizeLoad(int32_t textures) {
+    auto object = this->m_shared->asyncObject;
+
+    if (object && !object->isCurrent && !object->isRead && !object->isProcessed) {
+        AsyncFileReadLinkObject(object, 1);
+    }
+
+    if (this->m_loaded && textures) {
+        for (uint32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
+            if (this->m_textures[i]) {
+                TextureIncreasePriority(TextureGetTexturePtr(this->m_textures[i]));
+            }
+        }
+    }
+
+    for (auto child = this->m_attachList; child; child = child->m_attachNext) {
+        child->PrioritizeLoad(textures);
+    }
+}
+
+// ref: FUN_00825150
+// PrioritizeLoad with the read queue held.
+void CM2Model::IncreaseLoadPriority(int32_t textures) {
+    AsyncFileReadLockQueue();
+    this->PrioritizeLoad(textures);
+    AsyncFileReadUnlockQueue();
+}
+
+// ref: FUN_008254f0
+// The model's authored bounds, grown by the size of everything attached to it: each attachment's
+// combined box, centred on this model's, is folded in.
+CAaBox& CM2Model::GetCombinedBounds(CAaBox& bounds) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    bounds = this->m_shared->m_data->bounds.extent;
+
+    for (auto child = this->m_attachList; child; child = child->m_attachNext) {
+        CAaBox childBounds;
+        child->GetCombinedBounds(childBounds);
+
+        if (childBounds.b.x <= childBounds.t.x || childBounds.b.y <= childBounds.t.y || childBounds.b.z <= childBounds.t.z) {
+            const CAaBox& own = this->m_shared->m_data->bounds.extent;
+            C3Vector size = { childBounds.t.x - childBounds.b.x, childBounds.t.y - childBounds.b.y, childBounds.t.z - childBounds.b.z };
+
+            CAaBox grown;
+            grown.b = { own.b.x - size.x, own.b.y - size.y, own.b.z - size.z };
+            grown.t = { own.t.x + size.x, own.t.y + size.y, own.t.z + size.z };
+
+            bounds.GrowToInclude(grown);
+        }
+    }
+
+    return bounds;
+}
+
+// ref: FUN_00825660
+// The model's authored sphere, its radius grown by the largest attachment's combined radius.
+CAaSphere& CM2Model::GetCombinedSphere(CAaSphere& sphere) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto& bounds = this->m_shared->m_data->bounds;
+
+    sphere.c.x = (bounds.extent.b.x + bounds.extent.t.x) * 0.5f;
+    sphere.c.y = (bounds.extent.t.y + bounds.extent.b.y) * 0.5f;
+    sphere.c.z = (bounds.extent.t.z + bounds.extent.b.z) * 0.5f;
+    sphere.r = bounds.radius;
+
+    float grow = 0.0f;
+
+    for (auto child = this->m_attachList; child; child = child->m_attachNext) {
+        CAaSphere childSphere;
+        child->GetCombinedSphere(childSphere);
+
+        if (grow < childSphere.r) {
+            grow = childSphere.r;
+        }
+    }
+
+    sphere.r = grow + sphere.r;
+
+    return sphere;
+}
+
+// ref: FUN_00826530
+// A key bone's pivot in model space; zero when the model has no such bone. -1 asks for bone 0.
+void CM2Model::GetBonePivot(C3Vector& pivot, uint32_t boneId) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint16_t boneIndex;
+
+    if (boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    if (boneIndex >= data->bones.Count()) {
+        pivot = { 0.0f, 0.0f, 0.0f };
+        return;
+    }
+
+    pivot = data->bones[boneIndex].pivot;
+}
+
+// ref: FUN_00827a90
+// How many of the model's batches would draw this frame: visible section, not hidden by shader
+// 0x8000, and an alpha of at least 1/10000.
+uint32_t CM2Model::CountVisibleBatches() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto skinProfile = this->m_shared->skinProfile;
+    int32_t merged = this->ptr2D0 != nullptr;
+    uint32_t batchCount = merged ? this->ptr2D0->batchCount : skinProfile->batches.Count();
+    uint32_t count = 0;
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        M2Batch* batch = merged ? &this->ptr2D0->batches[i] : &skinProfile->batches[i];
+
+        if (!merged && !this->m_skinSections[batch->skinSectionIndex]) {
+            continue;
+        }
+
+        if (batch->shader != 0x8000 && M2BatchAlpha(this, batch) >= 0.0001f) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// ref: FUN_00827e30
+// How many of the drawing batches could join a doodad batch.
+uint32_t CM2Model::CountBatchableBatches() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto skinProfile = this->m_shared->skinProfile;
+    int32_t merged = this->ptr2D0 != nullptr;
+    uint32_t batchCount = merged ? this->ptr2D0->batchCount : skinProfile->batches.Count();
+    uint32_t count = 0;
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        M2Batch* batch = merged ? &this->ptr2D0->batches[i] : &skinProfile->batches[i];
+
+        if (!merged && !this->m_skinSections[batch->skinSectionIndex]) {
+            continue;
+        }
+
+        if (batch->shader != 0x8000 && M2BatchAlpha(this, batch) >= 0.0001f && this->IsBatchDoodadCompatible(batch)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// ref: FUN_00827f70
+// The triangles the model draws this frame: its drawing batches' sections, its visible ribbons'
+// segments, and its active emitters' particles.
+uint32_t CM2Model::CountTriangles() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto skinProfile = this->m_shared->skinProfile;
+    int32_t merged = this->ptr2D0 != nullptr;
+    uint32_t batchCount = merged ? this->ptr2D0->batchCount : skinProfile->batches.Count();
+    uint32_t count = 0;
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        M2Batch* batch;
+        M2SkinSection* section;
+
+        if (merged) {
+            batch = &this->ptr2D0->batches[i];
+            section = &this->ptr2D0->skinSections[batch->skinSectionIndex];
+        } else {
+            batch = &skinProfile->batches[i];
+            section = &this->m_shared->m_skinSections[batch->skinSectionIndex];
+
+            if (!this->m_skinSections[batch->skinSectionIndex]) {
+                continue;
+            }
+        }
+
+        if (batch->shader != 0x8000 && M2BatchAlpha(this, batch) >= 0.0001f) {
+            count += section->indexCount / 3;
+        }
+    }
+
+    auto data = this->m_shared->m_data;
+
+    for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+        if (this->m_ribbons[i].visibilityTrack.currentValue) {
+            count += this->m_ribbonEmitters[i]->CountVertices();
+        }
+    }
+
+    for (uint32_t i = 0; i < data->particles.Count(); i++) {
+        // Frozen-only: null for an emitter type frozen does not build.
+        auto emitter = this->m_particleEmitters ? this->m_particleEmitters[i] : nullptr;
+
+        if (this->m_particles[i].active && this->float198 >= 0.0001f && emitter) {
+            count += emitter->CountTriangles();
+        }
+    }
+
+    return count;
+}
+
+// ref: FUN_00829160
+// Skins a section's vertices on the CPU into a stream buffer (32-byte PNT) and binds it: one
+// section, or for a merged one every visible section of its batch range. Returns 0 when the
+// buffer could not be locked.
+int32_t CM2Model::PackBatchVertices(int32_t merged, M2SkinSection* section, uint32_t texCoordSet) {
+    auto buffer = GxBufStream(GxPoolTarget_Vertex, 0x20, section->vertexCount);
+    auto vertices = GxBufLock(buffer);
+
+    if (!vertices) {
+        return 0;
+    }
+
+    if (!merged) {
+        M2GetPackBatchVerticesFn(section->boneInfluences)(this, section, vertices, texCoordSet);
+    } else {
+        auto skinProfile = this->m_shared->skinProfile;
+        auto& range = this->ptr2D0->sourceBatchRange[section->skinSectionId];
+
+        for (uint32_t i = range[0]; i <= range[1]; i++) {
+            uint16_t sectionIndex = skinProfile->batches[i].skinSectionIndex;
+
+            if (!this->m_skinSections[sectionIndex]) {
+                continue;
+            }
+
+            M2SkinSection* source = &skinProfile->skinSections[sectionIndex];
+
+            M2GetPackBatchVerticesFn(source->boneInfluences)(this, source, vertices, texCoordSet);
+            vertices += source->vertexCount * 0x20;
+        }
+    }
+
+    GxBufUnlock(buffer, 0);
+    GxPrimVertexPtr(buffer, GxVBF_PNT);
+
+    return 1;
+}
+
 // Live as of 2026-10-02, with everything under it: CM2Scene::Animate groups the type-2 elements
 // and writes each group's instance count (FUN_0081cc50, FUN_0081e5c0, FUN_0081ea90), and
 // CM2SceneRender::DrawBatchDoodad draws a group as instances. The float at +0x1b8 that blocked the

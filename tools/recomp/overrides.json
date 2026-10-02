@@ -4075,5 +4075,21 @@
   "009812b0": {
     "status": "excluded",
     "note": "The ribbon emitter singleton release called from M2Destroy. Its global 0x00dce8d0 is read here and zeroed, and written nowhere else in the binary, so this frees nothing. Identified 2026-10-02."
+  },
+  "00824660": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CRibbonMat>::Reserve (8-byte elements, SMemReAlloc then copy), out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "00824700": {
+    "status": "excluded",
+    "note": "TSGrowableArray<M2ModelCallback>::Reserve (0x30-byte elements). Storm template internal. Identified 2026-10-02."
+  },
+  "008247a0": {
+    "status": "excluded",
+    "note": "std::rotate over 12-byte elements (gcd cycle rotation). STL internal. Identified 2026-10-02."
+  },
+  "008248b0": {
+    "status": "excluded",
+    "note": "An out-of-line byte array accessor, return base[index]. Template internal. Identified 2026-10-02."
   }
 }
