@@ -275,7 +275,7 @@
   },
   "00982950": {
     "status": "excluded",
-    "note": "three-dword copy (C3Vector assignment) folded into one COMDAT body, 21 callers"
+    "note": "C3Vector copy assignment, out of line (21 callers). Compiler-generated. Identified 2026-10-02."
   },
   "007d3230": {
     "status": "excluded",
@@ -2257,12 +2257,12 @@
   "0097d600": {
     "frozen": "",
     "status": "excluded",
-    "note": "TSGrowableArray<CM2ParticleEmitter::Particle>::SetCount -- the plain particle pool's SetCount, called from SetParticleCount's kind == 0 branch on the container at emitter+0x2c. Frozen has the code and calls it, but the compiler inlined this instantiation into its only caller, so frozen-pdb.txt carries TSGrowableArray<CM2ParticleEmitter::Particle>::Reserve and the destructor and no SetCount. There is therefore no frozen FUNCTION that is this one. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+    "note": "TSGrowableArray<CParticle2>::SetCount. Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
   },
   "0097df90": {
     "frozen": "",
     "status": "excluded",
-    "note": "TSGrowableArray<CM2ParticleEmitter::ModelParticle>::SetCount -- the 0x40-byte model pool's SetCount, the same operation as 0097d600 on the other instantiation, called from SetParticleCount's kind != 0 branch. Inlined into its only caller exactly as 0097d600 is. Not \"templates cannot bind\" -- that was the wrong diagnosis on 2026-09-24 and is corrected here. merge_frozen drops a function into the unbindable `inlined` set only when it has no PDB symbol AND lives only in headers; the PDB carries plenty of instantiations (TSGrowableArray<unsigned int>::New, ::SetCount, ::Reserve, TSGrowableArray<M2Element>::New) and an override naming one of those binds normally. What cannot bind is an instantiation the compiler inlined at every call site. Grep tools/recomp/data/frozen-pdb.txt for the exact name before writing an override; the tool now says so out loud when one binds nothing."
+    "note": "TSGrowableArray<CParticle2_Model>::SetCount: zero-fills new slots (orientation w = 1), releases models in dropped ones. Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
   },
   "00480fd0": {
     "frozen": "",
@@ -4075,5 +4075,89 @@
   "009812b0": {
     "status": "excluded",
     "note": "The ribbon emitter singleton release called from M2Destroy. Its global 0x00dce8d0 is read here and zeroed, and written nowhere else in the binary, so this frees nothing. Identified 2026-10-02."
+  },
+  "00978ec0": {
+    "status": "excluded",
+    "note": "TSFixedArray<CParticle2>::ReallocData (0x20-byte particles). Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "0097d7b0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<uint32_t>::Pop, the free-list pop in SpawnParticle. Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "0097bbe0": {
+    "status": "excluded",
+    "note": "TSFixedArray<CParticle2_Model>::ReallocData: copies elements through FUN_009797f0 and releases the old models. Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "0097bb80": {
+    "status": "excluded",
+    "note": "TSFixedArray<CParticle2_Model> destructor body: releases every slot's model, then frees. Frozen does the release in ~CM2ParticleEmitter (FUN_0097bcc0) and the array frees itself. Identified 2026-10-02."
+  },
+  "0097f650": {
+    "status": "excluded",
+    "note": "TSFixedArray<CGxVertexPCT0>::ReallocData (ribbon vertices). Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "0097fe80": {
+    "status": "excluded",
+    "note": "TSFixedArray<CRibbonMat>::Set (copy n materials in). Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "00980810": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CGxVertexPCT0>::SetCount. Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "00980ee0": {
+    "status": "excluded",
+    "note": "TSFixedArray<CParticleEmitter2*>::ReallocData (the emitter pool list). Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "00980fb0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CParticleEmitter2*>::New (the emitter pool list). Storm template instantiation; frozen reaches the same code through TSGrowableArray<T>. Identified 2026-10-02."
+  },
+  "0097d730": {
+    "status": "excluded",
+    "note": "Constructor of the CSortableParticleRecord priority queue at 0x00dce894 (a static initializer). Frozen keeps the queue as a static TSGrowableArray in CM2ParticleEmitter.cpp. Identified 2026-10-02."
+  },
+  "0097b9ec": {
+    "status": "excluded",
+    "note": "Not a function: a mid-body entry Ghidra split out of FUN_0097b9e0 (HasLiveParticles), the child loop. Identified 2026-10-02."
+  },
+  "0097d890": {
+    "status": "excluded",
+    "note": "CParticleEmitter2 scalar deleting destructor (vtable slot [5]): FUN_0097bcc0 then free. Compiler-generated; frozen's virtual destructor plus CM2ParticleEmitter::Release. Identified 2026-10-02."
+  },
+  "00981590": {
+    "status": "excluded",
+    "note": "Plane emitter scalar deleting destructor (vtable 0x00aa2d30). Compiler-generated. Identified 2026-10-02."
+  },
+  "00981920": {
+    "status": "excluded",
+    "note": "Sphere emitter scalar deleting destructor (vtable 0x00aa2d5c). Compiler-generated. Identified 2026-10-02."
+  },
+  "00982150": {
+    "status": "excluded",
+    "note": "Spline emitter scalar deleting destructor (vtable 0x00aa2df4): frees the curve's two spill arrays, then the base. Compiler-generated; frozen's CBezierSpline member destructor frees its spill. Identified 2026-10-02."
+  },
+  "009822f0": {
+    "status": "excluded",
+    "note": "Release of a first-generation CParticleEmitter (refcount at +0, destructor FUN_00982280). Reached only from the emitter pool's clear (FUN_00981000) for its first and third lists, which nothing in the binary fills. Dead. Identified 2026-10-02."
+  },
+  "00982280": {
+    "status": "excluded",
+    "note": "First-generation CParticleEmitter destructor body. Reached only through FUN_009822f0, which is dead (see there). Identified 2026-10-02."
+  },
+  "009810e0": {
+    "status": "excluded",
+    "note": "Clear of the ribbon emitter singleton at 0x00dce8d0, called only from its destroy FUN_009812b0. That global is never assigned in the binary, so this never runs. Identified 2026-10-02."
+  },
+  "00980b50": {
+    "status": "excluded",
+    "note": "Release of a refcounted CRibbonEmitter (deleting destructor around FUN_00980590). Its only callers are FUN_009810e0, which is dead. Identified 2026-10-02."
+  },
+  "0097eec0": {
+    "status": "diverged",
+    "note": "The emitter copy for the duplicate path, ported 2026-10-02 as CM2ParticleEmitter(const CM2ParticleEmitter&, int32_t). DIVERGED in one field: the reference copies the precompiled ramp pointer at +0x11c, so a clone and its source share one allocation and each frees it in its destructor (FUN_0097bcc0); frozen gives the clone its own copy. Two reference fields with no frozen counterpart (+0x18, +0x12c) are not carried."
+  },
+  "0097e8d0": {
+    "status": "diverged",
+    "note": "Ported 2026-10-02 as CM2ParticleEmitter::UpdateModelParticles. DIVERGED in the sorted (flag 0x20) arm: the reference computes each particle's depth from the PLAIN pool (+0x34, 0x20 stride), which a model-particle emitter never allocates, and passes that pointer on as a model particle; frozen reads the model pool."
   }
 }

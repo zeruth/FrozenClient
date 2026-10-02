@@ -1,6 +1,9 @@
 #ifndef TEMPEST_QUATERNION_C_4QUATERNION_HPP
 #define TEMPEST_QUATERNION_C_4QUATERNION_HPP
 
+class C33Matrix;
+class C3Vector;
+
 class C4Quaternion {
     public:
     // Static functions
@@ -23,6 +26,15 @@ class C4Quaternion {
         , y(y)
         , z(z)
         , w(w) {};
+    // The rotation a 3x3 matrix describes. ref: FUN_009828b0
+    explicit C4Quaternion(const C33Matrix& m);
+    // A rotation of `angle` radians about a unit `axis`. ref: FUN_00982400
+    C4Quaternion(float angle, const C3Vector& axis);
+    // Scale to unit length, unless the length is too small to divide by. ref: FUN_00979110
+    void Normalize();
+    // Approximately unit length, by up to three Newton steps of an inverse square root seeded
+    // for lengths near one -- what Nlerp uses. ref: FUN_00982570
+    void NormalizeFast();
 };
 
 // The Hamilton product, `a * b`. See the definition for why the reference's disassembly had to be

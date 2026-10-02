@@ -21,7 +21,11 @@ class CRect {
         , minX(minX)
         , maxY(maxY)
         , maxX(maxX) {};
+    // A rect collapsed onto one point. ref: FUN_00978e90
+    explicit CRect(const C2Vector& pt);
     bool operator==(const CRect& r);
+    // ref: FUN_004f5d90
+    bool operator!=(const CRect& r) const;
     bool IsPointInside(const C2Vector& pt);
     bool Sub4826D0() const;
 };

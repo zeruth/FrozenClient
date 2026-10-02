@@ -1,4 +1,13 @@
 #include "model/CM2ParticleEmitter.hpp"
+#include "model/CM2Model.hpp"
+#include "model/CM2Scene.hpp"
+#include "model/CM2Shared.hpp"
+#include "math/Utils.hpp"
+#include <common/Handle.hpp>
+#include <tempest/Rect.hpp>
+#include <storm/Error.hpp>
+#include <storm/Memory.hpp>
+#include <new>
 #include <cmath>
 #include <tempest/Math.hpp>
 #include <cstdlib>
@@ -697,7 +706,11 @@ void CM2ParticleEmitter::SpawnParticle(float dt, const C44Matrix& placement) {
 
     this->m_liveIndices.Add(1, &slot);
 
-    this->CreateParticle(this->ParticleAt(slot), dt, placement);
+    if (this->m_particleKind == 0) {
+        this->CreateParticle(this->m_pool[slot], dt, placement);
+    } else {
+        this->CreateModelParticle(this->m_modelPool[slot], dt, placement);
+    }
 }
 
 // Spawn whatever this frame's rate calls for.
@@ -928,10 +941,36 @@ void CM2ParticleEmitter::SetHeadTail(int32_t head, int32_t tail, float tailLengt
 // The TSGrowableArrays free themselves, but the texture reference does not: SetMaterial takes one
 // through HandleDuplicate, and the pooled buffer the emitter lives in is released wholesale
 // without running anything. CM2Model's teardown calls this explicitly for exactly that reason.
+//
+// ref: FUN_0097bcc0
 CM2ParticleEmitter::~CM2ParticleEmitter() {
     if (this->m_texture) {
         HandleClose(this->m_texture);
         this->m_texture = nullptr;
+    }
+
+    if (this->m_geometryModel) {
+        this->m_geometryModel->Release();
+        this->m_geometryModel = nullptr;
+    }
+
+    if (this->m_recursionModel) {
+        this->m_recursionModel->Release();
+        this->m_recursionModel = nullptr;
+    }
+
+    if (this->m_ramp) {
+        SMemFree(this->m_ramp, __FILE__, __LINE__, 0);
+        this->m_ramp = nullptr;
+    }
+
+    // The model pool's elements hold a reference each (FUN_0097bb80); the arrays free their
+    // storage themselves.
+    for (uint32_t i = 0; i < this->m_modelPool.Count(); i++) {
+        if (this->m_modelPool[i].m_model) {
+            this->m_modelPool[i].m_model->Release();
+            this->m_modelPool[i].m_model = nullptr;
+        }
     }
 }
 
@@ -1000,12 +1039,7 @@ void CM2ParticleEmitter::SetTextureGrid(uint32_t rows, uint32_t cols) {
 // layout) and are stored r g b as 0..255 floats in m_colorOverride, which SampleColor reads in
 // place of the track's three keys once flag 0x10 is up.
 //
-// The reference goes on, under flag 0x1000000, to rewrite the PRECOMPILED RAMP at +0x11c with
-// the same colours and their differences (bytes at +0 / +0x2c, dword deltas at +4..+0xc and
-// +0x30..+0x38). frozen has neither the ramp nor the flag -- the fast path FUN_00979d60 that
-// builds and reads it is unported, see docs/ref/parity-particles.md -- so that branch cannot be
-// taken here and is left out rather than written against a field that does not exist. When the
-// ramp lands, this is the second place it has to be written.
+// Under flag 0x1000000 the precompiled ramp is rebuilt from the new colours too.
 void CM2ParticleEmitter::SetColors(const uint8_t* start, const uint8_t* mid, const uint8_t* end) {
     this->m_colorOverride[0].x = static_cast<float>(start[2]);
     this->m_colorOverride[0].y = static_cast<float>(start[1]);
@@ -1019,6 +1053,10 @@ void CM2ParticleEmitter::SetColors(const uint8_t* start, const uint8_t* mid, con
     this->m_flags |= 0x10;
 
     this->m_colorOverride[2].z = static_cast<float>(end[0]);
+
+    if (this->m_flags & 0x1000000) {
+        this->PrecompileRampColor();
+    }
 }
 
 // ref: FUN_00978c40
@@ -1172,13 +1210,7 @@ void CM2ParticleEmitter::Update(float dt, const C44Matrix& matrix, const C3Vecto
     // reads them.
     this->m_flags |= 0x80;
 
-    if (this->m_particleKind == 1) {
-        // FUN_0097e8d0, the spawned-model pass for the 0x40-byte pool. Unported, and unreachable
-        // while nothing allocates that pool -- the same position as its integrator.
-        SysMsgPrintf(SYSMSG_ERROR,
-                     "CM2ParticleEmitter: model-particle update pass is not ported "
-                     "(FUN_0097e8d0); spawned models will not follow their particles");
-    }
+    this->UpdateModelParticles(relativeTo);
 }
 
 // Set the emitter's transform and origin for this frame.
@@ -1966,17 +1998,10 @@ bool CM2ParticleEmitter::WriteParticleVertices(const Particle& p, VertexCursor& 
     color.value = 0;
 
     if (this->m_flags & 0x1000000) {
-        // FUN_00979d60, the precompiled-ramp fast path. Unreachable: nothing builds the ramp at
-        // emitter +0x11c. Falling through to the normal sampler would be WRONG rather than
-        // approximate -- the ramp carries its own midpoint split -- so this says so instead.
-        SysMsgPrintf(SYSMSG_ERROR,
-                     "CM2ParticleEmitter: flag 0x1000000 wants the ramp sampler (FUN_00979d60), "
-                     "which is not ported");
-
-        return false;
+        this->SampleRamp(p, color, size, headCell, tailCell);
+    } else {
+        this->SampleAppearance(p, color, size, headCell, tailCell);
     }
-
-    this->SampleAppearance(p, color, size, headCell, tailCell);
 
     float initialSpin = 0.0f;
     float spinRate = 0.0f;
@@ -3025,4 +3050,1087 @@ void CM2ParticleEmitterSpline::CreateParticle(Particle& particle, float dt,
         particle.m_velocity.y += this->m_inheritedVelocity.y * scale;
         particle.m_velocity.z += this->m_inheritedVelocity.z * scale;
     }
+}
+
+// ================================================================================================
+// Lifetime: the copy, the clone slot, the reference count
+// ================================================================================================
+
+// Copy an emitter for the duplicate path.
+//
+// What is copied and what is not is the reference's, field for field: the cell geometry, the type,
+// the per-particle vertex and index counts, the whole parameter block from +0x98 to +0x11c, the
+// grid, the alpha and flags, the twinkle, tumble, drag, wind and follow parameters, and the time
+// accumulator. The containers, the placement and origin, the velocities and deltas and the bounds
+// start empty or zero -- the bounds ZERO, not inverted, which the next Draw resets anyway. The RNG
+// is reseeded from rand() as the base constructor does, the texture and both models gain a
+// reference, and flag 0x80 ("ran this frame") is dropped.
+//
+// Two reference fields have no frozen counterpart and are not carried: +0x18 and +0x12c, which
+// nothing frozen reads. +0x1ec (the scale) and +0x1f0 are NOT written by the reference, which
+// leaves the clone holding whatever its allocation held; frozen keeps its default instead.
+//
+// DIVERGED, deliberately: the reference copies the precompiled ramp POINTER, so a clone and its
+// source share one ramp and each frees it in its destructor. Frozen gives the clone its own copy.
+//
+// ref: FUN_0097eec0
+CM2ParticleEmitter::CM2ParticleEmitter(const CM2ParticleEmitter& source, int32_t copyParticles) {
+    this->m_emitCarry = 0.0f;
+    this->m_refCount = 1;
+    this->m_cellShift = source.m_cellShift;
+    this->m_cellWidth = source.m_cellWidth;
+    this->m_cellHeight = source.m_cellHeight;
+    this->m_emitterType = source.m_emitterType;
+    this->m_seed = CRndSeed(0);
+    this->m_childCount = 4;
+    this->m_verticesPerParticle = source.m_verticesPerParticle;
+    this->m_indicesPerParticle = source.m_indicesPerParticle;
+
+    // +0x98 .. +0x11c
+    this->m_particleKind = source.m_particleKind;
+    this->m_rate = source.m_rate;
+    this->m_rateVariation = source.m_rateVariation;
+    this->m_lifespan = source.m_lifespan;
+    this->m_lifespanVariation = source.m_lifespanVariation;
+    this->m_tailLength = source.m_tailLength;
+    this->m_speed = source.m_speed;
+    this->m_gravity = source.m_gravity;
+    this->m_variation = source.m_variation;
+    this->m_zSource = source.m_zSource;
+    this->m_initialSpin = source.m_initialSpin;
+    this->m_initialSpinVariation = source.m_initialSpinVariation;
+    this->m_spin = source.m_spin;
+    this->m_spinVariation = source.m_spinVariation;
+    this->m_blendMode = source.m_blendMode;
+    this->m_materialFlags = source.m_materialFlags;
+    this->m_colorTrack = source.m_colorTrack;
+    this->m_alphaTrack = source.m_alphaTrack;
+    this->m_scaleTrack = source.m_scaleTrack;
+    this->m_scaleVariation = source.m_scaleVariation;
+    this->m_headCellTrack = source.m_headCellTrack;
+    this->m_tailCellTrack = source.m_tailCellTrack;
+
+    for (uint32_t i = 0; i < 3; i++) {
+        this->m_colorOverride[i] = source.m_colorOverride[i];
+    }
+
+    this->m_rampSplit = source.m_rampSplit;
+
+    if (source.m_ramp) {
+        void* memory = SMemAlloc(sizeof(Ramp) * 2, __FILE__, __LINE__, 0);
+        this->m_ramp = static_cast<Ramp*>(memory);
+        memcpy(this->m_ramp, source.m_ramp, sizeof(Ramp) * 2);
+    }
+
+    this->m_textureRows = source.m_textureRows;
+    this->m_textureCols = source.m_textureCols;
+    this->m_alpha = source.m_alpha;
+    this->m_flags = source.m_flags;
+
+    // +0x13c .. +0x180
+    this->m_twinkleFps = source.m_twinkleFps;
+    this->m_twinkleOnOff = source.m_twinkleOnOff;
+    this->m_twinkleMin = source.m_twinkleMin;
+    this->m_twinkleSpan = source.m_twinkleSpan;
+    this->m_velocitySampleScale = source.m_velocitySampleScale;
+
+    for (uint32_t i = 0; i < 3; i++) {
+        this->m_tumble[i] = source.m_tumble[i];
+    }
+
+    this->m_drag = source.m_drag;
+    this->m_wind = source.m_wind;
+    this->m_windTime = source.m_windTime;
+    this->m_followBase = source.m_followBase;
+    this->m_followScale = source.m_followScale;
+
+    this->m_time = source.m_time;
+
+    this->m_boundsMin = { 0.0f, 0.0f, 0.0f };
+    this->m_boundsMax = { 0.0f, 0.0f, 0.0f };
+
+    uint32_t seed = (static_cast<uint32_t>(rand()) << 16) | (static_cast<uint32_t>(rand()) & 0xFFFF);
+    this->m_seed = CRndSeed(seed);
+
+    this->m_childCount = source.m_childCount;
+
+    for (uint32_t i = 0; i < source.m_childCount; i++) {
+        this->m_children[i] = M2ParticleEmitterPoolGet()->Add(source.m_children[i], 0);
+    }
+
+    this->m_geometryModel = source.m_geometryModel;
+
+    if (this->m_geometryModel) {
+        this->m_geometryModel->m_refCount++;
+    }
+
+    this->m_recursionModel = source.m_recursionModel;
+
+    if (this->m_recursionModel) {
+        this->m_recursionModel->m_refCount++;
+    }
+
+    this->m_texture = static_cast<HTEXTURE>(HandleDuplicate(source.m_texture));
+    this->m_flags &= ~0x80u;
+
+    if (!copyParticles || (!source.m_freeIndices.Count() && !source.m_liveIndices.Count())) {
+        return;
+    }
+
+    this->PrepareStep();
+
+    this->m_freeIndices.SetCount(0);
+    this->m_liveIndices.SetCount(0);
+
+    for (uint32_t i = 0; i < source.m_freeIndices.Count(); i++) {
+        uint32_t slot = source.m_freeIndices[i];
+        this->m_freeIndices.Add(1, &slot);
+    }
+
+    for (uint32_t i = 0; i < source.m_liveIndices.Count(); i++) {
+        uint32_t slot = source.m_liveIndices[i];
+        this->m_liveIndices.Add(1, &slot);
+
+        if (this->m_particleKind == 0) {
+            this->m_pool[slot] = source.m_pool[slot];
+        } else {
+            M2CopyModelParticle(this->m_modelPool[slot], source.m_modelPool[slot]);
+        }
+    }
+}
+
+// Slot [4] is pure in the base; reaching this means a bare base emitter was cloned, which the
+// reference cannot construct.
+CM2ParticleEmitter* CM2ParticleEmitter::Clone(int32_t copyParticles) {
+    SysMsgPrintf(SYSMSG_ERROR, "CM2ParticleEmitter::Clone is pure virtual in the reference");
+
+    return nullptr;
+}
+
+// ref: FUN_00978e70
+void CM2ParticleEmitter::AddRef() {
+    this->m_refCount++;
+}
+
+// The reference calls the emitter's scalar deleting destructor (vtable slot [5]); a clone is a
+// heap object of its own concrete class, so that is the destructor and then the free.
+//
+// ref: FUN_00978e80
+void CM2ParticleEmitter::Release() {
+    this->m_refCount--;
+
+    if (this->m_refCount == 0) {
+        this->~CM2ParticleEmitter();
+        SMemFree(this, __FILE__, __LINE__, 0);
+    }
+}
+
+// ref: FUN_00981350
+CM2ParticleEmitterPlane::CM2ParticleEmitterPlane(const CM2ParticleEmitterPlane& source,
+                                                 int32_t copyParticles)
+    : CM2ParticleEmitter(source, copyParticles) {
+    this->m_width = source.m_width;
+    this->m_length = source.m_length;
+    this->m_latitude = source.m_latitude;
+    this->m_longitude = source.m_longitude;
+}
+
+// ref: FUN_00981510
+CM2ParticleEmitter* CM2ParticleEmitterPlane::Clone(int32_t copyParticles) {
+    void* memory = SMemAlloc(sizeof(CM2ParticleEmitterPlane), __FILE__, __LINE__, 0);
+
+    if (!memory) {
+        return nullptr;
+    }
+
+    return new (memory) CM2ParticleEmitterPlane(*this, copyParticles);
+}
+
+// ref: FUN_00981430
+CM2ParticleEmitterSphere::CM2ParticleEmitterSphere(const CM2ParticleEmitterSphere& source,
+                                                   int32_t copyParticles)
+    : CM2ParticleEmitter(source, copyParticles) {
+    this->m_minRadius = source.m_minRadius;
+    this->m_maxRadius = source.m_maxRadius;
+    this->m_latitude = source.m_latitude;
+    this->m_longitude = source.m_longitude;
+    this->m_radiusSpan = source.m_radiusSpan;
+}
+
+// ref: FUN_00981550
+CM2ParticleEmitter* CM2ParticleEmitterSphere::Clone(int32_t copyParticles) {
+    void* memory = SMemAlloc(sizeof(CM2ParticleEmitterSphere), __FILE__, __LINE__, 0);
+
+    if (!memory) {
+        return nullptr;
+    }
+
+    return new (memory) CM2ParticleEmitterSphere(*this, copyParticles);
+}
+
+// The curve is copied by its points: frozen's CBezierSpline keeps them inline up to 25 and spills
+// the rest to the heap, so a member-wise copy would share the spill.
+//
+// ref: FUN_009821c0
+CM2ParticleEmitterSpline::CM2ParticleEmitterSpline(const CM2ParticleEmitterSpline& source,
+                                                   int32_t copyParticles)
+    : CM2ParticleEmitter(source, copyParticles) {
+    this->m_splineStart = source.m_splineStart;
+    this->m_splineEnd = source.m_splineEnd;
+    this->m_spread = source.m_spread;
+    this->m_spreadOffset = source.m_spreadOffset;
+    this->m_splineRate = source.m_splineRate;
+    this->m_emitAtEnd = source.m_emitAtEnd;
+
+    uint32_t count = source.m_curve.m_pointCount;
+
+    if (count) {
+        C3Vector* points = static_cast<C3Vector*>(SMemAlloc(sizeof(C3Vector) * count, __FILE__, __LINE__, 0));
+
+        for (uint32_t i = 0; i < count; i++) {
+            points[i] = source.m_curve.Point(i);
+        }
+
+        this->m_curve.SetPoints(points, count);
+
+        SMemFree(points, __FILE__, __LINE__, 0);
+    }
+}
+
+// ref: FUN_00982240
+CM2ParticleEmitter* CM2ParticleEmitterSpline::Clone(int32_t copyParticles) {
+    void* memory = SMemAlloc(sizeof(CM2ParticleEmitterSpline), __FILE__, __LINE__, 0);
+
+    if (!memory) {
+        return nullptr;
+    }
+
+    return new (memory) CM2ParticleEmitterSpline(*this, copyParticles);
+}
+
+// ================================================================================================
+// The emitter pool
+// ================================================================================================
+
+static M2ParticleEmitterPool* s_particleEmitterPool = nullptr;
+
+// Created on the first duplicate. It takes its own reference to the shared particle index buffer
+// and refills the twinkle table, as the model cache's initialisation does.
+//
+// ref: FUN_00981130
+M2ParticleEmitterPool* M2ParticleEmitterPoolGet() {
+    if (!s_particleEmitterPool) {
+        void* memory = SMemAlloc(sizeof(M2ParticleEmitterPool), __FILE__, __LINE__, 0);
+        s_particleEmitterPool = memory ? new (memory) M2ParticleEmitterPool() : nullptr;
+
+        M2ParticleInitTwinkleTable();
+        M2ParticleIndexBufferCreate();
+    }
+
+    return s_particleEmitterPool;
+}
+
+// ref: FUN_00981090
+CM2ParticleEmitter* M2ParticleEmitterPool::Add(CM2ParticleEmitter* source, int32_t copyParticles) {
+    if (!source) {
+        SErrSetLastError(0x57);
+
+        return nullptr;
+    }
+
+    CM2ParticleEmitter* clone = source->Clone(copyParticles);
+    clone->AddRef();
+
+    *this->m_emitters.New() = clone;
+
+    return clone;
+}
+
+// Release every held emitter, last first. The first-generation lists are never filled, so they
+// are only emptied.
+//
+// ref: FUN_00981000
+void M2ParticleEmitterPool::Clear() {
+    this->m_emitters1.SetCount(0);
+
+    for (uint32_t i = this->m_emitters.Count(); i != 0; i--) {
+        this->m_emitters[i - 1]->Release();
+    }
+
+    this->m_emitters.SetCount(0);
+    this->m_emitters1b.SetCount(0);
+
+    for (uint32_t i = this->m_emittersb.Count(); i != 0; i--) {
+        this->m_emittersb[i - 1]->Release();
+    }
+
+    this->m_emittersb.SetCount(0);
+}
+
+// ref: FUN_00981200
+M2ParticleEmitterPool::~M2ParticleEmitterPool() {
+    this->Clear();
+}
+
+// ref: FUN_00981270
+void M2ParticleEmitterPoolDestroy() {
+    if (s_particleEmitterPool) {
+        M2ParticleIndexBufferRelease();
+
+        M2ParticleEmitterPool* pool = s_particleEmitterPool;
+
+        if (pool) {
+            pool->~M2ParticleEmitterPool();
+            SMemFree(pool, __FILE__, __LINE__, 0);
+        }
+    }
+
+    s_particleEmitterPool = nullptr;
+}
+
+// ================================================================================================
+// Model particles
+// ================================================================================================
+
+// A model particle's copy: the plain particle, the spin state, and its model, which gains a
+// reference.
+//
+// ref: FUN_009797f0
+void M2CopyModelParticle(CM2ParticleEmitter::ModelParticle& out,
+                         const CM2ParticleEmitter::ModelParticle& in) {
+    static_cast<CM2ParticleEmitter::Particle&>(out) = in;
+    out.m_orientation = in.m_orientation;
+    out.m_angularVelocity = in.m_angularVelocity;
+    out.m_model = in.m_model;
+
+    if (out.m_model) {
+        out.m_model->m_refCount++;
+    }
+}
+
+// ref: FUN_00978b30
+void CM2ParticleEmitter::SetGeometryModel(CM2Scene* scene, const char* name) {
+    if (!scene || !name || !*name) {
+        return;
+    }
+
+    this->m_scene = scene;
+    this->m_geometryModel = scene->CreateModel(name, 0);
+
+    if (this->m_geometryModel) {
+        this->m_particleKind = 1;
+    }
+}
+
+// ref: FUN_0097aeb0
+void CM2ParticleEmitter::SetRecursionModel(CM2Scene* scene, const char* name) {
+    if (!scene) {
+        return;
+    }
+
+    this->m_recursionModel = scene->CreateModel(name, 0);
+
+    if (this->m_recursionModel) {
+        this->m_recursionModel->SetLoadedCallback(CM2ParticleEmitter::RecursionModelLoaded, this);
+    }
+}
+
+// The recursion model's first four emitters become this emitter's children, each flagged 0x1 so
+// it emits under its parent rather than on its own.
+//
+// ref: FUN_0097ae00
+void CM2ParticleEmitter::RecursionModelLoaded(CM2Model* model, void* arg) {
+    auto emitter = static_cast<CM2ParticleEmitter*>(arg);
+
+    if (!model || !emitter) {
+        return;
+    }
+
+    if (!model->m_loaded) {
+        model->WaitForLoad(nullptr);
+    }
+
+    uint32_t count = 4;
+
+    if (model->m_shared->m_data->particles.Count() < 4) {
+        if (!model->m_loaded) {
+            model->WaitForLoad(nullptr);
+        }
+
+        count = model->m_shared->m_data->particles.Count();
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (!model->m_loaded) {
+            model->WaitForLoad(nullptr);
+        }
+
+        CM2ParticleEmitter* child = model->m_particleEmitters[i];
+
+        // Frozen-only: null for an emitter type frozen does not build.
+        if (!child) {
+            continue;
+        }
+
+        emitter->m_children[emitter->m_childCount++] = child;
+        child->m_flags |= 0x1;
+    }
+}
+
+// ref: FUN_009799c0
+void CM2ParticleEmitter::CreateModelParticle(ModelParticle& p, float dt, const C44Matrix& placement) {
+    this->CreateParticle(p, dt, placement);
+
+    if (!(this->m_flags & 0x200)) {
+        C33Matrix rotation;
+
+        rotation.a0 = placement.a0;
+        rotation.a1 = placement.a1;
+        rotation.a2 = placement.a2;
+        rotation.b0 = placement.b0;
+        rotation.b1 = placement.b1;
+        rotation.b2 = placement.b2;
+        rotation.c0 = placement.c0;
+        rotation.c1 = placement.c1;
+        rotation.c2 = placement.c2;
+
+        // Only the first row is normalised, and only when it can be (2^-22, 0x009ea27c).
+        float lengthSquared = rotation.a0 * rotation.a0 + rotation.a2 * rotation.a2
+            + rotation.a1 * rotation.a1;
+
+        if (lengthSquared > 0.00000023841858f) {
+            float scale = 1.0f / sqrtf(lengthSquared);
+
+            rotation.a0 = scale * rotation.a0;
+            rotation.a1 = rotation.a1 * scale;
+            rotation.a2 = rotation.a2 * scale;
+        }
+
+        p.m_orientation = C4Quaternion(rotation);
+        p.m_orientation.Normalize();
+    }
+
+    uint32_t first = (CRandom::uint32(this->m_seed) & 0x7FFFFF) | 0x3F800000;
+    uint32_t second = (CRandom::uint32(this->m_seed) & 0x7FFFFF) | 0x3F800000;
+    uint32_t third = (CRandom::uint32(this->m_seed) & 0x7FFFFF) | 0x3F800000;
+
+    float r1;
+    float r2;
+    float r3;
+    memcpy(&r1, &first, sizeof(r1));
+    memcpy(&r2, &second, sizeof(r2));
+    memcpy(&r3, &third, sizeof(r3));
+
+    // Transcribed as the reference computes them: only the first axis adds its minimum; the other
+    // two take their draw in [1, 2) times the span (0x00979ad9..0x00979af3).
+    p.m_angularVelocity.x = (r3 - 1.0f) * this->m_tumble[0].span + this->m_tumble[0].min;
+    p.m_angularVelocity.y = ((r2 - 1.0f) + 1.0f) * this->m_tumble[1].span;
+    p.m_angularVelocity.z = ((r1 - 1.0f) + 1.0f) * this->m_tumble[2].span;
+
+    if (this->m_flags & 0x10000) {
+        float signZ = (CRandom::uint32(this->m_seed) & 0x1) ? 1.0f : -1.0f;
+        float signY = (CRandom::uint32(this->m_seed) & 0x1) ? 1.0f : -1.0f;
+        float signX = (CRandom::uint32(this->m_seed) & 0x1) ? 1.0f : -1.0f;
+
+        p.m_angularVelocity.x = signX * p.m_angularVelocity.x;
+        p.m_angularVelocity.y = p.m_angularVelocity.y * signY;
+        p.m_angularVelocity.z = p.m_angularVelocity.z * signZ;
+    }
+
+    if (!p.m_model) {
+        p.m_model = this->m_scene->CreateModel(this->m_geometryModel->m_shared->m_filePath, 0);
+    }
+}
+
+// Place, tint and show one particle's model, and fold its bounds into the emitter's. A twinkling
+// particle on its off frame hides its model instead and reports 0.
+//
+// The bounding sphere is transformed into a scratch point that is then not used: the box the
+// emitter grows by is built from the UNtransformed sphere. Transcribed (0x0097a93e).
+//
+// ref: FUN_0097a670
+int32_t CM2ParticleEmitter::UpdateModelParticle(ModelParticle& p, const C44Matrix* relativeTo) {
+    uint32_t twinkle = 0;
+
+    if (this->m_twinkleOnOff < 1.0f || this->m_twinkleSpan != 0.0f) {
+        int32_t step = static_cast<int32_t>(lrintf(this->m_twinkleFps * p.m_age));
+
+        twinkle = (static_cast<uint32_t>(reinterpret_cast<uintptr_t>(&p) >> 5) + (step & 0xFF)) & 0x7F;
+    }
+
+    CM2Model* model = p.m_model;
+
+    if (this->m_twinkleOnOff < 1.0f && this->m_twinkleOnOff < s_particleTwinkle[twinkle]) {
+        if (model->m_attachParent) {
+            model->m_flag80 = 0;
+            model->m_flag20000 = 0;
+        } else {
+            model->m_flag8 = 0;
+            model->m_flag10000 = 0;
+        }
+
+        return 0;
+    }
+
+    float lifespan = static_cast<float>(p.m_lifeVariation.n) * this->m_lifespanVariation
+        * 3.0518509e-05f + this->m_lifespan;
+
+    if (!(lifespan > 0.001f)) {
+        lifespan = 0.001f;
+    }
+
+    float t = p.m_age / lifespan;
+
+    CImVector color;
+    this->SampleColor(color, t);
+
+    float alpha = M2PartTrackEvalAlpha(*this->m_alphaTrack, t) * this->m_alpha * 255.0f;
+    int32_t alphaByte = static_cast<int32_t>(lrintf(alpha));
+
+    C2Vector scale;
+    M2PartTrackEval2(scale, *this->m_scaleTrack, t);
+
+    float twinkleScale = s_particleTwinkle[twinkle] * this->m_twinkleSpan + this->m_twinkleMin;
+
+    scale.x = scale.x * twinkleScale;
+    scale.y = twinkleScale * scale.y;
+
+    if (!(this->m_flags & 0x200) && (this->m_flags & 0x400)) {
+        scale.x = scale.x * this->m_scale;
+        scale.y = this->m_scale * scale.y;
+    }
+
+    C44Matrix matrix(p.m_orientation);
+
+    C3Vector scale3 = { scale.x, scale.y, (scale.x + scale.y) * 0.5f };
+    matrix.Scale(scale3);
+
+    matrix.d0 = p.m_position.x;
+    matrix.d1 = p.m_position.y;
+    matrix.d2 = p.m_position.z;
+
+    if (this->m_flags & 0x200) {
+        matrix *= this->m_placement;
+    } else if (relativeTo) {
+        matrix *= *relativeTo;
+    }
+
+    model->m_flag8000 = 1;
+    model->matrixB4 = matrix;
+
+    model->m_baseDiffuse.x = static_cast<float>(color.r) * (1.0f / 255.0f);
+    model->m_baseDiffuse.y = static_cast<float>(color.g) * (1.0f / 255.0f);
+    model->m_baseDiffuse.z = static_cast<float>(color.b) * (1.0f / 255.0f);
+    model->m_baseAlpha = (1.0f / 255.0f) * static_cast<float>(alphaByte & 0xFF);
+
+    if (model->m_attachParent) {
+        model->m_flag80 = 1;
+        model->m_flag20000 = 1;
+    } else {
+        model->m_flag8 = 1;
+        model->m_flag10000 = 1;
+    }
+
+    if (model->IsLoaded(0, 0)) {
+        CAaSphere sphere;
+        model->GetBoundingSphere(sphere);
+
+        C3Vector transformed;
+        TransformPointInPlace(transformed, sphere.c, matrix);
+
+        sphere.r = (scale.x > scale.y ? scale.x : scale.y) * sphere.r;
+
+        CAaBox box;
+        SphereToBox(sphere, box);
+
+        this->GetBounds()->GrowToInclude(box);
+    }
+
+    return 1;
+}
+
+// The depth queue the sorted pass orders its particles through (reference 0x00dce894): a max-heap
+// on view-space depth, so particles come out farthest first.
+struct M2ParticleDepthRecord {
+    float depth;
+    CM2ParticleEmitter::ModelParticle* particle;
+};
+
+static TSGrowableArray<M2ParticleDepthRecord> s_particleDepthQueue;
+
+static void M2ParticleDepthQueuePush(float depth, CM2ParticleEmitter::ModelParticle* particle) {
+    M2ParticleDepthRecord record = { depth, particle };
+    s_particleDepthQueue.Add(1, &record);
+
+    uint32_t i = s_particleDepthQueue.Count() - 1;
+
+    while (i > 0) {
+        uint32_t parent = (i - 1) / 2;
+
+        if (!(s_particleDepthQueue[parent].depth < s_particleDepthQueue[i].depth)) {
+            break;
+        }
+
+        M2ParticleDepthRecord swap = s_particleDepthQueue[parent];
+        s_particleDepthQueue[parent] = s_particleDepthQueue[i];
+        s_particleDepthQueue[i] = swap;
+
+        i = parent;
+    }
+}
+
+// Take the deepest record: the root, refilled from the last and sifted down toward the larger
+// child.
+//
+// ref: FUN_0097e080
+static M2ParticleDepthRecord M2ParticleDepthQueuePop() {
+    M2ParticleDepthRecord top = s_particleDepthQueue[0];
+    uint32_t count = s_particleDepthQueue.Count();
+    M2ParticleDepthRecord last = s_particleDepthQueue[count - 1];
+
+    s_particleDepthQueue.SetCount(count - 1);
+    count--;
+
+    if (count == 0) {
+        return top;
+    }
+
+    uint32_t i = 0;
+
+    for (;;) {
+        uint32_t child = i * 2 + 1;
+
+        if (child >= count) {
+            break;
+        }
+
+        if (child + 1 < count && s_particleDepthQueue[child].depth <= s_particleDepthQueue[child + 1].depth) {
+            child++;
+        }
+
+        if (s_particleDepthQueue[child].depth <= last.depth) {
+            break;
+        }
+
+        s_particleDepthQueue[i] = s_particleDepthQueue[child];
+        i = child;
+    }
+
+    s_particleDepthQueue[i] = last;
+
+    return top;
+}
+
+// Every live model particle's model. Under flag 0x20 they go back to front by depth in the view
+// the emitter draws in.
+//
+// DIVERGED in one place: the reference reads each particle's position for the depth from the PLAIN
+// pool (+0x34, 0x20 stride), which a model-particle emitter never allocates, and hands that
+// pointer on as a model particle. Frozen reads the model pool, which is where the particle is.
+//
+// ref: FUN_0097e8d0
+void CM2ParticleEmitter::UpdateModelParticles(const C44Matrix* relativeTo) {
+    if (!this->m_geometryModel) {
+        return;
+    }
+
+    if (!(this->m_flags & 0x20)) {
+        for (uint32_t i = 0; i < this->m_liveIndices.Count(); i++) {
+            this->UpdateModelParticle(this->m_modelPool[this->m_liveIndices[i]], relativeTo);
+        }
+
+        return;
+    }
+
+    C44Matrix view;
+    GxXformView(view);
+
+    C44Matrix toView;
+
+    if (this->m_flags & 0x200) {
+        toView = this->m_placement * view;
+    } else if (relativeTo) {
+        toView = *relativeTo * view;
+    } else {
+        toView = view;
+    }
+
+    for (uint32_t i = 0; i < this->m_liveIndices.Count(); i++) {
+        ModelParticle& p = this->m_modelPool[this->m_liveIndices[i]];
+
+        float depth = p.m_position.z * toView.c2 + p.m_position.y * toView.b2
+            + p.m_position.x * toView.a2 + toView.d2;
+
+        M2ParticleDepthQueuePush(depth, &p);
+    }
+
+    for (uint32_t n = this->m_liveIndices.Count(); n != 0; n--) {
+        M2ParticleDepthRecord record = M2ParticleDepthQueuePop();
+        this->UpdateModelParticle(*record.particle, relativeTo);
+    }
+}
+
+// ================================================================================================
+// The precompiled ramp
+// ================================================================================================
+
+// Replace the per-particle track lookups with two straight segments, when that is exact: colour,
+// alpha and scale have one to three keys, the cell tracks up to four (four only when the middle
+// two share a time), every three-key track bends at the same time, nothing varies per particle
+// (no lifespan variation, no scale variation, no non-uniform scale key), and a missing head-cell
+// track does not meet flag 0x100000.
+//
+// ref: FUN_0097d370
+void CM2ParticleEmitter::PrecompileRamp() {
+    uint32_t colorKeys = this->m_colorTrack->times.Count();
+
+    if (colorKeys > 3 || colorKeys == 0) {
+        return;
+    }
+
+    uint32_t alphaKeys = this->m_alphaTrack->times.Count();
+
+    if (alphaKeys > 3 || alphaKeys == 0) {
+        return;
+    }
+
+    const M2PartTrack<C2Vector>* scaleTrack = this->m_scaleTrack;
+    uint32_t scaleKeys = scaleTrack->times.Count();
+
+    if (scaleKeys > 3 || scaleKeys == 0) {
+        return;
+    }
+
+    uint32_t headKeys = this->m_headCellTrack->times.Count();
+
+    if (headKeys > 4) {
+        return;
+    }
+
+    if (headKeys == 4 && this->m_headCellTrack->times[1].n != this->m_headCellTrack->times[2].n) {
+        return;
+    }
+
+    uint32_t tailKeys = this->m_tailCellTrack->times.Count();
+
+    if (tailKeys > 4) {
+        return;
+    }
+
+    if (tailKeys == 4 && this->m_tailCellTrack->times[1].n != this->m_tailCellTrack->times[2].n) {
+        return;
+    }
+
+    if (this->m_lifespanVariation != 0.0f) {
+        return;
+    }
+
+    if (headKeys == 0 && (this->m_flags & 0x100000)) {
+        return;
+    }
+
+    if (CRect(this->m_scaleVariation) != CRect(0.0f, 0.0f, 0.0f, 0.0f)) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < scaleTrack->values.Count(); i++) {
+        if (NotEqual(scaleTrack->values[i].x, scaleTrack->values[i].y)) {
+            return;
+        }
+    }
+
+    int16_t split = 0;
+
+    if (colorKeys == 3) {
+        split = this->m_colorTrack->times[1].n;
+    } else if (alphaKeys == 3) {
+        split = this->m_alphaTrack->times[1].n;
+    } else if (scaleKeys == 3) {
+        split = scaleTrack->times[1].n;
+    } else if (headKeys > 2) {
+        split = this->m_headCellTrack->times[1].n;
+    } else if (tailKeys >= 3) {
+        split = this->m_tailCellTrack->times[1].n;
+    }
+
+    if (alphaKeys == 3 && this->m_alphaTrack->times[1].n != split) {
+        return;
+    }
+
+    if (scaleKeys == 3 && scaleTrack->times[1].n != split) {
+        return;
+    }
+
+    if (headKeys >= 3 && this->m_headCellTrack->times[1].n != split) {
+        return;
+    }
+
+    if (tailKeys >= 3 && this->m_tailCellTrack->times[1].n != split) {
+        return;
+    }
+
+    void* memory = SMemAlloc(sizeof(Ramp) * 2, __FILE__, __LINE__, 0);
+    Ramp* ramp = nullptr;
+
+    if (memory) {
+        ramp = static_cast<Ramp*>(memory);
+        new (&ramp[0]) Ramp();
+        new (&ramp[1]) Ramp();
+    }
+
+    this->m_ramp = ramp;
+
+    if (!ramp) {
+        return;
+    }
+
+    this->m_flags |= 0x1000000;
+    this->m_rampSplit = static_cast<float>(static_cast<int32_t>(split)) * 3.0518509e-05f;
+
+    this->PrecompileRampColor();
+    this->PrecompileRampAlpha();
+    this->PrecompileRampScale();
+    this->PrecompileRampHeadCell();
+    this->PrecompileRampTailCell();
+}
+
+static inline int32_t M2RampRound(float value) {
+    return static_cast<int32_t>(lrintf(value));
+}
+
+// The colour bytes and deltas, from the ParticleColor override under flag 0x10 and otherwise from
+// the colour track's keys.
+//
+// ref: FUN_0097aff0
+void CM2ParticleEmitter::PrecompileRampColor() {
+    Ramp* ramp = this->m_ramp;
+    float split = this->m_rampSplit;
+
+    if (this->m_flags & 0x10) {
+        ramp[0].color[2] = static_cast<uint8_t>(M2RampRound(this->m_colorOverride[0].x));
+        ramp[0].color[1] = static_cast<uint8_t>(M2RampRound(this->m_colorOverride[0].y));
+        ramp[0].color[0] = static_cast<uint8_t>(M2RampRound(this->m_colorOverride[0].z));
+
+        ramp[1].color[2] = static_cast<uint8_t>(M2RampRound(this->m_colorOverride[1].x));
+        ramp[1].color[0] = static_cast<uint8_t>(M2RampRound(this->m_colorOverride[1].z));
+        ramp[1].color[1] = static_cast<uint8_t>(M2RampRound(this->m_colorOverride[1].y));
+
+        ramp[0].deltaRed = static_cast<int32_t>(ramp[1].color[2]) - static_cast<int32_t>(ramp[0].color[2]);
+        ramp[0].deltaGreen = static_cast<int32_t>(ramp[1].color[1]) - static_cast<int32_t>(ramp[0].color[1]);
+        ramp[0].deltaBlue = static_cast<int32_t>(ramp[1].color[0]) - static_cast<int32_t>(ramp[0].color[0]);
+
+        ramp[1].deltaRed = (M2RampRound(this->m_colorOverride[2].x) & 0xFF) - static_cast<int32_t>(ramp[1].color[2]);
+        ramp[1].deltaGreen = (M2RampRound(this->m_colorOverride[2].y) & 0xFF) - static_cast<int32_t>(ramp[1].color[1]);
+        ramp[1].deltaBlue = (M2RampRound(this->m_colorOverride[2].z) & 0xFF) - static_cast<int32_t>(ramp[1].color[0]);
+
+        return;
+    }
+
+    const M2PartTrack<C3Vector>& track = *this->m_colorTrack;
+
+    ramp[0].color[2] = static_cast<uint8_t>(M2RampRound(track.values[0].x));
+    ramp[0].color[1] = static_cast<uint8_t>(M2RampRound(track.values[0].y));
+    ramp[0].color[0] = static_cast<uint8_t>(M2RampRound(track.values[0].z));
+
+    uint32_t keys = track.values.Count();
+
+    if (keys == 1) {
+        ramp[0].deltaRed = 0;
+        ramp[0].deltaGreen = 0;
+        ramp[0].deltaBlue = 0;
+    } else if (keys == 2) {
+        ramp[0].deltaRed = M2RampRound((track.values[1].x - track.values[0].x) * split);
+        ramp[0].deltaGreen = M2RampRound((track.values[1].y - track.values[0].y) * split);
+        ramp[0].deltaBlue = M2RampRound((track.values[1].z - track.values[0].z) * split);
+    } else if (keys == 3) {
+        ramp[0].deltaRed = M2RampRound(track.values[1].x - track.values[0].x);
+        ramp[0].deltaGreen = M2RampRound(track.values[1].y - track.values[0].y);
+        ramp[0].deltaBlue = M2RampRound(track.values[1].z - track.values[0].z);
+    }
+
+    ramp[1].color[2] = static_cast<uint8_t>(ramp[0].deltaRed + ramp[0].color[2]);
+    ramp[1].color[1] = static_cast<uint8_t>(ramp[0].deltaGreen + ramp[0].color[1]);
+    ramp[1].color[0] = static_cast<uint8_t>(ramp[0].deltaBlue + ramp[0].color[0]);
+
+    if (keys == 1) {
+        ramp[1].deltaRed = 0;
+        ramp[1].deltaGreen = 0;
+        ramp[1].deltaBlue = 0;
+    } else if (keys == 2) {
+        ramp[1].deltaRed = M2RampRound((1.0f - split) * (track.values[1].x - track.values[0].x));
+        ramp[1].deltaGreen = M2RampRound((1.0f - split) * (track.values[1].y - track.values[0].y));
+        ramp[1].deltaBlue = M2RampRound((1.0f - split) * (track.values[1].z - track.values[0].z));
+    } else if (keys == 3) {
+        ramp[1].deltaRed = M2RampRound(track.values[2].x - track.values[1].x);
+        ramp[1].deltaGreen = M2RampRound(track.values[2].y - track.values[1].y);
+        ramp[1].deltaBlue = M2RampRound(track.values[2].z - track.values[1].z);
+    }
+}
+
+// ref: FUN_0097b440
+void CM2ParticleEmitter::PrecompileRampAlpha() {
+    Ramp* ramp = this->m_ramp;
+    float split = this->m_rampSplit;
+    const M2PartTrack<fixed16>& track = *this->m_alphaTrack;
+
+    ramp[0].color[3] = static_cast<uint8_t>(M2RampRound(
+        static_cast<float>(track.values[0].n) * 3.0518509e-05f * 255.0f));
+
+    uint32_t keys = track.values.Count();
+
+    if (keys == 1) {
+        ramp[0].deltaAlpha = 0;
+    } else if (keys == 2) {
+        int16_t delta = static_cast<int16_t>(track.values[1].n - track.values[0].n);
+        ramp[0].deltaAlpha = M2RampRound(static_cast<float>(delta) * 3.0518509e-05f * split * 255.0f);
+    } else if (keys == 3) {
+        int16_t delta = static_cast<int16_t>(track.values[1].n - track.values[0].n);
+        ramp[0].deltaAlpha = M2RampRound(static_cast<float>(delta) * 3.0518509e-05f * 255.0f);
+    }
+
+    ramp[1].color[3] = static_cast<uint8_t>(ramp[0].deltaAlpha + ramp[0].color[3]);
+
+    if (keys == 1) {
+        ramp[1].deltaAlpha = 0;
+    } else if (keys == 2) {
+        int16_t delta = static_cast<int16_t>(track.values[1].n - track.values[0].n);
+        ramp[1].deltaAlpha = M2RampRound(static_cast<float>(delta) * 3.0518509e-05f * (1.0f - split) * 255.0f);
+    } else if (keys == 3) {
+        int16_t delta = static_cast<int16_t>(track.values[2].n - track.values[1].n);
+        ramp[1].deltaAlpha = M2RampRound(static_cast<float>(delta) * 3.0518509e-05f * 255.0f);
+    }
+}
+
+// The scale, from the x of the scale keys; PrecompileRamp has already required x == y.
+//
+// ref: FUN_0097b5f0
+void CM2ParticleEmitter::PrecompileRampScale() {
+    Ramp* ramp = this->m_ramp;
+    float split = this->m_rampSplit;
+    const M2PartTrack<C2Vector>& track = *this->m_scaleTrack;
+
+    ramp[0].scale = track.values[0].x;
+
+    uint32_t keys = track.values.Count();
+
+    if (keys == 1) {
+        ramp[0].deltaScale = 0.0f;
+    } else if (keys == 2) {
+        ramp[0].deltaScale = (track.values[1].x - track.values[0].x) * split;
+    } else if (keys == 3) {
+        ramp[0].deltaScale = track.values[1].x - track.values[0].x;
+    }
+
+    ramp[1].scale = ramp[0].deltaScale + ramp[0].scale;
+
+    if (keys == 1) {
+        ramp[1].deltaScale = 0.0f;
+    } else if (keys == 2) {
+        ramp[1].deltaScale = (track.values[1].x - track.values[0].x) * (1.0f - split);
+    } else if (keys == 3) {
+        ramp[1].deltaScale = track.values[2].x - track.values[1].x;
+    }
+}
+
+// One cell track into a pair of ramp fields. With four keys the middle two share a time, so the
+// second segment runs from the third key to the fourth.
+static void M2RampCell(const M2PartTrack<uint16_t>& track, float split, int32_t& start0,
+                       int32_t& delta0, int32_t& start1, int32_t& delta1) {
+    uint32_t keys = track.values.Count();
+
+    if (keys == 0) {
+        start0 = 0;
+        delta0 = 0;
+        start1 = 0;
+        delta1 = 0;
+
+        return;
+    }
+
+    start0 = track.values[0];
+
+    switch (keys) {
+        case 1:
+            delta0 = 0;
+            break;
+        case 2:
+            delta0 = static_cast<int32_t>(lrintf(static_cast<float>(
+                static_cast<int32_t>(track.values[1]) - static_cast<int32_t>(track.values[0])) * split));
+            break;
+        case 3:
+        case 4:
+            delta0 = static_cast<int32_t>(track.values[1]) - static_cast<int32_t>(track.values[0]);
+            break;
+        default:
+            break;
+    }
+
+    start1 = delta0 + start0;
+
+    switch (keys) {
+        case 1:
+            delta1 = 0;
+            break;
+        case 2:
+            delta1 = static_cast<int32_t>(lrintf((1.0f - split) * static_cast<float>(
+                static_cast<int32_t>(track.values[1]) - static_cast<int32_t>(track.values[0]))));
+            break;
+        case 3:
+            delta1 = static_cast<int32_t>(track.values[2]) - static_cast<int32_t>(track.values[1]);
+            break;
+        case 4:
+            delta1 = static_cast<int32_t>(track.values[3]) - static_cast<int32_t>(track.values[2]);
+            break;
+        default:
+            break;
+    }
+}
+
+// ref: FUN_0097b6c0
+void CM2ParticleEmitter::PrecompileRampHeadCell() {
+    M2RampCell(*this->m_headCellTrack, this->m_rampSplit, this->m_ramp[0].headCell,
+               this->m_ramp[0].deltaHeadCell, this->m_ramp[1].headCell, this->m_ramp[1].deltaHeadCell);
+}
+
+// ref: FUN_0097b840
+void CM2ParticleEmitter::PrecompileRampTailCell() {
+    M2RampCell(*this->m_tailCellTrack, this->m_rampSplit, this->m_ramp[0].tailCell,
+               this->m_ramp[0].deltaTailCell, this->m_ramp[1].tailCell, this->m_ramp[1].deltaTailCell);
+}
+
+// The particle's appearance off the precompiled ramp: its normalised age picks a segment and a
+// position along it, and every value is that segment's start plus its delta times the position.
+//
+// ref: FUN_00979d60
+void CM2ParticleEmitter::SampleRamp(const Particle& p, CImVector& color, C2Vector& size,
+                                    uint32_t& headCell, uint32_t& tailCell) const {
+    float lifespan = this->m_lifespan > 0.001f ? this->m_lifespan : 0.001f;
+    float t = p.m_age / lifespan;
+
+    const Ramp* segment = this->m_ramp;
+
+    if (this->m_rampSplit <= t) {
+        segment = segment + 1;
+        t = (t - this->m_rampSplit) / (1.0f - this->m_rampSplit);
+    } else {
+        t = t / this->m_rampSplit;
+    }
+
+    color.a = static_cast<uint8_t>(lrintf(
+        (t * static_cast<float>(segment->deltaAlpha) + static_cast<float>(segment->color[3])) * this->m_alpha));
+    color.r = static_cast<uint8_t>(lrintf(static_cast<float>(segment->deltaRed) * t
+        + static_cast<float>(segment->color[2])));
+    color.g = static_cast<uint8_t>(lrintf(static_cast<float>(segment->deltaGreen) * t
+        + static_cast<float>(segment->color[1])));
+    color.b = static_cast<uint8_t>(lrintf(static_cast<float>(segment->deltaBlue) * t
+        + static_cast<float>(segment->color[0])));
+
+    float scale = segment->deltaScale * t + segment->scale;
+    size.x = scale;
+    size.y = scale;
+
+    headCell = static_cast<uint32_t>(lrintf(t * static_cast<float>(segment->deltaHeadCell)
+        + static_cast<float>(segment->headCell)));
+    tailCell = static_cast<uint32_t>(lrintf(static_cast<float>(segment->deltaTailCell) * t
+        + static_cast<float>(segment->tailCell)));
 }

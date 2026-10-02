@@ -15,6 +15,7 @@
 #include <tempest/Vector.hpp>
 
 class CM2Model;
+class CM2Scene;
 
 // The reference's particle emitter object: one per M2Particle, held by CM2Model in an array of
 // POINTERS at +0x2c4, beside the animated state at +0x2c0 that M2ModelParticle now mirrors.
@@ -104,6 +105,15 @@ class CM2ParticleEmitter {
         // constructs one yet; whatever ports the constructor must carry the random seed over, or
         // every emitter in a scene will emit in lockstep.
         CRndSeed m_seed = CRndSeed(0);
+        // +0x04: the reference count. Born 1; AddRef and Release (FUN_00978e70, FUN_00978e80) are
+        // what the emitter pool holds its clones by.
+        uint32_t m_refCount = 1;
+        // +0x80 and +0x84: the model a model-particle emitter spawns per particle, and the scene it
+        // spawns them into (SetGeometryModel). +0x88: the model whose first emitters become this
+        // one's children once it loads (SetRecursionModel).
+        CM2Model* m_geometryModel = nullptr;
+        CM2Scene* m_scene = nullptr;
+        CM2Model* m_recursionModel = nullptr;
         // +0x2c: the 0x20-byte pool, used when m_particleKind is 0. A TSGrowableArray, which is
         // what the reference has: TSBaseArray is {m_alloc, m_count, m_data} at +0x0/+0x4/+0x8 and
         // TSGrowableArray adds m_chunk at +0xc for 0x10 bytes total -- exactly the spacing between
@@ -144,7 +154,8 @@ class CM2ParticleEmitter {
         // still zero from the top, so an emitter is born with no children and a null array. These
         // defaults already match; the 4 is not worth chasing a second time.
         uint32_t m_childCount = 0;
-        CM2ParticleEmitter** m_children = nullptr;
+        // Inline, four slots: the recursion model's loaded callback appends at most four.
+        CM2ParticleEmitter* m_children[4] = {};
         // +0x98: which pool is in use. Zero means the plain 0x20-byte one.
         uint32_t m_particleKind = 0;
         // +0xa4 and +0xa8: the base lifespan and its variation. The driver writes the base from
@@ -224,6 +235,30 @@ class CM2ParticleEmitter {
         // setter that matches on a particle id. The field is here so the branch can be written
         // truthfully rather than left out of the transcription.
         C3Vector m_colorOverride[3] = {};
+
+        // One half of the precompiled appearance ramp (0x2c bytes): a start value and a per-unit
+        // delta for each of colour, alpha, scale and the two cells. The colour bytes are in a
+        // CImVector's order (b g r) and the alpha byte follows them; the deltas are signed.
+        struct Ramp {
+            uint8_t color[4] = {};
+            int32_t deltaRed = 0;
+            int32_t deltaGreen = 0;
+            int32_t deltaBlue = 0;
+            int32_t deltaAlpha = 0;
+            float scale;
+            float deltaScale;
+            int32_t headCell;
+            int32_t deltaHeadCell;
+            int32_t tailCell;
+            int32_t deltaTailCell;
+        };
+
+        // +0x118 and +0x11c: the PRECOMPILED RAMP. When every appearance track is a straight
+        // line or two lines meeting at one shared key time, PrecompileRamp replaces the per-
+        // particle track lookups with two linear segments split at that time, and raises flag
+        // 0x1000000 so the quad writer samples it (SampleRamp) instead.
+        float m_rampSplit = 0.0f;
+        Ramp* m_ramp = nullptr;
         // +0x8c and +0x90: how many vertices and indices ONE particle costs. Not stored
         // parameters -- SetHeadTail derives them, four vertices and six indices per quad, one
         // quad each for the head and the tail. A particle drawing both costs 8 and 12. The draw
@@ -330,6 +365,49 @@ class CM2ParticleEmitter {
         // Construct an emitter with the reference's defaults and a randomly seeded RNG.
         // ref: FUN_0097e150
         CM2ParticleEmitter();
+
+        // A copy of `source` with nothing in flight, its children cloned through the emitter pool
+        // and, when `copyParticles` is set, its live particles carried over. ref: FUN_0097eec0
+        CM2ParticleEmitter(const CM2ParticleEmitter& source, int32_t copyParticles);
+
+        // Slot [4], pure in the base: a heap copy of this emitter as its own concrete class.
+        virtual CM2ParticleEmitter* Clone(int32_t copyParticles);
+
+        // ref: FUN_00978e70
+        void AddRef();
+        // The last release destroys and frees the emitter. ref: FUN_00978e80
+        void Release();
+
+        // The model each particle carries, created in `scene`. ref: FUN_00978b30
+        void SetGeometryModel(CM2Scene* scene, const char* name);
+        // The model whose emitters become this one's children when it loads. ref: FUN_0097aeb0
+        void SetRecursionModel(CM2Scene* scene, const char* name);
+        // ref: FUN_0097ae00
+        static void RecursionModelLoaded(CM2Model* model, void* arg);
+
+        // Build the precompiled ramp when the tracks allow it. ref: FUN_0097d370
+        void PrecompileRamp();
+        // ref: FUN_0097aff0
+        void PrecompileRampColor();
+        // ref: FUN_0097b440
+        void PrecompileRampAlpha();
+        // ref: FUN_0097b5f0
+        void PrecompileRampScale();
+        // ref: FUN_0097b6c0
+        void PrecompileRampHeadCell();
+        // ref: FUN_0097b840
+        void PrecompileRampTailCell();
+        // SampleAppearance's counterpart over the precompiled ramp. ref: FUN_00979d60
+        void SampleRamp(const Particle& p, CImVector& color, C2Vector& size, uint32_t& headCell,
+                        uint32_t& tailCell) const;
+
+        // Slot [1]: a model particle -- a plain one, then an orientation from the placement, a
+        // tumble rate, and its own model. ref: FUN_009799c0
+        virtual void CreateModelParticle(ModelParticle& particle, float dt, const C44Matrix& placement);
+        // Place, tint and show one particle's model. ref: FUN_0097a670
+        int32_t UpdateModelParticle(ModelParticle& particle, const C44Matrix* relativeTo);
+        // Every live model particle, back to front when flag 0x20 asks. ref: FUN_0097e8d0
+        void UpdateModelParticles(const C44Matrix* relativeTo);
 
         // NOT defaulted: the emitter holds a counted reference to its texture, and the pooled
         // buffer it lives in is freed wholesale, so nothing else would ever release it. One
@@ -697,6 +775,8 @@ class CM2ParticleEmitterSpline : public CM2ParticleEmitter {
 
         // Member functions
         CM2ParticleEmitterSpline();
+        CM2ParticleEmitterSpline(const CM2ParticleEmitterSpline& source, int32_t copyParticles);
+        CM2ParticleEmitter* Clone(int32_t copyParticles) override;
 
         void SetWidth(float width) override;
         void SetLength(float length) override;
@@ -720,6 +800,8 @@ class CM2ParticleEmitterPlane : public CM2ParticleEmitter {
         float m_longitude = 0.0f;
 
         CM2ParticleEmitterPlane();
+        CM2ParticleEmitterPlane(const CM2ParticleEmitterPlane& source, int32_t copyParticles);
+        CM2ParticleEmitter* Clone(int32_t copyParticles) override;
 
         void SetWidth(float width) override;
         void SetLength(float length) override;
@@ -749,6 +831,8 @@ class CM2ParticleEmitterSphere : public CM2ParticleEmitter {
         float m_longitude = 0.0f;
 
         CM2ParticleEmitterSphere();
+        CM2ParticleEmitterSphere(const CM2ParticleEmitterSphere& source, int32_t copyParticles);
+        CM2ParticleEmitter* Clone(int32_t copyParticles) override;
 
         // The two radius setters are deliberately asymmetric: each writes its own end and then
         // recomputes the cached span from the other.
@@ -815,6 +899,27 @@ void M2ParticleIndexBufferRelease();
 // (0x81c240), which is the only place that may call it -- the table is read every frame by every
 // emitter and refilling it mid-run would make every particle in the world blink at once.
 void M2ParticleInitTwinkleTable();
+
+// The emitter pool: every clone the duplicate path makes is held here by reference until
+// M2Destroy. Four lists, as the reference has them; only the second is ever filled -- the first
+// and third hold first-generation CParticleEmitter objects that nothing in the binary creates.
+struct M2ParticleEmitterPool {
+    TSGrowableArray<void*> m_emitters1;
+    TSGrowableArray<CM2ParticleEmitter*> m_emitters;
+    TSGrowableArray<void*> m_emitters1b;
+    TSGrowableArray<CM2ParticleEmitter*> m_emittersb;
+
+    ~M2ParticleEmitterPool();
+    CM2ParticleEmitter* Add(CM2ParticleEmitter* source, int32_t copyParticles);
+    void Clear();
+};
+
+M2ParticleEmitterPool* M2ParticleEmitterPoolGet();
+
+void M2CopyModelParticle(CM2ParticleEmitter::ModelParticle& out,
+                         const CM2ParticleEmitter::ModelParticle& in);
+
+void M2ParticleEmitterPoolDestroy();
 
 // How far the camera is from the emitter being updated. The reference keeps this in a global
 // (0x00dce68c) that its per-frame update writes before emission reads it, rather than passing it

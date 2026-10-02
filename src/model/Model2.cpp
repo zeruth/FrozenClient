@@ -3,6 +3,7 @@
 #include <storm/Hash.hpp>
 #include "model/Model2.hpp"
 #include "model/CM2Cache.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include "model/M2Internal.hpp"
 #include "console/CVar.hpp"
 #include "console/Console.hpp"
@@ -208,12 +209,12 @@ void M2Initialize(uint16_t flags, uint32_t a2) {
 
 // ref: FUN_0081c750
 // The model system's shutdown: the cache (its thread, its queued shared models, the particle
-// index buffer) and the CM2Model heap id. Between those the reference releases two singletons.
-// The ribbon one (FUN_009812b0, global 0x00dce8d0) is never assigned anywhere in the binary. The
-// particle one (FUN_00981270, 0x00dce8cc) is created only by the emitter duplicate path
-// (FUN_0097eec0), which frozen has not ported; it arrives with that path.
+// index buffer), the emitter pool the duplicate path fills, and the CM2Model heap id. The
+// reference also releases a ribbon singleton (FUN_009812b0, global 0x00dce8d0) that is never
+// assigned anywhere in the binary, so that call frees nothing and is not carried.
 void M2Destroy() {
     CM2Cache::s_cache.Destroy();
+    M2ParticleEmitterPoolDestroy();
 
     if (g_modelPool) {
         SMemFree(g_modelPool, __FILE__, __LINE__, 0);

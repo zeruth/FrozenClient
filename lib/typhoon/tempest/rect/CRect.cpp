@@ -13,6 +13,20 @@ CRect CRect::Intersection(const CRect& l, const CRect& r) {
     return i;
 }
 
+// ref: FUN_00978e90
+CRect::CRect(const C2Vector& pt)
+    : minY(pt.y)
+    , minX(pt.x)
+    , maxY(pt.y)
+    , maxX(pt.x) {
+}
+
+// ref: FUN_004f5d90
+bool CRect::operator!=(const CRect& rect) const {
+    return !(rect.minY == this->minY && rect.minX == this->minX && rect.maxY == this->maxY
+             && rect.maxX == this->maxX);
+}
+
 bool CRect::operator==(const CRect& rect) {
     return this->minX == rect.minX && this->minY == rect.minY && this->maxX == rect.maxX && this->maxY == rect.maxY;
 }
