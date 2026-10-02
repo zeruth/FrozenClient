@@ -2,6 +2,8 @@
 #define MODEL_C_M2_MODEL_HPP
 
 #include "gx/Camera.hpp"
+#include <tempest/Plane.hpp>
+#include <storm/Array.hpp>
 #include "gx/Texture.hpp"
 #include "model/CM2Lighting.hpp"
 #include "util/GUID.hpp"
@@ -61,6 +63,37 @@ typedef void (*M2SequenceDoneCallback)(CM2Model* model, uint32_t boneId, uint32_
 typedef void (*M2AnimEventCallback)(CM2Model* model, uint32_t boneId, uint32_t eventId,
                                     uint32_t eventData, const C3Vector* position, uint32_t a6,
                                     WOWGUID owner);
+
+// One queued model callback (reference RTTI M2ModelCallback, 0x30 bytes). CM2Model::ProcessCallbacks
+// gathers the callbacks that fall due at the earliest time in the frame into one global queue
+// and FlushCallbacks dispatches them: type 0 is a bone sequence that ran out (handled by
+// SequenceFinished, which calls the sequence-done callback), type 1 an authored animation event
+// (the anim-event callback, called directly).
+struct M2ModelCallback {
+    uint32_t type;
+    CM2Model* model;
+    uint32_t boneId;
+    void* callback;
+    // The animation id for type 0, the event id for type 1.
+    uint32_t id;
+    uint32_t data;
+    // Type 0: the sequence that ended and the time it started, so SequenceFinished can tell
+    // whether the bone has been given something else since. Type 1: the event's position in
+    // world space. The reference overlays the two at +0x18.
+    uint32_t sequenceIndex;
+    uint32_t sequenceStart;
+    C3Vector position;
+    // How long ago, in scene milliseconds, the sequence ended or the event fell.
+    uint32_t time;
+    WOWGUID owner;
+};
+
+// One collision triangle as CM2Model::GetCollisionTriangles hands it out (0x34 bytes): its plane in
+// world space, then its three corners.
+struct M2CollisionTriangle {
+    C4Plane plane;
+    C3Vector vertices[3];
+};
 
 struct CM2ModelCall {
     uint32_t type = -1;
@@ -420,6 +453,7 @@ class CM2Model {
         void AnimateTextureTransformsMT();
         void AttachToParent(CM2Model* parent, uint32_t id, const C3Vector* position, int32_t a5);
         void AttachToScene(CM2Scene* scene);
+        void AttachToSceneRecursive(CM2Scene* scene);
         void CancelAllDeferredSequences();
         void CancelDeferredSequences(uint32_t boneIndex, bool a3);
         void DetachAllChildrenById(uint32_t id);
@@ -431,6 +465,9 @@ class CM2Model {
         C44Matrix GetAttachmentWorldTransform(uint32_t id);
         CAaBox& GetBoundingBox(CAaBox& bounds);
         void GetBoundingSphere(CAaSphere& sphere);
+        CAaSphere& GetDrawBoundingSphere(CAaSphere& sphere);
+        void GetCollisionTriangles(const CAaBox& box, const C44Matrix& matrix, TSGrowableArray<M2CollisionTriangle>& triangles);
+        float GetAttachmentScale(uint32_t id);
         HCAMERA GetCameraByIndex(uint32_t index);
         C3Vector GetPosition();
         void GetSequenceInfo(uint32_t sequenceId, int32_t variationIndex, M2SequenceInfo& info);
@@ -455,6 +492,10 @@ class CM2Model {
         void LinkToCallbackListTail();
         void OptimizeVisibleGeometry();
         int32_t ProcessCallbacks();
+        int32_t QueueAnimEvents(uint32_t boneIndex, uint32_t sequenceIndex, int32_t loopBase, uint32_t duration, int32_t from, int32_t cursor, int32_t now);
+        int32_t QueueSequenceFinished(uint32_t boneIndex, int32_t now, int32_t overshoot, int32_t cursor);
+        void FlushCallbacks();
+        int32_t HasDeferredSequence(uint32_t boneIndex, int32_t primary);
         void ProcessCallbacksRecursive();
         uint32_t Release();
         void ReplaceTexture(uint32_t textureId, HTEXTURE texture);
@@ -478,7 +519,7 @@ class CM2Model {
         // ref: FUN_00825750
         CAaBox* GetWorldBounds(CAaBox* out);
         CAaBox& GetAnimatedBounds(CAaBox& out, uint32_t keyBoneId);
-        void SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas);
+        void SequenceFinished(const M2ModelCallback& callback);
         void Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId);
         // ref: FUN_008269c0
         // Tell the owner that the sequence on `boneIndex` has ended, and say whether the model

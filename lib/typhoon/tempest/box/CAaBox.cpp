@@ -1,3 +1,4 @@
+#include <cmath>
 #include "tempest/box/CAaBox.hpp"
 #include "tempest/matrix/C44Matrix.hpp"
 #include "tempest/sphere/CAaSphere.hpp"
@@ -151,4 +152,80 @@ CAaBox CAaBox::GrowToInclude(const CAaBox& other) {
     *this = merged;
 
     return merged;
+}
+
+// ref: FUN_009855f0
+void SpheresToBox(const CAaSphere* spheres, uint32_t count, CAaBox& box) {
+    if (!count) {
+        box.b = { 0.0f, 0.0f, 0.0f };
+        box.t = { 0.0f, 0.0f, 0.0f };
+        return;
+    }
+
+    CAaBox bounds;
+    SphereToBox(spheres[0], bounds);
+
+    for (uint32_t i = 1; i < count; i++) {
+        const CAaSphere& sphere = spheres[i];
+
+        float tx = sphere.r + sphere.c.x;
+        float ty = sphere.r + sphere.c.y;
+        float tz = sphere.r + sphere.c.z;
+        float bx = sphere.c.x - sphere.r;
+        float by = sphere.c.y - sphere.r;
+        float bz = sphere.c.z - sphere.r;
+
+        if (tz < bounds.t.z) tz = bounds.t.z;
+        if (ty < bounds.t.y) ty = bounds.t.y;
+        if (tx < bounds.t.x) tx = bounds.t.x;
+        if (bounds.b.z < bz) bz = bounds.b.z;
+        if (bounds.b.y < by) by = bounds.b.y;
+        if (bounds.b.x < bx) bx = bounds.b.x;
+
+        bounds.b = { bx, by, bz };
+        bounds.t = { tx, ty, tz };
+    }
+
+    box = bounds;
+}
+
+// ref: FUN_00985750
+void SphereBoundSpheres(CAaSphere& out, const CAaSphere* spheres, uint32_t count) {
+    if (count == 0) {
+        out.c = { 0.0f, 0.0f, 0.0f };
+        out.r = 0.0f;
+        return;
+    }
+
+    if (count == 1) {
+        out = spheres[0];
+        return;
+    }
+
+    CAaBox box;
+    SpheresToBox(spheres, count, box);
+
+    if (AaBoxIsDegenerate(box)) {
+        out.r = 0.0f;
+        out.c = box.b;
+        return;
+    }
+
+    C3Vector centre = { (box.t.x + box.b.x) * 0.5f, (box.t.y + box.b.y) * 0.5f, (box.t.z + box.b.z) * 0.5f };
+    float radius = 0.0f;
+
+    for (uint32_t i = 0; i < count; i++) {
+        float dx = spheres[i].c.x - centre.x;
+        float dy = spheres[i].c.y - centre.y;
+        float dz = spheres[i].c.z - centre.z;
+        float distanceSquared = dz * dz + dy * dy + dx * dx;
+        float slack = radius - spheres[i].r;
+
+        if (slack < 0.0f || slack * slack < distanceSquared) {
+            radius = sqrtf(distanceSquared) + spheres[i].r;
+        }
+    }
+
+    out.c = centre;
+    out.r = radius;
 }

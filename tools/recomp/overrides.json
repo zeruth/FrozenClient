@@ -2054,8 +2054,8 @@
     "note": "the order matcher proposed SMemMove for this. The entire body is `mov eax, 1; ret 0xc` -- it returns true and pops three arguments. Whatever it is, it does not move memory. Checked 2026-09-23 while deciding whether the widened order veto was throwing away good links; it was not."
   },
   "00831bb0": {
-    "status": "unlinked",
-    "note": "TSList remove-and-free: unlinks the node passed on the stack from the list in ECX, SMemFrees it, and returns the node that followed it, captured before the free. CancelDeferredSequences (00831ec0) uses it to drop superseded playback records. frozen has no single counterpart -- it spells this UnlinkNode followed by STORM_FREE, with the next pointer taken first, which is what the reference does inside this helper."
+    "status": "excluded",
+    "note": "TSList<CM2SequencePlayBack>::DeleteNode, out of line. Storm template internal. Identified 2026-10-02."
   },
   "00837a40": {
     "frozen": "CM2Shared::InitializeSkinProfile",
@@ -3384,27 +3384,27 @@
   },
   "00832500": {
     "status": "excluded",
-    "note": "std::sort _Sort. The entry. Insertion-sorts a range under 32 elements (the `< 0x21` test), recurses with a halving depth budget, and falls back to make_heap plus sort_heap when that budget runs out -- which is introsort, and the shape is unmistakable. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+    "note": "The introsort loop. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
   },
   "0082e840": {
     "status": "excluded",
-    "note": "std::sort _Partition_by_median_guess. Takes (&out, first, last, pred) and returns a pair of bounds through the out parameter, which is what _Sort splits on. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+    "note": "Unguarded partition. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
   },
   "0082eb10": {
     "status": "excluded",
-    "note": "std::sort _Insertion_sort. The small-range case _Sort calls when the span is under 32 elements. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+    "note": "Insertion sort. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
   },
   "0082ebc0": {
     "status": "excluded",
-    "note": "std::sort _Make_heap. Called as (first, last, pred, 0, 0) immediately before the heap sort, on the depth-exhausted path. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+    "note": "make_heap. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
   },
   "008312a0": {
     "status": "excluded",
-    "note": "std::sort _Sort_heap. Swaps the root with the last element and sifts down, shrinking the range each pass -- textbook sort_heap. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+    "note": "sort_heap. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
   },
   "0082dcc0": {
     "status": "excluded",
-    "note": "std::sort _Adjust_heap. The sift-down _Sort_heap and _Make_heap both drive. One instantiation of MSVC's std::sort machinery, over the 12-byte element CM2Model.cpp's batch grouping pass sorts (FUN_00832dd0, which holds {data, count} and strides by 0xc) with FUN_00824b70 as its comparator. STL, so excluded per CLAUDE.md rather than ported -- there is no frozen counterpart to write, because frozen calls std::sort and gets its own instantiation. Identified 2026-09-27 by walking the call graph down from that grouping pass; every one of the six is reached only from inside it. "
+    "note": "adjust_heap. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
   },
   "0082c8a0": {
     "status": "faithful",
@@ -4110,5 +4110,33 @@
     "frozen": "CGCharacterModelBase::SetUnitModel",
     "status": "diverged",
     "note": "Two parts are not carried, both for want of the frozen system they call. The gate FUN_00617a60(unit, 3) belongs to the portrait renderer (PortraitButton.cpp): it defers the copy while a portrait request for the unit is pending or can be queued, and frozen has no portrait queue, so the model is copied at once. And the frame alpha is set from a CGObject_C virtual at +0xe8 (scaled by 255) that frozen has not identified, so the frame keeps its own alpha. The duplicate, attachment strip, stand sequence and finger closing are as the reference has them. Ported 2026-10-02."
+  },
+  "0082bc20": {
+    "status": "excluded",
+    "note": "Median-of-three. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
+  },
+  "0082bcd0": {
+    "status": "excluded",
+    "note": "push_heap step. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
+  },
+  "0082dc10": {
+    "status": "excluded",
+    "note": "Ninther median. std::sort internal for the 12-byte shadow-caster merge entry (FUN_00832dd0 sorts with M2MergeEntryLess); frozen calls std::sort. Identified 2026-10-02."
+  },
+  "0082dac0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CRibbonMat>::SetCount, out of line; new slots get flags |= 0x1f. Storm template internal. Identified 2026-10-02."
+  },
+  "0082db30": {
+    "status": "excluded",
+    "note": "TSList<CM2SequenceLoad>::DeleteNode, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "0082db70": {
+    "status": "excluded",
+    "note": "TSGrowableArray<M2ModelCallback>::New, out of line (the model callback queue). Storm template internal; frozen calls s_modelCallbacks.New(). Identified 2026-10-02."
+  },
+  "0082dbc0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<M2ModelCallback>::SetCount, out of line. Storm template internal. Identified 2026-10-02."
   }
 }

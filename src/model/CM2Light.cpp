@@ -1,3 +1,5 @@
+#include "gx/Device.hpp"
+#include "gx/CGxDevice.hpp"
 #include "model/CM2Light.hpp"
 #include "model/CM2Scene.hpp"
 
@@ -14,6 +16,35 @@ void CM2Light::Initialize(CM2Scene* scene) {
     // never been driven has to read as stale -- and with a plain zero it would read as current for
     // as long as the counter is still zero, which it is on the first frame.
     this->m_updateStamp = scene ? scene->uint14 - 1 : 0;
+}
+
+// ref: FUN_00834b50
+// Load this light into device slot `index` and enable it: a directional light carries its
+// ambient and specular colours, a point light only its diffuse one.
+void CM2Light::SetupGxLight(uint32_t index) const {
+    CGxLight light;
+
+    light.m_flags ^= (static_cast<uint32_t>(this->m_visible) ^ light.m_flags) & 0x1;
+
+    if (this->m_type == 0) {
+        light.m_posOrDir = this->m_dir;
+        light.m_flags &= ~0x2u;
+        light.m_ambient = this->m_ambColor;
+        light.m_specular = this->m_specColor;
+    } else {
+        light.m_posOrDir = this->m_pos;
+        light.m_flags |= 0x2;
+        light.m_ambient = { 0.0f, 0.0f, 0.0f };
+        light.m_specular = { 0.0f, 0.0f, 0.0f };
+    }
+
+    light.m_attenuation = { this->m_constantAttenuation, this->m_linearAttenuation, this->m_quadraticAttenuation };
+    light.m_diffuse = this->m_dirColor;
+
+    C3Vector origin = { 0.0f, 0.0f, 0.0f };
+
+    g_theGxDevicePtr->LightSet(index, light, origin);
+    g_theGxDevicePtr->LightEnable(index, 1);
 }
 
 // ref: FUN_00834c70
