@@ -1235,22 +1235,6 @@
   "refSize": 73,
   "status": "ported"
  },
- "004209b0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/console/CVar.cpp",
-   "src/console/cvar.cpp"
-  ],
-  "frozen": "CVar::GetInt",
-  "frozenSize": 4,
-  "how": "callgraph",
-  "module": "OggDecompress.cpp",
-  "refSize": 44,
-  "status": "ported"
- },
  "00421800": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -2713,6 +2697,38 @@
   "how": "annotated",
   "module": "CSimpleRender.cpp",
   "refSize": 32,
+  "status": "ported"
+ },
+ "00482900": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Camera::Now",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "CSimpleRender.cpp",
+  "refSize": 53,
+  "status": "ported"
+ },
+ "00482940": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "ClampRange",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CSimpleRender.cpp",
+  "refSize": 40,
   "status": "ported"
  },
  "00482970": {
@@ -11079,6 +11095,54 @@
   "refSize": 21,
   "status": "ported"
  },
+ "004b9b20": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadPollHandler",
+  "frozenSize": 346,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 214,
+  "status": "ported"
+ },
+ "004b9c60": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadRegisterPollCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "004b9d20": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadRegisterPendingCounter",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
  "004b9de0": {
   "branchRatio": 0.429,
   "constOverlap": 0.0,
@@ -11115,13 +11179,13 @@
   "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/async/AsyncFileRead.cpp",
    "src/async/asyncfileread.cpp"
   ],
   "frozen": "AsyncFileReadWait",
-  "frozenSize": 532,
+  "frozenSize": 332,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 260,
@@ -11205,6 +11269,22 @@
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 137,
+  "status": "ported"
+ },
+ "004bae10": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/async/AsyncFileRead.cpp",
+   "src/async/asyncfileread.cpp"
+  ],
+  "frozen": "AsyncFileReadWaitAll",
+  "frozenSize": 550,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 222,
   "status": "ported"
  },
  "004baf60": {
@@ -11563,6 +11643,35 @@
   "refSize": 52,
   "status": "ported"
  },
+ "004c1180": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSBaseArray<CBaseManaged *>::operator[]",
+  "frozenSize": 142,
+  "how": "callgraph",
+  "module": "TextureBlob.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "004c11f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/DataMgr.cpp",
+   "lib/common/common/datamgr.cpp"
+  ],
+  "frozen": "DataMgrGetFloat",
+  "frozenSize": 117,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 37,
+  "status": "ported"
+ },
  "004c1220": {
   "branchRatio": 0.286,
   "constOverlap": 0.0,
@@ -11673,6 +11782,22 @@
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 174,
+  "status": "ported"
+ },
+ "004c1730": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "operator==",
+  "frozenSize": 260,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 250,
   "status": "ported"
  },
  "004c1930": {
@@ -11795,19 +11920,11 @@
   "faithful": true,
   "fidelity": 1.0,
   "files": [
-   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
-   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
-   "lib/typhoon/tempest/matrix/c33matrix.cpp",
-   "lib/typhoon/tempest/matrix/c34matrix.cpp",
-   "lib/typhoon/tempest/matrix/c44matrix.cpp",
-   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
-   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
-   "lib/typhoon/tempest/vector/C3Vector.cpp",
-   "lib/typhoon/tempest/vector/c3vector.cpp"
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
-  "frozen": "operator*",
-  "frozenSize": 1660,
+  "frozen": "operator==",
+  "frozenSize": 260,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 533,
@@ -11896,8 +12013,8 @@
  "004c2370": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -12056,8 +12173,8 @@
  "004c3300": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -12072,8 +12189,8 @@
  "004c3340": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -12088,8 +12205,8 @@
  "004c3380": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -12105,7 +12222,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
@@ -12293,6 +12410,22 @@
   "refSize": 22,
   "status": "ported"
  },
+ "004c5090": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "NormalizeAngle",
+  "frozenSize": 44,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
  "004c51b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -12363,6 +12496,22 @@
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 82,
+  "status": "ported"
+ },
+ "004c55b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CameraDeps.cpp",
+   "src/ui/game/cameradeps.cpp"
+  ],
+  "frozen": "CameraRollFacing",
+  "frozenSize": 177,
+  "how": "annotated",
+  "module": "TextureBlob.cpp",
+  "refSize": 114,
   "status": "ported"
  },
  "004c5820": {
@@ -12487,7 +12636,7 @@
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::StopOrFadeOut",
-  "frozenSize": 0,
+  "frozenSize": 59,
   "how": "callgraph",
   "module": "SoundInterface2.cpp",
   "refSize": 128,
@@ -12503,7 +12652,7 @@
    "src/sound/si2.cpp"
   ],
   "frozen": "SI2::PlaySoundKit",
-  "frozenSize": 1113,
+  "frozenSize": 1242,
   "how": "string",
   "module": "SoundInterface2.cpp",
   "refSize": 1787,
@@ -12555,6 +12704,22 @@
   "how": "callgraph",
   "module": "SoundInterface2.cpp",
   "refSize": 30,
+  "status": "ported"
+ },
+ "004cee50": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "ObjectIsActivePlayer",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SoundInterface2DSP.cpp",
+  "refSize": 36,
   "status": "ported"
  },
  "004cfbb0": {
@@ -15213,7 +15378,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetPosition",
-  "frozenSize": 0,
+  "frozenSize": 61,
   "how": "annotated",
   "module": "CharacterCreation.cpp",
   "refSize": 46,
@@ -16181,7 +16346,7 @@
    "src/object/movement/cmovementshared.cpp"
   ],
   "frozen": "CMovementShared::IsSplineFlag2000",
-  "frozenSize": 0,
+  "frozenSize": 33,
   "how": "annotated",
   "module": "Passenger.cpp",
   "refSize": 39,
@@ -16447,13 +16612,13 @@
   "branchRatio": 0.259,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.157,
+  "fidelity": 0.137,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldUpdate",
-  "frozenSize": 732,
+  "frozenSize": 743,
   "how": "override",
   "module": "WorldFrame.cpp",
   "refSize": 1493,
@@ -18329,22 +18494,6 @@
   "refSize": 22,
   "status": "ported"
  },
- "00513c30": {
-  "branchRatio": 0.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/object/client/CGUnit.cpp",
-   "src/object/client/cgunit.cpp"
-  ],
-  "frozen": "CGUnit::Unit",
-  "frozenSize": 4,
-  "how": "callgraph",
-  "module": "GameUI.cpp",
-  "refSize": 54,
-  "status": "ported"
- },
  "00513cb0": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -18356,7 +18505,7 @@
   ],
   "frozen": "Script_UnitPowerTypeOf",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "GameUI.cpp",
   "refSize": 54,
   "status": "ported"
@@ -19761,8 +19910,8 @@
    "src/ui/game/cgcamera.cpp"
   ],
   "frozen": "CGCamera::GetTarget",
-  "frozenSize": 5,
-  "how": "callgraph",
+  "frozenSize": 8,
+  "how": "sticky",
   "module": "GameUI.cpp",
   "refSize": 81,
   "status": "ported"
@@ -20837,7 +20986,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::RegisterGameCVars",
-  "frozenSize": 13033,
+  "frozenSize": 12868,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 6776,
@@ -21589,7 +21738,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::Initialize",
-  "frozenSize": 931,
+  "frozenSize": 936,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 1329,
@@ -22138,6 +22287,22 @@
   "module": "PartyFrame.cpp",
   "refSize": 85,
   "status": "stub"
+ },
+ "0052e480": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CameraDeps.cpp",
+   "src/ui/game/cameradeps.cpp"
+  ],
+  "frozen": "BarberShopGetMinDistance",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "PartyFrame.cpp",
+  "refSize": 7,
+  "status": "ported"
  },
  "0052e570": {
   "branchRatio": -1.0,
@@ -24485,16 +24650,16 @@
   "status": "ported"
  },
  "0054efe0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/console/Detect.cpp",
-   "src/console/detect.cpp"
+   "src/console/CVar.cpp",
+   "src/console/cvar.cpp"
   ],
-  "frozen": "ConsoleDetectGetResolutions",
-  "frozenSize": 645,
+  "frozen": "CVar::GetInt",
+  "frozenSize": 4,
   "how": "callgraph",
   "module": "BattlefieldInfo.cpp",
   "refSize": 102,
@@ -30663,6 +30828,22 @@
   "refSize": 70,
   "status": "ported"
  },
+ "005d0600": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGUnit.cpp",
+   "src/object/client/cgunit.cpp"
+  ],
+  "frozen": "CGUnit::Unit",
+  "frozenSize": 4,
+  "how": "callgraph",
+  "module": "DuelInfo.cpp",
+  "refSize": 159,
+  "status": "ported"
+ },
  "005d06a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -32386,7 +32567,7 @@
    "src/ui/inputcontrol.cpp"
   ],
   "frozen": "InputControlGetActive",
-  "frozenSize": 0,
+  "frozenSize": 8,
   "how": "annotated",
   "module": "AddOns.cpp",
   "refSize": 6,
@@ -32488,51 +32669,6 @@
   "refSize": 150,
   "status": "ported"
  },
- "005f9dd0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_IsMouselooking",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "InputControl.cpp",
-  "refSize": 63,
-  "status": "stub"
- },
- "005f9e10": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VehicleAimGetAngle",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "InputControl.cpp",
-  "refSize": 76,
-  "status": "stub"
- },
- "005f9e60": {
-  "branchRatio": 0.2,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VehicleAimGetNormAngle",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "InputControl.cpp",
-  "refSize": 166,
-  "status": "stub"
- },
  "005fa9b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -32548,51 +32684,6 @@
   "module": "InputControl.cpp",
   "refSize": 39,
   "status": "ported"
- },
- "005fb770": {
-  "branchRatio": 1.0,
-  "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VehicleAimIncrement",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "InputControl.cpp",
-  "refSize": 91,
-  "status": "stub"
- },
- "005fb820": {
-  "branchRatio": 0.2,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VehicleAimRequestAngle",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "InputControl.cpp",
-  "refSize": 145,
-  "status": "stub"
- },
- "005fb8c0": {
-  "branchRatio": 0.167,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VehicleAimRequestNormAngle",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "InputControl.cpp",
-  "refSize": 167,
-  "status": "stub"
  },
  "005fd1d0": {
   "branchRatio": 1.0,
@@ -32624,6 +32715,22 @@
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 163,
+  "status": "ported"
+ },
+ "005fd5c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraWrapAngleNear",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 103,
   "status": "ported"
  },
  "005fd630": {
@@ -32764,10 +32871,106 @@
    "src/ui/game/cgcamera.cpp"
   ],
   "frozen": "CameraRegisterCVars",
-  "frozenSize": 3594,
+  "frozenSize": 5083,
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 2475,
+  "status": "ported"
+ },
+ "005fe2c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraRegisterScriptFunctions",
+  "frozenSize": 64,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 38,
+  "status": "ported"
+ },
+ "005fe2f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraUnregisterScriptFunctions",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 31,
+  "status": "ported"
+ },
+ "005fe310": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::HasModelCamera",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 9,
+  "status": "ported"
+ },
+ "005fe320": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartModelCamera",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "005fe360": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ReleaseModel",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "005fe3a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::IsFirstPerson",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 28,
   "status": "ported"
  },
  "005fe3c0": {
@@ -32786,6 +32989,86 @@
   "refSize": 50,
   "status": "ported"
  },
+ "005fe400": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraPitchLimitCommand",
+  "frozenSize": 85,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
+ "005fe440": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SaveViewToCVars",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 148,
+  "status": "ported"
+ },
+ "005fe4e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SaveView",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 48,
+  "status": "ported"
+ },
+ "005fe510": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::LoadViewsFromCVars",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
+ "005fe570": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::GetMaxDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
  "005fe580": {
   "branchRatio": 1.0,
   "constOverlap": 0.111,
@@ -32796,10 +33079,106 @@
    "src/ui/game/cgcamera.cpp"
   ],
   "frozen": "CGCamera::SetTimedValue",
-  "frozenSize": 0,
+  "frozenSize": 123,
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 106,
+  "status": "ported"
+ },
+ "005fe5f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::AdjustYaw",
+  "frozenSize": 388,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 166,
+  "status": "ported"
+ },
+ "005fe6a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetMouseLookActive",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 31,
+  "status": "ported"
+ },
+ "005fe6c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraApplyShake",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 240,
+  "status": "ported"
+ },
+ "005fe7b0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateLiquid",
+  "frozenSize": 72,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "005fe800": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraSplitFloor",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 113,
+  "status": "ported"
+ },
+ "005fe880": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetupWorldProjection",
+  "frozenSize": 5,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 9,
   "status": "ported"
  },
  "005fe890": {
@@ -32882,6 +33261,118 @@
   "refSize": 8,
   "status": "ported"
  },
+ "005fe950": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartDistanceBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
+ "005fe9b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartTiltBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
+ "005fea40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartPitchBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
+ "005fead0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartPitchOffsetBlend",
+  "frozenSize": 213,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
+ "005feb60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartYawBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 141,
+  "status": "ported"
+ },
+ "005febf0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartMountHeightBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
+ "005fec50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraCollisionFlags",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 23,
+  "status": "ported"
+ },
  "005fecb0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -32896,6 +33387,22 @@
   "how": "annotated",
   "module": "InputControl.cpp",
   "refSize": 58,
+  "status": "ported"
+ },
+ "005fecf0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 41,
   "status": "ported"
  },
  "005fed20": {
@@ -32922,6 +33429,945 @@
   "refSize": 84,
   "status": "ported"
  },
+ "005fee10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::IsFalling",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "005feee0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StopPitchBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "005fef10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StopPitchOffsetBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "005fef40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StopYawBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "005ff000": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraScriptStartMove",
+  "frozenSize": 180,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 122,
+  "status": "ported"
+ },
+ "005ff080": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_MoveViewDownStart",
+  "frozenSize": 10,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
+ "005ff0d0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_MoveViewDownStart",
+  "frozenSize": 10,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "005ff120": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_MoveViewDownStart",
+  "frozenSize": 10,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "005ff170": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_MoveViewDownStart",
+  "frozenSize": 10,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "005ff1c0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_MoveViewDownStart",
+  "frozenSize": 10,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "005ff210": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_MoveViewDownStart",
+  "frozenSize": 10,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "005ff260": {
+  "branchRatio": 0.667,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_SaveView",
+  "frozenSize": 452,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
+ "005ff2c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_FlipCameraYaw",
+  "frozenSize": 110,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
+ "005ff320": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SaveDistanceToCVars",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 183,
+  "status": "ported"
+ },
+ "005ff3e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::LoadSavedDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "005ff440": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetPositionAndLookAt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 187,
+  "status": "ported"
+ },
+ "005ff530": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ClampAngles",
+  "frozenSize": 167,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 99,
+  "status": "ported"
+ },
+ "005ff5a0": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::WrapTargetYaw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 197,
+  "status": "ported"
+ },
+ "005ff670": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CameraDeps.cpp",
+   "src/ui/game/cameradeps.cpp"
+  ],
+  "frozen": "CameraSetFrustumCorners",
+  "frozenSize": 3,
+  "how": "callorder",
+  "module": "InputControl.cpp",
+  "refSize": 620,
+  "status": "stub"
+ },
+ "005ff8e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::IsViewDefault",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "005ff950": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ZoomIn",
+  "frozenSize": 291,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 269,
+  "status": "ported"
+ },
+ "005ffa60": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ZoomOut",
+  "frozenSize": 294,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 269,
+  "status": "ported"
+ },
+ "005ffb70": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.182,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ZoomTo",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 171,
+  "status": "ported"
+ },
+ "005ffc20": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::AdjustPitch",
+  "frozenSize": 375,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 254,
+  "status": "ported"
+ },
+ "005ffd20": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.25,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CanBob",
+  "frozenSize": 170,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 179,
+  "status": "ported"
+ },
+ "005ffde0": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.444,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CanPivot",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "InputControl.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "005ffe50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::IsBobbing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
+ "005ffeb0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CanPitchSmooth",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 129,
+  "status": "ported"
+ },
+ "005fff40": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.4,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::IsSmoothing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 62,
+  "status": "ported"
+ },
+ "005fff80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SineEase",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 70,
+  "status": "ported"
+ },
+ "005fffd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CosineEase",
+  "frozenSize": 144,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 86,
+  "status": "ported"
+ },
+ "00600030": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StopBobbing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 90,
+  "status": "ported"
+ },
+ "00600090": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetBobbing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
+ "006000e0": {
+  "branchRatio": 0.935,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::AdvanceTimedValues",
+  "frozenSize": 992,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 948,
+  "status": "ported"
+ },
+ "006004b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CameraShakeFalloff",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 118,
+  "status": "ported"
+ },
+ "00600530": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::FaceYaw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
+ "00600590": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetVehicleDistanceMode",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 271,
+  "status": "ported"
+ },
+ "006006a0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateBlendA",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 140,
+  "status": "ported"
+ },
+ "00600730": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ApplyBlendA",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 123,
+  "status": "ported"
+ },
+ "006007b0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateBlendB",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 140,
+  "status": "ported"
+ },
+ "00600840": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetMinDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "00600890": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetMaxDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "006008e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ClearMinDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "00600920": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ClearMaxDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "00600970": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateVehicleRelative",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "006009e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::GetVehicleFacing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "00600a10": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.176,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CheckFlyingHeight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 335,
+  "status": "ported"
+ },
+ "00600b60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ParentToWorld",
+  "frozenSize": 198,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 183,
+  "status": "ported"
+ },
+ "00600c20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::Forward",
+  "frozenSize": 109,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 156,
+  "status": "ported"
+ },
+ "00600cc0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::Right",
+  "frozenSize": 109,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 156,
+  "status": "ported"
+ },
+ "00600d60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::Up",
+  "frozenSize": 109,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 156,
+  "status": "ported"
+ },
+ "00600e00": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothDistance",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 244,
+  "status": "ported"
+ },
+ "00600f00": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartFovBlend",
+  "frozenSize": 225,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 153,
+  "status": "ported"
+ },
+ "00600fa0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp"
+  ],
+  "frozen": "CAMERA_SMOOTH_ANGLE",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 312,
+  "status": "ported"
+ },
+ "006010e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.182,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::StartHeightBlend",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
+ "00601190": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothPitch",
+  "frozenSize": 591,
+  "how": "callorder",
+  "module": "Camera.cpp",
+  "refSize": 312,
+  "status": "ported"
+ },
+ "006012d0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothPitchOffset",
+  "frozenSize": 397,
+  "how": "order",
+  "module": "Camera.cpp",
+  "refSize": 312,
+  "status": "ported"
+ },
+ "00601410": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothYaw",
+  "frozenSize": 591,
+  "how": "order",
+  "module": "Camera.cpp",
+  "refSize": 312,
+  "status": "ported"
+ },
+ "00601550": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothMountHeight",
+  "frozenSize": 350,
+  "how": "callorder",
+  "module": "Camera.cpp",
+  "refSize": 244,
+  "status": "ported"
+ },
  "00601650": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -32940,35 +34386,981 @@
   "refSize": 389,
   "status": "ported"
  },
- "006018a0": {
-  "branchRatio": 0.0,
+ "006017e0": {
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
   ],
-  "frozen": "Script_Stub_VehicleCameraZoomIn",
-  "frozenSize": 60,
-  "how": "order",
+  "frozen": "Script_CameraZoomIn",
+  "frozenSize": 130,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 88,
+  "status": "ported"
+ },
+ "00601840": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_CameraZoomOut",
+  "frozenSize": 130,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 88,
+  "status": "ported"
+ },
+ "006018a0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_VehicleCameraZoomIn",
+  "frozenSize": 130,
+  "how": "annotated",
   "module": "Camera.cpp",
   "refSize": 9,
-  "status": "stub"
+  "status": "ported"
  },
  "006018b0": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_VehicleCameraZoomOut",
+  "frozenSize": 130,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 9,
+  "status": "ported"
+ },
+ "006018c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::InitModelCamera",
+  "frozenSize": 625,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 240,
+  "status": "ported"
+ },
+ "006019b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::LockYaw",
+  "frozenSize": 206,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 185,
+  "status": "ported"
+ },
+ "00601a70": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UnlockYaw",
+  "frozenSize": 248,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 251,
+  "status": "ported"
+ },
+ "00601b70": {
+  "branchRatio": 0.929,
+  "constOverlap": 0.25,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateTerrainTilt",
+  "frozenSize": 1011,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 485,
+  "status": "ported"
+ },
+ "00601d60": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcPosition",
+  "frozenSize": 446,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 298,
+  "status": "ported"
+ },
+ "00601e90": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateModelCamera",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 214,
+  "status": "ported"
+ },
+ "00601f70": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.125,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::EndFreeLook",
+  "frozenSize": 125,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 122,
+  "status": "ported"
+ },
+ "00601ff0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::BeginFreeLook",
+  "frozenSize": 150,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 191,
+  "status": "ported"
+ },
+ "006020b0": {
+  "branchRatio": 0.56,
+  "constOverlap": 0.115,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::MouseLook",
+  "frozenSize": 974,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 788,
+  "status": "ported"
+ },
+ "006023d0": {
+  "branchRatio": 0.304,
+  "constOverlap": 0.154,
+  "faithful": false,
+  "fidelity": 0.556,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SyncPlayerFacing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 560,
+  "status": "ported"
+ },
+ "00602600": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CanTrackPitch",
+  "frozenSize": 292,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "00602680": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CanYawSmooth",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 223,
+  "status": "ported"
+ },
+ "00602760": {
+  "branchRatio": 0.662,
+  "constOverlap": 0.208,
+  "faithful": true,
+  "fidelity": 0.85,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcSmoothing",
+  "frozenSize": 2322,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 1622,
+  "status": "ported"
+ },
+ "00602dc0": {
+  "branchRatio": 0.846,
+  "constOverlap": 0.25,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetTracking",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 235,
+  "status": "ported"
+ },
+ "00602eb0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetTaxiLook",
+  "frozenSize": 139,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 121,
+  "status": "ported"
+ },
+ "00602f30": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcBobbing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 340,
+  "status": "ported"
+ },
+ "00603090": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::GetTargetPosition",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "006030e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothFov",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 332,
+  "status": "ported"
+ },
+ "00603230": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SmoothHeight",
+  "frozenSize": 389,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 244,
+  "status": "ported"
+ },
+ "00603330": {
+  "branchRatio": 0.609,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.632,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetView",
+  "frozenSize": 1762,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 1379,
+  "status": "ported"
+ },
+ "006038a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetViewCommentator",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 81,
+  "status": "ported"
+ },
+ "00603900": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetViewBarberShop",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 45,
+  "status": "ported"
+ },
+ "006039b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_SetView",
+  "frozenSize": 117,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 95,
+  "status": "ported"
+ },
+ "00603a10": {
+  "branchRatio": 0.9,
+  "constOverlap": 0.056,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcTerrainTiltFactor",
+  "frozenSize": 1050,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 664,
+  "status": "ported"
+ },
+ "00603d30": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.104,
+  "faithful": false,
+  "fidelity": 0.467,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateBlends",
+  "frozenSize": 934,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 1882,
+  "status": "ported"
+ },
+ "00604490": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::GetAngles",
+  "frozenSize": 717,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 422,
+  "status": "ported"
+ },
+ "00604640": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcHeights",
+  "frozenSize": 365,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 413,
+  "status": "ported"
+ },
+ "006047e0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::BeginFreeLookIfAllowed",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 101,
+  "status": "ported"
+ },
+ "00604850": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetViewLocked",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "006048a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ResetView",
+  "frozenSize": 226,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
+ "00604940": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetFovOffset",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 125,
+  "status": "ported"
+ },
+ "006049c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcWaterDepth",
+  "frozenSize": 252,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 171,
+  "status": "ported"
+ },
+ "00604a70": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetRelativeTo",
+  "frozenSize": 309,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 281,
+  "status": "ported"
+ },
+ "00604b90": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateVehicle",
+  "frozenSize": 218,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 215,
+  "status": "ported"
+ },
+ "00604c70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ClearVehicle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 15,
+  "status": "ported"
+ },
+ "00604c80": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Script_ResetView",
+  "frozenSize": 91,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "00604d40": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::~CGCamera",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 179,
+  "status": "ported"
+ },
+ "00604e00": {
+  "branchRatio": 0.9,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 0.742,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CalcTargetHeights",
+  "frozenSize": 1852,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 1449,
+  "status": "ported"
+ },
+ "006053d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.059,
+  "faithful": false,
+  "fidelity": 0.643,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetFirstPersonLook",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 811,
+  "status": "ported"
+ },
+ "00605700": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateLookAtCamera",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 164,
+  "status": "ported"
+ },
+ "006057b0": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
   "files": [
-   "src/ui/game/miscscriptstubs.cpp"
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
   ],
-  "frozen": "Script_Stub_VehicleCameraZoomOut",
-  "frozenSize": 60,
-  "how": "order",
+  "frozen": "CameraFrustumDepth",
+  "frozenSize": 723,
+  "how": "annotated",
   "module": "Camera.cpp",
-  "refSize": 9,
-  "status": "stub"
+  "refSize": 551,
+  "status": "ported"
+ },
+ "006059e0": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CollideFrustum",
+  "frozenSize": 916,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 881,
+  "status": "ported"
+ },
+ "00605d60": {
+  "branchRatio": 0.862,
+  "constOverlap": 0.122,
+  "faithful": true,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CollideDistance",
+  "frozenSize": 1344,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 1124,
+  "status": "ported"
+ },
+ "006061d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CollideWater",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 345,
+  "status": "ported"
+ },
+ "00606330": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::AddShake",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 221,
+  "status": "ported"
+ },
+ "00606410": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::AddShakeByID",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
+ "00606480": {
+  "branchRatio": 0.2,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ClearShakes",
+  "frozenSize": 135,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "006064f0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::RemoveShake",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 113,
+  "status": "ported"
+ },
+ "00606570": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.615,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetModel",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 363,
+  "status": "ported"
+ },
+ "006066e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.067,
+  "faithful": false,
+  "fidelity": 0.688,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::SetTargetObject",
+  "frozenSize": 1224,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 647,
+  "status": "ported"
+ },
+ "00606970": {
+  "branchRatio": 0.538,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::ApplyShakes",
+  "frozenSize": 1480,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 436,
+  "status": "ported"
+ },
+ "00606b30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::CGCamera",
+  "frozenSize": 1446,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 1118,
+  "status": "ported"
+ },
+ "00606f90": {
+  "branchRatio": 0.462,
+  "constOverlap": 0.104,
+  "faithful": false,
+  "fidelity": 0.755,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateTargetCamera",
+  "frozenSize": 5069,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 2920,
+  "status": "ported"
+ },
+ "00607b00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CGCamera::UpdateCallback",
+  "frozenSize": 909,
+  "how": "annotated",
+  "module": "Camera.cpp",
+  "refSize": 197,
+  "status": "ported"
+ },
+ "00607c00": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleCamera.cpp",
+   "src/ui/simple/csimplecamera.cpp"
+  ],
+  "frozen": "CSimpleCamera::GetScene",
+  "frozenSize": 33,
+  "how": "callgraph",
+  "module": "Camera.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "00607c20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "Camera::Int",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "Camera.cpp",
+  "refSize": 112,
+  "status": "ported"
+ },
+ "00607cb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleCamera.cpp",
+   "src/ui/simple/csimplecamera.cpp"
+  ],
+  "frozen": "CSimpleCamera::SetGxProjectionAndView",
+  "frozenSize": 274,
+  "how": "callgraph",
+  "module": "Camera.cpp",
+  "refSize": 306,
+  "status": "ported"
  },
  "006081f0": {
   "branchRatio": 0.0,
@@ -33502,7 +35894,7 @@
   "branchRatio": 0.375,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -33517,8 +35909,8 @@
  "0060cd50": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.875,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -33533,8 +35925,8 @@
  "0060ce20": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.875,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34206,7 +36598,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.5,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34222,7 +36614,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.625,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34238,7 +36630,7 @@
   "branchRatio": 0.368,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.588,
+  "fidelity": 0.529,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34254,7 +36646,7 @@
   "branchRatio": 0.438,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.643,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34270,7 +36662,7 @@
   "branchRatio": 0.462,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.455,
+  "fidelity": 0.409,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34334,7 +36726,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.778,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -34366,7 +36758,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.778,
+  "fidelity": 0.667,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -35438,7 +37830,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.625,
   "files": [
    "src/ui/game/ScriptEvents.cpp",
    "src/ui/game/scriptevents.cpp"
@@ -36715,7 +39107,7 @@
   "branchRatio": 0.11,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.195,
+  "fidelity": 0.188,
   "files": [
    "src/ui/game/CGTooltipScript.cpp",
    "src/ui/game/cgtooltipscript.cpp"
@@ -37950,7 +40342,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "GxTexCreate",
-  "frozenSize": 422,
+  "frozenSize": 287,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 215,
@@ -37991,8 +40383,8 @@
  "00682130": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.0,
   "files": [
    "src/gx/Transform.cpp",
    "src/gx/transform.cpp"
@@ -38318,7 +40710,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ScissorSet",
-  "frozenSize": 0,
+  "frozenSize": 46,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 55,
@@ -38692,19 +41084,6 @@
   "refSize": 132,
   "status": "ported"
  },
- "006839f0": {
-  "branchRatio": -1.0,
-  "constOverlap": -1.0,
-  "faithful": true,
-  "fidelity": 1.0,
-  "files": [],
-  "frozen": "WowClientDB<LiquidTypeRec>::GetRecord",
-  "frozenSize": 29,
-  "how": "sticky",
-  "module": "DBCache.cpp",
-  "refSize": 34,
-  "status": "ported"
- },
  "00683a20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38719,6 +41098,19 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 88,
+  "status": "ported"
+ },
+ "00683a80": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "WowClientDB<LiquidTypeRec>::GetRecord",
+  "frozenSize": 29,
+  "how": "callgraph",
+  "module": "DBCache.cpp",
+  "refSize": 82,
   "status": "ported"
  },
  "00683ae0": {
@@ -41481,8 +43873,8 @@
  "006a4af0": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.833,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -41609,8 +44001,8 @@
  "006a5aa0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.333,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -43365,6 +45757,51 @@
   "refSize": 61,
   "status": "ported"
  },
+ "006b44b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GetSelectedFriend",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "FriendList.cpp",
+  "refSize": 51,
+  "status": "stub"
+ },
+ "006b4a00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GetSelectedIgnore",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "FriendList.cpp",
+  "refSize": 51,
+  "status": "stub"
+ },
+ "006b4a40": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GetSelectedMute",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "FriendList.cpp",
+  "refSize": 51,
+  "status": "stub"
+ },
  "006b90e0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -43465,7 +45902,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.3,
+  "fidelity": 0.25,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -43491,6 +45928,22 @@
   "how": "annotated",
   "module": "CheckExecutableSignature.cpp",
   "refSize": 493,
+  "status": "ported"
+ },
+ "006c0050": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp"
+  ],
+  "frozen": "MatrixLookAtLH",
+  "frozenSize": 749,
+  "how": "annotated",
+  "module": "CheckExecutableSignature.cpp",
+  "refSize": 535,
   "status": "ported"
  },
  "006c02f0": {
@@ -44709,8 +47162,8 @@
  "006f1d20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -45471,6 +47924,38 @@
   "refSize": 102,
   "status": "ported"
  },
+ "00715c60": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "ClickToMoveGetAction",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameObject_C.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "00715cf0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "ClickToMoveGetFacing",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GameObject_C.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
  "00715d00": {
   "branchRatio": 0.364,
   "constOverlap": 0.5,
@@ -45961,7 +48446,7 @@
    "src/object/client/cgunit_c.cpp"
   ],
   "frozen": "CGUnit_C::CanFly",
-  "frozenSize": 0,
+  "frozenSize": 12,
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 12,
@@ -45982,6 +48467,22 @@
   "module": "Unit_C.cpp",
   "refSize": 134,
   "status": "ported"
+ },
+ "0071c1e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CameraDeps.cpp",
+   "src/ui/game/cameradeps.cpp"
+  ],
+  "frozen": "UnitConvertFacingToRaw",
+  "frozenSize": 0,
+  "how": "callorder",
+  "module": "Unit_C.cpp",
+  "refSize": 124,
+  "status": "stub"
  },
  "0071c500": {
   "branchRatio": 0.3,
@@ -46691,7 +49192,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.333,
   "files": [
    "src/object/client/CGUnit_C.cpp",
    "src/object/client/cgunit_c.cpp"
@@ -46718,6 +49219,22 @@
   "module": "Unit_C.cpp",
   "refSize": 78,
   "status": "diverged"
+ },
+ "00721f90": {
+  "branchRatio": 0.0,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "UnitIsClickMoving",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 42,
+  "status": "ported"
  },
  "007222a0": {
   "branchRatio": 0.571,
@@ -46959,6 +49476,22 @@
   "refSize": 265,
   "status": "ported"
  },
+ "007370d0": {
+  "branchRatio": 0.278,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.462,
+  "files": [
+   "src/object/client/CGUnit_C.cpp",
+   "src/object/client/cgunit_c.cpp"
+  ],
+  "frozen": "CGUnit_C::UpdateWorldObject",
+  "frozenSize": 559,
+  "how": "annotated",
+  "module": "Unit_C.cpp",
+  "refSize": 699,
+  "status": "ported"
+ },
  "00737ef0": {
   "branchRatio": 0.59,
   "constOverlap": 0.429,
@@ -47069,6 +49602,22 @@
   "how": "annotated",
   "module": "Unit_C.cpp",
   "refSize": 11,
+  "status": "ported"
+ },
+ "007438e0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/object/client/CGObject_C.cpp",
+   "src/object/client/cgobject_c.cpp"
+  ],
+  "frozen": "CGObject_C::UpdateWorldObject",
+  "frozenSize": 411,
+  "how": "annotated",
+  "module": "Object_C.cpp",
+  "refSize": 527,
   "status": "ported"
  },
  "00747b20": {
@@ -47519,6 +50068,22 @@
   "refSize": 118,
   "status": "ported"
  },
+ "00759580": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/object/client/CGObject_C.cpp",
+   "src/object/client/cgobject_c.cpp"
+  ],
+  "frozen": "CGObject_C::GetPosition",
+  "frozenSize": 12,
+  "how": "callgraph",
+  "module": "VehicleCamera_C.cpp",
+  "refSize": 577,
+  "status": "ported"
+ },
  "00759c60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -47545,7 +50110,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "CAaBox::IsPointInside",
-  "frozenSize": 0,
+  "frozenSize": 68,
   "how": "annotated",
   "module": "VehicleCamera_C.cpp",
   "refSize": 96,
@@ -50145,7 +52710,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::GetObjectFloor",
-  "frozenSize": 0,
+  "frozenSize": 48,
   "how": "annotated",
   "module": "World.cpp",
   "refSize": 59,
@@ -50166,6 +52731,22 @@
   "module": "World.cpp",
   "refSize": 26,
   "status": "ported"
+ },
+ "0077f310": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CameraDeps.cpp",
+   "src/ui/game/cameradeps.cpp"
+  ],
+  "frozen": "WorldQuerySegment",
+  "frozenSize": 3,
+  "how": "callgraph",
+  "module": "World.cpp",
+  "refSize": 9,
+  "status": "stub"
  },
  "0077f490": {
   "branchRatio": 1.0,
@@ -50215,6 +52796,102 @@
   "refSize": 14,
   "status": "ported"
  },
+ "0077f500": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::ProjectionCallback",
+  "frozenSize": 52,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 62,
+  "status": "ported"
+ },
+ "0077f600": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "ConsoleMaxLod",
+  "frozenSize": 87,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "0077f690": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "ConsoleWaterRipples",
+  "frozenSize": 36,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 32,
+  "status": "ported"
+ },
+ "0077f700": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "ConsoleDetailDoodadAlpha",
+  "frozenSize": 83,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "0077f750": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "ConsoleCharacterAmbient",
+  "frozenSize": 163,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 129,
+  "status": "ported"
+ },
+ "00780240": {
+  "branchRatio": 0.364,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::UpdateObject",
+  "frozenSize": 1230,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 693,
+  "status": "ported"
+ },
  "00780860": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
@@ -50234,14 +52911,14 @@
  "00780f50": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.484,
+  "faithful": true,
+  "fidelity": 0.839,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Initialize",
-  "frozenSize": 334,
+  "frozenSize": 640,
   "how": "string",
   "module": "World.cpp",
   "refSize": 1247,
@@ -50295,6 +52972,22 @@
   "refSize": 629,
   "status": "ported"
  },
+ "00782560": {
+  "branchRatio": 0.625,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::GetEntityAreaID",
+  "frozenSize": 348,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 284,
+  "status": "ported"
+ },
  "007826e0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -50321,7 +53014,7 @@
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Update",
-  "frozenSize": 1092,
+  "frozenSize": 1098,
   "how": "override",
   "module": "World.cpp",
   "refSize": 862,
@@ -50823,6 +53516,22 @@
   "refSize": 1354,
   "status": "ported"
  },
+ "0078f2f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "ViewRectUnion",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 119,
+  "status": "ported"
+ },
  "0078f370": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
@@ -51014,6 +53723,38 @@
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 67,
+  "status": "ported"
+ },
+ "00790570": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::ViewWindowInit",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
+ "007905b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::ViewWindowMerge",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 104,
   "status": "ported"
  },
  "00790620": {
@@ -51433,29 +54174,61 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.562,
+  "fidelity": 0.5,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCamera",
-  "frozenSize": 2231,
+  "frozenSize": 2241,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 2291,
+  "status": "ported"
+ },
+ "00795d00": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddPortalView",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldScene.cpp",
+  "refSize": 21,
+  "status": "ported"
+ },
+ "00795d20": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::AddExteriorView",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldScene.cpp",
+  "refSize": 21,
   "status": "ported"
  },
  "00795d40": {
   "branchRatio": 0.923,
   "constOverlap": 0.069,
   "faithful": false,
-  "fidelity": 0.312,
+  "fidelity": 0.5,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCameraDef",
-  "frozenSize": 411,
+  "frozenSize": 643,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 575,
@@ -51465,7 +54238,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.021,
   "faithful": false,
-  "fidelity": 0.909,
+  "fidelity": 0.818,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -51475,6 +54248,38 @@
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 1058,
+  "status": "ported"
+ },
+ "007968d0": {
+  "branchRatio": 0.647,
+  "constOverlap": 0.05,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::ComplementPortalViews",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldScene.cpp",
+  "refSize": 828,
+  "status": "ported"
+ },
+ "00796c10": {
+  "branchRatio": 0.267,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.938,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::FillViewWindows",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldScene.cpp",
+  "refSize": 1637,
   "status": "ported"
  },
  "007983b0": {
@@ -51657,13 +54462,13 @@
   "branchRatio": 0.542,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.415,
+  "fidelity": 0.451,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 1031,
+  "frozenSize": 1061,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 1355,
@@ -51711,7 +54516,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetLoadedArea",
-  "frozenSize": 0,
+  "frozenSize": 38,
   "how": "annotated",
   "module": "AaBsp.cpp",
   "refSize": 33,
@@ -51830,19 +54635,35 @@
   "status": "ported"
  },
  "0079e7c0": {
-  "branchRatio": 0.619,
-  "constOverlap": 0.023,
-  "faithful": false,
-  "fidelity": 0.0,
+  "branchRatio": 0.524,
+  "constOverlap": 0.114,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
-  "frozen": "CMap::CreateTerrainShadowShaders",
-  "frozenSize": 442,
+  "frozen": "CMap::MapMemInitialize",
+  "frozenSize": 1511,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2068,
+  "status": "ported"
+ },
+ "007a0490": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.4,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetChunkAreaID",
+  "frozenSize": 197,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 160,
   "status": "ported"
  },
  "007a0530": {
@@ -51855,10 +54676,26 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetTerrainType",
-  "frozenSize": 0,
+  "frozenSize": 469,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 361,
+  "status": "ported"
+ },
+ "007a06a0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.3,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::IsTerrainShadowed",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 369,
   "status": "ported"
  },
  "007a0820": {
@@ -51875,6 +54712,38 @@
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 422,
+  "status": "ported"
+ },
+ "007a09d0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetMapObjLiquid",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 303,
+  "status": "ported"
+ },
+ "007a0b00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetLiquidAt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 66,
   "status": "ported"
  },
  "007a0d60": {
@@ -51903,10 +54772,58 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 257,
+  "frozenSize": 264,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
+  "status": "ported"
+ },
+ "007a13e0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetEntityMapObjGroup",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 157,
+  "status": "ported"
+ },
+ "007a1a30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.083,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateEntityGroupLiquid",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 218,
+  "status": "ported"
+ },
+ "007a1bc0": {
+  "branchRatio": 0.381,
+  "constOverlap": 0.179,
+  "faithful": false,
+  "fidelity": 0.857,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateEntity",
+  "frozenSize": 1720,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 707,
   "status": "ported"
  },
  "007a20e0": {
@@ -51941,20 +54858,20 @@
   "refSize": 151,
   "status": "ported"
  },
- "007a2c60": {
-  "branchRatio": 0.458,
-  "constOverlap": 0.062,
+ "007a2aa0": {
+  "branchRatio": 0.407,
+  "constOverlap": 0.3,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
-   "src/world/map/CMap.cpp",
-   "src/world/map/cmap.cpp"
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
   ],
-  "frozen": "CMap::MapMemInitialize",
-  "frozenSize": 1495,
-  "how": "string",
+  "frozen": "MapQueryBoxModels",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "Map.cpp",
-  "refSize": 1122,
+  "refSize": 447,
   "status": "ported"
  },
  "007a6140": {
@@ -52053,17 +54970,33 @@
   "refSize": 272,
   "status": "ported"
  },
+ "007a6940": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.04,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "MapQueryBoxMapObjs",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 419,
+  "status": "ported"
+ },
  "007a6af0": {
   "branchRatio": 1.0,
   "constOverlap": 0.5,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMapObjGroup.cpp",
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "MapQueryBox",
-  "frozenSize": 16,
+  "frozenSize": 519,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 69,
@@ -52169,7 +55102,7 @@
   "branchRatio": 0.2,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.429,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
@@ -52328,8 +55261,8 @@
  "007a8320": {
   "branchRatio": 1.0,
   "constOverlap": 0.042,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
@@ -52533,6 +55466,22 @@
   "refSize": 2146,
   "status": "ported"
  },
+ "007ab760": {
+  "branchRatio": 0.636,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "MapObjDrawShadowCasters",
+  "frozenSize": 928,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 849,
+  "status": "ported"
+ },
  "007abf50": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -52553,13 +55502,13 @@
   "branchRatio": 0.278,
   "constOverlap": 0.07,
   "faithful": false,
-  "fidelity": 0.389,
+  "fidelity": 0.438,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::WalkPortals",
-  "frozenSize": 1122,
+  "frozenSize": 1093,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 1591,
@@ -52709,6 +55658,22 @@
   "refSize": 37,
   "status": "ported"
  },
+ "007ae4c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::IsGroupLoaded",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 42,
+  "status": "ported"
+ },
  "007ae520": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -52789,6 +55754,38 @@
   "refSize": 37,
   "status": "ported"
  },
+ "007ae7e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::BoxVsBounds",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "007ae810": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::PointInBounds",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
  "007ae840": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -52815,10 +55812,26 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::SegmentVsGroupBounds",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "MapObj.cpp",
   "refSize": 76,
+  "status": "ported"
+ },
+ "007ae8d0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GroupBoxIntersects",
+  "frozenSize": 86,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 75,
   "status": "ported"
  },
  "007ae920": {
@@ -52831,7 +55844,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::PointInGroupBox",
-  "frozenSize": 0,
+  "frozenSize": 79,
   "how": "annotated",
   "module": "MapObj.cpp",
   "refSize": 69,
@@ -52933,6 +55946,38 @@
   "refSize": 68,
   "status": "ported"
  },
+ "007aeb90": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::GetLiquidAt",
+  "frozenSize": 184,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 147,
+  "status": "ported"
+ },
+ "007aef00": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObj.cpp",
+   "src/world/map/cmapobj.cpp"
+  ],
+  "frozen": "CMapObj::QueryBoxGroups",
+  "frozenSize": 366,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 252,
+  "status": "ported"
+ },
  "007af280": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -52959,7 +56004,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::SegmentVsPortals",
-  "frozenSize": 0,
+  "frozenSize": 827,
   "how": "override",
   "module": "MapObj.cpp",
   "refSize": 542,
@@ -53075,6 +56120,22 @@
   "how": "annotated",
   "module": "MapObj.cpp",
   "refSize": 193,
+  "status": "ported"
+ },
+ "007b15d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Transform.cpp",
+   "src/gx/transform.cpp"
+  ],
+  "frozen": "GxXformSet",
+  "frozenSize": 17,
+  "how": "callgraph",
+  "module": "MapObj.cpp",
+  "refSize": 1333,
   "status": "ported"
  },
  "007b1b10": {
@@ -53327,7 +56388,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObjDef::SegmentVsBounds",
-  "frozenSize": 0,
+  "frozenSize": 9,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 27,
@@ -53343,7 +56404,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObjDef::GetPolyGroundType",
-  "frozenSize": 0,
+  "frozenSize": 101,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 88,
@@ -53379,6 +56440,19 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 67,
+  "status": "ported"
+ },
+ "007b4350": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "CMapObjDef::CMapObjDef",
+  "frozenSize": 284,
+  "how": "callgraph",
+  "module": "DetailDoodad.cpp",
+  "refSize": 430,
   "status": "ported"
  },
  "007b47f0": {
@@ -53427,6 +56501,38 @@
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 153,
+  "status": "ported"
+ },
+ "007b4960": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTargetArea",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
+ "007b49c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::GetTargetChunk",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DetailDoodad.cpp",
+  "refSize": 144,
   "status": "ported"
  },
  "007b4df0": {
@@ -53535,7 +56641,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::UpdatePendingEntities",
-  "frozenSize": 0,
+  "frozenSize": 235,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 260,
@@ -53590,16 +56696,16 @@
   "status": "ported"
  },
  "007b6b00": {
-  "branchRatio": 0.143,
+  "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.108,
+  "fidelity": 0.185,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Update",
-  "frozenSize": 359,
+  "frozenSize": 243,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 975,
@@ -54421,8 +57527,40 @@
   "refSize": 438,
   "status": "ported"
  },
+ "007ba840": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowResetCasters",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 172,
+  "status": "ported"
+ },
+ "007ba8f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowRadiusLimits",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
  "007ba960": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -54430,11 +57568,91 @@
    "src/world/CWFrustum.cpp",
    "src/world/cwfrustum.cpp"
   ],
-  "frozen": "CWFrustum::NegatePlanes",
-  "frozenSize": 0,
+  "frozen": "CWFrustum::GetBounds",
+  "frozenSize": 21,
   "how": "annotated",
   "module": "MapShadow.cpp",
   "refSize": 308,
+  "status": "ported"
+ },
+ "007baaa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWFrustum.cpp",
+   "src/world/cwfrustum.cpp"
+  ],
+  "frozen": "CWFrustum::MirrorCorners",
+  "frozenSize": 220,
+  "how": "callgraph",
+  "module": "MapShadow.cpp",
+  "refSize": 245,
+  "status": "ported"
+ },
+ "007baba0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowBillboardBones",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 20,
+  "status": "ported"
+ },
+ "007babc0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowBeyondDetail",
+  "frozenSize": 131,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "007bac10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.625,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowBuildMatrix",
+  "frozenSize": 1029,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 958,
+  "status": "ported"
+ },
+ "007bafd0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.632,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowSetupView",
+  "frozenSize": 1431,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 1034,
   "status": "ported"
  },
  "007bb3e0": {
@@ -54453,17 +57671,33 @@
   "refSize": 113,
   "status": "ported"
  },
- "007bb570": {
-  "branchRatio": 0.5,
+ "007bb460": {
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCellRange",
+  "frozenSize": 304,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 271,
+  "status": "ported"
+ },
+ "007bb570": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/MapShadow.cpp",
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowRender",
-  "frozenSize": 937,
+  "frozenSize": 426,
   "how": "annotated",
   "module": "MapShadow.cpp",
   "refSize": 248,
@@ -54472,8 +57706,8 @@
  "007bb670": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/world/MapShadow.cpp",
    "src/world/mapshadow.cpp"
@@ -54499,6 +57733,134 @@
   "how": "annotated",
   "module": "MapShadow.cpp",
   "refSize": 402,
+  "status": "ported"
+ },
+ "007bb9d0": {
+  "branchRatio": 0.455,
+  "constOverlap": 0.114,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCollectEntities",
+  "frozenSize": 665,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 631,
+  "status": "ported"
+ },
+ "007bbc50": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.968,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowRenderView",
+  "frozenSize": 1770,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 2098,
+  "status": "ported"
+ },
+ "007bc490": {
+  "branchRatio": 0.07,
+  "constOverlap": 0.027,
+  "faithful": false,
+  "fidelity": 0.091,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCollectMapObjsWhole",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 998,
+  "status": "ported"
+ },
+ "007bc890": {
+  "branchRatio": 0.116,
+  "constOverlap": 0.059,
+  "faithful": false,
+  "fidelity": 0.286,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCollectMapObjs",
+  "frozenSize": 615,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 861,
+  "status": "ported"
+ },
+ "007bcc00": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCollectChunksWhole",
+  "frozenSize": 1277,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 790,
+  "status": "ported"
+ },
+ "007bcf20": {
+  "branchRatio": 0.312,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCollectChunks",
+  "frozenSize": 849,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 727,
+  "status": "ported"
+ },
+ "007bd200": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.053,
+  "faithful": false,
+  "fidelity": 0.625,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowCollect",
+  "frozenSize": 1127,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 402,
+  "status": "ported"
+ },
+ "007bd3a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/MapShadow.cpp",
+   "src/world/mapshadow.cpp"
+  ],
+  "frozen": "MapShadowInitialize",
+  "frozenSize": 253,
+  "how": "annotated",
+  "module": "MapShadow.cpp",
+  "refSize": 162,
   "status": "ported"
  },
  "007bd450": {
@@ -54575,7 +57937,7 @@
    "src/world/map/cmapstaticentity.cpp"
   ],
   "frozen": "CMapStaticEntity::Place",
-  "frozenSize": 567,
+  "frozenSize": 570,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 607,
@@ -54600,8 +57962,8 @@
  "007becd0": {
   "branchRatio": 0.6,
   "constOverlap": 0.021,
-  "faithful": false,
-  "fidelity": 0.7,
+  "faithful": true,
+  "fidelity": 0.875,
   "files": [
    "src/world/map/CMapLoad.cpp",
    "src/world/map/cmapload.cpp"
@@ -54662,16 +58024,16 @@
   "status": "ported"
  },
  "007bfce0": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.526,
+  "fidelity": 0.579,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Load",
-  "frozenSize": 442,
+  "frozenSize": 401,
   "how": "annotated",
   "module": "MapLoad.cpp",
   "refSize": 339,
@@ -54920,14 +58282,14 @@
  "007c03e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::AllocMapObjDef",
-  "frozenSize": 375,
+  "frozenSize": 134,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 76,
@@ -55215,7 +58577,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::GetTerrainHeight",
-  "frozenSize": 0,
+  "frozenSize": 239,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 198,
@@ -55279,7 +58641,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::LinkToMapObjDefGroup",
-  "frozenSize": 0,
+  "frozenSize": 180,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 69,
@@ -55295,7 +58657,7 @@
    "src/world/map/cmapstaticentity.cpp"
   ],
   "frozen": "LinkEntityToChunks",
-  "frozenSize": 0,
+  "frozenSize": 732,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 28,
@@ -55311,7 +58673,7 @@
    "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapDoodadDef::CMapDoodadDef",
-  "frozenSize": 257,
+  "frozenSize": 264,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 362,
@@ -55343,7 +58705,7 @@
    "src/world/map/cmapstaticentity.cpp"
   ],
   "frozen": "QueryDefSegment",
-  "frozenSize": 0,
+  "frozenSize": 954,
   "how": "override",
   "module": "MapMem.cpp",
   "refSize": 299,
@@ -55391,10 +58753,74 @@
    "src/world/map/cmapstaticentity.cpp"
   ],
   "frozen": "ResolveEntityGround",
-  "frozenSize": 0,
+  "frozenSize": 1996,
   "how": "override",
   "module": "MapMem.cpp",
   "refSize": 369,
+  "status": "ported"
+ },
+ "007c2bf0": {
+  "branchRatio": 0.294,
+  "constOverlap": 0.067,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "LinkEntityToMapObjDefs",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 305,
+  "status": "ported"
+ },
+ "007c2d30": {
+  "branchRatio": 0.385,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.833,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "LinkEntityToMapObjDef",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 271,
+  "status": "ported"
+ },
+ "007c2e70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "ResolveObjectGround",
+  "frozenSize": 2418,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 262,
+  "status": "ported"
+ },
+ "007c2f80": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.2,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/CMapStaticEntity.cpp",
+   "src/world/map/cmapstaticentity.cpp"
+  ],
+  "frozen": "RelinkEntity",
+  "frozenSize": 119,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 100,
   "status": "ported"
  },
  "007c2ff0": {
@@ -55411,6 +58837,22 @@
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 34,
+  "status": "ported"
+ },
+ "007c3020": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::ReleaseDoodadDef",
+  "frozenSize": 460,
+  "how": "annotated",
+  "module": "MapMem.cpp",
+  "refSize": 134,
   "status": "ported"
  },
  "007c30b0": {
@@ -55433,13 +58875,13 @@
   "branchRatio": 0.231,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.615,
+  "fidelity": 0.692,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
   ],
   "frozen": "CMapChunk::Destroy",
-  "frozenSize": 608,
+  "frozenSize": 656,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 607,
@@ -55957,6 +59399,22 @@
   "refSize": 70,
   "status": "ported"
  },
+ "007c7230": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupAaBoxQuery::CachedLeaf",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "MapChunk.cpp",
+  "refSize": 926,
+  "status": "ported"
+ },
  "007c7610": {
   "branchRatio": 0.5,
   "constOverlap": 1.0,
@@ -56015,7 +59473,7 @@
    "src/world/map/cchunkliquid.cpp"
   ],
   "frozen": "ClassifyCornerZ",
-  "frozenSize": 0,
+  "frozenSize": 102,
   "how": "annotated",
   "module": "MapObjGroup.cpp",
   "refSize": 60,
@@ -56105,7 +59563,7 @@
   "branchRatio": 0.889,
   "constOverlap": 0.056,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/CMapObjGroupLoad.cpp",
    "src/world/map/cmapobjgroupload.cpp"
@@ -56197,6 +59655,22 @@
   "refSize": 75,
   "status": "ported"
  },
+ "007c94b0": {
+  "branchRatio": 0.594,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QueryLiquidBox",
+  "frozenSize": 1482,
+  "how": "annotated",
+  "module": "MapObjGroup.cpp",
+  "refSize": 1343,
+  "status": "ported"
+ },
  "007c9a00": {
   "branchRatio": 0.75,
   "constOverlap": -1.0,
@@ -56243,6 +59717,22 @@
   "how": "annotated",
   "module": "MapObjGroup.cpp",
   "refSize": 83,
+  "status": "ported"
+ },
+ "007c9b10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroupAaBoxQuery::TestFace",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapObjGroup.cpp",
+  "refSize": 171,
   "status": "ported"
  },
  "007c9cb0": {
@@ -56319,10 +59809,42 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::DualQueryNode",
-  "frozenSize": 0,
+  "frozenSize": 1101,
   "how": "annotated",
   "module": "MapObjGroup.cpp",
   "refSize": 699,
+  "status": "ported"
+ },
+ "007ca8c0": {
+  "branchRatio": 0.75,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::AaBoxQueryLeaf",
+  "frozenSize": 561,
+  "how": "annotated",
+  "module": "MapObjGroup.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
+ "007ca920": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::AaBoxQueryNode",
+  "frozenSize": 355,
+  "how": "annotated",
+  "module": "MapObjGroup.cpp",
+  "refSize": 434,
   "status": "ported"
  },
  "007cb0c0": {
@@ -56367,7 +59889,7 @@
    "src/world/map/cmapobjgroup.cpp"
   ],
   "frozen": "CMapObjGroup::QuerySegmentDual",
-  "frozenSize": 0,
+  "frozenSize": 642,
   "how": "annotated",
   "module": "MapObjGroup.cpp",
   "refSize": 133,
@@ -56416,6 +59938,22 @@
   "how": "callgraph",
   "module": "MapObjGroup.cpp",
   "refSize": 168,
+  "status": "ported"
+ },
+ "007cb7b0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.05,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjGroup.cpp",
+   "src/world/map/cmapobjgroup.cpp"
+  ],
+  "frozen": "CMapObjGroup::QueryAaBox",
+  "frozenSize": 326,
+  "how": "annotated",
+  "module": "MapObjGroup.cpp",
+  "refSize": 183,
   "status": "ported"
  },
  "007cb990": {
@@ -56546,6 +60084,22 @@
   "refSize": 151,
   "status": "ported"
  },
+ "007cc020": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/world/map/MapLowDetail.cpp",
+   "src/world/map/maplowdetail.cpp"
+  ],
+  "frozen": "CMapLowDetail::Free",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "MapObjGroup.cpp",
+  "refSize": 135,
+  "status": "ported"
+ },
  "007cc310": {
   "branchRatio": 0.389,
   "constOverlap": 0.091,
@@ -56578,6 +60132,22 @@
   "refSize": 207,
   "status": "diverged"
  },
+ "007ccdf0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/MapOcclusion.cpp",
+   "src/world/map/mapocclusion.cpp"
+  ],
+  "frozen": "MapOcclusion::GetVolumeCount",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapLowDetail.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "007cce00": {
   "branchRatio": 0.308,
   "constOverlap": 0.0,
@@ -56594,11 +60164,27 @@
   "refSize": 403,
   "status": "ported"
  },
+ "007ccfa0": {
+  "branchRatio": 0.438,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/MapOcclusion.cpp",
+   "src/world/map/mapocclusion.cpp"
+  ],
+  "frozen": "MapOcclusion::PolygonOccluded",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapLowDetail.cpp",
+  "refSize": 404,
+  "status": "ported"
+ },
  "007cd4e0": {
   "branchRatio": 0.077,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.25,
   "files": [
    "src/world/map/MapOcclusion.cpp",
    "src/world/map/mapocclusion.cpp"
@@ -56624,6 +60210,22 @@
   "how": "annotated",
   "module": "MapLowDetail.cpp",
   "refSize": 181,
+  "status": "ported"
+ },
+ "007cd910": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/MapOcclusion.cpp",
+   "src/world/map/mapocclusion.cpp"
+  ],
+  "frozen": "MapOcclusion::ClearVolumes",
+  "frozenSize": 15,
+  "how": "annotated",
+  "module": "MapLowDetail.cpp",
+  "refSize": 25,
   "status": "ported"
  },
  "007cde10": {
@@ -56672,6 +60274,22 @@
   "how": "annotated",
   "module": "MapLowDetail.cpp",
   "refSize": 64,
+  "status": "ported"
+ },
+ "007cdf50": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufIsValid",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapLowDetail.cpp",
+  "refSize": 47,
   "status": "ported"
  },
  "007cdf80": {
@@ -56818,6 +60436,22 @@
   "refSize": 529,
   "status": "ported"
  },
+ "007ced30": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufPairDestroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapLowDetail.cpp",
+  "refSize": 220,
+  "status": "ported"
+ },
  "007cee10": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -56829,6 +60463,54 @@
   "how": "callgraph",
   "module": "MapLowDetail.cpp",
   "refSize": 209,
+  "status": "ported"
+ },
+ "007cefd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufCreate",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 239,
+  "status": "ported"
+ },
+ "007cf0c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufBucketDestroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 127,
+  "status": "ported"
+ },
+ "007cf140": {
+  "branchRatio": 0.273,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufAcquire",
+  "frozenSize": 496,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 192,
   "status": "ported"
  },
  "007cf200": {
@@ -56847,6 +60529,38 @@
   "refSize": 1421,
   "status": "diverged"
  },
+ "007cf790": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufRelease",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 167,
+  "status": "ported"
+ },
+ "007cf840": {
+  "branchRatio": 0.227,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufAge",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 344,
+  "status": "ported"
+ },
  "007cf9a0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -56862,6 +60576,22 @@
   "module": "MapChunkLiquid.cpp",
   "refSize": 50,
   "status": "verified"
+ },
+ "007cf9e0": {
+  "branchRatio": 0.105,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::ChunkBufDestroyAll",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 289,
+  "status": "ported"
  },
  "007cfb10": {
   "branchRatio": 0.8,
@@ -56883,7 +60613,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.444,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -57215,11 +60945,27 @@
   "refSize": 865,
   "status": "ported"
  },
- "007d49b0": {
-  "branchRatio": 0.0,
+ "007d4920": {
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::AllocMeshGeomFactory",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 93,
+  "status": "ported"
+ },
+ "007d49b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/LiquidSurface.cpp",
    "src/world/map/liquidsurface.cpp"
@@ -57241,23 +60987,23 @@
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CreateGeomFactory",
-  "frozenSize": 346,
+  "frozenSize": 314,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 220,
   "status": "ported"
  },
  "007d4ab0": {
-  "branchRatio": 0.767,
+  "branchRatio": 0.567,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.294,
+  "fidelity": 0.353,
   "files": [
    "src/world/map/LiquidSurface.cpp",
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CChunkGeomFactory::Build",
-  "frozenSize": 2428,
+  "frozenSize": 2155,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1099,
@@ -58077,36 +61823,6 @@
   "refSize": 158,
   "status": "ported"
  },
- "007dac40": {
-  "branchRatio": 0.333,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VoiceEnumerateCaptureDevices",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "WardenClient.cpp",
-  "refSize": 170,
-  "status": "stub"
- },
- "007dafe0": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/ui/game/miscscriptstubs.cpp"
-  ],
-  "frozen": "Script_Stub_VoiceGetCurrentCaptureDevice",
-  "frozenSize": 60,
-  "how": "order",
-  "module": "WardenClient.cpp",
-  "refSize": 71,
-  "status": "stub"
- },
  "007dc010": {
   "branchRatio": 0.188,
   "constOverlap": 0.038,
@@ -58217,6 +61933,21 @@
   "how": "cvar",
   "module": "ComSatClient.cpp",
   "refSize": 53,
+  "status": "stub"
+ },
+ "007deef0": {
+  "branchRatio": 0.083,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_GetVoiceSessionMemberInfoBySessionID",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "ComSatClient.cpp",
+  "refSize": 447,
   "status": "stub"
  },
  "007e0f10": {
@@ -58526,8 +62257,8 @@
  "007e2d60": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 0.857,
+  "faithful": false,
+  "fidelity": 0.429,
   "files": [
    "src/world/Shadow.cpp",
    "src/world/shadow.cpp"
@@ -58581,7 +62312,7 @@
    "src/world/shadow.cpp"
   ],
   "frozen": "DecalStreamIndices",
-  "frozenSize": 0,
+  "frozenSize": 163,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 103,
@@ -58667,17 +62398,33 @@
   "refSize": 117,
   "status": "ported"
  },
+ "007e3aa0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
+  ],
+  "frozen": "DecalDrawBoundReceivers",
+  "frozenSize": 1225,
+  "how": "annotated",
+  "module": "DeclinedWords.cpp",
+  "refSize": 980,
+  "status": "ported"
+ },
  "007e3e80": {
   "branchRatio": 0.265,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.621,
+  "fidelity": 0.586,
   "files": [
    "src/world/Shadow.cpp",
    "src/world/shadow.cpp"
   ],
   "frozen": "DecalDrawReceivers",
-  "frozenSize": 1203,
+  "frozenSize": 957,
   "how": "annotated",
   "module": "DeclinedWords.cpp",
   "refSize": 1264,
@@ -59112,8 +62859,40 @@
   "refSize": 483,
   "status": "ported"
  },
+ "007f9320": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "TransformBoxRows",
+  "frozenSize": 862,
+  "how": "annotated",
+  "module": "PetNameCache.cpp",
+  "refSize": 168,
+  "status": "excluded"
+ },
+ "007f93d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "TransformBoxExtents",
+  "frozenSize": 164,
+  "how": "annotated",
+  "module": "PetNameCache.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
  "007f9430": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -59122,7 +62901,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "TransformBox",
-  "frozenSize": 756,
+  "frozenSize": 232,
   "how": "annotated",
   "module": "PetNameCache.cpp",
   "refSize": 66,
@@ -59175,6 +62954,21 @@
   "module": "PetNameCache.cpp",
   "refSize": 73,
   "status": "ported"
+ },
+ "007fdd60": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_SpellCanTargetGlyph",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "Spell_C.cpp",
+  "refSize": 70,
+  "status": "stub"
  },
  "007fde20": {
   "branchRatio": 1.0,
@@ -59544,6 +63338,21 @@
   "refSize": 338,
   "status": "ported"
  },
+ "00804190": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_SpellCanTargetUnit",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "Spell_C.cpp",
+  "refSize": 141,
+  "status": "stub"
+ },
  "00804220": {
   "branchRatio": 0.353,
   "constOverlap": 0.0,
@@ -59639,6 +63448,36 @@
   "module": "Spell_C.cpp",
   "refSize": 444,
   "status": "ported"
+ },
+ "00809ea0": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_SpellStopCasting",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "Spell_C.cpp",
+  "refSize": 222,
+  "status": "stub"
+ },
+ "0080dc00": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/game/miscscriptstubs.cpp"
+  ],
+  "frozen": "Script_Stub_SpellTargetUnit",
+  "frozenSize": 60,
+  "how": "order",
+  "module": "Spell_C.cpp",
+  "refSize": 227,
+  "status": "stub"
  },
  "0080fee0": {
   "branchRatio": 0.444,
@@ -60760,6 +64599,22 @@
   "refSize": 57,
   "status": "ported"
  },
+ "00817fd0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameScript.cpp",
+   "src/ui/framescript.cpp"
+  ],
+  "frozen": "FrameScript_UnregisterFunction",
+  "frozenSize": 75,
+  "how": "callgraph",
+  "module": "XMLTree.cpp",
+  "refSize": 51,
+  "status": "ported"
+ },
  "00818010": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -61442,7 +65297,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SetTime",
-  "frozenSize": 0,
+  "frozenSize": 37,
   "how": "annotated",
   "module": "M2Cache.cpp",
   "refSize": 35,
@@ -61570,7 +65425,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SetProjectionCallback",
-  "frozenSize": 0,
+  "frozenSize": 15,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 25,
@@ -61656,8 +65511,8 @@
  "0081cff0": {
   "branchRatio": 0.857,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -62392,13 +66247,13 @@
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.905,
+  "fidelity": 0.952,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 1416,
+  "frozenSize": 1432,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
@@ -62526,7 +66381,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SetAnimEventCallback",
-  "frozenSize": 0,
+  "frozenSize": 106,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 129,
@@ -62971,7 +66826,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetCombinedBounds",
-  "frozenSize": 0,
+  "frozenSize": 404,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 361,
@@ -62987,7 +66842,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetCombinedSphere",
-  "frozenSize": 0,
+  "frozenSize": 278,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 238,
@@ -62996,8 +66851,8 @@
  "00825750": {
   "branchRatio": 0.824,
   "constOverlap": 0.022,
-  "faithful": true,
-  "fidelity": 0.857,
+  "faithful": false,
+  "fidelity": 0.714,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -63467,7 +67322,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetAttachmentPosition",
-  "frozenSize": 0,
+  "frozenSize": 182,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 142,
@@ -63515,7 +67370,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::HasEvent",
-  "frozenSize": 0,
+  "frozenSize": 166,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 127,
@@ -63547,7 +67402,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetEventPosition",
-  "frozenSize": 0,
+  "frozenSize": 213,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 132,
@@ -63768,7 +67623,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::DrawReceiverGeometry",
-  "frozenSize": 0,
+  "frozenSize": 357,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 244,
@@ -63784,7 +67639,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::DrawShadowCasterBatch",
-  "frozenSize": 0,
+  "frozenSize": 826,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 658,
@@ -63800,7 +67655,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::DrawShadowCasterList",
-  "frozenSize": 0,
+  "frozenSize": 366,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 247,
@@ -64011,8 +67866,8 @@
  "0082c2c0": {
   "branchRatio": 0.783,
   "constOverlap": 0.021,
-  "faithful": true,
-  "fidelity": 0.889,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -64162,7 +68017,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::DrawShadowCasterLists",
-  "frozenSize": 0,
+  "frozenSize": 96,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 119,
@@ -64203,8 +68058,8 @@
  "0082e140": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -64284,7 +68139,7 @@
   "branchRatio": 0.566,
   "constOverlap": 0.021,
   "faithful": true,
-  "fidelity": 0.977,
+  "fidelity": 0.932,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -64300,7 +68155,7 @@
   "branchRatio": 0.548,
   "constOverlap": 0.042,
   "faithful": true,
-  "fidelity": 1.0,
+  "fidelity": 0.889,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -64315,8 +68170,8 @@
  "00830dc0": {
   "branchRatio": 0.75,
   "constOverlap": 0.04,
-  "faithful": true,
-  "fidelity": 0.875,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -64434,7 +68289,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetEventWorldPosition",
-  "frozenSize": 0,
+  "frozenSize": 288,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 178,
@@ -64460,13 +68315,13 @@
   "branchRatio": 0.462,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateAlphasOnly",
-  "frozenSize": 0,
+  "frozenSize": 437,
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 340,
@@ -64658,7 +68513,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "M2ShadowCasterList::MergeRuns",
-  "frozenSize": 0,
+  "frozenSize": 409,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 187,
@@ -64722,7 +68577,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::CollectShadowCasters",
-  "frozenSize": 0,
+  "frozenSize": 558,
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 426,
@@ -66358,7 +70213,7 @@
   ],
   "frozen": "lua_insert",
   "frozenSize": 79,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 176,
   "status": "ported"
@@ -70818,8 +74673,8 @@
  "00872b00": {
   "branchRatio": 1.0,
   "constOverlap": 0.025,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/gx/shader/CShaderEffect.cpp",
    "src/gx/shader/cshadereffect.cpp"
@@ -71183,6 +75038,70 @@
   "refSize": 18,
   "status": "ported"
  },
+ "00873fa0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetBuildMatrixCallback",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "00873fb0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetSetupViewCallback",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "00873fc0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetCollectCallback",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "00873fd0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetRenderCallback",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
  "00873fe0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -71231,6 +75150,22 @@
   "refSize": 22,
   "status": "ported"
  },
+ "00874030": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetDepthScale",
+  "frozenSize": 9,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 14,
+  "status": "ported"
+ },
  "008740d0": {
   "branchRatio": 0.762,
   "constOverlap": 0.0,
@@ -71264,10 +75199,10 @@
   "status": "ported"
  },
  "00874240": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/world/ShadowMap.cpp",
    "src/world/shadowmap.cpp"
@@ -71289,7 +75224,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBuildPcfTaps",
-  "frozenSize": 334,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 511,
@@ -71299,20 +75234,100 @@
   "branchRatio": 0.667,
   "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/world/ShadowMap.cpp",
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindScene",
-  "frozenSize": 337,
+  "frozenSize": 257,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 238,
   "status": "ported"
  },
  "008745d0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBindMapObj",
+  "frozenSize": 230,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
+ "00874660": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.286,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBindTerrain",
+  "frozenSize": 215,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 247,
+  "status": "ported"
+ },
+ "00874760": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.286,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapBindDetailDoodads",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 301,
+  "status": "ported"
+ },
+ "00874890": {
+  "branchRatio": 0.48,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapSetupCascades",
+  "frozenSize": 3178,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 1815,
+  "status": "ported"
+ },
+ "00874fb0": {
+  "branchRatio": 0.833,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapRenderCascades",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 247,
+  "status": "ported"
+ },
+ "008750b0": {
+  "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.333,
@@ -71320,27 +75335,11 @@
    "src/world/ShadowMap.cpp",
    "src/world/shadowmap.cpp"
   ],
-  "frozen": "ShadowMapBindMapObj",
-  "frozenSize": 122,
+  "frozen": "ShadowMapBuildLightMatrices",
+  "frozenSize": 1473,
   "how": "annotated",
   "module": "ShadowMap.cpp",
-  "refSize": 136,
-  "status": "ported"
- },
- "00874660": {
-  "branchRatio": 0.75,
-  "constOverlap": 0.286,
-  "faithful": false,
-  "fidelity": 0.125,
-  "files": [
-   "src/world/ShadowMap.cpp",
-   "src/world/shadowmap.cpp"
-  ],
-  "frozen": "ShadowMapBindTerrain",
-  "frozenSize": 519,
-  "how": "annotated",
-  "module": "ShadowMap.cpp",
-  "refSize": 247,
+  "refSize": 822,
   "status": "ported"
  },
  "00875c10": {
@@ -71360,19 +75359,51 @@
   "status": "ported"
  },
  "00875d30": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.111,
+  "faithful": true,
+  "fidelity": 0.889,
   "files": [
-   "src/world/MapShadow.cpp",
-   "src/world/mapshadow.cpp"
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
   ],
-  "frozen": "EnsureTargets",
-  "frozenSize": 429,
-  "how": "string",
+  "frozen": "ShadowMapEnsureTargets",
+  "frozenSize": 1473,
+  "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 591,
+  "status": "ported"
+ },
+ "00875f80": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.065,
+  "faithful": false,
+  "fidelity": 0.778,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapRender",
+  "frozenSize": 1702,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 983,
+  "status": "ported"
+ },
+ "00876360": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowMapInitialize",
+  "frozenSize": 19,
+  "how": "annotated",
+  "module": "ShadowMap.cpp",
+  "refSize": 11,
   "status": "ported"
  },
  "00876530": {
@@ -72150,7 +76181,7 @@
   "files": [],
   "frozen": "sscanf",
   "frozenSize": 82,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 31,
   "status": "ported"
@@ -72331,6 +76362,38 @@
   "refSize": 3,
   "status": "ported"
  },
+ "008a16c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialSettings::GetInt",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 17,
+  "status": "excluded"
+ },
+ "008a16e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::CMaterialSettings::GetStageFloat",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 17,
+  "status": "excluded"
+ },
  "008a1700": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -72345,6 +76408,54 @@
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 5,
+  "status": "ported"
+ },
+ "008a1720": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::SetShaderMaterials",
+  "frozenSize": 7,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "008a1730": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::SetSpecular",
+  "frozenSize": 7,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 13,
+  "status": "ported"
+ },
+ "008a1740": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::GetCameraRelative",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 6,
   "status": "ported"
  },
  "008a1750": {
@@ -72390,6 +76501,38 @@
   ],
   "frozen": "Liquid::Initialize",
   "frozenSize": 113,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
+ "008a1980": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::SortAscending",
+  "frozenSize": 85,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
+ "008a19e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::SortDescending",
+  "frozenSize": 85,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 91,
@@ -72501,23 +76644,23 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::ReleaseMaterials",
-  "frozenSize": 0,
+  "frozenSize": 417,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 68,
   "status": "ported"
  },
  "008a1fa0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.8,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.182,
+  "fidelity": 0.2,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::GetMaterial",
-  "frozenSize": 743,
+  "frozenSize": 1108,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 285,
@@ -72526,8 +76669,8 @@
  "008a20c0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/LiquidSurface.cpp",
    "src/world/map/liquidsurface.cpp"
@@ -72591,7 +76734,7 @@
   "branchRatio": 0.5,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.667,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -72655,7 +76798,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.75,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -72697,6 +76840,22 @@
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 138,
+  "status": "ported"
+ },
+ "008a2aa0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/LiquidMaterialSettings.cpp",
+   "src/world/map/liquidmaterialsettings.cpp"
+  ],
+  "frozen": "Liquid::ResetProceduralTextureLatches",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Liquid.cpp",
+  "refSize": 18,
   "status": "ported"
  },
  "008a2ac0": {
@@ -73004,16 +77163,16 @@
   "status": "verified"
  },
  "008a32f0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.25,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::SetupTransforms",
-  "frozenSize": 398,
+  "frozenSize": 413,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 448,
@@ -73205,7 +77364,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialWaterNoSpec::EnsureShaders",
-  "frozenSize": 0,
+  "frozenSize": 140,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 102,
@@ -73263,7 +77422,7 @@
   "branchRatio": 0.259,
   "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.54,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -73279,7 +77438,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.043,
+  "fidelity": 0.037,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -73295,13 +77454,13 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.043,
+  "fidelity": 0.037,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialWaterNoSpec::Draw",
-  "frozenSize": 0,
+  "frozenSize": 25,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 878,
@@ -73311,7 +77470,7 @@
   "branchRatio": 0.429,
   "constOverlap": 0.022,
   "faithful": false,
-  "fidelity": 0.812,
+  "fidelity": 0.833,
   "files": [
    "src/world/map/LiquidMaterialSettings.cpp",
    "src/world/map/liquidmaterialsettings.cpp"
@@ -73397,6 +77556,22 @@
    "src/db/rec/areatablerec.cpp"
   ],
   "frozen": "AreaTableRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008aaa90": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/CameraShakesRec.cpp",
+   "src/db/rec/camerashakesrec.cpp"
+  ],
+  "frozen": "CameraShakesRec::GetFilename",
   "frozenSize": 8,
   "how": "string",
   "module": "ComSatSoundIOSoundEngine.cpp",
@@ -74219,6 +78394,21 @@
   "refSize": 6,
   "status": "ported"
  },
+ "008bd8b0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/WMOAreaTableRec.cpp"
+  ],
+  "frozen": "WMOAreaTableRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "008bdfc0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -74345,6 +78535,22 @@
   "how": "callgraph",
   "module": "BattlenetLogin.cpp",
   "refSize": 6,
+  "status": "ported"
+ },
+ "008ca080": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCamera.cpp",
+   "src/ui/game/cgcamera.cpp"
+  ],
+  "frozen": "CosineInterp",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "BattlenetLogin.cpp",
+  "refSize": 40,
   "status": "ported"
  },
  "008ce200": {
@@ -79854,8 +84060,8 @@
  "0097a390": {
   "branchRatio": 0.667,
   "constOverlap": 0.054,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.4,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -79950,8 +84156,8 @@
  "0097ac20": {
   "branchRatio": 0.5,
   "constOverlap": 0.083,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -80431,7 +84637,7 @@
   "branchRatio": 0.7,
   "constOverlap": 0.057,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.333,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
@@ -81548,13 +85754,15 @@
   "status": "ported"
  },
  "009829b0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/Intersect.cpp",
-   "lib/typhoon/tempest/intersect.cpp"
+   "lib/typhoon/tempest/intersect.cpp",
+   "src/ui/game/CameraDeps.cpp",
+   "src/ui/game/cameradeps.cpp"
   ],
   "frozen": "DominantAxis",
   "frozenSize": 60,
@@ -81707,6 +85915,22 @@
   "refSize": 535,
   "status": "ported"
  },
+ "00983990": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWFrustum.cpp",
+   "src/world/cwfrustum.cpp"
+  ],
+  "frozen": "CWFrustum::NegatePlanes",
+  "frozenSize": 73,
+  "how": "callgraph",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "009839e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -81733,7 +85957,7 @@
    "lib/typhoon/tempest/intersect.cpp"
   ],
   "frozen": "AaBoxBehindPlanes6",
-  "frozenSize": 0,
+  "frozenSize": 501,
   "how": "annotated",
   "module": "GfxSingletonManager.cpp",
   "refSize": 124,
@@ -81878,16 +86102,16 @@
   "status": "ported"
  },
  "00984860": {
-  "branchRatio": 0.75,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": true,
+  "faithful": false,
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/box/CAaBox.cpp",
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "TransformBox",
-  "frozenSize": 756,
+  "frozenSize": 232,
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 198,
@@ -81916,9 +86140,11 @@
   "fidelity": 1.0,
   "files": [
    "src/world/CWorldScene.cpp",
+   "src/world/Shadow.cpp",
    "src/world/cworldscene.cpp",
    "src/world/map/CMapObjDraw.cpp",
-   "src/world/map/cmapobjdraw.cpp"
+   "src/world/map/cmapobjdraw.cpp",
+   "src/world/shadow.cpp"
   ],
   "frozen": "ImVectorToFloats",
   "frozenSize": 0,
@@ -82513,7 +86739,7 @@
    "src/object/movement/cmovementshared.cpp"
   ],
   "frozen": "CMovementShared::GetCurrentSpeed",
-  "frozenSize": 0,
+  "frozenSize": 205,
   "how": "annotated",
   "module": "MovementShared.cpp",
   "refSize": 267,
@@ -82613,6 +86839,38 @@
   "how": "annotated",
   "module": "HealthBar.cpp",
   "refSize": 79,
+  "status": "ported"
+ },
+ "00990560": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "FindWMOArea",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "HealthBar.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
+ "009905c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.333,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::GetAreaLiquidType",
+  "frozenSize": 210,
+  "how": "annotated",
+  "module": "HealthBar.cpp",
+  "refSize": 139,
   "status": "ported"
  },
  "00990680": {
@@ -82823,6 +87081,22 @@
   "how": "string",
   "module": "HealthBar.cpp",
   "refSize": 386,
+  "status": "ported"
+ },
+ "009a81f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::GetFarClip",
+  "frozenSize": 9,
+  "how": "callgraph",
+  "module": "HealthBar.cpp",
+  "refSize": 269,
   "status": "ported"
  }
 }

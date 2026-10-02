@@ -76,7 +76,6 @@ addr	how	frozen	evidence
 0040ab70	annotated	LoadingScreenStart	tag in src/gx/LoadingScreen.cpp
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
-004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421800	sticky	sprintf	held from the previous run, where it was sticky
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
 004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 006ab220=TgaFile::ReadRle, 006aff10=CBLPFile::Open, 00876d90=CShaderEffectManager::LoadEffectFile
@@ -169,6 +168,8 @@ addr	how	frozen	evidence
 004826d0	annotated	CRect::Sub4826D0	tag in lib/typhoon/tempest/rect/CRect.cpp
 00482720	annotated	CSimpleFontString::AddAnimTranslation	tag in src/ui/simple/CSimpleFontString.cpp
 00482870	annotated	NearlyEqual	tag in lib/typhoon/tempest/Intersect.cpp
+00482900	callgraph	Camera::Now	only unmatched callee of 00604940=CGCamera::SetFovOffset
+00482940	annotated	ClampRange	tag in src/ui/game/CGCamera.cpp
 00482970	annotated	C3Vector::operator+=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004829a0	annotated	operator-	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004829d0	annotated	GxBufLock	tag in src/gx/Buffer.cpp
@@ -692,6 +693,9 @@ addr	how	frozen	evidence
 004b9910	annotated	AsyncFileReadSetProgressCallback	tag in src/async/AsyncFileRead.cpp
 004b9950	annotated	AsyncFileReadLockQueue	tag in src/async/AsyncFileRead.cpp
 004b9970	annotated	AsyncFileReadUnlockQueue	tag in src/async/AsyncFileRead.cpp
+004b9b20	annotated	AsyncFileReadPollHandler	tag in src/async/AsyncFileRead.cpp
+004b9c60	annotated	AsyncFileReadRegisterPollCallback	tag in src/async/AsyncFileRead.cpp
+004b9d20	annotated	AsyncFileReadRegisterPendingCounter	tag in src/async/AsyncFileRead.cpp
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
@@ -700,6 +704,7 @@ addr	how	frozen	evidence
 004bab50	override	AsyncFileReadObject	
 004bac20	annotated	AsyncReadBumpPriority	tag in src/component/Texture.cpp
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
+004bae10	annotated	AsyncFileReadWaitAll	tag in src/async/AsyncFileRead.cpp
 004baf60	annotated	CModelBlob::~CModelBlob	tag in src/model/Model2.cpp
 004bb1c0	annotated	ModelBlobDestroy	tag in src/model/Model2.cpp
 004bb370	annotated	CModelBlob::Query	tag in src/model/Model2.cpp
@@ -722,6 +727,8 @@ addr	how	frozen	evidence
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004bf770	callgraph	CCamera::CCamera	only unmatched callee of 004bfca0=CameraCreate
 004bfca0	annotated	CameraCreate	tag in src/gx/Camera.cpp
+004c1180	callgraph	TSBaseArray<CBaseManaged *>::operator[]	only unmatched callee of 004c11f0=DataMgrGetFloat
+004c11f0	annotated	DataMgrGetFloat	tag in lib/common/common/DataMgr.cpp
 004c1220	callgraph	DataMgrGetCoord	only unmatched callee of 004c12b0=DataMgrSetCoord
 004c12b0	annotated	DataMgrSetCoord	tag in lib/common/common/DataMgr.cpp
 004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
@@ -729,6 +736,7 @@ addr	how	frozen	evidence
 004c1590	annotated	M2ParticleRand01	tag in src/model/CM2ParticleEmitter.cpp
 004c15c0	annotated	M2ParticleRandSigned	tag in src/model/CM2ParticleEmitter.cpp
 004c1680	annotated	M2ParticleRandomUnitVector	tag in src/model/CM2ParticleEmitter.cpp
+004c1730	annotated	operator==	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1930	annotated	C44Matrix::Determinant	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b30	annotated	C44Matrix::Translate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1b90	annotated	C44Matrix::Scale	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -736,7 +744,7 @@ addr	how	frozen	evidence
 004c1d80	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1de0	annotated	C44Matrix::C44Matrix	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c1e60	annotated	operator+	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
-004c1f00	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c1f00	annotated	operator==	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c2120	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c21b0	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c2270	annotated	TransformVector4	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -753,7 +761,7 @@ addr	how	frozen	evidence
 004c3290	annotated	C44Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3300	annotated	C44Matrix::RotateAroundX	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3340	annotated	C44Matrix::RotateAroundY	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
-004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 007bf460=CMap::CreateMapObjDef, 0082dd80=CM2Model::SetWorldTransform
+004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 00600730=CGCamera::ApplyBlendA, 007bf460=CMap::CreateMapObjDef, 0082dd80=CM2Model::SetWorldTransform
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3420	annotated	C3Vector::NormalizeUnchecked	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3460	callgraph	CGMinimapFrame::GetPingOffset	only unmatched callee of 0057efe0=CGMinimapFrame_GetPingPosition
@@ -766,10 +774,12 @@ addr	how	frozen	evidence
 004c4930	annotated	CBezierSpline::Tangent	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
 004c4d50	annotated	CBezierSpline::SetPoints	tag in lib/typhoon/tempest/spline/CBezierSpline.cpp
 004c4df0	annotated	C2Vector::operator=	tag in lib/typhoon/tempest/vector/C2Vector.cpp
+004c5090	annotated	NormalizeAngle	tag in src/ui/game/CGCamera.cpp
 004c51b0	annotated	C33Matrix::C33Matrix	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5230	annotated	C33Matrix::operator*=	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5340	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5550	annotated	C33Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c55b0	annotated	CameraRollFacing	tag in src/ui/game/CameraDeps.cpp
 004c5820	annotated	C33Matrix::RotationAroundAxis	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c5990	annotated	SoundKitProperties::ResetToDefaults	tag in src/sound/SoundKitProperties.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
@@ -782,6 +792,7 @@ addr	how	frozen	evidence
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004cc180	annotated	SI2::GetSoundKitDef	tag in src/sound/SI2.cpp
 004ccaa0	callgraph	SI2::GetSoundKitID	only unmatched callee of 004c8fc0=SI2::PlayUISound
+004cee50	annotated	ObjectIsActivePlayer	tag in src/ui/game/CGCamera.cpp
 004cfbb0	annotated	DbUnpackRecord	tag in src/db/Db.cpp
 004cfd20	sticky	WowClientDB<SpellRec>::GetRecord	held from the previous run, where it was sticky
 004cfd90	callgraph	CCharacterComponent::GetSectionsRecord	only unmatched callee of 004ed900=CCharacterComponent::GeosRenderPrep
@@ -1020,7 +1031,7 @@ addr	how	frozen	evidence
 004f5f80	annotated	CGUnit::IsPetitionerAndTabardDesigner	tag in src/object/client/CGUnit.cpp
 004f6210	annotated	CGUnit_C::GetVehicleRec	tag in src/object/client/CGUnit_C.cpp
 004f6250	annotated	CGUnit_C::IsRidingVehicle	tag in src/object/client/CGUnit_C.cpp
-004f6650	callgraph	CWorld::GetCameraPos	only unmatched callee of 007e2d60=DecalBuildTransforms
+004f6650	callgraph	CWorld::GetCameraPos	only unmatched callee of 007bac10=MapShadowBuildMatrix
 004f7250	annotated	CGUnit::IsControlledBy	tag in src/object/client/CGUnit.cpp
 004f7310	annotated	CGPlayer_C::GetFarsightObject	tag in src/object/client/CGPlayer_C.cpp
 004f8ea0	override	CGWorldFrame::OnWorldRender	
@@ -1141,8 +1152,7 @@ addr	how	frozen	evidence
 00513990	annotated	GetTotemSlot	tag in src/ui/game/GameScript.cpp
 00513a00	annotated	SetBoundTradeableValue	tag in src/ui/game/GameScript.cpp
 00513a10	annotated	SetBoundTradeableItem	tag in src/ui/game/GameScript.cpp
-00513c30	callgraph	CGUnit::Unit	only unmatched callee of 0060cd50=Script_UnitIsDND, 0060ce20=Script_UnitIsPVP, 0060f480=Script_UnitIsDead
-00513cb0	callgraph	Script_UnitPowerTypeOf	only unmatched callee of 0060f100=Script_UnitPowerType
+00513cb0	sticky	Script_UnitPowerTypeOf	held from the previous run, where it was callgraph
 00513df0	annotated	CGGameUI::GetLastError	tag in src/ui/game/CGGameUI.cpp
 00513e40	annotated	MirrorTimerIndexFromName	tag in src/ui/game/GameScript.cpp
 00513f20	annotated	GetMirrorTimer	tag in src/ui/game/GameScript.cpp
@@ -1229,7 +1239,7 @@ addr	how	frozen	evidence
 00517c60	table	Script_GetTotemTimeLeft	binding "GetTotemTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
 00517d30	table	Script_IsThreatWarningEnabled	binding "IsThreatWarningEnabled" in s_ScriptFunctions ~ table 00ac80b0
 00517d70	annotated	Script_CanMapChangeDifficulty	tag in src/ui/game/GameScript.cpp
-005186a0	callgraph	CGCamera::GetTarget	only unmatched callee of 0073ac30=CGUnit_C::UpdateAnimation
+005186a0	sticky	CGCamera::GetTarget	held from the previous run, where it was callgraph
 00518dc0	annotated	SendSetSelection	tag in src/ui/game/GameScript.cpp
 00519640	annotated	InstanceMapHasFlag100	tag in src/ui/game/GameScript.cpp
 005197d0	annotated	DestroyTotem	tag in src/ui/game/GameScript.cpp
@@ -1378,6 +1388,7 @@ addr	how	frozen	evidence
 0052e1b0	table	Script_SetPartyAssignment	binding "SetPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052e400	table	Script_ClearPartyAssignment	binding "ClearPartyAssignment" in s_ScriptFunctions ~ table 00acc6d0
 0052e420	table	Script_ChangePlayerDifficulty	binding "ChangePlayerDifficulty" in s_ScriptFunctions ~ table 00acc6d0
+0052e480	annotated	BarberShopGetMinDistance	tag in src/ui/game/CameraDeps.cpp
 0052e570	callgraph	WowClientDB<AnimationDataRec>::GetRecord	only unmatched callee of 00737ef0=CGUnit_C::ApplySequence
 005302b0	string	Script_Stub_FlagTutorial	score 0.50 shared FlagTutorial
 00530ec0	table	BattlenetUI::Script_BNConnected	binding "BNConnected" in s_ScriptFunctions ~ table 00accae8
@@ -1525,7 +1536,7 @@ addr	how	frozen	evidence
 0054ed80	annotated	Script_SetupFullscreenScale	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ee60	annotated	Script_GetVideoCaps	tag in src/ui/game/CGVideoOptionsScript.cpp
 0054ef90	table	Script_IsStereoVideoAvailable	binding "IsStereoVideoAvailable" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
-0054efe0	callgraph	ConsoleDetectGetResolutions	only unmatched callee of 0054f050=SetupResolutions
+0054efe0	callgraph	CVar::GetInt	only unmatched callee of 0076a220=CVGxResolutionCallback
 0054f050	callgraph	SetupResolutions	only unmatched callee of 0054f690=Script_GetRefreshRates
 0054f1b0	callgraph	SetupFormats	only unmatched callee of 0054f8b0=Script_GetCurrentMultisampleFormat, 0054f980=Script_SetMultisampleFormat
 0054f430	table	Script_GetScreenResolutions	binding "GetScreenResolutions" in CGVideoOptions::s_ScriptFunctions ~ table 00acd320
@@ -1918,6 +1929,7 @@ addr	how	frozen	evidence
 005cff60	string	Script_Stub_GetFactionInfo	score 0.50 shared GetFactionInfo
 005d04b0	annotated	ReputationIsAtWar	tag in src/ui/game/ReputationInfo.cpp
 005d05b0	annotated	ReputationGetStanding	tag in src/ui/game/ReputationInfo.cpp
+005d0600	callgraph	CGUnit::Unit	only unmatched callee of 0071f770=CGUnit_C::GetReaction
 005d06a0	annotated	ReputationGetForcedReaction	tag in src/ui/game/ReputationInfo.cpp
 005d2ff0	annotated	CGPetInfo::SetReactState	tag in src/ui/game/CGPetInfo.cpp
 005d3020	annotated	CGPetInfo::SetCommandState	tag in src/ui/game/CGPetInfo.cpp
@@ -2033,15 +2045,10 @@ addr	how	frozen	evidence
 005f96f0	annotated	CInputControl::SetWowMouseEnabled	tag in src/ui/InputControl.cpp
 005f9850	annotated	CInputControl::IsIdle	tag in src/ui/InputControl.cpp
 005f9c80	annotated	JoystickCallback	tag in src/ui/InputControl.cpp
-005f9dd0	order	Script_Stub_IsMouselooking	binding table name Script_Stub_IsMouselooking, in definition order in src/ui/game/miscscriptstubs.cpp
-005f9e10	order	Script_Stub_VehicleAimGetAngle	binding table name Script_Stub_VehicleAimGetAngle, in definition order in src/ui/game/miscscriptstubs.cpp
-005f9e60	order	Script_Stub_VehicleAimGetNormAngle	binding table name Script_Stub_VehicleAimGetNormAngle, in definition order in src/ui/game/miscscriptstubs.cpp
 005fa9b0	annotated	EnableWowMouseCallback	tag in src/ui/InputControl.cpp
-005fb770	order	Script_Stub_VehicleAimIncrement	binding table name Script_Stub_VehicleAimIncrement, in definition order in src/ui/game/miscscriptstubs.cpp
-005fb820	order	Script_Stub_VehicleAimRequestAngle	binding table name Script_Stub_VehicleAimRequestAngle, in definition order in src/ui/game/miscscriptstubs.cpp
-005fb8c0	order	Script_Stub_VehicleAimRequestNormAngle	binding table name Script_Stub_VehicleAimRequestNormAngle, in definition order in src/ui/game/miscscriptstubs.cpp
 005fd1d0	annotated	CInputControl::CInputControl	tag in src/ui/InputControl.cpp
 005fd2c0	annotated	InputControlInitialize	tag in src/ui/InputControl.cpp
+005fd5c0	annotated	CameraWrapAngleNear	tag in src/ui/game/CGCamera.cpp
 005fd630	annotated	ValidateCameraView	tag in src/ui/game/CGCamera.cpp
 005fd680	annotated	ValidateCameraDistance	tag in src/ui/game/CGCamera.cpp
 005fd6d0	annotated	ValidateCameraPitch	tag in src/ui/game/CGCamera.cpp
@@ -2051,18 +2058,161 @@ addr	how	frozen	evidence
 005fd860	annotated	ValidateCameraSpeed	tag in src/ui/game/CGCamera.cpp
 005fd8c0	annotated	ValidateCameraSmoothStyle	tag in src/ui/game/CGCamera.cpp
 005fd910	annotated	CameraRegisterCVars	tag in src/ui/game/CGCamera.cpp
+005fe2c0	annotated	CameraRegisterScriptFunctions	tag in src/ui/game/CGCamera.cpp
+005fe2f0	annotated	CameraUnregisterScriptFunctions	tag in src/ui/game/CGCamera.cpp
+005fe310	annotated	CGCamera::HasModelCamera	tag in src/ui/game/CGCamera.cpp
+005fe320	annotated	CGCamera::StartModelCamera	tag in src/ui/game/CGCamera.cpp
+005fe360	annotated	CGCamera::ReleaseModel	tag in src/ui/game/CGCamera.cpp
+005fe3a0	annotated	CGCamera::IsFirstPerson	tag in src/ui/game/CGCamera.cpp
 005fe3c0	annotated	CameraWrapAngleOnce	tag in src/ui/game/CGCamera.cpp
+005fe400	annotated	CameraPitchLimitCommand	tag in src/ui/game/CGCamera.cpp
+005fe440	annotated	CGCamera::SaveViewToCVars	tag in src/ui/game/CGCamera.cpp
+005fe4e0	annotated	CGCamera::SaveView	tag in src/ui/game/CGCamera.cpp
+005fe510	annotated	CGCamera::LoadViewsFromCVars	tag in src/ui/game/CGCamera.cpp
+005fe570	annotated	CGCamera::GetMaxDistance	tag in src/ui/game/CGCamera.cpp
 005fe580	annotated	CGCamera::SetTimedValue	tag in src/ui/game/CGCamera.cpp
+005fe5f0	annotated	CGCamera::AdjustYaw	tag in src/ui/game/CGCamera.cpp
+005fe6a0	annotated	CGCamera::SetMouseLookActive	tag in src/ui/game/CGCamera.cpp
+005fe6c0	annotated	CameraApplyShake	tag in src/ui/game/CGCamera.cpp
+005fe7b0	annotated	CGCamera::UpdateLiquid	tag in src/ui/game/CGCamera.cpp
+005fe800	annotated	CameraSplitFloor	tag in src/ui/game/CGCamera.cpp
+005fe880	annotated	CGCamera::SetupWorldProjection	tag in src/ui/game/CGCamera.cpp
 005fe890	annotated	CGCamera::SetBlendA	tag in src/ui/game/CGCamera.cpp
 005fe8d0	annotated	CGCamera::SetBlendB	tag in src/ui/game/CGCamera.cpp
 005fe910	annotated	CGCamera::SetUnk2FC	tag in src/ui/game/CGCamera.cpp
 005fe920	annotated	CGCamera::SetOverride2D0	tag in src/ui/game/CGCamera.cpp
 005fe940	annotated	CGCamera::ClearOverride2D0	tag in src/ui/game/CGCamera.cpp
+005fe950	annotated	CGCamera::StartDistanceBlend	tag in src/ui/game/CGCamera.cpp
+005fe9b0	annotated	CGCamera::StartTiltBlend	tag in src/ui/game/CGCamera.cpp
+005fea40	annotated	CGCamera::StartPitchBlend	tag in src/ui/game/CGCamera.cpp
+005fead0	annotated	CGCamera::StartPitchOffsetBlend	tag in src/ui/game/CGCamera.cpp
+005feb60	annotated	CGCamera::StartYawBlend	tag in src/ui/game/CGCamera.cpp
+005febf0	annotated	CGCamera::StartMountHeightBlend	tag in src/ui/game/CGCamera.cpp
+005fec50	annotated	CameraCollisionFlags	tag in src/ui/game/CGCamera.cpp
 005fecb0	annotated	CAaBox::Scale	tag in lib/typhoon/tempest/box/CAaBox.cpp
+005fecf0	annotated	CameraDistance	tag in src/ui/game/CGCamera.cpp
 005fed20	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+005fee10	annotated	CGCamera::IsFalling	tag in src/ui/game/CGCamera.cpp
+005feee0	annotated	CGCamera::StopPitchBlend	tag in src/ui/game/CGCamera.cpp
+005fef10	annotated	CGCamera::StopPitchOffsetBlend	tag in src/ui/game/CGCamera.cpp
+005fef40	annotated	CGCamera::StopYawBlend	tag in src/ui/game/CGCamera.cpp
+005ff000	annotated	CameraScriptStartMove	tag in src/ui/game/CGCamera.cpp
+005ff080	annotated	Script_MoveViewDownStart	tag in src/ui/game/CGCamera.cpp
+005ff0d0	annotated	Script_MoveViewDownStart	tag in src/ui/game/CGCamera.cpp
+005ff120	annotated	Script_MoveViewDownStart	tag in src/ui/game/CGCamera.cpp
+005ff170	annotated	Script_MoveViewDownStart	tag in src/ui/game/CGCamera.cpp
+005ff1c0	annotated	Script_MoveViewDownStart	tag in src/ui/game/CGCamera.cpp
+005ff210	annotated	Script_MoveViewDownStart	tag in src/ui/game/CGCamera.cpp
+005ff260	annotated	Script_SaveView	tag in src/ui/game/CGCamera.cpp
+005ff2c0	annotated	Script_FlipCameraYaw	tag in src/ui/game/CGCamera.cpp
+005ff320	annotated	CGCamera::SaveDistanceToCVars	tag in src/ui/game/CGCamera.cpp
+005ff3e0	annotated	CGCamera::LoadSavedDistance	tag in src/ui/game/CGCamera.cpp
+005ff440	annotated	CGCamera::SetPositionAndLookAt	tag in src/ui/game/CGCamera.cpp
+005ff530	annotated	CGCamera::ClampAngles	tag in src/ui/game/CGCamera.cpp
+005ff5a0	annotated	CGCamera::WrapTargetYaw	tag in src/ui/game/CGCamera.cpp
+005ff670	callorder	CameraSetFrustumCorners	same slot between linked calls in 006059e0=CGCamera::CollideFrustum
+005ff8e0	annotated	CGCamera::IsViewDefault	tag in src/ui/game/CGCamera.cpp
+005ff950	annotated	CGCamera::ZoomIn	tag in src/ui/game/CGCamera.cpp
+005ffa60	annotated	CGCamera::ZoomOut	tag in src/ui/game/CGCamera.cpp
+005ffb70	annotated	CGCamera::ZoomTo	tag in src/ui/game/CGCamera.cpp
+005ffc20	annotated	CGCamera::AdjustPitch	tag in src/ui/game/CGCamera.cpp
+005ffd20	annotated	CGCamera::CanBob	tag in src/ui/game/CGCamera.cpp
+005ffde0	annotated	CGCamera::CanPivot	tag in src/ui/game/CGCamera.cpp
+005ffe50	annotated	CGCamera::IsBobbing	tag in src/ui/game/CGCamera.cpp
+005ffeb0	annotated	CGCamera::CanPitchSmooth	tag in src/ui/game/CGCamera.cpp
+005fff40	annotated	CGCamera::IsSmoothing	tag in src/ui/game/CGCamera.cpp
+005fff80	annotated	CGCamera::SineEase	tag in src/ui/game/CGCamera.cpp
+005fffd0	annotated	CGCamera::CosineEase	tag in src/ui/game/CGCamera.cpp
+00600030	annotated	CGCamera::StopBobbing	tag in src/ui/game/CGCamera.cpp
+00600090	annotated	CGCamera::SetBobbing	tag in src/ui/game/CGCamera.cpp
+006000e0	annotated	CGCamera::AdvanceTimedValues	tag in src/ui/game/CGCamera.cpp
+006004b0	annotated	CameraShakeFalloff	tag in src/ui/game/CGCamera.cpp
+00600530	annotated	CGCamera::FaceYaw	tag in src/ui/game/CGCamera.cpp
+00600590	annotated	CGCamera::SetVehicleDistanceMode	tag in src/ui/game/CGCamera.cpp
+006006a0	annotated	CGCamera::UpdateBlendA	tag in src/ui/game/CGCamera.cpp
+00600730	annotated	CGCamera::ApplyBlendA	tag in src/ui/game/CGCamera.cpp
+006007b0	annotated	CGCamera::UpdateBlendB	tag in src/ui/game/CGCamera.cpp
+00600840	annotated	CGCamera::SetMinDistance	tag in src/ui/game/CGCamera.cpp
+00600890	annotated	CGCamera::SetMaxDistance	tag in src/ui/game/CGCamera.cpp
+006008e0	annotated	CGCamera::ClearMinDistance	tag in src/ui/game/CGCamera.cpp
+00600920	annotated	CGCamera::ClearMaxDistance	tag in src/ui/game/CGCamera.cpp
+00600970	annotated	CGCamera::UpdateVehicleRelative	tag in src/ui/game/CGCamera.cpp
+006009e0	annotated	CGCamera::GetVehicleFacing	tag in src/ui/game/CGCamera.cpp
+00600a10	annotated	CGCamera::CheckFlyingHeight	tag in src/ui/game/CGCamera.cpp
+00600b60	annotated	CGCamera::ParentToWorld	tag in src/ui/game/CGCamera.cpp
+00600c20	annotated	CGCamera::Forward	tag in src/ui/game/CGCamera.cpp
+00600cc0	annotated	CGCamera::Right	tag in src/ui/game/CGCamera.cpp
+00600d60	annotated	CGCamera::Up	tag in src/ui/game/CGCamera.cpp
+00600e00	annotated	CGCamera::SmoothDistance	tag in src/ui/game/CGCamera.cpp
+00600f00	annotated	CGCamera::StartFovBlend	tag in src/ui/game/CGCamera.cpp
+00600fa0	annotated	CAMERA_SMOOTH_ANGLE	tag in src/ui/game/CGCamera.cpp
+006010e0	annotated	CGCamera::StartHeightBlend	tag in src/ui/game/CGCamera.cpp
+00601190	callorder	CGCamera::SmoothPitch	same slot between linked calls in 00602760=CGCamera::CalcSmoothing
+006012d0	order	CGCamera::SmoothPitchOffset	definition order between CGCamera::SmoothPitch and CGCamera::SmoothMountHeight in src/ui/game/cgcamera.cpp
+00601410	order	CGCamera::SmoothYaw	definition order between CGCamera::SmoothPitch and CGCamera::SmoothMountHeight in src/ui/game/cgcamera.cpp
+00601550	callorder	CGCamera::SmoothMountHeight	same slot between linked calls in 00604640=CGCamera::CalcHeights
 00601650	annotated	CWFrustum::CWFrustum	tag in src/world/CWFrustum.cpp
-006018a0	order	Script_Stub_VehicleCameraZoomIn	binding table name Script_Stub_VehicleCameraZoomIn, in definition order in src/ui/game/miscscriptstubs.cpp
-006018b0	order	Script_Stub_VehicleCameraZoomOut	binding table name Script_Stub_VehicleCameraZoomOut, in definition order in src/ui/game/miscscriptstubs.cpp
+006017e0	annotated	Script_CameraZoomIn	tag in src/ui/game/CGCamera.cpp
+00601840	annotated	Script_CameraZoomOut	tag in src/ui/game/CGCamera.cpp
+006018a0	annotated	Script_VehicleCameraZoomIn	tag in src/ui/game/CGCamera.cpp
+006018b0	annotated	Script_VehicleCameraZoomOut	tag in src/ui/game/CGCamera.cpp
+006018c0	annotated	CGCamera::InitModelCamera	tag in src/ui/game/CGCamera.cpp
+006019b0	annotated	CGCamera::LockYaw	tag in src/ui/game/CGCamera.cpp
+00601a70	annotated	CGCamera::UnlockYaw	tag in src/ui/game/CGCamera.cpp
+00601b70	annotated	CGCamera::UpdateTerrainTilt	tag in src/ui/game/CGCamera.cpp
+00601d60	annotated	CGCamera::CalcPosition	tag in src/ui/game/CGCamera.cpp
+00601e90	annotated	CGCamera::UpdateModelCamera	tag in src/ui/game/CGCamera.cpp
+00601f70	annotated	CGCamera::EndFreeLook	tag in src/ui/game/CGCamera.cpp
+00601ff0	annotated	CGCamera::BeginFreeLook	tag in src/ui/game/CGCamera.cpp
+006020b0	annotated	CGCamera::MouseLook	tag in src/ui/game/CGCamera.cpp
+006023d0	annotated	CGCamera::SyncPlayerFacing	tag in src/ui/game/CGCamera.cpp
+00602600	annotated	CGCamera::CanTrackPitch	tag in src/ui/game/CGCamera.cpp
+00602680	annotated	CGCamera::CanYawSmooth	tag in src/ui/game/CGCamera.cpp
+00602760	annotated	CGCamera::CalcSmoothing	tag in src/ui/game/CGCamera.cpp
+00602dc0	annotated	CGCamera::SetTracking	tag in src/ui/game/CGCamera.cpp
+00602eb0	annotated	CGCamera::SetTaxiLook	tag in src/ui/game/CGCamera.cpp
+00602f30	annotated	CGCamera::CalcBobbing	tag in src/ui/game/CGCamera.cpp
+00603090	annotated	CGCamera::GetTargetPosition	tag in src/ui/game/CGCamera.cpp
+006030e0	annotated	CGCamera::SmoothFov	tag in src/ui/game/CGCamera.cpp
+00603230	annotated	CGCamera::SmoothHeight	tag in src/ui/game/CGCamera.cpp
+00603330	annotated	CGCamera::SetView	tag in src/ui/game/CGCamera.cpp
+006038a0	annotated	CGCamera::SetViewCommentator	tag in src/ui/game/CGCamera.cpp
+00603900	annotated	CGCamera::SetViewBarberShop	tag in src/ui/game/CGCamera.cpp
+006039b0	annotated	Script_SetView	tag in src/ui/game/CGCamera.cpp
+00603a10	annotated	CGCamera::CalcTerrainTiltFactor	tag in src/ui/game/CGCamera.cpp
+00603d30	annotated	CGCamera::UpdateBlends	tag in src/ui/game/CGCamera.cpp
+00604490	annotated	CGCamera::GetAngles	tag in src/ui/game/CGCamera.cpp
+00604640	annotated	CGCamera::CalcHeights	tag in src/ui/game/CGCamera.cpp
+006047e0	annotated	CGCamera::BeginFreeLookIfAllowed	tag in src/ui/game/CGCamera.cpp
+00604850	annotated	CGCamera::SetViewLocked	tag in src/ui/game/CGCamera.cpp
+006048a0	annotated	CGCamera::ResetView	tag in src/ui/game/CGCamera.cpp
+00604940	annotated	CGCamera::SetFovOffset	tag in src/ui/game/CGCamera.cpp
+006049c0	annotated	CGCamera::CalcWaterDepth	tag in src/ui/game/CGCamera.cpp
+00604a70	annotated	CGCamera::SetRelativeTo	tag in src/ui/game/CGCamera.cpp
+00604b90	annotated	CGCamera::UpdateVehicle	tag in src/ui/game/CGCamera.cpp
+00604c70	annotated	CGCamera::ClearVehicle	tag in src/ui/game/CGCamera.cpp
+00604c80	annotated	Script_ResetView	tag in src/ui/game/CGCamera.cpp
+00604d40	annotated	CGCamera::~CGCamera	tag in src/ui/game/CGCamera.cpp
+00604e00	annotated	CGCamera::CalcTargetHeights	tag in src/ui/game/CGCamera.cpp
+006053d0	annotated	CGCamera::SetFirstPersonLook	tag in src/ui/game/CGCamera.cpp
+00605700	annotated	CGCamera::UpdateLookAtCamera	tag in src/ui/game/CGCamera.cpp
+006057b0	annotated	CameraFrustumDepth	tag in src/ui/game/CGCamera.cpp
+006059e0	annotated	CGCamera::CollideFrustum	tag in src/ui/game/CGCamera.cpp
+00605d60	annotated	CGCamera::CollideDistance	tag in src/ui/game/CGCamera.cpp
+006061d0	annotated	CGCamera::CollideWater	tag in src/ui/game/CGCamera.cpp
+00606330	annotated	CGCamera::AddShake	tag in src/ui/game/CGCamera.cpp
+00606410	annotated	CGCamera::AddShakeByID	tag in src/ui/game/CGCamera.cpp
+00606480	annotated	CGCamera::ClearShakes	tag in src/ui/game/CGCamera.cpp
+006064f0	annotated	CGCamera::RemoveShake	tag in src/ui/game/CGCamera.cpp
+00606570	annotated	CGCamera::SetModel	tag in src/ui/game/CGCamera.cpp
+006066e0	annotated	CGCamera::SetTargetObject	tag in src/ui/game/CGCamera.cpp
+00606970	annotated	CGCamera::ApplyShakes	tag in src/ui/game/CGCamera.cpp
+00606b30	annotated	CGCamera::CGCamera	tag in src/ui/game/CGCamera.cpp
+00606f90	annotated	CGCamera::UpdateTargetCamera	tag in src/ui/game/CGCamera.cpp
+00607b00	annotated	CGCamera::UpdateCallback	tag in src/ui/game/CGCamera.cpp
+00607c00	callgraph	CSimpleCamera::GetScene	only unmatched callee of 005fe320=CGCamera::StartModelCamera
+00607c20	callgraph	Camera::Int	only unmatched callee of 00606b30=CGCamera::CGCamera
+00607cb0	callgraph	CSimpleCamera::SetGxProjectionAndView	only unmatched callee of 005fe880=CGCamera::SetupWorldProjection
 006081f0	table	Script_GetTime	binding "GetTime" in s_SystemFunctions ~ table 00ad2184
 00608230	table	Script_GetGameTime	binding "GetGameTime" in s_SystemFunctions ~ table 00ad2184
 00608270	annotated	Script_ConsoleExec	tag in src/ui/ScriptFunctionsSystem.cpp
@@ -2421,8 +2571,8 @@ addr	how	frozen	evidence
 00683670	annotated	CGxDevice::LogOpen	tag in src/gx/CGxDevice.cpp
 006836b0	annotated	CGxDevice::LogClose	tag in src/gx/CGxDevice.cpp
 006836d0	annotated	CGxDevice::ILimitFrameRate	tag in src/gx/CGxDevice.cpp
-006839f0	sticky	WowClientDB<LiquidTypeRec>::GetRecord	held from the previous run, where it was sticky
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
+00683a80	callgraph	WowClientDB<LiquidTypeRec>::GetRecord	only unmatched callee of 007a6630=MapQueryBoxChunk, 007c94b0=CMapObjGroup::QueryLiquidBox
 00683ae0	annotated	CGxTexFlags::operator!=	tag in src/gx/texture/CGxTex.cpp
 00683b90	annotated	CGxMatrixStack::CGxMatrixStack	tag in src/gx/CGxMatrixStack.cpp
 00683ce0	annotated	CGxDevice::IClipToWindow	tag in src/gx/CGxDevice.cpp
@@ -2714,6 +2864,9 @@ addr	how	frozen	evidence
 006b3700	annotated	FriendList::HasComplaint	tag in src/ui/game/FriendList.cpp
 006b3750	annotated	FriendList::AddComplaint	tag in src/ui/game/FriendList.cpp
 006b3920	annotated	FriendList::IsFriend	tag in src/ui/game/FriendList.cpp
+006b44b0	order	Script_Stub_GetSelectedFriend	binding table name Script_Stub_GetSelectedFriend, in definition order in src/ui/game/miscscriptstubs.cpp
+006b4a00	order	Script_Stub_GetSelectedIgnore	binding table name Script_Stub_GetSelectedIgnore, in definition order in src/ui/game/miscscriptstubs.cpp
+006b4a40	order	Script_Stub_GetSelectedMute	binding table name Script_Stub_GetSelectedMute, in definition order in src/ui/game/miscscriptstubs.cpp
 006b90e0	annotated	AccountDataSetClearConfigData	tag in src/client/AccountData.cpp
 006bd550	annotated	GxuFontGetStringPosition	tag in src/gx/font/GxuFont.cpp
 006bd5a0	annotated	GxuDetermineQuotedCode	tag in src/gx/font/GxuFont.cpp
@@ -2722,6 +2875,7 @@ addr	how	frozen	evidence
 006bf4c0	annotated	GxuXformCreateOrtho	tag in src/gx/Transform.cpp
 006bf6d0	annotated	FrustumCorners	tag in src/world/CWorldScene.cpp
 006bfe60	annotated	MatrixLookAt	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
+006c0050	annotated	MatrixLookAtLH	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 006c02f0	annotated	CanWrapBetween	tag in src/gx/font/Wrap.cpp
 006c0ac0	callgraph	PixelToScreenHeight	only unmatched callee of 006c2280=Sub6C2280
 006c2270	annotated	CGxFont::GetPixelSize	tag in src/gx/font/CGxFont.cpp
@@ -2846,6 +3000,8 @@ addr	how	frozen	evidence
 00715880	annotated	CGUnit_C::IsStandStateUprightOrSeated	tag in src/object/client/CGUnit_C.cpp
 00715970	callgraph	CGUnit_C::GetDisplayRaceNameFromRecord	only unmatched callee of 004e0670=Script_GetNameForRace, 004e1880=Script_GetAvailableRaces
 007159e0	callgraph	CGUnit_C::GetDisplayClassNameFromRecord	only unmatched callee of 004e0830=Script_GetAvailableClasses, 004e19a0=Script_GetClassesForRace
+00715c60	annotated	ClickToMoveGetAction	tag in src/ui/game/CGCamera.cpp
+00715cf0	annotated	ClickToMoveGetFacing	tag in src/ui/game/CGCamera.cpp
 00715d00	annotated	AdjustSheathState	tag in src/object/client/CGUnit_C.cpp
 00715df0	annotated	CGUnit_C::GetCreatureTypeFlag26	tag in src/object/client/CGUnit_C.cpp
 00715e50	annotated	CGUnit_C::GetCreatureSkinningType	tag in src/object/client/CGUnit_C.cpp
@@ -2878,6 +3034,7 @@ addr	how	frozen	evidence
 0071b7f0	annotated	PlayerIndoorsState	tag in src/ui/game/ScriptEvents.cpp
 0071b810	annotated	CGUnit_C::CanFly	tag in src/object/client/CGUnit_C.cpp
 0071c050	annotated	GetNativeRaceModelScale	tag in src/object/client/CGUnit_C.cpp
+0071c1e0	callorder	UnitConvertFacingToRaw	same slot between linked calls in 006023d0=CGCamera::SyncPlayerFacing
 0071c500	annotated	CGUnit_C::IsOtherPlayerWithFlaggedModel	tag in src/object/client/CGUnit_C.cpp
 0071c570	annotated	CGUnit_C::IsSpellClickable	tag in src/object/client/CGUnit_C.cpp
 0071c660	annotated	CMovementShared::IsUnsupportedSwimmingOrSlowFalling	tag in src/object/movement/CMovementShared.cpp
@@ -2924,6 +3081,7 @@ addr	how	frozen	evidence
 0071f560	annotated	CGUnit_C::IsDeadOrFeigning	tag in src/object/client/CGUnit_C.cpp
 0071f770	annotated	CGUnit_C::GetReaction	tag in src/object/client/CGUnit_C.cpp
 00721ca0	override	CGUnit_C::IsInNonStanceForm	
+00721f90	annotated	UnitIsClickMoving	tag in src/ui/game/CGCamera.cpp
 007222a0	annotated	CGUnit_C::CanShowLootAnimation	tag in src/object/client/CGUnit_C.cpp
 007224d0	annotated	CGUnit_C::GetSpellVisualAnimation	tag in src/object/client/CGUnit_C.cpp
 007225e0	override	CGUnit_C::GetGenderedText	
@@ -2939,6 +3097,7 @@ addr	how	frozen	evidence
 00735820	override	CGUnit_C::SetBoneSequence	
 00735a60	override	CGUnit_C::UnsetBoneSequence	
 00735cc0	override	CGUnit_C::SetBoneSequenceSpeed	
+007370d0	annotated	CGUnit_C::UpdateWorldObject	tag in src/object/client/CGUnit_C.cpp
 00737ef0	annotated	CGUnit_C::ApplySequence	tag in src/object/client/CGUnit_C.cpp
 007385c0	override	CGUnit_C::SetAnimation	
 0073ab90	callgraph	CGUnit_C::PlayEmote	only unmatched callee of 006cfe70=ReceiveEmote
@@ -2946,6 +3105,7 @@ addr	how	frozen	evidence
 0073bff0	annotated	CGUnit_C::OnAnimationFinished	tag in src/object/client/CGUnit_C.cpp
 0073c140	annotated	CGUnit_C::OnSequenceDone	tag in src/object/client/CGUnit_C.cpp
 00743320	annotated	CGUnit_C::SetFlag21	tag in src/object/client/CGUnit_C.cpp
+007438e0	annotated	CGObject_C::UpdateWorldObject	tag in src/object/client/CGObject_C.cpp
 00747b20	annotated	CVehiclePassenger_C::GetSeatAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
 00747bd0	annotated	CVehiclePassenger_C::GetSeatUpperAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
 00748560	annotated	CVehiclePassenger_C::GetRideAnimation	tag in src/object/client/CVehiclePassenger_C.cpp
@@ -2974,6 +3134,7 @@ addr	how	frozen	evidence
 00756f40	annotated	CVehicle_C::OwnerIsControllingAnimation	tag in src/object/client/CVehicle_C.cpp
 007571c0	annotated	CVehicle_C::ControlsPassengerAnimation	tag in src/object/client/CVehicle_C.cpp
 00757200	annotated	VehicleSendEjectPassenger	tag in src/object/client/CVehicle_C.cpp
+00759580	callgraph	CGObject_C::GetPosition	only unmatched callee of 00603090=CGCamera::GetTargetPosition
 00759c60	annotated	CVehicleCamera_C::ConvertSmoothFacingFromRawToWorld	tag in src/object/client/CVehicleCamera_C.cpp
 0075b5b0	annotated	CAaBox::IsPointInside	tag in lib/typhoon/tempest/box/CAaBox.cpp
 0075b610	annotated	CVehicleCamera_C::PointSet::PointSet	tag in src/object/client/CVehicleCamera_C.cpp
@@ -3010,7 +3171,7 @@ addr	how	frozen	evidence
 007681f0	annotated	CVarSetCommandHandler	tag in src/console/CVarHandlers.cpp
 00768340	string	CVar::Initialize	unique "%s%s\"
 00768900	annotated	ConsoleCommandParse	tag in src/console/Command.cpp
-007689e0	callgraph	ConsoleCommandUnregister	only unmatched callee of 007673f0=ConsoleDestroyClientCVar
+007689e0	callgraph	ConsoleCommandUnregister	only unmatched callee of 00604d40=CGCamera::~CGCamera, 007673f0=ConsoleDestroyClientCVar
 00769100	callgraph	ConsoleCommandRegister	only unmatched callee of 007691c0=ConsoleCommandInitialize
 007691c0	string	ConsoleCommandInitialize	unique "Provides help information about a command."
 00769220	callgraph	ConsoleDeviceExists	only unmatched callee of 007653b0=ConsolePrintf
@@ -3137,14 +3298,22 @@ addr	how	frozen	evidence
 0077b3e0	annotated	Sub	tag in lib/squall/storm/big/Ops.cpp
 0077f1e0	annotated	CWorld::GetObjectFloor	tag in src/world/CWorld.cpp
 0077f2c0	annotated	CWorld::SetObjectHandler	tag in src/world/CWorld.cpp
+0077f310	callgraph	WorldQuerySegment	only unmatched callee of 006061d0=CGCamera::CollideWater
 0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
 0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
 0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
+0077f500	annotated	CWorld::ProjectionCallback	tag in src/world/CWorld.cpp
+0077f600	annotated	ConsoleMaxLod	tag in src/world/CWorld.cpp
+0077f690	annotated	ConsoleWaterRipples	tag in src/world/CWorld.cpp
+0077f700	annotated	ConsoleDetailDoodadAlpha	tag in src/world/CWorld.cpp
+0077f750	annotated	ConsoleCharacterAmbient	tag in src/world/CWorld.cpp
+00780240	annotated	CWorld::UpdateObject	tag in src/world/CWorld.cpp
 00780860	annotated	CWorld::UpdateWindow	tag in src/world/CWorld.cpp
 00780f50	string	CWorld::Initialize	unique "MapObj.wfx"
 007815c0	annotated	CWorld::UpdateWindowAndMap	tag in src/world/CWorld.cpp
 00781610	annotated	CWorld::SetupFogRenderStates	tag in src/world/CWorld.cpp
 00781a10	annotated	CWorld::AddObject	tag in src/world/CWorld.cpp
+00782560	annotated	CWorld::GetEntityAreaID	tag in src/world/CWorld.cpp
 007826e0	annotated	CWorld::RemoveObject	tag in src/world/CWorld.cpp
 007831a0	override	CWorld::Update	
 00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
@@ -3178,6 +3347,7 @@ addr	how	frozen	evidence
 0078e070	annotated	CWorldParam::HwPCFCallback	tag in src/world/CWorldParam.cpp
 0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
 0078e400	string	CWorldParam::Initialize	unique "0.125"
+0078f2f0	annotated	ViewRectUnion	tag in src/world/CWorldScene.cpp
 0078f370	annotated	CAaBox::Intersects	tag in lib/typhoon/tempest/box/CAaBox.cpp
 0078f3e0	annotated	DistancePointBox	tag in lib/typhoon/tempest/Intersect.cpp
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
@@ -3190,6 +3360,8 @@ addr	how	frozen	evidence
 0078fc40	annotated	CWorldScene::SphereOccluded	tag in src/world/CWorldScene.cpp
 0078fdc0	annotated	CWorldScene::BoxOccluded	tag in src/world/CWorldScene.cpp
 00790520	annotated	CWorldScene::ChunkVertexPoint	tag in src/world/CWorldScene.cpp
+00790570	annotated	CWorldScene::ViewWindowInit	tag in src/world/CWorldScene.cpp
+007905b0	annotated	CWorldScene::ViewWindowMerge	tag in src/world/CWorldScene.cpp
 00790620	annotated	CWorldScene::ViewPlane2dDistance	tag in src/world/CWorldScene.cpp
 00790650	annotated	CWorldScene::BoxNearPoint	tag in src/world/CWorldScene.cpp
 007906c0	annotated	CWorldScene::BuildRowPlanes	tag in src/world/CWorldScene.cpp
@@ -3217,8 +3389,12 @@ addr	how	frozen	evidence
 00793d20	annotated	Liquid::BuildPendingMapObjSurfaces	tag in src/world/map/LiquidSurface.cpp
 007946d0	annotated	CWorldScene::SubmitOccluderBox	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
+00795d00	annotated	CWorldScene::AddPortalView	tag in src/world/CWorldScene.cpp
+00795d20	annotated	CWorldScene::AddExteriorView	tag in src/world/CWorldScene.cpp
 00795d40	annotated	CWorldScene::UpdateCameraDef	tag in src/world/CWorldScene.cpp
 007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
+007968d0	annotated	CWorldScene::ComplementPortalViews	tag in src/world/CWorldScene.cpp
+00796c10	annotated	CWorldScene::FillViewWindows	tag in src/world/CWorldScene.cpp
 007983b0	override	CWFrustum::Alloc	
 007984a0	annotated	CWorldScene::RenderDetailDoodads	tag in src/world/CWorldScene.cpp
 007987a0	annotated	CWorldScene::TraverseRowStaticEntities	tag in src/world/CWorldScene.cpp
@@ -3241,20 +3417,28 @@ addr	how	frozen	evidence
 0079e5c0	annotated	CMap::GetTerrainPixelShader	tag in src/world/map/CMap.cpp
 0079e6a0	annotated	CMap::UnlinkMapObjDef	tag in src/world/map/CMap.cpp
 0079e780	annotated	CMap::ReleaseAllBufEntries	tag in src/world/map/CMap.cpp
-0079e7c0	annotated	CMap::CreateTerrainShadowShaders	tag in src/world/map/CMap.cpp
+0079e7c0	annotated	CMap::MapMemInitialize	tag in src/world/map/CMap.cpp
+007a0490	annotated	CMap::GetChunkAreaID	tag in src/world/map/CMap.cpp
 007a0530	annotated	CMap::GetTerrainType	tag in src/world/map/CMap.cpp
+007a06a0	annotated	CMap::IsTerrainShadowed	tag in src/world/map/CMap.cpp
 007a0820	annotated	CMap::GetTerrainLiquid	tag in src/world/map/CMap.cpp
+007a09d0	annotated	CMap::GetMapObjLiquid	tag in src/world/map/CMap.cpp
+007a0b00	annotated	CMap::GetLiquidAt	tag in src/world/map/CMap.cpp
 007a0d60	override	CMapEntity::FloorLight	
 007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
+007a13e0	annotated	CMap::GetEntityMapObjGroup	tag in src/world/map/CMap.cpp
+007a1a30	annotated	CMap::UpdateEntityGroupLiquid	tag in src/world/map/CMap.cpp
+007a1bc0	annotated	CMap::UpdateEntity	tag in src/world/map/CMap.cpp
 007a20e0	annotated	CMap::AddCellSpanY	tag in src/world/map/CMap.cpp
 007a2180	annotated	CMap::AddCellSpanX	tag in src/world/map/CMap.cpp
-007a2c60	string	CMap::MapMemInitialize	score 0.50 shared Terrain
+007a2aa0	annotated	MapQueryBoxModels	tag in src/world/map/CMapObjGroup.cpp
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007a61d0	annotated	ClassifyCorner	tag in src/world/map/CMapObjGroup.cpp
 007a6260	annotated	TerrainCollectHits	tag in src/world/map/CMapObjGroup.cpp
 007a6630	annotated	MapQueryBoxChunk	tag in src/world/map/CMapObjGroup.cpp
 007a6830	annotated	MapQueryBoxTerrain	tag in src/world/map/CMapObjGroup.cpp
+007a6940	annotated	MapQueryBoxMapObjs	tag in src/world/map/CMapObjGroup.cpp
 007a6af0	annotated	MapQueryBox	tag in src/world/map/CMapObjGroup.cpp
 007a6b40	annotated	CMapObj::SetVisibleCallback	tag in src/world/map/CMapObjDraw.cpp
 007a6b60	annotated	CMapObj::ReportVisible	tag in src/world/map/CMapObjDraw.cpp
@@ -3285,6 +3469,7 @@ addr	how	frozen	evidence
 007a9090	annotated	CMapObj::MeasurePortal	tag in src/world/map/CMapObjDraw.cpp
 007a9160	annotated	CMapObj::SetupLocalLights	tag in src/world/map/CMapObjDraw.cpp
 007a9380	annotated	CMapObjGroup::DrawBatchesOutdoor	tag in src/world/map/CMapObjDraw.cpp
+007ab760	annotated	MapObjDrawShadowCasters	tag in src/world/map/CMapObjDraw.cpp
 007abf50	annotated	CMapObj::Render	tag in src/world/map/CMapObjDraw.cpp
 007ac060	annotated	CMapObj::WalkPortals	tag in src/world/map/CMapObjDraw.cpp
 007ac6a0	annotated	CMapObjGroup::DrawBatches	tag in src/world/map/CMapObjDraw.cpp
@@ -3296,13 +3481,17 @@ addr	how	frozen	evidence
 007ae140	annotated	CMapObj::QuerySkipFlags	tag in src/world/map/CMapObj.cpp
 007ae1a0	annotated	CMapObj::ReadGroup	tag in src/world/map/CMapObj.cpp
 007ae1c0	annotated	CMapObj::WaitForRoot	tag in src/world/map/CMapObj.cpp
+007ae4c0	annotated	CMapObj::IsGroupLoaded	tag in src/world/map/CMapObj.cpp
 007ae520	annotated	CMapObj::BoundingSphere	tag in src/world/map/CMapObj.cpp
 007ae5e0	annotated	CMapObj::Bounds	tag in src/world/map/CMapObj.cpp
 007ae670	annotated	CMapObj::GroupBoundingSphere	tag in src/world/map/CMapObj.cpp
 007ae720	annotated	CMapObj::GroupBounds	tag in src/world/map/CMapObj.cpp
 007ae7b0	annotated	CMapObj::GroupFlags	tag in src/world/map/CMapObj.cpp
+007ae7e0	annotated	CMapObj::BoxVsBounds	tag in src/world/map/CMapObj.cpp
+007ae810	annotated	CMapObj::PointInBounds	tag in src/world/map/CMapObj.cpp
 007ae840	annotated	CMapObj::SegmentVsBounds	tag in src/world/map/CMapObj.cpp
 007ae880	annotated	CMapObj::SegmentVsGroupBounds	tag in src/world/map/CMapObj.cpp
+007ae8d0	annotated	CMapObj::GroupBoxIntersects	tag in src/world/map/CMapObj.cpp
 007ae920	annotated	CMapObj::PointInGroupBox	tag in src/world/map/CMapObj.cpp
 007ae970	annotated	CMapObj::PointInGroupBounds	tag in src/world/map/CMapObj.cpp
 007aea80	annotated	CMapObj::GetGroup	tag in src/world/map/CMapObj.cpp
@@ -3310,6 +3499,8 @@ addr	how	frozen	evidence
 007aeae0	annotated	CMapObj::GroupName	tag in src/world/map/CMapObj.cpp
 007aeb10	annotated	CMapObj::GroupInfo	tag in src/world/map/CMapObj.cpp
 007aeb40	override	CMapObj::GroupFaceColor	
+007aeb90	annotated	CMapObj::GetLiquidAt	tag in src/world/map/CMapObj.cpp
+007aef00	annotated	CMapObj::QueryBoxGroups	tag in src/world/map/CMapObj.cpp
 007af280	annotated	CMapObj::QuerySegmentPortals	tag in src/world/map/CMapObj.cpp
 007af520	override	CMapObj::SegmentVsPortals	
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
@@ -3319,6 +3510,7 @@ addr	how	frozen	evidence
 007b11b0	annotated	DetailDoodad::BuildFadeTexels	tag in src/world/map/DetailDoodad.cpp
 007b1270	annotated	DetailDoodad::FadeTextureCallback	tag in src/world/map/DetailDoodad.cpp
 007b12b0	annotated	DetailDoodad::FillIndexBuffer	tag in src/world/map/DetailDoodad.cpp
+007b15d0	callgraph	GxXformSet	only unmatched callee of 007b2d30=DetailDoodad::SetupState
 007b1b10	annotated	DetailDoodad::OnModelLoaded	tag in src/world/map/DetailDoodad.cpp
 007b1b50	annotated	DetailDoodad::FillVertexBuffer	tag in src/world/map/DetailDoodad.cpp
 007b2760	annotated	DetailDoodad::Initialize	tag in src/world/map/DetailDoodad.cpp
@@ -3338,9 +3530,12 @@ addr	how	frozen	evidence
 007b39b0	annotated	CMapObjDef::GetPolyGroundType	tag in src/world/map/CMapObj.cpp
 007b3a10	annotated	CWorldScene::VisitMapObjDefGroup	tag in src/world/CWorldScene.cpp
 007b3b20	annotated	CMapObj::EnterPortalWalk	tag in src/world/map/CMapObjDraw.cpp
+007b4350	callgraph	CMapObjDef::CMapObjDef	only unmatched callee of 007c03e0=CMap::AllocMapObjDef
 007b47f0	annotated	CompareAreaDistance	tag in src/world/map/CMap.cpp
 007b4830	annotated	CMap::AreaDistanceSq	tag in src/world/map/CMap.cpp
 007b48c0	annotated	BoxDistanceSq	tag in src/world/map/CMapLoad.cpp
+007b4960	annotated	CMap::GetTargetArea	tag in src/world/map/CMap.cpp
+007b49c0	annotated	CMap::GetTargetChunk	tag in src/world/map/CMap.cpp
 007b4df0	annotated	CMap::UpdateAreaChunks	tag in src/world/map/CMap.cpp
 007b53b0	annotated	CMap::ClearFrameChunkList	tag in src/world/map/CMap.cpp
 007b5420	annotated	CMap::UpdateFrameLiquids	tag in src/world/map/CMap.cpp
@@ -3403,11 +3598,27 @@ addr	how	frozen	evidence
 007ba3d0	annotated	CMap::FreeBufBlocks	tag in src/world/map/CMap.cpp
 007ba5a0	annotated	CMap::DestroyRenderChunkPools	tag in src/world/map/CMap.cpp
 007ba600	annotated	CMap::CreateRenderChunkPools	tag in src/world/map/CMap.cpp
-007ba960	annotated	CWFrustum::NegatePlanes	tag in src/world/CWFrustum.cpp
+007ba840	annotated	MapShadowResetCasters	tag in src/world/MapShadow.cpp
+007ba8f0	annotated	MapShadowRadiusLimits	tag in src/world/MapShadow.cpp
+007ba960	annotated	CWFrustum::GetBounds	tag in src/world/CWFrustum.cpp
+007baaa0	callgraph	CWFrustum::MirrorCorners	only unmatched callee of 007bafd0=MapShadowSetupView
+007baba0	annotated	MapShadowBillboardBones	tag in src/world/MapShadow.cpp
+007babc0	annotated	MapShadowBeyondDetail	tag in src/world/MapShadow.cpp
+007bac10	annotated	MapShadowBuildMatrix	tag in src/world/MapShadow.cpp
+007bafd0	annotated	MapShadowSetupView	tag in src/world/MapShadow.cpp
 007bb3e0	annotated	MapShadowFocus	tag in src/world/MapShadow.cpp
+007bb460	annotated	MapShadowCellRange	tag in src/world/MapShadow.cpp
 007bb570	annotated	MapShadowRender	tag in src/world/MapShadow.cpp
 007bb670	annotated	MapShadowSetupPlane	tag in src/world/MapShadow.cpp
 007bb830	annotated	MapShadowClearTarget	tag in src/world/MapShadow.cpp
+007bb9d0	annotated	MapShadowCollectEntities	tag in src/world/MapShadow.cpp
+007bbc50	annotated	MapShadowRenderView	tag in src/world/MapShadow.cpp
+007bc490	annotated	MapShadowCollectMapObjsWhole	tag in src/world/MapShadow.cpp
+007bc890	annotated	MapShadowCollectMapObjs	tag in src/world/MapShadow.cpp
+007bcc00	annotated	MapShadowCollectChunksWhole	tag in src/world/MapShadow.cpp
+007bcf20	annotated	MapShadowCollectChunks	tag in src/world/MapShadow.cpp
+007bd200	annotated	MapShadowCollect	tag in src/world/MapShadow.cpp
+007bd3a0	annotated	MapShadowInitialize	tag in src/world/MapShadow.cpp
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
@@ -3464,7 +3675,12 @@ addr	how	frozen	evidence
 007c2700	override	QueryMapObjDefSegment	
 007c28f0	override	QueryEntityMapObj	
 007c2a70	override	ResolveEntityGround	
+007c2bf0	annotated	LinkEntityToMapObjDefs	tag in src/world/map/CMapStaticEntity.cpp
+007c2d30	annotated	LinkEntityToMapObjDef	tag in src/world/map/CMapStaticEntity.cpp
+007c2e70	annotated	ResolveObjectGround	tag in src/world/map/CMapStaticEntity.cpp
+007c2f80	annotated	RelinkEntity	tag in src/world/map/CMapStaticEntity.cpp
 007c2ff0	annotated	CMap::AsyncLoadCleanup	tag in src/world/map/CMap.cpp
+007c3020	annotated	CMap::ReleaseDoodadDef	tag in src/world/map/CMap.cpp
 007c30b0	annotated	CMapArea::GrowTextures	tag in src/world/map/CMapArea.cpp
 007c3370	annotated	CMapChunk::Destroy	tag in src/world/map/CMapChunk.cpp
 007c35d0	annotated	CMap::DestroyChunk	tag in src/world/map/CMap.cpp
@@ -3499,6 +3715,7 @@ addr	how	frozen	evidence
 007c6c30	override	CMapObjGroupSegmentQuery::TestFace	
 007c6d50	override	CMapObjGroupSegmentQuery::CachedLeaf	
 007c71e0	annotated	TriangleOutsideHull	tag in src/world/map/CMapObjGroup.cpp
+007c7230	callgraph	CMapObjGroupAaBoxQuery::CachedLeaf	only unmatched callee of 007ca8c0=CMapObjGroup::AaBoxQueryLeaf
 007c7610	annotated	CMapObjGroup::QueryEnd	tag in src/world/map/CMapObjGroup.cpp
 007c7660	annotated	CMapObjGroupBoxQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c7710	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
@@ -3514,20 +3731,25 @@ addr	how	frozen	evidence
 007c8bf0	annotated	CMapObjGroup::LiquidTileCount	tag in src/world/map/CMapObjGroup.cpp
 007c8c60	annotated	CMapObjGroup::BuildLiquidVertices	tag in src/world/map/CMapObjGroupLoad.cpp
 007c8d80	annotated	CMapObjGroup::FirstLiquidTileType	tag in src/world/map/CMapObjGroupLoad.cpp
+007c94b0	annotated	CMapObjGroup::QueryLiquidBox	tag in src/world/map/CMapObjGroup.cpp
 007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9ab0	annotated	CMapObjGroup::DualQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007c9b10	annotated	CMapObjGroupAaBoxQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c9cb0	annotated	CMapObjGroup::BindVertexStream	tag in src/world/map/CMapObjGroupBuffers.cpp
 007c9d80	annotated	CMapObjGroup::BindIndexStream	tag in src/world/map/CMapObjGroupBuffers.cpp
 007ca180	annotated	CMapObjGroup::SegmentQueryNode	tag in src/world/map/CMapObjGroup.cpp
 007ca440	annotated	CMapObjGroup::BoxQueryNode	tag in src/world/map/CMapObjGroup.cpp
 007ca600	annotated	CMapObjGroup::DualQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007ca8c0	annotated	CMapObjGroup::AaBoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
+007ca920	annotated	CMapObjGroup::AaBoxQueryNode	tag in src/world/map/CMapObjGroup.cpp
 007cb0c0	annotated	CMapObjGroup::QuerySegment	tag in src/world/map/CMapObjGroup.cpp
 007cb180	annotated	CMapObjGroup::QueryBox	tag in src/world/map/CMapObjGroup.cpp
 007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
 007cb2f0	annotated	CMapObjGroup::QuerySegmentFace	tag in src/world/map/CMapObjGroup.cpp
 007cb3b0	annotated	VBBList::NewBlock	tag in src/world/map/VBBList.cpp
 007cb700	callgraph	CMapObjGroup::CMapObjGroup	only unmatched callee of 007bffe0=CMap::AllocMapObjGroup
+007cb7b0	annotated	CMapObjGroup::QueryAaBox	tag in src/world/map/CMapObjGroup.cpp
 007cb990	annotated	VBBList::InitializeLists	tag in src/world/map/VBBList.cpp
 007cb9f0	override	VBBList::Free	
 007cbbc0	annotated	VBBList::Alloc	tag in src/world/map/VBBList.cpp
@@ -3536,14 +3758,19 @@ addr	how	frozen	evidence
 007cbdc0	annotated	CMapObjGroup::AcquireLiquidBuffers	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007cc020	callgraph	CMapLowDetail::Free	only unmatched callee of 007cc310=CMapLowDetail::Load
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
 007ccd20	callgraph	MapOcclusion::BuildBoxes	only unmatched callee of 007cd850=MapOcclusion::BuildVolumes
+007ccdf0	annotated	MapOcclusion::GetVolumeCount	tag in src/world/map/MapOcclusion.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
+007ccfa0	annotated	MapOcclusion::PolygonOccluded	tag in src/world/map/MapOcclusion.cpp
 007cd4e0	annotated	MapOcclusion::AddVolume	tag in src/world/map/MapOcclusion.cpp
 007cd850	annotated	MapOcclusion::BuildVolumes	tag in src/world/map/MapOcclusion.cpp
+007cd910	annotated	MapOcclusion::ClearVolumes	tag in src/world/map/MapOcclusion.cpp
 007cde10	annotated	CChunkLiquid::ReleaseSurface	tag in src/world/map/CChunkLiquid.cpp
 007cde30	annotated	CChunkLiquid::UpdateAnim	tag in src/world/map/CChunkLiquid.cpp
 007cde80	annotated	CChunkLiquid::GetBounds	tag in src/world/map/CChunkLiquid.cpp
+007cdf50	annotated	Liquid::ChunkBufIsValid	tag in src/world/map/LiquidSurface.cpp
 007cdf80	annotated	CChunkLiquid::BuildVertices	tag in src/world/map/CChunkLiquid.cpp
 007ce0b0	annotated	CChunkLiquid::GetHeightAt	tag in src/world/map/CChunkLiquid.cpp
 007ce180	annotated	CChunkLiquid::ReadTileFlags	tag in src/world/map/CChunkLiquid.cpp
@@ -3553,9 +3780,16 @@ addr	how	frozen	evidence
 007ce520	override	CChunkLiquid::GetBoundingSphere	
 007ce5d0	annotated	CChunkLiquid::RecordHits	tag in src/world/map/CChunkLiquid.cpp
 007ce960	annotated	CChunkLiquid::QueryBox	tag in src/world/map/CChunkLiquid.cpp
+007ced30	annotated	Liquid::ChunkBufPairDestroy	tag in src/world/map/LiquidSurface.cpp
 007cee10	callgraph	CChunkLiquid::CChunkLiquid	only unmatched callee of 007c0980=CMap::AllocChunkLiquid
+007cefd0	annotated	Liquid::ChunkBufCreate	tag in src/world/map/LiquidSurface.cpp
+007cf0c0	annotated	Liquid::ChunkBufBucketDestroy	tag in src/world/map/LiquidSurface.cpp
+007cf140	annotated	Liquid::ChunkBufAcquire	tag in src/world/map/LiquidSurface.cpp
 007cf200	annotated	Liquid::CreateSurface	tag in src/world/map/LiquidSurface.cpp
+007cf790	annotated	Liquid::ChunkBufRelease	tag in src/world/map/LiquidSurface.cpp
+007cf840	annotated	Liquid::ChunkBufAge	tag in src/world/map/LiquidSurface.cpp
 007cf9a0	annotated	CChunkLiquid::UpdateForFrame	tag in src/world/map/CChunkLiquid.cpp
+007cf9e0	annotated	Liquid::ChunkBufDestroyAll	tag in src/world/map/LiquidSurface.cpp
 007cfb10	annotated	CMapChunk::FeedHorizon	tag in src/world/map/CMapChunk.cpp
 007cfbe0	annotated	CWorldScene::SetupTerrainConstants	tag in src/world/CWorldScene.cpp
 007d0050	annotated	CMapRenderChunk::SetupVertexShader	tag in src/world/map/CMapRenderChunk.cpp
@@ -3578,6 +3812,7 @@ addr	how	frozen	evidence
 007d43b0	annotated	Liquid::CMeshGeomFactory::Release	tag in src/world/map/LiquidSurface.cpp
 007d43e0	annotated	Liquid::CMeshGeomFactory::SetDiffColor	tag in src/world/map/LiquidSurface.cpp
 007d43f0	override	Liquid::CMeshGeomFactory::Build	
+007d4920	annotated	Liquid::AllocMeshGeomFactory	tag in src/world/map/LiquidSurface.cpp
 007d49b0	annotated	Liquid::CMeshGeomFactory::Create	tag in src/world/map/LiquidSurface.cpp
 007d49d0	annotated	Liquid::CreateGeomFactory	tag in src/world/map/LiquidSurface.cpp
 007d4ab0	annotated	Liquid::CChunkGeomFactory::Build	tag in src/world/map/LiquidSurface.cpp
@@ -3632,8 +3867,6 @@ addr	how	frozen	evidence
 007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp
-007dac40	order	Script_Stub_VoiceEnumerateCaptureDevices	binding table name Script_Stub_VoiceEnumerateCaptureDevices, in definition order in src/ui/game/miscscriptstubs.cpp
-007dafe0	order	Script_Stub_VoiceGetCurrentCaptureDevice	binding table name Script_Stub_VoiceGetCurrentCaptureDevice, in definition order in src/ui/game/miscscriptstubs.cpp
 007dc010	override	StringToMouseButton	
 007dc770	cvar	EnableMicrophoneHandler	callback of CVar::Register("EnableMicrophone") on both sides
 007dc910	annotated	Script_VoiceIsDisabledByClient	tag in src/ui/game/VoiceScript.cpp
@@ -3641,6 +3874,7 @@ addr	how	frozen	evidence
 007dcf20	cvar	VoiceChatModeHandler	callback of CVar::Register("VoiceChatMode") on both sides
 007dcfe0	cvar	VoiceActivationSensitivityHandler	callback of CVar::Register("VoiceActivationSensitivity") on both sides
 007dd060	cvar	SelfMuteHandler	callback of CVar::Register("VoiceChatSelfMute") on both sides
+007deef0	order	Script_Stub_GetVoiceSessionMemberInfoBySessionID	binding table name Script_Stub_GetVoiceSessionMemberInfoBySessionID, in definition order in src/ui/game/miscscriptstubs.cpp
 007e0f10	annotated	IsDigitChar	tag in src/glue/Character.cpp
 007e0f30	annotated	IsLatinLetter	tag in src/glue/Character.cpp
 007e10f0	annotated	IsLowerCaseChar	tag in src/glue/Character.cpp
@@ -3669,6 +3903,7 @@ addr	how	frozen	evidence
 007e3820	annotated	ShadowModCallback	tag in src/world/Shadow.cpp
 007e3980	annotated	ShadowSetLOD	tag in src/world/Shadow.cpp
 007e3a20	annotated	ShadowLODCallback	tag in src/world/Shadow.cpp
+007e3aa0	annotated	DecalDrawBoundReceivers	tag in src/world/Shadow.cpp
 007e3e80	annotated	DecalDrawReceivers	tag in src/world/Shadow.cpp
 007e4370	annotated	DecalDrawProjected	tag in src/world/Shadow.cpp
 007e4480	annotated	ShadowProjectBlob	tag in src/world/Shadow.cpp
@@ -3697,10 +3932,13 @@ addr	how	frozen	evidence
 007f3b60	annotated	CGMinimapFrame::GetZoomLevels	tag in src/ui/game/CGMinimapFrame.cpp
 007f3b90	annotated	CGMinimapFrame::GetRadius	tag in src/ui/game/CGMinimapFrame.cpp
 007f6540	annotated	MinimapLoadTranslate	tag in src/world/Minimap.cpp
+007f9320	annotated	TransformBoxRows	tag in lib/typhoon/tempest/box/CAaBox.cpp
+007f93d0	annotated	TransformBoxExtents	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007f9430	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007f9480	annotated	SegmentIntersectsBox	tag in src/world/map/CMapObj.cpp
 007fa140	annotated	SphereToBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007fa290	annotated	GetSpellVisual	tag in src/object/client/CGUnit_C.cpp
+007fdd60	order	Script_Stub_SpellCanTargetGlyph	binding table name Script_Stub_SpellCanTargetGlyph, in definition order in src/ui/game/miscscriptstubs.cpp
 007fde20	annotated	SpellHasEffect	tag in src/object/client/Spell_C.cpp
 007fde50	annotated	SpellHasAura	tag in src/object/client/Spell_C.cpp
 007fde80	annotated	SpellGetEffectClassMask	tag in src/object/client/Spell_C.cpp
@@ -3724,12 +3962,15 @@ addr	how	frozen	evidence
 00800d00	annotated	SpellVisualGetImpactKit	tag in src/object/client/Spell_C.cpp
 00801c90	handler	ReceiveChannelStart	SetMessageHandler(MSG_CHANNEL_START) on both sides
 00801db0	handler	ReceiveChannelUpdate	SetMessageHandler(MSG_CHANNEL_UPDATE) on both sides
+00804190	order	Script_Stub_SpellCanTargetUnit	binding table name Script_Stub_SpellCanTargetUnit, in definition order in src/ui/game/miscscriptstubs.cpp
 00804220	annotated	Script_CancelUnitBuff	tag in src/ui/game/MiscScript.cpp
 00805100	annotated	SpellCastRetire	tag in src/object/client/Spell_C.cpp
 00805180	annotated	SpellCastFind	tag in src/object/client/Spell_C.cpp
 00805f60	annotated	SpellCastIsPending	tag in src/object/client/Spell_C.cpp
 00805fc0	override	SpellCastIsPendingFromItem	
 00809c70	handler	ReceiveSpellFailure	SetMessageHandler(SMSG_SPELL_FAILURE) on both sides
+00809ea0	order	Script_Stub_SpellStopCasting	binding table name Script_Stub_SpellStopCasting, in definition order in src/ui/game/miscscriptstubs.cpp
+0080dc00	order	Script_Stub_SpellTargetUnit	binding table name Script_Stub_SpellTargetUnit, in definition order in src/ui/game/miscscriptstubs.cpp
 0080fee0	handler	ReceiveSpellStart	SetMessageHandler(SMSG_SPELL_START) on both sides
 00810320	annotated	RaceClassMaskMatches	tag in src/object/client/Spell_C.cpp
 00810410	annotated	SkillLineAbilityFind	tag in src/object/client/Spell_C.cpp
@@ -3800,6 +4041,7 @@ addr	how	frozen	evidence
 00817da0	annotated	FrameScript_SetEuropeanNumbers	tag in src/ui/FrameScript.cpp
 00817db0	callgraph	FrameScript_GetContext	only unmatched callee of 00961560=CSimpleStatusBar::RunOnMinMaxChangedScript
 00817f90	callgraph	fprintf	only unmatched callee of 005302b0=Script_Stub_FlagTutorial, 005485b0=Script_Stub_GetWorldStateUIInfo, 00575820=Script_Stub_PlayDance
+00817fd0	callgraph	FrameScript_UnregisterFunction	only unmatched callee of 005fe2f0=CameraUnregisterScriptFunctions
 00818010	callgraph	FrameScript_GetVariable	only unmatched callee of 00819d40=FrameScript_GetText
 00818070	callorder	FrameScript_Sprintf	same slot between linked calls in 0048d800=CSimpleFontString_SetFormattedText, 009779b0=CSimpleButton_SetFormattedText
 00818c40	string	FrameScript_ExecuteFile	score 0.50 shared Error loading %s
@@ -4152,7 +4394,7 @@ addr	how	frozen	evidence
 0084dbd0	callgraph	CSimpleEditBox::GetObjectType	only unmatched callee of 009764e0=CSimpleEditBox_SetMaxBytes, 009765d0=CSimpleEditBox_SetMaxLetters
 0084dbf0	override	lua_settop	
 0084dc50	callgraph	lua_remove	only unmatched callee of 009748f0=CSimpleHTML_GetTextTypeArg
-0084dcc0	callorder	lua_insert	same slot between linked calls in 00819730=FrameScript_HandleError, 00819880=FrameScript_Object::RegisterScriptObject, 00819ea0=FrameScript_Execute
+0084dcc0	callgraph	lua_insert	only unmatched callee of 00817fd0=FrameScript_UnregisterFunction
 0084dd70	string	lua_replace	unique "no calling environment"
 0084de50	callorder	lua_pushvalue	same slot between linked calls in 00819ea0=FrameScript_Execute, 0084fc00=luaL_openlib, 008519b0=setn
 0084deb0	override	lua_type	
@@ -4192,7 +4434,7 @@ addr	how	frozen	evidence
 0084ea00	override	lua_rawseti	
 0084ea90	callorder	lua_setmetatable	same slot between linked calls in 00819880=FrameScript_Object::RegisterScriptObject, 008542c0=luaB_setmetatable
 0084eb40	order	lua_setfenv	definition order between lua_setmetatable and lua_call in vendor/lua-5.1.3/src/lapi.c
-0084ebf0	callorder	lua_call	same slot between linked calls in 00819730=FrameScript_HandleError, 0084f350=luaL_callmeta
+0084ebf0	callorder	lua_call	same slot between linked calls in 00819730=FrameScript_HandleError
 0084ec30	order	f_call	definition order between lua_call and lua_pcall in vendor/lua-5.1.3/src/lapi.c
 0084ec50	callorder	lua_pcall	same slot between linked calls in 00819ea0=FrameScript_Execute
 0084ed00	callorder	lua_dump	same slot between linked calls in 008529a0=str_dump
@@ -4427,7 +4669,7 @@ addr	how	frozen	evidence
 0086b0c0	annotated	OsEnableCpuLog	tag in src/util/win/OsSystem.cpp
 0086b0d0	annotated	OsLogCpuInfo	tag in src/util/win/OsSystem.cpp
 0086b240	annotated	OsGetProcessorCount	tag in src/util/win/OsSystem.cpp
-0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate, 006a3450=CGxDeviceD3d::ScenePresent, 0086ab30=OsTimeManager::Calibrate
+0086b280	callgraph	OsSleep	only unmatched callee of 004bae10=AsyncFileReadWaitAll, 006836d0=CGxDevice::ILimitFrameRate, 006a3450=CGxDeviceD3d::ScenePresent
 0086b2d0	annotated	OsGetVersion	tag in src/util/win/OsSystem.cpp
 0086b480	annotated	OsGetComputerName	tag in src/util/win/OsSystem.cpp
 0086b4a0	annotated	OsGetUserName	tag in src/util/win/OsSystem.cpp
@@ -4469,9 +4711,14 @@ addr	how	frozen	evidence
 00873f50	annotated	ExtShadowQualityAbsoluteMax	tag in src/glue/GlueScript.cpp
 00873f60	annotated	ShadowMapQualityName	tag in src/world/ShadowMap.cpp
 00873f80	annotated	ShadowMapGetQuality	tag in src/world/ShadowMap.cpp
+00873fa0	annotated	ShadowMapSetBuildMatrixCallback	tag in src/world/ShadowMap.cpp
+00873fb0	annotated	ShadowMapSetSetupViewCallback	tag in src/world/ShadowMap.cpp
+00873fc0	annotated	ShadowMapSetCollectCallback	tag in src/world/ShadowMap.cpp
+00873fd0	annotated	ShadowMapSetRenderCallback	tag in src/world/ShadowMap.cpp
 00873fe0	annotated	ShadowMapDeviceRestore	tag in src/world/ShadowMap.cpp
 00873ff0	override	ShadowMapGetShaderLevel	
 00874010	annotated	ShadowMapSetIntensity	tag in src/world/ShadowMap.cpp
+00874030	annotated	ShadowMapSetDepthScale	tag in src/world/ShadowMap.cpp
 008740d0	annotated	ShadowMapQualitySupported	tag in src/world/ShadowMap.cpp
 00874210	annotated	ShadowMapSetQuality	tag in src/world/ShadowMap.cpp
 00874240	annotated	ShadowMapReleaseTargets	tag in src/world/ShadowMap.cpp
@@ -4479,8 +4726,14 @@ addr	how	frozen	evidence
 008744e0	annotated	ShadowMapBindScene	tag in src/world/ShadowMap.cpp
 008745d0	annotated	ShadowMapBindMapObj	tag in src/world/ShadowMap.cpp
 00874660	annotated	ShadowMapBindTerrain	tag in src/world/ShadowMap.cpp
+00874760	annotated	ShadowMapBindDetailDoodads	tag in src/world/ShadowMap.cpp
+00874890	annotated	ShadowMapSetupCascades	tag in src/world/ShadowMap.cpp
+00874fb0	annotated	ShadowMapRenderCascades	tag in src/world/ShadowMap.cpp
+008750b0	annotated	ShadowMapBuildLightMatrices	tag in src/world/ShadowMap.cpp
 00875c10	annotated	ShadowMapSetLightDirection	tag in src/world/ShadowMap.cpp
-00875d30	string	EnsureTargets	unique "ShadowCache"
+00875d30	annotated	ShadowMapEnsureTargets	tag in src/world/ShadowMap.cpp
+00875f80	annotated	ShadowMapRender	tag in src/world/ShadowMap.cpp
+00876360	annotated	ShadowMapInitialize	tag in src/world/ShadowMap.cpp
 00876530	override	CShaderEffectManager::GetEffect	
 00876be0	callgraph	CShaderEffectManager::CreateEffect	only unmatched callee of 00836600=CM2Shared::CreateSimpleEffect, 00836c90=CM2Shared::GetEffect
 00876ca0	annotated	CShaderEffectManager::RegisterEffect	tag in src/gx/shader/CShaderEffectManager.cpp
@@ -4529,7 +4782,7 @@ addr	how	frozen	evidence
 0087f7a0	annotated	SESound::Load	tag in src/sound/SESound.cpp
 00889e50	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
-0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
+0088be0d	callgraph	sscanf	only unmatched callee of 0077f600=ConsoleMaxLod, 0077f690=ConsoleWaterRipples, 0077f700=ConsoleDetailDoodadAlpha
 008a09ba	override	NvAPI_Initialize	
 008a0a54	annotated	NvAPI_GetErrorMessage	tag in src/gx/d3d/NvApi.cpp
 008a0f88	annotated	NvAPI_Stereo_CreateConfigurationProfileRegistryKey	tag in src/gx/d3d/NvApi.cpp
@@ -4541,10 +4794,17 @@ addr	how	frozen	evidence
 008a0fd6	annotated	NvAPI_Stereo_SetSeparation	tag in src/gx/d3d/NvApi.cpp
 008a0fee	annotated	NvAPI_Stereo_SetConvergence	tag in src/gx/d3d/NvApi.cpp
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
+008a16c0	annotated	Liquid::CMaterialSettings::GetInt	tag in src/world/map/LiquidMaterialSettings.cpp
+008a16e0	annotated	Liquid::CMaterialSettings::GetStageFloat	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1700	annotated	Liquid::CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
+008a1720	annotated	Liquid::SetShaderMaterials	tag in src/world/map/LiquidMaterialSettings.cpp
+008a1730	annotated	Liquid::SetSpecular	tag in src/world/map/LiquidMaterialSettings.cpp
+008a1740	annotated	Liquid::GetCameraRelative	tag in src/world/map/LiquidMaterialSettings.cpp
 008a1750	override	Liquid::TextureScaleMultiplier	
 008a1760	callorder	Liquid::ProcWaterSuffix	same slot between linked calls in 008a3e00=Liquid::CMaterialProcWater::EnsureShaders
 008a1770	annotated	Liquid::Initialize	tag in src/world/map/LiquidMaterialSettings.cpp
+008a1980	annotated	Liquid::SortAscending	tag in src/world/map/LiquidSurface.cpp
+008a19e0	annotated	Liquid::SortDescending	tag in src/world/map/LiquidSurface.cpp
 008a1a40	annotated	Liquid::CInstance::CInstance	tag in src/world/map/LiquidSurface.cpp
 008a1ac0	annotated	Liquid::CInstance::Release	tag in src/world/map/LiquidSurface.cpp
 008a1b00	annotated	Liquid::CInstance::Create	tag in src/world/map/LiquidSurface.cpp
@@ -4564,6 +4824,7 @@ addr	how	frozen	evidence
 008a28f0	annotated	Liquid::GetMaterialSettings	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2980	annotated	Liquid::ReleaseProceduralTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2a10	annotated	Liquid::RestoreLiquidTextures	tag in src/world/map/LiquidMaterialSettings.cpp
+008a2aa0	annotated	Liquid::ResetProceduralTextureLatches	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2ac0	annotated	Liquid::WmoWaterGenerate	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2bf0	override	Liquid::DepthGradientGenerate	
 008a2e20	string	Liquid::ProceduralLiquidTexture	unique "proceduralOceanDepthTex"
@@ -4608,6 +4869,7 @@ addr	how	frozen	evidence
 008a8360	string	AchievementRec::GetFilename	unique "DBFilesClient\Achievement.dbc"
 008a93d0	string	AnimationDataRec::GetFilename	unique "DBFilesClient\AnimationData.dbc"
 008a9c50	string	AreaTableRec::GetFilename	unique "DBFilesClient\AreaTable.dbc"
+008aaa90	string	CameraShakesRec::GetFilename	unique "DBFilesClient\CameraShakes.dbc"
 008aaaa0	string	Cfg_CategoriesRec::GetFilename	unique "DBFilesClient\Cfg_Categories.dbc"
 008aad90	string	Cfg_ConfigsRec::GetFilename	unique "DBFilesClient\Cfg_Configs.dbc"
 008aada0	string	CharBaseInfoRec::GetFilename	unique "DBFilesClient\CharBaseInfo.dbc"
@@ -4659,6 +4921,7 @@ addr	how	frozen	evidence
 008bcc00	string	NamesReservedRec::GetFilename	unique "DBFilesClient\NamesReserved.dbc"
 008bcc10	string	CharSectionsRec::GetFilename	unique "DBFilesClient\CharSections.dbc"
 008bd1f0	string	SoundEntriesAdvancedRec::GetFilename	unique "DBFilesClient\SoundEntriesAdvanced.dbc"
+008bd8b0	string	WMOAreaTableRec::GetFilename	unique "DBFilesClient\WMOAreaTable.dbc"
 008bdfc0	string	LightSkyboxRec::GetFilename	unique "DBFilesClient\LightSkybox.dbc"
 008bdfd0	string	LightParamsRec::GetFilename	unique "DBFilesClient\LightParams.dbc"
 008bdfe0	string	LightRec::GetFilename	unique "DBFilesClient\Light.dbc"
@@ -4667,6 +4930,7 @@ addr	how	frozen	evidence
 008bfe80	string	EffectGlow::EffectGlow	unique "full screen glow effect"
 008c02a0	annotated	FFXDeathCallback	tag in src/ffx/EffectDeath.cpp
 008c8de0	callgraph	CSimpleModel::GetObjectType	only unmatched callee of 009610e0=CSimpleModel_AdvanceTime
+008ca080	annotated	CosineInterp	tag in src/ui/game/CGCamera.cpp
 008ce200	string	FindPatchPrefix_SC2_ArchiveName	score 0.50 shared Battle.net
 008cf7a0	string	Grunt::Timer::Timer	unique "GruntTimerEvt"
 008d1850	callgraph	TSBaseArray<SEDRIVERNAME>::operator[]	only unmatched callee of 008783b0=SESound::GetInputDriverName
@@ -5127,6 +5391,7 @@ addr	how	frozen	evidence
 009830d0	annotated	PointInPolygon	tag in lib/typhoon/tempest/Intersect.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 009836b0	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
+00983990	callgraph	CWFrustum::NegatePlanes	only unmatched callee of 00874890=ShadowMapSetupCascades
 009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983d20	annotated	CWFrustum::SphereInside	tag in src/world/CWorldScene.cpp
@@ -5183,6 +5448,8 @@ addr	how	frozen	evidence
 00990370	annotated	IsMovementAckOpcode	tag in src/object/client/CGUnit_C.cpp
 00990420	annotated	IsMovementAckOrNotActiveMoverOpcode	tag in src/object/client/CGUnit_C.cpp
 009904e0	annotated	IsMovementStateOpcode	tag in src/object/client/CGUnit_C.cpp
+00990560	annotated	FindWMOArea	tag in src/world/CWorld.cpp
+009905c0	annotated	CWorld::GetAreaLiquidType	tag in src/world/CWorld.cpp
 00990680	annotated	FT_DivFix	tag in vendor/freetype-2.0.9/src/base/ftcalc.c
 00990cb0	annotated	Destroy_Driver	tag in vendor/freetype-2.0.9/src/base/ftobjs.c
 009911a0	annotated	Destroy_Module	tag in vendor/freetype-2.0.9/src/base/ftobjs.c
@@ -5197,3 +5464,4 @@ addr	how	frozen	evidence
 00995ba0	string	Get_Interface	score 1.12 shared glyph_name; set_mm_blend; set_mm_design
 009a12d0	string	CID_New_Parser	unique "%!PS-Adobe-3.0 Resource-CIDFont"
 009a16a0	string	cid_parse_dict	unique "%ADOBeginFontDict"
+009a81f0	callgraph	CWorld::GetFarClip	only unmatched callee of 00795400=CWorldScene::UpdateCamera

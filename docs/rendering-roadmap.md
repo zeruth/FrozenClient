@@ -1,25 +1,27 @@
 # Rendering: the road to 100%
 
-A plan, not a status page: `docs/recomp/REPORT.md` is the status. Every item below is a reference
-address or a frozen name on purpose, so the next cycle can start from this page.
+A plan, not a status page: `docs/recomp/REPORT.md` is the status, regenerated every cycle. Every
+item below names a reference address or a frozen function so the next cycle can start from this
+page without re-deriving anything.
 
-**Completion first, verification last** (decision 2026-10-01). Runs, traces and scene compares
-wait until the render surface is practically 100% linked and faithful; until then a cycle is
-measured by the report's static numbers, and the gates that end it are the static ones in
-CLAUDE.md (a failed build, a lost link, a lost binding, a negative delta). The cost is accepted:
-ports stack up unseen and the first run will find a batch of defects at once, so every port
-records what it diverges from and why, in the commit and in `overrides.json`.
+Two standing decisions:
 
-**The reference is the vanilla `WoW.exe` (12340) in `.reference`, and only that.** Until
-2026-10-02 the Ghidra tooling read `RunicWorldGame.exe`, a branded patch of the same binary: same
-layout and addresses, but 14 strings and four code sites differ (0x4da7e5 and 0x52abd9 skip the
-GlueXML/FrameXML signature checks, 0x4e0481 lets every character name pass, 0x7f5f9f forces a
-branch). `recomp.GHIDRA_PROGRAM` now names the vanilla program and all exported data comes from it.
+- **Completion first, verification last** (2026-10-01). Runs, traces and scene compares wait until
+  the render surface is practically 100% linked and faithful. Until then a cycle is measured by
+  the report's static numbers, and the gates that end it are the static ones in CLAUDE.md (a
+  failed build, a lost link, a lost binding, a negative delta). The cost is accepted: ports stack
+  up unseen, and the first runs find defects in batches. Every port therefore records what it
+  diverges from and why, in the commit and in `overrides.json`. A short look at a run is still
+  taken when a change touches what is on screen; it is a look, not verification.
+- **The reference is the vanilla `WoW.exe` (12340) in `.reference`, and only that.** Until
+  2026-10-02 the tooling read `RunicWorldGame.exe`, a branded patch of the same binary with four
+  code sites changed (0x4da7e5, 0x52abd9, 0x4e0481, 0x7f5f9f). `recomp.GHIDRA_PROGRAM` names the
+  vanilla program and all exported data comes from it.
 
 ## What 100% means
 
 The render surface is the reference functions in the modules that draw the world
-(`RENDER_MODULES` in `tools/recomp/recomp.py`): 5,377 today. Completion is:
+(`RENDER_MODULES` in `tools/recomp/recomp.py`): 5,246 as of the last run. Completion is:
 
 1. every one **linked** to a frozen function, none of them a stub;
 2. every one **faithful**: the reference's calls in the reference's order, then branch and
@@ -31,42 +33,36 @@ trace or scene compare, with the scene-compare suite at 99% or better.
 
 ## Where it stands
 
-| | 2026-10-01 start | now (2026-10-02, after phase 1) | at completion |
-|---|---:|---:|---:|
-| render surface linked | 1,267 / 4,838 (26%) | 1,699 / 5,293 (32%) | 5,293 |
-| render surface faithful | not measured | 1,149 (22%) | 5,293 |
-| render surface stubs | 20 | 25 | 0 |
-| empty functions with live render call sites | 37 | 35 (not re-counted) | 0 |
-| D3D9 device census (vtable 0x00a2e718, 228 functions) | 199 linked, 154 faithful | 227 linked, 223 faithful | 228 / 228 |
-| render surface attributed by anchor guess | 63% | 49% | low |
+| | 2026-10-01 start | 2026-10-02, after phase 1 | 2026-10-02, phase 2 in progress | at completion |
+|---|---:|---:|---:|---:|
+| render surface linked | 1,267 / 4,838 (26%) | 1,699 / 5,293 (32%) | **1,897 / 5,246 (36%)** | 5,246 |
+| render surface faithful | not measured | 1,149 (22%) | **1,258 (24%)** | 5,246 |
+| render surface stubs | 20 | 25 | 25 | 0 |
+| render surface attributed by anchor guess | 63% | 49% | 49% | low |
+| D3D9 device census (vtable 0x00a2e718, 228 functions) | 199 linked | 227 linked, 223 faithful | unchanged | 228 / 228 |
 
-By area (2026-10-02; functions are the report's module counts, grouped). The models row and the
-totals are from the run after phase 1; the other rows are from the morning's run and have not
-moved since, apart from the denominator shrinking as template internals were excluded:
+The denominator moves as template instantiations are excluded and anchors are recovered, so
+compare linked counts, not percentages.
 
-| area | functions | linked | faithful | unlinked | share of unlinked |
-|---|---:|---:|---:|---:|---:|
-| entities (`Unit_C`, `Player_C`, `GameObject_C`, `Movement`, `Passenger`, effects, missiles, spell visuals) | 2,055 | 209 | 131 | 1,846 | 49% |
-| world layer and map streaming (`Map`, `MapMem`, `MapChunkLiquid`, `DetailDoodad`, `World*`, `Camera`, `MapWeather`, `WorldText`) | 1,042 | 366 | 217 | 676 | 18% |
-| textures and full-screen effects (`Texture*`, `blp`, `tga`, `FFXEffects`, glow, `Lightning`) | 793 | 235 | 156 | 558 | 15% |
-| models and particles (`M2*`, `ParticleSystem2`, `CharacterModelBase`, `ModelBlob`, `GfxSingletonManager`) | 506 | 477 | 316 | 29 | 1% |
-| map geometry (`MapChunk`, `MapLoad`, `MapArea`, `MapObj*`, `AaBsp`, `MapLowDetail`) | 327 | 148 | 106 | 179 | 5% |
-| D3D9Ex and OpenGL devices (not used on Windows) | 202 | 72 | 54 | 130 | 3% |
-| liquid, shadows, shader effects (`Liquid`, `ShadowMap`, `MapShadow`, `ShaderEffect`) | 192 | 108 | 64 | 84 | 2% |
-| D3D9 device by module name (see the census instead) | 164 | 75 | 54 | 89 | 2% |
-| **total** | **5,293** | **1,699** | **1,149** | **3,594** | |
+Remaining work by area (unlinked; the areas are module groups from the report):
 
-Read the chart with two caveats. Half the surface is still placed in its module by the nearest
-path string rather than a known boundary, so rows can be mis-sized (`MODULE_RANGES` is the fix per
-module; `DayNight` and `Sky` have no string at all and count under their neighbours). The device
-rows are the worst case: several of the plain D3D9 device's functions are anchored under the
-D3D9Ex module names, so the D3D9 device is measured by its vtable census above, not by these rows.
-Faithful by area counts links whose module is known, which is 1,002 of the report's 1,054.
+| area | phase | unlinked | notes |
+|---|---|---:|---|
+| entities (`Unit_C`, `Player_C`, `GameObject_C`, `Movement`, `Passenger`, effects, missiles, spell visuals) | 4 | ~1,840 | half of everything left |
+| world layer, map streaming, map geometry, liquid, shadows (see the phase 2 table) | 2 | ~750 | in progress |
+| textures and full-screen effects (`Texture*`, `blp`, `tga`, `FFXEffects`, glow, `Lightning`) | 3 | ~560 | |
+| D3D9Ex and OpenGL devices | out of scope | ~130 | not used on Windows |
+| models and particles | 1 | 29 | each blocked, see below |
+
+Half the surface is still placed in its module by the nearest path string rather than a known
+boundary, so rows can be mis-sized: read a function's body before trusting a `?` module in the
+queue. `MODULE_RANGES` in `recomp.py` is the fix per module.
 
 ## How a cycle runs
 
-The loop in CLAUDE.md, minus the run: `recomp.py`, `--next`, port, build, `clangparse.py`,
-`recomp.py --pdb`, commit with the delta. Rules learned the hard way:
+The loop in CLAUDE.md: `recomp.py`, `--next`, port, build and install with the PDB,
+`refresh-compile-db.bat` if a file was added, `clangparse.py`, `recomp.py --pdb`, commit with
+the delta. Rules learned the hard way:
 
 - **Fix before link.** `--next 20 --fix --render`, then `--diff <addr>` on each. Most gaps are a
   helper frozen calls under its own name; a tag costs minutes and lifts every caller.
@@ -77,186 +73,193 @@ The loop in CLAUDE.md, minus the run: `recomp.py`, `--next`, port, build, `clang
   neighbours.
 - **Tag the identified-but-not-ported.** A tag or an `overrides.json` entry takes seconds.
 - **Read every new inferred link.** The order, call-graph and string matchers are confidently
-  wrong often enough (`CGGameUI::Initialize` was string-matched to the wrong function until
-  2026-10-02).
-- **A hand verdict needs a read.** A branch-shape or call-order miss caused by inlined templates
-  or block layout is a verdict in `overrides.json`, written only after reading the port against
-  the decompilation. Merge it into an existing entry; replacing one can drop its `frozen` link.
+  wrong often enough to matter.
+- **Resolve register arguments in the asm.** Ghidra drops `ECX` (`this`) on `__thiscall` helpers
+  and reuses stack slots, so which frustum, list or matrix a call works on is read from the dump
+  (`llvm-objdump` into the scratchpad, then grep), never guessed from the decompilation. The
+  shadow-map port depended on this at a dozen call sites.
+- **A hand verdict needs a read.** A branch or order miss caused by inlined templates is a
+  verdict in `overrides.json`, written after reading the port against the decompilation. Merge
+  into an existing entry; replacing one can drop its `frozen` link.
 - **Record divergence in the same commit**, `status: "diverged"` with the reason.
+- **Bisect a visual regression** before reasoning about it: a second worktree at the last good
+  commit builds in minutes, and `FROZEN_AUTO_SCREENSHOT` captures the same spot on both.
 
 ## Done
 
 - **Phase 0, the ruler** (2026-10-01). `tools/recomp/anchors.py` recovers the path-string
-  anchors the export dropped (239 more across 63 modules), 19 modules joined `RENDER_MODULES`,
-  the report prints faithful and stub counts for the surface, and the stale inventory pages carry
-  banners.
-- **Phase 3a, the D3D9 device** (2026-10-01/02). Pulled ahead of the rest because every draw
-  ends in it. Closed by a census of the device's vtable (0x00a2e718) over 0x681000..0x6ac000
-  rather than an address range, which is how the range's misses were found. Ported: the
-  render-state translator `IRsSendToHw` and the complete `DsSet`; transform sync, texgen and
-  dirty tracking; texture create, upload, destroy and the reset walk; buffers, pools and the
-  scratch fallback; device create, destroy, format change and resource release; caps; the
-  window class, window, window procedure with its sizing helpers, and `DeviceWM`; scene begin,
-  end and present with the frame cap and fixLag; render targets, depth-stencil and the
-  back-buffer copies; occlusion queries; frame capture; gamma; device callbacks; the
-  vertex-declaration cache; NVIDIA stereo; the immediate-mode primitive; the hardware and
-  software cursor with the UI shaders and placeholder texture; Storm's `SLog` and Logs\gx.log;
-  the base constructor and destructor. On its path: the W32 time manager, `TextureLoadImage`
-  with the mip-bits cache and TGA readers, and the client cursor module.
+  anchors the export dropped, 19 modules joined `RENDER_MODULES`, and the report prints faithful
+  and stub counts for the surface.
+- **Phase 3a, the D3D9 device** (2026-10-01/02). Closed by a census of the device's vtable
+  (0x00a2e718) over 0x681000..0x6ac000. Render-state translation (`IRsSendToHw`, `DsSet`),
+  transforms and texgen, textures, buffers and pools, device lifetime and reset, caps, window and
+  window procedure, scene and present with the frame cap, render targets, queries, capture,
+  gamma, vertex declarations, stereo, the immediate-mode primitive, both cursors, `SLog`, and on
+  its path the W32 time manager and `TextureLoadImage`.
+- **Phase 1, models** (2026-10-02; 29 left of 240). Model cache with the animate thread,
+  `CM2Scene::Animate` and the doodad grouping, `CM2Scene::Draw`, batched particles, draw
+  callbacks, projected decals, the instanced shadow-caster draw, CPU skinning, the particle
+  emitter clone path and model particles, `CM2Model` queries and bounds, `CharacterModelBase`.
+  Seen running: the world loads and draws with doodad instancing on. The first run found two bugs
+  (a frame freeze from the old caster pass, exploding instanced doodads from
+  `CM2Shared::SetIndices`), both fixed.
 
-## Open phases
+  Left, each with its reason at the code or in `overrides.json`: model and texture byte
+  accounting through Storm's archive internals (`FUN_008245b0`, `FUN_004b57a0`); the
+  `CharacterModelBase` cameras and DressUp frame (need `CSimpleModel::SetCameraByID` and a
+  frame-owned `CCharacterComponent`); tempest helpers owned by `src/world` (`0x9838d0`,
+  `0x983940`, `0x983ae0`, `0x983fb0`); `M2Cache` `0x81ca10`. Branch ratios to read with `--diff`:
+  `Animate` 0.37, `CM2SceneRender::Draw` 0.31, `SetupLighting` 78% call order.
 
-### Phase 1: models (29 unlinked, was 240)
+## Phase 2: the environment (current)
 
-Worked through on 2026-10-02 in one pass (21 commits, three of them by parallel agents in their
-own worktrees). Per module, linked: `ParticleSystem2` 104/104, `M2Shared` 34/34, `M2Light` 44/44,
-`M2Model` 148/151, `M2Scene` 63/67, `M2Cache` 17/20, `GfxSingletonManager` 57/62,
-`CharacterModelBase` 10/24, `ModelBlob` complete (its functions now count under their callers'
-modules).
+### Landed (2026-10-02)
 
-**Seen running** (one run, 2026-10-02, desktop D3D9): the world loads and draws with doodad
-instancing on. That run is what found the two bugs below; it is a look, not a scene compare, and
-nothing here is `verified` in the report's sense.
+| commit | what |
+|---|---|
+| 74322478 | projected textures go live (`CWorld::ProjectionCallback` `FUN_0077f500`, `DecalDrawBoundReceivers` `FUN_007e3aa0`); the eleven world console commands |
+| 76579549 | the portal view lists and the far-plane fill over them |
+| f0d41af2 | `MapMemInitialize` in the reference's order, the loading-screen load loop and `AsyncFileReadWaitAll`; chunks release their doodad defs; occlusion clear and polygon test |
+| 3c988667 | liquid: the material bank as the reference builds it, the chunk buffer pool |
+| 32a8286c | the map-object box queries: blob-shadow WMO receivers (`FUN_007a6940` .. `FUN_007ca920`), M2 receivers `FUN_007a2aa0` |
+| e6fdb71f | **fix**: the shadowed terrain shaders load after `MapMemInitialize` clears its slots (see below) |
+| f3bb2d87 | **the camera** (`Camera.cpp`, 0x5fd630..0x607b00, 104 of 128 linked): views, zoom and timed moves, free look, smoothing, bobbing, terrain tilt, target heights, collision, shakes (CameraShakes.dbc), the model camera, the 22 Lua functions |
+| 989e7731 | **the shadow map** to the reference's architecture: `ShadowMap.cpp` and `MapShadow.cpp` (main map, lit pass, three amortised cascades, hardware-PCF depth maps, the four callbacks, the five caster walks, the binds) |
+| 4decbbdc | **objects place their map entity**: `CGObject_C::UpdateWorldObject` and the unit override, `CWorld::UpdateObject` `FUN_00780240`, `CMap::UpdateEntity` `FUN_007a1bc0` with its liquid, zone and baked-shadow helpers, WMOAreaTable.dbc |
 
-What landed:
+What these runs showed:
 
-- **Model cache:** hashed shared models with the pending-release queue, `GarbageCollect`,
-  `UpdateShared` / `TouchGeometry`, the model blob, `CM2Shared`'s load chain and skin-profile
-  choice, `Destroy` / `M2Destroy`, and the **animate thread** (`M2UseThreads`: the cache thread
-  animates the odd entries of the animate list).
-- **`CM2Scene::Animate`** rewritten from the decompilation: draw list, the separate particle draw
-  list that `AnimateST` joins, draw-callback elements, sort distances along the sort radius, and
-  the **doodad grouping** tail (hash, compare, group sort). `IsBatchDoodadCompatible` and
-  `DrawBatchDoodad` are live, so `M2BatchDoodads` instances repeated doodads.
-- **`CM2Scene::Draw`** gates on the pass mask again: the old "divergence" was wrong, because the
-  constructor sets the mask to every pass.
-- **Draw paths:** batched particles (`M2BatchParticles`), `DrawCallback`, projected decals
-  (`DrawBatchProj` and its texture-matrix solver; reached once the world installs the projection
-  callback), the instanced shadow-caster draw (`DrawShadowCasterLists` and below), and the
-  non-shader `SetBatchVertices` arm with both CPU skinning packers.
-- **Particles:** emitter clone path and pool, model particles (`SetGeometryModel` /
-  `SetRecursionModel`), the precompiled colour ramp, all wired from `InitializeLoaded`.
-- **CM2Model:** the callback queue (authored animation events now fire), queries and counts,
-  combined and animated bounds, draw sphere, collision triangles, the merge pass.
-- **CharacterModelBase:** `SetUnit`, `SetCreature`, `RefreshUnit` and the rotation path.
+- **Ground textures broke in the merge batch, and the cause was found by bisect, not by
+  reading.** The camera and projected textures were cleared first, by A/B runs. 15f2abfb alone
+  reproduced it: it moved `CreateTerrainShadowShaders` above the loop in `MapMemInitialize` that
+  nulls the Terrain2/Terrain3 arrays. The reference clears its slots at 0x0079e8b6..0x0079e974 and
+  loads the shadowed sets at 0x0079e979, after the clearing. Every shadowed terrain shader fell
+  back to the unshadowed one while the pass kept its shadowed setup, so chunks drew the wrong
+  layers once shadows came on a few frames in. Fixed in e6fdb71f and seen running: the road
+  matches the pre-merge build.
+- **"The ground goes fully shadowed" was the missing cascades.** At quality 3 the terrain shaders
+  sample four maps (stage 5 plus three cascades on 6..8) through twelve light-matrix rows at c37;
+  the stand-in bound one map and zeroed nine rows, so three taps of four read as occluded.
+  989e7731 replaces the stand-in, and the ground no longer darkens.
+- **The ported shadow map runs but casts nothing visible yet.** Two causes were found and one
+  fixed. Units had no map position (fixed in 4decbbdc; the lit pass now collects the units near
+  the player, 13 model batches where it had 0). And the cascades' look-at up vectors are never
+  written in the reference (cascade base +0x28, read at 0x874c60, 0x874d0a, 0x874ec6), so
+  `FUN_006c0050` fails its `up.SquaredMag() >= 0.01f` check and every cascade view is the
+  identity; frozen reproduces that and the cascades collect nothing. What is still open is why
+  the collected casters do not show on the ground: the device view and the sampling matrices
+  agree, and a hardware-PCF depth map cannot be read back to look. Next step when this is picked
+  up again: force `hwPCF 0` so the maps are R32F, dump one, and compare the depth written with the
+  depth the terrain shader computes.
 
-Two bugs the first run found, both fixed:
+### Owed a look at a run
 
-- **The world froze on its first frame.** Frozen's stand-in shadow caster pass fed the new
-  doodad elements to the instanced draw with an uninitialised instance count.
-- **Instanced doodads exploded (trees especially).** `CM2Shared::SetIndices` added each instance's
-  vertex offset to the read position instead of the index value; invisible while capacity was 1.
+- The camera beyond the default follow view: zoom, mouse look, view switching, the model camera
+  in a cinematic. It does not collide yet, because the world segment query is not ported (below).
+- Projected textures (`projectedTextures 1` is in the test config) on something that projects.
+- The liquid material bank and buffer pool at a water line.
+- Units standing in water or a building: `CMap::UpdateEntity` now sets their liquid and light
+  targets, and nothing has looked at a unit there.
 
-Left (29), each with its reason recorded at the code or in `overrides.json`:
+### Left, by module
 
-- `FUN_008245b0` / `FUN_004b57a0`: model and texture byte accounting through Storm's archive
-  internals, which frozen does not have.
-- `CharacterModelBase` cameras (`0x5974a0`, `0x5977c0`, need `CSimpleModel::SetCameraByID`), the
-  "model ready" check (`0x597aa0`, `0x597290`) and the DressUp frame (`0x597b50..0x5980b0`, needs a
-  frame-owned `CCharacterComponent`).
-- Tempest helpers owned by `src/world` / `src/model`: `0x9838d0`, `0x983940` (collision triangle),
-  `0x983990`, `0x983ae0`, `0x983fb0` (`CWFrustum`).
-- `M2Cache` `0x81ca10` (scene +0x18 setter, with the `OnWorldRender` port).
+From the 2026-10-02 13:49 run. "Left" is reference functions with no frozen link.
 
-Roots, call order / branch ratio: `InitializeLoaded` 85% (faithful), `Animate` 95% but branch
-ratio 0.37, `CM2SceneRender::Draw` 91% / 0.31, `SetupLighting` 78% (the clip-plane tail: dead until
-lighting flag 0x40 is set, and it reads device +0x1b4, which frozen has not mapped; the "`GxCaps`"
-link at `0x00682d20` is that getter, not caps), `SetupGxFog` 50%, `OptimizeVisibleGeometry` 89%.
-The branch ratios are the next thing to read with `--diff`.
+| module | ref | linked | left | next |
+|---|---:|---:|---:|---|
+| `World.cpp` | 138 | 21 | 117 | the world segment query `FUN_0077f310` -> `FUN_007a3b70` (map objects `FUN_007a30d0`, terrain cells `FUN_007a39f0` / `FUN_007a3570`); the frustum facet query `0x77f8d0` -> `FUN_007ad700`. The camera's collision waits on both |
+| `WorldMap.cpp` | 120 | 25 | 95 | read the bodies first: much of this may be the world map UI rather than rendering |
+| `Map.cpp` | 150 | 61 | 89 | the unfaithful roots below, then `--next --module Map.cpp` |
+| `MapWeather.cpp` | 96 | 26 | 70 | **next up**: the module at 0x783b90..0x78d610 replaces frozen's `Weather.cpp`. Its classes (ground-height cache, rain/patter/snow/sand packets, mist sheets, the four archived vertex shaders) are already worked out in `src/world/MapWeather.hpp` on branch `worktree-agent-ab711d744fbc42c0d` |
+| `WorldFrame.cpp` | 69 | 9 | 60 | `CGWorldFrame::OnWorldUpdate` 16% faithful; the frame's per-object placement loop is still frozen's own |
+| `DetailDoodad.cpp` | 134 | 85 | 49 | `CreateInstance` 8%; the shader path (`FUN_00874760` is ported and waits on `s_useShaders`) |
+| `MapObj.cpp` | 79 | 35 | 44 | `WalkPortals` 39% |
+| `AaBsp.cpp` | 48 | 8 | 40 | the BSP the segment query walks |
+| `WorldText.cpp` | 35 | 4 | 31 | floating combat and name text |
+| `WorldParam.cpp` | 70 | 40 | 30 | the stubbed CVar callbacks (footstep bias, alpha bit depth, ground effect density and distance, specular, base mip) |
+| `MapObjGroup.cpp` | 68 | 43 | 25 | |
+| `MapChunkLiquid.cpp` | 70 | 48 | 22 | the WMO liquid mesh factory `FUN_007d43f0` and its writers |
+| `WorldScene.cpp` | 47 | 26 | 21 | occluders `FUN_00796c10`, barriers `FUN_00794b50` |
+| `Liquid.cpp` | 89 | 69 | 20 | the post-liquid pass `0x00790a80` with decals `FUN_0079d5e0` |
+| `MapObjRead.cpp` | 36 | 18 | 18 | |
+| `MapLowDetail.cpp` | 37 | 23 | 14 | low-detail terrain `FUN_007cc810` |
+| `ShaderEffectManager.cpp` | 23 | 9 | 14 | |
+| `MapMem.cpp` | 87 | 73 | 14 | |
+| `MapLoad.cpp` | 15 | 8 | 7 | |
+| `ShadowMap.cpp` / `MapShadow.cpp` | 56 | 50 | 6 | the device-restore hook needs a registry frozen does not have |
+| `MapChunk.cpp`, `MapArea.cpp`, `ShaderEffect.cpp` | 62 | 55 | 7 | |
 
-**Owed a run:** the animate thread under load, animation events on units, the instanced shadow
-casters (reached only from the unported map shadow pass `0x7bbc50`), and projected decals.
+Work that spans modules:
 
-### Phase 2: the environment (676 world-layer + 179 geometry + 84 liquid/shadow unlinked)
-
-The most-ported area; finishing it closes the map modules and their matcher noise.
-
-- **Unfaithful roots:** `CMap::Update` [11%], `CMap::MapMemInitialize` [0%], `CMap::Render`
-  [42%], `CWorldScene::UpdateCamera` [56%], `CMapObj::WalkPortals` [39%],
-  `CWorldScene::SubmitOccluderBox` [17%], `CGWorldFrame::OnWorldUpdate` [16%],
-  `DetailDoodad::CreateInstance` [8%], `CMap::UpdateMapObjDefs` [53%],
-  `CMapRenderChunk::DrawLocal` [67%].
-- **Shadow map to the reference's architecture** (`parity-shadowmap.md`): cascades
-  `FUN_00874890`, `FUN_00874fb0`, `FUN_00875760`; the four `MapShadow.cpp` callbacks
-  (`FUN_007bac10`, `FUN_007bafd0`, `FUN_007bd200`, `FUN_007bbc50`) over the 0xb90-byte cascade
-  struct; the five caster walks; blur `FUN_008750b0`; three targets; hwPCF / D24X8; the
-  device-lost hook `FUN_00873fe0`.
+- **Unfaithful roots:** `CMap::Update` 11%, `CMap::Render` 42%, `CWorldScene::UpdateCamera` 56%,
+  `CMapObj::WalkPortals` 39%, `CWorldScene::SubmitOccluderBox` 17%, `CGWorldFrame::OnWorldUpdate`
+  16%, `DetailDoodad::CreateInstance` 8%, `CMap::UpdateMapObjDefs` 53%,
+  `CMapRenderChunk::DrawLocal` 67%.
+- **Terrain through the original's constant setup** (`parity-map-memory.md`): `FUN_007cfbe0` and
+  the permutation selection, and `MapMemInitialize` to 100% (`FUN_007c3d90`, `FUN_007afee0`,
+  `FUN_007cb990`, `FUN_007b2760`, `FUN_007a03c0`, the pools and heaps). This also retires table
+  fog in `IStateSetD3dDefaults`, the device's last frozen-only state.
+- **Stages with no port at all:** footprints `FUN_0079fcc0`, the fog override `FUN_007ed820`, the
+  per-frame sky override at `0x007f0573`, and the glare pair `FUN_007f3230` / `FUN_007eecc0` (tag
+  or port; `DrawGlare` exists).
 - **Blob shadows** (`parity-shadows.md`): the oriented-rectangle footprint and unit box
-  `FUN_0071ed80`; the map-object receiver query `FUN_007a6940 -> FUN_007aef00 -> FUN_007cb7b0`
-  with the BSP box walk `FUN_007ca920`; doodad receivers `FUN_007ce960`; M2 receivers
-  `FUN_0077f350 -> FUN_007a2aa0`.
-- **Terrain through the original's shaders** (`parity-map-memory.md`): the archived
-  `Terrain.bls` permutations, constant setup `FUN_007cfbe0`, permutation selection, and
-  `MapMemInitialize` to 100% (`FUN_007c3d90`, `FUN_007afee0`, `FUN_007cb990`, `FUN_007b2760`,
-  `FUN_007a03c0`, the pools and the `WAREAMED` / `WDETAILDOODADINST` heaps). This also retires
-  the device's last frozen-only state, table fog in `IStateSetD3dDefaults`.
-- **Liquid** (`parity-liquid.md`): the WMO liquid mesh factory `FUN_007d43f0` and its writers
-  (`FUN_007a7b00`, `FUN_007a7920`, `FUN_007a7f60`, `FUN_007cbdc0`); the queue `FUN_00793d20`;
-  the post-liquid pass `0x00790a80` with decals `FUN_0079d5e0`; pool allocation in
-  `CChunkGeomFactory::Build`.
-- **Stages with no port at all:** occluders `FUN_00796c10`, barriers `FUN_00794b50` (the one call
-  missing from `OnWorldRender`), footprints `FUN_0079fcc0`, low-detail terrain `FUN_007cd910` /
-  `FUN_007cc810`, weather (`MapWeather`, driver `FUN_0078ca50`; `Weather.cpp` is not a port and
-  goes), the fog override `FUN_007ed820`, the per-frame sky override at `0x007f0573`, and the
-  glare pair `FUN_007f3230` / `FUN_007eecc0` (tag or port; `DrawGlare` exists).
+  `FUN_0071ed80`, doodad receivers `FUN_007ce960`.
+- **Dependency boundaries the camera recorded** (`src/ui/game/CameraDeps.cpp`): unit smooth
+  facing `FUN_00735f60`, input-control facing `FUN_005fb260` / `FUN_005fbe70`, the vehicle camera
+  (0x759580..0x75af40). The last two belong to phase 4; the segment query is phase 2 (above).
 
-Exit: every map, liquid, shadow and sky module at 100% linked and faithful.
+Exit: every map, liquid, shadow, sky and world-layer module at 100% linked and faithful.
 
-### Phase 3: textures and effects (558 unlinked)
+## Phase 3: textures and effects (~560 unlinked)
 
 - **Texture async** (`parity-texture-async.md`): `AsyncTextureWait` `FUN_004b6550`,
   `TextureIncreasePriority` `FUN_004b6c50`, `SFile::IsStreamingMode`, `CTextureAtlas`, the
-  `CreateBlpAsync` and `CreateTgaTexture` stubs, `TextureAllocGxTex` [25%], `AsyncFileReadWait`
-  [56%], `TextureCache` (41, 15 linked; `MirrorInitialize` is a stub). `blp` (94, 37 linked) and
-  `tga` (82, 45 linked) to 100%; the image loaders landed with the cursor.
-- **Full-screen effects:** `FFXEffects` (171, 17 linked), `EffectGlow` (38, 2), `PassGlow` (26, 0).
-  The glow itself (`FUN_004f8770`, `FUN_008c1770`, `FUN_008c1010`, `FUN_008c1100`) is unported.
-- **What the D3D9 census left:** a proper read of `GxPrimVertexPtr` (0x682400) and `IRsSendToHw`
-  (0x6a4c30) for a verdict; the 0x38-byte zero fill at +0x3ae0 in the D3D9 constructor
-  (0x68fd50); vtable slot 21 (0x6a1950, no caller found); the base constructor recorded as
-  diverged until `CGxCaps` is layout-faithful; the money, object and spell item cursors
-  (`FUN_00616510`, `FUN_00616630`, `FUN_00616720`). The D3D9Ex and OpenGL devices are out of
-  scope on Windows.
-- **Live stubs to zero:** the 35 from `livestubs.py` (`M2Init` with 63 call sites,
-  `CClientEnvironment::AddRef` with 35, `CM2Cache::GarbageCollect`, `M2BlendValue`, the `CGxFont`
-  pair), each ported or recorded as a deliberate divergence.
+  `CreateBlpAsync` and `CreateTgaTexture` stubs, `TextureAllocGxTex` 25%, `AsyncFileReadWait`
+  56%, `TextureCache` (`MirrorInitialize` is a stub), `blp` and `tga` to 100%.
+- **Full-screen effects:** `FFXEffects` (171, 17 linked), `EffectGlow` (38, 2), `PassGlow` (26,
+  0); the glow itself (`FUN_004f8770`, `FUN_008c1770`, `FUN_008c1010`, `FUN_008c1100`).
+- **What the D3D9 census left:** a read of `GxPrimVertexPtr` (0x682400) and `IRsSendToHw`
+  (0x6a4c30) for a verdict, the zero fill at +0x3ae0 in the constructor (0x68fd50), vtable slot 21
+  (0x6a1950), the base constructor recorded as diverged until `CGxCaps` is layout-faithful, and
+  the money, object and spell item cursors (`FUN_00616510`, `FUN_00616630`, `FUN_00616720`).
+- **Live stubs to zero:** the 35 from `livestubs.py` (`M2Init`, `CClientEnvironment::AddRef`,
+  `CM2Cache::GarbageCollect`, `M2BlendValue`, the `CGxFont` pair), each ported or recorded as a
+  deliberate divergence.
 
 Exit: every texture and effect module at 100% linked, no stubs.
 
-### Phase 4: entities (1,846 unlinked)
+## Phase 4: entities (~1,840 unlinked)
 
-Half of everything left, last because it is the largest and least anchored and the phases before
-it close the modules its matchers lean on. Top down:
+Half of everything left, and last, because it is the largest and least anchored and the phases
+before it close the modules its matchers lean on. Top down:
 
 - **Animation chain top** (`unit-animation-chain-port.md`): `CGUnit_C::SetAnimation`
-  `FUN_007385c0` [63%, 57 callers], `UpdateAnimation` `FUN_0073ac30` wired to the stand, emote,
+  `FUN_007385c0` (63%, 57 callers), `UpdateAnimation` `FUN_0073ac30` wired to the stand, emote,
   death and movement sites, the unit model builder `FUN_0073e410`, `m_animTier` via
-  `FUN_007167c0`. Threading the ground normal through also turns on the death tilt
-  `SetWorldTransform` already supports.
+  `FUN_007167c0`.
 - **The CEffect list:** `ObjectEffect` (41, 10 linked); `FUN_00745230` creates them and
   `FUN_006f61d0` has 125 callers. The vehicle passenger table blocks three appliers above it.
-- **Movement:** `MovementShared` (83, 4 linked; `FUN_00988490`, `FUN_00987e30`, `FUN_0098c240`,
-  `FUN_0098bff0`, `FUN_0098b0e0`, `FUN_0098bd10` first) and `Movement` (249, 5).
-- **Missiles:** `UnitMissileTrajectory_C` and `Missile_C` (93, 4 linked; `FUN_007022d0`,
-  `FUN_006fcd60`, `FUN_007015d0`).
-- **Game objects and players:** `GameObject_C` (285, 21; `FUN_0070f160` first), `Player_C`
-  (479, 54; `FUN_006dcb40`, `FUN_006dc3f0`, `FUN_006ddbb0`), `Unit_C` (643, 95).
+- **Movement:** `MovementShared` (83, 4 linked) and `Movement` (249, 5). Unit smooth facing and
+  input-control facing (the camera's boundaries) land here.
+- **Vehicles:** the vehicle camera and seats. The camera port and `CGUnit_C::UpdateWorldObject`
+  already call into them through recorded boundaries.
+- **Missiles:** `UnitMissileTrajectory_C` and `Missile_C` (93, 4 linked).
+- **Game objects and players:** `GameObject_C` (285, 21; its `UpdateWorldObject` override
+  `FUN_0070cbe0` needs the rotation quaternion), `Player_C` (479, 54), `Unit_C` (643, 98).
 - **Spell visuals:** `SpellVisuals` (65, none linked).
 
 Exit: the entity row at 100% linked and faithful. With it, criteria 1 to 3 are met.
 
-### Phase 5: verification, once
+## Phase 5: verification, once
 
 Started when phases 1 to 4 are practically done, in one block:
 
-1. Build, install with the PDB, run with `FROZEN_AUTO_LOGIN`, `FROZEN_AUTO_CHARACTER` on a map-0
-   character, `FROZEN_FORCE_TIME=12`, `FROZEN_AUTO_SCREENSHOT` and `FROZEN_SHADOW_DUMP`. Expect a
-   fault; `tools/crashstack.py` and the commit log are the debugger. **Owed a first look,
-   newest first:** the device cursor at login and in the world; resize and alt-tab (the reset path
-   lost two frozen workarounds); the QPC timer; character creation now refusing invalid names;
-   doodads at a water line (the liquid plane clips them); one-bone doodads (`AnimateMTSimple`);
-   DXT textures gaining their smallest mips; fixed-function passes getting the combiners they ask
-   for; the 200/30 FPS caps.
+1. Run with `FROZEN_AUTO_LOGIN`, `FROZEN_AUTO_CHARACTER` on a map-0 character,
+   `FROZEN_FORCE_TIME=12` and `FROZEN_AUTO_SCREENSHOT`. Expect faults; `tools/crashstack.py` is
+   the debugger. Owed a first look, newest first: everything under "Owed a look" in phase 2; the
+   device cursor; resize and alt-tab (the reset path lost two frozen workarounds); the QPC timer;
+   character creation refusing invalid names; doodads at a water line; one-bone doodads; DXT
+   textures with their smallest mips; fixed-function combiners; the 200/30 FPS caps.
 2. Trace both clients with `tools/recomp/calltrace.py` over the same frames and drive per-frame
    agreement on the render spine from 58% (2026-09-18) to 100%, marking each function `verified`.
 3. Baseline `tools/scene-compare` on a fixed suite (outdoor noon, dawn in a `highlightSky` zone,
@@ -267,40 +270,24 @@ Exit: 100%.
 
 ## Order and pace
 
-Phases 1 to 4 in that order, each closed before the next so the matchers stop guessing, with
-`--fix` and `--helpers` batches interleaved because they are the cheapest links there are. Good
-days of cycles have linked 150 to 350 functions, so 3,802 links is on the order of fifteen to
-twenty-five such days, with the fidelity work on the roots on top.
+Phases 2 to 4 in that order, each closed before the next so the matchers stop guessing, with
+`--fix` and `--helpers` batches interleaved because they are the cheapest links there are. A good
+day has linked 150 to 350 functions, so the ~3,350 left is on the order of fifteen such days,
+with the fidelity work on the roots on top.
 
 ## Progress log
 
-One line per run, newest last: render surface linked / total, faithful, stubs, live empty
-functions. The commit log has the detail.
+One line per measured run: render surface linked / total, faithful, stubs, live empty functions.
+The commit log has the detail.
 
 | run | linked | faithful | stubs | live empty | what moved |
 |---|---|---|---|---|---|
 | 2026-10-01 start | 1,267 / 4,838 | n/a | 20 | 37 | baseline |
-| 2026-10-01 | 1,398 / 5,327 | 869 | 32 | 37 | phase 0: recovered anchors grew the denominator (no ports) |
-| 2026-10-01 | 1,398 / 5,327 | 870 | 32 | 37 | `SetWorldTransform` faithful: the surface-normal tilt and its per-sequence blend |
+| 2026-10-01 | 1,398 / 5,327 | 869 | 32 | 37 | phase 0: recovered anchors grew the denominator |
 | 2026-10-01 | 1,439 / 5,390 | 907 | 32 | 37 | ParticleColor.dbc override end to end; `ParticleSystem2` given its range |
-| 2026-10-01 | 1,439 / 5,390 | 909 | 32 | 37 | ruler: template instantiations matched; `AnimateMTSimple` 75% -> 100% |
-| 2026-10-01 | 1,441 / 5,390 | 911 | 32 | 37 | `AnimateMT`: ribbon and particle track passes, which were missing |
-| 2026-10-01 | 1,441 / 5,390 | 912 | 32 | 37 | `AnimateMT` faithful: billboarding, parent inheritance, secondary sequence |
-| 2026-10-01 | 1,442 / 5,390 | 913 | 32 | 37 | `InitializeLoaded` 64% -> 79%: emitter order, `SetFollow`, the stand animation |
-| 2026-10-01 | 1,442 / 5,390 | 914 | 32 | 37 | regression fixed: one-bone models never wrote their bone matrix |
-| 2026-10-01 | 1,444 / 5,390 | 917 | 32 | 37 | `ReplaceTexture` faithful: ribbons and emitters take replaceable textures |
-| 2026-10-01 | 1,446 / 5,390 | 920 | 32 | 37 | the liquid plane end to end: doodads clip at the water line |
-| 2026-10-01 | 1,446 / 5,390 | 922 | 32 | 37 | `SelectLights` (a `floor` bug missed lights in negative space), `SetupTextures` |
-| 2026-10-01 | 1,446 / 5,390 | 924 | 32 | 37 | `IsDrawable` waits on attachments; `~CM2Model` lost three leaks |
-| 2026-10-01 | 1,457 / 5,390 | 932 | 32 | 37 | phase 3a: `IRsSendToHw`, 33 -> 77 cases |
-| 2026-10-01 | 1,457 / 5,390 | 933 | 32 | 37 | phase 3a: `DsSet` sends all 182 slots (anisotropy had never been sent) |
-| 2026-10-01 | 1,461 / 5,390 | 939 | 32 | 37 | phase 3a: transform sync, texgen, dirty tracking |
-| 2026-10-01 | 1,468 / 5,390 | 944 | 32 | 37 | phase 3a: texture create, upload (DXT small mips), destroy (leak), reset |
-| 2026-10-01 | 1,486 / 5,390 | 955 | 32 | 37 | phase 3a: buffers, device destroy (was empty), format change |
-| 2026-10-01 | 1,492 / 5,390 | 957 | 32 | 37 | phase 3a: frame cap, fixLag, scene and present, window fit |
-| 2026-10-01 | 1,496 / 5,390 | 959 | 32 | 37 | phase 3a: caps, `DeviceWM` focus, `CGxFormat` defaults |
-| 2026-10-01 | 1,541 / 5,379 | 1,001 | 32 | n/m | phase 3a: the device census; queries, targets, capture, SLog, declarations, stereo |
-| 2026-10-01 | 1,571 / 5,377 | 1,023 | 33 | n/m | phase 3a closed: cursor, window procedure, time manager, `TextureLoadImage` |
-| 2026-10-01 | 1,575 / 5,377 | 1,054 | 33 | n/m | hand verdicts for ~45 census functions; NVAPI thunks tagged |
-| 2026-10-02 | 1,575 / 5,377 | 1,054 | 33 | 35 | reference switched to the vanilla `WoW.exe`; two patch leaks fixed |
-| 2026-10-02 | 1,699 / 5,293 | 1,149 | 25 | n/m | phase 1: models 240 -> 29 unlinked; doodad instancing live, two bugs found by the first run |
+| 2026-10-01 | 1,446 / 5,390 | 924 | 32 | 37 | `AnimateMT`, `InitializeLoaded`, `ReplaceTexture`, the liquid plane, `SelectLights` |
+| 2026-10-01 | 1,496 / 5,390 | 959 | 32 | 37 | phase 3a: render states, transforms, textures, buffers, frame cap, caps |
+| 2026-10-01 | 1,575 / 5,377 | 1,054 | 33 | n/m | phase 3a closed: device census, cursor, window procedure, hand verdicts |
+| 2026-10-02 | 1,575 / 5,377 | 1,054 | 33 | 35 | reference switched to the vanilla `WoW.exe` |
+| 2026-10-02 | 1,699 / 5,293 | 1,149 | 25 | n/m | phase 1: models 240 -> 29 unlinked; doodad instancing live |
+| 2026-10-02 | 1,897 / 5,246 | 1,258 | 25 | n/m | phase 2 part 1: projected textures, portal views, map memory order, liquid bank and pool, box queries, the camera, the shadow map, object placement |
