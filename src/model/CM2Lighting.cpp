@@ -1,3 +1,4 @@
+#include "gx/Gx.hpp"
 #include "model/CM2Lighting.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
@@ -390,15 +391,9 @@ uint8_t CM2Lighting::FogColorByte(float c) {
 // saturating. The component order is the reference's too: blue is computed first, then green, then
 // red, and alpha is forced to 0xff.
 //
-// ONE GATE IS NOT PORTED, and it is a missing frozen field rather than an oversight. The reference
-// skips the FogStart and FogEnd writes when a capability flag is set: it reads the global device,
-// takes the sub-object at +0x214, and tests the dword at +0xb4. That sub-object is CGxCaps -- the
-// same accessor feeds offsets 0x130, 0x134 and 0x138, which are precisely the three fields frozen
-// already names int130, int134 and int138 for their reference offsets. But frozen's CGxCaps is not
-// layout-faithful: laid out as declared, its int130 lands at 0xa0, so the class is roughly 0x90
-// bytes short of the reference's and has no field at 0xb4 to read. The flag is read ten times
-// across the reference, so it is real and used. Until CGxCaps is filled in, this takes the branch
-// that writes the states, which is what the reference does whenever the flag is clear.
+// The FogStart and FogEnd writes are gated on caps +0xb4, which is m_shaderTargets[GxSh_Vertex]:
+// CM2Cache::Initialize reads it beside +0xc4, sixteen bytes on, which is GxSh_Pixel in the same
+// six-entry array. A note here used to call that field missing from frozen's CGxCaps; it is not.
 //
 // **Built, not seen running.**
 // ref: FUN_00835750
@@ -409,9 +404,13 @@ void CM2Lighting::SetupGxFog() {
         return;
     }
 
-    // See the note above: the reference gates these two on a CGxCaps field frozen does not carry.
-    GxRsSet(GxRs_FogStart, this->m_fogStart);
-    GxRsSet(GxRs_FogEnd, this->m_fogEnd);
+    // The fog range is the fixed-function pipeline's; a vertex shader computes its own fog from
+    // the constants, so the range is only set without one. Caps +0xb4 is the vertex shader target,
+    // the same field CM2Cache::Initialize tests.
+    if (GxCaps().m_shaderTargets[GxSh_Vertex] == GxShVS_none) {
+        GxRsSet(GxRs_FogStart, this->m_fogStart);
+        GxRsSet(GxRs_FogEnd, this->m_fogEnd);
+    }
 
     CImVector fogColor;
     fogColor.b = CM2Lighting::FogColorByte(this->m_fogColor.z);
