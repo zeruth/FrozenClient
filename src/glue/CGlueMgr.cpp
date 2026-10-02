@@ -260,6 +260,9 @@ void CGlueMgr::EnterWorld() {
 
     CVar::Save();
 
+    // The glue screens' released textures are of no use in the world.
+    TextureFlushGxTexCache();
+
     if (ClientServices::LoginConnection()->GetLoginServerType() == 0) {
         ClientServices::LoginConnection()->Logoff();
     }

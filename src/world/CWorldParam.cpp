@@ -11,6 +11,9 @@
 #include "gx/Gx.hpp"
 #include "gx/Types.hpp"
 #include "gx/shader/CShaderEffect.hpp"
+#include "gx/Texture.hpp"
+#include "client/Client.hpp"
+#include "ui/game/PortraitButton.hpp"
 #include <cstdio>
 
 CVar* CWorldParam::cvar_baseMip;
@@ -64,7 +67,7 @@ bool CWorldParam::s_mapShadows = false;
 bool CWorldParam::BaseMipCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
     uint32_t level = SStrToInt(value);
 
-    if (level == g_theGxDevicePtr->m_baseMipLevel) {
+    if (level == g_theGxDevicePtr->DeviceBaseMipLevel()) {
         return true;
     }
 
@@ -76,9 +79,10 @@ bool CWorldParam::BaseMipCallback(CVar* var, const char* oldValue, const char* v
 
     g_theGxDevicePtr->DeviceSetBaseMipLevel(level);
 
-    // TODO FUN_004b65e0 reloads every loaded texture at the new base level (FUN_004b63b0 per
-    // texture), and FUN_00617070 marks the portrait buttons for a redraw. Frozen has neither yet,
-    // so textures already loaded keep the old level until they are next created.
+    // The atlas pages are read again at the new level (the device re-creates every other texture
+    // itself, through its callback), and every portrait is drawn again.
+    TextureReloadAtlases();
+    PortraitButtonInvalidateAll();
 
     CWorld::s_textureCacheDirty = 1;
 
@@ -271,11 +275,39 @@ bool CWorldParam::SkyCloudLODCallback(CVar* var, const char* oldValue, const cha
     return true;
 }
 
+// Reference 0x00d3920c: the violence level in force.
+int32_t CWorldParam::s_violenceLevel;
+
+// ref: FUN_007f39b0
+// The violence level, never above what the client's locale allows (the reference's table at
+// 0x00af4e14, by the locale index). Below the full level the small blood spurt is drawn with a
+// lower-detail texture, through the texture loader's one substitution.
 bool CWorldParam::ViolenceLevelCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO selects the blood texture set through UnitBloodLevels.dbc, whose record frozen already
-    // reads (src/db/rec/UnitBloodLevelsRec.cpp carries m_violencelevel[3]).
+    static int32_t s_maxViolenceLevel[9] = { 2, 1, 2, 2, 1, 2, 2, 2, 2 };
+
+    static const char* s_bloodSpurtTextures[3] = {
+        "BloodSpurtSmall01_Low.blp",
+        "BloodSpurtSmall01_Medium.blp",
+        "BloodSpurtSmall01.blp"
+    };
+
+    CWorldParam::s_violenceLevel = SStrToInt(value);
+
+    if (CWorldParam::s_violenceLevel < 0 || CWorldParam::s_violenceLevel > s_maxViolenceLevel[g_localeIndex]) {
+        CWorldParam::s_violenceLevel = s_maxViolenceLevel[g_localeIndex];
+    }
+
+    if (CWorldParam::s_violenceLevel == 2) {
+        TextureSetSubstitution(nullptr, nullptr);
+
+        return true;
+    }
+
+    TextureSetSubstitution(s_bloodSpurtTextures[2], s_bloodSpurtTextures[CWorldParam::s_violenceLevel]);
+
     return true;
 }
+
 
 void CWorldParam::Initialize() {
     CWorldParam::cvar_farClipOverride = CVar::Register(

@@ -320,7 +320,7 @@ void RestoreLiquidTextures() {
         CTexture* texture = TextureGetTexturePtr(s_proceduralTextures[i]);
 
         if (texture) {
-            TextureCacheNewTexture(texture, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1));
+            TextureCacheNewTexture(texture);
         }
     }
 
@@ -503,10 +503,32 @@ void CMaterialSettings::LoadTextures() {
             }
         }
 
-        // TODO the second set, FUN_004b8d70 over the same names, kept only when it comes out the
-        // same length as the first. Which loader that is, and so what the second set is for, is
-        // not established, so m_framesAlt stays empty.
-        (void)any;
+        // While any frame is still being read, the texture blobs' low-detail copies of the same
+        // frames stand in (GetFrame draws them until every real frame has arrived). The set is only
+        // kept when the blobs carry every frame the files do.
+        if (!any) {
+            continue;
+        }
+
+        for (uint32_t frame = 1; frame < MAX_FRAMES + 1; frame++) {
+            char path[CMaterialSettings::TEXTURE_NAME_SIZE];
+            SStrPrintf(path, sizeof(path), name, frame);
+
+            HTEXTURE texture = TextureCreateFromBlob(path, flags, &status, 1);
+
+            if (texture) {
+                this->m_framesAlt[slot].Add(1, &texture);
+            }
+        }
+
+        if (this->m_framesAlt[slot].Count() != this->m_frames[slot].Count()) {
+            for (uint32_t i = 0; i < this->m_framesAlt[slot].Count(); i++) {
+                HandleClose(this->m_framesAlt[slot][i]);
+            }
+
+            this->m_framesAlt[slot].SetCount(0);
+        }
+
     }
 }
 

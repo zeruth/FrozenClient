@@ -64,6 +64,7 @@ void CRenderBatch::Finish() {
     }
 }
 
+// ref: FUN_004846f0
 void CRenderBatch::Queue(CTexture* texture, EGxBlend alphaMode, int32_t posCount, const C3Vector* position, const C2Vector* texCoord, int32_t colorCount, const CImVector* color, int32_t idxCount, const uint16_t* indices, CGxShader* shader) {
     CGxTex* textureID = TextureGetGxTex(texture, 1, nullptr);
 
@@ -85,13 +86,13 @@ void CRenderBatch::Queue(CTexture* texture, EGxBlend alphaMode, int32_t posCount
     mesh->indices = const_cast<uint16_t*>(indices);
     mesh->idxCount = idxCount;
 
-    // TODO
-    // - implement atlas stuff
-    mesh->onAtlas = 0;
-    // mesh->onAtlas = TextureOnAtlas(texture);
-    // if (onAtlas) {
-    //     TextureGetAtlasOffsetAndScale(mesh->texture, mesh->offset, mesh->scale);
-    // }
+    // An atlased texture draws through its page: its coordinates are scaled into its block.
+    mesh->onAtlas = TextureIsAtlased(reinterpret_cast<HTEXTURE>(texture));
+
+    if (mesh->onAtlas) {
+        TextureGetAtlasCoords(reinterpret_cast<HTEXTURE>(mesh->texture), &mesh->atlasOffset, &mesh->atlasScale);
+    }
+
 
     this->m_count++;
 }

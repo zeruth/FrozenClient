@@ -222,7 +222,11 @@ CGxTex* ShadowAddGxTex() {
 void ShadowInit() {
     CGxTexFlags flags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
 
-    s_blobTexture = TextureCreate("Textures\\ShadowBlob.blp", flags, nullptr, 1);
+    // TextureCreate refuses a null status, as the reference's does.
+    CStatus status;
+
+    s_blobTexture = TextureCreate("Textures\\ShadowBlob.blp", flags, &status, 1);
+
 
     s_addTexture = TextureCreate(
         RAMP_WIDTH, RAMP_HEIGHT, GxTex_Argb8888, GxTex_Argb8888,
@@ -262,15 +266,15 @@ void ShadowDestroy() {
 // ref: FUN_007e3980
 // Turning blobs on is what generates the ramps: the reference re-installs each generator on its
 // texture and then latches both, rather than relying on the create-time callback firing.
-//
-// DIVERGED: the re-install (FUN_004b5430) has no counterpart here, because frozen's TextureCreate
-// keeps the callback it was given and nothing ever replaces it. The latch itself is reproduced.
 void ShadowSetLOD(int32_t lod) {
     g_shadowLOD = lod;
 
     if (lod != 1) {
         return;
     }
+
+    TextureSetUpdateCallback(s_addTexture, ShadowAddCallback, nullptr);
+    TextureSetUpdateCallback(s_modTexture, ShadowModCallback, nullptr);
 
     CiRect rect = RampRect();
 

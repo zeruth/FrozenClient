@@ -199,6 +199,7 @@ class CMap {
         // Static functions
         static void Initialize();
         static void Load(const char* mapName, int32_t mapID);
+        static void LoadTextureBlob();
         static void LoadWdt();
         static void LoadSettings();
         static void SetTerrainShaderLevel(int32_t level);

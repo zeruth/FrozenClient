@@ -1341,6 +1341,38 @@ void CWorld::UpdateWindow(const C3Vector& targetPos) {
     if (CMap::s_chunkWindowMaxY > 0x3FF) CMap::s_chunkWindowMaxY = 0x3FF;
 }
 
+// ref: FUN_0077f900
+// When the base mip level or the far clip changed (s_textureCacheDirty) and gxTextureCacheSize leaves
+// the choice to the client, size the device's texture cache from them: 64 MB, or 128 MB past a far
+// clip of 727, at full detail; 16 MB, or 32 MB past 177, at the reduced base mip.
+//
+// DIVERGED in the one call that uses the size: the reference hands it to the device through its
+// vtable slot 0xf4, which on the Direct3D 9 device is an empty `ret 4` (0x00632050). Frozen's D3D9
+// device has nothing to receive it, so the choice is made and dropped as the reference's own device
+// drops it.
+void CWorld::UpdateTextureCacheSize() {
+    if (!CWorld::s_textureCacheDirty || CWorld::s_textureCacheSize) {
+        return;
+    }
+
+    CWorld::s_textureCacheDirty = 0;
+
+    uint32_t baseMip = g_theGxDevicePtr->DeviceBaseMipLevel();
+    int32_t farClip = static_cast<int32_t>(CWorld::s_farClip);
+
+    int32_t megabytes;
+
+    if (baseMip == 0) {
+        megabytes = farClip <= 727 ? 64 : 128;
+    } else {
+        megabytes = farClip <= 177 ? 16 : 32;
+    }
+
+    // The size the reference passes to the device's slot 0xf4; see above.
+    uint32_t size = static_cast<uint32_t>(megabytes) << 20;
+    (void)size;
+}
+
 // ref: FUN_007831a0
 // The reference's frame update, of which the map part is ported: the previous chunk window is
 // kept, the new one built from the target, a window that no longer overlaps flags a full reload,
@@ -1360,7 +1392,9 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
         CWorld::s_cameraDir = { d.x / len, d.y / len, d.z / len };
     }
 
-    // TODO FUN_0077f900 and the 30-entry frame-time ring (DAT_00cd76b0 / DAT_00cd7728)
+    CWorld::UpdateTextureCacheSize();
+
+    // TODO the 30-entry frame-time ring (DAT_00cd76b0 / DAT_00cd7728)
 
     CWorld::s_prevWindowMinX = CMap::s_chunkWindowMinX;
     CWorld::s_prevWindowMinY = CMap::s_chunkWindowMinY;

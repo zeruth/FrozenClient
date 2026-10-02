@@ -7,6 +7,7 @@ class CWorldParam {
     public:
         // Static variables
         static int32_t s_maxLights;       // MaxLights (reference DAT_00cd7660)
+        static int32_t s_violenceLevel;   // violenceLevel, clamped (reference DAT_00d3920c)
         static uint32_t s_mapObjLightLOD; // mapObjLightLOD (DAT_00d1c414)
         static int32_t s_waterLOD;        // waterLOD, always 0 in 3.3.5 (DAT_00cdffd0)
         static bool s_mapShadows;         // mapShadows: bit 0x40 of the world flags (DAT_00cd774c)
