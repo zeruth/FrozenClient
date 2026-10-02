@@ -32,6 +32,7 @@ void CM2Shared::LoadCanceledCallback(CAsyncObject* object) {
     // TODO free buffer?
 }
 
+// ref: FUN_00835a00
 void CM2Shared::LoadFailedCallback(void* arg) {
     CM2Shared* shared = static_cast<CM2Shared*>(arg);
 
