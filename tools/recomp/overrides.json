@@ -1,4 +1,8 @@
 {
+  "007a03c0": {
+    "status": "unlinked",
+    "note": "The footprint textures, NOT CMap::MapMemInitializeHeaps (a positional order-matcher link, rejected 2026-10-02). Resets the two footprint ring cursors (DAT_00cf495c = 0x40, DAT_00cf4958 = 0), sizes the per-texture bucket array at 0x00cfbe64 to FootprintTextures.dbc's max id + 1 (FUN_007a02f0, CMapFootprintTexture), and TextureCreates each record's path into its bucket. Called from MapMemInitialize at 0x0079e7e0. Part of the footprint module 0x79f820..0x7a03c0 (draw FUN_0079fcc0, adder FUN_0079fa70), unported because its producer, the unit footstep event FUN_00723a50, is unported."
+  },
   "007cf9a0": {
     "status": "verified",
     "note": "CChunkLiquid::UpdateForFrame. Makes the layer's surface the first time it is looked at and marks it seen, so the surface lives while the layer stays in view. VERIFIED 2026-09-26 on map 0 (Elwynn Forest, reached with FROZEN_AUTO_CHARACTER=Tauren) through the genuine route with both frustum gates intact and nothing bypassed: a layer was visited, it took a surface, and its liquid type was 5 -- a different type from the 2 that map 609 offers, so the material bank resolved a second one too. This could NOT be verified on the default spawn: Acherus is 138 yards up and no chunk carrying liquid is ever in frustum there, so the row lists stay empty and this never fires -- a counter at the call site printed nothing even at a threshold of one. TODO the reference also queues the surface for the frame's draw (FUN_007d62a0) once it has geometry; the draw is not ported, so nothing is queued."

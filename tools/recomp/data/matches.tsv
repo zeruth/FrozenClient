@@ -22,8 +22,8 @@ addr	how	frozen	evidence
 00402100	annotated	M2ConvertFasterFlags	tag in src/model/Model2.cpp
 004021c0	annotated	M2FasterChanged	tag in src/model/Model2.cpp
 00402210	annotated	M2DebugFasterChanged	tag in src/model/Model2.cpp
-00402250	cvar	UIFasterCalllback	callback of CVar::Register("UIFaster") on both sides
-00402320	cvar	TextureCacheSizeCallback	callback of CVar::Register("textureCacheSize") on both sides
+00402250	override	UIFasterCalllback	
+00402320	annotated	TextureCacheSizeCallback	tag in src/client/Client.cpp
 004023c0	annotated	TextureFilteringCallback	tag in src/client/Client.cpp
 00402410	cvar	BatchDoodadsCallback	callback of CVar::Register("M2BatchDoodads") on both sides
 00402470	annotated	BatchParticlesCallback	tag in src/model/Model2.cpp
@@ -64,7 +64,7 @@ addr	how	frozen	evidence
 00408270	annotated	C3VectorStackArray::Init	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
-00408c30	callorder	GxRsSetAlphaRef	same slot between linked calls in 00687a90=CGxDevice::ICursorDraw, 007e4480=ShadowProjectBlob
+00408c30	callorder	GxRsSetAlphaRef	same slot between linked calls in 00687a90=CGxDevice::ICursorDraw, 007e4480=ShadowProjectBlob, 009ac400=GlareDraw
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
 00409550	annotated	LoadingScreenFinish	tag in src/gx/LoadingScreen.cpp
 00409670	override	GxRsPush	
@@ -76,9 +76,10 @@ addr	how	frozen	evidence
 0040ab70	annotated	LoadingScreenStart	tag in src/gx/LoadingScreen.cpp
 0040aef0	annotated	LoadingScreenSetProgress2	tag in src/gx/LoadingScreen.cpp
 0040af90	annotated	LoadingScreenSetProgress	tag in src/gx/LoadingScreen.cpp
+004217e0	annotated	SFile::GetStreamedBytes	tag in src/util/SFile.cpp
 00421800	sticky	sprintf	held from the previous run, where it was sticky
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
-004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 006ab220=TgaFile::ReadRle, 006aff10=CBLPFile::Open, 00876d90=CShaderEffectManager::LoadEffectFile
+004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 004b8910=CreateBlpSync, 004bbb20=CModelBlob::Load, 004c0f50=TextureBlobLoad
 00421bb0	annotated	SFile::SetFilePointer	tag in src/util/SFile.cpp
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
@@ -141,13 +142,15 @@ addr	how	frozen	evidence
 0047c060	annotated	DDCToNDCHeight	tag in src/gx/Coordinate.cpp
 0047c070	override	NDCToDDCWidth	
 0047c080	annotated	NDCToDDCHeight	tag in src/gx/Coordinate.cpp
-0047c360	sticky	CStatus::Add	held from the previous run, where it was sticky
+0047c090	callgraph	GetGlobalStatusObj	only unmatched callee of 0083cc80=CM2Shared::Initialize
+0047c360	callorder	CStatus::Add	same slot between linked calls in 00813ee0=FrameXML_ProcessFile
 0047cbf0	callgraph	PropSelectContext	only unmatched callee of 0081bfe0=CM2Cache::ThreadProc
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
 0047d1d0	callgraph	ConvertButtonNumberToMOUSEBUTTON	only unmatched callee of 005148b0=Script_IsMouseButtonDown
 0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
 0047d3c0	callgraph	EventRegisterEx	only unmatched callee of 00407b00=RegisterEvents
+0047d450	callgraph	EventUnregisterEx	only unmatched callee of 004b8420=TextureDestroy
 0047d790	callorder	EventUnregister	same slot between linked calls in 009860e0=SI2::StopGlueMusic
 0047e910	callorder	InitializeSchedulerThread	same slot between linked calls in 0047f230=SchedulerThreadProc
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
@@ -187,6 +190,7 @@ addr	how	frozen	evidence
 00483910	callorder	CSimpleFontString::SetText	same slot between linked calls in 0048d780=CSimpleFontString_SetText
 00483cd0	callorder	CSimpleFontString::AddShadow	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 00483dd0	annotated	CSimpleFontString::SetShadowOffset	tag in src/ui/simple/CSimpleFontString.cpp
+004846f0	annotated	CRenderBatch::Queue	tag in src/ui/CRenderBatch.cpp
 00485160	callorder	CSimpleFontable::SetFontObject	same slot between linked calls in 004873e0=CSimpleFontString::LoadXML
 004859e0	callorder	CSimpleTexture::SetTexture	same slot between linked calls in 0048c6f0=CSimpleTexture_SetTexture, 0057e100=CGMinimapFrame_SetPlayerTexture
 00485f40	override	CSimpleTexture::LoadXML	
@@ -649,42 +653,93 @@ addr	how	frozen	evidence
 004a8bb0	callorder	ScrnLayerCreate	same slot between linked calls in 0040a990=Begin
 004b5040	override	SysMsgPrintf	
 004b50a0	annotated	AsyncReadIsUnstarted	tag in src/component/Texture.cpp
+004b50c0	annotated	PixelFormatToGxTexFormat	tag in src/gx/texture/TextureBlob.cpp
+004b50d0	annotated	CTextureAtlas::UpdateBlock	tag in src/gx/texture/CTextureAtlas.cpp
+004b5130	annotated	AsyncTextureCleanup	tag in src/gx/Texture.cpp
+004b5170	annotated	FileError	tag in src/gx/Texture.cpp
 004b51c0	override	OsPathFindExtensionWithDot	
-004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
+004b5210	annotated	FindSubstitution	tag in src/gx/Texture.cpp
+004b5280	annotated	GetDefaultTexture	tag in src/gx/Texture.cpp
+004b5300	annotated	AsyncTextureFailed	tag in src/gx/Texture.cpp
+004b5340	annotated	TextureOpenFile	tag in src/gx/Texture.cpp
+004b5390	annotated	TextureSetAtlasEnable	tag in src/gx/Texture.cpp
 004b53a0	annotated	TextureIsSame	tag in src/gx/Texture.cpp
-004b5430	callgraph	RampRect	only unmatched callee of 007e3980=ShadowSetLOD
+004b5430	annotated	TextureSetUpdateCallback	tag in src/gx/Texture.cpp
+004b5460	annotated	TextureIsAtlased	tag in src/gx/Texture.cpp
+004b5490	annotated	TextureGetAtlasCoords	tag in src/gx/Texture.cpp
 004b54f0	annotated	TextureHasAlpha	tag in src/gx/Texture.cpp
 004b5510	annotated	CalcLevelCountFlat	tag in src/gx/Texture.cpp
 004b5550	annotated	TextureBuildMissingMips	tag in src/gx/Texture.cpp
 004b55e0	annotated	TextureFreeMem	tag in src/gx/Texture.cpp
 004b5600	annotated	TextureGetFileType	tag in src/component/Texture.cpp
 004b5670	annotated	TextureBuildAlternateName	tag in src/component/Texture.cpp
+004b56f0	annotated	TextureGetFilename	tag in src/gx/Texture.cpp
+004b5710	annotated	TextureIsLoaded	tag in src/gx/Texture.cpp
+004b5730	annotated	TextureSetSubstitution	tag in src/gx/Texture.cpp
 004b5750	annotated	TextureGetTexFlags	tag in src/gx/Texture.cpp
+004b5770	annotated	PixelFormatBlockBytes	tag in src/gx/Texture.cpp
+004b5780	annotated	TextureLoadBlob	tag in src/gx/Texture.cpp
+004b5790	annotated	TextureUnloadBlob	tag in src/gx/Texture.cpp
+004b57a0	annotated	TextureGetLoadProgress	tag in src/gx/Texture.cpp
 004b5800	annotated	TextureHasPendingData	tag in src/gx/Texture.cpp
+004b5820	annotated	CGxTexFlags::operator==	tag in src/gx/texture/CGxTex.cpp
 004b58d0	annotated	CBLPFile::CBLPFile	tag in src/gx/blp/CBLPFile.cpp
+004b5930	annotated	CTextureAtlas::UpdateTexture	tag in src/gx/texture/CTextureAtlas.cpp
 004b5a00	annotated	TextureLoadTgaMips	tag in src/gx/Texture.cpp
+004b5bb0	annotated	RequestImageDimensions	tag in src/gx/Texture.cpp
+004b5c30	annotated	GetBlpMips	tag in src/gx/Texture.cpp
+004b5e10	annotated	ReloadMips	tag in src/gx/Texture.cpp
+004b5e80	annotated	UpdateBlpTextureAsync	tag in src/gx/Texture.cpp
+004b5fe0	annotated	GetTextureFormats	tag in src/gx/Texture.cpp
+004b6180	annotated	TextureGetDefaultCacheSize	tag in src/gx/Texture.cpp
+004b61c0	annotated	TextureSetFilterMode	tag in src/gx/Texture.cpp
+004b6230	annotated	TextureSetMaxAnisotropy	tag in src/gx/Texture.cpp
 004b6280	annotated	TextureGetRefCount	tag in src/gx/Texture.cpp
+004b62a0	annotated	TextureIsGxTexUploaded	tag in src/gx/Texture.cpp
+004b62d0	annotated	TextureHasGxTexCallback	tag in src/gx/Texture.cpp
+004b6300	annotated	GxTexMemSize	tag in src/gx/Texture.cpp
+004b63b0	override	CTextureAtlas::Reload	
+004b64e0	override	AsyncTextureStartRead	
 004b6550	annotated	AsyncTextureWait	tag in src/gx/Texture.cpp
+004b6580	annotated	TextureSetCacheSize	tag in src/gx/Texture.cpp
+004b65e0	annotated	TextureReloadAtlases	tag in src/gx/texture/CTextureAtlas.cpp
 004b6610	annotated	TextureGetDimensions	tag in src/gx/Texture.cpp
+004b6700	annotated	CTextureAtlas::CTextureAtlas	tag in src/gx/texture/CTextureAtlas.cpp
 004b6760	override	TextureAllocGxTex	
 004b6920	string	FillInSolidTexture	unique "SolidTexture"
+004b69e0	override	AsyncTexturePoll	
+004b6ae0	override	TextureTrimGxTexCache	
 004b6c50	annotated	TextureIncreasePriority	tag in src/gx/Texture.cpp
 004b6cb0	override	TextureGetGxTex	
+004b6e90	override	CTextureAtlas::Create	
 004b6f30	override	TextureCacheGetProcedural	
 004b6fa0	override	TextureCacheGetTexture	
 004b7020	override	TextureCacheGetTexture	
+004b70a0	override	TextureFreeGxTex	
 004b7220	annotated	TextureAllocMippedImg	tag in src/gx/Texture.cpp
 004b7300	annotated	TextureFreeMippedImg	tag in src/gx/Texture.cpp
+004b76e0	override	CTextureAtlas::~CTextureAtlas	
+004b7770	override	CTextureAtlas::Allocate	
 004b78a0	annotated	TextureLoadTga	tag in src/gx/Texture.cpp
-004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
+004b7aa0	override	UpdateTgaTexture	
+004b7bd0	annotated	PumpBlpTextureAsync	tag in src/gx/Texture.cpp
+004b7e80	annotated	AsyncTextureLoaded	tag in src/gx/Texture.cpp
+004b7f80	annotated	TextureInitialize	tag in src/gx/Texture.cpp
+004b8000	annotated	GxTexCacheFlush	tag in src/gx/Texture.cpp
+004b8060	annotated	TextureFlushGxTexCache	tag in src/gx/Texture.cpp
 004b8070	annotated	TextureLoadBlp	tag in src/gx/Texture.cpp
 004b81d0	annotated	TextureLoadImage	tag in src/gx/Texture.cpp
+004b8420	annotated	TextureDestroy	tag in src/gx/Texture.cpp
+004b8720	annotated	CTextureAtlas::Free	tag in src/gx/texture/CTextureAtlas.cpp
 004b8770	override	CTexture::CTexture	
+004b8830	annotated	CTexture::~CTexture	tag in src/gx/texture/CTexture.cpp
 004b8910	override	CreateBlpSync	
 004b8a50	override	CreateBlpAsync	
 004b8be0	override	CreateBlpTexture	
 004b8c80	override	TextureCreate	
-004b9200	sticky	GxDevApi	held from the previous run, where it was sticky
+004b8d70	annotated	TextureCreateFromBlob	tag in src/gx/Texture.cpp
+004b9200	annotated	TextureCreate	tag in src/gx/Texture.cpp
+004b9420	annotated	TextureCacheNewTexture	tag in src/gx/Texture.cpp
 004b9480	override	TextureCacheNewTexture	
 004b94e0	annotated	TextureCacheNewTexture	tag in src/gx/Texture.cpp
 004b9550	override	TextureCreateSolid	
@@ -699,10 +754,10 @@ addr	how	frozen	evidence
 004b9de0	override	AsyncFileReadDestroyObject	
 004b9ea0	override	AsyncFileReadCancel	
 004ba060	annotated	AsyncFileReadWait	tag in src/async/AsyncFileRead.cpp
-004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 004f2be0=CACHEENTRY::LoadTexture, 007d7150=CMapArea::BeginLoad, 007d80c0=CMapObj::Read
+004ba170	callgraph	AsyncFileReadAllocObject	only unmatched callee of 004b8a50=CreateBlpAsync, 004f2be0=CACHEENTRY::LoadTexture, 007d7150=CMapArea::BeginLoad
 004ba3d0	annotated	AsyncFileReadLinkObject	tag in src/async/AsyncFileRead.cpp
 004bab50	override	AsyncFileReadObject	
-004bac20	annotated	AsyncReadBumpPriority	tag in src/component/Texture.cpp
+004bac20	annotated	AsyncReadBumpPriority	tag in src/async/AsyncFileRead.cpp
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
 004bae10	annotated	AsyncFileReadWaitAll	tag in src/async/AsyncFileRead.cpp
 004baf60	annotated	CModelBlob::~CModelBlob	tag in src/model/Model2.cpp
@@ -727,6 +782,19 @@ addr	how	frozen	evidence
 004bf540	annotated	operator!=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004bf770	callgraph	CCamera::CCamera	only unmatched callee of 004bfca0=CameraCreate
 004bfca0	annotated	CameraCreate	tag in src/gx/Camera.cpp
+004bfe70	annotated	CTextureBlobTexture::GetLevel	tag in src/gx/texture/TextureBlob.cpp
+004bff30	annotated	CTextureBlob::~CTextureBlob	tag in src/gx/texture/TextureBlob.cpp
+004c0210	annotated	TextureBlobFindBlob	tag in src/gx/texture/TextureBlob.cpp
+004c02f0	annotated	TextureBlobFind	tag in src/gx/texture/TextureBlob.cpp
+004c0330	annotated	CTextureBlob::RemoveEntries	tag in src/gx/texture/TextureBlob.cpp
+004c03c0	override	TextureBlobUpdateTexture	
+004c06c0	annotated	TextureBlobDestroy	tag in src/gx/texture/TextureBlob.cpp
+004c0710	annotated	TextureBlobCreateGxTex	tag in src/gx/texture/TextureBlob.cpp
+004c0e60	annotated	CTextureBlob::AddEntry	tag in src/gx/texture/TextureBlob.cpp
+004c0f20	annotated	CTextureBlob::AddEntries	tag in src/gx/texture/TextureBlob.cpp
+004c0f50	annotated	TextureBlobLoad	tag in src/gx/texture/TextureBlob.cpp
+004c1030	annotated	TextureBlobRebuild	tag in src/gx/texture/TextureBlob.cpp
+004c10c0	annotated	TextureBlobUnload	tag in src/gx/texture/TextureBlob.cpp
 004c1180	callgraph	TSBaseArray<CBaseManaged *>::operator[]	only unmatched callee of 004c11f0=DataMgrGetFloat
 004c11f0	annotated	DataMgrGetFloat	tag in lib/common/common/DataMgr.cpp
 004c1220	callgraph	DataMgrGetCoord	only unmatched callee of 004c12b0=DataMgrSetCoord
@@ -764,7 +832,7 @@ addr	how	frozen	evidence
 004c3380	callgraph	C44Matrix::RotateAroundZ	only unmatched callee of 00600730=CGCamera::ApplyBlendA, 007bf460=CMap::CreateMapObjDef, 0082dd80=CM2Model::SetWorldTransform
 004c33c0	annotated	C44Matrix::Rotate	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 004c3420	annotated	C3Vector::NormalizeUnchecked	tag in lib/typhoon/tempest/vector/C3Vector.cpp
-004c3460	callgraph	CGMinimapFrame::GetPingOffset	only unmatched callee of 0057efe0=CGMinimapFrame_GetPingPosition
+004c3460	annotated	RotationAroundAxis4	tag in src/world/MapWeather.cpp
 004c35a0	annotated	C3Vector::operator*=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c35d0	annotated	C3Vector::operator/=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004c3600	annotated	C3Vector::Normalize	tag in lib/typhoon/tempest/vector/C3Vector.cpp
@@ -781,6 +849,7 @@ addr	how	frozen	evidence
 004c5550	annotated	C33Matrix::RotationAroundZ	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 004c55b0	annotated	CameraRollFacing	tag in src/ui/game/CameraDeps.cpp
 004c5820	annotated	C33Matrix::RotationAroundAxis	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+004c5940	callgraph	Clamp01	only unmatched callee of 00784140=WeatherRainTilt
 004c5990	annotated	SoundKitProperties::ResetToDefaults	tag in src/sound/SoundKitProperties.cpp
 004c5a60	annotated	SI2::GetNumInputDrivers	tag in src/sound/SI2.cpp
 004c5a80	annotated	SI2::GetInputDriverName	tag in src/sound/SI2.cpp
@@ -789,6 +858,7 @@ addr	how	frozen	evidence
 004c5be0	callgraph	SI2::IsPlaying	only unmatched callee of 00986410=IsPlayingLoopbackSound
 004c6390	callgraph	SI2::StopOrFadeOut	only unmatched callee of 007c0240=CMap::FreeDoodadDef, 00985f70=SI2::StopGlueAmbience
 004c6a40	string	SI2::PlaySoundKit	unique "<UNKNOWN ERROR>"
+004c8610	annotated	WeatherSetAmbience	tag in src/world/MapWeather.cpp
 004c8fc0	string	SI2::PlayUISound	unique "VoiceChatOff"
 004cc180	annotated	SI2::GetSoundKitDef	tag in src/sound/SI2.cpp
 004ccaa0	callgraph	SI2::GetSoundKitID	only unmatched callee of 004c8fc0=SI2::PlayUISound
@@ -1031,9 +1101,10 @@ addr	how	frozen	evidence
 004f5f80	annotated	CGUnit::IsPetitionerAndTabardDesigner	tag in src/object/client/CGUnit.cpp
 004f6210	annotated	CGUnit_C::GetVehicleRec	tag in src/object/client/CGUnit_C.cpp
 004f6250	annotated	CGUnit_C::IsRidingVehicle	tag in src/object/client/CGUnit_C.cpp
-004f6650	callgraph	CWorld::GetCameraPos	only unmatched callee of 007bac10=MapShadowBuildMatrix
+004f6650	callgraph	CWorld::GetCameraPos	only unmatched callee of 007bac10=MapShadowBuildMatrix, 007e2d60=DecalBuildTransforms
 004f7250	annotated	CGUnit::IsControlledBy	tag in src/object/client/CGUnit.cpp
 004f7310	annotated	CGPlayer_C::GetFarsightObject	tag in src/object/client/CGPlayer_C.cpp
+004f8410	annotated	CGWorldFrame::UpdateDayNight	tag in src/ui/game/CGWorldFrame.cpp
 004f8ea0	override	CGWorldFrame::OnWorldRender	
 004fa5f0	override	CGWorldFrame::OnWorldUpdate	
 004faf90	override	CGWorldFrame::RenderWorld	
@@ -1152,7 +1223,7 @@ addr	how	frozen	evidence
 00513990	annotated	GetTotemSlot	tag in src/ui/game/GameScript.cpp
 00513a00	annotated	SetBoundTradeableValue	tag in src/ui/game/GameScript.cpp
 00513a10	annotated	SetBoundTradeableItem	tag in src/ui/game/GameScript.cpp
-00513cb0	sticky	Script_UnitPowerTypeOf	held from the previous run, where it was callgraph
+00513cb0	sticky	Script_UnitPowerTypeOf	held from the previous run, where it was sticky
 00513df0	annotated	CGGameUI::GetLastError	tag in src/ui/game/CGGameUI.cpp
 00513e40	annotated	MirrorTimerIndexFromName	tag in src/ui/game/GameScript.cpp
 00513f20	annotated	GetMirrorTimer	tag in src/ui/game/GameScript.cpp
@@ -1239,7 +1310,7 @@ addr	how	frozen	evidence
 00517c60	table	Script_GetTotemTimeLeft	binding "GetTotemTimeLeft" in s_ScriptFunctions ~ table 00ac80b0
 00517d30	table	Script_IsThreatWarningEnabled	binding "IsThreatWarningEnabled" in s_ScriptFunctions ~ table 00ac80b0
 00517d70	annotated	Script_CanMapChangeDifficulty	tag in src/ui/game/GameScript.cpp
-005186a0	sticky	CGCamera::GetTarget	held from the previous run, where it was callgraph
+005186a0	sticky	CGCamera::GetTarget	held from the previous run, where it was sticky
 00518dc0	annotated	SendSetSelection	tag in src/ui/game/GameScript.cpp
 00519640	annotated	InstanceMapHasFlag100	tag in src/ui/game/GameScript.cpp
 005197d0	annotated	DestroyTotem	tag in src/ui/game/GameScript.cpp
@@ -1591,7 +1662,7 @@ addr	how	frozen	evidence
 005648a0	annotated	CGActionBar::IsMacroAction	tag in src/ui/game/CGActionBar.cpp
 005648d0	annotated	CGActionBar::GetMacroAction	tag in src/ui/game/CGActionBar.cpp
 00564ab0	annotated	MacroGetSlotByID	tag in src/ui/game/UIMacros.cpp
-00565030	sticky	TSHashTable<CONSOLECOMMAND,HASHKEY_STRI>::InternalDelete	held from the previous run, where it was sticky
+00565030	callgraph	TSHashTable<CTextureBlobTexture,HASHKEY_STRI>::InternalDelete	only unmatched callee of 004c0330=CTextureBlob::RemoveEntries
 005670d0	order	Script_Stub_SetMacroItem	binding table name Script_Stub_SetMacroItem, in definition order in src/ui/game/miscscriptstubs.cpp
 00567320	order	Script_Stub_SetMacroSpell	binding table name Script_Stub_SetMacroSpell, in definition order in src/ui/game/miscscriptstubs.cpp
 00568680	annotated	C3Vector::operator-=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
@@ -1642,7 +1713,7 @@ addr	how	frozen	evidence
 0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
-0057c0e0	callgraph	TSGrowableArray<C3Vector>::New	only unmatched callee of 00685640=CGxDevice::PrimVertex
+0057c0e0	sticky	TSGrowableArray<C3Vector>::New	held from the previous run, where it was sticky
 0057c2a0	override	C44Matrix::Identity	
 0057c2e0	annotated	TransformDirection	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 0057c340	annotated	CGxMatrixStack::SetIdentity	tag in src/gx/CGxMatrixStack.cpp
@@ -2110,7 +2181,7 @@ addr	how	frozen	evidence
 005ff440	annotated	CGCamera::SetPositionAndLookAt	tag in src/ui/game/CGCamera.cpp
 005ff530	annotated	CGCamera::ClampAngles	tag in src/ui/game/CGCamera.cpp
 005ff5a0	annotated	CGCamera::WrapTargetYaw	tag in src/ui/game/CGCamera.cpp
-005ff670	callorder	CameraSetFrustumCorners	same slot between linked calls in 006059e0=CGCamera::CollideFrustum
+005ff670	annotated	CameraSetFrustumCorners	tag in src/ui/game/CameraDeps.cpp
 005ff8e0	annotated	CGCamera::IsViewDefault	tag in src/ui/game/CGCamera.cpp
 005ff950	annotated	CGCamera::ZoomIn	tag in src/ui/game/CGCamera.cpp
 005ffa60	annotated	CGCamera::ZoomOut	tag in src/ui/game/CGCamera.cpp
@@ -2178,6 +2249,7 @@ addr	how	frozen	evidence
 00603330	annotated	CGCamera::SetView	tag in src/ui/game/CGCamera.cpp
 006038a0	annotated	CGCamera::SetViewCommentator	tag in src/ui/game/CGCamera.cpp
 00603900	annotated	CGCamera::SetViewBarberShop	tag in src/ui/game/CGCamera.cpp
+00603930	callgraph	TSGrowableArray<M2CollisionTriangle>::SetCount	only unmatched callee of 007a5dd0=CMap::QueryFrustumFacets
 006039b0	annotated	Script_SetView	tag in src/ui/game/CGCamera.cpp
 00603a10	annotated	CGCamera::CalcTerrainTiltFactor	tag in src/ui/game/CGCamera.cpp
 00603d30	annotated	CGCamera::UpdateBlends	tag in src/ui/game/CGCamera.cpp
@@ -2407,6 +2479,8 @@ addr	how	frozen	evidence
 00616af0	annotated	GxMasterEnable	tag in src/gx/Device.cpp
 00616b10	annotated	CGUnit_C::GetDisplayID	tag in src/object/client/CGUnit_C.cpp
 00616ca0	callgraph	TSGrowableArray<unsigned int>::SetCount	only unmatched callee of 0068fed0=CGxDeviceD3d::ICaptureRead
+00616dc0	annotated	PortraitTestBackBufferAlpha	tag in src/ui/game/PortraitButton.cpp
+00617070	override	PortraitButtonInvalidateAll	
 00617a60	callgraph	CSimpleModel::SetModel	only unmatched callee of 005975e0=CGCharacterModelBase::SetUnitModel
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
 0061a4f0	annotated	ThreatStatusColor	tag in src/ui/game/GameScript.cpp
@@ -2508,8 +2582,15 @@ addr	how	frozen	evidence
 00681260	annotated	GxVertexBufferFormatHasAttrib	tag in src/gx/Buffer.cpp
 006813b0	override	GxSceneClear	
 006813d0	annotated	GxTexUpdate	tag in src/gx/Texture.cpp
+00681410	annotated	GxTexSetCallback	tag in src/gx/Texture.cpp
+00681430	annotated	GxTexSetFlags	tag in src/gx/Texture.cpp
 00681450	override	GxTexSetWrap	
 00681470	annotated	GxTexDestroy	tag in src/gx/Texture.cpp
+00681490	annotated	GxTexParameters	tag in src/gx/Texture.cpp
+006814b0	annotated	GxTexSetDataFormat	tag in src/gx/Texture.cpp
+00681580	annotated	GxTexReusable	tag in src/gx/Texture.cpp
+006815c0	annotated	GxTexReusable	tag in src/gx/Texture.cpp
+006815f0	callgraph	GxCalcTexelStrideInBytes	only unmatched callee of 004c03c0=TextureBlobUpdateTexture
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681780	annotated	GxMaxFps	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
@@ -2525,6 +2606,8 @@ addr	how	frozen	evidence
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
 00681cb0	annotated	GxTexCreate	tag in src/gx/Texture.cpp
+00681d90	callgraph	GxCaps	only unmatched callee of 00681ee0=GxTexCreate
+00681ee0	annotated	GxTexCreate	tag in src/gx/Texture.cpp
 00681f20	annotated	GxTexUpdate	tag in src/gx/Texture.cpp
 00681f60	override	GxXformSetViewport	
 00682130	annotated	GxXformViewProj	tag in src/gx/Transform.cpp
@@ -2539,7 +2622,8 @@ addr	how	frozen	evidence
 00682cd0	annotated	CGxDevice::DeviceCreate	tag in src/gx/CGxDevice.cpp
 00682cf0	annotated	CGxDevice::DeviceDestroy	tag in src/gx/CGxDevice.cpp
 00682d00	annotated	CGxDevice::DeviceSetBaseMipLevel	tag in src/gx/CGxDevice.cpp
-00682d20	sticky	GxCaps	held from the previous run, where it was sticky
+00682d10	annotated	CGxDevice::DeviceBaseMipLevel	tag in src/gx/CGxDevice.cpp
+00682d20	callgraph	GxDevApi	only unmatched callee of 004b6180=TextureGetDefaultCacheSize, 004b6580=TextureSetCacheSize, 004eff10=CCharacterComponent::CreateBaseTexture
 00682d40	annotated	CGxDevice::IDevIsWindowed	tag in src/gx/CGxDevice.cpp
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
 00682d70	override	CGxDevice::DeviceCurWindow	
@@ -2561,6 +2645,10 @@ addr	how	frozen	evidence
 00683130	annotated	CGxDevice::BufData	tag in src/gx/CGxDevice.cpp
 00683150	annotated	CGxDevice::BufLock	tag in src/gx/CGxDevice.cpp
 00683180	annotated	CGxDevice::BufUnlock	tag in src/gx/CGxDevice.cpp
+006831c0	annotated	GxTexIsUploaded	tag in src/gx/Texture.cpp
+006831f0	annotated	GxTexHasCallback	tag in src/gx/Texture.cpp
+00683340	annotated	CGxDevice::TexSetDataFormat	tag in src/gx/CGxDevice.cpp
+00683350	annotated	CGxDevice::TexParameters	tag in src/gx/CGxDevice.cpp
 006833a0	annotated	CGxDevice::ShaderConstantsClear	tag in src/gx/CGxDevice.cpp
 006833e0	annotated	CGxDevice::ShaderConstantsSet	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
@@ -2605,6 +2693,7 @@ addr	how	frozen	evidence
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 006848a0	annotated	CGxDevice::TexMarkForUpdate	tag in src/gx/CGxDevice.cpp
 00684900	annotated	CGxDevice::ITexMarkAsUpdated	tag in src/gx/CGxDevice.cpp
+00684930	annotated	CGxDevice::TexSetCallback	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00684ad0	annotated	CGxDevice::ICursorCreate	tag in src/gx/CGxDevice.cpp
 00684b50	annotated	CGxDevice::CursorUnlock	tag in src/gx/CGxDevice.cpp
@@ -2631,6 +2720,7 @@ addr	how	frozen	evidence
 00685b50	override	CGxDevice::IRsSync	
 00685c00	annotated	CGxPool::BufRemove	tag in src/gx/buffer/CGxPool.cpp
 00685c60	annotated	CGxDevice::TexCreate	tag in src/gx/CGxDevice.cpp
+00685cd0	annotated	CGxDevice::TexSetFlags	tag in src/gx/CGxDevice.cpp
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
 00685dc0	annotated	CGxTex::~CGxTex	tag in src/gx/texture/CGxTex.cpp
 00685e40	callgraph	TSGrowableArray<unsigned char>::SetCount	only unmatched callee of 00685e90=CGxBufScratch::Lock
@@ -2640,7 +2730,7 @@ addr	how	frozen	evidence
 00685fb0	annotated	CGxDevice::RsPop	tag in src/gx/CGxDevice.cpp
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
-006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
+006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools, 007d58b0=FVBBList::Initialize
 00687740	override	CGxPool::~CGxPool	
 006877c0	annotated	CGxDevice::QueryCreate	tag in src/gx/CGxDevice.cpp
 00687820	override	CGxDevice::ShaderDestroy	
@@ -2701,7 +2791,8 @@ addr	how	frozen	evidence
 00690680	annotated	CGxDeviceD3d::ICreateD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690750	annotated	CGxDeviceD3d::DeviceCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690830	annotated	CGxDeviceD3d::DeviceCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
-006908b0	annotated	GxExtensionListContains	tag in src/gx/CGxDevice.cpp
+006908b0	annotated	CGxDevice::DeviceAdapterInfo	tag in src/gx/cgxdevice.hpp
+00690910	callgraph	GxExtensionListContains	only unmatched callee of 006909a0=CGxDeviceGLES::ISetCaps
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 0069faa0	annotated	CGxDeviceD3d::ICheckDepthFormat	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2795,12 +2886,13 @@ addr	how	frozen	evidence
 006ab6c0	annotated	PixelFormatChainSize	tag in src/gx/Texture.cpp
 006ab700	annotated	CalcLevelCount	tag in src/gx/Texture.cpp
 006ab760	annotated	AllocMipChain	tag in src/gx/Texture.cpp
+006ab7e0	callgraph	MippedImgCalcSize	only unmatched callee of 004b7f80=TextureInitialize
 006ab810	annotated	BuildMipLevelPointers	tag in src/gx/Texture.cpp
 006ab860	annotated	TgaDownsample	tag in src/gx/texture/TgaFile.cpp
 006abac0	annotated	Dxt5ExpandAlpha	tag in src/gx/Blit.cpp
 006abe90	annotated	Blit_Argb4444_Abgr8888	tag in src/gx/Blit.cpp
 006abf40	annotated	Blit_Argb8888_Abgr8888	tag in src/gx/Blit.cpp
-006ac130	annotated	CGxDevice::TexFormatStride	tag in src/gx/CGxDevice.cpp
+006ac130	annotated	CGxDevice::DeviceAdapterInfo	tag in src/gx/cgxdevice.hpp
 006ac270	annotated	DxtExpandColorsNoAlphaMode	tag in src/gx/Blit.cpp
 006ac3f0	annotated	DxtExpandColorsArgb4444	tag in src/gx/Blit.cpp
 006ac5d0	annotated	Dxt1ExpandColorsRgb565	tag in src/gx/Blit.cpp
@@ -2832,6 +2924,9 @@ addr	how	frozen	evidence
 006af6a0	annotated	CBLPFile::GetMipPixelCount	tag in src/gx/blp/CBLPFile.cpp
 006af6e0	annotated	CBLPFile::Unlock	tag in src/gx/blp/CBLPFile.cpp
 006af730	annotated	CBLPFile::GetMipSize	tag in src/gx/blp/CBLPFile.cpp
+006af810	annotated	CBLPFile::DecompPal	tag in src/gx/blp/CBLPFile.cpp
+006af990	annotated	CBLPFile::Lock	tag in src/gx/blp/CBLPFile.cpp
+006afb70	annotated	CBLPFile::LockChain	tag in src/gx/blp/CBLPFile.cpp
 006afce0	annotated	CBLPFile::Lock2	tag in src/gx/blp/CBLPFile.cpp
 006aff10	annotated	CBLPFile::Open	tag in src/gx/blp/CBLPFile.cpp
 006affd0	annotated	CBLPFile::LockChain2	tag in src/gx/blp/CBLPFile.cpp
@@ -2872,6 +2967,7 @@ addr	how	frozen	evidence
 006bd5a0	annotated	GxuDetermineQuotedCode	tag in src/gx/font/GxuFont.cpp
 006bdfc0	callgraph	GxuFontDestroyString	only unmatched callee of 00763d80=CONSOLELINE::~CONSOLELINE
 006be2b0	string	GxuFontCreateString	unique "vertJustification < GxVJ_Last"
+006bf370	annotated	PerspectiveMatrix	tag in src/world/CWorldScene.cpp
 006bf4c0	annotated	GxuXformCreateOrtho	tag in src/gx/Transform.cpp
 006bf6d0	annotated	FrustumCorners	tag in src/world/CWorldScene.cpp
 006bfe60	annotated	MatrixLookAt	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
@@ -2962,6 +3058,7 @@ addr	how	frozen	evidence
 006f78b0	annotated	CEffect::Stop	tag in src/object/client/CEffect.cpp
 006f7900	annotated	CEffect::Start	tag in src/object/client/CEffect.cpp
 006f7a00	annotated	CEffect::LinkToGlobalList	tag in src/object/client/CEffect.cpp
+006f7a10	annotated	PolySin	tag in src/world/map/Particulates.cpp
 006f7a60	annotated	CMath::SinCos	tag in lib/typhoon/tempest/math/CMath.cpp
 006f7d60	annotated	CEffect::Initialize	tag in src/object/client/CEffect.cpp
 006f7fd0	annotated	CEffect::AttachToOwner	tag in src/object/client/CEffect.cpp
@@ -3206,6 +3303,7 @@ addr	how	frozen	evidence
 0076bf80	annotated	SpellTrajectoryTime	tag in src/object/client/SpellShared.cpp
 0076c070	annotated	SpellTrajectorySolve	tag in src/object/client/SpellShared.cpp
 0076c190	annotated	WowTime::WowTime	tag in src/util/time/WowTime.cpp
+0076c1f0	annotated	WowTime::GetDaysSinceEpoch	tag in src/util/time/WowTime.cpp
 0076c360	annotated	WowTime::GetHourAndMinutes	tag in src/util/time/WowTime.cpp
 0076c380	annotated	WowTime::SetHourAndMinutes	tag in src/util/time/WowTime.cpp
 0076c3c0	annotated	WowTime::SetHourAndMinutes	tag in src/util/time/WowTime.cpp
@@ -3219,6 +3317,7 @@ addr	how	frozen	evidence
 0076c910	annotated	WowTime::WowEncodeTime	tag in src/util/time/WowTime.cpp
 0076ca50	annotated	WowTime::WowEncodeTime	tag in src/util/time/WowTime.cpp
 0076cd40	string	WowTime::WowGetTimeString	unique "%2.2i"
+0076cff0	annotated	CGameTime::GetDayFraction	tag in src/util/time/CGameTime.cpp
 0076dc20	callorder	GetPackedGuid	same slot between linked calls in 006357d0=ReceiveNameQueryResponse
 0076dd20	override	NameNeedsDeclension	
 0076e540	override	SMemAlloc	
@@ -3229,14 +3328,14 @@ addr	how	frozen	evidence
 0076e760	override	SStrCmp	
 0076e780	callgraph	SStrCmpI	only unmatched callee of 00401200=ComparePatchArchives, 0048e680=CSimpleFrame::GetScriptByName, 00497500=CSimpleAnim::GetScriptByName
 0076ea40	override	SStrCmp	
-0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 004d7f60=CGlueMgr::SetCurrentAccount
+0076ed20	callgraph	SStrCopy	only unmatched callee of 004a8480=ScreenshotSetFormat, 004b6920=FillInSolidTexture, 004b8be0=CreateBlpTexture
 0076eda0	annotated	SStrCopyUTF8	tag in lib/squall/storm/String.cpp
 0076ee30	annotated	SStrLen	tag in lib/squall/storm/String.cpp
 0076eea0	annotated	SStrLenUTF8	tag in lib/squall/storm/String.cpp
 0076eee0	annotated	SStrNLenUTF8	tag in lib/squall/storm/String.cpp
 0076ef70	callgraph	SStrPack	only unmatched callee of 005fd910=CameraRegisterCVars, 008151e0=FontFlagsToString
 0076f010	callgraph	ISStrVPrintf	only unmatched callee of 0076f0a0=SStrVPrintf
-0076f070	callgraph	SStrPrintf	only unmatched callee of 004023c0=TextureFilteringCallback, 004e81c0=TabardBackgroundFileName, 004e8210=TabardEmblemFileName
+0076f070	callgraph	SStrPrintf	only unmatched callee of 00402320=TextureCacheSizeCallback, 004023c0=TextureFilteringCallback, 004e81c0=TabardBackgroundFileName
 0076f0a0	annotated	SStrVPrintf	tag in lib/squall/storm/String.cpp
 0076f0d0	override	SStrToInt	
 0076f140	callgraph	SStrToUnsigned	only unmatched callee of 0076a580=CVGxRefreshCallback
@@ -3252,10 +3351,12 @@ addr	how	frozen	evidence
 0076fb80	override	SStrToFloat	
 0076fdb0	callorder	SGetCurrentThreadId	same slot between linked calls in 0047f230=SchedulerThreadProc
 00770260	callgraph	SCreateThread	only unmatched callee of 00774740=SThread::Create
+00770840	callgraph	RegistryReadInt	only unmatched callee of 00787780=Weather::Weather
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
-007717e0	callgraph	SErrGetLastError	only unmatched callee of 004bbb20=CModelBlob::Load
+007717e0	callgraph	SErrGetLastError	only unmatched callee of 004b5340=TextureOpenFile
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
+00771a80	annotated	SErrGetErrorStr	tag in lib/squall/storm/Error.cpp
 007729b0	sticky	printf	held from the previous run, where it was sticky
 00772a80	override	SErrDisplayError	
 00772aa0	override	SErrDisplayAppFatal	
@@ -3296,28 +3397,114 @@ addr	how	frozen	evidence
 0077aff0	annotated	BigStack::BigStack	tag in lib/squall/storm/big/BigStack.cpp
 0077b2b0	annotated	Mul	tag in lib/squall/storm/big/Ops.cpp
 0077b3e0	annotated	Sub	tag in lib/squall/storm/big/Ops.cpp
+0077ed40	annotated	CWorld::InitializeLightZones	tag in src/world/CWorld.cpp
+0077eed0	annotated	CWorld::UpdateLightZones	tag in src/world/CWorld.cpp
+0077f030	annotated	CWorld::RenderWeather	tag in src/world/CWorld.cpp
 0077f1e0	annotated	CWorld::GetObjectFloor	tag in src/world/CWorld.cpp
 0077f2c0	annotated	CWorld::SetObjectHandler	tag in src/world/CWorld.cpp
-0077f310	callgraph	WorldQuerySegment	only unmatched callee of 006061d0=CGCamera::CollideWater
+0077f310	annotated	WorldQuerySegment	tag in src/world/CWorld.cpp
+0077f330	annotated	WorldQueryFrustumFacets	tag in src/world/CWorld.cpp
+0077f400	annotated	CWorld::AddRipple	tag in src/world/CWorld.cpp
 0077f490	annotated	CWorld::SetNearClip	tag in src/world/CWorld.cpp
 0077f4a0	annotated	CWorld::SetHorizonFarClipScale	tag in src/world/CWorld.cpp
 0077f4b0	annotated	CWorld::SetHorizonNearClipScale	tag in src/world/CWorld.cpp
+0077f4c0	annotated	ShadowModCallback	tag in src/world/CWorld.cpp
 0077f500	annotated	CWorld::ProjectionCallback	tag in src/world/CWorld.cpp
 0077f600	annotated	ConsoleMaxLod	tag in src/world/CWorld.cpp
 0077f690	annotated	ConsoleWaterRipples	tag in src/world/CWorld.cpp
 0077f700	annotated	ConsoleDetailDoodadAlpha	tag in src/world/CWorld.cpp
 0077f750	annotated	ConsoleCharacterAmbient	tag in src/world/CWorld.cpp
+0077f900	override	CWorld::UpdateTextureCacheSize	
+0077f980	annotated	CWorld::RenderBarriers	tag in src/world/CWorld.cpp
+0077f9a0	annotated	CWorld::SetBarrierPoint	tag in src/world/CWorld.cpp
+0077f9d0	annotated	CWorld::RenderParticulates	tag in src/world/CWorld.cpp
+0077fb90	annotated	CWorld::QueryMapObjFog	tag in src/world/CWorld.cpp
 00780240	annotated	CWorld::UpdateObject	tag in src/world/CWorld.cpp
+00780660	annotated	CWorld::SetShadowColor	tag in src/world/CWorld.cpp
+00780710	annotated	CWorld::SetGroundEffectDensity	tag in src/world/CWorld.cpp
+00780730	annotated	CWorld::SetGroundEffectDist	tag in src/world/CWorld.cpp
 00780860	annotated	CWorld::UpdateWindow	tag in src/world/CWorld.cpp
+00780cd0	annotated	CWorld::LightingCallback	tag in src/world/CWorld.cpp
 00780f50	string	CWorld::Initialize	unique "MapObj.wfx"
 007815c0	annotated	CWorld::UpdateWindowAndMap	tag in src/world/CWorld.cpp
 00781610	annotated	CWorld::SetupFogRenderStates	tag in src/world/CWorld.cpp
+007816f0	annotated	CWorld::UpdateDayNight	tag in src/world/CWorld.cpp
 00781a10	annotated	CWorld::AddObject	tag in src/world/CWorld.cpp
+007823d0	annotated	FadeoutEntityHandler	tag in src/world/CWorld.cpp
 00782560	annotated	CWorld::GetEntityAreaID	tag in src/world/CWorld.cpp
 007826e0	annotated	CWorld::RemoveObject	tag in src/world/CWorld.cpp
+00782740	annotated	CWorld::AddHitFacets	tag in src/world/CWorld.cpp
+00782e40	annotated	CWorld::ClearFadeouts	tag in src/world/CWorld.cpp
+00782f20	annotated	CWorld::UpdateFadeouts	tag in src/world/CWorld.cpp
+00783100	annotated	AllocFadeout	tag in src/world/CWorld.cpp
 007831a0	override	CWorld::Update	
-00784040	cvar	WeatherDensityCallback	callback of CVar::Register("weatherDensity") on both sides
-00787780	string	Weather::Weather	unique "useWeatherShaders"
+00783630	annotated	CWorld::FadeOutObject	tag in src/world/CWorld.cpp
+00783780	annotated	CWorld::FreeFadeoutPool	tag in src/world/CWorld.cpp
+00783b60	annotated	Weather::GetType	tag in src/world/MapWeather.cpp
+00783b90	annotated	Weather::SetDefaultTexture	tag in src/world/MapWeather.cpp
+00783bd0	annotated	WeatherGroundBelow	tag in src/world/MapWeather.cpp
+00783c10	annotated	WeatherGroundTile::Height	tag in src/world/MapWeather.cpp
+00783ce0	annotated	WeatherGroundCache::CellHeight	tag in src/world/MapWeather.cpp
+00783dc0	annotated	WeatherGroundCache::GetBounds	tag in src/world/MapWeather.cpp
+00783fb0	annotated	WeatherGroundQuery::~WeatherGroundQuery	tag in src/world/MapWeather.cpp
+00783fe0	annotated	Sand::GetBounds	tag in src/world/MapWeather.cpp
+00784010	annotated	Weather::GetPlayerPosition	tag in src/world/MapWeather.cpp
+00784040	annotated	WeatherDensityCallback	tag in src/world/MapWeather.cpp
+007840b0	annotated	Rain::SetIntensity	tag in src/world/MapWeather.cpp
+00784140	annotated	WeatherRainTilt	tag in src/world/MapWeather.cpp
+00784270	annotated	WeatherRainTail	tag in src/world/MapWeather.cpp
+007842d0	annotated	Rain::UploadDrops	tag in src/world/MapWeather.cpp
+007843e0	annotated	Rain::UploadPatter	tag in src/world/MapWeather.cpp
+007844f0	annotated	Snow::SetIntensity	tag in src/world/MapWeather.cpp
+00784580	annotated	Sand::SetIntensity	tag in src/world/MapWeather.cpp
+007845f0	annotated	WeatherUploadFlakes	tag in src/world/MapWeather.cpp
+007846a0	annotated	Weather::SetWeather	tag in src/world/MapWeather.cpp
+00784850	annotated	Weather::UpdateIntensity	tag in src/world/MapWeather.cpp
+00784a30	annotated	Weather::GetEffectBounds	tag in src/world/MapWeather.cpp
+00784ab0	annotated	WeatherGroundCache::WeatherGroundCache	tag in src/world/MapWeather.cpp
+00784b60	annotated	WeatherGroundCache::GetCellSize	tag in src/world/MapWeather.cpp
+00784b80	annotated	WeatherGroundCache::~WeatherGroundCache	tag in src/world/MapWeather.cpp
+00784be0	annotated	WeatherGroundCache::HeightAt	tag in src/world/MapWeather.cpp
+00784c60	annotated	WeatherGroundCache::Intersect	tag in src/world/MapWeather.cpp
+00784f20	annotated	WeatherGroundCache::Update	tag in src/world/MapWeather.cpp
+00785140	annotated	Rain::SpawnDrop	tag in src/world/MapWeather.cpp
+00785640	annotated	Rain::FillPackets	tag in src/world/MapWeather.cpp
+00785880	annotated	Snow::SpawnFlake	tag in src/world/MapWeather.cpp
+00785d60	annotated	Snow::FillPacket	tag in src/world/MapWeather.cpp
+00785ea0	annotated	Sand::SpawnGrain	tag in src/world/MapWeather.cpp
+00786210	annotated	Sand::FillPacket	tag in src/world/MapWeather.cpp
+00786330	annotated	Mists::Init	tag in src/world/MapWeather.cpp
+00786560	annotated	Mists::Spawn	tag in src/world/MapWeather.cpp
+00786a90	annotated	Rain::CountActive	tag in src/world/MapWeather.cpp
+00786b10	annotated	Snow::CountActive	tag in src/world/MapWeather.cpp
+00786e10	annotated	Mists::Render	tag in src/world/MapWeather.cpp
+00787780	annotated	Weather::Weather	tag in src/world/MapWeather.cpp
+00787ce0	annotated	Rain::Update	tag in src/world/MapWeather.cpp
+00788090	annotated	Snow::Update	tag in src/world/MapWeather.cpp
+00788660	annotated	Sand::Update	tag in src/world/MapWeather.cpp
+00789110	annotated	Rain::~Rain	tag in src/world/MapWeather.cpp
+007891b0	annotated	Rain::RenderPatter	tag in src/world/MapWeather.cpp
+007898a0	annotated	Rain::RenderDrops	tag in src/world/MapWeather.cpp
+0078a030	annotated	Rain::RenderPatterShader	tag in src/world/MapWeather.cpp
+0078a640	annotated	Rain::RenderDropsShader	tag in src/world/MapWeather.cpp
+0078ae20	annotated	Rain::Render	tag in src/world/MapWeather.cpp
+0078ae70	annotated	Snow::~Snow	tag in src/world/MapWeather.cpp
+0078aee0	annotated	Snow::RenderShader	tag in src/world/MapWeather.cpp
+0078b370	override	Sand::RenderCpu	
+0078ba60	annotated	Snow::Render	tag in src/world/MapWeather.cpp
+0078baa0	annotated	Sand::~Sand	tag in src/world/MapWeather.cpp
+0078bb00	annotated	Snow::RenderCpu	tag in src/world/MapWeather.cpp
+0078bee0	annotated	Sand::RenderShader	tag in src/world/MapWeather.cpp
+0078c3e0	annotated	Sand::Render	tag in src/world/MapWeather.cpp
+0078c500	annotated	Weather::UpdateMotion	tag in src/world/MapWeather.cpp
+0078ca90	annotated	Rain::Rain	tag in src/world/MapWeather.cpp
+0078cd30	annotated	Snow::Snow	tag in src/world/MapWeather.cpp
+0078cf20	annotated	Sand::Sand	tag in src/world/MapWeather.cpp
+0078d0b0	annotated	Weather::DestroyEffects	tag in src/world/MapWeather.cpp
+0078d130	annotated	Weather::Clear	tag in src/world/MapWeather.cpp
+0078d170	annotated	Weather::Update	tag in src/world/MapWeather.cpp
+0078d540	annotated	Weather::~Weather	tag in src/world/MapWeather.cpp
+0078d610	annotated	CWorldParam::LodCallback	tag in src/world/CWorldParam.cpp
 0078d660	annotated	CWorldParam::MapShadowsCallback	tag in src/world/CWorldParam.cpp
 0078d6b0	annotated	CWorldParam::MaxLightsCallback	tag in src/world/CWorldParam.cpp
 0078d6f0	annotated	CWorldParam::ShadowLevelCallback	tag in src/world/CWorldParam.cpp
@@ -3328,37 +3515,41 @@ addr	how	frozen	evidence
 0078d860	annotated	CWorldParam::ParticleDensityCallback	tag in src/world/CWorldParam.cpp
 0078d8b0	annotated	CWorldParam::WaterLODCallback	tag in src/world/CWorldParam.cpp
 0078d8f0	annotated	CWorldParam::ShowFootprintsCallback	tag in src/world/CWorldParam.cpp
-0078d940	cvar	CWorldParam::FootstepBiasCallback	callback of CVar::Register("footstepBias") on both sides
+0078d940	annotated	CWorldParam::FootstepBiasCallback	tag in src/world/CWorldParam.cpp
 0078d9d0	annotated	CWorldParam::OcclusionCallback	tag in src/world/CWorldParam.cpp
 0078da10	annotated	CWorldParam::WorldPoolUsageCallback	tag in src/world/CWorldParam.cpp
-0078da50	cvar	CWorldParam::TerrainAlphaBitDepthCallback	callback of CVar::Register("terrainAlphaBitDepth") on both sides
-0078dab0	cvar	CWorldParam::GroundEffectDensityCallback	callback of CVar::Register("groundEffectDensity") on both sides
-0078db10	cvar	CWorldParam::GroundEffectDistCallback	callback of CVar::Register("groundEffectDist") on both sides
+0078da50	annotated	CWorldParam::TerrainAlphaBitDepthCallback	tag in src/world/CWorldParam.cpp
+0078dab0	annotated	CWorldParam::GroundEffectDensityCallback	tag in src/world/CWorldParam.cpp
+0078db10	annotated	CWorldParam::GroundEffectDistCallback	tag in src/world/CWorldParam.cpp
 0078db90	annotated	CWorldParam::ObjectFadeCallback	tag in src/world/CWorldParam.cpp
 0078dbe0	annotated	CWorldParam::ObjectFadeZFillCallback	tag in src/world/CWorldParam.cpp
 0078dc30	annotated	CWorldParam::FarClipOverrideCallback	tag in src/world/CWorldParam.cpp
 0078dc60	annotated	CWorldParam::EnvironmentDetailCallback	tag in src/world/CWorldParam.cpp
 0078dcb0	annotated	CWorldParam::ExtShadowQualityCallback	tag in src/world/CWorldParam.cpp
 0078dcf0	annotated	CWorldParam::ProjectedTexturesCallback	tag in src/world/CWorldParam.cpp
-0078de60	cvar	CWorldParam::SpecularCallback	callback of CVar::Register("specular") on both sides
+0078de60	annotated	CWorldParam::SpecularCallback	tag in src/world/CWorldParam.cpp
 0078ded0	annotated	CWorldParam::MapObjLightLODCallback	tag in src/world/CWorldParam.cpp
-0078df00	cvar	CWorldParam::BaseMipCallback	callback of CVar::Register("baseMip") on both sides
-0078df90	cvar	CWorldParam::BSPCacheCallback	callback of CVar::Register("bspcache") on both sides
+0078df00	override	CWorldParam::BaseMipCallback	
+0078df90	annotated	CWorldParam::BSPCacheCallback	tag in src/world/CWorldParam.cpp
 0078e070	annotated	CWorldParam::HwPCFCallback	tag in src/world/CWorldParam.cpp
-0078e110	cvar	CWorldParam::TextureCacheSizeCallback	callback of CVar::Register("gxTextureCacheSize") on both sides
+0078e110	annotated	CWorldParam::TextureCacheSizeCallback	tag in src/world/CWorldParam.cpp
 0078e400	string	CWorldParam::Initialize	unique "0.125"
 0078f2f0	annotated	ViewRectUnion	tag in src/world/CWorldScene.cpp
 0078f370	annotated	CAaBox::Intersects	tag in lib/typhoon/tempest/box/CAaBox.cpp
 0078f3e0	annotated	DistancePointBox	tag in lib/typhoon/tempest/Intersect.cpp
 0078f480	annotated	C3Segment::C3Segment	tag in lib/typhoon/tempest/segment/C3Segment.cpp
 0078f4d0	annotated	C3Segment::Lerp	tag in lib/typhoon/tempest/segment/C3Segment.cpp
+0078f510	annotated	CWorldScene::ReleaseBarrierTextures	tag in src/world/CWorldScene.cpp
 0078f570	annotated	CWorld::SetEnvironmentDetail	tag in src/world/CWorld.cpp
 0078f6a0	annotated	CWorldScene::ShadeHorizon	tag in src/world/CWorldScene.cpp
+0078f900	annotated	CWorldScene::ShadeHorizonPolyline	tag in src/world/CWorldScene.cpp
 0078fae0	annotated	CWorldScene::GetFrustumCorners	tag in src/world/CWorldScene.cpp
 0078fb20	annotated	CWorldScene::BoxOutsideFrustum	tag in src/world/CWorldScene.cpp
 0078fb60	annotated	CWorldScene::DistanceBand	tag in src/world/CWorldScene.cpp
+0078fbd0	callgraph	GxRsPop	only unmatched callee of 00794b50=CWorldScene::RenderBarriers
 0078fc40	annotated	CWorldScene::SphereOccluded	tag in src/world/CWorldScene.cpp
 0078fdc0	annotated	CWorldScene::BoxOccluded	tag in src/world/CWorldScene.cpp
+0078ffa0	annotated	UnitClipClassify	tag in src/world/CWFrustum.cpp
 00790520	annotated	CWorldScene::ChunkVertexPoint	tag in src/world/CWorldScene.cpp
 00790570	annotated	CWorldScene::ViewWindowInit	tag in src/world/CWorldScene.cpp
 007905b0	annotated	CWorldScene::ViewWindowMerge	tag in src/world/CWorldScene.cpp
@@ -3370,28 +3561,41 @@ addr	how	frozen	evidence
 00790af0	annotated	CWorldScene::SubFrustum	tag in src/world/CWorldScene.cpp
 00790e20	override	CWorldScene::SubFrustum	
 00791120	annotated	CWorldScene::SphereOutsideFrustum	tag in src/world/CWorldScene.cpp
+00791170	annotated	CWorldScene::HorizonProjection	tag in src/world/CWorldScene.cpp
 007912c0	annotated	PlaneFromPoints	tag in src/world/CWorldScene.cpp
+00791380	annotated	ClipToUnitCube	tag in src/world/CWFrustum.cpp
+00791640	annotated	FrustumUnitBasis	tag in src/world/CWFrustum.cpp
 007917b0	callgraph	TSBaseArray<CMapObjDefGroup *>::operator[]	only unmatched callee of 007c1dc0=QueryDefGroupSegment
+00791980	annotated	CWorldScene::TraverseLowDetail	tag in src/world/CWorldScene.cpp
 00791cb0	annotated	CWorldScene::VisitStaticEntity	tag in src/world/CWorldScene.cpp
+00792360	annotated	CWorldScene::SubmitBarrierPolygon	tag in src/world/CWorldScene.cpp
 00792ad0	annotated	CWorldScene::BucketMapObjDefGroup	tag in src/world/CWorldScene.cpp
 00792bd0	annotated	CWorldScene::BucketMapObjDefGroups	tag in src/world/CWorldScene.cpp
 00792d80	annotated	CWorldScene::BucketChunk	tag in src/world/CWorldScene.cpp
 00792df0	annotated	CWorldScene::AddLiquid	tag in src/world/CWorldScene.cpp
 00792e60	annotated	CWorldScene::AddEntity	tag in src/world/CWorldScene.cpp
+00792f60	annotated	CWorldScene::QueueLowDetailArea	tag in src/world/CWorldScene.cpp
+00792f80	annotated	CWorldScene::QueueLowDetailDef	tag in src/world/CWorldScene.cpp
 00792fa0	annotated	CWorldScene::AddDetailDoodads	tag in src/world/CWorldScene.cpp
 00792fc0	annotated	CWorldScene::AddGroupIndexUnique	tag in src/world/CWorldScene.cpp
 00793060	annotated	CWorldScene::TraverseRowEntities	tag in src/world/CWorldScene.cpp
+00793270	annotated	CWorldScene::VisitGroupEntities	tag in src/world/CWorldScene.cpp
+00793450	annotated	CWorldScene::FinishHiddenEntities	tag in src/world/CWorldScene.cpp
 007935a0	annotated	CWorldScene::TraverseRowLiquids	tag in src/world/CWorldScene.cpp
 00793760	annotated	CWorldScene::TraverseRowOccluders	tag in src/world/CWorldScene.cpp
 00793980	annotated	CWorldScene::DrawEntityShadows	tag in src/world/CWorldScene.cpp
 00793b10	annotated	CWorldScene::RenderSolidChunks	tag in src/world/CWorldScene.cpp
 00793c30	annotated	CWorldScene::RenderHiddenChunks	tag in src/world/CWorldScene.cpp
 00793d20	annotated	Liquid::BuildPendingMapObjSurfaces	tag in src/world/map/LiquidSurface.cpp
-007946d0	annotated	CWorldScene::SubmitOccluderBox	tag in src/world/CWorldScene.cpp
+007944c0	annotated	CWorldScene::SubmitBarrierEdge	tag in src/world/CWorldScene.cpp
+007946d0	annotated	CWorldScene::SubmitBarrierBox	tag in src/world/CWorldScene.cpp
+00794ad0	annotated	CWorldScene::SubmitBarrierGroup	tag in src/world/CWorldScene.cpp
+00794b50	annotated	CWorldScene::RenderBarriers	tag in src/world/CWorldScene.cpp
 00795400	annotated	CWorldScene::UpdateCamera	tag in src/world/CWorldScene.cpp
 00795d00	annotated	CWorldScene::AddPortalView	tag in src/world/CWorldScene.cpp
 00795d20	annotated	CWorldScene::AddExteriorView	tag in src/world/CWorldScene.cpp
 00795d40	annotated	CWorldScene::UpdateCameraDef	tag in src/world/CWorldScene.cpp
+00795f80	annotated	CWorldScene::RenderLowDetail	tag in src/world/CWorldScene.cpp
 007964a0	annotated	CWorldScene::RenderMapObjs	tag in src/world/CWorldScene.cpp
 007968d0	annotated	CWorldScene::ComplementPortalViews	tag in src/world/CWorldScene.cpp
 00796c10	annotated	CWorldScene::FillViewWindows	tag in src/world/CWorldScene.cpp
@@ -3401,16 +3605,45 @@ addr	how	frozen	evidence
 007989c0	annotated	CWorldScene::RenderChunkLists	tag in src/world/CWorldScene.cpp
 00798da0	annotated	CWorldScene::RenderTerrain	tag in src/world/CWorldScene.cpp
 00799310	annotated	CWorldScene::MarkMapObjGroupVisible	tag in src/world/CWorldScene.cpp
+00799730	annotated	CWorldScene::CreateBarrierTextures	tag in src/world/CWorldScene.cpp
 007997d0	annotated	CWorldScene::Initialize	tag in src/world/CWorldScene.cpp
+007998a0	annotated	CWorldScene::BucketGroupDoodads	tag in src/world/CWorldScene.cpp
 00799980	annotated	CWorldScene::TraverseChunkDoodads	tag in src/world/CWorldScene.cpp
+00799b70	annotated	CWorldScene::VisitGroupDoodads	tag in src/world/CWorldScene.cpp
 00799d40	annotated	CWorldScene::TraverseRowChunks	tag in src/world/CWorldScene.cpp
+00799f80	annotated	CWorldScene::VisitCandidateGroups	tag in src/world/CWorldScene.cpp
 0079a160	annotated	CWorldScene::TraverseRowMapObjDefs	tag in src/world/CWorldScene.cpp
+0079a260	annotated	CWorldScene::VisitVisibleGroupContents	tag in src/world/CWorldScene.cpp
 0079a790	annotated	CWorldScene::Traverse	tag in src/world/CWorldScene.cpp
 0079a870	annotated	CMap::Render	tag in src/world/map/CMap.cpp
 0079adc0	annotated	CMapObjGroup::SetBsp	tag in src/world/map/CMapObjGroupLoad.cpp
+0079ae10	annotated	CMapBspNodeCache::Evict	tag in src/world/map/CMap.cpp
 0079ae80	override	CMap::BuildBspLeafCache	
+0079b0d0	annotated	CMap::EvictBspLeaves	tag in src/world/map/CMap.cpp
+0079b160	annotated	CMapBspNodeCache::CMapBspNodeCache	tag in src/world/map/CMap.cpp
+0079b1c0	annotated	CMapBspNodeCache::Clear	tag in src/world/map/CMap.cpp
+0079b1f0	annotated	CMapBspNodeCache::Lookup	tag in src/world/map/CMap.cpp
+0079b340	annotated	Particulates::~Particulates	tag in src/world/map/Particulates.cpp
+0079b360	annotated	Particulates::SetSizeScale	tag in src/world/map/Particulates.cpp
 0079b440	annotated	CMap::GetLoadedArea	tag in src/world/map/CMap.cpp
 0079b870	override	Liquid::LiquidTypeBlock	
+0079b8e0	annotated	Particulates::Respawn	tag in src/world/map/Particulates.cpp
+0079bcc0	annotated	Particulates::NewCurrent	tag in src/world/map/Particulates.cpp
+0079be50	annotated	Particulates::Drift	tag in src/world/map/Particulates.cpp
+0079bf40	annotated	Particulates::Update	tag in src/world/map/Particulates.cpp
+0079c110	annotated	Water0Ripple::~Water0Ripple	tag in src/world/map/WaterRipples.cpp
+0079ca70	annotated	Particulates::Render	tag in src/world/map/Particulates.cpp
+0079cf40	annotated	Water0Ripple::Init	tag in src/world/map/WaterRipples.cpp
+0079d180	annotated	WaterRipples::Spawn	tag in src/world/map/WaterRipples.cpp
+0079d220	annotated	Water0Ripple::Water0Ripple	tag in src/world/map/WaterRipples.cpp
+0079d460	annotated	WaterRipples::Add	tag in src/world/map/WaterRipples.cpp
+0079d5e0	annotated	WaterRipples::Draw	tag in src/world/map/WaterRipples.cpp
+0079dff0	annotated	Particulates::SetTexture	tag in src/world/map/Particulates.cpp
+0079e080	annotated	WaterRipples::SetPoolSize	tag in src/world/map/WaterRipples.cpp
+0079e100	annotated	Particulates::Particulates	tag in src/world/map/Particulates.cpp
+0079e1a0	annotated	WaterRipples::Initialize	tag in src/world/map/WaterRipples.cpp
+0079e2d0	annotated	WaterRipples::Destroy	tag in src/world/map/WaterRipples.cpp
+0079e3c0	annotated	CMap::LiquidInitialize	tag in src/world/map/CMap.cpp
 0079e470	annotated	CMap::GetTerrainVertexShader	tag in src/world/map/CMap.cpp
 0079e4b0	annotated	CMap::GetTerrain0PixelShader	tag in src/world/map/CMap.cpp
 0079e4f0	annotated	CMap::CreateTerrainShadowShaders	tag in src/world/map/CMap.cpp
@@ -3424,14 +3657,29 @@ addr	how	frozen	evidence
 007a0820	annotated	CMap::GetTerrainLiquid	tag in src/world/map/CMap.cpp
 007a09d0	annotated	CMap::GetMapObjLiquid	tag in src/world/map/CMap.cpp
 007a0b00	annotated	CMap::GetLiquidAt	tag in src/world/map/CMap.cpp
+007a0c10	annotated	CMapStaticEntity::~CMapStaticEntity	tag in src/world/map/CMapStaticEntity.cpp
+007a0cd0	annotated	BlendMapObjFog	tag in src/world/map/CMap.cpp
 007a0d60	override	CMapEntity::FloorLight	
 007a0fe0	callgraph	CMapEntity::CMapEntity	only unmatched callee of 007c0670=CMap::AllocEntity
+007a1150	annotated	CMap::QueryCameraFog	tag in src/world/map/CMap.cpp
 007a13e0	annotated	CMap::GetEntityMapObjGroup	tag in src/world/map/CMap.cpp
 007a1a30	annotated	CMap::UpdateEntityGroupLiquid	tag in src/world/map/CMap.cpp
 007a1bc0	annotated	CMap::UpdateEntity	tag in src/world/map/CMap.cpp
 007a20e0	annotated	CMap::AddCellSpanY	tag in src/world/map/CMap.cpp
 007a2180	annotated	CMap::AddCellSpanX	tag in src/world/map/CMap.cpp
+007a2230	annotated	CMap::AddCellLineSecond	tag in src/world/map/CMap.cpp
+007a23e0	annotated	CMap::AddCellLineFirst	tag in src/world/map/CMap.cpp
+007a2960	annotated	CMap::AddRayObjects	tag in src/world/map/CMap.cpp
 007a2aa0	annotated	MapQueryBoxModels	tag in src/world/map/CMapObjGroup.cpp
+007a30d0	annotated	CMap::QuerySegmentObjects	tag in src/world/map/CMap.cpp
+007a3570	annotated	CMap::QuerySegmentCells	tag in src/world/map/CMap.cpp
+007a39f0	annotated	CMap::QuerySegmentTerrain	tag in src/world/map/CMap.cpp
+007a3b70	annotated	CMap::QuerySegment	tag in src/world/map/CMap.cpp
+007a3d50	annotated	CMap::QueryFrustumLiquid	tag in src/world/map/CMap.cpp
+007a4c10	annotated	CWorldScene::AddDebugTriangle	tag in src/world/CWorldScene.cpp
+007a4ee0	annotated	CMap::QueryFrustumObjects	tag in src/world/map/CMap.cpp
+007a5330	annotated	CMap::QueryFrustumCell	tag in src/world/map/CMap.cpp
+007a5dd0	annotated	CMap::QueryFrustumFacets	tag in src/world/map/CMap.cpp
 007a6140	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
 007a6190	annotated	CMapObjGroup::AllocHitIndices	tag in src/world/map/CMapObjGroup.cpp
 007a61d0	annotated	ClassifyCorner	tag in src/world/map/CMapObjGroup.cpp
@@ -3470,6 +3718,7 @@ addr	how	frozen	evidence
 007a9160	annotated	CMapObj::SetupLocalLights	tag in src/world/map/CMapObjDraw.cpp
 007a9380	annotated	CMapObjGroup::DrawBatchesOutdoor	tag in src/world/map/CMapObjDraw.cpp
 007ab760	annotated	MapObjDrawShadowCasters	tag in src/world/map/CMapObjDraw.cpp
+007abac0	annotated	MapObjDrawGroupsFlat	tag in src/world/map/CMapObjDraw.cpp
 007abf50	annotated	CMapObj::Render	tag in src/world/map/CMapObjDraw.cpp
 007ac060	annotated	CMapObj::WalkPortals	tag in src/world/map/CMapObjDraw.cpp
 007ac6a0	annotated	CMapObjGroup::DrawBatches	tag in src/world/map/CMapObjDraw.cpp
@@ -3478,10 +3727,15 @@ addr	how	frozen	evidence
 007ad1f0	annotated	CMapObj::WalkFromInside	tag in src/world/map/CMapObjDraw.cpp
 007ad350	annotated	CMapObj::WalkFromOutside	tag in src/world/map/CMapObjDraw.cpp
 007ad3b0	annotated	CMapChunk::HeightAt	tag in src/world/map/CMapChunk.cpp
+007ad940	annotated	CMap::AddGroundRayModels	tag in src/world/map/CMap.cpp
+007ada80	annotated	CMap::QueryGroundMapObjs	tag in src/world/map/CMap.cpp
+007ade10	annotated	CMap::QueryGroundHeight	tag in src/world/map/CMap.cpp
+007ae060	annotated	CMapObj::ClearFarClipDirty	tag in src/world/map/CMapObj.cpp
 007ae140	annotated	CMapObj::QuerySkipFlags	tag in src/world/map/CMapObj.cpp
 007ae1a0	annotated	CMapObj::ReadGroup	tag in src/world/map/CMapObj.cpp
 007ae1c0	annotated	CMapObj::WaitForRoot	tag in src/world/map/CMapObj.cpp
 007ae4c0	annotated	CMapObj::IsGroupLoaded	tag in src/world/map/CMapObj.cpp
+007ae4f0	annotated	CMapObj::GroupReadPending	tag in src/world/map/CMapObj.cpp
 007ae520	annotated	CMapObj::BoundingSphere	tag in src/world/map/CMapObj.cpp
 007ae5e0	annotated	CMapObj::Bounds	tag in src/world/map/CMapObj.cpp
 007ae670	annotated	CMapObj::GroupBoundingSphere	tag in src/world/map/CMapObj.cpp
@@ -3500,7 +3754,11 @@ addr	how	frozen	evidence
 007aeb10	annotated	CMapObj::GroupInfo	tag in src/world/map/CMapObj.cpp
 007aeb40	override	CMapObj::GroupFaceColor	
 007aeb90	annotated	CMapObj::GetLiquidAt	tag in src/world/map/CMapObj.cpp
+007aec30	annotated	CMapObj::DoodadSetOf	tag in src/world/map/CMapObj.cpp
+007aecb0	annotated	CMapObj::QuerySegmentGroups	tag in src/world/map/CMapObj.cpp
 007aef00	annotated	CMapObj::QueryBoxGroups	tag in src/world/map/CMapObj.cpp
+007af0f0	annotated	CMapObj::QueryHullGroups	tag in src/world/map/CMapObj.cpp
+007af200	annotated	CMapObj::QuerySegmentGroup	tag in src/world/map/CMapObj.cpp
 007af280	annotated	CMapObj::QuerySegmentPortals	tag in src/world/map/CMapObj.cpp
 007af520	override	CMapObj::SegmentVsPortals	
 007af780	annotated	CMapObj::GroupFloorColor	tag in src/world/map/CMapObj.cpp
@@ -3536,15 +3794,20 @@ addr	how	frozen	evidence
 007b48c0	annotated	BoxDistanceSq	tag in src/world/map/CMapLoad.cpp
 007b4960	annotated	CMap::GetTargetArea	tag in src/world/map/CMap.cpp
 007b49c0	annotated	CMap::GetTargetChunk	tag in src/world/map/CMap.cpp
+007b4bc0	annotated	CMap::SubmitTileEdgeBarriers	tag in src/world/map/CMap.cpp
 007b4df0	annotated	CMap::UpdateAreaChunks	tag in src/world/map/CMap.cpp
+007b4fa0	annotated	CMap::GrowParentBounds	tag in src/world/map/CMap.cpp
+007b50b0	annotated	CMap::CountPendingMapObjs	tag in src/world/map/CMap.cpp
 007b53b0	annotated	CMap::ClearFrameChunkList	tag in src/world/map/CMap.cpp
 007b5420	annotated	CMap::UpdateFrameLiquids	tag in src/world/map/CMap.cpp
 007b54a0	annotated	CMap::UpdateDetailDoodads	tag in src/world/map/CMap.cpp
 007b5500	annotated	CMap::AgeRenderChunks	tag in src/world/map/CMap.cpp
 007b5590	annotated	CMap::BucketEntities	tag in src/world/map/CMap.cpp
+007b55e0	annotated	CMap::GrowParentsBounds	tag in src/world/map/CMap.cpp
 007b5630	annotated	CMap::UpdatePendingEntities	tag in src/world/map/CMap.cpp
 007b5950	annotated	CMap::UpdateAreas	tag in src/world/map/CMap.cpp
-007b5d00	annotated	MapObjDoodadLighting	tag in src/world/map/CMapLoad.cpp
+007b5d00	callorder	CMap::SetupMapObjDef	same slot between linked calls in 007b6110=CMap::UpdateMapObjDefs
+007b5e80	annotated	CMap::CountPendingEntities	tag in src/world/map/CMap.cpp
 007b6110	annotated	CMap::UpdateMapObjDefs	tag in src/world/map/CMapLoad.cpp
 007b6b00	annotated	CMap::Update	tag in src/world/map/CMap.cpp
 007b7330	annotated	CMap::SetTerrainShaderLevel	tag in src/world/map/CMap.cpp
@@ -3622,6 +3885,7 @@ addr	how	frozen	evidence
 007bd450	annotated	AaBoxIsInverted	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007bd480	annotated	CMap::SafeOpen	tag in src/world/map/CMap.cpp
 007bd4d0	annotated	CMap::SafeRead	tag in src/world/map/CMap.cpp
+007bd540	annotated	CMap::LoadTextureBlob	tag in src/world/map/CMap.cpp
 007bd8a0	annotated	CMap::LoadSettings	tag in src/world/map/CMap.cpp
 007bdb10	annotated	CMapStaticEntity::Place	tag in src/world/map/CMapStaticEntity.cpp
 007bde50	annotated	CMap::CreateDefGroups	tag in src/world/map/CMapLoad.cpp
@@ -3661,12 +3925,15 @@ addr	how	frozen	evidence
 007c0a90	annotated	CMap::AllocAreaLow	tag in src/world/map/CMap.cpp
 007c0ae0	annotated	CMap::FreeAreaLowObject	tag in src/world/map/CMap.cpp
 007c0c60	annotated	CMap::FreeAreaLow	tag in src/world/map/CMap.cpp
-007c10c0	annotated	CMapStaticEntity::ApplyWaterSide	tag in src/world/map/CMapDoodadDef.cpp
+007c10c0	annotated	CMapStaticEntity::SelectUnderwater	tag in src/world/map/CMapDoodadDef.cpp
+007c1150	annotated	CMapDoodadDef::SelectLights	tag in src/world/map/CMapDoodadDef.cpp
 007c15f0	override	ClassifyEntityInterior	
 007c1660	annotated	CMap::GetTerrainHeight	tag in src/world/map/CMap.cpp
+007c1730	annotated	CMapStaticEntity::SelectLights	tag in src/world/map/CMapStaticEntity.cpp
 007c1ad0	annotated	CMapEntity::SplitFloorLight	tag in src/world/map/CMapEntity.cpp
 007c1c40	annotated	CMapDoodadDef::FloorLight	tag in src/world/map/CMapDoodadDef.cpp
 007c1dc0	override	QueryDefGroupSegment	
+007c1f20	annotated	CMap::UnlinkEntitiesInBox	tag in src/world/map/CMapLoad.cpp
 007c1ff0	annotated	CMap::LinkToMapObjDefGroup	tag in src/world/map/CMap.cpp
 007c2040	annotated	LinkEntityToChunks	tag in src/world/map/CMapStaticEntity.cpp
 007c21e0	annotated	CMapDoodadDef::CMapDoodadDef	tag in src/world/map/CMapDoodadDef.cpp
@@ -3703,6 +3970,7 @@ addr	how	frozen	evidence
 007c5440	annotated	CMapChunk::EnsureRenderChunk	tag in src/world/map/CMapChunk.cpp
 007c54c0	annotated	CMapChunk::BuildVertices	tag in src/world/map/CMapChunk.cpp
 007c5530	annotated	CMapChunk::GetBounds	tag in src/world/map/CMapChunk.cpp
+007c55d0	annotated	CMapChunk::GetLiquidHeight	tag in src/world/map/CMapChunk.cpp
 007c5690	annotated	CMapChunk::CreateLiquid	tag in src/world/map/CMapChunk.cpp
 007c5b20	annotated	CMapChunk::UpdateLiquidVisibility	tag in src/world/map/CMapChunk.cpp
 007c5c50	annotated	CMapChunk::CMapChunk	tag in src/world/map/CMapChunk.cpp
@@ -3711,11 +3979,11 @@ addr	how	frozen	evidence
 007c64b0	annotated	CMapChunk::Load	tag in src/world/map/CMapChunk.cpp
 007c6600	annotated	CMapObjGroupDualSegmentQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c6710	annotated	CMapObjGroupDualSegmentQuery::Results	tag in src/world/map/CMapObjGroup.cpp
-007c6790	override	CMapObjGroupDualSegmentQuery::CachedLeaf	
+007c6790	annotated	CMapObjGroupDualSegmentQuery::CachedLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c6c30	override	CMapObjGroupSegmentQuery::TestFace	
-007c6d50	override	CMapObjGroupSegmentQuery::CachedLeaf	
+007c6d50	annotated	CMapObjGroupSegmentQuery::CachedLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c71e0	annotated	TriangleOutsideHull	tag in src/world/map/CMapObjGroup.cpp
-007c7230	callgraph	CMapObjGroupAaBoxQuery::CachedLeaf	only unmatched callee of 007ca8c0=CMapObjGroup::AaBoxQueryLeaf
+007c7230	annotated	CMapObjGroupAaBoxQuery::CachedLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c7610	annotated	CMapObjGroup::QueryEnd	tag in src/world/map/CMapObjGroup.cpp
 007c7660	annotated	CMapObjGroupBoxQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c7710	annotated	CMapObjGroup::AllocHitRecord	tag in src/world/map/CMapObjGroup.cpp
@@ -3731,6 +3999,11 @@ addr	how	frozen	evidence
 007c8bf0	annotated	CMapObjGroup::LiquidTileCount	tag in src/world/map/CMapObjGroup.cpp
 007c8c60	annotated	CMapObjGroup::BuildLiquidVertices	tag in src/world/map/CMapObjGroupLoad.cpp
 007c8d80	annotated	CMapObjGroup::FirstLiquidTileType	tag in src/world/map/CMapObjGroupLoad.cpp
+007c8dd0	annotated	CMapObjGroup::TestLiquidTiles	tag in src/world/map/CMapObjGroup.cpp
+007c9110	annotated	WalkLiquidTilesX	tag in src/world/map/CMapObjGroup.cpp
+007c91a0	annotated	WalkLiquidTilesY	tag in src/world/map/CMapObjGroup.cpp
+007c9230	annotated	CMapObjGroup::WalkLiquidTilesXMajor	tag in src/world/map/CMapObjGroup.cpp
+007c9370	annotated	CMapObjGroup::WalkLiquidTilesYMajor	tag in src/world/map/CMapObjGroup.cpp
 007c94b0	annotated	CMapObjGroup::QueryLiquidBox	tag in src/world/map/CMapObjGroup.cpp
 007c9a00	annotated	CMapObjGroup::SegmentQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007c9a60	annotated	CMapObjGroup::BoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
@@ -3738,11 +4011,13 @@ addr	how	frozen	evidence
 007c9b10	annotated	CMapObjGroupAaBoxQuery::TestFace	tag in src/world/map/CMapObjGroup.cpp
 007c9cb0	annotated	CMapObjGroup::BindVertexStream	tag in src/world/map/CMapObjGroupBuffers.cpp
 007c9d80	annotated	CMapObjGroup::BindIndexStream	tag in src/world/map/CMapObjGroupBuffers.cpp
+007c9dd0	annotated	CMapObjGroup::QueryLiquidSegment	tag in src/world/map/CMapObjGroup.cpp
 007ca180	annotated	CMapObjGroup::SegmentQueryNode	tag in src/world/map/CMapObjGroup.cpp
 007ca440	annotated	CMapObjGroup::BoxQueryNode	tag in src/world/map/CMapObjGroup.cpp
 007ca600	annotated	CMapObjGroup::DualQueryNode	tag in src/world/map/CMapObjGroup.cpp
 007ca8c0	annotated	CMapObjGroup::AaBoxQueryLeaf	tag in src/world/map/CMapObjGroup.cpp
 007ca920	annotated	CMapObjGroup::AaBoxQueryNode	tag in src/world/map/CMapObjGroup.cpp
+007cab70	annotated	CMapObjGroup::QueryLiquidHull	tag in src/world/map/CMapObjGroup.cpp
 007cb0c0	annotated	CMapObjGroup::QuerySegment	tag in src/world/map/CMapObjGroup.cpp
 007cb180	annotated	CMapObjGroup::QueryBox	tag in src/world/map/CMapObjGroup.cpp
 007cb260	annotated	CMapObjGroup::QuerySegmentDual	tag in src/world/map/CMapObjGroup.cpp
@@ -3758,8 +4033,13 @@ addr	how	frozen	evidence
 007cbdc0	annotated	CMapObjGroup::AcquireLiquidBuffers	tag in src/world/map/CMapObjGroup.cpp
 007cbe80	callgraph	CMapObjGroup::FreeQueryData	only unmatched callee of 007cbf40=CMapObjGroup::~CMapObjGroup
 007cbf40	callgraph	CMapObjGroup::~CMapObjGroup	only unmatched callee of 007c0030=CMap::FreeMapObjGroup
+007cbfe0	annotated	CMapLowDetail::ReleaseBuffers	tag in src/world/map/MapLowDetail.cpp
 007cc020	callgraph	CMapLowDetail::Free	only unmatched callee of 007cc310=CMapLowDetail::Load
+007cc0b0	annotated	CMapLowDetail::QueueVisible	tag in src/world/map/MapLowDetail.cpp
 007cc310	annotated	CMapLowDetail::Load	tag in src/world/map/MapLowDetail.cpp
+007cc880	callgraph	TSList<CMapChunk,TSGetExplicitLink<CMapChunk> >::UnlinkAll	only unmatched callee of 00793760=CWorldScene::TraverseRowOccluders
+007cc9a0	annotated	CWorldScene::AllocOccluder	tag in src/world/CWorldScene.cpp
+007cca90	annotated	CWorldScene::FreeOccluder	tag in src/world/CWorldScene.cpp
 007ccd20	callgraph	MapOcclusion::BuildBoxes	only unmatched callee of 007cd850=MapOcclusion::BuildVolumes
 007ccdf0	annotated	MapOcclusion::GetVolumeCount	tag in src/world/map/MapOcclusion.cpp
 007cce00	annotated	CWorldScene::SphereOccludedByVolumes	tag in src/world/CWorldScene.cpp
@@ -3780,6 +4060,7 @@ addr	how	frozen	evidence
 007ce520	override	CChunkLiquid::GetBoundingSphere	
 007ce5d0	annotated	CChunkLiquid::RecordHits	tag in src/world/map/CChunkLiquid.cpp
 007ce960	annotated	CChunkLiquid::QueryBox	tag in src/world/map/CChunkLiquid.cpp
+007ceb80	annotated	CChunkLiquid::QueryHull	tag in src/world/map/CChunkLiquid.cpp
 007ced30	annotated	Liquid::ChunkBufPairDestroy	tag in src/world/map/LiquidSurface.cpp
 007cee10	callgraph	CChunkLiquid::CChunkLiquid	only unmatched callee of 007c0980=CMap::AllocChunkLiquid
 007cefd0	annotated	Liquid::ChunkBufCreate	tag in src/world/map/LiquidSurface.cpp
@@ -3819,7 +4100,15 @@ addr	how	frozen	evidence
 007d4f10	annotated	CMapLiquidData::SetBody	tag in src/world/map/CMapLiquidData.cpp
 007d4f40	annotated	Liquid::CClientEnvironment::SetupLighting	tag in src/world/map/LiquidSurface.cpp
 007d5120	annotated	Liquid::CreateEnvironment	tag in src/world/map/LiquidSurface.cpp
+007d5150	annotated	CMapAreaLow::FillVertices	tag in src/world/map/MapLowDetail.cpp
+007d5240	annotated	CMapAreaLow::FillIndices	tag in src/world/map/MapLowDetail.cpp
+007d5540	annotated	FVBBList::Take	tag in src/world/map/FVBBList.cpp
+007d55b0	annotated	FVBBList::Release	tag in src/world/map/FVBBList.cpp
+007d5610	annotated	CWorldScene::RenderDebugTriangles	tag in src/world/CWorldScene.cpp
+007d58b0	annotated	FVBBList::Initialize	tag in src/world/map/FVBBList.cpp
 007d59b0	annotated	QuerySegmentMapObjs	tag in src/world/map/CMapObj.cpp
+007d5de0	annotated	FVBBList::Acquire	tag in src/world/map/FVBBList.cpp
+007d5e70	annotated	CMapAreaLow::Draw	tag in src/world/map/MapLowDetail.cpp
 007d6210	annotated	Liquid::CWaveManager::Release	tag in src/world/map/LiquidSurface.cpp
 007d62a0	annotated	Liquid::CWaveManager::Update	tag in src/world/map/LiquidSurface.cpp
 007d6690	annotated	CWorldScene::ChunkRectInView	tag in src/world/CWorldScene.cpp
@@ -3854,6 +4143,8 @@ addr	how	frozen	evidence
 007d82e0	annotated	CMapObjGroup::ReadComplete	tag in src/world/map/CMapObjGroupLoad.cpp
 007d8570	annotated	CMapObjGroup::ReadCallback	tag in src/world/map/CMapObjGroupLoad.cpp
 007d85e0	annotated	CMapObjGroup::Read	tag in src/world/map/CMapObjGroupLoad.cpp
+007d8730	annotated	CMapChunk::IntersectCell	tag in src/world/map/CMapChunk.cpp
+007d8e00	annotated	CMapChunk::GatherFacets	tag in src/world/map/CMapChunk.cpp
 007d91f0	annotated	Liquid::MapObjPolyEval	tag in src/world/map/LiquidSurface.cpp
 007d9230	annotated	Liquid::MapObjPolyAddPoint	tag in src/world/map/LiquidSurface.cpp
 007d9270	annotated	Liquid::MapObjPolyCloseOutline	tag in src/world/map/LiquidSurface.cpp
@@ -3867,6 +4158,10 @@ addr	how	frozen	evidence
 007d9990	override	CMap::LoadTexture	
 007d9a20	annotated	CMapArea::Load	tag in src/world/map/CMapArea.cpp
 007d9a70	annotated	CMap::CreateArea	tag in src/world/map/CMap.cpp
+007d9b10	annotated	CMapLight::CMapLight	tag in src/world/map/CMapLight.cpp
+007d9bd0	annotated	CMapLight::Create	tag in src/world/map/CMapLight.cpp
+007d9d50	annotated	CMapLight::Enable	tag in src/world/map/CMapLight.cpp
+007da100	annotated	CMapLight::Link	tag in src/world/map/CMapLight.cpp
 007dc010	override	StringToMouseButton	
 007dc770	cvar	EnableMicrophoneHandler	callback of CVar::Register("EnableMicrophone") on both sides
 007dc910	annotated	Script_VoiceIsDisabledByClient	tag in src/ui/game/VoiceScript.cpp
@@ -3900,7 +4195,7 @@ addr	how	frozen	evidence
 007e3580	annotated	DecalStreamIndices	tag in src/world/Shadow.cpp
 007e35f0	annotated	DecalCollectReceivers	tag in src/world/Shadow.cpp
 007e36e0	annotated	ShadowAddCallback	tag in src/world/Shadow.cpp
-007e3820	annotated	ShadowModCallback	tag in src/world/Shadow.cpp
+007e3820	annotated	ShadowModCallback	tag in src/world/CWorld.cpp
 007e3980	annotated	ShadowSetLOD	tag in src/world/Shadow.cpp
 007e3a20	annotated	ShadowLODCallback	tag in src/world/Shadow.cpp
 007e3aa0	annotated	DecalDrawBoundReceivers	tag in src/world/Shadow.cpp
@@ -3917,15 +4212,79 @@ addr	how	frozen	evidence
 007ea260	string	EffectDeath::EffectDeath	unique "full screen death effect"
 007ea5f0	string	CGlueMgr::InitializeFFX	unique "ffxSpecial"
 007eae60	annotated	GetGuildTabardCost	tag in src/ui/game/CGTabardModelFrame.cpp
+007eae70	annotated	FindBandSegment	tag in src/world/DayNightLight.cpp
+007eaef0	annotated	InterpFloatBandRec	tag in src/world/DayNightLight.cpp
+007eb070	annotated	InterpIntBand	tag in src/world/DayNightLight.cpp
+007eb180	annotated	DNLightParams	tag in src/world/DayNightLight.cpp
 007ebf30	override	InterpBandColor	
 007ebf90	override	InterpFloatBand	
 007ebff0	override	ComputeLightColors	
+007ec220	annotated	DNMixInfo	tag in src/world/DayNightLight.cpp
+007ecb30	annotated	DNLoadMapLights	tag in src/world/DayNightLight.cpp
+007ecc90	annotated	DayNightSetFogMode	tag in src/world/DayNightLight.cpp
+007eccb0	annotated	DayNightClearForcedLights	tag in src/world/DayNightLight.cpp
+007ecd00	annotated	DNFogRateFor	tag in src/world/DayNightLight.cpp
+007ecd80	annotated	DNComputeInfoClamped	tag in src/world/DayNightLight.cpp
+007ece00	annotated	DayNightOverrideActive	tag in src/world/DayNightLight.cpp
+007ece10	annotated	CloudTextureCallback	tag in src/world/DayNightSky.cpp
+007ecec0	annotated	DayNightSetForcedParams	tag in src/world/DayNightLight.cpp
+007ecee0	annotated	DayNightClearForcedParams	tag in src/world/DayNightLight.cpp
+007ecf00	annotated	DayNightClearFadeFlag	tag in src/world/DayNightLight.cpp
+007ecf20	annotated	SkyModelAnimate	tag in src/world/DayNightSky.cpp
+007ecff0	annotated	ReserveAreaLights	tag in src/world/DayNightLight.cpp
+007ed0a0	annotated	LightQEOrder	tag in src/world/DayNightLight.cpp
+007ed150	annotated	DayNightAddForcedLight	tag in src/world/DayNightLight.cpp
+007ed1b0	annotated	DNSetupMapObjFog	tag in src/world/DayNightLight.cpp
+007ed250	annotated	CloudTables	tag in src/world/DayNightSky.cpp
 007ed2d0	override	SkyLerp	
-007ed3b0	annotated	InterpBodyBand	tag in src/world/DayNight.cpp
-007f0530	override	SkyRender	
-007f09b0	override	SkyRender	
+007ed3b0	annotated	InterpBodyBand	tag in src/world/DayNightLight.cpp
+007ed4c0	annotated	DNBlendInfo	tag in src/world/DayNightLight.cpp
+007ed820	annotated	DayNightEndFogOverride	tag in src/world/DayNightLight.cpp
+007ed870	annotated	DayNightBeginFogOverride	tag in src/world/DayNightLight.cpp
+007eda30	annotated	GlareLiquidFactor	tag in src/world/DayNightSky.cpp
+007eda90	annotated	CloudDomeHit	tag in src/world/DayNightSky.cpp
+007edb50	annotated	CloudsSetExponent	tag in src/world/DayNightSky.cpp
+007edbe0	annotated	BodyQuad	tag in src/world/DayNightSky.cpp
+007edee0	annotated	BodyClip	tag in src/world/DayNightSky.cpp
+007ee0d0	annotated	DNUpdateStarSky	tag in src/world/DayNightLight.cpp
+007ee150	annotated	SunGlareInitialize	tag in src/world/DayNightSky.cpp
+007ee230	annotated	MoonGlareInitialize	tag in src/world/DayNightSky.cpp
+007ee360	annotated	DNClearInfo	tag in src/world/DayNightLight.cpp
+007ee510	annotated	DNComputeLightInfo	tag in src/world/DayNightLight.cpp
+007ee6b0	annotated	DNAddForcedLight	tag in src/world/DayNightLight.cpp
+007ee750	annotated	DNUpdateColors	tag in src/world/DayNightLight.cpp
+007ee9b0	annotated	DNFadeFog	tag in src/world/DayNightLight.cpp
+007eea10	annotated	DNDarkenColor	tag in src/world/DayNightLight.cpp
+007eea80	annotated	DayNightUpdateStars	tag in src/world/DayNightLight.cpp
+007eea90	annotated	DNUpdateDirection	tag in src/world/DayNightLight.cpp
+007eecc0	annotated	DNUpdateBodies	tag in src/world/DayNightLight.cpp
+007ef6e0	annotated	GlareUpdate	tag in src/world/DayNightSky.cpp
+007ef920	annotated	CloudSheetCoords	tag in src/world/DayNightSky.cpp
+007efa30	annotated	CloudDensityAt	tag in src/world/DayNightSky.cpp
+007efae0	annotated	CloudsLight	tag in src/world/DayNightSky.cpp
+007efd00	annotated	CloudsGenerate	tag in src/world/DayNightSky.cpp
+007f04b0	annotated	CloudsConstruct	tag in src/world/DayNightSky.cpp
+007f0530	annotated	DNUpdateDomeColors	tag in src/world/DayNightLight.cpp
+007f0870	annotated	DayNightGlareRender	tag in src/world/DayNightSky.cpp
+007f08c0	annotated	SkyModelDraw	tag in src/world/DayNightSky.cpp
+007f09b0	annotated	DayNightSkyRender	tag in src/world/DayNightSky.cpp
+007f0cc0	annotated	NewAreaLight	tag in src/world/DayNightLight.cpp
+007f1010	annotated	DayNightUpdateClouds	tag in src/world/DayNightSky.cpp
+007f1070	annotated	DayNightResetLightFade	tag in src/world/DayNightLight.cpp
+007f10a0	annotated	DayNightAddAreaLight	tag in src/world/DayNightLight.cpp
+007f11a0	annotated	DayNightRemoveAreaLight	tag in src/world/DayNightLight.cpp
+007f1360	annotated	DNGatherLights	tag in src/world/DayNightLight.cpp
+007f16f0	annotated	DayNightUpdateFog	tag in src/world/DayNightLight.cpp
+007f1b10	annotated	CloudsSetDetail	tag in src/world/DayNightSky.cpp
 007f1cd0	cvar	CWorldParam::SkyCloudLODCallback	callback of CVar::Register("SkyCloudLOD") on both sides
-007f39b0	cvar	CWorldParam::ViolenceLevelCallback	callback of CVar::Register("violenceLevel") on both sides
+007f1d30	annotated	DayNightShutdown	tag in src/world/DayNightLight.cpp
+007f20e0	annotated	CloudsBuildMesh	tag in src/world/DayNightSky.cpp
+007f2470	annotated	DomeBuild	tag in src/world/DayNightSky.cpp
+007f30c0	annotated	DayNightGetSkyModel	tag in src/world/DayNightLight.cpp
+007f31c0	annotated	DayNightSetSkyModel	tag in src/world/DayNightSky.cpp
+007f3230	annotated	DNUpdateLight	tag in src/world/DayNightLight.cpp
+007f3920	annotated	DayNightUpdateCamera	tag in src/world/DayNightLight.cpp
+007f39b0	override	CWorldParam::ViolenceLevelCallback	
 007f3a60	callgraph	WowClientDB<SpellVisualRec>::GetRecord	only unmatched callee of 007fa290=GetSpellVisual
 007f3ae0	override	CGMinimapFrame::SetZoom	
 007f3b40	annotated	CGMinimapFrame::GetZoom	tag in src/ui/game/CGMinimapFrame.cpp
@@ -3936,6 +4295,8 @@ addr	how	frozen	evidence
 007f93d0	annotated	TransformBoxExtents	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007f9430	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007f9480	annotated	SegmentIntersectsBox	tag in src/world/map/CMapObj.cpp
+007f9bf0	annotated	SegmentDistanceSq	tag in src/world/CWorld.cpp
+007f9c90	annotated	PolygonContains	tag in src/world/CWorld.cpp
 007fa140	annotated	SphereToBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 007fa290	annotated	GetSpellVisual	tag in src/object/client/CGUnit_C.cpp
 007fdd60	order	Script_Stub_SpellCanTargetGlyph	binding table name Script_Stub_SpellCanTargetGlyph, in definition order in src/ui/game/miscscriptstubs.cpp
@@ -4148,6 +4509,7 @@ addr	how	frozen	evidence
 00823cb0	override	CM2Scene::Draw	
 00823d50	override	M2ShadowCasterList::Add	
 00823d90	override	CM2Model::DetachFromScene	
+00823e40	annotated	CM2Model::IsLoadedWithTextures	tag in src/model/CM2Model.cpp
 00823ed0	callgraph	CM2Model::WaitForLoad	only unmatched callee of 004f5e20=CM2Model::GetBoundingBox, 004f5e80=CM2Model::GetBoundingSphere, 006f75f0=CEffect::SetEmittersFlag400000
 00823f10	annotated	CM2Model::SetAnimating	tag in src/model/CM2Model.cpp
 00823f90	annotated	M2BatchesCanMerge	tag in src/model/CM2Model.cpp
@@ -4165,6 +4527,7 @@ addr	how	frozen	evidence
 008244f0	annotated	CM2Model::LinkToCallbackListTail	tag in src/model/CM2Model.cpp
 00824510	callgraph	CM2Model::UnlinkFromCallbackList	only unmatched callee of 00838490=CM2Shared::FinishLoadingSkinProfile
 00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
+008245b0	annotated	CM2Model::GetLoadProgress	tag in src/model/CM2Model.cpp
 008248c0	annotated	CM2Lighting::CM2Lighting	tag in src/model/CM2Lighting.cpp
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
 00824a00	annotated	M2ModelParticle::M2ModelParticle	tag in src/model/M2Internal.cpp
@@ -4312,7 +4675,7 @@ addr	how	frozen	evidence
 008355d0	annotated	CM2Lighting::GetSunlight	tag in src/model/CM2Lighting.cpp
 00835640	annotated	CM2Light::SetLightType	tag in src/model/CM2Light.cpp
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
-008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights, 00824d30=CM2Model::FreeExternalResources
+008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 007d9d50=CMapLight::Enable, 0081e400=CM2Scene::SelectLights, 00824d30=CM2Model::FreeExternalResources
 00835750	annotated	CM2Lighting::SetupGxFog	tag in src/model/CM2Lighting.cpp
 00835950	override	CM2Shared::LoadCanceledCallback	
 00835970	annotated	CM2Shared::AddRef	tag in src/model/CM2Shared.cpp
@@ -4673,7 +5036,7 @@ addr	how	frozen	evidence
 0086b2d0	annotated	OsGetVersion	tag in src/util/win/OsSystem.cpp
 0086b480	annotated	OsGetComputerName	tag in src/util/win/OsSystem.cpp
 0086b4a0	annotated	OsGetUserName	tag in src/util/win/OsSystem.cpp
-0086b4c0	annotated	OsGetPhysicalMemory	tag in src/util/win/OsSystem.cpp
+0086b4c0	annotated	OsGetPhysicalMemory	tag in src/util/android/OsAndroid.cpp
 0086b600	annotated	OsParseCpuSpeedFromBrand	tag in src/util/win/OsSystem.cpp
 0086b710	annotated	OsQueryCpuSpeedFromPowerInfo	tag in src/util/win/OsSystem.cpp
 0086b9a0	annotated	OsGetCpuInfo	tag in src/util/win/OsSystem.cpp
@@ -4827,7 +5190,7 @@ addr	how	frozen	evidence
 008a2aa0	annotated	Liquid::ResetProceduralTextureLatches	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2ac0	annotated	Liquid::WmoWaterGenerate	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2bf0	override	Liquid::DepthGradientGenerate	
-008a2e20	string	Liquid::ProceduralLiquidTexture	unique "proceduralOceanDepthTex"
+008a2e20	annotated	Liquid::ProceduralLiquidTexture	tag in src/world/map/LiquidMaterialSettings.cpp
 008a2f00	annotated	Liquid::UpdateProceduralTextures	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3050	annotated	CMapLiquidData::CMapLiquidData	tag in src/world/map/CMapLiquidData.cpp
 008a3060	annotated	CMapLiquidData::HasLiquid	tag in src/world/map/CMapLiquidData.cpp
@@ -4851,7 +5214,7 @@ addr	how	frozen	evidence
 008a3810	annotated	Liquid::SetupWaveConstants	tag in src/world/map/LiquidMaterialSettings.cpp
 008a38b0	annotated	Liquid::SetupLightConstants	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3c90	annotated	Liquid::SetupSunConstants	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3da0	sticky	Liquid::DrawWaterMaterial	held from the previous run, where it was sticky
+008a3da0	callgraph	Liquid::DrawWaterMaterial	only unmatched callee of 008a5590=Liquid::CMaterialWater::Draw, 008a5900=Liquid::CMaterialWaterNoSpec::Draw
 008a3e00	annotated	Liquid::CMaterialProcWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3ec0	annotated	Liquid::CMaterialProcWater::~CMaterialProcWater	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3f70	string	Liquid::CMaterialWater::EnsureShaders	unique "psLiquidWater"
@@ -5391,19 +5754,23 @@ addr	how	frozen	evidence
 009830d0	annotated	PointInPolygon	tag in lib/typhoon/tempest/Intersect.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
 009836b0	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
+009838d0	callgraph	TSGrowableArray<M2CollisionTriangle>::Reserve	only unmatched callee of 007d8e00=CMapChunk::GatherFacets
 00983990	callgraph	CWFrustum::NegatePlanes	only unmatched callee of 00874890=ShadowMapSetupCascades
 009839e0	annotated	AaBoxVsPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983a60	annotated	AaBoxBehindPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
+00983ae0	annotated	CWFrustum::Translate	tag in src/world/CWFrustum.cpp
 00983d20	annotated	CWFrustum::SphereInside	tag in src/world/CWorldScene.cpp
 00983d70	annotated	ClassifyPointPlanes6	tag in lib/typhoon/tempest/Intersect.cpp
 00983e70	annotated	CWFrustum::ComputePlanes	tag in src/world/CWorldScene.cpp
 00983f40	annotated	CWFrustum::Transform	tag in src/world/CWFrustum.cpp
+00983fb0	callgraph	SphereInGroupFrustums	only unmatched callee of 00793270=CWorldScene::VisitGroupEntities, 00799b70=CWorldScene::VisitGroupDoodads
 00983fe0	annotated	CWFrustum::CWFrustum	tag in src/world/CWFrustum.cpp
 00984240	annotated	CWFrustum::SetCorners	tag in src/world/CWorldScene.cpp
 00984310	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
 00984450	annotated	C34Matrix::RotateAroundZ	tag in lib/typhoon/tempest/matrix/C34Matrix.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
+00984c70	callgraph	FloorToInt	only unmatched callee of 00784c60=WeatherGroundCache::Intersect
 00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp
 00984ce0	annotated	DistancePointSegmentSq	tag in lib/typhoon/tempest/Intersect.cpp
 00984db0	annotated	DistancePointPolygon	tag in lib/typhoon/tempest/Intersect.cpp
@@ -5465,3 +5832,14 @@ addr	how	frozen	evidence
 009a12d0	string	CID_New_Parser	unique "%!PS-Adobe-3.0 Resource-CIDFont"
 009a16a0	string	cid_parse_dict	unique "%ADOBeginFontDict"
 009a81f0	callgraph	CWorld::GetFarClip	only unmatched callee of 00795400=CWorldScene::UpdateCamera
+009abb30	annotated	StarsRelease	tag in src/world/DayNightSky.cpp
+009abb60	annotated	FacingBasis	tag in src/world/DayNightSky.cpp
+009abc60	annotated	GlareRaycast	tag in src/world/DayNightSky.cpp
+009abd50	annotated	StarsDraw	tag in src/world/DayNightSky.cpp
+009abe00	annotated	GlareOcclusion	tag in src/world/DayNightSky.cpp
+009ac400	annotated	GlareDraw	tag in src/world/DayNightSky.cpp
+009ac660	annotated	BodyDraw	tag in src/world/DayNightSky.cpp
+009acb00	annotated	DomeDraw	tag in src/world/DayNightSky.cpp
+009acd40	annotated	CloudsDraw	tag in src/world/DayNightSky.cpp
+009ad000	annotated	GlareLoadTexture	tag in src/world/DayNightSky.cpp
+009ad0b0	annotated	BodyLoadTexture	tag in src/world/DayNightSky.cpp

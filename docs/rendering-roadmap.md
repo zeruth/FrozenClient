@@ -21,7 +21,7 @@ Two standing decisions:
 ## What 100% means
 
 The render surface is the reference functions in the modules that draw the world
-(`RENDER_MODULES` in `tools/recomp/recomp.py`): 5,246 as of the last run. Completion is:
+(`RENDER_MODULES` in `tools/recomp/recomp.py`): 5,214 as of the last run. Completion is:
 
 1. every one **linked** to a frozen function, none of them a stub;
 2. every one **faithful**: the reference's calls in the reference's order, then branch and
@@ -33,30 +33,36 @@ trace or scene compare, with the scene-compare suite at 99% or better.
 
 ## Where it stands
 
-| | 2026-10-01 start | 2026-10-02, after phase 1 | 2026-10-02, phase 2 in progress | at completion |
+| | 2026-10-01 start | 2026-10-02 morning (phase 1 done) | **2026-10-02 evening** | at completion |
 |---|---:|---:|---:|---:|
-| render surface linked | 1,267 / 4,838 (26%) | 1,699 / 5,293 (32%) | **1,897 / 5,246 (36%)** | 5,246 |
-| render surface faithful | not measured | 1,149 (22%) | **1,258 (24%)** | 5,246 |
-| render surface stubs | 20 | 25 | 25 | 0 |
-| render surface attributed by anchor guess | 63% | 49% | 49% | low |
+| render surface linked | 1,267 / 4,838 (26%) | 1,699 / 5,293 (32%) | **2,222 / 5,214 (43%)** | 5,214 |
+| render surface faithful | not measured | 1,149 (22%) | **1,478 (28%)** | 5,214 |
+| render surface stubs | 20 | 25 | **16** | 0 |
+| live empty functions (this platform) | 37 | 35 | **17** | 0 |
+| attributed by anchor guess | 63% | 49% | 49% | low |
 | D3D9 device census (vtable 0x00a2e718, 228 functions) | 199 linked | 227 linked, 223 faithful | unchanged | 228 / 228 |
 
 The denominator moves as template instantiations are excluded and anchors are recovered, so
 compare linked counts, not percentages.
 
-Remaining work by area (unlinked; the areas are module groups from the report):
+**The stand-in renderer is gone.** As of 4b40fc4d every call in `CGWorldFrame::OnWorldRender`'s
+order and in `CMap::Render` goes to ported reference code; what remains is fidelity inside those
+passes and the modules beneath them. None of it has been run since phase 1 (see phase 5).
+
+Remaining work by area (unlinked):
 
 | area | phase | unlinked | notes |
 |---|---|---:|---|
-| entities (`Unit_C`, `Player_C`, `GameObject_C`, `Movement`, `Passenger`, effects, missiles, spell visuals) | 4 | ~1,840 | half of everything left |
-| world layer, map streaming, map geometry, liquid, shadows (see the phase 2 table) | 2 | ~750 | in progress |
-| textures and full-screen effects (`Texture*`, `blp`, `tga`, `FFXEffects`, glow, `Lightning`) | 3 | ~560 | |
+| entities (`Unit_C`, `Player_C`, `GameObject_C`, `Movement`, effects, missiles, spell visuals) | 4 | ~1,800 | well over half of what is left |
+| world layer and map (see the phase 2 table) | 2 | ~700 | the tail: fidelity and leaves |
+| textures and full-screen effects (`blp`, `tga`, `FFXEffects`, glow, `Lightning`) | 3 | ~300 | `Texture.cpp` landed |
 | D3D9Ex and OpenGL devices | out of scope | ~130 | not used on Windows |
-| models and particles | 1 | 29 | each blocked, see below |
+| models and particles | 1 | ~10 | each blocked, see below |
 
 Half the surface is still placed in its module by the nearest path string rather than a known
 boundary, so rows can be mis-sized: read a function's body before trusting a `?` module in the
-queue. `MODULE_RANGES` in `recomp.py` is the fix per module.
+queue. `MODULE_RANGES` in `recomp.py` is the fix per module. The DayNight light and sky code
+(0x7ea000..0x7f4000) is one such unanchored block: 81 of its 159 functions are linked.
 
 ## How a cycle runs
 
@@ -68,16 +74,23 @@ the delta. Rules learned the hard way:
   helper frozen calls under its own name; a tag costs minutes and lifts every caller.
 - **Seeds every few cycles.** `--next 40 --helpers`: one identified leaf lifts hundreds of
   callers and feeds the matchers.
-- **Port chains from the top.** Check what feeds a stub before writing it.
+- **Port chains from the top.** Check what feeds a stub before writing it. The footprints are the
+  current example: the draw is easy and its producer is three unported levels down (phase 4).
+- **Check the gate before calling something dead.** A pass that looks unreachable can be on by a
+  value in `.data`: the load barriers' mode is initialised to 1 in the image, with no code ever
+  writing it. Read the initial bytes (a small PE reader in the scratchpad does it) before
+  concluding a system is off.
 - **Close a module, then move.** A module at 100% stops feeding false order-matcher links to its
   neighbours.
 - **Tag the identified-but-not-ported.** A tag or an `overrides.json` entry takes seconds.
 - **Read every new inferred link.** The order, call-graph and string matchers are confidently
-  wrong often enough to matter.
-- **Resolve register arguments in the asm.** Ghidra drops `ECX` (`this`) on `__thiscall` helpers
-  and reuses stack slots, so which frustum, list or matrix a call works on is read from the dump
-  (`llvm-objdump` into the scratchpad, then grep), never guessed from the decompilation. The
-  shadow-map port depended on this at a dozen call sites.
+  wrong often enough to matter. Two found this way: `FUN_009a81f0` linked as
+  `CWorld::GetFarClip` (it is an object-list tick), and `FUN_007a03c0` linked as
+  `CMap::MapMemInitializeHeaps` (it is the footprint textures, now rejected in `overrides.json`).
+- **Resolve register arguments in the asm.** Ghidra drops `ECX` (`this`) on `__thiscall` helpers,
+  loses x87 arguments to CRT intrinsics, and reuses stack slots, so which object, list or matrix a
+  call works on is read from the dump (`llvm-objdump` into the scratchpad, then grep), never
+  guessed from the decompilation.
 - **A hand verdict needs a read.** A branch or order miss caused by inlined templates is a
   verdict in `overrides.json`, written after reading the port against the decompilation. Merge
   into an existing entry; replacing one can drop its `frozen` link.
@@ -91,162 +104,156 @@ the delta. Rules learned the hard way:
   anchors the export dropped, 19 modules joined `RENDER_MODULES`, and the report prints faithful
   and stub counts for the surface.
 - **Phase 3a, the D3D9 device** (2026-10-01/02). Closed by a census of the device's vtable
-  (0x00a2e718) over 0x681000..0x6ac000. Render-state translation (`IRsSendToHw`, `DsSet`),
-  transforms and texgen, textures, buffers and pools, device lifetime and reset, caps, window and
-  window procedure, scene and present with the frame cap, render targets, queries, capture,
-  gamma, vertex declarations, stereo, the immediate-mode primitive, both cursors, `SLog`, and on
-  its path the W32 time manager and `TextureLoadImage`.
-- **Phase 1, models** (2026-10-02; 29 left of 240). Model cache with the animate thread,
-  `CM2Scene::Animate` and the doodad grouping, `CM2Scene::Draw`, batched particles, draw
-  callbacks, projected decals, the instanced shadow-caster draw, CPU skinning, the particle
-  emitter clone path and model particles, `CM2Model` queries and bounds, `CharacterModelBase`.
-  Seen running: the world loads and draws with doodad instancing on. The first run found two bugs
-  (a frame freeze from the old caster pass, exploding instanced doodads from
-  `CM2Shared::SetIndices`), both fixed.
+  (0x00a2e718) over 0x681000..0x6ac000: render-state translation, transforms and texgen,
+  textures, buffers and pools, lifetime and reset, caps, window and window procedure, scene and
+  present with the frame cap, render targets, queries, capture, gamma, vertex declarations,
+  stereo, the immediate-mode primitive, both cursors, `SLog`, the W32 time manager and
+  `TextureLoadImage`. The device also sends the fixed-function stage states, which the reference
+  sky, the barriers and the debug overlays draw through.
+- **Phase 1, models** (2026-10-02). `M2Model` 149/151, `M2Scene` 64/67, `M2Shared`,
+  `ParticleSystem2`, `M2Light` and `MapShadow` all complete, `M2Cache` 17/20. Seen running: the
+  world loads and draws with doodad instancing on. Left, each with its reason at the code or in
+  `overrides.json`: Storm's archive byte accounting (`FUN_008245b0`, `FUN_004b57a0`); the
+  `CharacterModelBase` cameras and DressUp frame (need `CSimpleModel::SetCameraByID`); tempest
+  helpers owned by `src/world` (`0x9838d0`, `0x983940`, `0x983ae0`, `0x983fb0`); `M2Cache`
+  `0x81ca10`.
 
-  Left, each with its reason at the code or in `overrides.json`: model and texture byte
-  accounting through Storm's archive internals (`FUN_008245b0`, `FUN_004b57a0`); the
-  `CharacterModelBase` cameras and DressUp frame (need `CSimpleModel::SetCameraByID` and a
-  frame-owned `CCharacterComponent`); tempest helpers owned by `src/world` (`0x9838d0`,
-  `0x983940`, `0x983ae0`, `0x983fb0`); `M2Cache` `0x81ca10`. Branch ratios to read with `--diff`:
-  `Animate` 0.37, `CM2SceneRender::Draw` 0.31, `SetupLighting` 78% call order.
-
-## Phase 2: the environment (current)
-
-### Landed (2026-10-02)
+### Phase 2, the environment: what landed (2026-10-02)
 
 | commit | what |
 |---|---|
-| 74322478 | projected textures go live (`CWorld::ProjectionCallback` `FUN_0077f500`, `DecalDrawBoundReceivers` `FUN_007e3aa0`); the eleven world console commands |
+| 74322478 | projected textures go live; the eleven world console commands |
 | 76579549 | the portal view lists and the far-plane fill over them |
-| f0d41af2 | `MapMemInitialize` in the reference's order, the loading-screen load loop and `AsyncFileReadWaitAll`; chunks release their doodad defs; occlusion clear and polygon test |
-| 3c988667 | liquid: the material bank as the reference builds it, the chunk buffer pool |
-| 32a8286c | the map-object box queries: blob-shadow WMO receivers (`FUN_007a6940` .. `FUN_007ca920`), M2 receivers `FUN_007a2aa0` |
-| e6fdb71f | **fix**: the shadowed terrain shaders load after `MapMemInitialize` clears its slots (see below) |
-| f3bb2d87 | **the camera** (`Camera.cpp`, 0x5fd630..0x607b00, 104 of 128 linked): views, zoom and timed moves, free look, smoothing, bobbing, terrain tilt, target heights, collision, shakes (CameraShakes.dbc), the model camera, the 22 Lua functions |
-| 989e7731 | **the shadow map** to the reference's architecture: `ShadowMap.cpp` and `MapShadow.cpp` (main map, lit pass, three amortised cascades, hardware-PCF depth maps, the four callbacks, the five caster walks, the binds) |
-| 4decbbdc | **objects place their map entity**: `CGObject_C::UpdateWorldObject` and the unit override, `CWorld::UpdateObject` `FUN_00780240`, `CMap::UpdateEntity` `FUN_007a1bc0` with its liquid, zone and baked-shadow helpers, WMOAreaTable.dbc |
+| f0d41af2 | `MapMemInitialize` in the reference's order, the loading-screen load loop |
+| 3c988667 | liquid material bank and chunk buffer pool |
+| 32a8286c | the map-object box queries: blob-shadow WMO and M2 receivers |
+| e6fdb71f | **fix**: shadowed terrain shaders load after `MapMemInitialize` clears its slots (found by bisect; seen running) |
+| f3bb2d87 | the camera (`Camera.cpp`, now 105/128): views, zoom, free look, smoothing, collision, shakes, the model camera, the 22 Lua functions |
+| 989e7731 | the shadow map to the reference's architecture: main map, lit pass, three cascades, hardware-PCF depth maps |
+| 4decbbdc | objects place their map entity (`CWorld::UpdateObject`, `CMap::UpdateEntity`, WMOAreaTable.dbc) |
+| 6f568a9c, bdf9e007 | the world segment query (buildings, terrain cells, liquid, ray models) and the frustum facet query; the camera sweep; the WorldParam callbacks |
+| 55fccb0d | **MapWeather** (69/88), replacing frozen's own weather; underwater particulates replace the overlay stand-in |
+| 4514898a, 8ec44351 | the BSP node cache and the three cached leaf queries; the ground height and group liquid segment queries |
+| ba845923, f90c5c5a | global-WMO maps load; `CMap::Update` to the reference; the camera building lookup's order |
+| 828ea806 | water ripples; the liquid initialise to the reference |
+| 20539963, bc4160d2 | horizon occluder edges into the distance rows; doodads and entities of visible building groups through the portal frusta |
+| 18de6361 | WMO doodads made per group as the reference does, retiring the cull stand-in |
+| 9e8cc99d, 1b4785ae, a0eb22a6 | **Texture.cpp** (105/122): atlases, the GxTex reuse cache, async BLP, texture blobs, load progress |
+| 9d377066, d5dd48de, 9a4e6022 | `CMap::Render`: unseen frame entities, the indoor candidate-group pass, model fade-outs (`SWModelFadeout`) |
+| 828539e7, 8cdf5458, 73ea1c39 | **the DayNight light block** (`DayNightLight.cpp`, `FUN_007f3230`): band interpolation, area lights, fog, sun direction and bodies; models lit from it through `CMapLight` |
+| f5bfe91f | **the DayNight sky** (`DayNightSky.cpp`): stars, dome, bodies with the horizon clip, clouds with the reference noise table, glares with the occlusion query, skybox models. The stand-in sky and clouds are deleted |
+| d6dd5f1e | **the low-detail horizon**: WDL tiles and far buildings past the far clip (`FVBBList`, `CMapAreaLow`, `CWorldScene::RenderLowDetail`) |
+| b1dd0673, c39ec12e | the end and top of `CMap::Render`: cursor image, weather box, the collision debug overlay (enable 0x200000), the frame flags, the portal view reset |
+| 4b40fc4d | **the load barriers** (`FUN_00794b50` and the system feeding it): walls near unstreamed tile edges and loading buildings and doodads. The last missing call in `OnWorldRender` |
 
-What these runs showed:
+Lessons from these, kept because they change how the next one is done:
 
-- **Ground textures broke in the merge batch, and the cause was found by bisect, not by
-  reading.** The camera and projected textures were cleared first, by A/B runs. 15f2abfb alone
-  reproduced it: it moved `CreateTerrainShadowShaders` above the loop in `MapMemInitialize` that
-  nulls the Terrain2/Terrain3 arrays. The reference clears its slots at 0x0079e8b6..0x0079e974 and
-  loads the shadowed sets at 0x0079e979, after the clearing. Every shadowed terrain shader fell
-  back to the unshadowed one while the pass kept its shadowed setup, so chunks drew the wrong
-  layers once shadows came on a few frames in. Fixed in e6fdb71f and seen running: the road
-  matches the pre-merge build.
+- **Ground textures broke in a merge batch; bisect found it, not reading.** 15f2abfb moved
+  `CreateTerrainShadowShaders` above the loop that nulls the Terrain2/Terrain3 arrays. Fixed in
+  e6fdb71f and seen running.
 - **"The ground goes fully shadowed" was the missing cascades.** At quality 3 the terrain shaders
-  sample four maps (stage 5 plus three cascades on 6..8) through twelve light-matrix rows at c37;
-  the stand-in bound one map and zeroed nine rows, so three taps of four read as occluded.
-  989e7731 replaces the stand-in, and the ground no longer darkens.
-- **The ported shadow map runs but casts nothing visible yet.** Two causes were found and one
-  fixed. Units had no map position (fixed in 4decbbdc; the lit pass now collects the units near
-  the player, 13 model batches where it had 0). And the cascades' look-at up vectors are never
-  written in the reference (cascade base +0x28, read at 0x874c60, 0x874d0a, 0x874ec6), so
-  `FUN_006c0050` fails its `up.SquaredMag() >= 0.01f` check and every cascade view is the
-  identity; frozen reproduces that and the cascades collect nothing. What is still open is why
-  the collected casters do not show on the ground: the device view and the sampling matrices
-  agree, and a hardware-PCF depth map cannot be read back to look. Next step when this is picked
-  up again: force `hwPCF 0` so the maps are R32F, dump one, and compare the depth written with the
-  depth the terrain shader computes.
+  sample four maps through twelve light-matrix rows at c37; the stand-in bound one. Fixed by
+  989e7731.
+- **The ported shadow map casts nothing visible yet.** Units now have map positions (4decbbdc).
+  The cascades' look-at up vectors are never written in the reference (cascade base +0x28, read
+  at 0x874c60, 0x874d0a, 0x874ec6), so `FUN_006c0050` fails its `up.SquaredMag() >= 0.01f` check
+  and every cascade view is the identity; frozen reproduces that. Open: why the collected casters
+  do not show on the ground. Next step: force `hwPCF 0` so the maps are R32F, dump one, and
+  compare the depth written with the depth the terrain shader computes.
+- **What frozen called occluders were load barriers.** `FUN_007946d0` had been ported as an
+  occluder box measured from the camera; it feeds the barrier wall and measures from the active
+  mover. The surrounding notes were corrected in 4b40fc4d.
+- **Dead by construction, not ported:** the object list at 0x00b2eb68 (`FUN_009a80c0`,
+  `FUN_009a81f0`) is never added to anywhere in the binary, and the barrier draw's four models
+  (DAT_00cd85f8) are never created. Both are noted at their call sites.
 
-### Owed a look at a run
+## Phase 2: what is left (current)
 
-- The camera beyond the default follow view: zoom, mouse look, view switching, the model camera
-  in a cinematic. It does not collide yet, because the world segment query is not ported (below).
-- Projected textures (`projectedTextures 1` is in the test config) on something that projects.
-- The liquid material bank and buffer pool at a water line.
-- Units standing in water or a building: `CMap::UpdateEntity` now sets their liquid and light
-  targets, and nothing has looked at a unit there.
-
-### Left, by module
-
-From the 2026-10-02 13:49 run. "Left" is reference functions with no frozen link.
+From the 2026-10-02 18:36 run. "Left" is reference functions with no frozen link.
 
 | module | ref | linked | left | next |
 |---|---:|---:|---:|---|
-| `World.cpp` | 138 | 21 | 117 | the world segment query `FUN_0077f310` -> `FUN_007a3b70` (map objects `FUN_007a30d0`, terrain cells `FUN_007a39f0` / `FUN_007a3570`); the frustum facet query `0x77f8d0` -> `FUN_007ad700`. The camera's collision waits on both |
 | `WorldMap.cpp` | 120 | 25 | 95 | read the bodies first: much of this may be the world map UI rather than rendering |
-| `Map.cpp` | 150 | 61 | 89 | the unfaithful roots below, then `--next --module Map.cpp` |
-| `MapWeather.cpp` | 96 | 26 | 70 | **next up**: the module at 0x783b90..0x78d610 replaces frozen's `Weather.cpp`. Its classes (ground-height cache, rain/patter/snow/sand packets, mist sheets, the four archived vertex shaders) are already worked out in `src/world/MapWeather.hpp` on branch `worktree-agent-ab711d744fbc42c0d` |
-| `WorldFrame.cpp` | 69 | 9 | 60 | `CGWorldFrame::OnWorldUpdate` 16% faithful; the frame's per-object placement loop is still frozen's own |
-| `DetailDoodad.cpp` | 134 | 85 | 49 | `CreateInstance` 8%; the shader path (`FUN_00874760` is ported and waits on `s_useShaders`) |
-| `MapObj.cpp` | 79 | 35 | 44 | `WalkPortals` 39% |
-| `AaBsp.cpp` | 48 | 8 | 40 | the BSP the segment query walks |
+| DayNight (unanchored, 0x7ea000..0x7f4000) | 159 | 81 | 78 | give it a `MODULE_RANGES` entry, then `--next --module` it; `DNUpdateLight` is 71% faithful |
+| `World.cpp` | 137 | 64 | 73 | `CWorld::Destroy` `FUN_007837f0`; `FUN_0077ec30`, `FUN_0077fa00` |
+| `Map.cpp` | 150 | 82 | 68 | the unload `FUN_007c3830`; the footprint module (blocked, below) |
+| `WorldFrame.cpp` | 69 | 10 | 59 | `OnWorldUpdate` 18% and `OnWorldRender` 28%: the glow pre-pass `FUN_004f8770` / `FUN_008c1770`, the object enumeration `FUN_004f6a40`, the post calls (`FUN_007fca30` mount transitions, `FUN_004f6f90`, `FUN_0056c7a0`, `FUN_008c1010`, `FUN_00747ae0`) |
+| `DetailDoodad.cpp` | 134 | 90 | 44 | `CreateInstance` 8% |
+| `MapObj.cpp` | 79 | 40 | 39 | `WalkPortals` 44% |
 | `WorldText.cpp` | 35 | 4 | 31 | floating combat and name text |
-| `WorldParam.cpp` | 70 | 40 | 30 | the stubbed CVar callbacks (footstep bias, alpha bit depth, ground effect density and distance, specular, base mip) |
-| `MapObjGroup.cpp` | 68 | 43 | 25 | |
-| `MapChunkLiquid.cpp` | 70 | 48 | 22 | the WMO liquid mesh factory `FUN_007d43f0` and its writers |
-| `WorldScene.cpp` | 47 | 26 | 21 | occluders `FUN_00796c10`, barriers `FUN_00794b50` |
-| `Liquid.cpp` | 89 | 69 | 20 | the post-liquid pass `0x00790a80` with decals `FUN_0079d5e0` |
-| `MapObjRead.cpp` | 36 | 18 | 18 | |
-| `MapLowDetail.cpp` | 37 | 23 | 14 | low-detail terrain `FUN_007cc810` |
-| `ShaderEffectManager.cpp` | 23 | 9 | 14 | |
-| `MapMem.cpp` | 87 | 73 | 14 | |
-| `MapLoad.cpp` | 15 | 8 | 7 | |
-| `ShadowMap.cpp` / `MapShadow.cpp` | 56 | 50 | 6 | the device-restore hook needs a registry frozen does not have |
-| `MapChunk.cpp`, `MapArea.cpp`, `ShaderEffect.cpp` | 62 | 55 | 7 | |
+| `Camera.cpp` | 128 | 105 | 23 | the boundaries in `CameraDeps.cpp` (phase 4) |
+| `Liquid.cpp` | 89 | 69 | 20 | |
+| `MapWeather.cpp` | 88 | 69 | 19 | five stubs |
+| `AaBsp.cpp`, `WorldParam.cpp`, `MapObjGroup.cpp` | 186 | 136 | 50 | `MapObjGroup` lacks the occluder-edge list at +0x1b0 the visible-group feed walks |
+| `ShaderEffectManager.cpp`, `MapChunkLiquid.cpp`, `MapObjRead.cpp` | 129 | 89 | 40 | |
+| `WorldScene.cpp`, `MapLowDetail.cpp`, `MapMem.cpp` | 171 | 140 | 31 | the scene teardown `FUN_00798310` (it would also give `ReleaseBarrierTextures` and the liquid release chain their caller) |
+| `MapLoad`, `ShadowMap`, `MapChunk`, `ShaderEffect`, `MapArea`, `MapShadow` | 133 | 114 | 19 | the shadow map's device-restore hook needs a registry frozen does not have |
 
 Work that spans modules:
 
-- **Unfaithful roots:** `CMap::Update` 11%, `CMap::Render` 42%, `CWorldScene::UpdateCamera` 56%,
-  `CMapObj::WalkPortals` 39%, `CWorldScene::SubmitOccluderBox` 17%, `CGWorldFrame::OnWorldUpdate`
-  16%, `DetailDoodad::CreateInstance` 8%, `CMap::UpdateMapObjDefs` 53%,
-  `CMapRenderChunk::DrawLocal` 67%.
-- **Terrain through the original's constant setup** (`parity-map-memory.md`): `FUN_007cfbe0` and
-  the permutation selection, and `MapMemInitialize` to 100% (`FUN_007c3d90`, `FUN_007afee0`,
-  `FUN_007cb990`, `FUN_007b2760`, `FUN_007a03c0`, the pools and heaps). This also retires table
-  fog in `IStateSetD3dDefaults`, the device's last frozen-only state.
-- **Stages with no port at all:** footprints `FUN_0079fcc0`, the fog override `FUN_007ed820`, the
-  per-frame sky override at `0x007f0573`, and the glare pair `FUN_007f3230` / `FUN_007eecc0` (tag
-  or port; `DrawGlare` exists).
-- **Blob shadows** (`parity-shadows.md`): the oriented-rectangle footprint and unit box
-  `FUN_0071ed80`, doodad receivers `FUN_007ce960`.
-- **Dependency boundaries the camera recorded** (`src/ui/game/CameraDeps.cpp`): unit smooth
-  facing `FUN_00735f60`, input-control facing `FUN_005fb260` / `FUN_005fbe70`, the vehicle camera
-  (0x759580..0x75af40). The last two belong to phase 4; the segment query is phase 2 (above).
+- **Unfaithful roots** (call-order fidelity): `DetailDoodad::CreateInstance` 8%,
+  `CGWorldFrame::OnWorldUpdate` 18%, `CMap::MapMemInitialize` 26%, `OnWorldRender` 28%,
+  `CWorldScene::SubmitBarrierBox` 33%, `CMapObj::WalkPortals` 44%, `CMap::Update` 49%,
+  `CWorldScene::UpdateCamera` 50%, `CMapRenderChunk::DrawLocal` 67%, `CWorld::Update` 69%,
+  `CMap::UpdateMapObjDefs` 71%, `CMap::Render` 74%.
+- **M2 animate placement.** The reference runs `CM2Scene::AdvanceTime` / `Animate` and
+  `MapShadowRender` inside `CMap::Render`; frozen still does them in `OnWorldRender`, because it
+  culls and queues unit models after `CMap::Render` with its own frustum test. They move
+  together with the unit queueing (the reference queues units in the traversal, through
+  `CMapEntity`), not separately.
+- **Terrain through the original's constant setup** (`parity-map-memory.md`):
+  `CWorldScene::SetupTerrainConstants` `FUN_007cfbe0` is at 44%, plus the permutation
+  selection. This also retires table fog in `IStateSetD3dDefaults`, the device's last frozen-only
+  state.
+- **Footprints, blocked on phase 4.** The module is 0x79f820..0x7a03c0 (`CMapFootprintTexture`,
+  576 records of 0x34 bytes at 0x00cf4960, draw `FUN_0079fcc0` behind `showfootprints`, adder
+  `FUN_0079fa70` through the thunk `FUN_0077f040`, textures `FUN_007a03c0`). Its only producer is
+  the unit footstep event `FUN_00723a50`, and the adder also needs the box facet query
+  `FUN_007a5f20`. Port it with the footstep event, top down.
+- **Blob shadows** (`parity-shadows.md`): the oriented-rectangle footprint;
+  `CGUnit_C::GetShadowBox` `FUN_0071ed80` is at 50%.
+- **The collision debug overlay's second feeder**, `FUN_007d8840` (map-object read side), is
+  unported; the first, `CMapObjGroup::RecordHits`, feeds it.
 
 Exit: every map, liquid, shadow, sky and world-layer module at 100% linked and faithful.
 
-## Phase 3: textures and effects (~560 unlinked)
+## Phase 3: textures and effects (~300 unlinked)
 
-- **Texture async** (`parity-texture-async.md`): `AsyncTextureWait` `FUN_004b6550`,
-  `TextureIncreasePriority` `FUN_004b6c50`, `SFile::IsStreamingMode`, `CTextureAtlas`, the
-  `CreateBlpAsync` and `CreateTgaTexture` stubs, `TextureAllocGxTex` 25%, `AsyncFileReadWait`
-  56%, `TextureCache` (`MirrorInitialize` is a stub), `blp` and `tga` to 100%.
-- **Full-screen effects:** `FFXEffects` (171, 17 linked), `EffectGlow` (38, 2), `PassGlow` (26,
-  0); the glow itself (`FUN_004f8770`, `FUN_008c1770`, `FUN_008c1010`, `FUN_008c1100`).
+- **Textures:** `Texture.cpp` is in (105/122). Left: `blp` 40/94 and `tga` 46/82 to 100%,
+  `TextureAllocGxTex` at 62%, `AsyncFileReadWait` at 67%, the `TextureCache` mirror.
+- **Full-screen effects:** `FFXEffects` 81/171, `EffectGlow` 2/38, `PassGlow` 0/26,
+  `Lightning` 0/7; the world-frame glow calls (`FUN_004f8770`, `FUN_008c1770`, `FUN_008c1010`)
+  are where it enters the frame.
 - **What the D3D9 census left:** a read of `GxPrimVertexPtr` (0x682400) and `IRsSendToHw`
   (0x6a4c30) for a verdict, the zero fill at +0x3ae0 in the constructor (0x68fd50), vtable slot 21
   (0x6a1950), the base constructor recorded as diverged until `CGxCaps` is layout-faithful, and
   the money, object and spell item cursors (`FUN_00616510`, `FUN_00616630`, `FUN_00616720`).
-- **Live stubs to zero:** the 35 from `livestubs.py` (`M2Init`, `CClientEnvironment::AddRef`,
-  `CM2Cache::GarbageCollect`, `M2BlendValue`, the `CGxFont` pair), each ported or recorded as a
-  deliberate divergence.
+- **Live stubs to zero:** 17 on this platform from `livestubs.py`, each ported or recorded as a
+  deliberate divergence. The 17 in the GL backends belong to the Android port.
 
 Exit: every texture and effect module at 100% linked, no stubs.
 
-## Phase 4: entities (~1,840 unlinked)
+## Phase 4: entities (~1,800 unlinked)
 
-Half of everything left, and last, because it is the largest and least anchored and the phases
-before it close the modules its matchers lean on. Top down:
+The largest and least anchored phase, last because the phases before it close the modules its
+matchers lean on. Top down:
 
 - **Animation chain top** (`unit-animation-chain-port.md`): `CGUnit_C::SetAnimation`
-  `FUN_007385c0` (63%, 57 callers), `UpdateAnimation` `FUN_0073ac30` wired to the stand, emote,
-  death and movement sites, the unit model builder `FUN_0073e410`, `m_animTier` via
-  `FUN_007167c0`.
-- **The CEffect list:** `ObjectEffect` (41, 10 linked); `FUN_00745230` creates them and
-  `FUN_006f61d0` has 125 callers. The vehicle passenger table blocks three appliers above it.
-- **Movement:** `MovementShared` (83, 4 linked) and `Movement` (249, 5). Unit smooth facing and
-  input-control facing (the camera's boundaries) land here.
-- **Vehicles:** the vehicle camera and seats. The camera port and `CGUnit_C::UpdateWorldObject`
-  already call into them through recorded boundaries.
-- **Missiles:** `UnitMissileTrajectory_C` and `Missile_C` (93, 4 linked).
-- **Game objects and players:** `GameObject_C` (285, 21; its `UpdateWorldObject` override
-  `FUN_0070cbe0` needs the rotation quaternion), `Player_C` (479, 54), `Unit_C` (643, 98).
-- **Spell visuals:** `SpellVisuals` (65, none linked).
+  `FUN_007385c0` is at 63% and `UpdateAnimation` `FUN_0073ac30` is ported; next are the stand,
+  emote, death and movement call sites, the unit model builder `FUN_0073e410`, and `m_animTier`
+  via `FUN_007167c0`.
+- **The footstep event** `FUN_00723a50`: footprints, camera shakes and footstep sounds. It
+  unblocks the footprint module in phase 2.
+- **The CEffect list:** `ObjectEffect` (11/41); `FUN_00745230` creates them and `FUN_006f61d0`
+  has 125 callers. The vehicle passenger table blocks three appliers above it.
+- **Movement:** `MovementShared` (4/83) and `Movement` (5/249). Unit smooth facing
+  `FUN_00735f60` and input-control facing (the camera's recorded boundaries) land here.
+- **Vehicles:** the vehicle camera (0x759580..0x75af40) and seats.
+- **Missiles:** `UnitMissileTrajectory_C` (1/40, including `FUN_006fda20` from `CMap::Render`
+  and `FUN_006fdfb0` from `OnWorldRender`) and `Missile_C` (3/53).
+- **Game objects and players:** `GameObject_C` (23/285; its `UpdateWorldObject` override
+  `FUN_0070cbe0` needs the rotation quaternion), `Player_C` (54/479), `Unit_C` (98/643).
+- **Spell visuals:** `SpellVisuals` (0/65).
 
 Exit: the entity row at 100% linked and faithful. With it, criteria 1 to 3 are met.
 
@@ -256,14 +263,25 @@ Started when phases 1 to 4 are practically done, in one block:
 
 1. Run with `FROZEN_AUTO_LOGIN`, `FROZEN_AUTO_CHARACTER` on a map-0 character,
    `FROZEN_FORCE_TIME=12` and `FROZEN_AUTO_SCREENSHOT`. Expect faults; `tools/crashstack.py` is
-   the debugger. Owed a first look, newest first: everything under "Owed a look" in phase 2; the
-   device cursor; resize and alt-tab (the reset path lost two frozen workarounds); the QPC timer;
-   character creation refusing invalid names; doodads at a water line; one-bone doodads; DXT
-   textures with their smallest mips; fixed-function combiners; the 200/30 FPS caps.
+   the debugger. Owed a first look, newest first:
+   - the load barriers: walls that never go away would mean a doodad's or building's 0x80
+     "set up" flag is not being set;
+   - the low-detail horizon past the far clip;
+   - the DayNight sky (stars, dome, sun and moon with the horizon clip, clouds, glare) and the
+     light block it shares with models and fog, at noon and at dusk;
+   - model fade-outs; WMO doodads per group; global-WMO maps; MapWeather in rain and snow;
+   - the texture module (async BLP, atlases, the reuse cache);
+   - the camera beyond the default view, now that the segment query exists for its collision;
+   - projected textures on something that projects; the liquid bank and buffer pool at a water
+     line; units standing in water or a building;
+   - from phase 3a: the device cursor, resize and alt-tab, the QPC timer, the 200/30 FPS caps,
+     fixed-function combiners; from phase 1: doodads at a water line, one-bone doodads, DXT
+     textures with their smallest mips.
 2. Trace both clients with `tools/recomp/calltrace.py` over the same frames and drive per-frame
    agreement on the render spine from 58% (2026-09-18) to 100%, marking each function `verified`.
 3. Baseline `tools/scene-compare` on a fixed suite (outdoor noon, dawn in a `highlightSky` zone,
-   a WMO interior, underwater, rain, night) and drive each viewpoint to 99% or better.
+   a WMO interior, underwater, rain, night, a tile edge while it streams) and drive each viewpoint
+   to 99% or better.
 4. Tighten fidelity from call order to branch and constant checks and re-close what drops.
 
 Exit: 100%.
@@ -272,8 +290,8 @@ Exit: 100%.
 
 Phases 2 to 4 in that order, each closed before the next so the matchers stop guessing, with
 `--fix` and `--helpers` batches interleaved because they are the cheapest links there are. A good
-day has linked 150 to 350 functions, so the ~3,350 left is on the order of fifteen such days,
-with the fidelity work on the roots on top.
+day has linked 150 to 350 functions; 2026-10-02 linked 523. The ~3,000 left is on the order of
+ten such days, with the fidelity work on the roots on top.
 
 ## Progress log
 
@@ -291,3 +309,4 @@ The commit log has the detail.
 | 2026-10-02 | 1,575 / 5,377 | 1,054 | 33 | 35 | reference switched to the vanilla `WoW.exe` |
 | 2026-10-02 | 1,699 / 5,293 | 1,149 | 25 | n/m | phase 1: models 240 -> 29 unlinked; doodad instancing live |
 | 2026-10-02 | 1,897 / 5,246 | 1,258 | 25 | n/m | phase 2 part 1: projected textures, portal views, map memory order, liquid bank and pool, box queries, the camera, the shadow map, object placement |
+| 2026-10-02 18:36 | 2,222 / 5,214 | 1,478 | 16 | 17 | phase 2 part 2: segment and facet queries, MapWeather, Texture.cpp, BSP cache, WMO doodads per group, the DayNight light and sky, the low-detail horizon, the rest of `CMap::Render`, the load barriers; the stand-in renderer is gone |
