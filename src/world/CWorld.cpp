@@ -34,6 +34,7 @@
 #include "db/Db.hpp"
 #include "client/Client.hpp"
 #include <storm/Memory.hpp>
+#include <common/Time.hpp>
 #include <storm/String.hpp>
 #include <cstdio>
 #include <cmath>
@@ -1822,4 +1823,160 @@ void CWorld::RenderParticulates() {
 // ref: FUN_0077f400
 void CWorld::AddRipple(const C3Vector& position, float angle, float radius, float alphaPeak, float life, float radiusRate, int32_t kind, int32_t reserved) {
     WaterRipples::Add(position, angle, radius, alphaPeak, life, radiusRate, kind, reserved);
+}
+
+static STORM_EXPLICIT_LIST(SWModelFadeout, m_link) s_fadeouts;      // DAT_00adf1a8
+static STORM_EXPLICIT_LIST(SWModelFadeout, m_link) s_freeFadeouts;  // DAT_00adf1b4
+
+// ref: FUN_00783100
+static SWModelFadeout* AllocFadeout() {
+    void* memory = SMemAlloc(sizeof(SWModelFadeout), ".?AUSWModelFadeout@@", -2, 0x8);
+
+    return memory ? new (memory) SWModelFadeout() : nullptr;
+}
+
+// The handler a fading object's entity is given: the scene tells it whether it was seen, and it
+// keeps the model drawing and animating only while it is.
+// ref: FUN_007823d0
+static int32_t FadeoutEntityHandler(void* param, int32_t event, uint32_t guidLow, uint32_t guidHigh, uint32_t param32) {
+    auto entity = static_cast<CMapEntity*>(param);
+
+    if (!entity) {
+        return 0;
+    }
+
+    CM2Model* model = entity->m_model;
+
+    if (!(event & 1)) {
+        if (!model->m_attachParent) {
+            model->m_flag8 = 0;
+            model->m_flag10000 = 0;
+        } else {
+            model->m_flag80 = 0;
+            model->m_flag20000 = 0;
+        }
+
+        model->SetAnimating(0);
+
+        model = entity->m_model;
+
+        if (!model->m_attachParent) {
+            model->m_flag10000 = 0;
+        } else {
+            model->m_flag20000 = 0;
+        }
+
+        return 1;
+    }
+
+    model->SetAnimating(1);
+    model = entity->m_model;
+
+    if (model->m_attachParent) {
+        model->m_flag80 = 1;
+        model->m_flag20000 = 1;
+    } else {
+        model->m_flag8 = 1;
+        model->m_flag10000 = 1;
+    }
+
+    return 1;
+}
+
+static void RetireFadeout(SWModelFadeout* fadeout) {
+    CWorld::RemoveObject(reinterpret_cast<HWORLDOBJECT>(fadeout->entity));
+    fadeout->entity = nullptr;
+    fadeout->m_link.Unlink();
+    s_freeFadeouts.LinkToTail(fadeout);
+}
+
+// ref: FUN_00783630
+void CWorld::FadeOutObject(HWORLDOBJECT object, float alpha, WOWGUID transport) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (!entity) {
+        return;
+    }
+
+    if (!entity->m_model || !entity->m_model->IsDrawable(0, 0) || alpha < 0.01f || (entity->m_flags7c & 0x4)) {
+        CWorld::RemoveObject(object);
+        return;
+    }
+
+    SWModelFadeout* fadeout = s_freeFadeouts.Head();
+
+    if (!fadeout) {
+        fadeout = AllocFadeout();
+    }
+
+    fadeout->entity = entity;
+    fadeout->startMs = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    fadeout->alpha = alpha;
+    fadeout->transport = 0;
+
+    if (transport) {
+        // TODO the reference looks the transport up as a game object (ClntObjMgrObjectPtr, type
+        // 0x20) and stores the model's matrix times the inverse of the transport's world matrix,
+        // which it gets through game-object vtable slot +0xc4. That slot is not identified in
+        // frozen, so a fade on a transport is held in world space, as it is when the transport
+        // has already gone.
+    }
+
+    fadeout->m_link.Unlink();
+    s_fadeouts.LinkToTail(fadeout);
+
+    entity->m_handler = reinterpret_cast<void*>(&FadeoutEntityHandler);
+    entity->m_handlerParam = entity;
+}
+
+// ref: FUN_00782f20
+void CWorld::UpdateFadeouts() {
+    int32_t now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+    for (auto fadeout = s_fadeouts.Head(); fadeout; ) {
+        auto next = s_fadeouts.Next(fadeout);
+        int32_t elapsed = now - static_cast<int32_t>(fadeout->startMs);
+        CM2Model* model = fadeout->entity->m_model;
+
+        if (elapsed > 2000 || !model->IsLoadedWithTextures()) {
+            RetireFadeout(fadeout);
+            fadeout = next;
+            continue;
+        }
+
+        if (fadeout->transport) {
+            // TODO model->matrixB4 = fadeout->relative * (the transport's world matrix), with
+            // m_flag8000 set; see FadeOutObject. Never reached while the transport is not stored.
+        }
+
+        float t = (1.0f - static_cast<float>(elapsed) * 0.0005f) * fadeout->alpha;
+
+        if (t < 0.0f) {
+            model->m_baseAlpha = 0.0f;
+        } else if (t > 1.0f) {
+            model->m_baseAlpha = 1.0f;
+        } else {
+            model->m_baseAlpha = (3.0f - (t + t)) * t * t;
+        }
+
+        fadeout = next;
+    }
+}
+
+// ref: FUN_00782e40
+void CWorld::ClearFadeouts() {
+    for (auto fadeout = s_fadeouts.Head(); fadeout; ) {
+        auto next = s_fadeouts.Next(fadeout);
+        RetireFadeout(fadeout);
+        fadeout = next;
+    }
+}
+
+// ref: FUN_00783780
+void CWorld::FreeFadeoutPool() {
+    for (auto fadeout = s_freeFadeouts.Head(); fadeout; fadeout = s_freeFadeouts.Head()) {
+        fadeout->m_link.Unlink();
+        fadeout->~SWModelFadeout();
+        SMemFree(fadeout, ".?AUSWModelFadeout@@", -2, 0);
+    }
 }

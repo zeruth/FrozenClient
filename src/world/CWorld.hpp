@@ -2,7 +2,13 @@
 #define WORLD_C_WORLD_HPP
 
 #include "event/Event.hpp"
+#include "util/GUID.hpp"
+#include "util/GUID.hpp"
 #include "world/Types.hpp"
+#include <storm/List.hpp>
+#include <tempest/Matrix.hpp>
+#include <storm/List.hpp>
+#include <tempest/Matrix.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
@@ -31,6 +37,19 @@ struct WorldDetailBands {
     float farDistSq[5];
     float fadeStart[5];
     float fadeStartSq[5];
+};
+
+// One object fading out of the world (reference SWModelFadeout, 0x60 bytes). The records are pooled:
+// a finished one goes on a free list rather than back to the heap.
+class CMapEntity;
+
+struct SWModelFadeout {
+    CMapEntity* entity = nullptr;         // +0x00
+    uint32_t startMs = 0;                 // +0x04, OsGetAsyncTimeMs when the fade began
+    float alpha = 0.0f;                   // +0x08, where it starts
+    WOWGUID transport = 0;                // +0x10, the game object it rides, or 0
+    C44Matrix relative;                   // +0x18, the model's matrix in the transport's space
+    TSLink<SWModelFadeout> m_link;        // +0x58
 };
 
 class CWorld {
@@ -121,6 +140,16 @@ class CWorld {
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
         static void RemoveObject(HWORLDOBJECT object);
+        // Takes the object out of the world over two seconds instead of at once: its model keeps
+        // drawing while its alpha runs from `alpha` to zero, and (given a transport) keeps riding
+        // it. A model that cannot draw, an alpha under 0.01, or entity flag 0x4 removes it now.
+        static void FadeOutObject(HWORLDOBJECT object, float alpha, WOWGUID transport);
+        // Every frame, from CMap::Render: advance each fade, removing the finished ones.
+        static void UpdateFadeouts();
+        // Removes every fading object at once.
+        static void ClearFadeouts();
+        // Frees the spare fade records.
+        static void FreeFadeoutPool();
         // An object moved: its placement, collision centre, scale, box and sphere, and a relink
         // into the map when any of them moved enough (unless `noRelink`). ref: FUN_00780240
         static void UpdateObject(HWORLDOBJECT object, const C44Matrix& matrix, const CAaBox& box,

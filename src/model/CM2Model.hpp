@@ -498,6 +498,8 @@ class CM2Model {
         int32_t PackBatchVertices(int32_t merged, M2SkinSection* section, uint32_t texCoordSet);
         int32_t IsDrawable(int32_t a2, int32_t a3);
         int32_t IsLoaded(int32_t a2, int32_t attachments);
+        // Loaded, every texture on the device, and the same for each attached model.
+        int32_t IsLoadedWithTextures();
         void LinkToCallbackListTail();
         void OptimizeVisibleGeometry();
         int32_t ProcessCallbacks();

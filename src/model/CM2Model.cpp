@@ -8872,3 +8872,26 @@ void CM2Model::GetLoadProgress(uint64_t* done, uint64_t* total) {
         }
     }
 }
+
+// ref: FUN_00823e40
+int32_t CM2Model::IsLoadedWithTextures() {
+    if (!this->m_loaded) {
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
+        HTEXTURE texture = this->m_textures[i];
+
+        if (texture && !TextureHasGxTexCallback(texture) && !TextureIsGxTexUploaded(texture)) {
+            return 0;
+        }
+    }
+
+    for (auto child = this->m_attachList; child; child = child->m_attachNext) {
+        if (!child->IsLoadedWithTextures()) {
+            return 0;
+        }
+    }
+
+    return 1;
+}

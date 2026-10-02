@@ -1729,7 +1729,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     CWorldScene::s_farChunkDistance = CWorld::GetFarClip() - 33.33333206176758f;
     // TODO CWorldScene::s_hasMapObjs from the map object def list; DAT_00cd877c from the
     // camera's field of view: fogEnd / cos(fov * 0.5) - fogEnd
-    // TODO FUN_00782f20(): the timed object transforms
+    CWorld::UpdateFadeouts();
 
     CMap::CreateRenderChunkPools();
 
