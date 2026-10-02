@@ -4061,5 +4061,19 @@
   "0081cd50": {
     "status": "excluded",
     "note": "An indexed accessor into a 0x30-byte element array at +0x4 (TSFixedArray::operator[]), out of line. Template internal. Identified 2026-10-02."
+  },
+  "0081c900": {
+    "frozen": "CM2Cache::CM2Cache",
+    "status": "ported",
+    "note": "The cache constructor: the SThread and the two auto-reset SEvents (+0x1004/+0x1008/+0x100c), the geometry list, the empty free list, every bucket zeroed. Frozen builds it from member initialisers on CM2Cache::s_cache. Identified 2026-10-02."
+  },
+  "0081c870": {
+    "frozen": "CM2Cache::~CM2Cache",
+    "status": "ported",
+    "note": "The cache destructor: warns \"M2Destroy never called\" to a log that does nothing, destroys the two events, unlinks the geometry list, destroys the thread object. Frozen gets the same from the implicit destructor of s_cache. Identified 2026-10-02."
+  },
+  "009812b0": {
+    "status": "excluded",
+    "note": "The ribbon emitter singleton release called from M2Destroy. Its global 0x00dce8d0 is read here and zeroed, and written nowhere else in the binary, so this frees nothing. Identified 2026-10-02."
   }
 }

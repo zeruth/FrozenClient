@@ -4,6 +4,7 @@
 #include "model/CM2Shared.hpp"
 #include "model/Model2.hpp"
 #include "util/Filesystem.hpp"
+#include "util/OsSystem.hpp"
 #include "util/SFile.hpp"
 #include <cstring>
 #include <common/Time.hpp>
@@ -14,26 +15,56 @@
 
 CM2Cache CM2Cache::s_cache;
 
-// **A stub with a trap attached.** CM2Scene::Animate takes its multithreaded branch on cache flag
-// 0x4, and that branch interleaves: it expects the thread started here to animate the odd entries
-// of the animate list while the caller walks the even ones two at a time. With this empty, setting
-// that bit leaves every second model frozen mid-pose and logs nothing.
-//
-// CM2Cache::Initialize therefore refuses to propagate the M2UseThreads CVar into flag 0x4, and
-// says so at the spot where the propagation would be added. Port this and WaitThread together,
-// and re-enable the bit in the same change.
-// Identified 2026-09-23 as FUN_0081bfa0, from CM2Scene::Animate's call order -- frozen calls it at
-// exactly that position. The reference stores its two arguments at +0x1014 and +0x1018 and then
-// signals a thread object at +0x1008, and it returns with `retl $0x8`, so it takes the two stack
-// arguments this signature has: the callback and its context. frozen's own call site passes
-// CM2Scene::AnimateThread and the scene, which is the same shape.
-//
-// **Still not implemented, deliberately.** The warning above has not changed: this and WaitThread
-// have to land together, with the M2UseThreads bit re-enabled in the same change, or every second
-// model freezes mid-pose.
 // ref: FUN_0081bfa0
+// Hands the animate thread its work for this frame and wakes it.
 void CM2Cache::BeginThread(void (*callback)(void*), void* arg) {
-    // TODO -- with WaitThread, and not before; see above
+    this->m_threadCallback = callback;
+    this->m_threadArg = arg;
+    this->m_threadStart.Set();
+}
+
+// ref: FUN_0081bfd0
+// Blocks until the animate thread has finished the work BeginThread gave it.
+void CM2Cache::WaitThread() {
+    this->m_threadDone.Wait(0xFFFFFFFF);
+}
+
+// ref: FUN_0081bfe0
+// The animate thread: wait to be woken, run the callback, say so, until Destroy sets 0x800.
+uint32_t CM2Cache::ThreadProc(void* arg) {
+    auto cache = static_cast<CM2Cache*>(arg);
+
+    PropSelectContext(cache->m_threadPropContext);
+
+    cache->m_flags |= 0x400;
+    cache->m_threadStart.Wait(0xFFFFFFFF);
+
+    while (!(cache->m_flags & 0x800)) {
+        cache->m_threadCallback(cache->m_threadArg);
+        cache->m_threadDone.Set();
+        cache->m_threadStart.Wait(0xFFFFFFFF);
+    }
+
+    cache->m_flags &= ~0x400;
+
+    return 0;
+}
+
+// ref: FUN_0081bf50
+// Empties every hash bucket, unhooking each shared model from its chain without freeing it.
+void CM2Cache::ClearBuckets() {
+    for (uint32_t i = 0; i < 0x3fd; i++) {
+        auto shared = this->m_buckets[i];
+
+        while (shared) {
+            auto next = shared->m_hashNext;
+            shared->m_hashPrev = nullptr;
+            shared->m_hashNext = nullptr;
+            shared = next;
+        }
+
+        this->m_buckets[i] = nullptr;
+    }
 }
 
 // ref: FUN_0081c390
@@ -190,12 +221,24 @@ void CM2Cache::GarbageCollect(int32_t all) {
 
 int32_t CM2Cache::Initialize(uint32_t flags) {
     if (this->m_initialized) {
-        // TODO
-
+        // "Model2: M2Initialize called more than once" to a log that does nothing
         return 1;
     }
 
-    // TODO
+    // M2UseThreads (0x4) only takes on a machine with a second processor, and then the animate
+    // thread starts here and lives until Destroy. CM2Scene::Animate hands it the odd entries of
+    // the animate list each frame.
+    if (OsGetProcessorCount() > 1) {
+        this->m_flags |= flags & 0x4;
+    }
+
+    if (this->m_flags & 0x4) {
+        this->m_flags &= ~(0x400 | 0x800);
+        this->m_threadStart.Reset();
+        this->m_threadDone.Reset();
+        this->m_threadPropContext = PropGetSelectedContext();
+        SThread::Create(CM2Cache::ThreadProc, this, this->m_thread, const_cast<char*>("Model2"), 0);
+    }
 
     // M2RegisterCVars packs the model CVars into this word and every one of them arrives here.
     // Only 0x8 was being propagated, so the rest were registered, defaulted on, and dropped --
@@ -234,13 +277,7 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
     // so this is inert today and carried so the bits are right when something does read them.
     this->m_flags |= flags & 0x1a0;
 
-    // **0x4 (M2UseThreads) is deliberately NOT propagated, and this is the place someone would
-    // "finish the job" and break the client.** CM2Scene::Animate's 0x4 branch does not merely
-    // start a thread: it then walks the animate list two at a time, because the thread it spawned
-    // is supposed to take the odd entries. CM2Cache::BeginThread is an empty stub, so setting this
-    // bit would leave every second model un-animated, frozen mid-pose, with nothing in the log.
-    // Port BeginThread and WaitThread first, then set this.
-    //
+    // (0x4, M2UseThreads, is taken at the top, with the thread it needs.)
     // The reference also derives 0x40 here rather than taking it from the caller: it sets it when
     // 0x8 is clear and a capability global is clear too, i.e. "no shader support, use the
     // single-bone fixed-function path". frozen requires shaders, so 0x8 is set and 0x40 stays
@@ -255,8 +292,6 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
     // And the shared index buffer every particle quad draws through, which the reference creates
     // on the next line (0x81c273). One buffer for the whole world; see its definition.
     M2ParticleIndexBufferCreate();
-
-    // TODO
 
     this->m_initialized = 1;
 
@@ -288,6 +323,37 @@ void CM2Cache::TouchGeometry(CM2Shared* shared) {
     this->m_geometryList.LinkToTail(shared);
 }
 
-void CM2Cache::WaitThread() {
-    // TODO
+// ref: FUN_0081c300
+// Stops the animate thread, destroys every shared model still waiting in the free list, empties
+// the hash, releases the particle index buffer and marks the cache uninitialised.
+void CM2Cache::Destroy() {
+    if (this->m_flags & 0x4) {
+        this->m_flags |= 0x800;
+        this->m_threadStart.Set();
+        this->m_thread.Wait(0xFFFFFFFF);
+    }
+
+    while (this->m_freeListHead) {
+        auto shared = this->m_freeListHead;
+
+        if (shared->m_freePrev) {
+            *shared->m_freePrev = shared->m_freeNext;
+        }
+
+        if (shared->m_freeNext) {
+            shared->m_freeNext->m_freePrev = shared->m_freePrev;
+        } else {
+            this->m_freeListTail = shared->m_freePrev;
+        }
+
+        shared->m_freePrev = nullptr;
+        shared->m_freeNext = nullptr;
+
+        delete shared;
+    }
+
+    this->ClearBuckets();
+    M2ParticleIndexBufferRelease();
+
+    this->m_initialized = 0;
 }

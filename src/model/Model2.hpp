@@ -17,6 +17,8 @@ void M2SetCacheFlags(uint32_t flags);
 
 void M2Initialize(uint16_t flags, uint32_t a2);
 
+void M2Destroy();
+
 uint32_t M2RegisterCVars();
 
 void M2SetGlobalOptFlags(uint16_t flags);

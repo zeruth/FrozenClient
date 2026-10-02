@@ -176,6 +176,7 @@ int32_t M2ConvertModelFileName(const char* source, char* dest, uint32_t a3, uint
     return 1;
 }
 
+// ref: FUN_0081c080
 CM2Scene* M2CreateScene() {
     auto m = SMemAlloc(sizeof(CM2Scene), __FILE__, __LINE__, 0x0);
     return new (m) CM2Scene(&CM2Cache::s_cache);
@@ -191,6 +192,7 @@ void M2SetCacheFlags(uint32_t flags) {
     CM2Cache::s_cache.m_flags = flags;
 }
 
+// ref: FUN_0081c6e0
 void M2Initialize(uint16_t flags, uint32_t a2) {
     CM2Cache::s_cache.Initialize(flags);
 
@@ -202,6 +204,22 @@ void M2Initialize(uint16_t flags, uint32_t a2) {
     *heapId = ObjectAllocAddHeap(sizeof(CM2Model), a2, "CM2Model", 1);
 
     g_modelPool = heapId;
+}
+
+// ref: FUN_0081c750
+// The model system's shutdown: the cache (its thread, its queued shared models, the particle
+// index buffer) and the CM2Model heap id. Between those the reference releases two singletons.
+// The ribbon one (FUN_009812b0, global 0x00dce8d0) is never assigned anywhere in the binary. The
+// particle one (FUN_00981270, 0x00dce8cc) is created only by the emitter duplicate path
+// (FUN_0097eec0), which frozen has not ported; it arrives with that path.
+void M2Destroy() {
+    CM2Cache::s_cache.Destroy();
+
+    if (g_modelPool) {
+        SMemFree(g_modelPool, __FILE__, __LINE__, 0);
+    }
+
+    g_modelPool = nullptr;
 }
 
 // ref: FUN_0081c060

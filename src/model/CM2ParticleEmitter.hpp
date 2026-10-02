@@ -803,9 +803,12 @@ float M2PartTrackEvalAlpha(const M2PartTrack<fixed16>& track, float t);
 uint32_t M2PartTrackEvalCell(const M2PartTrack<uint16_t>& track, float t);
 
 // Create the ONE index buffer every particle quad in the world draws through, and take a
-// reference to it. Refcounted; the matching release (FUN_009791e0) is not ported. Called from
+// reference to it. Refcounted; M2ParticleIndexBufferRelease drops it. Called from
 // CM2Cache::Initialize, which is the reference's only caller. ref: FUN_00979170
 void M2ParticleIndexBufferCreate();
+
+// Drop a reference to the shared particle index buffer, destroying it with the last.
+void M2ParticleIndexBufferRelease();
 
 // Fill the particle twinkle table: 128 random floats in [0, 1), seeded from rand() so no two
 // runs and no two emitters blink alike. The reference does this inline in CM2Cache::Initialize

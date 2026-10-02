@@ -1419,6 +1419,29 @@ void M2ParticleIndexBufferCreate() {
     s_particleIndexRefs++;
 }
 
+// ref: FUN_009791e0
+// The last release destroys the buffer (unless it is the device stream, which is not ours to
+// destroy) and then its pool.
+void M2ParticleIndexBufferRelease() {
+    s_particleIndexRefs--;
+
+    if (s_particleIndexRefs != 0) {
+        return;
+    }
+
+    if (s_particleIndexBuf) {
+        CGxBuf* buffer = s_particleIndexBuf;
+
+        if (buffer != GxBufStream(buffer->m_pool->m_target, 0, 0)) {
+            GxBufDestroy(buffer);
+        }
+    }
+
+    if (s_particleIndexPool) {
+        GxPoolDestroy(s_particleIndexPool);
+    }
+}
+
 // The twinkle table: 128 random floats in [0, 1), filled once by M2ParticleInitTwinkleTable.
 //
 // The quad writer hashes a particle into this as `((address >> 5) + round(fps * age)) & 0x7f` and

@@ -31,7 +31,7 @@ bool CM2Scene::s_rayBlend4x4 = false;
 
 // ref: FUN_0081ce70
 // The animate thread's half of the interleave: entries 1, 3, 5, ... of the animate list, the
-// caller taking 0, 2, 4, .... Unreached until CM2Cache::BeginThread is ported (see there).
+// caller taking 0, 2, 4, ...; run on the cache thread through CM2Cache::BeginThread.
 void CM2Scene::AnimateThread(void* arg) {
     auto scene = static_cast<CM2Scene*>(arg);
 
@@ -772,10 +772,7 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_view.Translate(invCameraPos);
     this->m_viewInv = this->m_view.Inverse(this->m_view.Determinant());
 
-    // This branch is unreachable today and must stay that way until CM2Cache::BeginThread is real.
-    // The interleave below is not an optimisation that degrades gracefully: with no second thread,
-    // walking two at a time simply leaves every other model un-animated. CM2Cache::Initialize
-    // refuses to propagate the M2UseThreads CVar into this bit for that reason.
+    // M2UseThreads: the cache thread (CM2Cache::ThreadProc) takes the odd entries.
     if (this->m_cache->m_flags & 0x4) {
         // In multithreaded mode, iteration over the animate list is interleaved:
         // - the current thread animates entries 0, 2, 4, ...
