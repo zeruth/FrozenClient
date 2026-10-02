@@ -1,4 +1,5 @@
 #include "gx/d3d/CGxDeviceD3d.hpp"
+#include <common/Time.hpp>
 #include <cstdio>
 #include "gx/Texture.hpp"
 #include "gx/Blit.hpp"
@@ -210,6 +211,10 @@ D3DTEXTUREADDRESS CGxDeviceD3d::s_wrapModes[] = {
     D3DTADDRESS_WRAP,   // GxTex_Wrap
 };
 
+// ref: FUN_0068eb20
+// One recorded divergence: the reference falls back to LoadCursorA(instance, IDC_ARROW), which
+// can only fail for a module handle; frozen asks the system (see below). The reference never
+// reaches the fallback because its exe carries BlizzardCursor.cur.
 ATOM WindowClassCreate() {
     auto instance = GetModuleHandle(nullptr);
 
@@ -1032,6 +1037,101 @@ LPDIRECT3DVERTEXDECLARATION9 CGxDeviceD3d::ICreateD3dVertexDecl(D3DVERTEXELEMENT
     return nullptr;
 }
 
+// ref: FUN_00684d70
+// Fits a windowed-mode client rect into the primary monitor's work area and centres it. `rect` is
+// {left, top, right, bottom} of the client area on the way in and of the client area placed on
+// screen on the way out; `adjust` is the frame's extra width and height. When the window has to
+// shrink and an aspect is set, it walks down from the largest size that fits to half the asked
+// size looking for one whose other side is (within 0.01) a whole number, so the client keeps the
+// aspect without a fractional edge; failing that it rounds. Returns 0 only when the monitor
+// cannot be queried.
+int32_t GxWindowFitToWorkArea(float aspect, const int32_t* adjust, int32_t* rect) {
+    POINT origin = { 0, 0 };
+    HMONITOR monitor = MonitorFromPoint(origin, MONITOR_DEFAULTTOPRIMARY);
+
+    MONITORINFO info;
+    info.cbSize = sizeof(info);
+
+    if (!GetMonitorInfoA(monitor, &info)) {
+        return 0;
+    }
+
+    float height = static_cast<float>(rect[3] - rect[1]);
+    int32_t width = rect[2] - rect[0];
+
+    rect[1] = info.rcWork.top;
+    rect[0] = info.rcWork.left;
+    rect[2] = adjust[0] + info.rcWork.left + width;
+    rect[3] = adjust[1] + info.rcWork.top + static_cast<int32_t>(height);
+
+    if (info.rcWork.right < rect[2]) {
+        rect[2] = info.rcWork.right;
+
+        if (aspect != 0.0f) {
+            int32_t outerWidth = info.rcWork.right - info.rcWork.left;
+            int32_t maxWidth = outerWidth - adjust[0];
+            int32_t minWidth = width / 2;
+            float invAspect = 1.0f / aspect;
+            float clientHeight = static_cast<float>(maxWidth) / aspect + 0.5f;
+
+            for (int32_t w = maxWidth; minWidth <= w; w--) {
+                float h = static_cast<float>(w) * invAspect;
+
+                if (h - floorf(h) < 0.01f) {
+                    outerWidth = adjust[0] + w;
+                    clientHeight = static_cast<float>(w) * invAspect;
+                    break;
+                }
+            }
+
+            rect[2] = outerWidth + info.rcWork.left;
+            rect[3] = static_cast<int32_t>(floorf(clientHeight)) + adjust[1] + info.rcWork.top;
+        }
+    }
+
+    if (info.rcWork.bottom < rect[3]) {
+        rect[3] = info.rcWork.bottom;
+
+        if (aspect != 0.0f) {
+            float outerHeight = static_cast<float>(info.rcWork.bottom - info.rcWork.top);
+            int32_t minHeight = static_cast<int32_t>(height) / 2;
+            int32_t maxHeight = static_cast<int32_t>(outerHeight) - adjust[1];
+            int32_t clientWidth = static_cast<int32_t>(floorf(static_cast<float>(maxHeight) * aspect + 0.5f));
+            float bottom = outerHeight;
+
+            for (int32_t h = maxHeight; minHeight <= h; h--) {
+                float w = static_cast<float>(h) * aspect;
+
+                if (w - floorf(w) < 0.01f) {
+                    bottom = static_cast<float>(adjust[1] + h);
+                    clientWidth = static_cast<int32_t>(floorf(static_cast<float>(h) * aspect));
+                    break;
+                }
+            }
+
+            rect[2] = clientWidth + adjust[0] + info.rcWork.left;
+            rect[3] = static_cast<int32_t>(bottom) + info.rcWork.top;
+        }
+    }
+
+    int32_t dx = (info.rcWork.right - rect[2]) / 2;
+    rect[2] += dx;
+    rect[0] = dx + info.rcWork.left;
+
+    int32_t dy = (info.rcWork.bottom - rect[3]) / 2;
+    rect[3] += dy;
+    rect[1] = info.rcWork.top + dy;
+
+    rect[2] -= adjust[0];
+    rect[3] -= adjust[1];
+
+    return 1;
+}
+
+// ref: FUN_0068ebb0
+// Ported 2026-10-01. What was missing: a windowed format is now fitted into the work area and
+// centred (GxWindowFitToWorkArea), holding gxAspect's ratio, and a maximized one (gxMaximize 1)
+// takes the screen size; both write back into `format`, which the caller then stores.
 bool CGxDeviceD3d::ICreateWindow(CGxFormat& format) {
     auto instance = GetModuleHandle(nullptr);
 
@@ -1046,7 +1146,11 @@ bool CGxDeviceD3d::ICreateWindow(CGxFormat& format) {
         dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
     }
 
-    // TODO
+    float aspect = 0.0f;
+
+    if (format.aspect && format.size.x && format.size.y) {
+        aspect = static_cast<float>(format.size.x) / static_cast<float>(format.size.y);
+    }
 
     RECT clientArea = {
         0,             // left
@@ -1058,7 +1162,27 @@ bool CGxDeviceD3d::ICreateWindow(CGxFormat& format) {
     CGxDeviceD3d::s_clientAdjustWidth = clientArea.right - format.size.x - clientArea.left;
     CGxDeviceD3d::s_clientAdjustHeight = clientArea.bottom - format.size.y - clientArea.top;
 
-    // TODO
+    if (format.window) {
+        if (format.maximize == 1) {
+            format.pos.x = 0;
+            format.pos.y = 0;
+            format.size.x = GetSystemMetrics(SM_CXSCREEN);
+            format.size.y = GetSystemMetrics(SM_CYSCREEN);
+        } else {
+            int32_t adjust[2] = { CGxDeviceD3d::s_clientAdjustWidth, CGxDeviceD3d::s_clientAdjustHeight };
+            int32_t rect[4] = { 0, 0, format.size.x, format.size.y };
+
+            if (!GxWindowFitToWorkArea(aspect, adjust, rect)) {
+                format.pos.x = 0;
+                format.pos.y = 0;
+            } else {
+                format.pos.x = rect[0];
+                format.pos.y = rect[1];
+                format.size.x = rect[2] - rect[0];
+                format.size.y = rect[3] - rect[1];
+            }
+        }
+    }
 
     int32_t width = format.size.x ? format.size.x : CW_USEDEFAULT;
     int32_t height = format.size.y ? format.size.y : CW_USEDEFAULT;
@@ -1304,6 +1428,11 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     if (this->m_defDepthSurface) {
         this->m_defDepthSurface->Release();
         this->m_defDepthSurface = nullptr;
+    }
+
+    if (this->m_d3dFrameQuery) {
+        this->m_d3dFrameQuery->Release();
+        this->m_d3dFrameQuery = nullptr;
     }
 
     // TODO
@@ -1887,20 +2016,62 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
     }
 }
 
+// ref: FUN_006a3350
+// Recovers a lost device before beginning the scene: once D3D reports the device can be reset,
+// everything in the default pool is released, the device is reset with the current format, the
+// defaults are re-sent and the window is marked active again. Frozen used to retry on D3D_OK as
+// well, to escape a hang whose real cause was a render target surviving the reset; the texture
+// list walk releases those now, and retrying on OK would re-enter from IStateSetD3dDefaults.
+// Not ported, recorded: the stereo-dirty flag (+0x3acc) and the device-restored callbacks
+// (vtable slot 5, FUN_006843b0).
 void CGxDeviceD3d::ISceneBegin() {
-    if (this->m_context) {
-        this->ShaderConstantsClear();
+    if (!this->m_context) {
+        HRESULT coop = this->m_d3dDevice ? this->m_d3dDevice->TestCooperativeLevel() : D3DERR_DEVICELOST;
 
-        if (SUCCEEDED(this->m_d3dDevice->BeginScene())) {
-            this->m_inScene = 1;
+        if (coop == D3DERR_DEVICENOTRESET) {
+            this->IReleaseD3dResources(0);
+
+            D3DPRESENT_PARAMETERS d3dpp;
+            this->ISetPresentParms(d3dpp, this->m_format);
+
+            if (SUCCEEDED(this->m_d3dDevice->Reset(&d3dpp))) {
+                this->IStateSetD3dDefaults();
+                this->IWindowActiveSet(1);
+                this->m_context = 1;
+                this->intF5C = 0;
+            }
         }
 
-        return;
+        if (!this->m_context) {
+            return;
+        }
     }
 
-    // TODO
+    this->ShaderConstantsClear();
+
+    if (SUCCEEDED(this->m_d3dDevice->BeginScene())) {
+        this->m_inScene = 1;
+    }
 }
 
+// ref: FUN_0069fe10
+// Records whether the window is active (intF64, reference +0xf64), which the frame cap reads; on
+// activation the cursor image is re-sent and, in fullscreen, the cursor is clipped to the window.
+void CGxDeviceD3d::IWindowActiveSet(int32_t active) {
+    this->intF64 = active;
+
+    if (active) {
+        this->m_cursorDirty = 1;
+
+        if (!this->m_format.window) {
+            RECT windowRect;
+            GetWindowRect(this->m_hwnd, &windowRect);
+            ClipCursor(&windowRect);
+        }
+    }
+}
+
+// ref: FUN_006a3420
 void CGxDeviceD3d::ISceneEnd() {
     if (this->m_inScene) {
         this->m_d3dDevice->EndScene();
@@ -2279,14 +2450,16 @@ void CGxDeviceD3d::IShaderCreateVertex(CGxShader* shader) {
     }
 }
 
+// ref: FUN_006a3a60
+// One recorded divergence: frozen also sets D3DRS_FOGTABLEMODE to linear, which the reference
+// never does, because frozen's own terrain shaders do not write a vertex fog value; pixel fog
+// by view depth stands in for it. Remove it with the move to the archived shaders.
 void CGxDeviceD3d::IStateSetD3dDefaults() {
     this->m_d3dDevice->SetRenderState(D3DRS_ZENABLE, 1);
     this->m_d3dDevice->SetRenderState(D3DRS_LOCALVIEWER, 1);
     this->m_d3dDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
     this->m_d3dDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);
     this->m_d3dDevice->SetRenderState(D3DRS_FOGDENSITY, 0);
-    // Linear pixel (table) fog so fog applies to shader-lit geometry by view depth; only takes
-    // effect while D3DRS_FOGENABLE is on (set per-frame during the world render).
     this->m_d3dDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);
 
     for (uint32_t tmu = 0; tmu < 16; tmu++) {
@@ -2313,7 +2486,11 @@ void CGxDeviceD3d::IStateSetD3dDefaults() {
     this->m_d3dDevice->GetRenderTarget(0, &this->m_defColorSurface);
     this->m_d3dDevice->GetDepthStencilSurface(&this->m_defDepthSurface);
 
-    // TODO
+    this->ILightsInvalidate();
+
+    if (!this->m_d3dFrameQuery) {
+        this->m_d3dDevice->CreateQuery(D3DQUERYTYPE_EVENT, &this->m_d3dFrameQuery);
+    }
 
     this->ISceneBegin();
 }
@@ -3508,44 +3685,46 @@ void CGxDeviceD3d::SceneClear(uint32_t mask, CImVector color) {
     this->m_d3dDevice->Clear(0, nullptr, flags, d3dColor, 1.0f, 0);
 }
 
+// ref: FUN_006a3450
+// Ported 2026-10-01. Gained: gxFixLag (wait on an event query issued for the frame, or, with no
+// query, lock the back buffer, which forces the same wait) and the maxFPS / maxFPSBk cap before
+// the present, neither of which frozen had. Not ported, recorded: the hardware cursor upload
+// (vtable slot 4, FUN_0068e810), the frame read-back the one-shot request at +0x2934 asks for
+// (FUN_006841d0), and the NVAPI stereo convergence and separation updates.
 void CGxDeviceD3d::ScenePresent() {
-    // A lost context is recoverable and must be retried. Previously one failed Reset cleared
-    // m_context and nothing ever set it again: the client kept rendering at full speed while
-    // presenting nothing, so the window held its last frame for ever. That reads as a hang.
-    if (!this->m_context && this->m_d3dDevice) {
-        HRESULT coop = this->m_d3dDevice->TestCooperativeLevel();
-
-        if (coop == D3DERR_DEVICENOTRESET || coop == D3D_OK) {
-            this->IReleaseD3dResources(0);
-
-            D3DPRESENT_PARAMETERS d3dpp;
-            this->ISetPresentParms(d3dpp, this->m_format);
-
-            if (SUCCEEDED(this->m_d3dDevice->Reset(&d3dpp))) {
-                this->IStateSetD3dDefaults();
-                this->m_context = 1;
-            }
-        }
-    }
-
     if (this->m_context) {
         CGxDevice::ScenePresent();
         this->ISceneEnd();
 
-        // TODO
+        if (this->m_format.fixLag) {
+            if (!this->m_d3dFrameQuery) {
+                LPDIRECT3DSURFACE9 backBuffer;
 
-        // TODO fixLag
+                if (SUCCEEDED(this->m_d3dDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &backBuffer))) {
+                    D3DSURFACE_DESC desc;
+                    backBuffer->GetDesc(&desc);
 
-        // TODO
+                    D3DLOCKED_RECT locked;
+                    if (SUCCEEDED(backBuffer->LockRect(&locked, nullptr, D3DLOCK_READONLY))) {
+                        backBuffer->UnlockRect();
+                    }
 
-        HRESULT presented = this->m_d3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
+                    backBuffer->Release();
+                }
+            } else {
+                this->m_d3dFrameQuery->Issue(D3DISSUE_END);
 
-        if (FAILED(presented)) {
-            // Recoverable: the retry at the top of this function resets and sets m_context again.
-            this->m_context = 0;
+                while (this->m_d3dFrameQuery->GetData(nullptr, 0, D3DGETDATA_FLUSH) == S_FALSE) {
+                    OsSleep(0);
+                }
+            }
         }
 
-        // TODO stereo handling
+        this->ILimitFrameRate();
+
+        if (FAILED(this->m_d3dDevice->Present(nullptr, nullptr, nullptr, nullptr))) {
+            this->m_context = 0;
+        }
     }
 
     this->ISceneBegin();

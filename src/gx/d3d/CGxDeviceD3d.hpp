@@ -243,6 +243,9 @@ class CGxDeviceD3d : public CGxDevice {
     // Reference +0x3b4c: the hardware cursor image needs re-uploading. DeviceSetFormat and the
     // cursor setter raise it; the per-frame cursor upload (FUN_0068e810, not ported) clears it.
     int32_t m_cursorDirty = 0;
+    // Reference +0x3b48: an event query issued after each frame when gxFixLag is on, and waited
+    // on before the present, so the CPU never runs more than a frame ahead of the GPU.
+    LPDIRECT3DQUERY9 m_d3dFrameQuery = nullptr;
     LPDIRECT3DINDEXBUFFER9 m_d3dCurrentIndexBuf;
     LPDIRECT3DVERTEXBUFFER9 m_d3dVertexStreamBuf[8];
     uint32_t m_d3dVertexStreamOfs[8];
@@ -346,6 +349,7 @@ class CGxDeviceD3d : public CGxDevice {
     virtual void IPoolRelease(CGxPool* pool);
     void IReleaseD3dResources(int32_t a2);
     void ISceneBegin();
+    void IWindowActiveSet(int32_t active);
     void ISceneEnd();
     void ISetCaps(const CGxFormat& format);
     void ISetTexture(uint32_t tmu, CGxTex* texId);

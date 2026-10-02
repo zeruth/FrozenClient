@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-10-01 20:28 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-10-01 20:38 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26939 | 5.35M |
-| mapped to a frozen function | 4824 (-1) (17.9%) | 1.02M (19.0%) |
-| &nbsp;&nbsp;ported | 4149 (-1) | 865.1k |
+| mapped to a frozen function | 4836 (=) (18.0%) | 1.02M (19.0%) |
+| &nbsp;&nbsp;ported | 4161 (=) | 867.9k |
 | &nbsp;&nbsp;stub (unimplemented body) | 569 (=) | 122.3k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2587 (=) (9.6%)** | **380.1k (6.9%)** |
-| unmapped | 22115 | 4.34M |
+| **faithful** (linked, not stub, call order >= 80%) | **2594 (+1) (9.6%)** | **380.6k (6.9%)** |
+| unmapped | 22103 | 4.33M |
 | world spine (reachable from OnFrameRender) | 5375, mapped 1661 (=) (30.9%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5642, mapped 1684 (=) (29.8%) | |
-| **render surface** (the modules that draw the world) | **5390, mapped 1486 (-1) (27.6%)** | |
-| &nbsp;&nbsp;of which faithful / stub | 955 (=) (17.7%) / 32 (=) | |
+| **render surface** (the modules that draw the world) | **5390, mapped 1492 (=) (27.7%)** | |
+| &nbsp;&nbsp;of which faithful / stub | 957 (=) (17.8%) / 32 (=) | |
 | of which the module is an anchor GUESS | 2643 (49.0%) | |
-| frozen functions (src/, from PDB + source) | 14050, stubs 1635 | |
+| frozen functions (src/, from PDB + source) | 14056, stubs 1635 | |
 
-Match evidence: annotated 2516, callgraph 253, callorder 110, cvar 30, handler 29, order 142, override 388, sticky 31, string 305, table 1020. Module anchors: 1718 assert strings.
+Match evidence: annotated 2528, callgraph 254, callorder 110, cvar 30, handler 29, order 142, override 388, sticky 31, string 304, table 1020. Module anchors: 1718 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-10-01 20:28 -- mapped 4825, ported 4150, stub 569, spine mapped 1661.
+Previous run: 2026-10-01 20:37 -- mapped 4836, ported 4161, stub 569, spine mapped 1661.
 
 ## Lua API coverage (binding tables)
 
@@ -145,7 +145,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
 | lmemPool.cpp | 342 | 80.2k | 79 (23.1%) | 32.1% | 0 | 0 | 107 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
-| CGxD3dDevice.cpp | 106 | 63.6k | 16 (15.1%) | 11.7% | 0 | 0 | 0 |
+| CGxD3dDevice.cpp | 106 | 63.6k | 19 (17.9%) | 13.7% | 0 | 0 | 0 |
 | M2Model.cpp | 163 | 61.7k | 115 (70.6%) | 74.3% | 1 | 0 | 136 |
 | Map.cpp | 150 | 60.8k | 52 (34.7%) | 37.5% | 0 | 1 | 88 |
 | SoundEngine.cpp | 407 | 60.2k | 34 (8.4%) | 19.4% | 0 | 0 | 59 |
@@ -162,7 +162,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | Movement.cpp | 249 | 42.0k | 5 (2.0%) | 1.6% | 0 | 0 | 56 |
 | Camera.cpp | 128 | 39.9k | 12 (9.4%) | 18.7% | 5 | 0 | 50 |
 | TradeSkillFrame.cpp | 160 | 38.4k | 14 (8.8%) | 2.7% | 5 | 0 | 20 |
-| DBCache.cpp | 231 | 38.1k | 59 (25.5%) | 13.9% | 0 | 0 | 78 |
+| DBCache.cpp | 231 | 38.1k | 65 (28.1%) | 16.2% | 0 | 0 | 78 |
 | GameObject_C.cpp | 285 | 38.0k | 21 (7.4%) | 4.5% | 0 | 0 | 59 |
 | framing.c | 114 | 37.5k | 36 (31.6%) | 54.6% | 0 | 0 | 35 |
 | MapWeather.cpp | 96 | 36.5k | 26 (27.1%) | 6.1% | 6 | 0 | 55 |
@@ -187,7 +187,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | XMLTree.cpp | 163 | 28.6k | 85 (52.1%) | 52.7% | 5 | 0 | 20 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 203 | 27.3k | 119 (58.6%) | 60.8% | 1 | 4 | 49 |
-| CGxD3d9ExDevice.cpp | 102 | 27.2k | 31 (30.4%) | 35.1% | 0 | 0 | 1 |
+| CGxD3d9ExDevice.cpp | 102 | 27.2k | 35 (34.3%) | 37.9% | 0 | 0 | 1 |
 | CSimpleRender.cpp | 166 | 26.6k | 44 (26.5%) | 34.5% | 2 | 0 | 50 |
 | UnitCombatLog_C.cpp | 105 | 26.1k | 5 (4.8%) | 3.7% | 0 | 0 | 32 |
 | PaperDollInfoFrame.cpp | 110 | 24.9k | 38 (34.5%) | 30.4% | 12 | 0 | 8 |
@@ -305,7 +305,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | fmod_codec_mpeg.cpp | 26 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
 | CalendarEvent.cpp | 40 | 7.9k | 1 (2.5%) | 3.4% | 0 | 0 | 0 |
 | MapChunk.cpp | 16 | 7.7k | 12 (75.0%) | 83.7% | 0 | 0 | 13 |
-| CGxDeviceD3d9Ex.cpp | 30 | 7.6k | 3 (10.0%) | 4.2% | 0 | 0 | 0 |
+| CGxDeviceD3d9Ex.cpp | 30 | 7.6k | 2 (6.7%) | 2.5% | 0 | 0 | 0 |
 | PlayerName.cpp | 36 | 7.6k | 1 (2.8%) | 0.9% | 0 | 0 | 7 |
 | fmod_codec_midi.cpp | 13 | 7.5k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | ChatBubbleFrame.cpp | 54 | 7.5k | 1 (1.9%) | 1.6% | 1 | 0 | 8 |
@@ -589,6 +589,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
 | 0069ed50 | `CGxDeviceGLL::PatchVertexShader` |  = program.env  ;  = program.local;  = { program.env  ;  = { program.local |
+| 0068f3d0 | `CGxDeviceD3d::ICreateD3dDevice` | 	NVAPI: %d; 	stereoHandle: %x; Failed to enable stereoscopic mode: %s; No stereoscopic device present. |
 | 00631000 | `CGTooltip_SetAction` | ATTACK; PET_ACTION_%s; PET_MODE_%s; UberTooltips |
 | 005ccd90 | `Script_Stub_GetGuildEventInfo` | Usage: GetGuildEventInfo(index); d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; demote; invite |
 | 005b8570 | `Script_Stub_CalendarEventSortInvites` | Usage: CalendarEventSortInvites("criteria", revers; class; level; notes |
@@ -598,7 +599,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `BattlenetUI::Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `BattlenetUI::Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
-| 0052a980 | `WowClientInit` | Cannot create WOWClient log file "%s"!; GameTooltip; Interface\FrameXML\Bindings.xml; Interface\FrameXML\FrameXML.toc |
 
 ## Largest frozen functions with no reference link
 
@@ -773,8 +773,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-10-01 19:35 | 4784 (17.8%) | 2550 (9.5%) | 569 | 1658/5377 | 2924/2964 | 1380 |
-| 2026-10-01 19:35 | 4784 (17.8%) | 2550 (9.5%) | 569 | 1658/5377 | 2924/2964 | 1380 |
 | 2026-10-01 19:36 | 4784 (17.8%) | 2550 (9.5%) | 569 | 1658/5377 | 2924/2964 | 1380 |
 | 2026-10-01 19:36 | 4784 (17.8%) | 2550 (9.5%) | 569 | 1658/5377 | 2924/2964 | 1380 |
 | 2026-10-01 19:36 | 4784 (17.8%) | 2550 (9.5%) | 569 | 1658/5377 | 2924/2964 | 1380 |
@@ -798,6 +796,8 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-10-01 20:21 | 4815 (17.9%) | 2581 (9.6%) | 569 | 1661/5375 | 2924/2964 | 1380 |
 | 2026-10-01 20:28 | 4825 (17.9%) | 2587 (9.6%) | 569 | 1661/5375 | 2924/2964 | 1380 |
 | 2026-10-01 20:28 | 4824 (17.9%) | 2587 (9.6%) | 569 | 1661/5375 | 2924/2964 | 1380 |
+| 2026-10-01 20:37 | 4836 (18.0%) | 2593 (9.6%) | 569 | 1661/5375 | 2924/2964 | 1380 |
+| 2026-10-01 20:38 | 4836 (18.0%) | 2594 (9.6%) | 569 | 1661/5375 | 2924/2964 | 1380 |
 
 ## How to move a row
 

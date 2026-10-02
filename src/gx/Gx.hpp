@@ -18,6 +18,10 @@ void GxCapsWindowSize(CRect&);
 
 void GxFormatColor(CImVector&);
 
+int32_t GxMaxFps();
+
+int32_t GxMaxFpsBk();
+
 void GxMaxFpsSet(int32_t maxFps);
 
 void GxMaxFpsBkSet(int32_t maxFps);

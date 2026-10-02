@@ -1,4 +1,5 @@
 #include "gx/CGxDevice.hpp"
+#include <common/Time.hpp>
 #include "gx/CGxMonitorMode.hpp"
 #include "gx/Gx.hpp"
 #include "gx/Shader.hpp"
@@ -637,6 +638,47 @@ const CRect& CGxDevice::DeviceCurWindow() {
 }
 
 float CGxDevice::s_aspectRatio = 0.0f;
+uint32_t CGxDevice::s_nextFrameTime = 0;
+
+// ref: FUN_006836d0
+// The frame-rate cap, run by the backend just before each present. maxFPS applies while the window
+// is active (intF64, reference +0xf64), the lower of maxFPS and maxFPSBk while it is not; 0 means
+// no limit. Nothing is capped below 8 frames a second. A frame that is due more than a second out
+// is not waited for. Frozen stored both CVars and read neither, so it had no cap at all.
+void CGxDevice::ILimitFrameRate() {
+    uint32_t maxFps = GxMaxFps() ? GxMaxFps() : 0xFFFFFFFF;
+    uint32_t maxFpsBk = GxMaxFpsBk() ? GxMaxFpsBk() : 0xFFFFFFFF;
+
+    if (!this->intF64 && maxFpsBk <= maxFps) {
+        maxFps = maxFpsBk;
+    }
+
+    if (maxFps < 9) {
+        maxFps = 8;
+    } else if (maxFps == 0xFFFFFFFF) {
+        return;
+    }
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    if (CGxDevice::s_nextFrameTime - now < 1000) {
+        OsSleep(CGxDevice::s_nextFrameTime - now);
+        now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    }
+
+    CGxDevice::s_nextFrameTime = now + 1000 / maxFps;
+}
+
+// ref: FUN_00682c50
+// After a device (re)set, every light is off and every field of it is dirty, so the next sync
+// sends all four in full.
+void CGxDevice::ILightsInvalidate() {
+    for (auto& light : this->m_lights) {
+        light.m_enabled = 0;
+        light.m_dirty = 0xFF;
+        light.m_attenuationValid = 0xFF;
+    }
+}
 
 // ref: FUN_006840f0
 // Stores the format, raises a size below 320x240 to that minimum, and records the aspect the
@@ -1530,6 +1572,7 @@ void CGxDevice::ScenePresent() {
     this->intF5C = 0;
 }
 
+// ref: FUN_006833a0
 void CGxDevice::ShaderConstantsClear() {
     for (int32_t i = 0; i < 256; i++) {
         CGxDevice::s_shadowConstants[0].constants[i] = {

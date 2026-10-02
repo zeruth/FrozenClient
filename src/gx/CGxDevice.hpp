@@ -122,6 +122,9 @@ class CGxDevice {
         // The window-sizing helpers (FUN_00683d60 and its three siblings) read it to hold the
         // aspect while the window is dragged.
         static float s_aspectRatio;
+        // Reference 0x00c60308: the time, in OsGetAsyncTimeMs milliseconds, before which the next
+        // frame may not be presented.
+        static uint32_t s_nextFrameTime;
         static C3Vector s_pointScaleIdentity;
         static uint32_t s_primVtxAdjust[];
         static uint32_t s_primVtxDiv[];
@@ -315,6 +318,8 @@ class CGxDevice {
         const CRect& DeviceDefWindow(void);
         int32_t IDevIsWindowed();
         void IRsDirty(EGxRenderState);
+        void ILimitFrameRate();
+        void ILightsInvalidate();
         // Turn one light slot on or off. ref: FUN_00683080
         void LightEnable(uint32_t index, int32_t enable);
         // Store one light into the given slot. `origin` is subtracted from a POINT light's

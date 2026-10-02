@@ -2304,7 +2304,9 @@ addr	how	frozen	evidence
 00681450	override	GxTexSetWrap	
 00681470	annotated	GxTexDestroy	tag in src/gx/Texture.cpp
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
+00681780	annotated	GxMaxFps	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
+006817a0	annotated	GxMaxFpsBk	tag in src/gx/Gx.cpp
 006817b0	override	GxGetBlitFormat	
 00681890	override	CGxDevice::XformSetViewport	
 00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
@@ -2316,6 +2318,7 @@ addr	how	frozen	evidence
 00682130	annotated	GxXformViewProj	tag in src/gx/Transform.cpp
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00682c40	annotated	CGxBufScratch::Unlock	tag in src/gx/CGxDevice.cpp
+00682c50	annotated	CGxDevice::ILightsInvalidate	tag in src/gx/CGxDevice.cpp
 00682d20	callgraph	GxCaps	only unmatched callee of 008740d0=ShadowMapQualitySupported
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
 00682d70	override	CGxDevice::DeviceCurWindow	
@@ -2333,8 +2336,10 @@ addr	how	frozen	evidence
 00683130	annotated	CGxDevice::BufData	tag in src/gx/CGxDevice.cpp
 00683150	annotated	CGxDevice::BufLock	tag in src/gx/CGxDevice.cpp
 00683180	annotated	CGxDevice::BufUnlock	tag in src/gx/CGxDevice.cpp
+006833a0	annotated	CGxDevice::ShaderConstantsClear	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
 00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
+006836d0	annotated	CGxDevice::ILimitFrameRate	tag in src/gx/CGxDevice.cpp
 006839f0	sticky	WowClientDB<LiquidTypeRec>::GetRecord	held from the previous run, where it was sticky
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
 006840f0	annotated	CGxDevice::DeviceSetFormat	tag in src/gx/CGxDevice.cpp
@@ -2348,6 +2353,7 @@ addr	how	frozen	evidence
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00684c20	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
 00684d10	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
+00684d70	annotated	GxWindowFitToWorkArea	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00685130	override	TSGrowableArray<enum EGxRenderState>::New	
 00685970	override	CGxDevice::IRsDirty	
 006859e0	override	CGxDevice::IRsForceUpdate	
@@ -2371,11 +2377,13 @@ addr	how	frozen	evidence
 00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 0068a4c0	annotated	CGxDevice::AdapterMonitorModes	tag in src/gx/CGxDevice.cpp
-0068da10	string	WindowClassCreate	score 0.67 shared BlizzardCursor.cur; BlizzardIcon.ico
 0068e180	annotated	CGxDeviceD3d::ICreateD3dIB	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e1f0	annotated	CGxDeviceD3d::IPoolRelease	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e250	annotated	CGxDeviceD3d::ISetPresentParms	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068eb20	annotated	WindowClassCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068ebb0	annotated	CGxDeviceD3d::ICreateWindow	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
+0068f3d0	callgraph	CGxDeviceD3d::ICreateD3dDevice	only unmatched callee of 006904d0=CGxDeviceD3d::DeviceSetFormat
 0068fa60	annotated	CGxDeviceD3d::IBufUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fae0	annotated	CGxDeviceD3d::BufUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fb10	annotated	CGxDeviceD3d::IBufLock	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2390,12 +2398,16 @@ addr	how	frozen	evidence
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
 0069fb00	annotated	CGxDeviceD3d::ICreateD3dVB	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069fb70	annotated	CGxDeviceD3d::CreatePoolAPI	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0069fe10	annotated	CGxDeviceD3d::IWindowActiveSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a1c60	annotated	CGxDeviceD3d::IReleaseD3dPools	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2aa0	annotated	CGxDeviceD3d::IReleaseD3dTextures	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2bb0	annotated	CGxDeviceD3d::TexDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2c00	annotated	CGxDeviceD3d::ITexCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2d80	annotated	CGxDeviceD3d::ITexUpload	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3070	override	CGxDeviceD3d::ITexMarkAsUpdated	
+006a3350	annotated	CGxDeviceD3d::ISceneBegin	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a3420	annotated	CGxDeviceD3d::ISceneEnd	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a3450	annotated	CGxDeviceD3d::ScenePresent	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
 006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
@@ -4125,7 +4137,7 @@ addr	how	frozen	evidence
 0086ae20	override	OsGetAsyncTimeMs	
 0086af90	override	OsGetCpuidInfo	
 0086b240	annotated	OsGetProcessorCount	tag in src/util/win/OsSystem.cpp
-0086b280	callgraph	OsSleep	only unmatched callee of 004b9de0=AsyncFileReadDestroyObject
+0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate
 0086b2d0	annotated	OsGetVersion	tag in src/util/win/OsSystem.cpp
 0086b480	annotated	OsGetComputerName	tag in src/util/win/OsSystem.cpp
 0086b4a0	annotated	OsGetUserName	tag in src/util/win/OsSystem.cpp
