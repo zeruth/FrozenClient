@@ -7,6 +7,7 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class Particulates;
 class CWFrustum;
 struct CFacetList;
 class CM2Model;
@@ -104,6 +105,8 @@ class CWorld {
         // terrain chunk take its half-size alpha map
         static int32_t s_terrainShadowLevel;
         static Weather* s_weather;
+        // DAT_00cd7548
+        static Particulates* s_particulates;
         // The settings the world console commands change (CWorld::Initialize registers them):
         // the terrain level of detail (0x00adeec4, 2 or 3), the water ripple setting (0x00adf7f0),
         // the grass alpha cutoff (0x00cd766c), the character ambient multiplier and whether it is
@@ -213,6 +216,9 @@ class CWorld {
         static void LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg);
         static void SetUpdateTime(float tickTimeSec, uint32_t curTimeMs);
         static void Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos);
+        static void RenderWeather();
+        // The underwater motes, when the camera is in a liquid that takes them. ref: FUN_0077f9d0
+        static void RenderParticulates();
 
     private:
         // Private static variables

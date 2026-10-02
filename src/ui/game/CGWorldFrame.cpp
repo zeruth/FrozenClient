@@ -6,7 +6,6 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
-#include "world/Weather.hpp"
 #include "world/DayNight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
@@ -503,7 +502,7 @@ void CGWorldFrame::OnWorldRender() {
         // invites someone to remove a call the renderer needs.
         if (CWorld::IsCameraUnderLiquid()) {
             if (scene) { scene->Draw(M2PASS_1); }
-            WeatherRender();
+            CWorld::RenderWeather();
             CWorldScene::DrawLiquidPass();
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
@@ -513,14 +512,14 @@ void CGWorldFrame::OnWorldRender() {
             ParticleFxRender();
             OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
             CWorldScene::DrawLiquidPass();
-            WeatherRender();
+            CWorld::RenderWeather();
             if (scene) { scene->Draw(M2PASS_1); }
         }
 
         ParticleFxEndFrame();
 
-        // Underwater overlay last in the world (reference FUN_0077f9d0 -> CMap FUN_0079ca70)
-        UnderwaterOverlayRender();
+        // The underwater motes last in the world (FUN_0077f9d0 -> FUN_0079ca70)
+        CWorld::RenderParticulates();
 
         if (useFog) {
             GxRsSet(GxRs_Fog, 0);
@@ -565,10 +564,9 @@ void CGWorldFrame::OnWorldUpdate() {
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
     // What the stand-in's per-frame update still did: refresh the outdoor light, and hand the
-    // camera to the two modules that build their geometry around it.
+    // camera to the sky, which builds its geometry around it.
     CWorld::UpdateOutdoorLight();
     SkySetCameraState(this->m_camera->Position());
-    WeatherSetCameraPos(this->m_camera->Position());
     CWorldScene::s_worldCameraPos = this->m_camera->Position();
 
     // Poll the server for questgiver status; nothing populates the overhead markers otherwise.

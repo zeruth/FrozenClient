@@ -4426,5 +4426,46 @@
   "007d6670": {
     "status": "excluded",
     "note": "Dynamic initializer: registers the CWaveManager CDataAllocator. Compiler-generated. Identified 2026-10-02."
+  },
+  "00783f30": {
+    "status": "excluded",
+    "note": "TSFixedArray<float> copy (count, then the floats): Mists::Mist's height array assignment, inlined into the Mist copy; squall template"
+  },
+  "007850c0": {
+    "status": "excluded",
+    "note": "TSFixedArray<Rain::Drop> constructor (capacity 0x1800, items zeroed), inlined by frozen into Packet<Rain::Drop>'s constructor (FUN_00786920); squall template"
+  },
+  "00785100": {
+    "status": "excluded",
+    "note": "TSFixedArray<Snow::Flake> constructor (capacity 0x1800, items zeroed), inlined by frozen into Packet<Snow::Flake>'s constructor (FUN_00786a20); squall template"
+  },
+  "00786850": {
+    "status": "excluded",
+    "note": "WeatherGroundCache scalar deleting destructor (dtor FUN_00784b80 then SMemFree); compiler generated"
+  },
+  "00786880": {
+    "status": "excluded",
+    "note": "Mists::Mist copy constructor (TSFixedArray<float> heights + the tail), used by TSGrowableArray<Mist> reallocation; squall template"
+  },
+  "00786b90": {
+    "status": "excluded",
+    "note": "TSGrowableArray<Mists::Mist> reallocate (SMemReAlloc, else alloc + copy-construct + free); squall template"
+  },
+  "00788930": {
+    "status": "excluded",
+    "note": "TSGrowableArray<Mists::Mist>::SetCount (constructs each new Mist: count 0x40, position/velocity/startTime zeroed); squall template, called from Mists::Mists"
+  },
+  "00788b20": {
+    "status": "excluded",
+    "note": "TSList<PosDelta> delete-all (unlink and SMemFree every node), inlined into Weather::~Weather (FUN_0078d540); squall template"
+  },
+  "00788b90": {
+    "status": "excluded",
+    "note": "TSList<PosDelta>::DeleteNode (unlink, SMemFree, return next), called by Weather::UpdateMotion; squall template"
+  },
+  "0078b370": {
+    "frozen": "Sand::RenderCpu",
+    "status": "diverged",
+    "note": "the reference passes Sand+0x98 to TextureGetGxTex, but +0x98 in Sand is the vertex shader slot (sand has no texture of its own; the CPU path only runs when the shader path is off). frozen does not hand a CGxShader* to the texture code: it treats it as no texture and returns before drawing, which is what a null shader slot gives in the reference."
   }
 }

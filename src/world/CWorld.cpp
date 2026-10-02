@@ -1,3 +1,4 @@
+#include "world/map/Particulates.hpp"
 #include "world/map/DetailDoodad.hpp"
 #include "util/Log.hpp"
 #include "world/CWFrustum.hpp"
@@ -25,7 +26,7 @@
 #include "model/Model2.hpp"
 #include "world/CWorldParam.hpp"
 #include "world/Map.hpp"
-#include "world/Weather.hpp"
+#include "world/MapWeather.hpp"
 #include "world/map/CMap.hpp"
 #include "gx/LoadingScreen.hpp"
 #include "util/SFile.hpp"
@@ -67,6 +68,7 @@ const float CWorld::s_textureScrollDir[8][2] = {
     { -1.0f, -1.0f },
 };
 Weather* CWorld::s_weather;
+Particulates* CWorld::s_particulates;
 C3Vector CWorld::s_outdoorAmbient = { 0.45f, 0.45f, 0.5f };
 C3Vector CWorld::s_outdoorDiffuse = { 0.9f, 0.85f, 0.75f };
 // Unit-length: CM2Lighting::AddDiffuse and the terrain/WMO bake dot this straight into N.L without
@@ -1076,6 +1078,7 @@ void CWorld::Initialize() {
     // TODO
 
     CWorld::s_weather = STORM_NEW(Weather);
+    CWorld::s_particulates = STORM_NEW(Particulates)(0.02777777798473835f, 30.0f, "Textures\\WaterPoop02.blp");
 
     // The projected-texture callback (0x00781340). The particle ground query installed beside it
     // (FUN_0077f540, 0x00781351) waits on the map segment query FUN_007a3b70.
@@ -1432,8 +1435,21 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
     // nothing it falls back to the outdoor traversal rather than to the unported teardown.
     CWorldScene::UpdateCameraDef();
 
-    // TODO the day/night update FUN_007816f0, the fog-end read into DAT_00cd7668, the underwater
-    // update FUN_0079bf40, the weather update FUN_0078d170, and the zone light blend at the end
+    // TODO the day/night update FUN_007816f0 and the fog-end read into DAT_00cd7668
+
+    if ((CWorld::s_enables & CWorld::Enable_Particulates) && CWorldScene::s_cameraLiquidType != 0) {
+        CWorld::s_particulates->Update();
+    }
+
+    CWorld::s_weather->Update();
+
+    // TODO the zone light blend at the end
+}
+
+// ref: FUN_0077f030
+// The weather's draw, which CGWorldFrame::OnWorldRender calls on each side of the liquid pass
+void CWorld::RenderWeather() {
+    CWorld::s_weather->Render();
 }
 
 float CWorld::GetCloudDensity() {
@@ -1747,4 +1763,11 @@ void CWorld::AddHitFacets(CFacetList& list, uint32_t owner0, uint32_t owner1) {
 // ref: FUN_0077f330
 int32_t WorldQueryFrustumFacets(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
     return CMap::QueryFrustumFacets(frustum, list, flags, hitFlags) ? 1 : 0;
+}
+
+// ref: FUN_0077f9d0
+void CWorld::RenderParticulates() {
+    if ((CWorld::s_enables & CWorld::Enable_Particulates) && CWorldScene::s_cameraLiquidType != 0) {
+        CWorld::s_particulates->Render();
+    }
 }

@@ -4,7 +4,7 @@
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/Shadow.hpp"
 #include "gx/Shader.hpp"
-#include "world/Weather.hpp"
+#include "world/map/Particulates.hpp"
 #include "world/DayNight.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
@@ -1899,12 +1899,14 @@ void CWorldScene::UpdateCameraLiquid() {
     } else if (liquidType != CWorldScene::s_cameraLiquidType) {
         auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquidType));
 
-        // Bit 3 marks the kinds that take the water treatment -- the ones you can be submerged
-        // in rather than merely stand on.
-        if (rec && ((rec->m_flags >> 3) & 1)) {
-            // TODO the reference switches the underwater light set and the bubble particle
-            // scale here (FUN_0079b8e0, FUN_0079b360), and records the bit on the world state.
-            // Neither setter is ported.
+        // Bit 3 marks the kinds that carry underwater motes. Frozen-only null check: the
+        // reference reads the row unguarded.
+        uint8_t motes = rec ? (rec->m_flags >> 3) & 1 : 0;
+        CWorld::s_particulates->m_active = motes;
+
+        if (motes) {
+            CWorld::s_particulates->Respawn(liquidType);
+            CWorld::s_particulates->SetSizeScale(rec->m_particleScale * 0.02777777798473835f);
         }
     }
 
