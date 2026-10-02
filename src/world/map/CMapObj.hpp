@@ -395,6 +395,12 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Does the segment touch the whole object's MOHD bounds? False until the root is parsed,
         // because the bounds are not known before that. ref: FUN_007ae840
         bool SegmentVsBounds(const C3Vector& start, const C3Vector& end);
+        // Does a box (in this building's space) reach its MOHD bounds? ref: FUN_007ae7e0
+        bool BoxVsBounds(const CAaBox& box);
+        // Whether group `index` has its own file loaded. ref: FUN_007ae4c0
+        bool IsGroupLoaded(uint32_t index);
+        // A box query over every loaded, solid group the box reaches. ref: FUN_007aef00
+        bool QueryBoxGroups(const CAaBox& box, uint32_t queryFlags, const C44Matrix* placement, void* object);
 
         // Does the segment touch one group's bounds? Also false when that group's own file has not
         // arrived -- a group whose state bit 0 is clear has no geometry to hit. ref: FUN_007ae880

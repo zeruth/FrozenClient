@@ -1,6 +1,7 @@
 #include <cmath>
 #include "tempest/box/CAaBox.hpp"
 #include "tempest/matrix/C44Matrix.hpp"
+#include "tempest/matrix/C33Matrix.hpp"
 #include "tempest/sphere/CAaSphere.hpp"
 #include <cstdint>
 
@@ -52,44 +53,47 @@ int32_t CAaBox::IsPointInside(const C3Vector& p) const {
     return 0;
 }
 
+// ref: FUN_007f9320
+// Adds each row's contribution to the box being built: per output axis, the smaller of the two
+// products to the minimum and the larger to the maximum.
+static void TransformBoxRows(CAaBox& out, const float* rowA, const float* rowB, const float* rowC, const CAaBox& box) {
+    float* lo = &out.b.x;
+    float* hi = &out.t.x;
+
+    for (uint32_t axis = 0; axis < 3; axis++) {
+        const float* rows[3] = { rowA, rowB, rowC };
+        const float boxLo[3] = { box.b.x, box.b.y, box.b.z };
+        const float boxHi[3] = { box.t.x, box.t.y, box.t.z };
+
+        for (uint32_t r = 0; r < 3; r++) {
+            float a = boxLo[r] * rows[r][axis];
+            float b = rows[r][axis] * boxHi[r];
+
+            if (b <= a) {
+                lo[axis] = b + lo[axis];
+                hi[axis] = a + hi[axis];
+            } else {
+                lo[axis] = lo[axis] + a;
+                hi[axis] = b + hi[axis];
+            }
+        }
+    }
+}
+
 // ref: FUN_00984860
 // ref: FUN_007f9430
 CAaBox TransformBox(const CAaBox& box, const C44Matrix& m) {
     // The translation row is where a zero-sized box would land, so both corners start there and
-    // the rows below only ever widen them.
-    float lo[3] = { m.d0, m.d1, m.d2 };
-    float hi[3] = { m.d0, m.d1, m.d2 };
-
-    const float row[3][3] = {
-        { m.a0, m.a1, m.a2 },
-        { m.b0, m.b1, m.b2 },
-        { m.c0, m.c1, m.c2 }
-    };
-
-    const float boxLo[3] = { box.b.x, box.b.y, box.b.z };
-    const float boxHi[3] = { box.t.x, box.t.y, box.t.z };
-
-    for (uint32_t axis = 0; axis < 3; axis++) {
-        for (uint32_t r = 0; r < 3; r++) {
-            float a = boxLo[r] * row[r][axis];
-            float b = boxHi[r] * row[r][axis];
-
-            // A negative matrix element swaps which end of the box contributes the minimum, which
-            // is the only reason this is a comparison rather than two additions.
-            if (b <= a) {
-                lo[axis] += b;
-                hi[axis] += a;
-            } else {
-                lo[axis] += a;
-                hi[axis] += b;
-            }
-        }
-    }
-
+    // the rows only ever widen them.
     CAaBox out;
+    out.b = { m.d0, m.d1, m.d2 };
+    out.t = { m.d0, m.d1, m.d2 };
 
-    out.b = { lo[0], lo[1], lo[2] };
-    out.t = { hi[0], hi[1], hi[2] };
+    const float rowA[3] = { m.a0, m.a1, m.a2 };
+    const float rowB[3] = { m.b0, m.b1, m.b2 };
+    const float rowC[3] = { m.c0, m.c1, m.c2 };
+
+    TransformBoxRows(out, rowA, rowB, rowC, box);
 
     return out;
 }
@@ -228,4 +232,16 @@ void SphereBoundSpheres(CAaSphere& out, const CAaSphere* spheres, uint32_t count
 
     out.c = centre;
     out.r = radius;
+}
+
+// ref: FUN_007f93d0
+void TransformBoxExtents(const C33Matrix& m, const CAaBox& box, CAaBox& out) {
+    out.b = { 0.0f, 0.0f, 0.0f };
+    out.t = { 0.0f, 0.0f, 0.0f };
+
+    const float rowA[3] = { m.a0, m.a1, m.a2 };
+    const float rowB[3] = { m.b0, m.b1, m.b2 };
+    const float rowC[3] = { m.c0, m.c1, m.c2 };
+
+    TransformBoxRows(out, rowA, rowB, rowC, box);
 }

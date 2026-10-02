@@ -219,6 +219,46 @@ bool CMapObj::SegmentVsBounds(const C3Vector& start, const C3Vector& end) {
     return SegmentIntersectsBox(this->m_bounds, start, end) != 0;
 }
 
+// ref: FUN_007ae7e0
+bool CMapObj::BoxVsBounds(const CAaBox& box) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    return this->m_bounds.Intersects(box);
+}
+
+// ref: FUN_007ae4c0
+bool CMapObj::IsGroupLoaded(uint32_t index) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    return this->m_groups[index]->m_state & 0x1;
+}
+
+// ref: FUN_007aef00
+// Each group whose MOGI box meets the query box, whose file has arrived and which is not flagged
+// 0x80 (no collision), runs the plain-box BSP query. Hits are stamped with `placement` and `object`.
+bool CMapObj::QueryBoxGroups(const CAaBox& box, uint32_t queryFlags, const C44Matrix* placement, void* object) {
+    bool hit = false;
+    uint16_t skipFlags = static_cast<uint16_t>(CMapObj::QuerySkipFlags(queryFlags));
+
+    for (uint32_t i = 0; i < this->m_groupCount; i++) {
+        const CAaBox& groupBounds = this->m_mogi[i].bounds;
+        CMapObjGroup* group = this->m_groups[i];
+
+        if (groupBounds.b.x <= box.t.x && groupBounds.b.y <= box.t.y && groupBounds.b.z <= box.t.z
+            && box.b.x <= groupBounds.t.x && box.b.y <= groupBounds.t.y && box.b.z <= groupBounds.t.z
+            && this->m_rootLoaded && (group->m_state & 0x1)
+            && !(group->m_flags & 0x80)) {
+            hit |= group->QueryAaBox(box, queryFlags, skipFlags, placement, object);
+        }
+    }
+
+    return hit;
+}
+
 // ref: FUN_007ae880
 bool CMapObj::SegmentVsGroupBounds(const C3Vector& start, const C3Vector& end,
                                    uint32_t groupIndex) {

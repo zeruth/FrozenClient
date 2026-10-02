@@ -220,6 +220,8 @@ constexpr float CORNER_EPSILON = 0.0194444433f;
 // Which of the box's two z faces the vertex lies outside of, in bits 2 and 5 of the same outcode the
 // terrain collector's six-face ClassifyCorner builds. The reference has this as its own function with
 // exactly one caller, the classify loop below.
+} // namespace
+
 // ref: FUN_007c7790
 uint8_t ClassifyCornerZ(const CAaBox& box, const C3Vector& v) {
     uint8_t code = 0;
@@ -229,6 +231,8 @@ uint8_t ClassifyCornerZ(const CAaBox& box, const C3Vector& v) {
 
     return code;
 }
+
+namespace {
 
 // The two triangles of one tile, as offsets from its first vertex, where `stride` is however many
 // entries a row of the array being indexed holds. The vertex array and the outcode array have

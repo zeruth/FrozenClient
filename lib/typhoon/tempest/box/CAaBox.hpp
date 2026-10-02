@@ -46,6 +46,12 @@ class CAaBox {
 // transform, which is tighter than transforming the eight corners and cheaper than both.
 CAaBox TransformBox(const CAaBox& box, const C44Matrix& m);
 
+class C33Matrix;
+
+// The same transform through a 3x3, with no translation: `out` starts at the origin and each axis
+// gathers the smaller and larger product of every input axis.
+void TransformBoxExtents(const C33Matrix& m, const CAaBox& box, CAaBox& out);
+
 // The smallest box containing both: min of the minima, max of the maxima.
 // ref: FUN_007150d0
 CAaBox AaBoxUnion(const CAaBox& a, const CAaBox& b);

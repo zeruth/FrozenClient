@@ -109,6 +109,22 @@ struct CMapObjGroupDualSegmentQuery {
 
 // The box query: every face that reaches into a six-plane hull. Reference: built inline by
 // FUN_007cb180.
+// The plain-box sibling of CMapObjGroupBoxQuery: the same fields, with the box itself in place of
+// the hull, and faces kept when the triangle is not wholly outside it. FUN_007cb7b0.
+class CM2Model;
+
+struct CMapObjGroupAaBoxQuery {
+    uint32_t* overflow;
+    SMOPoly* polys;
+    const C3Vector* vertices;
+    const uint16_t* indices;
+    const CAaBox* box;
+    uint16_t skipFlags;
+
+    bool CachedLeaf(CMapObjGroup* group, const CAaBspNode* node);
+    void TestFace(uint16_t face);
+};
+
 struct CMapObjGroupBoxQuery {
     uint32_t* overflow;
     SMOPoly* polys;
@@ -172,6 +188,18 @@ bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b,
 //
 // ref: FUN_007a6af0
 bool MapQueryBox(const CAaBox& box, void* object, uint32_t queryMask);
+
+// Which z face of the box a vertex lies outside of, as outcode bits 0x04 and 0x20. Shared by the
+// chunk and group liquid collectors. ref: FUN_007c7790 (CChunkLiquid.cpp)
+uint8_t ClassifyCornerZ(const CAaBox& box, const C3Vector& v);
+
+// The map-object half of MapQueryBox: every placed building the box reaches, in its own space.
+// ref: FUN_007a6940
+bool MapQueryBoxMapObjs(const CAaBox& box, void* object, uint32_t queryMask);
+
+// Up to `maxModels` doodad models inside placed buildings whose bounds meet the box, for the
+// decal's M2 receivers. Returns how many. ref: FUN_007a2aa0
+uint32_t MapQueryBoxModels(CM2Model** models, uint32_t maxModels, const CAaBox& box, uint32_t queryMask);
 
 // The terrain half on its own, reached through the dispatcher above: turn the box into a range of
 // chunks and collect each one.
@@ -353,6 +381,10 @@ class CMapObjGroup {
         void DualQueryLeaf(CMapObjGroupDualSegmentQuery& query, const CAaBspNode* node);
         void BoxQueryNode(CMapObjGroupBoxQuery& query, int32_t nodeIdx, const CAaBox& queryBox, const CAaBox& box);
         void BoxQueryLeaf(CMapObjGroupBoxQuery& query, const CAaBspNode* node);
+        bool QueryAaBox(const CAaBox& box, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object);
+        bool QueryLiquidBox(const CAaBox& box, uint32_t queryFlags, const C44Matrix* placement, void* object);
+        void AaBoxQueryNode(CMapObjGroupAaBoxQuery& query, int32_t nodeIdx, const CAaBox& queryBox, const CAaBox& box);
+        void AaBoxQueryLeaf(CMapObjGroupAaBoxQuery& query, const CAaBspNode* node);
         void RecordHits(const C44Matrix* placement, void* object, uint32_t flags);
 
         // Loading the group file
