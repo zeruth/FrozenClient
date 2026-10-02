@@ -1,6 +1,8 @@
 #include "world/CWorldParam.hpp"
 #include "world/ShadowMap.hpp"
 #include <storm/String.hpp>
+#include <storm/Memory.hpp>
+#include <new>
 #include "console/Console.hpp"
 #include "world/CWorld.hpp"
 #include "console/CVar.hpp"
@@ -89,8 +91,37 @@ bool CWorldParam::BaseMipCallback(CVar* var, const char* oldValue, const char* v
     return true;
 }
 
+// ref: FUN_0078df90
 bool CWorldParam::BSPCacheCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (!SStrToInt(value)) {
+        if (CMap::s_bspNodeCache) {
+            ConsoleWrite("Disabling BSP node cache.", DEFAULT_COLOR);
+
+            CMapBspNodeCache* cache = CMap::s_bspNodeCache;
+            cache->Clear();
+            SMemFree(cache, "delete", -1, 0);
+            CMap::s_bspNodeCache = nullptr;
+
+            return true;
+        }
+
+        ConsoleWrite("BSP node cache already disabled.", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    if (CMap::s_bspNodeCache) {
+        ConsoleWrite("Enabling BSP node cache (already enabled, so clearing content.)", DEFAULT_COLOR);
+        CMap::s_bspNodeCache->Clear();
+
+        return true;
+    }
+
+    ConsoleWrite("Enabling BSP node cache (first time - starting up)", DEFAULT_COLOR);
+
+    void* memory = SMemAlloc(sizeof(CMapBspNodeCache), __FILE__, __LINE__, 0);
+    CMap::s_bspNodeCache = memory ? new (memory) CMapBspNodeCache() : nullptr;
+
     return true;
 }
 

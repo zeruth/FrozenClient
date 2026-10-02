@@ -7,6 +7,7 @@
 #include "gx/Buffer.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMap.hpp"
+#include <algorithm>
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CChunkLiquid.hpp"
@@ -193,6 +194,11 @@ CMapObjGroup::~CMapObjGroup() {
 }
 
 void CMapObjGroup::FreeQueryData() {
+    // The reference resets the group's BSP object here (FUN_0079b2c0), whose first act is to take
+    // its leaves out of the node cache: a node address freed now could come back as a new
+    // group's node and hit a stale entry.
+    CMap::EvictBspLeaves(this->m_bspNodes, this->m_bspNodeCount);
+
     if (this->m_polys) {
         SMemFree(this->m_polys, __FILE__, __LINE__, 0);
         this->m_polys = nullptr;
@@ -227,8 +233,8 @@ void CMapObjGroupSegmentQuery::Init(SMOPoly* polys, const C3Vector* vertices, co
     this->materials = materials;
     this->materialCount = materialCount;
     this->skipFlags = skipFlags | SMOPoly::F_COLLIDE_HIT;
-    // The reference copies the global DAT_00cf08f8 here; nothing ported reads it
-    this->unk15 = 0;
+    // The reference copies CMap::s_useSse (DAT_00cf08f8) here.
+    this->unk15 = CMap::s_useSse;
 
     this->ray.origin = segment.start;
     this->ray.dir.x = segment.end.x - segment.start.x;
@@ -248,12 +254,131 @@ void CMapObjGroupSegmentQuery::Init(SMOPoly* polys, const C3Vector* vertices, co
     this->ray.dir.z = invLength * this->ray.dir.z;
 }
 
-// FUN_007c6d50 (see overrides.json: diverged). With the bspcache CVar on, which is its default,
-// the reference resolves the leaf through CMap's node cache (FUN_0079b1f0): a world-space copy of
-// the leaf's faces with per-vertex outcodes that prefilter the triangle test. The cache is not
-// ported, so every leaf takes the uncached loop below; the hits are the same set.
+
+namespace {
+
+// The six outcode bits a cached leaf's vertices take against a box: x below / above (0x20 / 0x10),
+// y (0x08 / 0x04), z (0x02 / 0x01). `inclusive` makes a vertex ON a face count as outside it,
+// which is how the plain-box query compares; the segment queries compare strictly.
+void ClassifyLeafVertices(const CMapBspLeafCache* leaf, const C3Vector& min, const C3Vector& max, bool inclusive, uint8_t* outcodes) {
+    for (uint32_t i = 0; i < leaf->vertexCount; i++) {
+        const C3Vector& v = leaf->vertices[i];
+        uint8_t code = 0;
+
+        if (inclusive) {
+            if (v.x <= min.x) { code = 0x20; }
+            if (max.x <= v.x) { code |= 0x10; }
+            if (v.y <= min.y) { code |= 0x08; }
+            if (max.y <= v.y) { code |= 0x04; }
+            if (v.z <= min.z) { code |= 0x02; }
+            if (max.z <= v.z) { code |= 0x01; }
+        } else {
+            if (v.x < min.x) { code = 0x20; }
+            if (max.x < v.x) { code |= 0x10; }
+            if (v.y < min.y) { code |= 0x08; }
+            if (max.y < v.y) { code |= 0x04; }
+            if (v.z < min.z) { code |= 0x02; }
+            if (max.z < v.z) { code |= 0x01; }
+        }
+
+        outcodes[i] = code;
+    }
+}
+
+// The segment's box, widened by 0.01 on every side (DAT_009f1968).
+void SegmentLeafBounds(const C3Segment& segment, C3Vector& min, C3Vector& max) {
+    const float slack = 0.009999999776482582f;
+
+    min = { std::min(segment.start.x, segment.end.x) - slack, std::min(segment.start.y, segment.end.y) - slack, std::min(segment.start.z, segment.end.z) - slack };
+    max = { std::max(segment.start.x, segment.end.x) + slack, std::max(segment.start.y, segment.end.y) + slack, std::max(segment.start.z, segment.end.z) + slack };
+}
+
+}
+
+// ref: FUN_007c6d50
+// With bspcache on, the leaf's faces come from CMap's node cache: the same face test as TestFace,
+// run over the compacted copy, with the copy's vertices outcoded against the segment's box first
+// so a face wholly to one side of it skips the triangle test (it is still marked visited).
 bool CMapObjGroupSegmentQuery::CachedLeaf(CMapObjGroup* group, const CAaBspNode* node) {
-    return false;
+    if (!CMap::s_bspNodeCache) {
+        return false;
+    }
+
+    CMapBspLeafCache* leaf = CMap::s_bspNodeCache->Lookup(group->m_bspFaceRefs, node, this->polys, this->vertices, this->indices);
+
+    if (!leaf) {
+        return false;
+    }
+
+    C3Vector min;
+    C3Vector max;
+    SegmentLeafBounds(this->segment, min, max);
+
+    uint8_t outcodes[452];
+    ClassifyLeafVertices(leaf, min, max, false, outcodes);
+
+    uint16_t mask = this->skipFlags;
+
+    for (uint32_t f = 0; f < leaf->faceCount; f++) {
+        uint16_t face = leaf->faceSource[f];
+
+        if (leaf->faceFlags[f] & mask) {
+            continue;
+        }
+
+        if (this->polys[face].flags & static_cast<uint8_t>(mask)) {
+            continue;
+        }
+
+        // Diverges from the reference in the same way TestFace does: the material table is
+        // bounds-checked before it is read.
+        uint8_t material = this->polys[face].material;
+
+        bool textured = material != 0xFF
+            && this->materials
+            && material < this->materialCount
+            && this->materials[material].texture1 != 0;
+
+        if (textured ? (mask & 0x100) : (mask & 0x200)) {
+            continue;
+        }
+
+        if (s_collideHitCount >= 0x2000) {
+            if (this->overflow) {
+                *this->overflow |= 0x1;
+            }
+
+            break;
+        }
+
+        s_collideHitFaces[s_collideHitCount] = face;
+        s_collideHitCount++;
+        this->polys[face].flags |= SMOPoly::F_COLLIDE_HIT;
+
+        const uint16_t* tri = &leaf->faceIndices[f * 3];
+
+        if (outcodes[tri[2]] & outcodes[tri[1]] & outcodes[tri[0]] & 0x3f) {
+            continue;
+        }
+
+        float t = 0.0f;
+
+        if (IntersectRayTriangle(this->ray, leaf->vertices, tri, &t, nullptr, RAY_TRIANGLE_EPSILON)
+            && 0.0f <= t
+            && t <= this->bestDist) {
+            this->bestDist = t;
+            s_hitCount = 1;
+            s_hitFaces[0] = face;
+
+            *this->outT = t * this->invLength;
+
+            if (*this->outT > this->maxT) {
+                *this->outT = this->maxT;
+            }
+        }
+    }
+
+    return true;
 }
 
 // ref: FUN_007c6c30
@@ -462,9 +587,79 @@ void CMapObjGroupDualSegmentQuery::Init(SMOPoly* polys, const C3Vector* vertices
     this->bestRenderDist = maxRenderT * length;
 }
 
-// FUN_007c6790 (see overrides.json: diverged, as CMapObjGroupSegmentQuery::CachedLeaf)
+// ref: FUN_007c6790
+// The cached twin of the dual query's leaf loop. Unlike the single segment query it does not flag
+// an overflow when the visited list fills; it just stops.
 bool CMapObjGroupDualSegmentQuery::CachedLeaf(CMapObjGroup* group, const CAaBspNode* node) {
-    return false;
+    if (!CMap::s_bspNodeCache) {
+        return false;
+    }
+
+    CMapBspLeafCache* leaf = CMap::s_bspNodeCache->Lookup(group->m_bspFaceRefs, node, this->polys, this->vertices, this->indices);
+
+    if (!leaf) {
+        return false;
+    }
+
+    C3Vector min;
+    C3Vector max;
+    SegmentLeafBounds(this->segment, min, max);
+
+    uint8_t outcodes[452];
+    ClassifyLeafVertices(leaf, min, max, false, outcodes);
+
+    for (uint32_t f = 0; f < leaf->faceCount; f++) {
+        uint16_t face = leaf->faceSource[f];
+        uint8_t flags = this->polys[face].flags;
+
+        if ((this->skipFlags & leaf->faceFlags[f]) || (flags & this->skipFlags)) {
+            continue;
+        }
+
+        if (s_collideHitCount >= 0x2000) {
+            break;
+        }
+
+        s_collideHitFaces[s_collideHitCount] = face;
+        s_collideHitCount++;
+        this->polys[face].flags |= SMOPoly::F_COLLIDE_HIT;
+
+        const uint16_t* tri = &leaf->faceIndices[f * 3];
+
+        if (outcodes[tri[2]] & outcodes[tri[1]] & outcodes[tri[0]] & 0x3f) {
+            continue;
+        }
+
+        float t = 0.0f;
+
+        if (!IntersectRayTriangle(this->ray, leaf->vertices, tri, &t, nullptr, RAY_TRIANGLE_EPSILON)) {
+            continue;
+        }
+
+        if (!(flags & SMOPoly::F_RENDER)) {
+            if (!(flags & SMOPoly::F_COLLISION)) {
+                if ((flags & SMOPoly::F_DETAIL) && 0.0f <= t && t <= this->bestRenderDist) {
+                    this->bestRenderDist = t;
+                    this->renderFace = face;
+                }
+            } else if (0.0f <= t && t <= this->bestCollisionDist) {
+                this->bestCollisionDist = t;
+                this->collisionFace = face;
+            }
+        } else if (0.0f <= t) {
+            if (t <= this->bestCollisionDist) {
+                this->bestCollisionDist = t;
+                this->collisionFace = face;
+            }
+
+            if (t <= this->bestRenderDist) {
+                this->bestRenderDist = t;
+                this->renderFace = face;
+            }
+        }
+    }
+
+    return true;
 }
 
 // ref: FUN_007c6600
@@ -961,11 +1156,54 @@ bool CMapObjGroup::QueryBox(const CWFrustum& frustum, uint32_t queryFlags, uint1
     return CMapObjGroup::s_hitRecordCount != recordsBefore;
 }
 
-// FUN_007c7230 (see overrides.json: diverged, as CMapObjGroupSegmentQuery::CachedLeaf). The
-// reference resolves the leaf through CMap's node cache when bspcache is on; the cache is not
-// ported, so every leaf takes the uncached loop, which finds the same faces.
+// ref: FUN_007c7230
+// NOT the same set as the uncached path. TestFace keeps a face only when TriangleOutsideBox says
+// it reaches into the box; the cached leaf keeps every face whose three vertices do not share an
+// outcode bit, with no exact test after -- so a triangle that clips a box corner only by its
+// bounding region counts as a hit here. That is the reference's behaviour with bspcache on, which
+// is the CVar's default.
 bool CMapObjGroupAaBoxQuery::CachedLeaf(CMapObjGroup* group, const CAaBspNode* node) {
-    return false;
+    if (!CMap::s_bspNodeCache) {
+        return false;
+    }
+
+    CMapBspLeafCache* leaf = CMap::s_bspNodeCache->Lookup(group->m_bspFaceRefs, node, this->polys, this->vertices, this->indices);
+
+    if (!leaf) {
+        return false;
+    }
+
+    uint8_t outcodes[452];
+    ClassifyLeafVertices(leaf, this->box->b, this->box->t, true, outcodes);
+
+    for (uint32_t f = 0; f < leaf->faceCount; f++) {
+        uint16_t face = leaf->faceSource[f];
+
+        if ((leaf->faceFlags[f] & this->skipFlags) || (this->polys[face].flags & static_cast<uint8_t>(this->skipFlags))) {
+            continue;
+        }
+
+        if (s_collideHitCount >= 0x2000) {
+            if (this->overflow) {
+                *this->overflow |= 0x1;
+            }
+
+            break;
+        }
+
+        s_collideHitFaces[s_collideHitCount] = face;
+        s_collideHitCount++;
+        this->polys[face].flags |= SMOPoly::F_COLLIDE_HIT;
+
+        const uint16_t* tri = &leaf->faceIndices[f * 3];
+
+        if (!(outcodes[tri[2]] & outcodes[tri[1]] & outcodes[tri[0]] & 0x3f)) {
+            s_hitFaces[s_hitCount] = face;
+            s_hitCount++;
+        }
+    }
+
+    return true;
 }
 
 // ref: FUN_007c9b10

@@ -52,6 +52,27 @@ struct CMapBspLeafCache {
     uint16_t faceSource[300];       // each face's group face index
 };
 
+// The leaf cache the bspcache CVar turns on (reference: one 0x919000-byte block at DAT_00cdd7a0,
+// Map.cpp): 128 buckets of eight ways, keyed by the leaf node's address, each way holding a
+// compacted copy of that leaf. A query that finds its leaf here tests the copy's faces with a
+// per-vertex outcode prefilter instead of walking the group's own arrays.
+struct CMapBspNodeCache {
+    const CAaBspNode* keys[1024];
+    CMapBspLeafCache entries[1024];
+
+    // ref: FUN_0079b160
+    CMapBspNodeCache();
+    // Forget every leaf. ref: FUN_0079b1c0
+    void Clear();
+    // The cached copy of `node`, building it on a miss (round-robin eviction when the bucket is
+    // full); null when the leaf is too big to cache. ref: FUN_0079b1f0
+    CMapBspLeafCache* Lookup(const uint16_t* faceRefs, const CAaBspNode* node, const SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices);
+    // Drop `node` if it is cached. ref: FUN_0079ae10
+    void Evict(const CAaBspNode* node);
+
+    static uint32_t Bucket(const CAaBspNode* node);
+};
+
 class CMap {
     public:
         // Static variables: the object heaps CMap::MapMemInitialize creates, in the reference's
@@ -360,6 +381,12 @@ class CMap {
         // Whether the processor has SSE (OsGetCpuInfo bit 2), read once by MapMemInitialize.
         // The facet builders normalise with rsqrtss when it is set. DAT_00cf08f8
         static int32_t s_useSse;
+        // The BSP leaf cache, while bspcache is on (DAT_00cdd7a0), and the way it evicts next
+        // from a full bucket (DAT_00cdf7bc).
+        static CMapBspNodeCache* s_bspNodeCache;
+        static uint32_t s_bspNodeCacheVictim;
+        // A group's leaves out of the cache, before its BSP goes away. ref: FUN_0079b0d0
+        static void EvictBspLeaves(const CAaBspNode* nodes, uint32_t count);
 
         // Tiles and chunks
         static CMapArea* CreateArea(int32_t x, int32_t y);

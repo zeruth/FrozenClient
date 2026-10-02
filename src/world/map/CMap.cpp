@@ -2695,6 +2695,8 @@ void CMap::UpdateEntity(CMapEntity* entity) {
 uint64_t CMap::s_segmentHitGUID;
 int32_t CMap::s_queryStamp;
 int32_t CMap::s_useSse;
+CMapBspNodeCache* CMap::s_bspNodeCache;
+uint32_t CMap::s_bspNodeCacheVictim;
 
 static const float SEGMENT_CELL_SIZE = 4.166666507720947f;   // an eighth of a chunk
 static const float SEGMENT_CELL_SCALE = 0.23999999463558197f; // DAT_00a3fda0
@@ -3448,4 +3450,84 @@ bool CMap::QueryFrustumFacets(const CWFrustum& frustum, CFacetList& list, uint32
     CMap::QueryFrustumObjects(frustum, list, flags, hitFlags);
 
     return list.facets.Count() != 0;
+}
+
+// ref: FUN_0079b160
+CMapBspNodeCache::CMapBspNodeCache() {
+    this->Clear();
+}
+
+// ref: FUN_0079b1c0
+void CMapBspNodeCache::Clear() {
+    memset(static_cast<void*>(this->keys), 0, sizeof(this->keys));
+    memset(static_cast<void*>(this->entries), 0, sizeof(this->entries));
+}
+
+uint32_t CMapBspNodeCache::Bucket(const CAaBspNode* node) {
+    return (node->nFaces ^ static_cast<uint32_t>(reinterpret_cast<uintptr_t>(node) >> 5)) & 0x7f;
+}
+
+// ref: FUN_0079b1f0
+CMapBspLeafCache* CMapBspNodeCache::Lookup(const uint16_t* faceRefs, const CAaBspNode* node, const SMOPoly* polys, const C3Vector* vertices, const uint16_t* indices) {
+    uint32_t bucket = CMapBspNodeCache::Bucket(node);
+    int32_t hit = -1;
+    int32_t empty = -1;
+
+    for (int32_t way = 0; way < 8; way++) {
+        const CAaBspNode* key = this->keys[bucket * 8 + way];
+
+        if (key == node) {
+            hit = way;
+            break;
+        }
+
+        if (!key) {
+            empty = way;
+            break;
+        }
+    }
+
+    CMapBspLeafCache* leaf;
+
+    if (hit < 0) {
+        if (empty < 0) {
+            CMap::s_bspNodeCacheVictim++;
+            empty = static_cast<int32_t>(CMap::s_bspNodeCacheVictim & 7);
+        }
+
+        uint32_t slot = bucket * 8 + empty;
+        this->keys[slot] = node;
+        leaf = &this->entries[slot];
+        CMap::BuildBspLeafCache(leaf, faceRefs, node, polys, vertices, indices);
+    } else {
+        leaf = &this->entries[bucket * 8 + hit];
+    }
+
+    return leaf->status == 0 ? leaf : nullptr;
+}
+
+// ref: FUN_0079ae10
+void CMapBspNodeCache::Evict(const CAaBspNode* node) {
+    uint32_t bucket = CMapBspNodeCache::Bucket(node);
+
+    for (int32_t way = 0; way < 8; way++) {
+        if (this->keys[bucket * 8 + way] == node) {
+            this->keys[bucket * 8 + way] = nullptr;
+            memset(static_cast<void*>(&this->entries[bucket * 8 + way]), 0, sizeof(CMapBspLeafCache));
+            return;
+        }
+    }
+}
+
+// ref: FUN_0079b0d0
+void CMap::EvictBspLeaves(const CAaBspNode* nodes, uint32_t count) {
+    if (!CMap::s_bspNodeCache) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (nodes[i].flags & CAaBspNode::Flag_Leaf) {
+            CMap::s_bspNodeCache->Evict(&nodes[i]);
+        }
+    }
 }
