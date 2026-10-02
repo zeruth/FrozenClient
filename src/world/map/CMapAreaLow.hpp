@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_AREA_LOW_HPP
 #define WORLD_MAP_C_MAP_AREA_LOW_HPP
 
+#include "world/map/FVBBList.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Sphere.hpp>
@@ -12,6 +13,8 @@
 //
 // One per tile of the map's .wdl, built by CMapLowDetail::Load. Everything it points at lives in
 // that file's buffer, so an area is only valid while the CMapLowDetail that made it is.
+class CGxBuf;
+
 class CMapAreaLow {
     public:
         // Member variables
@@ -42,7 +45,20 @@ class CMapAreaLow {
         const uint16_t* m_holes = nullptr;
 
         TSLink<CMapAreaLow> m_link;       // +0x4c
-        // TODO +0x54..+0x58
+        // +0x54: the vertex buffer it holds from CMap::s_lowDetailCache, if it holds one.
+        FVBBList::Block* m_vertexBlock = nullptr;
+        // +0x58: bit 1 set means its holes are drawn as two passes even when it has none.
+        uint32_t m_flags = 0;
+
+        // Draw the tile flat in the fog colour, beyond the far clip: the 17x17 corner grid and
+        // the 16x16 centre grid as four triangles a cell, the holed cells (if any) in a second,
+        // culled pass. ref: FUN_007d5e70
+        void Draw();
+        // ref: FUN_007d5150
+        void FillVertices(CGxBuf* buf);
+        // The cells' triangles, all of them, or only the unholed (`holed` 0) or holed (`holed` 1)
+        // ones. ref: FUN_007d5240
+        static void FillIndices(const uint16_t* holes, int32_t holed, CGxBuf* buf);
 };
 
 #endif

@@ -593,7 +593,7 @@ void CMap::MapMemInitialize() {
     CMap::s_lowDetailIndexPool = g_theGxDevicePtr->PoolCreate(GxPoolTarget_Index, GxPoolUsage_Dynamic, 0x1800, GxPoolHintBit_Unk0, "CMap::lowDetailIndexPool");
     CMap::s_lowDetailIndexBuf = g_theGxDevicePtr->BufCreate(CMap::s_lowDetailIndexPool, 2, 0xc00, 0);
 
-    // TODO FUN_007d58b0(0, 1, 0x10, 0x221, 0x18): the liquid vertex buffer block list
+    CMap::s_lowDetailCache.Initialize(GxPoolTarget_Vertex, GxPoolUsage_Dynamic, 0x10, 0x221, 0x18);
 
     CMap::MapMemInitializeHeaps();
 
@@ -1670,7 +1670,7 @@ void CMap::UnloadAll() {
     }
 
     // TODO the 64x64 grid of CMapAreaMed at DAT_00ce08d0: FreeAreaMed each
-    // TODO FUN_007cbfe0(): the low-detail areas
+    CMap::s_lowDetail.ReleaseBuffers();
 }
 
 // ref: FUN_007b53b0
@@ -1903,8 +1903,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     CWorldScene::RenderMapObjs();
 
-    // TODO FUN_00795f80: the map-object groups carrying group flag 0x8, drawn through FUN_007abac0
-    // in their own viewport.
+    CWorldScene::RenderLowDetail();
 
     // Outside, or looking out: what the portals leave uncovered and what lies beyond the
     // building's own openings is filled at the far plane, a building's skybox takes the first sky
@@ -4089,6 +4088,7 @@ void CMap::LiquidInitialize() {
 }
 
 CMapLight* CMap::s_outdoorLight;
+FVBBList CMap::s_lowDetailCache;
 
 namespace {
 

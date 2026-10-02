@@ -24,6 +24,7 @@ class CSimpleCamera {
         void SetFacing(float yaw, float pitch, float roll);
         void SetFarZ(float farZ);
         float FarZ() const { return this->m_farZ; }
+        float Aspect() const { return this->m_aspect; }
         void SetFieldOfView(float fov);
         void SetGxProjectionAndView(const CRect& projRect);
         void SetNearZ(float nearZ);

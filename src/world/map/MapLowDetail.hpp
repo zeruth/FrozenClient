@@ -38,6 +38,11 @@ class CMapLowDetail {
 
         // Release the areas, the defs this file placed, and the file buffer itself.
         void Free();
+        // The tiles and the far buildings around `cameraPos` the horizon frustum can see, put on
+        // the scene's low-detail lists for CWorldScene::RenderLowDetail. ref: FUN_007cc0b0
+        void QueueVisible(const C3Vector& cameraPos);
+        // Hand every tile's vertex buffer back to the cache. ref: FUN_007cbfe0
+        void ReleaseBuffers();
 };
 
 #endif

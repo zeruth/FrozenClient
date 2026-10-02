@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_HPP
 #define WORLD_MAP_C_MAP_HPP
 
+#include "world/map/FVBBList.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapAreaLow.hpp"
@@ -343,6 +344,8 @@ class CMap {
         static int32_t QueryCameraFog(SMOFog* fog, CMapObjDef** def, uint8_t* inside, TSGrowableArray<uint32_t>** groups, float* distance);
         // The sun's light (DAT_00ce04a8), made with the map.
         static CMapLight* s_outdoorLight;
+        // The vertex buffers the low-detail tiles take turns with (0x00adfbcc).
+        static FVBBList s_lowDetailCache;
         static void FreeLight(CMapLight* light);
         static CMapObjDefGroup* AllocMapObjDefGroup();
         static void FreeMapObjDefGroup(CMapObjDefGroup* group);

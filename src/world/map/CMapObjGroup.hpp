@@ -179,6 +179,13 @@ static_assert(sizeof(SMOBatch) == 0x18, "SMOBatch is 24 bytes");
 void MapObjDrawShadowCasters(CMapObjGroup* const* groups, uint32_t count, const C44Matrix* const* placements,
                              const C44Matrix& toCamera, const CWFrustum& frustum);
 
+// Map-object groups drawn through their placements with no shaders, the vertices streamed with one
+// colour: by batch with each material's texture, or in one untextured draw for a group whose
+// batches are all untextured (state bit 4). The far buildings beyond the horizon draw through
+// this, entirely fogged. ref: FUN_007abac0
+void MapObjDrawGroupsFlat(CMapObjGroup* const* groups, uint32_t count, const C44Matrix* const* placements,
+                          const C44Matrix& toCamera, CImVector color);
+
 // ref: FUN_007c7a00
 bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b, const C3Vector& c);
 

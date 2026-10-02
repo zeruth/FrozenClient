@@ -1,3 +1,13 @@
+#include "gx/buffer/CGxBuf.hpp"
+#include "gx/RenderState.hpp"
+#include "gx/Draw.hpp"
+#include "gx/Device.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/CGxBatch.hpp"
+#include "gx/Buffer.hpp"
+#include "world/CWorldScene.hpp"
+#include "world/CWorld.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/map/MapLowDetail.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObj.hpp"
@@ -232,4 +242,241 @@ int32_t CMapLowDetail::Load(const char* path, const char* name) {
     }
 
     return 1;
+}
+
+namespace {
+
+const float LOW_CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
+const float LOW_HALF_CHUNK = 16.66666603088379f;       // DAT_00a3fab8
+const uint32_t LOW_FULL_INDICES = 0xC00;               // DAT_00a3fae8
+
+}
+
+// ref: FUN_007d5150
+void CMapAreaLow::FillVertices(CGxBuf* buf) {
+    float* out = reinterpret_cast<float*>(g_theGxDevicePtr->BufLock(buf));
+    int32_t i = 0;
+    float x = this->m_originX;
+
+    for (int32_t row = 0; row < 17; row++) {
+        float y = this->m_originY;
+
+        for (int32_t col = 0; col < 17; col++) {
+            out[0] = x;
+            out[1] = y;
+            out[2] = static_cast<float>(this->m_heights[i++]);
+            reinterpret_cast<uint32_t*>(out)[3] = 0xFFFFFFFF;
+            out += 4;
+            y -= LOW_CHUNK_SIZE;
+        }
+
+        x -= LOW_CHUNK_SIZE;
+    }
+
+    x = this->m_originX - LOW_HALF_CHUNK;
+
+    for (int32_t row = 0; row < 16; row++) {
+        float y = this->m_originY - LOW_HALF_CHUNK;
+
+        for (int32_t col = 0; col < 16; col++) {
+            out[0] = x;
+            out[1] = y;
+            out[2] = static_cast<float>(this->m_heights[i++]);
+            reinterpret_cast<uint32_t*>(out)[3] = 0xFFFFFFFF;
+            out += 4;
+            y -= LOW_CHUNK_SIZE;
+        }
+
+        x -= LOW_CHUNK_SIZE;
+    }
+
+    g_theGxDevicePtr->BufUnlock(buf, 0);
+    buf->unk1C = 1;
+}
+
+// ref: FUN_007d5240
+void CMapAreaLow::FillIndices(const uint16_t* holes, int32_t holed, CGxBuf* buf) {
+    uint16_t* out = reinterpret_cast<uint16_t*>(g_theGxDevicePtr->BufLock(buf));
+    uint16_t center = 0x121;
+    uint16_t corner = 0;
+
+    for (int32_t row = 0; row < 16; row++) {
+        for (int32_t col = 0; col < 16; col++) {
+            if (holes) {
+                bool set = (holes[row] >> col) & 1;
+
+                if (holed ? !set : set) {
+                    center++;
+                    corner++;
+                    continue;
+                }
+            }
+
+            uint16_t c00 = corner;
+            uint16_t c01 = corner + 1;
+            uint16_t c10 = corner + 17;
+            uint16_t c11 = corner + 18;
+
+            out[0] = center;
+            out[1] = c01;
+            out[2] = c00;
+            out[3] = center;
+            out[4] = c11;
+            out[5] = c01;
+            out[6] = center;
+            out[7] = c10;
+            out[8] = c11;
+            out[9] = center;
+            out[10] = c00;
+            out[11] = c10;
+            out += 12;
+
+            center++;
+            corner++;
+        }
+
+        corner++;
+    }
+
+    g_theGxDevicePtr->BufUnlock(buf, 0);
+    buf->unk1C = 1;
+}
+
+// ref: FUN_007d5e70
+void CMapAreaLow::Draw() {
+    if (this->m_meshBytes <= 0) {
+        return;
+    }
+
+    GxRsPush();
+    GxRsSet(GxRs_Fog, 1);
+    GxRsSet(GxRs_DepthTest, 3);
+
+    auto block = DayNightGetBlock();
+    GxRsSet(GxRs_FogStart, 0.0f);
+    GxRsSet(GxRs_FogEnd, 1.0f);
+    GxRsSet(GxRs_FogColor, block->fogColor.value);
+    GxRsSet(GxRs_Lighting, 0);
+
+    if (!this->m_vertexBlock) {
+        CMap::s_lowDetailCache.Acquire(&this->m_vertexBlock);
+    }
+
+    if (!this->m_vertexBlock) {
+        CGxBuf* stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x10, 0x221);
+        this->FillVertices(stream);
+        GxPrimVertexPtr(stream, GxVBF_PC);
+    } else {
+        CGxBuf* buf = this->m_vertexBlock->buf;
+
+        if (!buf->unk1C || !buf->unk1D) {
+            this->FillVertices(buf);
+        }
+
+        this->m_vertexBlock->frame = static_cast<uint32_t>(CWorld::s_updateCount);
+        GxPrimVertexPtr(buf, GxVBF_PC);
+    }
+
+    CGxBatch batch;
+    batch.m_primType = GxPrim_Triangles;
+    batch.m_start = 0;
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = 0x220;
+
+    if (!(this->m_flags & 1) && this->m_meshBytes == LOW_FULL_INDICES) {
+        GxRsSet(GxRs_Culling, 0);
+
+        if (!CMap::s_lowDetailIndexBuf->unk1C || !CMap::s_lowDetailIndexBuf->unk1D) {
+            CMapAreaLow::FillIndices(nullptr, 0, CMap::s_lowDetailIndexBuf);
+        }
+
+        g_theGxDevicePtr->PrimIndexPtr(CMap::s_lowDetailIndexBuf);
+        batch.m_count = LOW_FULL_INDICES;
+    } else {
+        GxRsSet(GxRs_Culling, 0);
+
+        CGxBuf* stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, this->m_meshBytes);
+        CMapAreaLow::FillIndices(this->m_holes, 0, stream);
+        g_theGxDevicePtr->PrimIndexPtr(stream);
+        batch.m_count = this->m_meshBytes;
+        GxDraw(&batch, 1);
+
+        GxRsSet(GxRs_Culling, 1);
+
+        stream = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, LOW_FULL_INDICES - this->m_meshBytes);
+        CMapAreaLow::FillIndices(this->m_holes, 1, stream);
+        g_theGxDevicePtr->PrimIndexPtr(stream);
+        batch.m_count = LOW_FULL_INDICES - this->m_meshBytes;
+    }
+
+    GxDraw(&batch, 1);
+    GxRsPop();
+
+    // TODO the reference ends by resetting the matrix stack at device +0x1008 to identity
+    // (FUN_0057c340); which of frozen's stacks that is has not been pinned.
+}
+
+// ref: FUN_007cc0b0
+void CMapLowDetail::QueueVisible(const C3Vector& cameraPos) {
+    int32_t cx = static_cast<int32_t>(lrintf(-(cameraPos.x - 17066.666f) * 0.03f - 0.5f));
+    int32_t cy = static_cast<int32_t>(lrintf(-(cameraPos.y - 17066.666f) * 0.03f - 0.5f));
+    int32_t reach = static_cast<int32_t>(llrintf(CWorld::GetHorizonDistance() * 0.030000001f));
+
+    int32_t minCol = ((cy - reach) >> 4) - 2;
+    int32_t minRow = ((cx - reach) >> 4) - 2;
+    int32_t maxCol = ((cy + reach) >> 4) + 2;
+    int32_t maxRow = ((reach + cx) >> 4) + 2;
+
+    if (minRow < 0) {
+        minRow = 0;
+    }
+
+    if (minCol < 0) {
+        minCol = 0;
+    }
+
+    if (63 < maxCol) {
+        maxCol = 63;
+    }
+
+    if (63 < maxRow) {
+        maxRow = 63;
+    }
+
+    for (int32_t row = minRow; row <= maxRow; row++) {
+        for (int32_t col = minCol; col <= maxCol; col++) {
+            CMapAreaLow* area = this->m_areas[row * 64 + col];
+
+            if (area && !CWorldScene::BoxOutsideFrustum(area->m_bounds)
+                && !CWorldScene::SphereOccludedByVolumes(area->m_sphere)
+                && (CWorld::GetFarClip() <= 300.0f || !CWorldScene::BoxOccluded(area->m_bounds, 0x28))) {
+                CWorldScene::QueueLowDetailArea(area);
+            }
+        }
+    }
+
+    for (uint32_t i = 0; i < this->m_placedDefs.Count(); i++) {
+        CMapObjDef* def = this->m_placedDefs[i];
+        CAaSphere sphere;
+        sphere.c = def->m_center;
+        sphere.r = def->m_radius;
+
+        if (def->m_mapObj->m_rootLoaded && !CWorldScene::BoxOutsideFrustum(def->m_bounds)
+            && !CWorldScene::SphereOccludedByVolumes(sphere)) {
+            CWorldScene::QueueLowDetailDef(def);
+        }
+    }
+}
+
+// ref: FUN_007cbfe0
+void CMapLowDetail::ReleaseBuffers() {
+    for (auto area : this->m_areas) {
+        if (area) {
+            if (area->m_vertexBlock) {
+                CMap::s_lowDetailCache.Release(area->m_vertexBlock);
+            }
+
+            area->m_vertexBlock = nullptr;
+        }
+    }
 }

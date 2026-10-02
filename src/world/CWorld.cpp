@@ -2338,3 +2338,7 @@ void CWorld::PublishDayNight() {
         s_skyboxPath[0] = '\0';
     }
 }
+
+float CWorld::GetHorizonDistance() {
+    return CWorld::s_horizonFarClipScale * CWorld::s_farClip;
+}

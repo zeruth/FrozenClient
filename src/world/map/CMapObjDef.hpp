@@ -51,6 +51,8 @@ class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_N
         C44Matrix m_inversePlacement;    // +0xb0
         uint32_t m_nameId = 0;           // +0xf0
         CMapObj* m_mapObj = nullptr;     // +0xf4: the root this places
+        // +0x10c: on CWorldScene's low-detail list while the horizon pass has it queued.
+        TSLink<CMapObjDef> m_lowDetailLink;
 
         // The ground type of one polygon's material, for a thing standing on this building.
         // 0xFFFFFFFF when the group, the polygon or the material is not there.

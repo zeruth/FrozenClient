@@ -1641,3 +1641,87 @@ void MapObjDrawShadowCasters(CMapObjGroup* const* groups, uint32_t count, const 
 
     GxRsPop();
 }
+
+// ref: FUN_007abac0
+void MapObjDrawGroupsFlat(CMapObjGroup* const* groups, uint32_t count, const C44Matrix* const* placements,
+                          const C44Matrix& toCamera, CImVector color) {
+    CImVector vertexColor = color;
+
+    // A device that reads colours red first gets the bytes the other way round.
+    if (g_theGxDevicePtr->Caps().m_colorFormat == GxCF_rgba) {
+        vertexColor.r = color.b;
+        vertexColor.b = color.r;
+    }
+
+    GxRsPush();
+    GxRsSet(GxRs_BlendingMode, GxBlend_Opaque);
+    GxRsSetAlphaRef();
+    GxRsSet(GxRs_VertexShader, static_cast<CGxShader*>(nullptr));
+    GxRsSet(GxRs_PixelShader, static_cast<CGxShader*>(nullptr));
+
+    for (uint32_t i = 0; i < count; i++) {
+        CMapObjGroup* group = groups[i];
+        CMapObj* mapObj = group->m_mapObj;
+
+        GxXformSet(GxXform_World, *placements[i] * toCamera);
+
+        if (!group->m_batchCount) {
+            continue;
+        }
+
+        CGxBuf* vertices = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x1c, group->m_vertexCount);
+        uint8_t* out = reinterpret_cast<uint8_t*>(g_theGxDevicePtr->BufLock(vertices));
+
+        for (uint32_t v = 0; v < group->m_vertexCount; v++) {
+            memcpy(out, &group->m_vertices[v], sizeof(C3Vector));
+            memcpy(out + 0xc, &group->m_normals[v], sizeof(C3Vector));
+            memcpy(out + 0x18, &vertexColor, sizeof(CImVector));
+            out += 0x1c;
+        }
+
+        g_theGxDevicePtr->BufUnlock(vertices, 0);
+        vertices->unk1C = 1;
+        GxPrimVertexPtr(vertices, GxVBF_PNC);
+
+        CGxBuf* indices = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, group->m_indexCount);
+        void* indexOut = g_theGxDevicePtr->BufLock(indices);
+        memcpy(indexOut, group->m_indices, group->m_indexCount * 2);
+        g_theGxDevicePtr->BufUnlock(indices, 0);
+        indices->unk1C = 1;
+        g_theGxDevicePtr->PrimIndexPtr(indices);
+
+        if (!(group->m_state & 0x4)) {
+            for (uint32_t b = 0; b < group->m_batchCount; b++) {
+                const SMOBatch& batch = group->m_batches[b];
+                HTEXTURE texture = mapObj->m_materialTextures[batch.materialId].texture1;
+                CGxTex* gxTex = texture ? TextureGetGxTex(texture, 0, nullptr) : nullptr;
+
+                if (!gxTex) {
+                    continue;
+                }
+
+                g_theGxDevicePtr->RsSet(GxRs_Texture0, gxTex);
+
+                CGxBatch gxBatch;
+                gxBatch.m_primType = GxPrim_Triangles;
+                gxBatch.m_start = batch.startIndex;
+                gxBatch.m_count = batch.count;
+                gxBatch.m_minIndex = batch.minVertex;
+                gxBatch.m_maxIndex = batch.maxVertex;
+                g_theGxDevicePtr->Draw(&gxBatch, 1);
+            }
+        } else {
+            GxRsSet(GxRs_Texture0, static_cast<CGxTex*>(nullptr));
+
+            CGxBatch gxBatch;
+            gxBatch.m_primType = GxPrim_Triangles;
+            gxBatch.m_start = group->m_minIndex;
+            gxBatch.m_count = group->m_maxIndex - group->m_minIndex + 1;
+            gxBatch.m_minIndex = group->m_minVertex;
+            gxBatch.m_maxIndex = group->m_maxVertex;
+            g_theGxDevicePtr->Draw(&gxBatch, 1);
+        }
+    }
+
+    GxRsPop();
+}

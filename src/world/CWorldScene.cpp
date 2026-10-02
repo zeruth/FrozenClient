@@ -1,3 +1,9 @@
+#include "world/map/CMapAreaLow.hpp"
+#include "world/map/CMapObjGroup.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "ui/game/CGWorldFrame.hpp"
+#include "world/DayNightLight.hpp"
+#include "world/map/MapLowDetail.hpp"
 #include "model/CM2Shared.hpp"
 #include <new>
 #include "world/map/MapHorizonTable.hpp"
@@ -1212,7 +1218,7 @@ void CWorldScene::Traverse(const ViewWindow* window, int32_t portal) {
         CWorldScene::TraverseRowOccluders(row);
     }
 
-    // TODO FUN_00791980(window)
+    CWorldScene::TraverseLowDetail(window);
 
     CWorldScene::s_frustumDepth--;
 }
@@ -3341,4 +3347,157 @@ void CWorldScene::VisitCandidateGroups(const ViewWindow* window) {
     }
 
     CWorldScene::s_frustumDepth--;
+}
+
+// The low-detail tiles (DAT_00cdb0bc) and the far buildings (DAT_00cdb0c8) the horizon traversal
+// found, drawn and emptied by RenderLowDetail.
+static STORM_EXPLICIT_LIST(CMapAreaLow, m_link) s_lowDetailAreas;
+static STORM_EXPLICIT_LIST(CMapObjDef, m_lowDetailLink) s_lowDetailDefs;
+
+// ref: FUN_00792f60
+void CWorldScene::QueueLowDetailArea(CMapAreaLow* area) {
+    area->m_link.Unlink();
+    s_lowDetailAreas.LinkToTail(area);
+}
+
+// ref: FUN_00792f80
+void CWorldScene::QueueLowDetailDef(CMapObjDef* def) {
+    def->m_lowDetailLink.Unlink();
+    s_lowDetailDefs.LinkToTail(def);
+}
+
+// ref: FUN_006bf370
+// A left-handed perspective projection.
+static void PerspectiveMatrix(float fovy, float aspect, float zNear, float zFar, C44Matrix& out) {
+    if (!(0.0f < fovy && fovy < 3.1415927f && 0.0f < aspect) || !(zNear < zFar)) {
+        return;
+    }
+
+    float t = tanf(fovy * 0.5f);
+
+    out = C44Matrix(
+        zNear / (zNear * t * aspect), 0.0f, 0.0f, 0.0f,
+        0.0f, zNear / (zNear * t), 0.0f, 0.0f,
+        0.0f, 0.0f, (zNear + zFar) / (zFar - zNear), 1.0f,
+        0.0f, 0.0f, (zFar * -2.0f * zNear) / (zFar - zNear), 0.0f
+    );
+}
+
+// ref: FUN_00791170
+void CWorldScene::HorizonProjection(C44Matrix& out) {
+    CGCamera* camera = CGWorldFrame::GetActiveCamera();
+    float farZ = camera->FarZ();
+
+    PerspectiveMatrix(camera->FOV() * 0.6f, camera->Aspect(), farZ - 50.0f, CWorld::GetHorizonDistance(), out);
+}
+
+// ref: FUN_00791980
+void CWorldScene::TraverseLowDetail(const ViewWindow* window) {
+    if (!(CWorld::s_enables & 0x4000000)) {
+        return;
+    }
+
+    C44Matrix projection;
+    CWorldScene::HorizonProjection(projection);
+
+    C44Matrix savedProjection;
+    GxXformProjection(savedProjection);
+    GxXformSetProjection(projection);
+
+    C44Matrix view;
+    GxXformView(view);
+
+    C3Vector corners[8];
+    FrustumCorners(view, projection, corners);
+
+    for (auto& corner : corners) {
+        corner.x += CWorldScene::s_cameraPos.x;
+        corner.y += CWorldScene::s_cameraPos.y;
+        corner.z += CWorldScene::s_cameraPos.z;
+    }
+
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+    CWorldScene::SubFrustum(corners, window);
+
+    CMap::s_lowDetail.QueueVisible(CWorldScene::s_cameraPos);
+
+    CWorldScene::s_frustumDepth--;
+
+    GxXformSetProjection(savedProjection);
+}
+
+// ref: FUN_00795f80
+void CWorldScene::RenderLowDetail() {
+    C44Matrix savedProjection;
+    GxXformProjection(savedProjection);
+
+    C44Matrix projection;
+    CWorldScene::HorizonProjection(projection);
+    GxXformSetProjection(projection);
+
+    float minX, maxX, minY, maxY, minZ, maxZ;
+    GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
+    GxXformSetViewport(minX, maxX, minY, maxY, 0.998046875f, 0.9990234375f);
+
+    GxRsPush();
+
+    C44Matrix toCamera;
+    C3Vector offset = { -CWorldScene::s_cameraPos.x, -CWorldScene::s_cameraPos.y, -CWorldScene::s_cameraPos.z };
+    toCamera.Translate(offset);
+    GxXformPush(GxXform_World);
+    GxXformSet(GxXform_World, toCamera);
+
+    for (auto area = s_lowDetailAreas.Head(); area; ) {
+        auto next = s_lowDetailAreas.Next(area);
+        area->Draw();
+        area->m_link.Unlink();
+        area = next;
+    }
+
+    static CMapObjGroup* s_groups[255];
+    static const C44Matrix* s_placements[255];
+    uint32_t count = 0;
+
+    for (auto def = s_lowDetailDefs.Head(); def; ) {
+        auto next = s_lowDetailDefs.Next(def);
+        CMapObj* mapObj = def->m_mapObj;
+
+        for (uint32_t g = 0; g < mapObj->m_groupCount; g++) {
+            if (!mapObj->IsGroupLoaded(g)) {
+                if (!mapObj->GroupReadPending(g)) {
+                    mapObj->ReadGroup(g);
+                }
+            } else {
+                CMapObjGroup* group = mapObj->GetGroup(g, 0);
+
+                if ((group->m_flags & 0x8) && count < 255) {
+                    s_groups[count] = group;
+                    s_placements[count] = &def->m_placement;
+                    count++;
+                }
+            }
+        }
+
+        def->m_lowDetailLink.Unlink();
+        def = next;
+    }
+
+    if (count) {
+        auto block = DayNightGetBlock();
+        GxRsSet(GxRs_FogStart, 0.0f);
+        GxRsSet(GxRs_FogEnd, 1.0f);
+        GxRsSet(GxRs_FogColor, block->fogColor.value);
+        GxRsSet(GxRs_Fog, 1);
+        GxRsSet(GxRs_Lighting, 0);
+
+        CImVector white;
+        white.value = 0xFFFFFFFF;
+        MapObjDrawGroupsFlat(s_groups, count, s_placements, toCamera, white);
+    }
+
+    GxXformPop(GxXform_World);
+    GxRsPop();
+    GxXformSetViewport(minX, maxX, minY, maxY, minZ, maxZ);
+    GxXformSetProjection(savedProjection);
 }

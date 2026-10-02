@@ -29,6 +29,8 @@ class CMapStaticEntity;
 // The plane through three points, facing along (b - a) x (c - a). ref: FUN_007912c0
 void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const C3Vector& c);
 
+class CMapAreaLow;
+
 class CWorldScene {
     public:
         // Types
@@ -259,6 +261,18 @@ class CWorldScene {
         // The skybox of the building the portal walk stepped into, when its group asks for one
         // (group flag 0x40000; DAT_00cd861c). Cleared every frame.
         static const char* s_mapObjSkybox;
+        // ref: FUN_00792f60
+        static void QueueLowDetailArea(CMapAreaLow* area);
+        // ref: FUN_00792f80
+        static void QueueLowDetailDef(CMapObjDef* def);
+        // The projection the horizon passes use: the camera's, narrowed, from just inside its far
+        // plane out to the horizon. ref: FUN_00791170
+        static void HorizonProjection(C44Matrix& out);
+        // The low-detail half of a traversal, through the horizon projection. ref: FUN_00791980
+        static void TraverseLowDetail(const ViewWindow* window);
+        // The horizon: the low-detail tiles, then the far buildings' exterior groups, flat in the fog
+        // colour at the back of the depth range. ref: FUN_00795f80
+        static void RenderLowDetail();
         static ViewWindow s_portalWindow;                   // DAT_00adf58c
         // The screen regions seen through portals (DAT_00cdd0e8) and seen from outside them
         // (DAT_00cdd0f8). CMap::Render fills what the first leaves uncovered, and the second, at the

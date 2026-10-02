@@ -113,6 +113,7 @@ class CWorld {
 
         // Public static variables
         static uint32_t s_enables;
+        static int32_t s_updateCount;           // DAT_00cd7690
         static uint32_t s_enables2;
         // The reference's THIRD enables word, 0x00cd7754, and it is not a general flag set: one
         // bit per M2 draw pass. World init raises the low three (there are three passes), and the
@@ -219,6 +220,9 @@ class CWorld {
         static uint32_t GetTickTimeFixed();
         static uint32_t GetTickTimeMs();
         static float GetTickTimeSec();
+        // How far the horizon reaches: the far clip times the horizon scale (DAT_00adeecc *
+        // DAT_00cd7748, as the low-detail passes multiply them).
+        static float GetHorizonDistance();
         static void Initialize();
         static void ProjectionCallback(const CAaBox& bounds, const CImVector& color, uint32_t shaded, void* context, uint32_t force);
         static void LoadMap(const char* mapName, const C3Vector& position, int32_t mapID);
@@ -250,7 +254,6 @@ class CWorld {
         // world update (FUN_0077f900) to choose again.
         static int32_t s_textureCacheSize;      // DAT_00cd7760
         static int32_t s_textureCacheDirty;     // DAT_00adeee0
-        static int32_t s_updateCount;           // DAT_00cd7690
         static int32_t OnTick(const EVENT_DATA_TICK* data, void* param);
         static void SetGroundEffectDensity(int32_t density);
         static void SetGroundEffectDist(float dist);
