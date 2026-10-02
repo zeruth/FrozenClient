@@ -7,6 +7,7 @@
 #include "gx/RenderState.hpp"
 #include "gx/CGxBatch.hpp"
 #include "gx/Draw.hpp"
+#include <common/Handle.hpp>
 #include <cmath>
 #include <cstring>
 
@@ -27,6 +28,19 @@ CM2Ribbon::CM2Ribbon() {
     // carved out of a shared buffer. Transcribed as the mask it is; frozen's default initialiser
     // has already made it zero, so the two agree.
     this->m_flags &= ~0x12u;
+}
+
+// ref: FUN_00980510
+// The ribbon takes its own reference to every texture it is handed: the destructor closes each
+// one (ReleaseTextures), so a plain copy would release the model's references out from under it.
+static void M2RibbonCopyTextures(const TSGrowableArray<HTEXTURE>& source, TSGrowableArray<HTEXTURE>& dest) {
+    uint32_t count = source.Count();
+
+    dest.SetCount(count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        dest[i] = HandleDuplicate(source[i]);
+    }
 }
 
 // ref: FUN_009808a0
@@ -113,11 +127,7 @@ void CM2Ribbon::Initialize(float edgesPerSecond, float edgeLifetime, CImVector c
         this->m_materials[i] = materials[i];
     }
 
-    this->m_textures.SetCount(textures.Count());
-
-    for (uint32_t i = 0; i < textures.Count(); i++) {
-        this->m_textures[i] = textures[i];
-    }
+    M2RibbonCopyTextures(textures, this->m_textures);
 
     this->m_textureRecords.SetCount(textureRecords.Count());
 

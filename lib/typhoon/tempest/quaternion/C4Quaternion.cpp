@@ -1,5 +1,8 @@
+#include <cstdint>
 #include "tempest/quaternion/C4Quaternion.hpp"
 #include "tempest/math/CMath.hpp"
+#include "tempest/matrix/C33Matrix.hpp"
+#include "tempest/vector/C3Vector.hpp"
 #include <cmath>
 
 // The Hamilton product.
@@ -55,27 +58,113 @@ C4Quaternion C4Quaternion::Slerp(float ratio, const C4Quaternion& q1, const C4Qu
     };
 }
 
+// ref: FUN_00982630
 C4Quaternion C4Quaternion::Nlerp(float ratio, const C4Quaternion& q1, const C4Quaternion& q2) {
-    float x = (q2.x - q1.x) * ratio + q1.x;
-    float y = (q2.y - q1.y) * ratio + q1.y;
-    float z = (q2.z - q1.z) * ratio + q1.z;
-    float w = (q2.w - q1.w) * ratio + q1.w;
+    C4Quaternion result;
 
-    float m = x * x + y * y + z * z + w * w;
-    float v9 = ((m - 0.95906597) * -0.532516) + 1.021435;
+    result.x = q1.x + (q2.x - q1.x) * ratio;
+    result.y = (q2.y - q1.y) * ratio + q1.y;
+    result.z = (q2.z - q1.z) * ratio + q1.z;
+    result.w = ratio * (q2.w - q1.w) + q1.w;
 
-    if (m <= 0.91521198) {
-        v9 *= (((v9 * v9 * m) - 0.95906597) * -0.532516) + 1.021435;
+    result.NormalizeFast();
 
-        if (m <= 0.6521197) {
-            v9 *= (((v9 * v9 * m) - 0.95906597) * -0.532516) + 1.021435;
+    return result;
+}
+
+// ref: FUN_00982570
+void C4Quaternion::NormalizeFast() {
+    float m = this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w;
+    float scale = 1.021435f - (m - 0.95906597f) * 0.532516f;
+
+    if (m <= 0.91521198f) {
+        scale = (1.021435f - (scale * scale * m - 0.95906597f) * 0.532516f) * scale;
+
+        if (m <= 0.6521197f) {
+            scale = scale * (1.021435f - 0.532516f * (scale * scale * m - 0.95906597f));
         }
     }
 
-    x *= v9;
-    y *= v9;
-    z *= v9;
-    w *= v9;
+    this->x *= scale;
+    this->y *= scale;
+    this->z = scale * this->z;
+    this->w = scale * this->w;
+}
 
-    return { x, y, z, w };
+// ref: FUN_00979110
+void C4Quaternion::Normalize() {
+    float lengthSquared = this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w;
+
+    // 2^-22 (0x009ea27c).
+    if (lengthSquared > 0.00000023841858f) {
+        float scale = 1.0f / CMath::sqrt(lengthSquared);
+
+        this->x *= scale;
+        this->y *= scale;
+        this->z = scale * this->z;
+        this->w = scale * this->w;
+    }
+}
+
+// ref: FUN_009826a0
+// The quaternion of a row-major 3x3 rotation `m` whose trace the caller has already summed: the
+// usual square-root extraction, through w when the trace is positive and otherwise through the
+// largest diagonal element, walking the axes with the reference's next-axis table (0x00aa2e4c).
+static void C4QuaternionFromRotation(const float* m, float trace, C4Quaternion& q) {
+    static const int32_t s_next[3] = { 1, 2, 0 };
+
+    float half = 0.5f;
+
+    if (trace > 0.0f) {
+        trace = trace + 1.0f;
+        q.w = CMath::sqrt(trace) * 0.5f;
+        half = half / CMath::sqrt(trace);
+        q.x = (m[7] - m[5]) * half;
+        q.y = (m[2] - m[6]) * half;
+        q.z = (m[3] - m[1]) * half;
+
+        return;
+    }
+
+    float* components = &q.x;
+
+    int32_t i = m[0] < m[4] ? 1 : 0;
+
+    if (m[i * 4] < m[8]) {
+        i = 2;
+    }
+
+    int32_t j = s_next[i];
+    int32_t k = s_next[j];
+
+    float root = CMath::sqrt(((m[i * 4] - m[j * 4]) - m[k * 4]) + 1.0f);
+    components[i] = root * 0.5f;
+    half = half / root;
+
+    q.w = (m[k * 3 + j] - m[j * 3 + k]) * half;
+    components[j] = (m[i * 3 + j] + m[j * 3 + i]) * half;
+    components[k] = (m[i * 3 + k] + m[k * 3 + i]) * half;
+}
+
+// ref: FUN_009828b0
+// Through the transpose: the extraction above reads the matrix column-major.
+C4Quaternion::C4Quaternion(const C33Matrix& m) {
+    const float transposed[9] = {
+        m.a0, m.b0, m.c0,
+        m.a1, m.b1, m.c1,
+        m.a2, m.b2, m.c2,
+    };
+
+    C4QuaternionFromRotation(transposed, m.c2 + m.b1 + m.a0, *this);
+}
+
+// ref: FUN_00982400
+C4Quaternion::C4Quaternion(float angle, const C3Vector& axis) {
+    float c = std::cos(angle * 0.5f);
+    float s = std::sin(angle * 0.5f);
+
+    this->w = c;
+    this->x = axis.x * s;
+    this->y = axis.y * s;
+    this->z = s * axis.z;
 }
