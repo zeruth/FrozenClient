@@ -1,11 +1,15 @@
 #ifndef WORLD_DAY_NIGHT_LIGHT_HPP
 #define WORLD_DAY_NIGHT_LIGHT_HPP
 
+#include "gx/Texture.hpp"
 #include <storm/Hash.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
 class CM2Model;
+class CM2Scene;
+class CRect;
+struct CGxQuery;
 class LightRec;
 class LightParamsRec;
 
@@ -112,7 +116,7 @@ struct DayNightBlock {
     CImVector ambientHalf;          // +0x1b4
     float specular[4];              // +0x1b8, the ambient desaturated and brightened, alpha 1
     CImVector shadowColor;          // +0x1c8, the ambient a third of the way to white
-    int32_t drawGlare;              // +0x1cc
+    int32_t drawSky;                // +0x1cc, whether the sky draws at all (names.json had it as s_drawGlare)
     int32_t pad1d0;                 // +0x1d0
     int32_t pad1d4;                 // +0x1d4
     float twilight;                 // +0x1d8, 1 at dawn and dusk, 0 at noon and midnight
@@ -130,26 +134,118 @@ struct DayNightBlock {
 struct DNBody {
     C3Vector pos;                   // +0x00
     CImVector color;                // +0x0c
-    uint32_t texture;               // +0x10
+    HTEXTURE texture;               // +0x10
     float size;                     // +0x14, the day band times scale
     float scale;                    // +0x18
     float scale2;                   // +0x1c, the second moon's orbit period
+};
+
+// A body's glare (the reference's objects at 0x00d38ea8 the sun's and 0x00d38f58 the moon's; vtables
+// 0x00a41c18 and 0x00a41c2c, which differ only in how cloud cover dims them).
+struct DNGlare {
+    enum {
+        Kind_Sun = 0,
+        Kind_Moon = 1,
+    };
+
+    int32_t kind = Kind_Sun;
+    CGxQuery* query = nullptr;      // +0x04, the occlusion query
+    int32_t enabled = 0;            // +0x08
+    C3Vector pos;                   // +0x0c
+    CImVector color;                // +0x18
+    HTEXTURE texture = nullptr;     // +0x1c
+    float sizeBase = 0.0f;          // +0x20
+    float size = 0.0f;              // +0x24
+    float rise = 0.0f;              // +0x28
+    float fall = 0.0f;              // +0x2c
+    float current = 0.0f;           // +0x30
+    float target = 0.0f;            // +0x34
+    int32_t skipQuery = 0;          // +0x38, the first frame has no query result yet
+    uint32_t lastPixels = 0;        // +0x6c
+    float band[8] = {};             // +0x70, strength over the day
+    float sizeMin = 0.0f;           // +0x90
+    float sizeMax = 0.0f;           // +0x94
+    float dotMin = 0.0f;            // +0x98
+    float alphaMin = 0.0f;          // +0x9c
+    float alphaMax = 0.0f;          // +0xa0
+    float darken = 0.0f;            // +0xa4, how much it dims the scene
+    DNBody* body = nullptr;         // +0xa8
 };
 
 struct DNBodies {
     DNBody sun;
     DNBody moon;
     DNBody moon2;
-    C3Vector sunGlarePos;           // 0x00d38eb4
-    CImVector sunGlareColor;        // 0x00d38ec0
-    C3Vector moonGlarePos;          // 0x00d38f64
-    CImVector moonGlareColor;       // 0x00d38f70
-    float moonGlareSize[2];         // 0x00d38fe8
-    float sunGlareDarken;           // 0x00d38f4c, how much the sun's glare dims the scene
+    DNGlare sunGlare;
+    DNGlare moonGlare;
+};
+
+// The cloud sheet (0x00d38d90): value noise generated a few rows a frame into one of two textures,
+// drawn on a twelve-ring dome.
+struct DNClouds {
+    float exponent = 0.0f;          // +0x00, the coverage-to-alpha curve
+    float density = 0.0f;           // +0x04, a fixed cover, or 0 to follow the light
+    uint8_t threshold = 0;          // +0x08
+    uint8_t lod = 0;                // +0x09
+    uint8_t restart = 0;            // +0x0a
+    uint8_t current = 0;            // +0x0b
+    float speed = 2.0f;             // +0x0c
+    uint32_t rows = 8;              // +0x10
+    uint32_t rowStart = 0;          // +0x14
+    uint32_t format = 2;            // +0x18
+    uint32_t size = 0;              // +0x1c
+    uint32_t sizeShift = 0;         // +0x20
+    uint32_t sizeMask = 0;          // +0x24
+    uint32_t octaves = 4;           // +0x28
+    int32_t enabled = 0;            // +0x2c
+    CImVector* texels = nullptr;    // +0x38
+    uint8_t* coverage = nullptr;    // +0x44
+    float* rowValues = nullptr;     // +0x50
+    C3Vector verts[192];            // +0x5c
+    C2Vector uvs[192];              // +0x68
+    CImVector colors[192];          // +0x74
+    uint16_t indices[374];          // +0x80
+    uint16_t indexCount = 0;        // +0x84
+    uint16_t vertexCount = 0;       // +0x86
+    uint16_t time = 0;              // +0x88
+    float clock = 0.0f;             // +0x8c
+    HTEXTURE textures[2] = {};      // +0x90
+    float lightU = 0.0f;            // 0x00d38cd0
+    float lightV = 0.0f;            // 0x00d38cd4
+};
+
+// The star sky (0x00d38ae4): its own scene and stars.mdl, drawn at the camera with an alpha from
+// the day band (FUN_007ee0d0).
+struct DNStars {
+    CM2Scene* scene = nullptr;      // +0x00
+    CM2Model* model = nullptr;      // +0x04
+    CImVector color;                // +0x08, alpha at +0x0b
+    C3Vector pos;                   // +0x0c
+    uint32_t time = 0;              // +0x18
+};
+
+// The sky dome (0x00d38d4c): seven rings of a sphere sunk so its 45-degree ring is the horizon,
+// coloured each frame from the light's sky bands (FUN_007f0530).
+struct DNDome {
+    C3Vector verts[168];
+    CImVector colors[168];
+    uint16_t indices[300];
+    int32_t segments = 0;           // +0x24
+    uint16_t vertexCount = 0;       // +0x28
+    uint16_t indexCount = 0;        // +0x2a
 };
 
 DayNightBlock* DayNightGetBlock();
 DNBodies* DayNightGetBodies();
+DNStars* DayNightGetStars();
+DNDome* DayNightGetDome();
+DNClouds* DayNightGetClouds();
+int32_t DayNightSkyReady();
+CM2Scene* DayNightGetSkyScene();
+uint32_t DayNightGetSkySceneTime();
+void DayNightSetSkySceneTime(uint32_t time);
+int32_t DayNightTimedFadeActive();
+float DayNightTimedFadeAmount();
 
 // The light state CMap::Render and the lighting callbacks read.
 int32_t DayNightOverrideActive();
@@ -159,7 +255,7 @@ void DayNightClearForcedParams();
 void DayNightClearFadeFlag(uint8_t bit);
 void DayNightResetLightFade(char now);
 void DayNightAddForcedLight(int32_t lightID, float depth);
-void DayNightBeginFogOverride(float startScalar, float end, CImVector color, int32_t drawGlare);
+void DayNightBeginFogOverride(float startScalar, float end, CImVector color, int32_t drawSky);
 void DayNightEndFogOverride();
 void DayNightAddAreaLight(int32_t lightID, int32_t sourceID, int32_t durationMs);
 void DayNightRemoveAreaLight(int32_t lightID, int32_t durationMs);
@@ -179,5 +275,14 @@ CImVector SkyLerp(const CImVector& a, const CImVector& b, float t);
 CImVector DayNightScaleSaturation(uint32_t color, float scale);
 
 DNSkyModel* DayNightGetSkyModel(const char* name, uint32_t flags);
+DNSkyModel* DayNightSetSkyModel(uint32_t slot, int32_t enable, const char* name, uint32_t flags, float weight);
+
+// The sky, drawn by CMap::Render into the window it is given (FUN_007f09b0).
+void DayNightSkyRender(const CRect& window);
+// The sky's own resources, made at map load and freed at shutdown.
+void DayNightSkyInitialize();
+void DayNightSkyShutdown();
+// The world frame's glare pass (FUN_007f0870).
+void DayNightGlareRender();
 
 #endif

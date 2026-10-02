@@ -26,7 +26,6 @@
 #include "world/map/CMapEntity.hpp"
 #include "world/CWorldScene.hpp"
 #include <tempest/ColorConvert.hpp>
-#include "world/DayNight.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
@@ -1189,10 +1188,6 @@ void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapI
         && (CWorld::s_enables & CWorld::Enables::Enable_PixelShader));
     Liquid::ReleaseMaterials();
 
-    // The stand-in's own load hook is gone; what it did that still matters is release the
-    // sky's private scenes so the next map does not inherit the last one's skybox.
-    SkyRelease();
-
     // TODO the terrain, map objects, and doodads around the position are loaded here, and the
     // original reports their progress through the callback as they come in
 
@@ -2253,7 +2248,7 @@ void CWorld::UpdateDayNight(int32_t force, const C3Vector* cameraPos) {
         DayNightResetLightFade(1);
         DayNightClearFadeFlag(1);
     } else {
-        darken = DayNightGetBodies()->sunGlareDarken * 0.35f;
+        darken = DayNightGetBodies()->sunGlare.darken * 0.35f;
 
         if (darken == 0.0f) {
             DayNightClearFadeFlag(1);

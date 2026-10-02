@@ -1,3 +1,4 @@
+#include <tempest/Rect.hpp>
 #include "world/DayNightLight.hpp"
 #include <tempest/ColorConvert.hpp>
 #include "world/map/WaterRipples.hpp"
@@ -1873,7 +1874,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         clearColor.value = 0xFF000000;
     } else if (CWorldScene::s_window.depth < 0.0f) {
         clearColor = dayNight->finalFogColor;
-    } else if (CWorldScene::s_cameraLiquidType != 0 || (dayNight->drawGlare == 0 && DayNightOverrideActive())) {
+    } else if (CWorldScene::s_cameraLiquidType != 0 || (dayNight->drawSky == 0 && DayNightOverrideActive())) {
         clearColor = dayNight->fogColor;
     } else {
         clearColor.value = 0;
@@ -1902,9 +1903,33 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     CWorldScene::RenderMapObjs();
 
-    // TODO the passes the reference runs between the map objects and the liquid, in its order:
-    // FUN_00795f80 (the map-object groups carrying group flag 0x8, drawn through FUN_007abac0 in
-    // their own viewport), FUN_007968d0, FUN_00796c10 twice, and two calls to FUN_007f31c0.
+    // TODO FUN_00795f80: the map-object groups carrying group flag 0x8, drawn through FUN_007abac0
+    // in their own viewport.
+
+    // Outside, or looking out: what the portals leave uncovered and what lies beyond the
+    // building's own openings is filled at the far plane, a building's skybox takes the first sky
+    // slot at the building fog's blend, and the sky draws -- unless the camera is under liquid.
+    if (0.0f <= CWorldScene::s_window.depth) {
+        if (CWorldScene::s_portalViews.Count()) {
+            CWorldScene::ComplementPortalViews();
+            CWorldScene::FillViewWindows(CWorldScene::s_portalViews, 1);
+        }
+
+        if (CWorldScene::s_exteriorViews.Count()) {
+            CWorldScene::FillViewWindows(CWorldScene::s_exteriorViews, 0);
+        }
+
+        if (CWorldScene::s_mapObjSkybox) {
+            DayNightSetSkyModel(0, 1, CWorldScene::s_mapObjSkybox, 0, DayNightGetBlock()->mapObjFogBlend);
+            DayNightSetSkyModel(1, 0, nullptr, 0, 0.0f);
+        }
+
+        if (CWorldScene::s_cameraLiquidType == 0) {
+            // The reference hands the window's four floats over as a CRect, in their memory order.
+            const auto& w = CWorldScene::s_window;
+            DayNightSkyRender(CRect(w.minX, w.minY, w.maxX, w.maxY));
+        }
+    }
     // The procedural liquid textures' one-time upload, in the reference's own position: between
     // CWorldScene::DrawEntityShadows and BuildPendingMapObjSurfaces, at 0x0079acc9. Each of the
     // three latches after its first upload, so this costs three compares a frame thereafter.

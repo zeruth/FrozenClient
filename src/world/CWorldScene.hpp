@@ -256,6 +256,9 @@ class CWorldScene {
         // spreads them over the distance rows (DAT_00cdaf48)
         static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) s_mapObjDefGroupCandidates;
         static ViewWindow s_window;                         // DAT_00adf570
+        // The skybox of the building the portal walk stepped into, when its group asks for one
+        // (group flag 0x40000; DAT_00cd861c). Cleared every frame.
+        static const char* s_mapObjSkybox;
         static ViewWindow s_portalWindow;                   // DAT_00adf58c
         // The screen regions seen through portals (DAT_00cdd0e8) and seen from outside them
         // (DAT_00cdd0f8). CMap::Render fills what the first leaves uncovered, and the second, at the

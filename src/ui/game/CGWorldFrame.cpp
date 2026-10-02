@@ -6,7 +6,6 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
-#include "world/DayNight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
 #include "world/OverheadIcons.hpp"
@@ -304,8 +303,6 @@ void CGWorldFrame::OnWorldRender() {
 
     CWorldScene::s_viewUpdated = false;
 
-    SkyRender();
-
     // Frustum-cull entities: UpdateWorldView has refreshed the frustum, so only in-view objects
     // animate and draw, matching the reference (the scene itself does no view culling). Server
     // positions are always valid, so there is no visibility/animation deadlock.
@@ -532,6 +529,10 @@ void CGWorldFrame::OnWorldRender() {
 
     GxRsPop();
 
+    // The sun's and the moon's glare over everything (FUN_007f0870, at 0x004f9213, just after the
+    // draw lists are flushed).
+    DayNightGlareRender();
+
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 }
 
@@ -571,7 +572,6 @@ void CGWorldFrame::OnWorldUpdate() {
 
     // What the stand-in's per-frame update still did: refresh the outdoor light, and hand the
     // camera to the sky, which builds its geometry around it.
-    SkySetCameraState(this->m_camera->Position());
     CWorldScene::s_worldCameraPos = this->m_camera->Position();
 
     // Poll the server for questgiver status; nothing populates the overhead markers otherwise.

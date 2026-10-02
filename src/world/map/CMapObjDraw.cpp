@@ -1351,6 +1351,10 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
 
     CMapObj::s_interiorFog = interior;
 
+    if (CMapObj::s_insideBuilding && (group->m_flags & 0x40000)) {
+        CWorldScene::s_mapObjSkybox = this->m_mosb;
+    }
+
     if (CMapObj::s_visibleCallback) {
         CMapObj::s_visibleCallback(groupIndex, CMapObj::s_visibleCallbackArg);
     }

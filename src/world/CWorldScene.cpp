@@ -9,7 +9,6 @@
 #include "gx/Shader.hpp"
 #include "world/map/Particulates.hpp"
 #include "world/map/WaterRipples.hpp"
-#include "world/DayNight.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
 #include "world/map/MapOcclusion.hpp"
@@ -99,6 +98,7 @@ TSGrowableArray<uint32_t> CWorldScene::s_cameraGroupIndices;
 TSGrowableArray<uint32_t> CWorldScene::s_cameraFlaggedGroupIndices;
 float CWorldScene::s_cameraGroundHeight;
 int32_t CWorldScene::s_hasMapObjs;
+const char* CWorldScene::s_mapObjSkybox;
 CWorldScene::ViewWindow CWorldScene::s_window;
 CWorldScene::ViewWindow CWorldScene::s_portalWindow;
 TSGrowableArray<CWorldScene::ViewWindow> CWorldScene::s_portalViews;
@@ -666,7 +666,8 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
 
     CWorldScene::s_window = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, nullptr, 0 };
     CWorldScene::s_portalWindow = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, nullptr, 0 };
-    // TODO DAT_00cd8620 = 0, DAT_00cd861c = 0
+    CMapObj::s_sawExterior = 0;
+    CWorldScene::s_mapObjSkybox = nullptr;
     CWorldScene::s_portalViews.SetCount(0);
     CWorldScene::s_exteriorViews.SetCount(0);
 

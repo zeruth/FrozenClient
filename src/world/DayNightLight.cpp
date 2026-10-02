@@ -35,7 +35,7 @@ CImVector s_fadeTarget;                     // DAT_00d38d44
 float s_overrideFogRate;                    // DAT_00d38aa8
 float s_overrideFogScalar;                  // DAT_00d38aac
 float s_overrideFogEnd;                     // DAT_00d38ab0
-int32_t s_savedDrawGlare;                   // DAT_00d38ab4
+int32_t s_savedDrawSky;                   // DAT_00d38ab4
 float s_savedFogRate;                       // DAT_00d38ab8
 float s_savedFogScalar;                     // DAT_00d38abc
 float s_savedFogEnd;                        // DAT_00d38ac0
@@ -44,6 +44,7 @@ CImVector s_overrideFogColor;               // DAT_00d38d18
 
 int32_t s_mapID;                            // DAT_00d38ac4
 int32_t s_initialized;                      // DAT_00d38adc
+int32_t s_skyReady;                         // DAT_00d38180
 CM2Scene* s_skyScene;                       // DAT_00d38ad4
 uint32_t s_skySceneTime;                    // DAT_00d38ad8
 uint8_t s_lightFadeRestart;                 // DAT_00d38d9a
@@ -76,12 +77,8 @@ struct {
 
 TSHashTable<DNSkyModel, HASHKEY_STRI> s_skyModels;    // DAT_00d38d1c
 
-// The star sky's state (DAT_00d38ae4): the camera position it is drawn at, and its alpha.
-struct {
-    uint8_t pad[8];
-    CImVector color;                        // +0x08, alpha at +0x0b
-    C3Vector pos;                           // +0x0c
-} s_stars;
+DNStars s_stars;                            // DAT_00d38ae4
+DNDome s_dome;                              // DAT_00d38d4c
 
 // The reference's per-frame band tables, built on first use (the static guards at 0x00d39104 and
 // 0x00d39208). Keys are (time of day, value) pairs.
@@ -116,6 +113,38 @@ DayNightBlock* DayNightGetBlock() {
 
 DNBodies* DayNightGetBodies() {
     return &s_bodies;
+}
+
+DNStars* DayNightGetStars() {
+    return &s_stars;
+}
+
+DNDome* DayNightGetDome() {
+    return &s_dome;
+}
+
+int32_t DayNightSkyReady() {
+    return s_skyReady;
+}
+
+CM2Scene* DayNightGetSkyScene() {
+    return s_skyScene;
+}
+
+uint32_t DayNightGetSkySceneTime() {
+    return s_skySceneTime;
+}
+
+void DayNightSetSkySceneTime(uint32_t time) {
+    s_skySceneTime = time;
+}
+
+int32_t DayNightTimedFadeActive() {
+    return (s_fadeFlags & 1) != 0;
+}
+
+float DayNightTimedFadeAmount() {
+    return s_fadeAmount;
 }
 
 // ref: FUN_007ece00
@@ -850,12 +879,12 @@ void DayNightAddForcedLight(int32_t lightID, float depth) {
 }
 
 // ref: FUN_007ed870
-void DayNightBeginFogOverride(float startScalar, float end, CImVector color, int32_t drawGlare) {
+void DayNightBeginFogOverride(float startScalar, float end, CImVector color, int32_t drawSky) {
     if (!s_overrideActive) {
         s_savedFogEnd = s_block.info.fogEnd;
         s_savedFogColor = s_block.info.color[DNInfo::Color_Fog];
         s_savedFogScalar = s_block.info.fogStartScalar;
-        s_savedDrawGlare = s_block.drawGlare;
+        s_savedDrawSky = s_block.drawSky;
         s_savedFogRate = s_block.info.fogRate;
     }
 
@@ -863,7 +892,7 @@ void DayNightBeginFogOverride(float startScalar, float end, CImVector color, int
     s_overrideFogScalar = startScalar;
     s_overrideFogRate = DNFogRateFor(end * startScalar, end);
     s_overrideFogColor = color;
-    s_block.drawGlare = drawGlare;
+    s_block.drawSky = drawSky;
     s_overrideActive = 1;
 }
 
@@ -873,7 +902,7 @@ void DayNightEndFogOverride() {
         s_block.info.fogEnd = s_savedFogEnd;
         s_block.info.color[DNInfo::Color_Fog] = s_savedFogColor;
         s_block.info.fogStartScalar = s_savedFogScalar;
-        s_block.drawGlare = s_savedDrawGlare;
+        s_block.drawSky = s_savedDrawSky;
         s_overrideActive = 0;
         s_block.info.fogRate = s_savedFogRate;
     }
@@ -1060,6 +1089,90 @@ DNSkyModel* DayNightGetSkyModel(const char* name, uint32_t flags) {
     return sky;
 }
 
+
+// The highlight's strength over the day (0x00af4b7c) and its fall-off around the sky from the
+// direction the camera faces (0x00af4bac).
+static const float s_skyHighlightBand[12] = { 0.125f, 0.0f, 0.27083334f, 1.0f, 0.29166669f, 0.0f, 0.85416663f, 0.0f, 0.89583331f, 1.0f, 0.99930555f, 0.0f };
+static const float s_skyAzimuthBand[12] = { 0.125f, 1.0f, 0.375f, 0.0f, 0.5f, -0.5f, 0.625f, -0.7f, 0.75f, -0.5f, 0.875f, 0.0f };
+
+// ref: FUN_007f0530
+// The dome's colours: the zenith from sky band 3, rings 1 to 4 from bands 4 to 7 pulled toward a
+// highlight that follows the camera's heading (and that only a light with highlightSky has), the
+// horizon ring and the nadir in the fog colour, each faded by the death fade.
+static void DNUpdateDomeColors(DNDome* dome) {
+    float highlight = InterpBodyBand(s_skyHighlightBand, 6, s_block.timeOfDay) * s_block.info.highlightSky;
+
+    if (s_fadeFlags & 1) {
+        for (int32_t slot = 3; slot < 9; slot++) {
+            uint32_t alpha = static_cast<uint32_t>(lrintf((1.0f - s_fadeAmount) * 255.0f)) & 0xFF;
+
+            if (alpha) {
+                LerpColor(s_block.info.color[slot], alpha, s_fadeTarget);
+            }
+        }
+    }
+
+    CImVector toward[6] = {};
+
+    for (int32_t i = 0; i < 5; i++) {
+        toward[i + 1] = SkyLerp(s_block.info.color[4 + i], s_block.info.color[4], highlight);
+    }
+
+    CImVector* out = dome->colors;
+    *out++ = DayNightScaleSaturation(s_block.info.color[3].value, 1.0f);
+
+    float step = -1.0f / static_cast<float>(dome->segments);
+
+    for (int32_t ring = 1; ring <= 4; ring++) {
+        float u = s_block.cameraYaw * 0.15915494f + 0.25f;
+
+        if (1.0f < u) {
+            u = u - 1.0f;
+        }
+
+        for (int32_t j = 0; j < dome->segments; j++) {
+            if (u < 0.0f) {
+                u = u + 1.0f;
+            }
+
+            float w = InterpBodyBand(s_skyAzimuthBand, 6, u);
+            CImVector c;
+
+            if (0.0f <= w) {
+                c = SkyLerp(s_block.info.color[ring + 3], toward[ring], (1.0f - w) * highlight);
+            } else {
+                CImVector up = SkyLerp(toward[ring], s_block.info.color[3], highlight * 0.7f);
+                c = SkyLerp(toward[ring], up, -w * highlight);
+            }
+
+            if (s_block.fadeAlpha) {
+                LerpColor(c, s_block.fadeAlpha, s_block.fadeColor);
+            }
+
+            *out++ = c;
+            u = u + step;
+        }
+    }
+
+    CImVector fog = s_block.info.color[DNInfo::Color_Fog];
+
+    if (s_block.fadeAlpha) {
+        LerpColor(fog, s_block.fadeAlpha, s_block.fadeColor);
+    }
+
+    for (int32_t j = 0; j < dome->segments; j++) {
+        *out++ = fog;
+    }
+
+    fog = s_block.info.color[DNInfo::Color_Fog];
+
+    if (s_block.fadeAlpha) {
+        LerpColor(fog, s_block.fadeAlpha, s_block.fadeColor);
+    }
+
+    *out = fog;
+}
+
 // ref: FUN_007f3230
 // The frame's light: the record the camera stands in, the outdoor colours from it, and the
 // skyboxes it calls for.
@@ -1180,15 +1293,14 @@ static void DNUpdateLight() {
         s_block.diffuse = DayNightScaleSaturation(s_block.diffuse.value, k * liquid->m_dirDarkenIntensity + 1.0f);
     }
 
-    // TODO FUN_007f0530(&DAT_00d38d4c): the sky dome's colours, which the sky half (DayNight.cpp)
-    // still computes for itself inside its own SkyRender. Lands with the sky port.
+    DNUpdateDomeColors(&s_dome);
 
     // The bodies and their glares take band 9's tint.
     CImVector tint = s_block.info.color[9];
     s_bodies.sun.color = tint;
-    s_bodies.sunGlareColor = tint;
+    s_bodies.sunGlare.color = tint;
     s_bodies.moon.color = tint;
-    s_bodies.moonGlareColor = tint;
+    s_bodies.moonGlare.color = tint;
 
     // The fade (+0x50 a strength, +0x51 a colour) pulls the outdoor colours and the bodies toward
     // its colour.
@@ -1206,9 +1318,9 @@ static void DNUpdateLight() {
     if (s_block.storm != 0.0f) {
         uint8_t alpha = static_cast<uint8_t>(lrintf((1.0f - s_block.storm) * 255.0f));
         s_bodies.sun.color.a = alpha;
-        s_bodies.sunGlareColor.a = alpha;
+        s_bodies.sunGlare.color.a = alpha;
         s_bodies.moon.color.a = alpha;
-        s_bodies.moonGlareColor.a = alpha;
+        s_bodies.moonGlare.color.a = alpha;
         s_bodies.moon2.color.a = alpha;
     }
 
@@ -1278,14 +1390,14 @@ static void DNUpdateBodies() {
 
     s_bodies.sun.pos = DNBodyPosition(InterpBodyBand(s_sunThetaBand, 5, t), InterpBodyBand(s_sunPhiBand, 3, t));
     s_bodies.sun.size = InterpBodyBand(s_sunSizeBand, 4, t) * s_bodies.sun.scale;
-    s_bodies.sunGlarePos = s_bodies.sun.pos;
+    s_bodies.sunGlare.pos = s_bodies.sun.pos;
 
     s_bodies.moon.pos = DNBodyPosition(InterpBodyBand(s_moonThetaBand, 5, t), InterpBodyBand(s_moonPhiBand, 3, t));
     float moonSize = InterpBodyBand(s_moonSizeBand, 4, t) * s_bodies.moon.scale;
     s_bodies.moon.size = moonSize;
-    s_bodies.moonGlareSize[0] = moonSize;
-    s_bodies.moonGlareSize[1] = moonSize;
-    s_bodies.moonGlarePos = s_bodies.moon.pos;
+    s_bodies.moonGlare.sizeMin = moonSize;
+    s_bodies.moonGlare.sizeMax = moonSize;
+    s_bodies.moonGlare.pos = s_bodies.moon.pos;
 
     // The second moon runs on its own period, in 1/65536ths of a day.
     float period = s_bodies.moon2.scale2;
@@ -1398,6 +1510,13 @@ static void DNLoadMapLights(int32_t mapID) {
 
 // ref: FUN_007f2790
 void DayNightInitialize(int32_t mapID) {
+    // FROZEN-ONLY: the reference shuts the last map's DayNight down from CMap's unload
+    // (FUN_007c3830 -> FUN_007f1d30), which frozen does not have yet; without this a second map
+    // would make every sky resource again on top of the first's.
+    if (s_initialized) {
+        DayNightShutdown();
+    }
+
     s_mapID = mapID;
     DNLoadMapLights(mapID);
 
@@ -1429,10 +1548,7 @@ void DayNightInitialize(int32_t mapID) {
     s_block.mapObjFogDef = 0;
     s_block.mapObjFogGroups.count = 0;
 
-    // TODO FUN_007f2470(1.0), FUN_007f1b10(0, 0), FUN_007f20e0(1.0): the sky dome's mesh, the
-    // cloud sheets and the glare quads; FUN_007edb50(0.96): the star twinkle table; FUN_007ee150
-    // and FUN_007ee230: the sun and moon glares; and the sun and moon disc textures. All of them
-    // belong to the sky half and land with its port -- DayNight.cpp still builds its own.
+    DayNightSkyInitialize();
 
     s_bodies.sun.scale = 1.0f;
     s_bodies.sun.scale2 = 1.0f;
@@ -1441,7 +1557,8 @@ void DayNightInitialize(int32_t mapID) {
     s_bodies.moon2.scale = 1.0f;
     s_bodies.moon2.scale2 = 1.7f;
 
-    s_block.drawGlare = 1;
+    s_skyReady = 1;
+    s_block.drawSky = 1;
     s_block.fadeAlpha = 0;
     s_fadeFlags = 0;
 
@@ -1478,8 +1595,8 @@ void DayNightShutdown() {
 
     s_areaLights.count = 0;
 
-    // TODO the sky half's textures and meshes (the two handles at DAT_00d38e20/24, FUN_009abaf0,
-    // FUN_009abac0, FUN_009abb30); see DayNightInitialize.
+    DayNightSkyShutdown();
+    s_skyReady = 0;
 
     s_initialized = 0;
 }
@@ -1699,9 +1816,3 @@ void DayNightUpdateFog() {
     }
 }
 
-// ref: FUN_007f1010
-// The cloud sheets' generation step (FUN_007efd00 on the cloud object at 0x00d38d90).
-void DayNightUpdateClouds() {
-    // TODO FUN_007efd00: the cloud noise is still generated by the sky half's own Clouds.cpp,
-    // inside its draw; it moves here with the sky port.
-}
