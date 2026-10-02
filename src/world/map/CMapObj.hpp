@@ -394,6 +394,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Is a point (in this building's space) inside its MOHD bounds? False until the root
         // is parsed. ref: FUN_007ae810
         bool PointInBounds(const C3Vector& point);
+        // A segment (in this building's space) against one loaded group's faces.
+        // ref: FUN_007af200
+        bool QuerySegmentGroup(const C3Vector& start, const C3Vector& end, float* t, uint32_t queryFlags,
+                               uint32_t skipFlags, uint32_t groupIndex, uint32_t* face);
         // Does a box (in this building's space) meet a group's MOGI box? With requireLoaded the
         // group itself has to be in. ref: FUN_007ae8d0
         bool GroupBoxIntersects(const CAaBox& box, uint32_t groupIndex, int32_t requireLoaded);

@@ -1,3 +1,9 @@
+#include "model/CM2Scene.hpp"
+#include "model/CM2Model.hpp"
+#include <tempest/Intersect.hpp>
+#include <tempest/Ray.hpp>
+#include <algorithm>
+#include <cmath>
 #include "world/map/CMap.hpp"
 #include <cstdio>
 #include "object/client/CGUnit_C.hpp"
@@ -452,7 +458,10 @@ void CMap::MapMemInitialize() {
         CMap::s_areaInfo[i][0] = 0;
     }
 
-    // TODO the 0x800-entry growable array at DAT_00cf4928 and the map state flags
+    // The cell list the segment query fills (DAT_00cf4928): 0x800 entries, never grown.
+    CMap::s_cellList.SetCount(0x800);
+
+    // TODO the map state flags
     // (DAT_00ce04c8, DAT_00ce04c4, DAT_00ce04a4 = -2, DAT_00adfbc4 = -1, DAT_00cf08f4 = 0,
     // DAT_00cf08f0 = 0, DAT_00ce04ac = 0), none of which frozen carries yet; and FUN_0079e3c0,
     // the liquid initialise (its depth ramps are LiquidSurface.cpp's DepthRamp, built on first
@@ -2674,4 +2683,593 @@ void CMap::UpdateEntity(CMapEntity* entity) {
     }
 
     entity->m_dirLightScaleTarget = static_cast<float>(entity->m_interiorDirColor.a) * 0.003921568859368563f * (2.5f - 1.0f) + 1.0f;
+}
+
+uint64_t CMap::s_segmentHitGUID;
+int32_t CMap::s_segmentQueryStamp;
+
+static const float SEGMENT_CELL_SIZE = 4.166666507720947f;   // an eighth of a chunk
+static const float SEGMENT_CELL_SCALE = 0.23999999463558197f; // DAT_00a3fda0
+
+static void PushCell(int32_t first, int32_t second) {
+    auto cells = CMap::s_cellList.Ptr();
+    cells[CMap::s_cellListCount++] = first;
+    cells[CMap::s_cellListCount++] = second;
+}
+
+// ref: FUN_007a23e0
+void CMap::AddCellLineFirst(const float* from, const float* to, const int32_t* cells) {
+    float slope = (to[1] - from[1]) / (to[0] - from[0]);
+    float fromA = from[0];
+    float fromB = from[1];
+
+    int32_t first = cells[1];
+    int32_t second = cells[0];
+    int32_t step;
+    int32_t start;
+
+    if (second < cells[2]) {
+        step = 1;
+        start = second + 1;
+    } else {
+        step = -1;
+        start = second;
+    }
+
+    float boundary = static_cast<float>(start) * SEGMENT_CELL_SIZE;
+
+    PushCell(cells[1], cells[0]);
+
+    int32_t last = first;
+
+    if (second != cells[2] + step) {
+        do {
+            if (0x7FB < CMap::s_cellListCount) {
+                return;
+            }
+
+            first = static_cast<int32_t>(lrintf((boundary - (-(fromA * slope) + fromB)) * (1.0f / slope) * SEGMENT_CELL_SCALE - 0.5f));
+
+            if (first != last) {
+                PushCell(first, second);
+            }
+
+            boundary += static_cast<float>(step) * SEGMENT_CELL_SIZE;
+            second += step;
+            PushCell(first, second);
+            last = first;
+        } while (second != cells[2] + step);
+    }
+
+    if (first != cells[3]) {
+        PushCell(cells[3], cells[2]);
+    }
+}
+
+// ref: FUN_007a2230
+void CMap::AddCellLineSecond(const float* from, const float* to, const int32_t* cells) {
+    int32_t second = cells[0];
+    float slope = (to[1] - from[1]) / (to[0] - from[0]);
+    float fromA = from[0];
+    float fromB = from[1];
+
+    int32_t first = cells[1];
+    int32_t step;
+    int32_t start;
+
+    if (first < cells[3]) {
+        step = 1;
+        start = first + 1;
+    } else {
+        step = -1;
+        start = first;
+    }
+
+    float boundary = static_cast<float>(start) * SEGMENT_CELL_SIZE;
+
+    PushCell(first, second);
+
+    int32_t last = second;
+
+    if (first != cells[3] + step) {
+        do {
+            if (0x7FB < CMap::s_cellListCount) {
+                return;
+            }
+
+            second = static_cast<int32_t>(lrintf((boundary * slope + -(fromA * slope) + fromB) * SEGMENT_CELL_SCALE - 0.5f));
+
+            if (second != last) {
+                PushCell(first, second);
+            }
+
+            first += step;
+            boundary += static_cast<float>(step) * SEGMENT_CELL_SIZE;
+            PushCell(first, second);
+            last = second;
+        } while (first != cells[3] + step);
+    }
+
+    if (second == cells[2]) {
+        return;
+    }
+
+    PushCell(cells[3], cells[2]);
+}
+
+// Put a model on the scene's ray list, with the kind of test the query wants.
+static void LinkRayModel(CM2Model* model, uint32_t kind, void* owner) {
+    if (!model->m_rayPrev) {
+        CM2Scene* scene = model->m_scene;
+        model->m_rayPrev = &scene->m_rayModelList;
+        model->m_rayNext = scene->m_rayModelList;
+        scene->m_rayModelList = model;
+
+        if (model->m_rayNext) {
+            model->m_rayNext->m_rayPrev = &model->m_rayNext;
+        }
+    }
+
+    model->m_rayQueryType = kind;
+    model->m_rayOwner = owner;
+    model->m_rayKey = 0;
+}
+
+// ref: FUN_007a2760
+// A placed doodad joins the ray list as kind 3 (its collision mesh) for queries of bit 0 or bit
+// 20, kind 2 for bit 3, and kind 1 or 0 (the 24th bit) for bits 1-2; an object (a non-zero GUID
+// at +0xb8) only for bits 20-22, as kind 3 or 0.
+void CMap::AddRayModels(CMapBaseObjRefList* list, uint32_t queryFlags) {
+    for (auto link = list->Head(); link; link = list->Next(link)) {
+        auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+        if ((queryFlags & 0x1000000) && entity->m_visible) {
+            continue;
+        }
+
+        if ((entity->m_flags & 0x100) || !(entity->m_flags & 0x80) || entity->m_queryStamp == CMap::s_segmentQueryStamp) {
+            continue;
+        }
+
+        CM2Model* model = entity->m_model;
+
+        if (!model) {
+            continue;
+        }
+
+        uint64_t guid = (entity->m_type & CMapBaseObj::Type_Entity) ? static_cast<CMapEntity*>(entity)->m_param64 : 0;
+
+        if (guid == 0) {
+            if (queryFlags & 0x1) {
+                if (model->m_loaded) {
+                    LinkRayModel(model, 3, entity);
+                }
+            } else if (queryFlags & 0xE) {
+                if (!(queryFlags & 0x8)) {
+                    if (model->m_loaded) {
+                        LinkRayModel(model, (queryFlags >> 0x18) & 1, entity);
+                    }
+                } else if (model->m_loaded) {
+                    LinkRayModel(model, 2, entity);
+                }
+            }
+        } else if (queryFlags & 0x100000) {
+            if (model->m_loaded) {
+                LinkRayModel(model, 3, entity);
+            }
+        } else if ((queryFlags & 0x600000) && model->m_loaded) {
+            LinkRayModel(model, 0, entity);
+        }
+
+        entity->m_queryStamp = CMap::s_segmentQueryStamp;
+    }
+}
+
+// ref: FUN_007a2960
+// Entities that carry an object (state bit 2 of +0x7c) are asked through the object query
+// callback (DAT_00ce04b0) which model stands for them. NOT INSTALLED in frozen: nothing registers
+// that callback yet, and with it null the reference does nothing here either.
+void CMap::AddRayObjects(CMapBaseObjRefList* list, uint32_t queryFlags) {
+    (void)list;
+    (void)queryFlags;
+}
+
+// ref: FUN_007a3570
+// Each listed cell: its chunk's models and objects joined to the ray list once per chunk, its
+// terrain triangles (query bit 8), and the liquid over it (bits 16-17), keeping the nearest.
+bool CMap::QuerySegmentCells(const C3Vector& start, const C3Vector& end, float* t, uint32_t queryFlags, CMapChunk** outChunk) {
+    auto cells = CMap::s_cellList.Ptr();
+    int32_t remaining = CMap::s_cellListCount;
+
+    uint32_t lastFirst = cells[0] & 0x2000;
+    uint32_t lastSecond = cells[1] & 0x2000;
+    uint32_t modelQuery = queryFlags & 0x40F0000F;
+
+    CMapChunk* chunk = nullptr;
+    CMapChunk* hitChunk = nullptr;
+
+    CM2Scene* scene = CWorld::GetM2Scene();
+
+    if (modelQuery && scene) {
+        scene->BeginRayQuery();
+    }
+
+    C3Vector dir = { end.x - start.x, end.y - start.y, end.z - start.z };
+    float invLength = 1.0f / sqrtf(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+    dir = { dir.x * invLength, dir.y * invLength, dir.z * invLength };
+
+    float best = *t;
+    C3Vector local = start;
+    int32_t index = 0;
+
+    while (remaining != 0) {
+        uint32_t first = static_cast<uint32_t>(cells[index]);
+        uint32_t second = static_cast<uint32_t>(cells[index + 1]);
+        remaining -= 2;
+        index += 2;
+
+        if (0x2000 < first || 0x2000 < second) {
+            break;
+        }
+
+        uint32_t firstChunk = first & 0x1FF8;
+
+        if (firstChunk != lastSecond || (second & 0x1FF8) != lastFirst) {
+            CMapArea* area = CMap::s_areaGrid[((second >> 7) & 0x3F) * 64 + ((first >> 7) & 0x3F)];
+
+            if (!area || area->m_asyncObject) {
+                break;
+            }
+
+            chunk = area->m_chunks[((second >> 3) & 0xF) * 16 + ((first >> 3) & 0xF)];
+
+            if (!chunk) {
+                break;
+            }
+
+            lastFirst = second & 0x1FF8;
+            local = { start.x - chunk->m_position.x, start.y - chunk->m_position.y, start.z - chunk->m_position.z };
+
+            if (modelQuery) {
+                CMap::AddRayModels(&chunk->m_entityLinkList, queryFlags);
+            }
+
+            if (queryFlags & 0x40F00000) {
+                CMap::AddRayObjects(&chunk->m_mapObjDefLinkList, queryFlags);
+            }
+
+            lastSecond = firstChunk;
+        }
+
+        uint32_t cellA = first & 7;
+        uint32_t cellB = second & 7;
+
+        C3Ray ray;
+        ray.origin = local;
+        ray.dir = dir;
+
+        if (queryFlags & 0x100) {
+            float hitT = 3.4028235e+38f;
+
+            if (chunk->IntersectCell(cellA, cellB, ray, &hitT)) {
+                float fraction = hitT * invLength;
+
+                if (fraction < best && 0.0f < fraction) {
+                    hitChunk = chunk;
+                    best = fraction;
+                }
+            }
+        }
+
+        if (queryFlags & 0x30000) {
+            bool typedOnly = (queryFlags & 0x10000) && !(queryFlags & 0x20000);
+
+            for (auto liquid = chunk->m_liquidList.Head(); liquid; liquid = chunk->m_liquidList.Next(liquid)) {
+                if (typedOnly) {
+                    auto type = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquid->m_liquidType));
+
+                    if (!type || !(type->m_flags & 0x4)) {
+                        continue;
+                    }
+                }
+
+                if (!liquid->CoversTile(cellA, cellB)) {
+                    continue;
+                }
+
+                int32_t stride = static_cast<int32_t>(liquid->m_tileEndY - liquid->m_tileY) + 1;
+                int32_t base = (static_cast<int32_t>(cellB) - static_cast<int32_t>(liquid->m_tileX)) * stride
+                    - static_cast<int32_t>(liquid->m_tileY) + static_cast<int32_t>(cellA);
+                const int32_t offsets[2][3] = { { 0, stride + 1, stride }, { 0, 1, stride + 1 } };
+
+                for (auto& tri : offsets) {
+                    int32_t indices[3] = { base + tri[0], base + tri[1], base + tri[2] };
+                    float hitT = 0.0f;
+
+                    if (IntersectRayTriangle(ray, liquid->m_vertices, indices, &hitT, nullptr, 0.01f)) {
+                        float fraction = hitT * invLength;
+
+                        if (fraction < best && 0.0f < fraction) {
+                            best = fraction;
+                            hitChunk = chunk;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (modelQuery && scene) {
+        if (!(queryFlags & 0x16000AE)) {
+            scene->RayQueryCollision(start, end, &best);
+        } else {
+            C3Vector viewStart = start * scene->m_view;
+            C3Vector viewEnd = end * scene->m_view;
+            scene->RayQuery(viewStart, viewEnd, &best, 0);
+        }
+    }
+
+    if (*t <= best) {
+        return false;
+    }
+
+    *t = best;
+
+    if (outChunk) {
+        *outChunk = hitChunk;
+    }
+
+    return true;
+}
+
+// ref: FUN_007a39f0
+bool CMap::QuerySegmentTerrain(const C3Vector& start, const C3Vector& end, float* t, uint32_t queryFlags, CMapChunk** chunk) {
+    float fromA0 = -(start.y - AREA_HALF_EXTENT);
+    float fromB0 = -(start.x - AREA_HALF_EXTENT);
+    float fromA1 = -(end.y - AREA_HALF_EXTENT);
+    float fromB1 = -(end.x - AREA_HALF_EXTENT);
+
+    float spanA = fromA1 - fromA0;
+    float spanB = fromB1 - fromB0;
+
+    int32_t cells[4] = {
+        static_cast<int32_t>(lrintf(fromB0 * SEGMENT_CELL_SCALE - 0.5f)),
+        static_cast<int32_t>(lrintf(fromA0 * SEGMENT_CELL_SCALE - 0.5f)),
+        static_cast<int32_t>(lrintf(fromB1 * SEGMENT_CELL_SCALE - 0.5f)),
+        static_cast<int32_t>(lrintf(fromA1 * SEGMENT_CELL_SCALE - 0.5f))
+    };
+
+    CMap::s_cellListCount = 0;
+
+    if (std::fabs(spanA) < 2.384185791015625e-07f || cells[1] == cells[3]) {
+        CMap::AddCellSpanX(cells);
+    } else if (std::fabs(spanB) < 2.384185791015625e-07f || cells[0] == cells[2]) {
+        CMap::AddCellSpanY(cells);
+    } else {
+        const float from[2] = { fromA0, fromB0 };
+        const float to[2] = { fromA1, fromB1 };
+
+        if (std::fabs(spanA) <= std::fabs(spanB)) {
+            CMap::AddCellLineFirst(from, to, cells);
+        } else {
+            CMap::AddCellLineSecond(from, to, cells);
+        }
+    }
+
+    return CMap::QuerySegmentCells(start, end, t, queryFlags, chunk);
+}
+
+// ref: FUN_007a30d0
+// Every building the segment's box reaches, each loaded group it crosses listed with how far along
+// the segment it starts, nearest first; then each group's faces, its models onto the ray list,
+// and last the models themselves.
+bool CMap::QuerySegmentObjects(const C3Vector& start, const C3Vector& end, uint32_t queryFlags, uint32_t defSkipFlags,
+                               float* t, uint16_t* face, CMapObj** outMapObj, CMapObjDef** outDef,
+                               CMapObjDefGroup** outDefGroup) {
+    struct Entry {
+        CMapObjDef* def;
+        CMapObjDefGroup* defGroup;
+        float distance;
+    };
+
+    static Entry s_entries[499];
+    uint32_t count = 0;
+
+    uint32_t modelQuery = queryFlags & 0x40F0000F;
+    CM2Scene* scene = CWorld::GetM2Scene();
+
+    if (modelQuery && scene) {
+        scene->BeginRayQuery();
+    }
+
+    float length = sqrtf((end.z - start.z) * (end.z - start.z) + (end.y - start.y) * (end.y - start.y)
+        + (end.x - start.x) * (end.x - start.x));
+
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        CMapObj* mapObj = def->m_mapObj;
+
+        if ((def->m_flags & defSkipFlags) || !mapObj || !mapObj->m_rootLoaded) {
+            continue;
+        }
+
+        if (!SegmentIntersectsBox(def->m_bounds, start, end)) {
+            continue;
+        }
+
+        for (uint32_t j = 0; j < def->m_defGroups.Count(); j++) {
+            CMapObjDefGroup* defGroup = def->m_defGroups[j];
+
+            if (!defGroup || !mapObj->IsGroupLoaded(j) || !SegmentIntersectsBox(defGroup->m_bounds, start, end)) {
+                continue;
+            }
+
+            if (count >= 499) {
+                break;
+            }
+
+            C3Vector local = start * def->m_inversePlacement;
+            Entry& entry = s_entries[count++];
+            entry.def = def;
+            entry.defGroup = defGroup;
+
+            if (mapObj->PointInGroupBox(local, j)) {
+                entry.distance = 0.0f;
+                continue;
+            }
+
+            CAaBox bounds;
+            mapObj->GroupBounds(j, &bounds);
+
+            C3Vector nearest = {
+                std::min(std::max(local.x, bounds.b.x), bounds.t.x),
+                std::min(std::max(local.y, bounds.b.y), bounds.t.y),
+                std::min(std::max(local.z, bounds.b.z), bounds.t.z)
+            };
+
+            entry.distance = sqrtf((local.y - nearest.y) * (local.y - nearest.y) + (local.z - nearest.z) * (local.z - nearest.z)
+                + (local.x - nearest.x) * (local.x - nearest.x)) / length;
+        }
+    }
+
+    std::sort(s_entries, s_entries + count, [](const Entry& a, const Entry& b) {
+        return a.distance < b.distance;
+    });
+
+    uint32_t skipFlags = CMapObj::QuerySkipFlags(queryFlags);
+    float best = *t;
+    bool hit = false;
+    uint32_t hitFace = 0xFFFFFFFF;
+
+    for (uint32_t i = 0; i < count; i++) {
+        Entry& entry = s_entries[i];
+        CMapObj* mapObj = entry.def->m_mapObj;
+
+        C3Vector localStart = start * entry.def->m_inversePlacement;
+        C3Vector localEnd = end * entry.def->m_inversePlacement;
+
+        if (entry.distance <= best
+            && mapObj->SegmentVsGroupBounds(localStart, localEnd, entry.defGroup->m_groupIndex)
+            && mapObj->QuerySegmentGroup(localStart, localEnd, &best, queryFlags, skipFlags, entry.defGroup->m_groupIndex, &hitFace)) {
+            hit = true;
+
+            if (outMapObj) {
+                *outMapObj = mapObj;
+            }
+
+            if (outDef) {
+                *outDef = entry.def;
+            }
+
+            if (outDefGroup) {
+                *outDefGroup = entry.defGroup;
+            }
+        }
+
+        if (modelQuery) {
+            CMap::AddRayModels(&entry.defGroup->m_doodadDefLinkList, queryFlags);
+        }
+
+        if (queryFlags & 0x40F00000) {
+            CMap::AddRayObjects(&entry.defGroup->m_entityLinkList, queryFlags);
+        }
+    }
+
+    if (hit) {
+        *t = best;
+
+        if (face) {
+            *face = static_cast<uint16_t>(hitFace);
+        }
+    }
+
+    if (modelQuery && scene) {
+        C3Vector viewStart = start * scene->m_view;
+        C3Vector viewEnd = end * scene->m_view;
+        float fraction = *t;
+
+        void* owner = scene->RayQuery(viewStart, viewEnd, &fraction, 0);
+
+        if (fraction < *t) {
+            auto entity = static_cast<CMapBaseObj*>(owner);
+
+            if (entity && (entity->m_type & CMapBaseObj::Type_Entity)) {
+                uint64_t guid = static_cast<CMapEntity*>(entity)->m_param64;
+
+                if (guid) {
+                    CMap::s_segmentHitGUID = guid;
+                }
+            }
+
+            *t = fraction;
+
+            if (face) {
+                *face = 0xFFFF;
+            }
+
+            return true;
+        }
+    }
+
+    if (!hit && face) {
+        *face = 0xFFFF;
+    }
+
+    return hit;
+}
+
+// ref: FUN_007a3b70
+// Buildings first (query bits 0-7, 16-17, 20-23, 30), then terrain (0-3, 8, 16-17, 20-23, 30); `t`
+// carries the nearest hit from one to the other, and the point is placed along the segment at it.
+//
+// NOT PORTED: filling `result` (FUN_007a2c60, the hit's map object, group, face and floor
+// details). Every frozen caller passes null today; one that needs it will find this note.
+bool CMap::QuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t,
+                        uint32_t queryFlags, void* result) {
+    (void)result;
+
+    CMap::s_segmentQueryStamp++;
+    bool found = false;
+
+    CM2Scene* scene = CWorld::GetM2Scene();
+
+    if (queryFlags & 0x40F300FF) {
+        if (scene) {
+            scene->m_rayHitModel = nullptr;
+        }
+
+        CMap::s_segmentHitGUID = 0;
+
+        uint16_t face = 0;
+        CMapObj* mapObj = nullptr;
+        CMapObjDef* def = nullptr;
+        CMapObjDefGroup* defGroup = nullptr;
+
+        if (CMap::QuerySegmentObjects(start, end, queryFlags, 0x100, t, &face, &mapObj, &def, &defGroup)) {
+            found = true;
+        }
+    }
+
+    if (queryFlags & 0x40F3010F) {
+        if (scene) {
+            scene->m_rayHitModel = nullptr;
+        }
+
+        if (CMap::QuerySegmentTerrain(start, end, t, queryFlags, nullptr)) {
+            CMap::s_segmentHitGUID = 0;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        return false;
+    }
+
+    if (hit) {
+        float fraction = *t;
+        hit->x = start.x + (end.x - start.x) * fraction;
+        hit->y = (end.y - start.y) * fraction + start.y;
+        hit->z = fraction * (end.z - start.z) + start.z;
+    }
+
+    return true;
 }

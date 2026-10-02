@@ -1492,3 +1492,17 @@ bool CMapObj::GetLiquidAt(uint32_t excludeFlags, const C3Vector& point, uint32_t
 
     return false;
 }
+
+// ref: FUN_007af200
+bool CMapObj::QuerySegmentGroup(const C3Vector& start, const C3Vector& end, float* t, uint32_t queryFlags,
+                                uint32_t skipFlags, uint32_t groupIndex, uint32_t* face) {
+    if (!this->m_rootLoaded || !this->m_groups[groupIndex] || !(this->m_groups[groupIndex]->m_state & 0x1)) {
+        return false;
+    }
+
+    C3Segment segment;
+    segment.start = start;
+    segment.end = end;
+
+    return this->m_groups[groupIndex]->QuerySegmentFace(segment, t, queryFlags, static_cast<uint16_t>(skipFlags), face);
+}

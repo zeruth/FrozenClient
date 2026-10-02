@@ -21,6 +21,9 @@ class CMapBaseObjLink {
         TSLink<CMapBaseObjLink> ownerLink;
 };
 
+// The list a referenced object keeps its incoming links in, threaded through refLink.
+typedef STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMapBaseObjRefList;
+
 class CMapBaseObj {
     friend class CMap;
     friend class CWorld;

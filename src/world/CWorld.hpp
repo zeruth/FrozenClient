@@ -248,4 +248,7 @@ class CWorld {
         static uint32_t GetFixedPrecisionTime(float timeSec);
 };
 
+// The world segment query, as the rest of the client calls it. ref: FUN_0077f310
+int32_t WorldQuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t, uint32_t flags, void* result);
+
 #endif

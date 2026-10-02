@@ -7,6 +7,7 @@
 #include "gx/CGxBatch.hpp"
 #include <storm/List.hpp>
 #include <tempest/Box.hpp>
+#include <tempest/Ray.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
@@ -157,6 +158,10 @@ class CMapChunk : public CMapBaseObj {
         uint8_t* m_soundEmitters = nullptr;  // +0x13c: MCSE
 
         // Member functions
+        // A ray (in the chunk's own space) against the four triangles of one of its 8x8 cells,
+        // unless the cell is a hole. `t` keeps the nearest positive hit. ref: FUN_007d8730
+        bool IntersectCell(uint32_t cellX, uint32_t cellY, const C3Ray& ray, float* t);
+
         CMapChunk();
         ~CMapChunk() override;
         void Load(uint8_t* data, int32_t fixSizes);

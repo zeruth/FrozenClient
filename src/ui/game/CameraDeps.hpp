@@ -28,13 +28,7 @@ struct CFacet {
 // ref: FUN_0052e480
 float BarberShopGetMinDistance();
 
-// ref: FUN_0077f310
-// The world segment query: terrain, map objects, liquid and models along start -> end. `t` comes
-// in as the furthest fraction to look and leaves as the nearest hit; `hit` gets the point.
-int32_t WorldQuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t, uint32_t flags, void* result);
-
-// ref: FUN_0077f8d0
-// The world triangles a frustum touches.
+// The world triangles a frustum touches: World.cpp's 0x0077f330 -> FUN_007a5dd0.
 void WorldQueryFrustumFacets(CWFrustum* frustum, TSGrowableArray<CFacet>& facets);
 
 // The part of a triangle inside a frustum, as pointers to its clipped points.

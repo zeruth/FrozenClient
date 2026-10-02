@@ -1650,3 +1650,8 @@ const LiquidTypeRec* CWorld::GetAreaLiquidType(uint32_t areaID, uint32_t liquidT
 
     return g_liquidTypeDB.GetRecord(liquidType);
 }
+
+// ref: FUN_0077f310
+int32_t WorldQuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t, uint32_t flags, void* result) {
+    return CMap::QuerySegment(start, end, hit, t, flags, result) ? 1 : 0;
+}

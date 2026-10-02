@@ -23,6 +23,8 @@ class CMapStaticEntity : public CMapBaseObj {
         // The shadow frame each of the three cascades last collected it on, so a doodad reached
         // through two chunks or groups casts once per cascade.
         uint8_t m_shadowFrame[3] = {};           // +0x28
+        // The world segment query that last put its model on the ray list (CMap::s_segmentQueryStamp).
+        int32_t m_queryStamp = 0;                // +0x2c
         // How far along the camera forward its near edge is, used to sort the frame.
         float m_sortDistance = 0.0f;             // +0x30
         CM2Model* m_model = nullptr;             // +0x34

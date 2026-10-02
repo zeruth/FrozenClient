@@ -1,5 +1,6 @@
 #include "world/map/CMapDoodadDef.hpp"
 #include "world/map/CMapChunk.hpp"
+#include <tempest/Intersect.hpp>
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
 #include "world/map/CMapRenderChunk.hpp"
@@ -1064,4 +1065,39 @@ void CMapChunk::FeedHorizon() {
 
     CWorldScene::ShadeHorizon(CMapChunk::s_vertexTable, this->m_heights, indices, 9,
                               this->m_position, this->m_header->holes);
+}
+
+// The four triangles of a cell, as the pair of corner offsets each forms with the centre vertex
+// (DAT_00a3fb30): the centre is the cell's base + 9.
+static const int32_t s_cellTriangles[4][2] = { { 17, 0 }, { 0, 1 }, { 18, 17 }, { 1, 18 } };
+
+// ref: FUN_007d8730
+// The heights go into the shared vertex table's z before each test, the way the reference does it.
+bool CMapChunk::IntersectCell(uint32_t cellX, uint32_t cellY, const C3Ray& ray, float* t) {
+    if (CMapChunk::s_holeMask[(cellX >> 1) + (cellY >> 1) * 4] & this->m_header->holes) {
+        return false;
+    }
+
+    bool hit = false;
+    int32_t base = static_cast<int32_t>(cellY) * 17 + static_cast<int32_t>(cellX);
+
+    for (auto& pair : s_cellTriangles) {
+        int32_t tri[3] = { base + 9, base + pair[1], base + pair[0] };
+
+        for (int32_t index : tri) {
+            CMapChunk::s_vertexTable[index][2] = this->m_heights[index];
+        }
+
+        float hitT = 0.0f;
+
+        if (IntersectRayTriangle(ray, reinterpret_cast<const C3Vector*>(CMapChunk::s_vertexTable), tri, &hitT, nullptr, 0.01f)) {
+            hit = true;
+
+            if (hitT < *t && 0.0f < hitT) {
+                *t = hitT;
+            }
+        }
+    }
+
+    return hit;
 }

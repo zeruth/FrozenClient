@@ -316,6 +316,34 @@ class CMap {
         // Whether the terrain's baked shadow (MCSH) covers a point. ref: FUN_007a06a0
         static bool IsTerrainShadowed(const C3Vector& point);
 
+        // The world segment query: buildings and the models in them, then the terrain cells and
+        // their liquid and models, along start -> end. `t` comes in as the furthest fraction to
+        // look and leaves as the nearest hit; `hit` gets the point. ref: FUN_007a3b70
+        static bool QuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t,
+                                 uint32_t queryFlags, void* result);
+        // The buildings along a segment, nearest first. ref: FUN_007a30d0
+        static bool QuerySegmentObjects(const C3Vector& start, const C3Vector& end, uint32_t queryFlags,
+                                        uint32_t defSkipFlags, float* t, uint16_t* face, CMapObj** mapObj,
+                                        CMapObjDef** def, CMapObjDefGroup** defGroup);
+        // The terrain cells a segment crosses, listed and then tested. ref: FUN_007a39f0
+        static bool QuerySegmentTerrain(const C3Vector& start, const C3Vector& end, float* t,
+                                        uint32_t queryFlags, CMapChunk** chunk);
+        // ref: FUN_007a3570
+        static bool QuerySegmentCells(const C3Vector& start, const C3Vector& end, float* t,
+                                      uint32_t queryFlags, CMapChunk** chunk);
+        // The cells a line crosses, stepping along the first or the second cell axis.
+        // ref: FUN_007a23e0, FUN_007a2230
+        static void AddCellLineFirst(const float* from, const float* to, const int32_t* cells);
+        static void AddCellLineSecond(const float* from, const float* to, const int32_t* cells);
+        // The doodads of a list onto the ray list of the model scene, by query kind. ref: FUN_007a2760
+        static void AddRayModels(CMapBaseObjRefList* list, uint32_t queryFlags);
+        // The entities of a list onto it through the object query callback. ref: FUN_007a2960
+        static void AddRayObjects(CMapBaseObjRefList* list, uint32_t queryFlags);
+        // What the last segment query hit, if it was an object (DAT_00cd7768).
+        static uint64_t s_segmentHitGUID;
+        // Bumped by every segment query so an entity reached twice is tested once (DAT_00ce04c4).
+        static int32_t s_segmentQueryStamp;
+
         // Tiles and chunks
         static CMapArea* CreateArea(int32_t x, int32_t y);
         static void UnloadArea(CMapArea* area);

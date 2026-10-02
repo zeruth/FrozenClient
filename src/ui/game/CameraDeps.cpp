@@ -13,14 +13,9 @@ float BarberShopGetMinDistance() {
     return 1.0f;
 }
 
-int32_t WorldQuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t, uint32_t flags, void* result) {
-    // TODO port FUN_007a3b70 (terrain cells FUN_007a39f0, map objects FUN_007a30d0); until then
-    // nothing is hit and the camera does not collide.
-    return 0;
-}
-
 void WorldQueryFrustumFacets(CWFrustum* frustum, TSGrowableArray<CFacet>& facets) {
-    // TODO port FUN_007ad700 (the map-object facet gather behind FUN_0077f8d0)
+    // TODO port 0x0077f330 -> FUN_007a5dd0 (the facets of the cells and buildings a frustum
+    // touches, FUN_007a5330 per cell and FUN_007a4ee0 for the buildings).
 }
 
 int32_t FrustumClipFacet(CWFrustum* frustum, const C3Vector* points, uint32_t count, uint32_t** clipped, uint32_t* clippedCount) {
