@@ -112,6 +112,8 @@ class CM2SceneRender {
         void DrawBatchDoodad(M2Element* elements, uint32_t* a3);
         void DrawBatchProj();
         void DrawCallback();
+        int32_t DrawParticleBatch(uint32_t first, M2Element* elements, uint32_t* indices, uint32_t count);
+        void SubmitParticleBatch(CM2ParticleEmitter* emitter, CGxBuf* buffer, EGxVertexBufferFormat format, uint32_t vertexCount, uint32_t indexCount);
         void BeginCallbackDraw(const C3Vector& cameraPosition);
         static void EndCallbackDraw();
         // Put the view into camera-relative space for a particle draw, and reset the world

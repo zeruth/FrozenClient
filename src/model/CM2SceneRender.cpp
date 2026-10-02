@@ -1,3 +1,7 @@
+#include "model/CM2Lighting.hpp"
+#include <tempest/Intersect.hpp>
+#include <cmath>
+#include "gx/Buffer.hpp"
 #include "model/CM2SceneRender.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 #include "model/CM2Ribbon.hpp"
@@ -656,21 +660,10 @@ int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t*
     // previous element left.
     this->m_prevMaterial = nullptr;
 
+    // M2BatchParticles: adjacent emitters that can share a buffer are drawn as one, and the count
+    // they swallowed is returned for Draw to skip.
     if (this->m_cache->m_flags & 0x80) {
-        // The BATCHED path, FUN_00821100: it walks forward over the adjacent type-4 elements,
-        // merges every emitter that agrees on blend, the three material bits and the texture into
-        // one vertex buffer, and returns how many elements it swallowed -- which is why this
-        // function returns a count at all. Not ported, and the flag that selects it is off.
-        //
-        // Returning 0 is the safe shape either way: Draw increments its own index in the loop
-        // header, so a zero here just means this element drew alone. These four are the arguments
-        // that path takes and this one does not.
-        (void)a2;
-        (void)elements;
-        (void)a4;
-        (void)a5;
-
-        return 0;
+        return this->DrawParticleBatch(a2, elements, a4, a5);
     }
 
     CGxTex* texture = TextureGetGxTex(emitter->m_texture, 0, nullptr);
@@ -734,6 +727,158 @@ int32_t CM2SceneRender::DrawParticle(uint32_t a2, M2Element* elements, uint32_t*
     GxXformSet(GxXform_World, CM2SceneRender::s_identity);
 
     return 0;
+}
+
+// The sign of `(a - b) >> 2` over two handles (FUN_0047bf20); see M2CompareHandles in CM2Scene.cpp.
+static int32_t M2CompareTextures(const void* a, const void* b) {
+    return a < b ? -1 : a > b ? 1 : 0;
+}
+
+// ref: FUN_0081f800
+// Two lightings close enough to share a draw: sun ambient and diffuse colours within 1/255.
+static int32_t M2LightingNearlyEqual(const CM2Lighting* a, const CM2Lighting* b) {
+    const float epsilon = 1.0f / 255.0f;
+
+    return std::fabs(a->m_sunAmbient.x - b->m_sunAmbient.x) < epsilon
+        && std::fabs(a->m_sunAmbient.y - b->m_sunAmbient.y) < epsilon
+        && std::fabs(a->m_sunAmbient.z - b->m_sunAmbient.z) < epsilon
+        && std::fabs(a->m_sunDiffuse.x - b->m_sunDiffuse.x) < epsilon
+        && NearlyEqual(a->m_sunDiffuse.y, b->m_sunDiffuse.y, epsilon)
+        && NearlyEqual(a->m_sunDiffuse.z, b->m_sunDiffuse.z, epsilon);
+}
+
+// ref: FUN_00821040
+// One merged particle buffer to the device: the first emitter's texture and effect, the model's
+// lighting and material, then the emitter's own submit.
+void CM2SceneRender::SubmitParticleBatch(CM2ParticleEmitter* emitter, CGxBuf* buffer, EGxVertexBufferFormat format, uint32_t vertexCount, uint32_t indexCount) {
+    CShaderEffect* effect = (emitter->m_materialFlags & 0x1) ? this->m_particleEffect : this->m_particleUnlitEffect;
+
+    GxRsSet(GxRs_Texture0, TextureGetGxTex(emitter->m_texture, 0, nullptr));
+
+    CGxDevice* device = g_theGxDevicePtr;
+
+    if (device && device->m_context) {
+        CGxAppRenderState& rs = device->m_appRenderStates[GxRs_Texture1];
+
+        if (rs.m_value != static_cast<void*>(nullptr)) {
+            device->IRsDirty(GxRs_Texture1);
+            rs.m_value = static_cast<void*>(nullptr);
+        }
+    }
+
+    if (effect) {
+        effect->SetCurrent();
+    }
+
+    this->SetupLighting();
+    this->SetupMaterial();
+
+    emitter->SubmitDraw(buffer, format, static_cast<uint16_t>(vertexCount), indexCount);
+}
+
+// ref: FUN_00821100
+// The batched particle draw. From the current element it takes every following particle element
+// whose emitter agrees on blend, the three material bits and texture, fits the 1MB vertex and
+// 0x20000 index budgets and, when lit, sits in near-equal lighting; draws them all into one
+// stream buffer; and answers how many extra elements that consumed.
+int32_t CM2SceneRender::DrawParticleBatch(uint32_t first, M2Element* elements, uint32_t* indices, uint32_t count) {
+    auto& firstElement = elements[indices[first]];
+    auto emitter = firstElement.emitter;
+
+    EGxVertexBufferFormat format = (emitter->m_materialFlags & 0x1) ? GxVBF_PNCT : GxVBF_PCT;
+    uint32_t stride = GxVertexBufferFormatSize(format);
+    uint32_t maxVertices = 0x100000 / stride;
+
+    uint32_t flags = emitter->m_materialFlags;
+    int32_t blend = static_cast<int32_t>(emitter->m_blendMode);
+    auto lighting = firstElement.model->m_currentLighting;
+    auto texture = emitter->m_texture;
+
+    auto budget = [](CM2ParticleEmitter* e, uint32_t& vertices, uint32_t& indices) {
+        uint32_t live = e->m_liveIndices.Count();
+        uint32_t fit = 0x4000 / e->m_verticesPerParticle;
+        uint32_t drawn = live <= fit ? live : fit;
+
+        vertices = e->m_verticesPerParticle * drawn;
+        indices = e->m_indicesPerParticle * drawn;
+    };
+
+    uint32_t vertexCount;
+    uint32_t indexCount;
+    budget(emitter, vertexCount, indexCount);
+
+    uint32_t batched = 1;
+
+    for (uint32_t i = first + 1; i < count; i++) {
+        auto& element = elements[indices[i]];
+
+        if (element.type != 4) {
+            break;
+        }
+
+        auto other = element.emitter;
+
+        uint32_t otherVertices;
+        uint32_t otherIndices;
+        budget(other, otherVertices, otherIndices);
+
+        if (static_cast<int32_t>(other->m_blendMode) != blend) {
+            break;
+        }
+
+        uint32_t otherFlags = other->m_materialFlags;
+        uint32_t lit = otherFlags & 0x1;
+
+        if (lit != (flags & 0x1) || ((flags ^ otherFlags) & 0x2) || ((flags ^ otherFlags) & 0x4)
+            || M2CompareTextures(other->m_texture, texture) != 0
+            || maxVertices < otherVertices + vertexCount
+            || 0x20000 < otherIndices + indexCount
+            || (lit && !M2LightingNearlyEqual(element.model->m_currentLighting, lighting))) {
+            break;
+        }
+
+        batched++;
+        vertexCount += otherVertices;
+        indexCount += otherIndices;
+    }
+
+    if (!vertexCount || !indexCount) {
+        return 0;
+    }
+
+    C44Matrix savedView;
+    GxXformView(savedView);
+
+    const C44Matrix& viewInv = this->m_scene->m_viewInv;
+    C3Vector cameraPosition = { viewInv.d0, viewInv.d1, viewInv.d2 };
+    this->SetupParticleTransform(cameraPosition);
+
+    auto buffer = GxBufStream(GxPoolTarget_Vertex, stride, vertexCount);
+    auto vertices = GxBufLock(buffer);
+
+    uint32_t submittedVertices = 0;
+    uint32_t submittedIndices = 0;
+    CM2ParticleEmitter* last = emitter;
+
+    for (uint32_t i = 0; i < batched; i++) {
+        last = elements[indices[first + i]].emitter;
+        last->Draw(this->m_curModel->m_particleRelative, vertices, i == 0);
+
+        uint32_t drawnVertices = last->m_verticesPerParticle * last->m_drawnCount;
+        submittedVertices += drawnVertices;
+        vertices += drawnVertices * stride;
+        submittedIndices += last->m_indicesPerParticle * last->m_drawnCount;
+    }
+
+    GxBufUnlock(buffer, 0);
+
+    if (submittedVertices && submittedIndices) {
+        this->SubmitParticleBatch(last, buffer, format, submittedVertices, submittedIndices);
+    }
+
+    GxXformSetView(savedView);
+
+    return batched - 1;
 }
 
 // ref: FUN_00820f40
