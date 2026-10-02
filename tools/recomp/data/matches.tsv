@@ -30,6 +30,8 @@ addr	how	frozen	evidence
 004024d0	annotated	ForceAdditiveParticleSortCallback	tag in src/model/Model2.cpp
 00402760	string	M2RegisterCVars	unique "M2BatchDoodads"
 00402b90	annotated	HasCommonArchiveLayout	tag in src/client/Archive.cpp
+00403200	annotated	TimingMethodCallback	tag in src/client/Client.cpp
+004032a0	annotated	TimingInfoCommand	tag in src/client/Client.cpp
 00403320	cvar	LocaleChangedCallback	callback of CVar::Register("locale") on both sides
 00403760	callgraph	TSGrowableArray<char *>::Reserve	only unmatched callee of 00405a10=AddPatchArchive
 00403880	override	CDataStore::~CDataStore	
@@ -55,13 +57,14 @@ addr	how	frozen	evidence
 00407f40	annotated	C44Matrix::Identity	tag in lib/typhoon/tempest/matrix/C44Matrix.cpp
 00408030	annotated	GxXformSetProjection	tag in src/gx/Transform.cpp
 00408050	annotated	GxXformSetView	tag in src/gx/Transform.cpp
-00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint
+00408070	callorder	GxXformViewport	same slot between linked calls in 0040a270=Paint, 00687a90=CGxDevice::ICursorDraw
 004080e0	annotated	GxXformView	tag in src/gx/Transform.cpp
+00408210	annotated	GxShaderConstantsSet	tag in src/gx/Shader.cpp
 00408240	annotated	GxRsSet	tag in src/gx/RenderState.cpp
 00408270	annotated	C3VectorStackArray::Init	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 00408520	annotated	KeepAlive	tag in src/gx/LoadingScreen.cpp
 00408bf0	annotated	GxRsSet	tag in src/gx/RenderState.cpp
-00408c30	callorder	GxRsSetAlphaRef	same slot between linked calls in 007e4480=ShadowProjectBlob
+00408c30	callorder	GxRsSetAlphaRef	same slot between linked calls in 00687a90=CGxDevice::ICursorDraw, 007e4480=ShadowProjectBlob
 004090c0	annotated	DrawBar	tag in src/gx/LoadingScreen.cpp
 00409550	annotated	LoadingScreenFinish	tag in src/gx/LoadingScreen.cpp
 00409670	override	GxRsPush	
@@ -76,14 +79,14 @@ addr	how	frozen	evidence
 004209b0	callgraph	CVar::GetInt	only unmatched callee of 00401b60=ClientRegisterConsoleCommands
 00421800	sticky	sprintf	held from the previous run, where it was sticky
 00421880	callgraph	SFile::GetBasePath	only unmatched callee of 00768340=CVar::Initialize
-004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 006aff10=CBLPFile::Open, 00876d90=CShaderEffectManager::LoadEffectFile
+004218c0	callgraph	SFile::GetFileSize	only unmatched callee of 006ab220=TgaFile::ReadRle, 006aff10=CBLPFile::Open, 00876d90=CShaderEffectManager::LoadEffectFile
+00421bb0	annotated	SFile::SetFilePointer	tag in src/util/SFile.cpp
 00421ca0	callorder	SFile::Unload	same slot between linked calls in 004dcd60=Script_GetCreditsText
 00421f50	string	CalculateMpqHashSha1	unique "ARCHIVE"
 00422130	override	SFile::IsStreamingMode	
 00422140	callgraph	SFile::IsStreamingTrial	only unmatched callee of 004e0dd0=Script_GetCreateBackgroundModel
 00422530	override	SFile::Read	
 00422910	override	SFile::Close	
-00424b10	sticky	FrameXML_SetProgressCallback	held from the previous run, where it was sticky
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
 00424f80	callgraph	SFile::Open	only unmatched callee of 007bd480=CMap::SafeOpen
@@ -94,7 +97,7 @@ addr	how	frozen	evidence
 0042cea0	callgraph	OsMakeDirectory	only unmatched callee of 00461d10=OsCreateDirectory
 00431f30	annotated	CMapObjGroup::GetLiquidType	tag in src/world/map/CMapObjGroup.cpp
 00461c00	callgraph	OsDirectoryExists	only unmatched callee of 00766320=s_CreatePathDirectories
-00461d10	callgraph	OsCreateDirectory	only unmatched callee of 00683670=CGxDevice::LogOpen
+00461d10	callgraph	OsCreateDirectory	only unmatched callee of 00683670=CGxDevice::LogOpen, 0086b0d0=OsLogCpuInfo
 00461ef0	annotated	OsFileTranslateOpenFlags	tag in src/util/Filesystem.cpp
 00462000	callgraph	OsFileEnumerate	only unmatched callee of 00406740=ProcessRunOnceFiles
 00464580	annotated	CRandom::uint32	tag in lib/typhoon/tempest/random/CRandom.cpp
@@ -166,6 +169,10 @@ addr	how	frozen	evidence
 00482870	annotated	NearlyEqual	tag in lib/typhoon/tempest/Intersect.cpp
 00482970	annotated	C3Vector::operator+=	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 004829a0	annotated	operator-	tag in lib/typhoon/tempest/vector/C3Vector.cpp
+004829d0	annotated	GxBufLock	tag in src/gx/Buffer.cpp
+004829f0	annotated	GxBufUnlock	tag in src/gx/Buffer.cpp
+00482a20	annotated	GxBufStream	tag in src/gx/Buffer.cpp
+00482a40	annotated	GxDraw	tag in src/gx/Draw.cpp
 00482a60	callgraph	RibbonVertexColor	only unmatched callee of 00980090=CM2Ribbon::Update
 00482aa0	override	FrameScript_Object::GetDisplayName	
 00482ac0	annotated	CLayoutFrame::HasPoints	tag in src/ui/CLayoutFrame.cpp
@@ -338,6 +345,8 @@ addr	how	frozen	evidence
 00492f70	string	CSimpleFrame::LoadXML_Attributes	unique "Attribute"
 004932c0	annotated	CSimpleFrame::LoadXML	tag in src/ui/simple/CSimpleFrame.cpp
 00493ad0	callgraph	CSimpleFrame::RunOnLeaveScript	only unmatched callee of 00495710=CSimpleFrame::OnLayerCursorExit
+00493bf0	annotated	GxCapsWindowSizeInScreenCoords	tag in src/gx/Gx.cpp
+00493c80	annotated	CursorSetImage	tag in src/ui/game/Cursor.cpp
 00494d20	override	CFrameStrata::FrameOccluded	
 00495060	callorder	CSimpleTop::CompressStrata	same slot between linked calls in 004951a0=CSimpleTop::RaiseFrame
 004951a0	callgraph	CSimpleTop::RaiseFrame	only unmatched callee of 0048e9a0=CSimpleFrame::Raise
@@ -345,6 +354,7 @@ addr	how	frozen	evidence
 00495710	callgraph	CSimpleFrame::OnLayerCursorExit	only unmatched callee of 00495900=CSimpleTop::UnregisterForEvent
 00495880	callgraph	CSimpleTop::RegisterForEvent	only unmatched callee of 0048ea40=CSimpleFrame::RegisterForEvents, 0048f6a0=CSimpleFrame::EnableEvent
 00495900	callgraph	CSimpleTop::UnregisterForEvent	only unmatched callee of 0048f6f0=CSimpleFrame::DisableEvent
+00495eb0	callorder	CSimpleTop::CSimpleTop	same slot between linked calls in 004da5f0=CGlueMgr::Resume
 00496390	override	CSimpleFontStringAttributes::SetJustifyH	
 004963c0	override	CSimpleFontStringAttributes::SetJustifyV	
 00496f70	callgraph	CSimpleFont::GetFont	only unmatched callee of 0081b7b0=Script_CreateFont
@@ -641,12 +651,14 @@ addr	how	frozen	evidence
 004b5430	callgraph	RampRect	only unmatched callee of 007e3980=ShadowSetLOD
 004b54f0	annotated	TextureHasAlpha	tag in src/gx/Texture.cpp
 004b5510	annotated	CalcLevelCountFlat	tag in src/gx/Texture.cpp
+004b5550	annotated	TextureBuildMissingMips	tag in src/gx/Texture.cpp
 004b55e0	annotated	TextureFreeMem	tag in src/gx/Texture.cpp
 004b5600	annotated	TextureGetFileType	tag in src/component/Texture.cpp
 004b5670	annotated	TextureBuildAlternateName	tag in src/component/Texture.cpp
 004b5750	annotated	TextureGetTexFlags	tag in src/gx/Texture.cpp
 004b5800	annotated	TextureHasPendingData	tag in src/gx/Texture.cpp
 004b58d0	annotated	CBLPFile::CBLPFile	tag in src/gx/blp/CBLPFile.cpp
+004b5a00	annotated	TextureLoadTgaMips	tag in src/gx/Texture.cpp
 004b6280	annotated	TextureGetRefCount	tag in src/gx/Texture.cpp
 004b6550	annotated	AsyncTextureWait	tag in src/gx/Texture.cpp
 004b6610	annotated	TextureGetDimensions	tag in src/gx/Texture.cpp
@@ -658,6 +670,8 @@ addr	how	frozen	evidence
 004b6fa0	override	TextureCacheGetTexture	
 004b7020	override	TextureCacheGetTexture	
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
+004b8070	annotated	TextureLoadBlp	tag in src/gx/Texture.cpp
+004b81d0	annotated	TextureLoadImage	tag in src/gx/Texture.cpp
 004b8770	override	CTexture::CTexture	
 004b8910	override	CreateBlpSync	
 004b8a50	override	CreateBlpAsync	
@@ -804,7 +818,7 @@ addr	how	frozen	evidence
 004d98a0	callgraph	CCharacterSelection::GetCharacterDisplay	only unmatched callee of 004e3620=Script_GetSelectBackgroundModel
 004d98d0	string	CGlueMgr::StatusDialogClick	score 0.53 shared login; patchdownload
 004d9bd0	string	CGlueMgr::EnterWorld	unique "CHAR_RENAME_DESCRIPTION"
-004da5f0	string	CGlueMgr::Resume	unique "Interface\GlueXML\GlueXML.toc"
+004da5f0	string	CGlueMgr::Resume	unique "Interface\Cursor\Point.blp"
 004dab40	string	CGlueMgr::PollAccountLogin	unique "AUTH_DB_BUSY_URL"
 004db9f0	string	CGlueMgr::Initialize	unique "ModelFFX"
 004dbc70	string	GlueScriptEventsInitialize	unique "ACCOUNT_MESSAGES_AVAILABLE"
@@ -2201,8 +2215,18 @@ addr	how	frozen	evidence
 00614e60	table	Script_GetVehicleUIIndicator	binding "GetVehicleUIIndicator" in s_UnitFunctions ~ table 00ad21d8
 00614ef0	table	Script_GetVehicleUIIndicatorSeat	binding "GetVehicleUIIndicatorSeat" in s_UnitFunctions ~ table 00ad21d8
 006160b0	annotated	CopyCursorImage	tag in src/ui/game/Cursor.cpp
+00616220	annotated	CursorDestroyItemImage	tag in src/ui/game/Cursor.cpp
 00616260	annotated	GetCursorMode	tag in src/ui/game/Cursor.cpp
 00616270	annotated	SetCursorMode	tag in src/ui/game/Cursor.cpp
+00616280	annotated	CursorGetIndex	tag in src/ui/game/Cursor.cpp
+006162c0	annotated	CursorUpdate	tag in src/ui/game/Cursor.cpp
+006163b0	annotated	CursorInitialize	tag in src/ui/game/Cursor.cpp
+006164b0	annotated	CursorApplyItemImage	tag in src/ui/game/Cursor.cpp
+006165b0	annotated	CursorSetItemTexture	tag in src/ui/game/Cursor.cpp
+006167e0	annotated	CursorClearItem	tag in src/ui/game/Cursor.cpp
+00616800	annotated	CursorSet	tag in src/ui/game/Cursor.cpp
+00616830	annotated	CursorSetCustom	tag in src/ui/game/Cursor.cpp
+00616920	annotated	CursorReset	tag in src/ui/game/Cursor.cpp
 00616a30	annotated	CGxDevice::XformPush	tag in src/gx/CGxDevice.cpp
 00616af0	annotated	GxMasterEnable	tag in src/gx/Device.cpp
 00616b10	annotated	CGUnit_C::GetDisplayID	tag in src/object/client/CGUnit_C.cpp
@@ -2303,7 +2327,7 @@ addr	how	frozen	evidence
 0067cbd0	callgraph	GetI32	only unmatched callee of 006354d0=ReceiveItemQueryResponse
 00681210	annotated	GxAdapterMonitorModes	tag in src/gx/Adapter.cpp
 00681230	annotated	GxVertexBufferFormatSize	tag in src/gx/Buffer.cpp
-00681240	callgraph	GxVertexAttribOffset	only unmatched callee of 0097a2e0=CM2ParticleEmitter::SetupVertexCursor
+00681240	callgraph	GxVertexAttribOffset	only unmatched callee of 007d43f0=Liquid::CMeshGeomFactory::Build, 0097a2e0=CM2ParticleEmitter::SetupVertexCursor
 00681260	annotated	GxVertexBufferFormatHasAttrib	tag in src/gx/Buffer.cpp
 006813b0	override	GxSceneClear	
 006813d0	annotated	GxTexUpdate	tag in src/gx/Texture.cpp
@@ -2323,6 +2347,7 @@ addr	how	frozen	evidence
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
+00681cb0	annotated	GxTexCreate	tag in src/gx/Texture.cpp
 00681f20	annotated	GxTexUpdate	tag in src/gx/Texture.cpp
 00681f60	override	GxXformSetViewport	
 00682130	annotated	GxXformViewProj	tag in src/gx/Transform.cpp
@@ -2336,7 +2361,8 @@ addr	how	frozen	evidence
 00682cb0	annotated	CGxDevice::DeviceCreate	tag in src/gx/CGxDevice.cpp
 00682cd0	annotated	CGxDevice::DeviceCreate	tag in src/gx/CGxDevice.cpp
 00682cf0	annotated	CGxDevice::DeviceDestroy	tag in src/gx/CGxDevice.cpp
-00682d20	callgraph	GxCaps	only unmatched callee of 008740d0=ShadowMapQualitySupported
+00682d00	annotated	CGxDevice::DeviceSetBaseMipLevel	tag in src/gx/CGxDevice.cpp
+00682d20	sticky	GxCaps	held from the previous run, where it was sticky
 00682d40	annotated	CGxDevice::IDevIsWindowed	tag in src/gx/CGxDevice.cpp
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
 00682d70	override	CGxDevice::DeviceCurWindow	
@@ -2359,8 +2385,12 @@ addr	how	frozen	evidence
 00683150	annotated	CGxDevice::BufLock	tag in src/gx/CGxDevice.cpp
 00683180	annotated	CGxDevice::BufUnlock	tag in src/gx/CGxDevice.cpp
 006833a0	annotated	CGxDevice::ShaderConstantsClear	tag in src/gx/CGxDevice.cpp
+006833e0	annotated	CGxDevice::ShaderConstantsSet	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
 00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
+006835e0	annotated	CGxDevice::ICursorDestroy	tag in src/gx/CGxDevice.cpp
+00683610	annotated	CursorTexCallback	tag in src/gx/CGxDevice.cpp
+00683640	annotated	CGxDevice::CursorSetVisible	tag in src/gx/CGxDevice.cpp
 00683670	annotated	CGxDevice::LogOpen	tag in src/gx/CGxDevice.cpp
 006836b0	annotated	CGxDevice::LogClose	tag in src/gx/CGxDevice.cpp
 006836d0	annotated	CGxDevice::ILimitFrameRate	tag in src/gx/CGxDevice.cpp
@@ -2369,6 +2399,14 @@ addr	how	frozen	evidence
 00683ae0	annotated	CGxTexFlags::operator!=	tag in src/gx/texture/CGxTex.cpp
 00683b90	annotated	CGxMatrixStack::CGxMatrixStack	tag in src/gx/CGxMatrixStack.cpp
 00683ce0	annotated	CGxDevice::IClipToWindow	tag in src/gx/CGxDevice.cpp
+00683d60	annotated	SizingAspectTop	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683db0	annotated	SizingAspectBottom	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683e00	annotated	SizingAspectLeft	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683e50	annotated	SizingAspectRight	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683ea0	annotated	SizingMinLeft	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683ed0	annotated	SizingMinRight	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683f00	annotated	SizingMinTop	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00683f30	annotated	SizingMinBottom	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00684070	annotated	CGxGammaRamp::Build	tag in src/gx/CGxDevice.cpp
 006840f0	annotated	CGxDevice::DeviceSetFormat	tag in src/gx/CGxDevice.cpp
 00684170	annotated	CGxDevice::DeviceSetGamma	tag in src/gx/CGxDevice.cpp
@@ -2391,8 +2429,11 @@ addr	how	frozen	evidence
 006848a0	annotated	CGxDevice::TexMarkForUpdate	tag in src/gx/CGxDevice.cpp
 00684900	annotated	CGxDevice::ITexMarkAsUpdated	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
+00684ad0	annotated	CGxDevice::ICursorCreate	tag in src/gx/CGxDevice.cpp
+00684b50	annotated	CGxDevice::CursorUnlock	tag in src/gx/CGxDevice.cpp
 00684ba0	annotated	CGxDevice::ILogWrite	tag in src/gx/CGxDevice.cpp
 00684c20	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
+00684c40	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
 00684d10	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
 00684d70	annotated	GxWindowFitToWorkArea	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00684fe0	annotated	CGxDevice::DeviceOverride	tag in src/gx/CGxDevice.cpp
@@ -2429,10 +2470,13 @@ addr	how	frozen	evidence
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00687980	annotated	CGxDevice::TexDestroy	tag in src/gx/CGxDevice.cpp
 006879f0	annotated	CGxDevice::QueryDestroy	tag in src/gx/CGxDevice.cpp
+00687a90	annotated	CGxDevice::ICursorDraw	tag in src/gx/CGxDevice.cpp
 00688230	annotated	CGxPool::Invalidate	tag in src/gx/buffer/CGxPool.cpp
 00688260	annotated	CGxPool::Discard	tag in src/gx/buffer/CGxPool.cpp
 00688290	override	CGxDevice::BufDestroy	
+00688690	annotated	CGxDevice::CGxDevice	tag in src/gx/CGxDevice.cpp
 00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
+006890c0	annotated	CGxDevice::~CGxDevice	tag in src/gx/CGxDevice.cpp
 006897c0	annotated	CGxDevice::ShaderCreate	tag in src/gx/CGxDevice.cpp
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
 00689ef0	annotated	CGxDevice::NewD3d	tag in src/gx/CGxDevice.cpp
@@ -2440,8 +2484,16 @@ addr	how	frozen	evidence
 0068e180	annotated	CGxDeviceD3d::ICreateD3dIB	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e1f0	annotated	CGxDeviceD3d::IPoolRelease	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e250	annotated	CGxDeviceD3d::ISetPresentParms	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e4a0	annotated	CGxDeviceD3d::DeviceSetBaseMipLevel	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e4c0	annotated	CGxDeviceD3d::DeviceSetGamma	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e570	annotated	CGxDeviceD3d::DeviceAdapterInfo	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e720	annotated	CGxDeviceD3d::PoolDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e750	annotated	CGxDeviceD3d::CursorSetVisible	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e7e0	annotated	CGxDeviceD3d::CursorUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e810	annotated	CGxDeviceD3d::ICursorDraw	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e900	annotated	CGxDeviceD3d::ICursorCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e980	annotated	CGxDeviceD3d::StereoSetConvergence	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e9a0	annotated	CGxDeviceD3d::StereoSetSeparation	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e9c0	annotated	CGxDeviceD3d::QueryCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ea10	annotated	CGxDeviceD3d::QueryBegin	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ea90	annotated	CGxDeviceD3d::QueryGetParam	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2449,6 +2501,7 @@ addr	how	frozen	evidence
 0068ebb0	annotated	CGxDeviceD3d::ICreateWindow	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ed80	annotated	CGxDeviceD3d::ILoadD3dLib	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ee20	annotated	CGxDeviceD3d::ISetCaps	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068f370	annotated	PlaceholderTexCallback	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068f3d0	annotated	CGxDeviceD3d::ICreateD3dDevice	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068f6a0	annotated	CGxDeviceD3d::IEnsureCaptureTarget	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068f770	annotated	CGxDeviceD3d::RenderTargetSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2479,9 +2532,11 @@ addr	how	frozen	evidence
 0069fe80	annotated	CGxDeviceD3d::DeviceSetGammaRamp	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069ff40	annotated	CGxDeviceD3d::DeviceOverride	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069ff80	annotated	CGxDeviceD3d::PoolSizeSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a00c0	annotated	CGxDeviceD3d::ICursorDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a0190	annotated	CGxDeviceD3d::QueryDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a0240	annotated	CGxDeviceD3d::QueryEnd	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a0310	annotated	CGxDeviceD3d::QueryGetData	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a0360	annotated	CGxDeviceD3d::WindowProcD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a1690	annotated	CGxDeviceD3d::IReleaseD3dQueries	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a1c60	annotated	CGxDeviceD3d::IReleaseD3dPools	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2aa0	annotated	CGxDeviceD3d::IReleaseD3dTextures	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2495,6 +2550,7 @@ addr	how	frozen	evidence
 006a3420	annotated	CGxDeviceD3d::ISceneEnd	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3450	annotated	CGxDeviceD3d::ScenePresent	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3620	annotated	CGxDeviceD3d::Draw	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a3720	annotated	CGxDeviceD3d::GxVertexDecl::Matches	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
 006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
@@ -2514,6 +2570,7 @@ addr	how	frozen	evidence
 006a4af0	annotated	CGxDeviceD3d::ISetTexGen	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a4c30	annotated	CGxDeviceD3d::IRsSendToHw	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
+006a5680	annotated	CGxDeviceD3d::IReleaseD3dVertexDecls	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
 006a5940	override	CGxDeviceD3d::IStateSync	
 006a5a00	annotated	CGxDeviceD3d::CapsWindowSize	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2541,18 +2598,26 @@ addr	how	frozen	evidence
 006aa3b0	annotated	TgaFile::ValidateColorDepth	tag in src/gx/texture/TgaFile.cpp
 006aa3e0	annotated	TgaFile::ImageDataOffset	tag in src/gx/texture/TgaFile.cpp
 006aa420	annotated	TgaFile::AddAlphaChannel	tag in src/gx/texture/TgaFile.cpp
+006aa520	annotated	TgaFile::ReadUncompressed	tag in src/gx/texture/TgaFile.cpp
 006aa630	annotated	TgaFile::DecodeRle	tag in src/gx/texture/TgaFile.cpp
 006aa700	annotated	TgaFile::SetTopDown	tag in src/gx/texture/TgaFile.cpp
 006aa820	annotated	TgaFile::GetImage	tag in src/gx/texture/TgaFile.cpp
 006aa840	annotated	TgaFile::GetImage32	tag in src/gx/texture/TgaFile.cpp
+006aa870	annotated	TgaFile::RemoveAlphaChannel	tag in src/gx/texture/TgaFile.cpp
 006aaf40	annotated	TgaFile::Close	tag in src/gx/texture/TgaFile.cpp
 006aafb0	annotated	TgaFile::Open	tag in src/gx/texture/TgaFile.cpp
+006ab0e0	annotated	TgaFile::ExpandColorMap	tag in src/gx/texture/TgaFile.cpp
+006ab220	annotated	TgaFile::ReadRle	tag in src/gx/texture/TgaFile.cpp
+006ab390	annotated	TgaFile::AddAlpha	tag in src/gx/texture/TgaFile.cpp
+006ab450	annotated	TgaFile::ReadColorMapped	tag in src/gx/texture/TgaFile.cpp
+006ab4b0	annotated	TgaFile::ReadImage	tag in src/gx/texture/TgaFile.cpp
 006ab5c0	annotated	PixelFormatBitsPerPixel	tag in src/gx/Texture.cpp
 006ab620	annotated	PixelFormatLevelSize	tag in src/gx/Texture.cpp
 006ab6c0	annotated	PixelFormatChainSize	tag in src/gx/Texture.cpp
 006ab700	annotated	CalcLevelCount	tag in src/gx/Texture.cpp
 006ab760	annotated	AllocMipChain	tag in src/gx/Texture.cpp
 006ab810	annotated	BuildMipLevelPointers	tag in src/gx/Texture.cpp
+006ab860	annotated	TgaDownsample	tag in src/gx/texture/TgaFile.cpp
 006abac0	annotated	Dxt5ExpandAlpha	tag in src/gx/Blit.cpp
 006abe90	annotated	Blit_Argb4444_Abgr8888	tag in src/gx/Blit.cpp
 006abf40	annotated	Blit_Argb8888_Abgr8888	tag in src/gx/Blit.cpp
@@ -2588,7 +2653,9 @@ addr	how	frozen	evidence
 006af6a0	annotated	CBLPFile::GetMipPixelCount	tag in src/gx/blp/CBLPFile.cpp
 006af6e0	annotated	CBLPFile::Unlock	tag in src/gx/blp/CBLPFile.cpp
 006af730	annotated	CBLPFile::GetMipSize	tag in src/gx/blp/CBLPFile.cpp
+006afce0	annotated	CBLPFile::Lock2	tag in src/gx/blp/CBLPFile.cpp
 006aff10	annotated	CBLPFile::Open	tag in src/gx/blp/CBLPFile.cpp
+006affd0	annotated	CBLPFile::LockChain2	tag in src/gx/blp/CBLPFile.cpp
 006b0850	callorder	ClientConnection::Cleanup	same slot between linked calls in 004d98d0=CGlueMgr::StatusDialogClick
 006b0970	override	ClientServices::Connection	
 006b0990	callgraph	ClientServices::LoginConnection	only unmatched callee of 004de450=Script_RealmListUpdateRate, 00530f20=BattlenetUI::Script_IsBNLogin
@@ -2891,15 +2958,17 @@ addr	how	frozen	evidence
 00764f30	string	ConsoleScreenInitialize	score 0.50 shared Fonts\ARIALN.ttf
 00765270	override	ConsoleWrite	
 00765360	override	ConsoleWriteA	
+007653b0	annotated	ConsolePrintf	tag in src/console/Console.cpp
 00765880	override	Script_AccessDenied	
 007658a0	annotated	ConsoleCommandExecute	tag in src/console/Command.cpp
 00766320	annotated	s_CreatePathDirectories	tag in src/console/CVar.cpp
 00766400	annotated	s_LoadFromFile	tag in src/console/CVar.cpp
 00766530	annotated	CVar::Load	tag in src/console/CVar.cpp
 007665d0	string	CVar::RemoveFile	score 0.50 shared WTF\%s
+00766700	annotated	CVar::SetReadOnly	tag in src/console/CVar.cpp
 007667b0	callorder	CVar::InternalSet	same slot between linked calls in 007668c0=CVar::Set
 00766860	annotated	CVarBitField::GetBit	tag in src/console/CVar.cpp
-007668c0	callgraph	CVar::Set	only unmatched callee of 005f4cb0=AddOnSetVersionCheck
+007668c0	callgraph	CVar::Set	only unmatched callee of 00403200=TimingMethodCallback, 005f4cb0=AddOnSetVersionCheck
 00766940	annotated	CVar::SetInt	tag in src/console/CVar.cpp
 00766ab0	callgraph	CVar::Update	only unmatched callee of 007698b0=UpdateGxCVars
 00767030	annotated	s_WriteCVars	tag in src/console/CVar.cpp
@@ -2915,7 +2984,7 @@ addr	how	frozen	evidence
 007689e0	callgraph	ConsoleCommandUnregister	only unmatched callee of 007673f0=ConsoleDestroyClientCVar
 00769100	callgraph	ConsoleCommandRegister	only unmatched callee of 007691c0=ConsoleCommandInitialize
 007691c0	string	ConsoleCommandInitialize	unique "Provides help information about a command."
-00769220	callgraph	ConsoleDeviceExists	only unmatched callee of 00765270=ConsoleWrite
+00769220	callgraph	ConsoleDeviceExists	only unmatched callee of 007653b0=ConsolePrintf
 00769240	annotated	CVGxColorBitsCallback	tag in src/console/Device.cpp
 007692d0	annotated	CVGxDepthBitsCallback	tag in src/console/Device.cpp
 00769360	annotated	CVGxTripleBufferCallback	tag in src/console/Device.cpp
@@ -4007,7 +4076,7 @@ addr	how	frozen	evidence
 0084e350	callgraph	lua_pushstring	only unmatched callee of 004e06f0=Script_GetFactionForRace, 004e0900=Script_GetHairCustomization, 004e0970=Script_GetFacialHairCustomization
 0084e3a0	override	lua_pushvfstring	
 0084e3d0	callgraph	lua_pushfstring	only unmatched callee of 009858b0=Script_PlaySound
-0084e400	callorder	lua_pushcclosure	same slot between linked calls in 0084fc00=luaL_openlib
+0084e400	callorder	lua_pushcclosure	same slot between linked calls in 00819bb0=FrameScript_Initialize
 0084e4d0	override	lua_pushboolean	
 0084e500	callorder	lua_pushlightuserdata	same slot between linked calls in 00819880=FrameScript_Object::RegisterScriptObject
 0084e530	order	lua_pushthread	definition order between lua_pushlightuserdata and lua_gettable in vendor/lua-5.1.3/src/lapi.c
@@ -4243,15 +4312,31 @@ addr	how	frozen	evidence
 00869620	annotated	OsGuiSetWindowResizeLock	tag in src/client/gui/android/OsGui.cpp
 00869630	annotated	OsGuiGetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
 0086a070	annotated	OsGuiSetMouseSpeed	tag in src/client/gui/android/OsGui.cpp
+0086a0d0	annotated	OsInputGetMousePosition	tag in src/event/android/Input.cpp
+0086ab30	annotated	OsTimeManager::Calibrate	tag in lib/common/common/Time.cpp
+0086ad50	annotated	OsTimeGetTestError	tag in lib/common/common/Time.cpp
+0086ad60	annotated	OsTimeGetTimingMethod	tag in lib/common/common/Time.cpp
+0086ad70	annotated	OsTimeGetTimingMethodName	tag in lib/common/common/Time.cpp
+0086adc0	annotated	OsTimeManager::GetTimeMs	tag in lib/common/common/Time.cpp
 0086ae20	override	OsGetAsyncTimeMs	
+0086ae30	annotated	OsGetAsyncClocks	tag in lib/common/common/Time.cpp
+0086ae70	annotated	OsGetAsyncClocksPerSecond	tag in lib/common/common/Time.cpp
+0086aea0	annotated	OsTimeManager::OsTimeManager	tag in lib/common/common/Time.cpp
+0086af20	annotated	OsTimeStartup	tag in lib/common/common/Time.cpp
+0086af60	annotated	OsTimeShutdown	tag in lib/common/common/Time.cpp
 0086af90	override	OsGetCpuidInfo	
+0086b0c0	annotated	OsEnableCpuLog	tag in src/util/win/OsSystem.cpp
+0086b0d0	annotated	OsLogCpuInfo	tag in src/util/win/OsSystem.cpp
 0086b240	annotated	OsGetProcessorCount	tag in src/util/win/OsSystem.cpp
-0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate, 006a3450=CGxDeviceD3d::ScenePresent
+0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate, 0086ab30=OsTimeManager::Calibrate
 0086b2d0	annotated	OsGetVersion	tag in src/util/win/OsSystem.cpp
 0086b480	annotated	OsGetComputerName	tag in src/util/win/OsSystem.cpp
 0086b4a0	annotated	OsGetUserName	tag in src/util/win/OsSystem.cpp
 0086b4c0	annotated	OsGetPhysicalMemory	tag in src/util/win/OsSystem.cpp
+0086b600	annotated	OsParseCpuSpeedFromBrand	tag in src/util/win/OsSystem.cpp
 0086b710	annotated	OsQueryCpuSpeedFromPowerInfo	tag in src/util/win/OsSystem.cpp
+0086b9a0	annotated	OsGetCpuInfo	tag in src/util/win/OsSystem.cpp
+0086bb80	annotated	OsGetCpuFeatures	tag in src/util/win/OsSystem.cpp
 0086bd80	string	OsBuildFontFilePath	unique "Fonts"
 0086c6a0	annotated	OsGuiGetWindow	tag in src/client/gui/android/OsGui.cpp
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
@@ -4344,6 +4429,9 @@ addr	how	frozen	evidence
 00889e50	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
+008a09ba	override	NvAPI_Initialize	
+008a0fac	callorder	NvAPI_Stereo_IsEnabled	same slot between linked calls in 0068f3d0=CGxDeviceD3d::ICreateD3dDevice
+008a0fd6	callorder	NvAPI_Stereo_SetSeparation	same slot between linked calls in 006a3450=CGxDeviceD3d::ScenePresent
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a1700	annotated	Liquid::CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
 008a1750	override	Liquid::TextureScaleMultiplier	
@@ -4394,7 +4482,7 @@ addr	how	frozen	evidence
 008a3810	annotated	Liquid::SetupWaveConstants	tag in src/world/map/LiquidMaterialSettings.cpp
 008a38b0	annotated	Liquid::SetupLightConstants	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3c90	annotated	Liquid::SetupSunConstants	tag in src/world/map/LiquidMaterialSettings.cpp
-008a3da0	callgraph	Liquid::DrawWaterMaterial	only unmatched callee of 008a5590=Liquid::CMaterialWater::Draw, 008a5900=Liquid::CMaterialWaterNoSpec::Draw
+008a3da0	sticky	Liquid::DrawWaterMaterial	held from the previous run, where it was sticky
 008a3e00	annotated	Liquid::CMaterialProcWater::EnsureShaders	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3ec0	annotated	Liquid::CMaterialProcWater::~CMaterialProcWater	tag in src/world/map/LiquidMaterialSettings.cpp
 008a3f70	string	Liquid::CMaterialWater::EnsureShaders	unique "psLiquidWater"

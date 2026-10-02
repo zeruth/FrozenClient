@@ -1811,12 +1811,12 @@
     "note": "the order matcher proposed `TextureFreeGxTex` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
   },
   "004b7220": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `TextureAllocMippedImg` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "ported",
+    "note": "TextureAllocMippedImg, ported 2026-10-01 from the disassembly: images 8..256 on a side in a cached format family come from the CMipBitsCache bucket for their shape, anything else from AllocMipChain (lines 0xd72/0xd8a). The 2026-09-23 rejection was of an order-matcher guess against frozen's then-stub, which answered null for every cacheable shape; the name and the function now agree."
   },
   "004b7300": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GxTexUpdate` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "ported",
+    "note": "TextureFreeMippedImg, ported 2026-10-01: the cacheable shapes go back on their bucket list through a spare node (allocated when none is free), the rest are freed. Replaces the 2026-09-23 rejection of an order-matcher guess (GxTexUpdate), which was rightly refused."
   },
   "004b73e0": {
     "status": "unlinked",
@@ -1843,8 +1843,8 @@
     "note": "the order matcher proposed `MippedImgSet` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
   },
   "004b78a0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `RequestImageDimensions` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "ported",
+    "note": "TextureLoadTga, ported 2026-10-01: ARGB8888 always, further levels from _mip%d.tga (FUN_004b5a00), the rest filtered (FUN_004b5550). Register arguments recovered from the call site in FUN_004b81d0: ECX is the is-opaque out pointer, EAX where the extension is written. Replaces the 2026-09-23 rejection of an order-matcher guess (RequestImageDimensions)."
   },
   "004b7aa0": {
     "status": "unlinked",
@@ -3603,8 +3603,8 @@
     "note": "Checked 2026-10-01 against the decompilation, condition for condition: needs an update and a context; create when creation is pending or there is no object; then, if an object exists, upload when there is a callback and clear the update. The branch gate reads 0.44 only because the reference compiles each || chain into separate compares."
   },
   "0068fe80": {
-    "status": "unlinked",
-    "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the CGxDeviceD3d destructor: stores the vtable, frees the vertex-declaration cache at +0x3ad8, runs the base destructor (FUN_006890c0) and frees the object when asked. Frozen declares no destructor for the device."
+    "status": "ported",
+    "note": "CGxDeviceD3d::~CGxDeviceD3d, declared 2026-10-01. Its body in the reference only frees the vertex-declaration cache, which frozen holds as a member that frees itself, and runs the base destructor (FUN_006890c0), which frozen now has too."
   },
   "00683760": {
     "status": "excluded",
@@ -3687,5 +3687,13 @@
     "frozen": "NvAPI_Initialize",
     "status": "diverged",
     "note": "nvapi.lib's initialize (vendor code linked into the reference): loads the driver DLL, initializes through nvapi_QueryInterface(0x0150E828) and resolves every entry point by id. Ported 2026-10-02 in src/gx/d3d/NvApi.cpp with the same ids and failure values. Diverged for the platform only: the reference is 32-bit and loads nvapi.dll, frozen is 64-bit and loads nvapi64.dll."
+  },
+  "00424b10": {
+    "status": "unlinked",
+    "note": "REJECTED sticky link to FrameXML_SetProgressCallback. This is an SFile existence check: it hands the name and a flag to FUN_00424780 with a 260-byte scratch path and answers whether the file resolves. TextureLoadTgaMips (FUN_004b5a00) calls it per _mip%d.tga file; frozen reaches the same question through SFile::FileExists, whose StormLib-backed SFile is not the reference's."
+  },
+  "006a1950": {
+    "status": "unlinked",
+    "note": "Identified 2026-10-01, not ported: device vtable slot 21 (+0x54) in both the D3D9 and D3D9Ex vtables, beside ICaptureRead at slot 20. Clips a rect to the window, grows a TSGrowableArray<uint32_t> to the rect's pixel count (rounded up to the array's granularity) and zero-fills it. No direct or vtable caller was found in the reference, so nothing in frozen needs it yet."
   }
 }
