@@ -470,6 +470,12 @@ class CM2Model {
         void GetBoundingSphere(CAaSphere& sphere);
         CAaSphere& GetDrawBoundingSphere(CAaSphere& sphere);
         void GetCollisionTriangles(const CAaBox& box, const C44Matrix& matrix, TSGrowableArray<M2CollisionTriangle>& triangles);
+        // Move the model's file read (and, with `textures`, its textures' reads) to the front of
+        // the queue, then the same for every model attached to it. ref: FUN_008250b0
+        void IncreasePriority(int32_t textures);
+        // How much of the model's files a streaming install has: the .m2 itself, plus one for
+        // the model having loaded. ref: FUN_008245b0
+        void GetLoadProgress(uint64_t* done, uint64_t* total);
         float GetAttachmentScale(uint32_t id);
         HCAMERA GetCameraByIndex(uint32_t index);
         C3Vector GetPosition();

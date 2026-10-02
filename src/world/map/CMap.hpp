@@ -132,6 +132,28 @@ class CMap {
         // The map is one global WMO with no terrain (DAT_00cf08f4), and the links to its
         // placement (DAT_00adfc04).
         static int32_t s_globalMapObj;
+        // The uniqueId the next global WMO placement is filed under: counts down from -2, so it
+        // can never meet a tile's own (DAT_00ce04a4).
+        static int32_t s_globalMapObjId;
+        // On a global-WMO map, the links to the entities placed on the map itself, where a
+        // terrain map would link them to chunks (DAT_00adfbf8).
+        static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_entityLinkList;
+        // A map has been loaded since the last MapMemInitialize (DAT_00cf08f0).
+        static int32_t s_mapLoaded;
+        // Per-frame tallies CMap::Update zeroes (DAT_00ce04c0, DAT_00ce04bc, DAT_00ce04ac); the
+        // frustum facet query adds to the second.
+        static int32_t s_frameCountC0;
+        static int32_t s_frameCountBC;
+        static int32_t s_frameCountAC;
+        // Streaming mode's load loop: how many entities / building groups round the target
+        // are still waiting on their files, flagging each as wanted; `progress` gets the share
+        // of `initial` that has arrived. ref: FUN_007b5e80, FUN_007b50b0
+        static int32_t CountPendingEntities(CMapChunk* chunk, float* progress, int32_t initial);
+        static int32_t CountPendingMapObjs(CMapChunk* chunk, float* progress, int32_t initial);
+        // A placed entity pushes its box up into the chunk or building group that holds it.
+        // ref: FUN_007b4fa0, FUN_007b55e0
+        static void GrowParentBounds(CMapStaticEntity* entity, CMapBaseObj* parent);
+        static void GrowParentsBounds(CMapStaticEntity* entity);
         static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_mapObjDefLinkList;
 
         // Cell pairs a map query collects, two ints per cell (DAT_00cf4928, a 0x800-entry array

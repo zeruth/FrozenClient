@@ -474,6 +474,8 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         void GroupBounds(uint32_t index, CAaBox* bounds);
         uint32_t GroupFlags(uint32_t index);
         CMapObjGroup* GetGroup(uint32_t index, int32_t allowUnloaded);
+        // Whether the group's file read is still in flight. ref: FUN_007ae4f0
+        bool GroupReadPending(uint32_t index);
 
         // ref: FUN_007a6d70
         // The material one group's liquid draws with, or null when the group is not loaded.

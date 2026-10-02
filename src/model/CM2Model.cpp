@@ -14,6 +14,8 @@
 #include "db/Db.hpp"
 #include <cstdlib>
 #include "async/AsyncFileRead.hpp"
+#include "async/CAsyncObject.hpp"
+#include "util/SFile.hpp"
 #include "math/Types.hpp"
 #include "model/CM2Scene.hpp"
 #include "model/CM2Shared.hpp"
@@ -8825,5 +8827,38 @@ void CM2Model::CollectShadowCasters(M2ShadowCasterList* lists) {
 
     for (CM2Model* attached = this->m_attachList; attached; attached = attached->m_attachNext) {
         attached->CollectShadowCasters(lists);
+    }
+}
+
+// ref: FUN_008250b0
+void CM2Model::IncreasePriority(int32_t textures) {
+    CAsyncObject* object = this->m_shared->asyncObject;
+
+    if (object && !object->isCurrent && !object->isRead && !object->isProcessed) {
+        AsyncFileReadLinkObject(object, 1);
+    }
+
+    if (this->m_loaded && textures && this->m_shared->m_m2DataLoaded) {
+        for (uint32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
+            if (this->m_textures[i]) {
+                TextureIncreasePriority(TextureGetTexturePtr(this->m_textures[i]));
+            }
+        }
+    }
+
+    for (CM2Model* child = this->m_attachList; child; child = child->m_attachNext) {
+        child->IncreasePriority(textures);
+    }
+}
+
+// ref: FUN_008245b0
+// The reference also adds each texture's share (FUN_004b57a0) once the model has loaded; that
+// half is Texture.cpp's and lands with that module's port.
+void CM2Model::GetLoadProgress(uint64_t* done, uint64_t* total) {
+    SFile::GetStreamedBytes(this->m_shared->m_filePath, done, total);
+    (*total)++;
+
+    if (this->m_loaded) {
+        (*done)++;
     }
 }

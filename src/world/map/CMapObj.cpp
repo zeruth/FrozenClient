@@ -1614,3 +1614,15 @@ bool CMapObj::QuerySegmentGroup(const C3Vector& start, const C3Vector& end, floa
 
     return this->m_groups[groupIndex]->QuerySegmentFace(segment, t, queryFlags, static_cast<uint16_t>(skipFlags), face);
 }
+
+// ref: FUN_007ae4f0
+bool CMapObj::GroupReadPending(uint32_t index) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    // Frozen-only null check: the reference reads the slot unguarded.
+    CMapObjGroup* group = this->m_groups[index];
+
+    return group && group->m_asyncObject != nullptr;
+}

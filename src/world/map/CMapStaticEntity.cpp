@@ -414,11 +414,7 @@ static const float PROBE_FRACTION_SCALE = 0.001f;
 // reference's x87 pair only keeps the record when the terrain is strictly further, so an equal
 // distance -- or a NaN from a degenerate segment -- discards it. A plain `<` would keep both.
 //
-// FROZEN DIVERGENCE, deliberate: the reference skips the terrain query entirely when DAT_00cf08f4
-// is set, which is the flag a global-WMO map raises when its def is created (0x007bfca7). frozen
-// has no such flag. Leaving the query in is equivalent where it matters, because a map with no ADT
-// grid has no loaded area and GetTerrainHeight already answers false -- but it is not provably
-// equivalent for a map that had both, so it is recorded rather than called identical.
+// On a global-WMO map (CMap::s_globalMapObj) there is no terrain, and the query is skipped.
 void QueryEntityMapObj(CMapStaticEntity* entity, C3Vector* start, C3Vector* end,
                        const C3Vector& point, uint32_t* outInterior, uint32_t* outHit,
                        SMapObjHit* collision, SMapObjHit* render) {
@@ -433,12 +429,15 @@ void QueryEntityMapObj(CMapStaticEntity* entity, C3Vector* start, C3Vector* end,
     // Written by the call and then thrown away, exactly as the reference throws it away.
     CMapChunk* terrainChunk = nullptr;
 
-    bool terrainFound = CMap::GetTerrainHeight(*start, &terrainHeight, &terrainChunk);
+    bool terrainFound = false;
 
-    terrainFraction = (start->z - terrainHeight) * PROBE_FRACTION_SCALE;
+    if (!CMap::s_globalMapObj) {
+        terrainFound = CMap::GetTerrainHeight(*start, &terrainHeight, &terrainChunk);
+        terrainFraction = (start->z - terrainHeight) * PROBE_FRACTION_SCALE;
 
-    if (terrainFraction < 0.0f) {
-        terrainFound = false;
+        if (terrainFraction < 0.0f) {
+            terrainFound = false;
+        }
     }
 
     bool hit = false;
@@ -524,11 +523,12 @@ static int32_t ChunkIndexFrom(float v) {
 // otherwise; a doodad def always goes to the head; anything else is not filed at all, and the link
 // stays on the owner's side only.
 //
-// FROZEN DIVERGENCE, same one as QueryEntityMapObj: the reference returns immediately when
-// DAT_00cf08f4 is set, the flag a global-WMO map raises when its def is created. frozen tracks no
-// such flag. A map with no ADT grid has no loaded areas, so the walk below finds nothing and
-// returns false by itself -- the same answer by a longer route.
+// A global-WMO map has no chunks to link to.
 bool LinkEntityToChunks(CMapStaticEntity* entity) {
+    if (CMap::s_globalMapObj) {
+        return false;
+    }
+
     const CAaBox& box = entity->m_bounds;
 
     // Larger coordinates give smaller indices, so the box's MAX corner starts each range.

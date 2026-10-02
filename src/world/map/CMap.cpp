@@ -54,6 +54,7 @@
 #include "util/CStatus.hpp"
 #include "world/CWorldScene.hpp"
 #include "util/SFile.hpp"
+#include <common/Time.hpp>
 #include "world/CWorld.hpp"
 #include "util/Log.hpp"
 #include <cstdlib>
@@ -97,6 +98,12 @@ uint8_t CMap::s_terrainSpecular;
 CMapArea* CMap::s_areaGrid[64 * 64];
 STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_areaLinkList;
 int32_t CMap::s_globalMapObj;
+int32_t CMap::s_globalMapObjId = -2;
+STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_entityLinkList;
+int32_t CMap::s_mapLoaded;
+int32_t CMap::s_frameCountC0;
+int32_t CMap::s_frameCountBC;
+int32_t CMap::s_frameCountAC;
 STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_mapObjDefLinkList;
 TSGrowableArray<int32_t> CMap::s_cellList;
 int32_t CMap::s_cellListCount;
@@ -187,7 +194,8 @@ void CMap::Load(const char* mapName, int32_t mapID) {
     // TODO FUN_007b0040(1); FUN_0079fa10()
 
     CMap::s_mapID = mapID;
-    // TODO DAT_00cf08f0 = 1 (map loaded), DAT_00cf08f4 = 0 (global WMO)
+    CMap::s_mapLoaded = 1;
+    CMap::s_globalMapObj = 0;
     CMap::s_loading = 1;
 
     CMap::s_streamingMode = SFile::IsStreamingMode() | SFile::IsStreamingTrial();
@@ -214,8 +222,8 @@ void CMap::Load(const char* mapName, int32_t mapID) {
 
 // ref: FUN_007bf8b0
 // The WDT: version, header, the 64x64 tile table, and, when the header says the map is one
-// global WMO, that WMO's placement (not ported yet: it needs the map obj def creation from
-// MapLoad.cpp). Then the terrain shader level from the header and the settings pass.
+// global WMO (an instance with no terrain), that WMO's name and placement. Then the terrain shader
+// level from the header and the settings pass.
 void CMap::LoadWdt() {
     SFile* file = nullptr;
     SFile::Open(CMap::s_wdtFilename, &file);
@@ -235,8 +243,31 @@ void CMap::LoadWdt() {
     SFile::Read(file, CMap::s_areaInfo, 0x8000, nullptr, nullptr, nullptr);
 
     if (CMap::s_wdtHeader[0] & 0x1) {
-        // TODO MWMO name + MODF entry -> AllocMapObjDef, FUN_007beae0, FUN_007b0cc0, linked
-        // under the map (DAT_00cf08f4 = 1)
+        // MWMO: the one name. The reference reads it into a 256-byte stack buffer at the chunk's
+        // own size; frozen caps the read at the buffer.
+        char name[256] = {};
+        SFile::Read(file, chunkHeader, 8, nullptr, nullptr, nullptr);
+
+        uint32_t nameSize = chunkHeader[1] < sizeof(name) ? chunkHeader[1] : sizeof(name) - 1;
+        SFile::Read(file, name, nameSize, nullptr, nullptr, nullptr);
+
+        // MODF: the one placement, which sits in world space -- no tile corner to add -- and is
+        // filed under a uniqueId from the map's own countdown rather than the record's.
+        SMODF modf = {};
+        SFile::Read(file, chunkHeader, 8, nullptr, nullptr, nullptr);
+        SFile::Read(file, &modf, 0x40, nullptr, nullptr, nullptr);
+
+        modf.uniqueId = static_cast<uint32_t>(CMap::s_globalMapObjId);
+        CMap::s_globalMapObjId--;
+
+        C3Vector origin = { 0.0f, 0.0f, 0.0f };
+        CMapObjDef* def = CMap::CreateMapObjDef(name, &modf, origin, 1);
+
+        auto link = CMap::AllocBaseObjLink(def);
+        link->ref = nullptr;
+        CMap::s_mapObjDefLinkList.LinkToTail(link);
+
+        CMap::s_globalMapObj = 1;
     }
 
     CMap::SetTerrainShaderLevel((CMap::s_wdtHeader[0] & 0x2) ? 2 : 1);
@@ -466,11 +497,19 @@ void CMap::MapMemInitialize() {
     // The cell list the segment query fills (DAT_00cf4928): 0x800 entries, never grown.
     CMap::s_cellList.SetCount(0x800);
 
-    // TODO the map state flags
-    // (DAT_00ce04c8, DAT_00ce04c4, DAT_00ce04a4 = -2, DAT_00adfbc4 = -1, DAT_00cf08f4 = 0,
-    // DAT_00cf08f0 = 0, DAT_00ce04ac = 0), none of which frozen carries yet; and FUN_0079e3c0,
-    // the liquid initialise (its depth ramps are LiquidSurface.cpp's DepthRamp, built on first
-    // use; the splash textures and the WaterRipples shaders of FUN_0079e1a0 are not ported).
+    // The map state: no cells listed, no query run, no global WMO placed or flagged, no map ID,
+    // nothing loaded.
+    CMap::s_cellListCount = 0;
+    CMap::s_queryStamp = 0;
+    CMap::s_globalMapObjId = -2;
+    CMap::s_mapID = -1;
+    CMap::s_globalMapObj = 0;
+    CMap::s_mapLoaded = 0;
+    CMap::s_frameCountAC = 0;
+
+    // TODO FUN_0079e3c0, the liquid initialise (its depth ramps are LiquidSurface.cpp's
+    // DepthRamp, built on first use; the splash textures and the WaterRipples shaders of
+    // FUN_0079e1a0 are the Liquid.cpp port, next in line).
 
     for (int32_t i = 0; i < 0x80; i++) {
         CMap::s_terrainVertexShaders[i] = nullptr;
@@ -1212,10 +1251,21 @@ bool CMap::GetTerrainLiquid(const C3Vector& position, uint32_t* liquidType, floa
 // Placing it is what sets the bit both traversal walks test, so nothing draws a doodad until
 // this has run on it.
 void CMap::UpdatePendingEntities() {
+    int32_t streaming = SFile::IsStreamingMode();
+
     for (auto entity = CMap::s_pendingEntityList.Head(); entity; ) {
         auto next = CMap::s_pendingEntityList.Next(entity);
 
         if (entity->m_model && !entity->m_model->IsLoaded(0, 0)) {
+            // Still loading. Streaming mode pushes a model the load loop marked wanted.
+            if (streaming && (entity->m_flags7c & 0x10000)) {
+                AsyncFileReadLockQueue();
+                entity->m_model->IncreasePriority(1);
+                AsyncFileReadUnlockQueue();
+
+                entity->m_flags7c &= ~0x10000u;
+            }
+
             entity = next;
 
             continue;
@@ -1229,11 +1279,12 @@ void CMap::UpdatePendingEntities() {
                 entity->Place(static_cast<CMapDoodadDef*>(entity)->m_placement);
             }
 
-            // TODO FUN_007a06a0(&m_position): under liquid, the entity draws at the dimmed
-            // opacity DAT_00a40304 rather than one.
+            // Standing in the terrain's baked shadow, it draws at half opacity.
+            if (!(entity->m_flags & 0x2) && CMap::IsTerrainShadowed(entity->m_position)) {
+                entity->m_opacity = 0.5f;
+            }
 
-            // TODO FUN_007b55e0: a doodad standing inside a building joins that building's
-            // group, so the interior light reaches it.
+            CMap::GrowParentsBounds(entity);
 
             entity->m_flags |= 0x81;
         }
@@ -1500,8 +1551,11 @@ void CMap::Update(int32_t update) {
         CMap::UnloadAll();
     }
 
-    // TODO DAT_00ce04c0 = 0; DAT_00ce04bc = 0; DAT_00ce04ac = 0 (per-frame counters)
-    // TODO FUN_007cf840(dt): chunk liquid animation
+    CMap::s_frameCountC0 = 0;
+    CMap::s_frameCountBC = 0;
+    CMap::s_frameCountAC = 0;
+
+    Liquid::ChunkBufAge(CWorld::GetTickTimeSec());
     CMapObj::UpdateAll();
     CMap::RecycleBufBlocks();
     CMap::UpdateAreas(update);
@@ -1533,7 +1587,77 @@ void CMap::Update(int32_t update) {
                 CMap::UpdatePendingEntities();
             }
         } else {
-            // TODO the streaming-mode load loop (FUN_007b4960, FUN_007b5e80, FUN_007b50b0)
+            // Streaming: wait on the target tile's own read with a sleep and a progress tick,
+            // then until every entity and every building group round the target has its files.
+            CMapArea* area = CMap::GetTargetArea(CWorld::s_targetPos);
+
+            if (area && area->m_asyncObject) {
+                AsyncFileReadLockQueue();
+                AsyncFileReadLinkObject(area->m_asyncObject, 1);
+                AsyncFileReadUnlockQueue();
+
+                while (area->m_asyncObject) {
+                    AsyncFileReadPollHandler(nullptr, nullptr);
+
+                    // The reference reports the tile file's streamed share here (FUN_004217e0);
+                    // frozen's files are all local, so the share is the whole file.
+                    if (CMap::s_loadProgressCallback) {
+                        CMap::s_loadProgressCallback(0.20000000298023224f, CMap::s_loadProgressArg);
+                    }
+
+                    OsSleep(10);
+                }
+            }
+
+            if (CMap::s_loadProgressCallback) {
+                CMap::s_loadProgressCallback(0.20000000298023224f, CMap::s_loadProgressArg);
+            }
+
+            auto pass = [&]() {
+                CMap::UpdateAreas(update);
+                CMap::UpdateMapObjDefs(update);
+                CMapObj::UpdateAll();
+                CMap::UpdatePendingEntities();
+            };
+
+            pass();
+            AsyncFileReadPollHandler(nullptr, nullptr);
+
+            CMapChunk* chunk = CMap::GetTargetChunk(CWorld::s_targetPos);
+            float progress = 0.0f;
+            int32_t initial = CMap::CountPendingEntities(chunk, &progress, 0);
+
+            for (int32_t left = initial; left; ) {
+                OsSleep(10);
+                AsyncFileReadPollHandler(nullptr, nullptr);
+                pass();
+                left = CMap::CountPendingEntities(chunk, &progress, initial);
+
+                if (CMap::s_loadProgressCallback) {
+                    CMap::s_loadProgressCallback(progress * 0.25f + 0.20000000298023224f, CMap::s_loadProgressArg);
+                }
+            }
+
+            pass();
+            AsyncFileReadPollHandler(nullptr, nullptr);
+
+            initial = CMap::CountPendingMapObjs(chunk, &progress, 0);
+            CMapObj::UpdateAll();
+
+            for (int32_t left = initial; left; ) {
+                OsSleep(10);
+                AsyncFileReadPollHandler(nullptr, nullptr);
+                pass();
+                left = CMap::CountPendingMapObjs(chunk, &progress, initial);
+
+                if (CMap::s_loadProgressCallback) {
+                    float done = static_cast<float>(static_cast<uint32_t>(initial - left));
+                    CMap::s_loadProgressCallback(done * 0.30000001192092896f / static_cast<float>(static_cast<uint32_t>(initial)) + 0.44999998807907104f, CMap::s_loadProgressArg);
+                }
+            }
+
+            pass();
+            AsyncFileReadPollHandler(nullptr, nullptr);
         }
     }
 }
@@ -3729,4 +3853,208 @@ bool CMap::QueryGroundHeight(const C3Vector& position, float range, float* heigh
     }
 
     return true;
+}
+
+// ref: FUN_007b4fa0
+void CMap::GrowParentBounds(CMapStaticEntity* entity, CMapBaseObj* parent) {
+    if (parent->m_type & CMapBaseObj::Type_Chunk) {
+        auto chunk = static_cast<CMapChunk*>(parent);
+
+        if (chunk->m_bounds.t.z < entity->m_bounds.t.z) {
+            chunk->m_bounds.t.z = entity->m_bounds.t.z;
+        }
+
+        return;
+    }
+
+    if (parent->m_type & CMapBaseObj::Type_MapObjDefGroup) {
+        auto defGroup = static_cast<CMapObjDefGroup*>(parent);
+        defGroup->m_bounds.GrowToInclude(entity->m_bounds);
+
+        // And the building the group belongs to: the group's first parent.
+        auto link = defGroup->m_parentLinkList.Head();
+        auto def = static_cast<CMapObjDef*>(link ? link->ref : nullptr);
+
+        if (def) {
+            def->m_bounds.GrowToInclude(entity->m_bounds);
+        }
+    }
+}
+
+// ref: FUN_007b55e0
+void CMap::GrowParentsBounds(CMapStaticEntity* entity) {
+    for (auto link = entity->m_parentLinkList.Head(); link; link = entity->m_parentLinkList.Next(link)) {
+        CMap::GrowParentBounds(entity, link->ref);
+    }
+}
+
+// ref: FUN_007b5e80
+int32_t CMap::CountPendingEntities(CMapChunk* chunk, float* progress, int32_t initial) {
+    *progress = 0.0f;
+    float share = initial ? 1.0f / static_cast<float>(static_cast<uint32_t>(initial)) : 0.0f;
+
+    const float reach = 16.66666603088379f;
+    const C3Vector& target = CWorld::s_targetPos;
+    CMapBaseObjRefList* list;
+    CAaBox box;
+
+    if (!CMap::s_globalMapObj) {
+        if (!chunk) {
+            return 0;
+        }
+
+        box.b.x = chunk->m_bounds.b.x;
+        box.b.y = chunk->m_bounds.b.y;
+        box.t.x = chunk->m_bounds.t.x;
+        box.t.y = chunk->m_bounds.t.y;
+        list = &chunk->m_entityLinkList;
+    } else {
+        box.b.x = target.x - reach;
+        box.b.y = target.y - reach;
+        box.t.x = target.x + reach;
+        box.t.y = target.y + reach;
+        list = &CMap::s_entityLinkList;
+    }
+
+    box.t.z = reach + target.z;
+    box.b.z = target.z - reach;
+
+    int32_t pending = 0;
+
+    for (auto link = list->Head(); link; ) {
+        auto next = list->Next(link);
+        auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+        if ((!entity->m_model || !(entity->m_flags & 0x80)) && !(entity->m_flags7c & 0x10000)) {
+            if (initial && entity->m_model) {
+                uint64_t done = 0;
+                uint64_t total = 0;
+                entity->m_model->GetLoadProgress(&done, &total);
+                *progress = static_cast<float>(static_cast<double>(done) / static_cast<double>(total)) * share + *progress;
+            }
+
+            entity->m_flags7c |= 0x10000;
+            pending++;
+        }
+
+        link = next;
+    }
+
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        CMapObj* mapObj = def->m_mapObj;
+
+        if ((def->m_flags & 0x80) || !mapObj || !mapObj->m_asyncObject) {
+            continue;
+        }
+
+        const CAaBox& b = def->m_bounds;
+
+        if (b.b.x <= box.t.x && b.b.y <= box.t.y && b.b.z <= box.t.z
+            && box.b.x <= b.t.x && box.b.y <= b.t.y && box.b.z <= b.t.z) {
+            pending++;
+
+            if (0.0f < mapObj->m_nearestDistanceSq) {
+                mapObj->m_nearestDistanceSq = 0.0f;
+            }
+        }
+    }
+
+    *progress = static_cast<float>(static_cast<uint32_t>(initial - pending)) * share + *progress;
+
+    return pending;
+}
+
+// ref: FUN_007b50b0
+int32_t CMap::CountPendingMapObjs(CMapChunk* chunk, float* progress, int32_t initial) {
+    *progress = 0.0f;
+    float share = initial ? 1.0f / static_cast<float>(static_cast<uint32_t>(initial)) : 0.0f;
+
+    const float reach = 16.66666603088379f;
+    const C3Vector& target = CWorld::s_targetPos;
+    CMapBaseObjRefList* list;
+    CAaBox box;
+
+    if (!CMap::s_globalMapObj) {
+        if (!chunk) {
+            return 0;
+        }
+
+        box.b.x = chunk->m_bounds.b.x;
+        box.b.y = chunk->m_bounds.b.y;
+        box.t.x = chunk->m_bounds.t.x;
+        box.t.y = chunk->m_bounds.t.y;
+        list = &chunk->m_mapObjDefLinkList;
+    } else {
+        box.b.x = target.x - reach;
+        box.b.y = target.y - reach;
+        box.t.x = target.x + reach;
+        box.t.y = target.y + reach;
+        list = &CMap::s_mapObjDefLinkList;
+    }
+
+    box.t.z = reach + target.z;
+    box.b.z = target.z - reach;
+
+    int32_t pending = 0;
+
+    for (auto link = list->Head(); link; link = list->Next(link)) {
+        auto def = static_cast<CMapObjDef*>(link->owner);
+
+        if (!(def->m_flags & 0x80) || !box.Intersects(def->m_bounds)) {
+            continue;
+        }
+
+        for (auto groupLink = def->m_defGroupLinkList.Head(); groupLink; groupLink = def->m_defGroupLinkList.Next(groupLink)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(groupLink->owner);
+            const CAaBox& b = defGroup->m_bounds;
+
+            if (box.t.x < b.b.x || box.t.y < b.b.y || box.t.z < b.b.z
+                || !(box.b.x <= b.t.x) || !(box.b.y <= b.t.y) || !(box.b.z <= b.t.z)) {
+                continue;
+            }
+
+            if (!(defGroup->m_flags & 0x80)) {
+                CMapObj* mapObj = def->m_mapObj;
+
+                if (!mapObj || !mapObj->GroupReadPending(defGroup->m_groupIndex)) {
+                    continue;
+                }
+
+                CMapObjGroup* group = mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+                if (group) {
+                    if (0.0f < group->m_nearestDistanceSq) {
+                        group->m_nearestDistanceSq = 0.0f;
+                    }
+
+                    pending++;
+
+                    continue;
+                }
+            } else {
+                // A loaded group: its doodads still waiting on files are marked wanted, and the
+                // group counts once if any were.
+                bool any = false;
+
+                for (auto doodadLink = defGroup->m_doodadDefLinkList.Head(); doodadLink; doodadLink = defGroup->m_doodadDefLinkList.Next(doodadLink)) {
+                    auto entity = static_cast<CMapStaticEntity*>(doodadLink->owner);
+
+                    if ((!entity->m_model || !(entity->m_flags & 0x80)) && !(entity->m_flags7c & 0x10000)) {
+                        entity->m_flags7c |= 0x10000;
+                        any = true;
+                    }
+                }
+
+                if (!any) {
+                    continue;
+                }
+            }
+
+            pending++;
+        }
+    }
+
+    *progress = static_cast<float>(static_cast<uint32_t>(initial - pending)) * share + *progress;
+
+    return pending;
 }

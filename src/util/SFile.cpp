@@ -422,3 +422,13 @@ void SFileCritSectEnter(SCritSect* critSect) {
 void SFileCritSectLeave(SCritSect* critSect) {
     critSect->Leave();
 }
+
+// ref: FUN_004217e0
+// DIVERGED: Storm adds a file's present and total bytes only when the file lives in a streaming
+// archive, and adds nothing otherwise. Frozen reads every file locally, so there is never a
+// streamed file to report and nothing is added -- the reference's own answer for a full install.
+void SFile::GetStreamedBytes(const char* name, uint64_t* done, uint64_t* total) {
+    (void)name;
+    (void)done;
+    (void)total;
+}

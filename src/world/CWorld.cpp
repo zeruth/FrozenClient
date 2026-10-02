@@ -1606,9 +1606,21 @@ static const WMOAreaTableRec* FindWMOArea(int32_t wmoID, int32_t nameSet, int32_
 }
 
 // ref: FUN_00782560
-// FROZEN DIVERGENCE, the same one QueryEntityMapObj records: a global-WMO map (DAT_00cf08f4)
-// answers from its one definition first; frozen tracks no such map, so that arm is absent.
 int32_t CWorld::GetEntityAreaID(CMapStaticEntity* entity, uint32_t* areaID) {
+    // A global-WMO map is one area, Map.dbc's own.
+    if (CMap::s_globalMapObj) {
+        auto rec = g_mapDB.GetRecord(CMap::s_mapID);
+
+        // Frozen-only null check: the reference reads the row unguarded.
+        if (!rec || !rec->m_areaTableID) {
+            return 0;
+        }
+
+        *areaID = static_cast<uint32_t>(rec->m_areaTableID);
+
+        return 1;
+    }
+
     if (!entity) {
         return 0;
     }
