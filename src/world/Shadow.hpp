@@ -60,6 +60,7 @@ int32_t DecalCollectReceivers(const CAaBox& casterBox, uint32_t queryMask, uint3
 // The wrapper every projected decal shares: transforms, the two texture matrices, the receiver
 // walk. ref: FUN_007e4370
 void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44Matrix& texMatrix, float bias, uint32_t queryMask, uint32_t flags, float strength);
+void DecalDrawBoundReceivers(const CAaBox& bounds, const CImVector& color, uint32_t queryMask, uint32_t flags, float strength);
 
 // Turn a caster's box into a projection volume and its texture matrix, set the decal state, draw.
 // ref: FUN_007e4480

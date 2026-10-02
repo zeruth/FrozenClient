@@ -1,3 +1,4 @@
+#include "gx/shader/CShaderEffect.hpp"
 #include "world/Shadow.hpp"
 #include "gx/Gx.hpp"
 #include "gx/buffer/CGxBuf.hpp"
@@ -754,6 +755,115 @@ void DecalDrawReceivers(const CAaBox& casterBox, const CImVector& color, uint32_
 
     g_theGxDevicePtr->XformPop(GxXform_World);
     GxRsPop();
+}
+
+// The colour as four floats in 0..1, red first (FUN_00984c90; CWorldScene.cpp carries the tag).
+static void ImVectorToFloats(float* out, const CImVector& color) {
+    out[0] = color.r / 255.0f;
+    out[1] = color.g / 255.0f;
+    out[2] = color.b / 255.0f;
+    out[3] = color.a / 255.0f;
+}
+
+// ref: FUN_007e3aa0
+// The receiver walk for a decal whose texture matrices and texgen the CALLER has already bound --
+// the projected-texture path, where CM2SceneRender::DrawBatchProj sets both stages before calling
+// the scene's projection callback. So unlike DecalDrawReceivers there is no state push and no
+// texgen here: only stage 1's ramp (ShadowMod under blend mode 4, otherwise ShadowAdd when the
+// stage is still empty), the polygon offset from the strength, restored at the end, and the two
+// receiver lists -- the map's hit records in their own placements, then the M2 receivers through
+// their own matrices with the colour as a material constant.
+void DecalDrawBoundReceivers(const CAaBox& bounds, const CImVector& color, uint32_t queryMask, uint32_t flags, float strength) {
+    uint32_t wantM2 = 0;
+    uint32_t wantHits = 0;
+
+    if (!DecalCollectReceivers(bounds, queryMask, flags, &wantM2, &wantHits)) {
+        return;
+    }
+
+    if (g_theGxDevicePtr->m_appRenderStates[GxRs_BlendingMode].m_value == 4) {
+        g_theGxDevicePtr->RsSet(GxRs_Texture1, ShadowModGxTex());
+    } else if (g_theGxDevicePtr->m_appRenderStates[GxRs_Texture1].m_value == static_cast<void*>(nullptr)) {
+        g_theGxDevicePtr->RsSet(GxRs_Texture1, ShadowAddGxTex());
+    }
+
+    float savedOffset = 0.0f;
+
+    if (strength != 0.0f) {
+        savedOffset = static_cast<float>(g_theGxDevicePtr->m_appRenderStates[GxRs_PolygonOffset].m_value);
+        GxRsSet(GxRs_PolygonOffset, (strength + strength) * DECAL_OFFSET_SCALE);
+    }
+
+    uint32_t streamColor = color.value;
+
+    if ((flags & 2) == 0) {
+        DecalFixupColor(streamColor);
+    } else {
+        C4Vector diffuse;
+        ImVectorToFloats(reinterpret_cast<float*>(&diffuse), color);
+        CShaderEffect::SetDiffuse(diffuse);
+    }
+
+    const C3Vector& cameraPos = CWorld::GetCameraPos();
+
+    C44Matrix toCamera;
+    toCamera.Identity();
+    C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
+    toCamera.Translate(back);
+
+    g_theGxDevicePtr->XformPush(GxXform_World);
+
+    for (uint32_t i = 0; wantHits && i < CMapObjGroup::s_hitRecordCount; i++) {
+        const CMapObjHitRecord& record = CMapObjGroup::s_hitRecords[i];
+
+        if (static_cast<uint32_t>(record.indexCount) * 3 >= 0x10001) {
+            continue;
+        }
+
+        if (!record.placement || !record.vertices || !record.indices) {
+            continue;
+        }
+
+        GxXformSet(GxXform_World, *record.placement * toCamera);
+
+        CGxBatch batch;
+        batch.m_primType = GxPrim_Triangles;
+        batch.m_start = 0;
+        batch.m_count = record.indexCount;
+        batch.m_minIndex = 0;
+        batch.m_maxIndex = static_cast<uint16_t>(record.indexCount - 1);
+
+        if ((flags & 2) == 0) {
+            DecalStreamReceiverColored(record, batch, streamColor, flags);
+        } else {
+            DecalStreamReceiver(record, batch, flags);
+        }
+
+        DecalStreamIndices(record);
+        CShaderEffect::SetShadersForGeometry(0);
+        CShaderEffect::SetWorldViewConstants();
+
+        if (batch.m_count != 0) {
+            GxDraw(&batch, 1);
+        }
+    }
+
+    for (uint32_t i = 0; wantM2 && i < s_decalM2ReceiverCount; i++) {
+        auto model = static_cast<CM2Model*>(s_decalM2Receivers[i]);
+
+        GxXformSet(GxXform_World, model->matrixB4 * toCamera);
+        CShaderEffect::SetWorldViewConstants();
+        C4Vector diffuse;
+        ImVectorToFloats(reinterpret_cast<float*>(&diffuse), color);
+        CShaderEffect::SetDiffuse(diffuse);
+        model->DrawReceiverGeometry();
+    }
+
+    g_theGxDevicePtr->XformPop(GxXform_World);
+
+    if (strength != 0.0f) {
+        GxRsSet(GxRs_PolygonOffset, savedOffset);
+    }
 }
 
 // ref: FUN_007e4370

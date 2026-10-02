@@ -1,3 +1,6 @@
+#include "console/Console.hpp"
+#include "console/Command.hpp"
+#include "world/Shadow.hpp"
 #include "model/CM2Lighting.hpp"
 #include <cstdlib>
 #include "model/CM2Model.hpp"
@@ -870,6 +873,128 @@ float CWorld::GetTickTimeSec() {
     return CWorld::s_tickTimeSec;
 }
 
+uint32_t CWorld::s_maxLod = 3;
+uint32_t CWorld::s_waterRipples;
+uint32_t CWorld::s_detailDoodadAlpha = 0x80;
+float CWorld::s_characterAmbient;
+uint32_t CWorld::s_characterAmbientActive;
+uint32_t CWorld::s_showSimpleDoodads;
+
+// ref: FUN_0077f500
+// The scene's projection callback: a batch flagged for projection is drawn onto whatever lies
+// under it rather than as geometry, when projected textures are on or the model insists.
+void CWorld::ProjectionCallback(const CAaBox& bounds, const CImVector& color, uint32_t shaded, void* context, uint32_t force) {
+    (void)context;
+
+    if (force || (CWorld::s_enables2 & Enables2::Enable_ProjectedTextures)) {
+        DecalDrawBoundReceivers(bounds, color, 0x200122, shaded ? 2 : 0, 0.4f);
+    }
+}
+
+static int32_t WorldToggle(uint32_t bit, const char* enabled, const char* disabled) {
+    if (CWorld::s_enables & bit) {
+        ConsoleWrite(disabled, DEFAULT_COLOR);
+        CWorld::s_enables &= ~bit;
+    } else {
+        ConsoleWrite(enabled, DEFAULT_COLOR);
+        CWorld::s_enables |= bit;
+    }
+
+    return 1;
+}
+
+// ref: FUN_0077f5b0
+static int32_t ConsoleShowDetailDoodads(const char* command, const char* arguments) {
+    return WorldToggle(CWorld::Enable_DetailDoodads, "Detail doodads enabled.", "Detail doodads disabled.");
+}
+
+// ref: FUN_0077f600
+static int32_t ConsoleMaxLod(const char* command, const char* arguments) {
+    uint32_t lod = 0;
+    sscanf(arguments, "%d", &lod);
+
+    if (lod > 3) {
+        CWorld::s_maxLod = 3;
+        return 1;
+    }
+
+    CWorld::s_maxLod = lod < 2 ? 2 : lod;
+
+    return 1;
+}
+
+// ref: FUN_0077f650
+static int32_t ConsoleShowCull(const char* command, const char* arguments) {
+    return WorldToggle(CWorld::Enable_Culling, "Terrain culling enabled.", "Terrain culling disabled.");
+}
+
+// ref: FUN_0077f690
+static int32_t ConsoleWaterRipples(const char* command, const char* arguments) {
+    sscanf(arguments, "%d", &CWorld::s_waterRipples);
+
+    return 1;
+}
+
+// ref: FUN_0077f6b0
+static int32_t ConsoleWaterParticulates(const char* command, const char* arguments) {
+    return WorldToggle(CWorld::Enable_Particulates, "Particulates enabled", "Particulates disabled");
+}
+
+// ref: FUN_0077f700
+static int32_t ConsoleDetailDoodadAlpha(const char* command, const char* arguments) {
+    uint32_t alpha = 0;
+    sscanf(arguments, "%d", &alpha);
+
+    if (alpha > 0xFF) {
+        ConsoleWrite("Alpha ref range 0 - 255.", DEFAULT_COLOR);
+        return 1;
+    }
+
+    CWorld::s_detailDoodadAlpha = alpha;
+
+    return 1;
+}
+
+// ref: FUN_0077f750
+// The multiplier is stored as 3x the argument; it is in force unless the argument is exactly 1.
+static int32_t ConsoleCharacterAmbient(const char* command, const char* arguments) {
+    float ambient = 0.0f;
+    sscanf(arguments, "%f", &ambient);
+
+    if (ambient < 0.0f || ambient > 1.0f) {
+        ConsoleWrite("Ambient multiply range 0.0 - 1.0.", DEFAULT_COLOR);
+        return 1;
+    }
+
+    CWorld::s_characterAmbient = ambient + ambient + ambient;
+    CWorld::s_characterAmbientActive = ambient != 1.0f ? 1 : 0;
+
+    return 1;
+}
+
+// ref: FUN_0077f7e0
+static int32_t ConsoleShowShadow(const char* command, const char* arguments) {
+    return WorldToggle(CWorld::Enable_Shadow, "Terrain shadow enabled.", "Terrain shadow disabled.");
+}
+
+// ref: FUN_0077f820
+static int32_t ConsoleShowLowDetail(const char* command, const char* arguments) {
+    return WorldToggle(CWorld::Enable_LowDetail, "Terrain low detail enabled.", "Terrain low detail disabled.");
+}
+
+// ref: FUN_0077f870
+static int32_t ConsoleShowSimpleDoodads(const char* command, const char* arguments) {
+    if (CWorld::s_showSimpleDoodads) {
+        ConsoleWrite("Simple doodads disabled.", DEFAULT_COLOR);
+        CWorld::s_showSimpleDoodads = 0;
+    } else {
+        ConsoleWrite("Simple doodads enabled.", DEFAULT_COLOR);
+        CWorld::s_showSimpleDoodads = 1;
+    }
+
+    return 1;
+}
+
 void CWorld::Initialize() {
     CWorld::s_enables |=
           Enables::Enable_1
@@ -941,7 +1066,21 @@ void CWorld::Initialize() {
 
     CWorld::s_weather = STORM_NEW(Weather);
 
-    // TODO
+    // The projected-texture callback (0x00781340). The particle ground query installed beside it
+    // (FUN_0077f540, 0x00781351) waits on the map segment query FUN_007a3b70.
+    CWorld::s_m2Scene->SetProjectionCallback(reinterpret_cast<void*>(&CWorld::ProjectionCallback), nullptr);
+
+    ConsoleCommandRegister("showDetailDoodads", ConsoleShowDetailDoodads, GRAPHICS, nullptr);
+    ConsoleCommandRegister("maxLOD", ConsoleMaxLod, GRAPHICS, nullptr);
+    ConsoleCommandRegister("showCull", ConsoleShowCull, GRAPHICS, nullptr);
+    // "setShadow" (FUN_00780e20) sets the terrain shadow colour through FUN_00780660, not ported.
+    ConsoleCommandRegister("waterRipples", ConsoleWaterRipples, GRAPHICS, nullptr);
+    ConsoleCommandRegister("waterParticulates", ConsoleWaterParticulates, GRAPHICS, nullptr);
+    ConsoleCommandRegister("showShadow", ConsoleShowShadow, GRAPHICS, nullptr);
+    ConsoleCommandRegister("showLowDetail", ConsoleShowLowDetail, GRAPHICS, nullptr);
+    ConsoleCommandRegister("showSimpleDoodads", ConsoleShowSimpleDoodads, GRAPHICS, nullptr);
+    ConsoleCommandRegister("detailDoodadAlpha", ConsoleDetailDoodadAlpha, GRAPHICS, nullptr);
+    ConsoleCommandRegister("characterAmbient", ConsoleCharacterAmbient, GRAPHICS, nullptr);
 }
 
 int32_t CWorld::GetOutdoorParamsID() {

@@ -98,6 +98,16 @@ class CWorld {
         // terrain chunk take its half-size alpha map
         static int32_t s_terrainShadowLevel;
         static Weather* s_weather;
+        // The settings the world console commands change (CWorld::Initialize registers them):
+        // the terrain level of detail (0x00adeec4, 2 or 3), the water ripple setting (0x00adf7f0),
+        // the grass alpha cutoff (0x00cd766c), the character ambient multiplier and whether it is
+        // in force (0x00adeebc, 0x00cd7740), and whether simple doodads draw (0x00cb753c).
+        static uint32_t s_maxLod;
+        static uint32_t s_waterRipples;
+        static uint32_t s_detailDoodadAlpha;
+        static float s_characterAmbient;
+        static uint32_t s_characterAmbientActive;
+        static uint32_t s_showSimpleDoodads;
 
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
@@ -141,6 +151,7 @@ class CWorld {
         static uint32_t GetTickTimeMs();
         static float GetTickTimeSec();
         static void Initialize();
+        static void ProjectionCallback(const CAaBox& bounds, const CImVector& color, uint32_t shaded, void* context, uint32_t force);
         static void LoadMap(const char* mapName, const C3Vector& position, int32_t mapID);
         static void UpdateWindow(const C3Vector& targetPos);
 

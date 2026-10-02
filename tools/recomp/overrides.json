@@ -178,7 +178,7 @@
   },
   "00791f30": {
     "status": "excluded",
-    "note": "the inline-storage growable array's SetCount instantiation, used for a placed WMO's group pointers (four inline, heap past that); frozen uses a plain TSGrowableArray"
+    "note": "TSGrowableArray<CMapObjDefGroup*>::SetCount. Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
   },
   "007b3b70": {
     "status": "excluded",
@@ -231,11 +231,11 @@
   },
   "00791f80": {
     "status": "excluded",
-    "note": "TSGrowableArray's own append for the occlusion volume list: grow to a multiple of the chunk size, then copy one 0x20-byte element in. frozen uses the container, so there is no separate function to bind"
+    "note": "TSGrowableArray<CGxVertexPCT0T1>::Add (append n). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
   },
   "007920a0": {
     "status": "excluded",
-    "note": "the same append for the volume list's second array, 0xc-byte elements"
+    "note": "TSGrowableArray<CBarrier::SContact>::Add (append n). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
   },
   "007a8e90": {
     "status": "excluded",
@@ -2723,7 +2723,7 @@
   },
   "007917d0": {
     "status": "excluded",
-    "note": "squall/storm or STL template instantiation (TSFixedArray/TSGrowableArray/TSList/TSHashTable/std): frozen has the template, not a linkable instance (wave 0, 2026-09-25)"
+    "note": "TSGrowableArray<CGxVertexPC>::Reserve (0x10-byte elements). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
   },
   "0081a5a0": {
     "status": "excluded",
@@ -4234,5 +4234,53 @@
   "009845d0": {
     "status": "excluded",
     "note": "CRT memset entry: a fall-through switch for fewer than 16 bytes, else FUN_00984540. Identified 2026-10-02."
+  },
+  "00790250": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CMapObjDefGroup*>::Reserve (4-byte elements, SMemReAlloc then copy). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "007902e0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CGxVertexPCT0T1>::Reserve (0x20-byte barrier vertices). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00790370": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CBarrier::SContact>::Reserve (0x20-byte contacts). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00791eb0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CMapObjDefGroup*>::Add (append n). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00792010": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CGxVertexPCT0T1>::SetCount (new slots zeroed). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00792130": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CBarrier::SContact>::SetCount (new slots default-constructed: zeros, +0x18 = 1.0). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00790400": {
+    "status": "excluded",
+    "note": "TSGrowableArray growth granularity (largest power of two not above the count, capped at 9 and cached). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "007940f0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CPortalView>::Add (append n, 0x1c-byte elements). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00794190": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CPortalView>::SetCount (new views default-constructed: empty rect, -1, no points). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00791870": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CPortalView>::Reserve (0x1c-byte elements). Storm template internal, out of line; frozen reaches it through TSGrowableArray members. Identified 2026-10-02."
+  },
+  "00791910": {
+    "status": "excluded",
+    "note": "Implicit destructor of a pair of TSGrowableArray<Liquid::CInstance*> (frees both buffers). Compiler-generated; frozen's members destroy themselves. Identified 2026-10-02."
+  },
+  "00792300": {
+    "status": "excluded",
+    "note": "Implicit destructor of the barrier sink's four TSGrowableArrays (CMapObjDefGroup*, CMapChunk*, CBarrier::SContact, CGxVertexPCT0T1). Compiler-generated. Identified 2026-10-02."
   }
 }
