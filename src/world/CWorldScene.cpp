@@ -1,3 +1,5 @@
+#include "gx/Draw.hpp"
+#include "gx/Buffer.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/Shadow.hpp"
@@ -89,6 +91,8 @@ float CWorldScene::s_cameraGroundHeight;
 int32_t CWorldScene::s_hasMapObjs;
 CWorldScene::ViewWindow CWorldScene::s_window;
 CWorldScene::ViewWindow CWorldScene::s_portalWindow;
+TSGrowableArray<CWorldScene::ViewWindow> CWorldScene::s_portalViews;
+TSGrowableArray<CWorldScene::ViewWindow> CWorldScene::s_exteriorViews;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) CWorldScene::s_visibleMapObjGroups;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_liquidQueueLink) CWorldScene::s_pendingLiquidGroups;
 CMapObjDef* CWorldScene::s_visibleCallbackDef;
@@ -650,9 +654,11 @@ int32_t CWFrustum::SphereInside(const CAaSphere& sphere) {
 void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& cameraTarget) {
     // if (DAT_00cd8610) FUN_005eeb70(): nothing
 
-    CWorldScene::s_window = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, 0.0f, 0.0f };
-    CWorldScene::s_portalWindow = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, 0.0f, 0.0f };
-    // TODO DAT_00cd8620 = 0, DAT_00cd861c = 0, FUN_00794190(&array, 0) twice
+    CWorldScene::s_window = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, nullptr, 0 };
+    CWorldScene::s_portalWindow = { 3.4028235e+38f, 3.4028235e+38f, -3.4028235e+38f, -3.4028235e+38f, -1.0f, nullptr, 0 };
+    // TODO DAT_00cd8620 = 0, DAT_00cd861c = 0
+    CWorldScene::s_portalViews.SetCount(0);
+    CWorldScene::s_exteriorViews.SetCount(0);
 
     CWorldScene::s_cameraPos = cameraPos;
     CWorldScene::s_cameraTarget = cameraTarget;
@@ -2299,6 +2305,279 @@ void CWorldScene::AddGroupIndexUnique(TSGrowableArray<uint32_t>& list, uint32_t 
     list.Add(1, &groupIndex);
 }
 
+// ref: FUN_00790570
+// A window over a rectangle of the screen at a depth, with no outline.
+void CWorldScene::ViewWindowInit(ViewWindow& window, const float* rect, float depth) {
+    window.minX = rect[0];
+    window.minY = rect[1];
+    window.maxX = rect[2];
+    window.maxY = rect[3];
+    window.depth = depth;
+    window.points = nullptr;
+    window.pointCount = 0;
+}
+
+// ref: FUN_0078f2f0
+// The rectangle covering both: the smaller of each pair of mins, the larger of each pair of maxes.
+static void ViewRectUnion(float* out, const float* a, const float* b) {
+    float maxY = a[3] <= b[3] ? b[3] : a[3];
+    float maxX = a[2] <= b[2] ? b[2] : a[2];
+    float minY = b[1] <= a[1] ? b[1] : a[1];
+
+    out[0] = a[0] < b[0] ? a[0] : b[0];
+    out[1] = minY;
+    out[2] = maxX;
+    out[3] = maxY;
+}
+
+// ref: FUN_007905b0
+// Grow the window over another: the union of the two rectangles, at the deeper of the two depths,
+// and no outline any more.
+void CWorldScene::ViewWindowMerge(ViewWindow& window, const ViewWindow& other) {
+    float rect[4];
+    ViewRectUnion(rect, &window.minX, &other.minX);
+
+    window.minX = rect[0];
+    window.minY = rect[1];
+    window.maxX = rect[2];
+    window.maxY = rect[3];
+
+    if (!(other.depth < window.depth)) {
+        window.depth = other.depth;
+    }
+
+    window.pointCount = 0;
+}
+
+// ref: FUN_00795d00
+void CWorldScene::AddPortalView(const ViewWindow& window) {
+    *CWorldScene::s_portalViews.New() = window;
+}
+
+// ref: FUN_00795d20
+void CWorldScene::AddExteriorView(const ViewWindow& window) {
+    *CWorldScene::s_exteriorViews.New() = window;
+}
+
+// ref: FUN_007968d0
+// Replace the portal views with what they leave uncovered: the whole screen, cut by each view in
+// turn into at most four rectangles around it, keeping no more than sixty pieces.
+void CWorldScene::ComplementPortalViews() {
+    float pieces[2][64][4] = {};
+    int32_t pieceCount[2] = { 1, 0 };
+
+    pieces[0][0][0] = 0.0f;
+    pieces[0][0][1] = 0.0f;
+    pieces[0][0][2] = 1.0f;
+    pieces[0][0][3] = 1.0f;
+
+    uint32_t pass = 0;
+
+    for (; pass < CWorldScene::s_portalViews.Count(); pass++) {
+        const ViewWindow& cut = CWorldScene::s_portalViews[pass];
+        uint32_t from = pass & 1;
+        uint32_t to = (pass - 1) & 1;
+
+        pieceCount[to] = 0;
+
+        if (pieceCount[from] > 60) {
+            break;
+        }
+
+        for (int32_t i = 0; i < pieceCount[from]; i++) {
+            float minX = pieces[from][i][0];
+            float minY = pieces[from][i][1];
+            float maxX = pieces[from][i][2];
+            float maxY = pieces[from][i][3];
+
+            auto emit = [&](float a, float b, float c, float d) {
+                float* piece = pieces[to][pieceCount[to]];
+                piece[0] = a;
+                piece[1] = b;
+                piece[2] = c;
+                piece[3] = d;
+                pieceCount[to]++;
+            };
+
+            if (maxY <= cut.minY || cut.maxY <= minY || maxX <= cut.minX || cut.maxX <= minX) {
+                // Untouched by the cut.
+                emit(minX, minY, maxX, maxY);
+            } else {
+                if (minX < cut.minX) {
+                    emit(minX, minY, cut.minX, maxY);
+                    minX = cut.minX;
+                }
+
+                if (cut.maxX < maxX) {
+                    emit(cut.maxX, minY, maxX, maxY);
+                    maxX = cut.maxX;
+                }
+
+                if (minY < cut.minY) {
+                    emit(minX, minY, maxX, cut.minY);
+                    minY = cut.minY;
+                }
+
+                if (cut.maxY < maxY) {
+                    emit(minX, cut.maxY, maxX, maxY);
+                }
+            }
+
+            if (pieceCount[to] > 60) {
+                break;
+            }
+        }
+    }
+
+    uint32_t result = pass & 1;
+    int32_t count = pieceCount[result];
+
+    // Growing the list default-builds the new views (no outline); the views kept keep theirs.
+    uint32_t oldCount = CWorldScene::s_portalViews.Count();
+    CWorldScene::s_portalViews.SetCount(count);
+
+    for (uint32_t i = oldCount; i < static_cast<uint32_t>(count); i++) {
+        CWorldScene::s_portalViews[i].points = nullptr;
+        CWorldScene::s_portalViews[i].pointCount = 0;
+    }
+
+    for (int32_t i = 0; i < count; i++) {
+        ViewWindow& view = CWorldScene::s_portalViews[i];
+        view.minX = pieces[result][i][0];
+        view.minY = pieces[result][i][1];
+        view.maxX = pieces[result][i][2];
+        view.maxY = pieces[result][i][3];
+        view.depth = 0.0f;
+    }
+}
+
+// ref: FUN_00796c10
+// Fill a list of screen regions at the far plane in the fog colour, with identity view and
+// projection: rectangles as two triangles, outlines as fans. The rectangles are converted to clip
+// space in place. `portal` picks the DayNight block's blended fog colour (+0xa0) over its plain
+// one (+0x8c); frozen's stand-in light model keeps one fog colour, so both read it.
+void CWorldScene::FillViewWindows(TSGrowableArray<ViewWindow>& views, int32_t portal) {
+    if (!views.Count()) {
+        return;
+    }
+
+    (void)portal;
+
+    C44Matrix savedProjection;
+    C44Matrix savedView;
+    GxXformProjection(savedProjection);
+    GxXformView(savedView);
+
+    C44Matrix identity;
+    GxXformSetView(identity);
+    GxXformSetProjection(identity);
+    g_theGxDevicePtr->XformPush(GxXform_World, identity);
+
+    GxRsPush();
+    GxRsSet(GxRs_DepthWrite, 1);
+    GxRsSet(GxRs_DepthTest, 1);
+
+    const C3Vector& fog = CWorld::GetFogColor();
+    CImVector color;
+    color.r = static_cast<uint8_t>(fog.x * 255.0f);
+    color.g = static_cast<uint8_t>(fog.y * 255.0f);
+    color.b = static_cast<uint8_t>(fog.z * 255.0f);
+    color.a = 0xFF;
+    GxFormatColor(color);
+
+    GxRsSet(GxRs_BlendingMode, 0);
+    GxRsSet(GxRs_MatDiffuse, color.value);
+    GxRsSet(GxRs_Culling, 0);
+    GxRsSet(GxRs_Lighting, 0);
+    GxRsSet(GxRs_Fog, 0);
+
+    uint32_t vertexCount = 0;
+    uint32_t indexCount = 0;
+
+    for (uint32_t i = 0; i < views.Count(); i++) {
+        if (views[i].pointCount == 0) {
+            vertexCount += 4;
+            indexCount += 6;
+        } else {
+            vertexCount += views[i].pointCount;
+            indexCount += views[i].pointCount * 3 - 6;
+        }
+    }
+
+    auto vertexBuf = GxBufStream(GxPoolTarget_Vertex, 0x10, vertexCount);
+    auto indexBuf = GxBufStream(GxPoolTarget_Index, 2, indexCount);
+    auto vertices = reinterpret_cast<float*>(GxBufLock(vertexBuf));
+    auto indices = reinterpret_cast<uint16_t*>(GxBufLock(indexBuf));
+
+    if (vertices && indices) {
+        uint16_t base = 0;
+
+        auto vertex = [&](float x, float y) {
+            vertices[0] = x;
+            vertices[1] = y;
+            vertices[2] = 1.0f;
+            reinterpret_cast<uint32_t*>(vertices)[3] = color.value;
+            vertices += 4;
+        };
+
+        for (uint32_t i = 0; i < views.Count(); i++) {
+            ViewWindow& view = views[i];
+
+            if (view.pointCount == 0) {
+                view.minY = view.minY * 2.0f - 1.0f;
+                view.maxY = view.maxY * 2.0f - 1.0f;
+                view.minX = view.minX * 2.0f - 1.0f;
+                view.maxX = view.maxX * 2.0f - 1.0f;
+
+                vertex(view.minY, view.minX);
+                vertex(view.minY, view.maxX);
+                vertex(view.maxY, view.maxX);
+                vertex(view.maxY, view.minX);
+
+                indices[0] = base;
+                indices[1] = base + 1;
+                indices[2] = base + 2;
+                indices[3] = base;
+                indices[4] = base + 2;
+                indices[5] = base + 3;
+                indices += 6;
+                base += 4;
+            } else {
+                for (uint32_t k = 0; k < view.pointCount; k++) {
+                    vertex(view.points[k].x, view.points[k].y);
+                }
+
+                for (uint32_t k = 0; view.pointCount != 2 && k < view.pointCount - 2; k++) {
+                    indices[0] = base;
+                    indices[1] = base + 1 + k;
+                    indices[2] = base + 2 + k;
+                    indices += 3;
+                }
+
+                base += view.pointCount;
+            }
+        }
+    }
+
+    GxBufUnlock(vertexBuf, 0);
+    GxBufUnlock(indexBuf, 0);
+    GxPrimVertexPtr(vertexBuf, GxVBF_PC);
+    g_theGxDevicePtr->PrimIndexPtr(indexBuf);
+
+    CGxBatch batch;
+    batch.m_primType = GxPrim_Triangles;
+    batch.m_start = 0;
+    batch.m_count = indexCount;
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = static_cast<uint16_t>(vertexCount - 1);
+    GxDraw(&batch, 1);
+
+    GxRsPop();
+    g_theGxDevicePtr->XformPop(GxXform_World);
+    GxXformSetProjection(savedProjection);
+    GxXformSetView(savedView);
+}
+
 // ref: FUN_00795d40
 // Which building the camera is standing in. The whole thing is one downward segment: from the
 // camera to 1760 units below it, which is more than the world is tall, so it always reaches ground
@@ -2375,11 +2654,13 @@ void CWorldScene::UpdateCameraDef() {
         }
 
         if (flags & 0x40140) {
-            // TODO seed the window. The reference builds a full-screen ViewWindow -- the rect
-            // (0, 0, 1, 1) at depth 0, through FUN_00790570 -- merges it into s_window with
-            // FUN_007905b0, and appends it to a list with FUN_00795d00 (which is one
-            // FUN_007940f0(list, 1, window) whose list frozen has not identified). Without it the
-            // indoor pass starts from whatever window the last frame left.
+            // The whole screen at depth 0, merged into the window and kept as a portal view.
+            static const float fullScreen[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+            ViewWindow window;
+            CWorldScene::ViewWindowInit(window, fullScreen, 0.0f);
+            CWorldScene::ViewWindowMerge(CWorldScene::s_window, window);
+            CWorldScene::AddPortalView(window);
         }
     }
 

@@ -1437,8 +1437,8 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         narrowed.maxX = (sub[2] + 1.0f) * 0.5f;
         narrowed.maxY = (sub[3] + 1.0f) * 0.5f;
         narrowed.depth = -1.0f;
-        narrowed.unknown14 = 0.0f;
-        narrowed.unknown18 = 0.0f;
+        narrowed.points = nullptr;
+        narrowed.pointCount = 0;
 
         CWorldScene::s_frustumDepth++;
         CWorldScene::s_frustums[CWorldScene::s_frustumDepth] =

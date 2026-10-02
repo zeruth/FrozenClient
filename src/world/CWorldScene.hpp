@@ -103,8 +103,10 @@ class CWorldScene {
             float maxX;
             float maxY;
             float depth;
-            float unknown14;
-            float unknown18;
+            // An outline in place of the rectangle: screen-space points (x and y read) and how
+            // many. A rectangle window has none.
+            const C3Vector* points;
+            uint32_t pointCount;
         };
 
         static const uint32_t TERRAIN_CONSTANT_COUNT = 37;
@@ -238,6 +240,11 @@ class CWorldScene {
         static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) s_mapObjDefGroupCandidates;
         static ViewWindow s_window;                         // DAT_00adf570
         static ViewWindow s_portalWindow;                   // DAT_00adf58c
+        // The screen regions seen through portals (DAT_00cdd0e8) and seen from outside them
+        // (DAT_00cdd0f8). CMap::Render fills what the first leaves uncovered, and the second, at the
+        // far plane in the fog colour (FillViewWindows).
+        static TSGrowableArray<ViewWindow> s_portalViews;
+        static TSGrowableArray<ViewWindow> s_exteriorViews;
         static const int32_t s_quadrantVertex[4];           // DAT_00aeee3c: the chunk vertex nearest the camera per quadrant
 
         // Put a group index in one of the two lists if it is not already there. ref: FUN_00792fc0
@@ -247,6 +254,12 @@ class CWorldScene {
         // straight down from it. Fills s_cameraDef, s_cameraDefFlagged and the two index lists.
         // ref: FUN_00795d40
         static void UpdateCameraDef();
+        static void ViewWindowInit(ViewWindow& window, const float* rect, float depth);
+        static void ViewWindowMerge(ViewWindow& window, const ViewWindow& other);
+        static void AddPortalView(const ViewWindow& window);
+        static void AddExteriorView(const ViewWindow& window);
+        static void ComplementPortalViews();
+        static void FillViewWindows(TSGrowableArray<ViewWindow>& views, int32_t portal);
 
         // Static functions
         static void Initialize();

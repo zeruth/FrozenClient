@@ -1563,11 +1563,11 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::s_portalWindow.minX = 0.0f;
         CWorldScene::s_portalWindow.depth = 0.0f;
         CWorldScene::s_portalWindow.minY = 0.0f;
-        CWorldScene::s_portalWindow.unknown14 = 0.0f;
+        CWorldScene::s_portalWindow.points = nullptr;
         CWorldScene::s_nearChunkDistance = -10000.0f;
         CWorldScene::s_portalWindow.maxX = 1.0f;
         CWorldScene::s_portalWindow.maxY = 1.0f;
-        CWorldScene::s_portalWindow.unknown18 = 0.0f;
+        CWorldScene::s_portalWindow.pointCount = 0;
         CWorldScene::Traverse(&CWorldScene::s_portalWindow, 0);
     } else {
         CWorldScene::s_frameStamp++;
@@ -1599,16 +1599,16 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
             CWorldScene::s_window.maxX = INVERTED_MAX;
             CWorldScene::s_window.maxY = INVERTED_MAX;
             CWorldScene::s_window.depth = -1.0f;
-            CWorldScene::s_window.unknown14 = 0.0f;
-            CWorldScene::s_window.unknown18 = 0.0f;
+            CWorldScene::s_window.points = nullptr;
+            CWorldScene::s_window.pointCount = 0;
 
             CWorldScene::s_portalWindow.minX = INVERTED_MIN;
             CWorldScene::s_portalWindow.minY = INVERTED_MIN;
             CWorldScene::s_portalWindow.maxX = INVERTED_MAX;
             CWorldScene::s_portalWindow.maxY = INVERTED_MAX;
             CWorldScene::s_portalWindow.depth = -1.0f;
-            CWorldScene::s_portalWindow.unknown14 = 0.0f;
-            CWorldScene::s_portalWindow.unknown18 = 0.0f;
+            CWorldScene::s_portalWindow.points = nullptr;
+            CWorldScene::s_portalWindow.pointCount = 0;
 
             // TODO two SetCount(0) calls on the window arrays at 0x00cdd0e8 and 0x00cdd0f8, which
             // FUN_00795d00 and FUN_00795d20 append to and which frozen does not carry. They
@@ -1639,8 +1639,8 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
             CWorldScene::s_portalWindow.maxX = 1.0f;
             CWorldScene::s_portalWindow.maxY = 1.0f;
             CWorldScene::s_portalWindow.depth = 0.0f;
-            CWorldScene::s_portalWindow.unknown14 = 0.0f;
-            CWorldScene::s_portalWindow.unknown18 = 0.0f;
+            CWorldScene::s_portalWindow.points = nullptr;
+            CWorldScene::s_portalWindow.pointCount = 0;
             CWorldScene::s_nearChunkDistance = -10000.0f;
 
             CWorldScene::Traverse(&CWorldScene::s_portalWindow, 0);
