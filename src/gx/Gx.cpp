@@ -43,6 +43,11 @@ bool GxCapsWindowHasFocus(int32_t a1) {
     return true;
 }
 
+// ref: FUN_00493bf0
+void GxCapsWindowSizeInScreenCoords(CRect& rect) {
+    g_theGxDevicePtr->CapsWindowSizeInScreenCoords(rect);
+}
+
 void GxCapsWindowSize(CRect& rect) {
     g_theGxDevicePtr->CapsWindowSize(rect);
 }

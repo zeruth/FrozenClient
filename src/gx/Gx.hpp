@@ -16,6 +16,8 @@ bool GxCapsWindowHasFocus(int32_t);
 
 void GxCapsWindowSize(CRect&);
 
+void GxCapsWindowSizeInScreenCoords(CRect& rect);
+
 void GxFormatColor(CImVector&);
 
 int32_t GxMaxFps();

@@ -1,4 +1,5 @@
 #include "ui/game/CGGameUI.hpp"
+#include "ui/game/Cursor.hpp"
 #include <storm/String.hpp>
 #include "ui/FrameScript.hpp"
 #include "client/Client.hpp"
@@ -241,6 +242,10 @@ void CGGameUI::Initialize() {
     // TODO
 
     CGGameUI::s_simpleTop = STORM_NEW(CSimpleTop);
+
+    // TODO
+
+    CursorInitialize();
 
     // TODO
 

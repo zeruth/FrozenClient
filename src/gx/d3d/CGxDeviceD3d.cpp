@@ -1,4 +1,5 @@
 #include "gx/d3d/CGxDeviceD3d.hpp"
+#include "gx/Gx.hpp"
 #include "gx/d3d/NvApi.hpp"
 #include <common/Os.hpp>
 #include <common/Time.hpp>
@@ -13,7 +14,6 @@
 #include <directxmath.h>
 
 
-HCURSOR CGxDeviceD3d::s_classCursor = nullptr;
 
 int32_t CGxDeviceD3d::s_clientAdjustWidth;
 int32_t CGxDeviceD3d::s_clientAdjustHeight;
@@ -220,9 +220,6 @@ D3DTEXTUREADDRESS CGxDeviceD3d::s_wrapModes[] = {
 };
 
 // ref: FUN_0068eb20
-// One recorded divergence: the reference falls back to LoadCursorA(instance, IDC_ARROW), which
-// can only fail for a module handle; frozen asks the system (see below). The reference never
-// reaches the fallback because its exe carries BlizzardCursor.cur.
 ATOM WindowClassCreate() {
     auto instance = GetModuleHandle(nullptr);
 
@@ -231,22 +228,15 @@ ATOM WindowClassCreate() {
     wc.cbSize = sizeof(wc);
     wc.style = CS_OWNDC;
     wc.lpfnWndProc = CGxDeviceD3d::WindowProcD3d;
-    wc.hInstance = instance;
     wc.lpszClassName = TEXT("GxWindowClassD3d");
+    wc.hInstance = instance;
 
     wc.hIcon = static_cast<HICON>(LoadImage(instance, TEXT("BlizzardIcon.ico"), 1u, 0, 0, 0x40));
     wc.hCursor = LoadCursor(instance, TEXT("BlizzardCursor.cur"));
 
     if (!wc.hCursor) {
-        // A STANDARD cursor must be loaded with a null module handle. Passing `instance` makes
-        // LoadCursor look for a resource named IDC_ARROW inside the exe, which does not exist, so it
-        // returned NULL -- and a window class with no cursor leaves whatever the previous window
-        // set, which at startup is the "app starting" arrow-and-spinner. That is why the cursor was
-        // a spinning wheel over the whole window for the life of the process.
-        wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wc.hCursor = LoadCursor(instance, IDC_ARROW);
     }
-
-    CGxDeviceD3d::s_classCursor = wc.hCursor;
 
     return RegisterClassEx(&wc);
 }
@@ -299,13 +289,80 @@ void CGxDeviceD3d::IUnloadD3dLib(HINSTANCE& d3dLib, LPDIRECT3D9& d3d) {
     }
 }
 
+// The window-sizing helpers WM_SIZING runs (reference 0x00683d60..0x00683f30). The rectangle is
+// the dragged window, frame included: s_clientAdjustWidth and s_clientAdjustHeight are the
+// frame's size, so the aspect ratio and the 320x240 minimum apply to the client area.
+
+// ref: FUN_00683d60
+static void SizingAspectTop(CiRect& rect) {
+    if (CGxDevice::s_aspectRatio != 0.0f) {
+        auto height = static_cast<int32_t>(static_cast<double>(rect.maxX - rect.minX - CGxDeviceD3d::s_clientAdjustWidth) / CGxDevice::s_aspectRatio + 0.5f + CGxDeviceD3d::s_clientAdjustHeight);
+        rect.minY = rect.maxY - height;
+    }
+}
+
+// ref: FUN_00683db0
+static void SizingAspectBottom(CiRect& rect) {
+    if (CGxDevice::s_aspectRatio != 0.0f) {
+        auto height = static_cast<int32_t>(static_cast<double>(rect.maxX - rect.minX - CGxDeviceD3d::s_clientAdjustWidth) / CGxDevice::s_aspectRatio + 0.5f + CGxDeviceD3d::s_clientAdjustHeight);
+        rect.maxY = height + rect.minY;
+    }
+}
+
+// ref: FUN_00683e00
+static void SizingAspectLeft(CiRect& rect) {
+    if (CGxDevice::s_aspectRatio != 0.0f) {
+        auto width = static_cast<int32_t>(static_cast<double>(rect.maxY - rect.minY - CGxDeviceD3d::s_clientAdjustHeight) * CGxDevice::s_aspectRatio + 0.5f + CGxDeviceD3d::s_clientAdjustWidth);
+        rect.minX = rect.maxX - width;
+    }
+}
+
+// ref: FUN_00683e50
+static void SizingAspectRight(CiRect& rect) {
+    if (CGxDevice::s_aspectRatio != 0.0f) {
+        auto width = static_cast<int32_t>(static_cast<double>(rect.maxY - rect.minY - CGxDeviceD3d::s_clientAdjustHeight) * CGxDevice::s_aspectRatio + 0.5f + CGxDeviceD3d::s_clientAdjustWidth);
+        rect.maxX = width + rect.minX;
+    }
+}
+
+// ref: FUN_00683ea0
+static void SizingMinLeft(CiRect& rect) {
+    if (rect.maxX - rect.minX - CGxDeviceD3d::s_clientAdjustWidth < 320) {
+        rect.minX = rect.maxX - CGxDeviceD3d::s_clientAdjustWidth - 320;
+    }
+}
+
+// ref: FUN_00683ed0
+static void SizingMinRight(CiRect& rect) {
+    if (rect.maxX - rect.minX - CGxDeviceD3d::s_clientAdjustWidth < 320) {
+        rect.maxX = rect.minX + CGxDeviceD3d::s_clientAdjustWidth + 320;
+    }
+}
+
+// ref: FUN_00683f00
+static void SizingMinTop(CiRect& rect) {
+    if (rect.maxY - rect.minY - CGxDeviceD3d::s_clientAdjustHeight < 240) {
+        rect.minY = rect.maxY - CGxDeviceD3d::s_clientAdjustHeight - 240;
+    }
+}
+
+// ref: FUN_00683f30
+static void SizingMinBottom(CiRect& rect) {
+    if (rect.maxY - rect.minY - CGxDeviceD3d::s_clientAdjustHeight < 240) {
+        rect.maxY = rect.minY + CGxDeviceD3d::s_clientAdjustHeight + 240;
+    }
+}
+
+// ref: FUN_006a0360
+// Over the client area the system cursor is always hidden: the device shows its own hardware
+// cursor, or draws the software one with the frame.
 LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     auto device = reinterpret_cast<CGxDeviceD3d*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
     switch (uMsg) {
     case WM_CREATE: {
         auto lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
-        SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(lpcs->lpCreateParams));
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(lpcs->lpCreateParams));
 
         return 0;
     }
@@ -325,6 +382,7 @@ LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         };
 
         int32_t resizeType = 0;
+
         if (wParam == SIZE_MINIMIZED) {
             resizeType = 1;
         } else if (wParam == SIZE_MAXHIDE) {
@@ -337,12 +395,14 @@ LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
 
     case WM_ACTIVATE: {
-        if (wParam == WA_INACTIVE && !device->IDevIsWindowed()) {
-            CRect windowRect = { 0.0f, 0.f, 0.0f, 0.0f };
-            device->DeviceWM(GxWM_Size, reinterpret_cast<uintptr_t>(&windowRect), 1);
-        } else if (wParam == WA_ACTIVE && !device->IDevIsWindowed()) {
-            CRect windowRect;
-            device->CapsWindowSizeInScreenCoords(windowRect);
+        if (LOWORD(wParam) == WA_INACTIVE) {
+            if (!device->IDevIsWindowed()) {
+                CRect windowRect = { 0.0f, 0.0f, 0.0f, 0.0f };
+                device->DeviceWM(GxWM_Size, reinterpret_cast<uintptr_t>(&windowRect), 1);
+            }
+        } else if (LOWORD(wParam) == WA_ACTIVE && !device->IDevIsWindowed()) {
+            CRect windowRect = { 0.0f, 0.0f, 0.0f, 0.0f };
+            GxCapsWindowSizeInScreenCoords(windowRect);
             device->DeviceWM(GxWM_Size, reinterpret_cast<uintptr_t>(&windowRect), 3);
         }
 
@@ -374,14 +434,13 @@ LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
 
     case WM_SETCURSOR: {
-        // Returning TRUE means "handled, do not change the cursor". Doing that without ever calling
-        // SetCursor left whatever cursor was last set in place -- the other half of the spinning
-        // wheel. Set it for the client area, and let DefWindowProc handle the frame so the resize
-        // borders still get their own arrows.
-        if (LOWORD(lParam) == HTCLIENT) {
-            if (CGxDeviceD3d::s_classCursor) {
-                SetCursor(CGxDeviceD3d::s_classCursor);
-            }
+        if (!device) {
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
+        }
+
+        if (device->m_d3dDevice && LOWORD(lParam) == HTCLIENT) {
+            SetCursor(nullptr);
+            device->m_d3dDevice->ShowCursor(device->m_cursorVisible && device->m_hwCursor);
 
             return 1;
         }
@@ -390,19 +449,91 @@ LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     }
 
     case WM_DISPLAYCHANGE: {
-        // TODO
+        if (!device->IDevIsWindowed()) {
+            CRect windowRect = {
+                0.0f,
+                0.0f,
+                static_cast<float>(HIWORD(lParam)),
+                static_cast<float>(LOWORD(lParam))
+            };
+
+            device->DeviceWM(GxWM_DisplayChange, reinterpret_cast<uintptr_t>(&windowRect), 0);
+        }
 
         break;
     }
 
     case WM_SYSCOMMAND: {
-        // TODO
+        // No screen saver and no monitor power-down while the game is up.
+        if (wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER) {
+            return 0;
+        }
 
         break;
     }
 
     case WM_SIZING: {
-        // TODO
+        auto dragged = reinterpret_cast<RECT*>(lParam);
+        CiRect rect = { dragged->top, dragged->left, dragged->bottom, dragged->right };
+
+        if (rect.maxX - rect.minX <= 0 || rect.maxY - rect.minY <= 0) {
+            return 0;
+        }
+
+        switch (wParam) {
+        case WMSZ_LEFT:
+            SizingMinLeft(rect);
+            SizingAspectTop(rect);
+            break;
+
+        case WMSZ_RIGHT:
+            SizingMinRight(rect);
+            SizingAspectBottom(rect);
+            break;
+
+        case WMSZ_TOP:
+            SizingMinTop(rect);
+            SizingAspectLeft(rect);
+            break;
+
+        case WMSZ_TOPLEFT:
+            SizingMinTop(rect);
+            SizingMinLeft(rect);
+            SizingAspectTop(rect);
+            SizingAspectLeft(rect);
+            break;
+
+        case WMSZ_TOPRIGHT:
+            SizingMinTop(rect);
+            SizingMinRight(rect);
+            SizingAspectTop(rect);
+            SizingAspectRight(rect);
+            break;
+
+        case WMSZ_BOTTOM:
+            SizingMinBottom(rect);
+            SizingAspectRight(rect);
+            break;
+
+        case WMSZ_BOTTOMLEFT:
+            SizingMinBottom(rect);
+            SizingMinLeft(rect);
+            SizingAspectLeft(rect);
+            SizingAspectBottom(rect);
+            break;
+
+        case WMSZ_BOTTOMRIGHT:
+            SizingMinBottom(rect);
+            SizingMinRight(rect);
+            SizingAspectBottom(rect);
+            SizingAspectRight(rect);
+            break;
+        }
+
+        dragged->left = rect.minX;
+        dragged->bottom = rect.maxY;
+        dragged->top = rect.minY;
+        dragged->right = rect.maxX;
 
         return 1;
     }

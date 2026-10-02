@@ -8,8 +8,6 @@
 
 class CGxDeviceD3d : public CGxDevice {
     public:
-        // The cursor the window class was registered with, so WM_SETCURSOR can restore it.
-        static HCURSOR s_classCursor;
 
     public:
     // Types

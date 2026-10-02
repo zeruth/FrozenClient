@@ -19,6 +19,8 @@
 #include "glue/Types.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/Device.hpp"
+#include "gx/Texture.hpp"
+#include "ui/game/Cursor.hpp"
 #include "gx/LoadingScreen.hpp"
 #include "math/Utils.hpp"
 #include "net/Connection.hpp"
@@ -659,6 +661,9 @@ void CGlueMgr::DeleteCharacter(uint64_t guid) {
     ClientServices::Connection()->DeleteCharacter(guid);
 }
 
+// The glue screens' cursor image (reference 0x00b6a9dc).
+static MipBits* s_cursorImage;
+
 void CGlueMgr::Initialize() {
     CGlueMgr::m_initialized = 1;
 
@@ -1288,8 +1293,16 @@ void CGlueMgr::Resume() {
     CGlueMgr::m_simpleTop = top;
     CGlueMgr::m_simpleTop->m_displaySizeCallback = &CGlueMgr::HandleDisplaySizeChanged;
 
+    uint32_t cursorWidth = 0;
+    uint32_t cursorHeight = 0;
+    PIXEL_FORMAT cursorFormat = PIXEL_ARGB8888;
+    s_cursorImage = TextureLoadImage("Interface\\Cursor\\Point.blp", &cursorWidth, &cursorHeight, &cursorFormat, nullptr, nullptr, nullptr, 0);
+
+    // Twice, as the reference does.
+    CursorSetImage(s_cursorImage);
+    CursorSetImage(s_cursorImage);
+
     // TODO
-    // - setting cursor texture
     // - setting mouse mode
 
     FrameScript_Flush();
@@ -1530,6 +1543,11 @@ void CGlueMgr::Suspend() {
     if (CGlueMgr::m_simpleTop) {
         delete CGlueMgr::m_simpleTop;
         CGlueMgr::m_simpleTop = nullptr;
+    }
+
+    if (s_cursorImage) {
+        TextureFreeMippedImg(s_cursorImage, PIXEL_ARGB8888, 32, 32);
+        s_cursorImage = nullptr;
     }
 
     // TODO
