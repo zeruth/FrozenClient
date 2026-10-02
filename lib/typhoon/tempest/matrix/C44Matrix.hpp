@@ -77,6 +77,9 @@ C44Matrix operator*(const C44Matrix& l, float a);
 
 C44Matrix operator*(const C44Matrix& l, const C44Matrix& r);
 
+// Every element equal, compared in order. ref: FUN_004c1730
+bool operator==(const C44Matrix& l, const C44Matrix& r);
+
 // A row vector through a matrix. Shared by the world scene's frustum and occlusion code and the
 // M2 clip plane. ref: FUN_004c2270
 void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m);

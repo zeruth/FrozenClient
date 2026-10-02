@@ -4314,5 +4314,29 @@
   "008a1410": {
     "status": "excluded",
     "note": "An empty function (two callers in the device range). A nullsub. Identified 2026-10-02."
+  },
+  "007d48c0": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of Liquid::CChunkGeomFactory: returns its buffer pair to the pool and frees the layer array. Compiler-generated; frozen does the same work in CChunkGeomFactory::Release. Identified 2026-10-02."
+  },
+  "007d4980": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of Liquid::CMeshGeomFactory. Compiler-generated. Identified 2026-10-02."
+  },
+  "007d4f20": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData (CClientEnvironment). Compiler-generated. Identified 2026-10-02."
+  },
+  "007d47d0": {
+    "status": "excluded",
+    "note": "Dynamic initializer: registers the CDataAllocators for the two geometry factories. Compiler-generated; frozen allocates with SMemAlloc. Identified 2026-10-02."
+  },
+  "007d5100": {
+    "status": "excluded",
+    "note": "Dynamic initializer: registers the CClientEnvironment CDataAllocator. Compiler-generated. Identified 2026-10-02."
+  },
+  "007d6670": {
+    "status": "excluded",
+    "note": "Dynamic initializer: registers the CWaveManager CDataAllocator. Compiler-generated. Identified 2026-10-02."
   }
 }
