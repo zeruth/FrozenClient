@@ -297,6 +297,11 @@ class CM2Model {
         M2ModelLight* m_lights;
         CM2Lighting m_lighting;
         CM2Lighting* m_currentLighting = nullptr;
+        // +0x1bc / +0x1c0: a draw the model's owner does itself, instead of the model's batches
+        // (CM2SceneRender::DrawCallback); unit code installs one (0x0071aade). Called with the
+        // model, its lighting and the argument.
+        void (*m_drawCallback)(CM2Model* model, CM2Lighting* lighting, void* arg) = nullptr;
+        void* m_drawCallbackArg = nullptr;
         void (*m_lightingCallback)(CM2Model*, CM2Lighting*, void*) = nullptr;
         void* m_lightingArg = nullptr;
         M2ModelCamera* m_cameras = nullptr;

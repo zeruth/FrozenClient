@@ -443,8 +443,38 @@ void CM2SceneRender::DrawBatchProj() {
     // TODO
 }
 
+// ref: FUN_00823070
+// The model's own textures, lighting and material, no shaders, the particle transform, and the
+// states pushed so the owner's draw cannot leak them.
+void CM2SceneRender::BeginCallbackDraw(const C3Vector& cameraPosition) {
+    this->SetupTextures();
+    this->SetupLighting();
+    this->SetupMaterial();
+    GxRsSet(GxRs_VertexShader, static_cast<CGxShader*>(nullptr));
+    GxRsSet(GxRs_PixelShader, static_cast<CGxShader*>(nullptr));
+    this->SetupParticleTransform(cameraPosition);
+    GxRsPush();
+}
+
+// ref: FUN_0081f6a0
+void CM2SceneRender::EndCallbackDraw() {
+    GxRsPop();
+    GxXformSetView(CM2SceneRender::s_identity);
+    GxXformSet(GxXform_World, CM2SceneRender::s_identity);
+}
+
+// ref: FUN_008230d0
+// An element whose model draws itself: set up as for a particle, hand over to the owner's
+// callback, restore.
 void CM2SceneRender::DrawCallback() {
-    // TODO
+    C3Vector origin = { 0.0f, 0.0f, 0.0f };
+    this->BeginCallbackDraw(origin);
+
+    auto model = this->m_curModel;
+    model->m_drawCallback(model, model->m_currentLighting, model->m_drawCallbackArg);
+
+    CM2SceneRender::EndCallbackDraw();
+    CShaderEffect::UpdateProjMatrix();
 }
 
 // DEAD STUB, and the chain above it is what has to land first.

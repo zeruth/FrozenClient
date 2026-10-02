@@ -112,6 +112,8 @@ class CM2SceneRender {
         void DrawBatchDoodad(M2Element* elements, uint32_t* a3);
         void DrawBatchProj();
         void DrawCallback();
+        void BeginCallbackDraw(const C3Vector& cameraPosition);
+        static void EndCallbackDraw();
         // Put the view into camera-relative space for a particle draw, and reset the world
         // matrix to identity. ref: FUN_0081f620
         void SetupParticleTransform(const C3Vector& cameraPosition);
