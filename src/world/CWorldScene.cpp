@@ -259,10 +259,11 @@ void CWorldScene::SetupTerrainConstants(const C44Matrix& world, const C44Matrix&
     CAaSphere origin = { sunDir, 0.0f };
     lighting.Initialize(nullptr, origin);
 
-    // The reference adds the day/night block's sun light (a CM2Light at DAT_00ce04a8 + 0x58);
-    // frozen keeps it as a direction and colours (diverged, as in CMap::SetupChunkLighting)
-    lighting.AddAmbient(CWorld::GetOutdoorAmbient());
-    lighting.AddDiffuse(CWorld::GetOutdoorDiffuse(), CWorld::GetOutdoorDirection());
+    // The outdoor light whole: ambient, sun and specular. Its direction points AWAY from the sun,
+    // which is why the view-space light below is built from the negation. Until 2026-10-02 this
+    // took CWorld's stand-in getters, whose direction is already negated -- so the terrain was
+    // lit from the side facing away from the sun, and got no specular.
+    lighting.AddLight(&CMap::s_outdoorLight->m_light);
 
     auto ambient = reinterpret_cast<C3Vector*>(constants->sunAmbient);
     auto diffuse = reinterpret_cast<C3Vector*>(constants->sunDiffuse);
@@ -294,12 +295,11 @@ void CWorldScene::SetupTerrainConstants(const C44Matrix& world, const C44Matrix&
     }
 
     if (g_theGxDevicePtr->MasterEnable(GxMasterEnable_Fog)) {
-        float fogStart = CWorld::GetFogStart();
-        float fogEnd = CWorld::GetFogEnd();
-        float inv = 1.0f / (fogEnd - fogStart);
+        auto block = DayNightGetBlock();
+        float inv = 1.0f / (block->fogEnd - block->fogStart);
         constants->fog[0] = -(g_shadowMapFogScale * inv);
-        constants->fog[1] = inv * fogEnd;
-        constants->fog[2] = CWorld::GetFogRate();
+        constants->fog[1] = inv * block->fogEnd;
+        constants->fog[2] = block->fogRate;
         constants->fog[3] = 0.0f;
     } else {
         constants->fog[0] = 0.0f;
@@ -319,9 +319,11 @@ void CWorldScene::RenderTerrain() {
 
     g_theGxDevicePtr->RsGet(GxRs_FogColor, CWorldScene::s_fogColorState);
 
+    auto block = DayNightGetBlock();
+
     if (!CMap::s_chunkVerticesWorldSpace) {
-        g_theGxDevicePtr->RsSet(GxRs_FogStart, CWorld::GetFogStart());
-        g_theGxDevicePtr->RsSet(GxRs_FogEnd, CWorld::GetFogEnd());
+        g_theGxDevicePtr->RsSet(GxRs_FogStart, block->fogStart);
+        g_theGxDevicePtr->RsSet(GxRs_FogEnd, block->fogEnd);
         g_theGxDevicePtr->RsSet(GxRs_MatDiffuse, 0xFF7F7F7Fu);
 
         if (CMap::s_terrainSpecular) {
@@ -344,17 +346,21 @@ void CWorldScene::RenderTerrain() {
         CWorldScene::SetupTerrainConstants(world, view);
     }
 
+    // The fog colour is the block's fogColor (+0x8c), not the final one.
+    CImVector fogColor = block->fogColor;
+
     if (!CMap::s_terrainShaders) {
-        g_theGxDevicePtr->RsSet(GxRs_FogColor, FogColorImVector().value);
+        g_theGxDevicePtr->RsSet(GxRs_FogColor, fogColor.value);
         g_theGxDevicePtr->RsSet(GxRs_Fog, 1);
         g_theGxDevicePtr->RsSet(GxRs_ColorOp0, 1);
         g_theGxDevicePtr->RsSet(GxRs_AlphaOp0, 0);
         g_theGxDevicePtr->RsSet(GxRs_ColorOp1, 0);
         g_theGxDevicePtr->RsSet(GxRs_AlphaOp1, 0);
     } else {
-        CImVector fogColor = FogColorImVector();
-
-        if (!GxCaps().int134) {
+        // On a ps_3_0 device both caps are clear and the terrain pixel shader fogs itself
+        // (Terrain1 ends in `mad oC0.xyz, v5.x, colour - c2, c2`), so the colour goes to c2 and no
+        // fixed-function fog is turned on. Below ps_3_0 the device fogs the shader's output.
+        if (!GxCaps().m_notPs30a) {
             float color[4];
             ImVectorToFloats(color, fogColor);
             g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 2, color, 1);
@@ -362,24 +368,11 @@ void CWorldScene::RenderTerrain() {
             g_theGxDevicePtr->RsSet(GxRs_FogColor, fogColor.value);
         }
 
-        if (GxCaps().int138) {
+        if (GxCaps().m_notPs30b) {
             g_theGxDevicePtr->RsSet(GxRs_Fog, 1);
         }
 
         ShadowMapBindTerrain();
-
-        // Diverged: frozen's D3D backend never reports the two capability fields the reference
-        // gates on above (int134, int138), and fogs shader-drawn geometry through the
-        // fixed-function table fog (CGxDeviceD3d::IStateSetD3dDefaults), so the ramp and the
-        // enable go through the render states here as the stand-in did. The vertex shader's
-        // own fog output is unused on that path.
-        if (!GxCaps().int138) {
-            bool fogActive = CWorld::GetFogEnd() > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
-            g_theGxDevicePtr->RsSet(GxRs_FogStart, CWorld::GetFogStart());
-            g_theGxDevicePtr->RsSet(GxRs_FogEnd, CWorld::GetFogEnd());
-            g_theGxDevicePtr->RsSet(GxRs_FogColor, fogColor.value);
-            g_theGxDevicePtr->RsSet(GxRs_Fog, fogActive ? 1 : 0);
-        }
     }
 
     CWorldScene::RenderChunkLists();

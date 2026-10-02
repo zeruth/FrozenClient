@@ -2255,14 +2255,15 @@ void CMap::ReleaseAllBufEntries() {
 }
 
 // ref: FUN_007b7bd0
-// The map's own light and fog on top of the scene lights selected for a chunk. The reference
-// adds the day/night block's sun (a CM2Light at DAT_00ce04a8 + 0x58); frozen keeps the outdoor
-// light as a direction and two colours, so it goes in as an ambient and a diffuse until that
-// block is ported.
+// The map's own light and fog on top of the scene lights selected for a chunk: the outdoor light
+// whole, and the day/night block's fog (its fogColor, not the final one).
 void CMap::SetupChunkLighting(CM2Lighting* lighting) {
-    lighting->AddAmbient(CWorld::GetOutdoorAmbient());
-    lighting->AddDiffuse(CWorld::GetOutdoorDiffuse(), CWorld::GetOutdoorDirection());
-    lighting->SetFog(CWorld::GetFogColor(), CWorld::GetFogStart(), CWorld::GetFogEnd());
+    lighting->AddLight(&CMap::s_outdoorLight->m_light);
+
+    auto block = DayNightGetBlock();
+    const float k = 1.0f / 255.0f;
+    C3Vector color = { block->fogColor.r * k, block->fogColor.g * k, block->fogColor.b * k };
+    lighting->SetFog(color, block->fogStart, block->fogEnd, block->fogRate);
 }
 
 // ref: FUN_007b54a0

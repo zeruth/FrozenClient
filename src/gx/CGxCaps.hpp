@@ -50,9 +50,10 @@ class CGxCaps {
         uint32_t m_maxTexAnisotropy = 0;
         int32_t m_depthBias = 0;
         int32_t m_stereoAvailable = 0;
-        int32_t int130 = 1;
-        int32_t int134 = 0;
-        int32_t int138 = 0;
+        // int130, int134 and int138 used to sit here as well, read by the shader-effect fog and
+        // the terrain pass while ISetCaps wrote the real ones below (int130b, m_notPs30a,
+        // m_notPs30b). The readers saw constant defaults: harmless on a ps_3_0 device, wrong
+        // below it. Removed 2026-10-02 so each reference field has one name.
 
         // The rest of the reference's CGxCaps (device +0x214..+0x350), which ISetCaps fills and
         // whoa's layout did not carry. Frozen's order differs from the reference's above this line,
