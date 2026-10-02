@@ -1,4 +1,8 @@
 #include "gx/CGxDevice.hpp"
+#include <cstdio>
+#include <cstdarg>
+#include "util/Filesystem.hpp"
+#include <storm/Log.hpp>
 #include "gx/Buffer.hpp"
 #include <cmath>
 #include <common/Time.hpp>
@@ -286,10 +290,55 @@ int32_t CGxDevice::GLLAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monit
 }
 #endif
 
+// The gx log (reference 0x00c5fff8) and how much has gone into it (0x00c5fff4).
+static HSLOG s_gxLog;
+static uint32_t s_gxLogSize;
+
+// ref: FUN_00683670
+void CGxDevice::LogOpen() {
+    if (s_gxLog) {
+        return;
+    }
+
+    OsCreateDirectory("Logs", 0);
+    SLogCreate("Logs\\gx.log", 0, &s_gxLog);
+    s_gxLogSize = 0;
+}
+
+// ref: FUN_006836b0
+void CGxDevice::LogClose() {
+    if (s_gxLog) {
+        SLogClose(s_gxLog);
+        s_gxLog = 0;
+    }
+}
+
+// ref: FUN_00684ba0
+// No more than 2 MB goes into the log over a run.
+void CGxDevice::ILogWrite(const char* format, va_list args) {
+    if (!s_gxLog) {
+        return;
+    }
+
+    char buffer[2048];
+    vsnprintf(buffer, sizeof(buffer), format, args);
+
+    if (s_gxLogSize < 0x200000) {
+        SLogWrite(s_gxLog, buffer);
+        s_gxLogSize += static_cast<uint32_t>(strlen(buffer));
+    }
+}
+
 // ref: FUN_00684c20
-// STUB, recorded: the reference writes to Logs\gx.log through Storm's SLog API (opened by
-// FUN_00683670, written by FUN_00684ba0, capped at 2 MB), which frozen's Storm does not have.
 void CGxDevice::Log(const char* format, ...) {
+    if (!s_gxLog) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+    CGxDevice::ILogWrite(format, args);
+    va_end(args);
 }
 
 // ref: FUN_00684d10

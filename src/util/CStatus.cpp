@@ -88,7 +88,7 @@ CWOWClientStatus::~CWOWClientStatus() {
         }
 
         SLogClose(this->m_logFile);
-        this->m_logFile = nullptr;
+        this->m_logFile = 0;
     }
 }
 

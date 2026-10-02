@@ -45,7 +45,7 @@ class CStatus {
 class CWOWClientStatus : public CStatus {
     public:
         // Member variables
-        HSLOG m_logFile = nullptr;
+        HSLOG m_logFile = 0;
 
         // Virtual member functions
         virtual ~CWOWClientStatus();

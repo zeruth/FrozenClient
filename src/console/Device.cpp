@@ -833,6 +833,8 @@ void ConsoleDeviceStereoInitialize() {
 }
 
 void ConsoleDeviceInitialize(const char* title) {
+    GxLogOpen();
+
     // TODO
 
     // TODO proper logic
@@ -912,6 +914,8 @@ void ConsoleDeviceInitialize(const char* title) {
     ConsoleDeviceStereoInitialize();
 
     // TODO
+
+    GxLogClose();
 }
 
 int32_t ConsoleDeviceExists() {

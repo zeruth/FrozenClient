@@ -3,15 +3,21 @@
 #include <cstdio>
 #include <storm/String.hpp>
 
-// TODO the original routes these through Storm's SLog, which prefixes each line with a timestamp
-// and keeps the file open on a shared handle table
+// Windows uses Storm's SLog (lib/squall/storm/Log.cpp). Other platforms -- the Android build --
+// keep this plain-file stand-in behind the same handle API.
+#if !defined(WHOA_SYSTEM_WIN)
+
+static FILE* s_logFiles[64];
+
+void SLogInitialize() {
+}
 
 int32_t SLogCreate(const char* filename, uint32_t flags, HSLOG* log) {
     if (!filename || !*filename || !log) {
         return 0;
     }
 
-    *log = nullptr;
+    *log = 0;
 
     char path[STORM_MAX_PATH];
     SStrCopy(path, filename, sizeof(path));
@@ -22,41 +28,56 @@ int32_t SLogCreate(const char* filename, uint32_t flags, HSLOG* log) {
         }
     }
 
-    FILE* file = fopen(path, "w");
+    for (uint32_t i = 1; i < 64; i++) {
+        if (!s_logFiles[i]) {
+            FILE* file = fopen(path, "w");
 
-    if (!file) {
-        return 0;
+            if (!file) {
+                return 0;
+            }
+
+            s_logFiles[i] = file;
+            *log = i;
+            return 1;
+        }
     }
 
-    *log = file;
-
-    return 1;
+    return 0;
 }
 
 void SLogClose(HSLOG log) {
-    if (log) {
-        fclose(static_cast<FILE*>(log));
+    if (log && log < 64 && s_logFiles[log]) {
+        fclose(s_logFiles[log]);
+        s_logFiles[log] = nullptr;
     }
 }
 
 void SLogFlush(HSLOG log) {
-    if (log) {
-        fflush(static_cast<FILE*>(log));
+    if (log && log < 64 && s_logFiles[log]) {
+        fflush(s_logFiles[log]);
     }
 }
 
-void SLogWrite(HSLOG log, const char* format, ...) {
-    if (!log || !format) {
+void SLogFlushAll() {
+}
+
+void SLogVWrite(HSLOG log, const char* format, va_list args) {
+    if (!log || log >= 64 || !s_logFiles[log] || !format) {
         return;
     }
 
+    vfprintf(s_logFiles[log], format, args);
+    fputc('\n', s_logFiles[log]);
+}
+
+void SLogWrite(HSLOG log, const char* format, ...) {
     va_list args;
     va_start(args, format);
-    vfprintf(static_cast<FILE*>(log), format, args);
+    SLogVWrite(log, format, args);
     va_end(args);
-
-    fputc('\n', static_cast<FILE*>(log));
 }
+
+#endif
 
 // Client diagnostics. Until now this was an empty TODO, so everything handed to it was thrown
 // away silently -- including the two warnings about being unable to create the interface log

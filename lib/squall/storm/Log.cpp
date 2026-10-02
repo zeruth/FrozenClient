@@ -1,3 +1,5 @@
+#include "storm/Log.hpp"
+#include "storm/Error.hpp"
 #include "storm/String.hpp"
 
 #if defined(WHOA_SYSTEM_WIN)
@@ -6,9 +8,10 @@
 #include <cstdint>
 #include <cstring>
 
-// Storm's log files (the reference's SLog). Only the helpers under the public calls are here so
-// far: finding a log by handle, its write buffer, the timestamp and indent prefixes, and freeing
-// it. Nothing initializes the four bucket locks yet -- that is SLog's own startup, not ported.
+// Storm's log files (the reference's SLog): a buffered, timestamped text log per handle, opened
+// lazily on the first write unless asked otherwise. Not ported, recorded: SLogDestroy (FUN_007758e0),
+// which runs at process exit and reports unreleased handles through Storm's registry-gated leak
+// report.
 
 namespace {
 
@@ -37,6 +40,16 @@ char s_timestamp[64];
 uint32_t s_timestampLen;
 // ref: DAT_00cb7400
 DWORD s_timestampTick;
+// ref: DAT_00cb7220
+int32_t s_logInitialized;
+// ref: DAT_00cb7224
+uint32_t s_logNextHandle;
+// ref: DAT_00cb7228
+char s_logDirectory[MAX_PATH];
+// ref: DAT_00cb732c
+CRITICAL_SECTION s_logDirectoryCritSect;
+// ref: DAT_00cae968
+int32_t s_logDebugEcho;
 
 // ref: FUN_007750d0
 // The length of a path's root: 1 for "/", 2 for "C:" and 3 for "C:\", and for a UNC path
@@ -226,6 +239,260 @@ void FreeLogAndUnlock(uint32_t bucket, LOGRECORD* log) {
     LeaveCriticalSection(&s_logCritSect[bucket]);
 }
 
+// ref: FUN_007753e0
+// A bare file name -- no drive, no directory -- goes in the log directory, or beside the exe when
+// none is set; anything else is used as given.
+const char* ResolveLogPath(const char* filename, char* buffer, uint32_t size) {
+    if (!filename || !*filename || filename[1] == ':' || SStrChr(filename, '\\')) {
+        return filename;
+    }
+
+    EnterCriticalSection(&s_logDirectoryCritSect);
+
+    if (s_logDirectory[0]) {
+        auto length = SStrCopy(buffer, s_logDirectory, size);
+        SStrCopy(buffer + length, filename, size - length);
+        LeaveCriticalSection(&s_logDirectoryCritSect);
+        return buffer;
+    }
+
+    GetModuleFileNameA(GetModuleHandleA(nullptr), buffer, size);
+
+    auto slash = SStrChrR(buffer, '\\');
+    if (slash) {
+        *slash = '\0';
+    }
+
+    SStrPack(buffer, "\\", size);
+    SStrPack(buffer, filename, size);
+
+    LeaveCriticalSection(&s_logDirectoryCritSect);
+
+    return buffer;
+}
+
+// ref: FUN_00775630
+// Creates every directory on the way to a file.
+BOOL CreateLogPath(const char* filename) {
+    if (!filename) {
+        SErrSetLastError(ERROR_INVALID_PARAMETER);
+        return FALSE;
+    }
+
+    char path[MAX_PATH];
+    SStrCopy(path, filename, sizeof(path));
+
+    auto backslash = SStrChrR(path, '\\');
+    auto slash = SStrChrR(path, '/');
+    auto last = backslash > slash ? backslash : slash;
+
+    if (last) {
+        auto root = PathRootLength(path);
+
+        if (last < path + root) {
+            path[root] = '\0';
+        } else {
+            last[1] = '\0';
+        }
+    }
+
+    auto root = PathRootLength(path);
+
+    for (auto c = SStrChr(path + root, '/'); c; c = SStrChr(c + 1, '/')) {
+        *c = '\\';
+    }
+
+    for (auto c = SStrChr(path + root, '\\'); c; c = SStrChr(c + 1, '\\')) {
+        *c = '\0';
+        CreateDirectoryA(path, nullptr);
+        *c = '\\';
+    }
+
+    return CreateDirectoryA(path, nullptr);
+}
+
+// ref: FUN_00775740
+int32_t OpenLogFile(const char* filename, uint32_t flags, HANDLE* file) {
+    if (!filename || !*filename) {
+        *file = INVALID_HANDLE_VALUE;
+        return 0;
+    }
+
+    char buffer[MAX_PATH];
+    auto path = ResolveLogPath(filename, buffer, sizeof(buffer));
+    auto append = (flags & SLOG_FLAG_APPEND) != 0;
+
+    CreateLogPath(path);
+
+    *file = CreateFileA(path, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+        append ? OPEN_ALWAYS : CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (*file != INVALID_HANDLE_VALUE && append) {
+        SetFilePointer(*file, 0, nullptr, FILE_END);
+    }
+
+    return *file != INVALID_HANDLE_VALUE;
+}
+
+}
+
+// ref: FUN_007755f0
+void SLogInitialize() {
+    if (s_logInitialized) {
+        return;
+    }
+
+    for (auto& critSect : s_logCritSect) {
+        InitializeCriticalSection(&critSect);
+    }
+
+    InitializeCriticalSection(&s_logDirectoryCritSect);
+    s_logInitialized = 1;
+}
+
+// ref: FUN_007757e0
+int32_t SLogCreate(const char* filename, uint32_t flags, HSLOG* log) {
+    if (!filename || !*filename || !log) {
+        SErrSetLastError(ERROR_INVALID_PARAMETER);
+        return 0;
+    }
+
+    *log = 0;
+
+    if (flags & SLOG_FLAG_NO_FILE) {
+        filename = "";
+        flags &= ~SLOG_FLAG_OPEN_NOW;
+    }
+
+    HANDLE file = INVALID_HANDLE_VALUE;
+
+    if ((flags & SLOG_FLAG_OPEN_NOW) && !OpenLogFile(filename, flags, &file)) {
+        return 0;
+    }
+
+    *log = ++s_logNextHandle;
+
+    uint32_t bucket;
+    auto record = LockLog(*log, &bucket, 1);
+
+    if (!record) {
+        *log = 0;
+        return 0;
+    }
+
+    record->file = file;
+    SStrCopy(record->filename, filename, sizeof(record->filename));
+    record->unk110 = flags;
+    record->timestamps = 1;
+    record->indent = 0;
+
+    LeaveCriticalSection(&s_logCritSect[bucket]);
+
+    return 1;
+}
+
+// ref: FUN_007754a0
+void SLogClose(HSLOG log) {
+    if (!s_logInitialized) {
+        return;
+    }
+
+    uint32_t bucket;
+    auto record = LockLog(log, &bucket, 0);
+
+    if (!record) {
+        return;
+    }
+
+    if (record->file != INVALID_HANDLE_VALUE) {
+        FlushLog(record);
+        CloseHandle(record->file);
+    }
+
+    FreeLogAndUnlock(bucket, record);
+}
+
+// ref: FUN_00775500
+void SLogFlush(HSLOG log) {
+    uint32_t bucket;
+    auto record = LockLog(log, &bucket, 0);
+
+    if (!record) {
+        return;
+    }
+
+    if (record->file != INVALID_HANDLE_VALUE) {
+        FlushLog(record);
+    }
+
+    LeaveCriticalSection(&s_logCritSect[bucket]);
+}
+
+// ref: FUN_00775550
+void SLogFlushAll() {
+    for (uint32_t bucket = 0; bucket < 4; bucket++) {
+        EnterCriticalSection(&s_logCritSect[bucket]);
+
+        for (auto record = s_logTable[bucket]; record; record = record->next) {
+            if (record->file != INVALID_HANDLE_VALUE && record->bufferPos) {
+                DWORD written;
+                WriteFile(record->file, record->buffer, record->bufferPos, &written, nullptr);
+                FlushFileBuffers(record->file);
+                record->bufferPos = 0;
+                record->echoPos = 0;
+            }
+        }
+
+        LeaveCriticalSection(&s_logCritSect[bucket]);
+    }
+}
+
+// ref: FUN_00775a90
+// Opens the file on the first write if it is not open yet; a file that will not open clears the
+// name so it is not tried again. Each write is one timestamped, indented line ending in CRLF; the
+// buffer goes to disk once it passes 48 KB.
+void SLogVWrite(HSLOG log, const char* format, va_list args) {
+    uint32_t bucket;
+    auto record = LockLog(log, &bucket, 0);
+
+    if (!record) {
+        return;
+    }
+
+    if (record->file == INVALID_HANDLE_VALUE && !OpenLogFile(record->filename, record->unk110, &record->file)) {
+        record->filename[0] = '\0';
+        LeaveCriticalSection(&s_logCritSect[bucket]);
+        return;
+    }
+
+    TimestampLog(record, 1);
+    IndentLog(record);
+
+    SStrVPrintf(&record->buffer[record->bufferPos], sizeof(record->buffer) - record->bufferPos, format, args);
+    record->bufferPos += SStrLen(&record->buffer[record->bufferPos]);
+
+    memcpy(&record->buffer[record->bufferPos], "\r\n", 3);
+    record->bufferPos += 2;
+
+    if (s_logDebugEcho) {
+        OutputDebugStringA(&record->buffer[record->echoPos]);
+    }
+
+    record->echoPos = record->bufferPos;
+
+    if (record->bufferPos > 0xBFFF) {
+        FlushLog(record);
+    }
+
+    LeaveCriticalSection(&s_logCritSect[bucket]);
+}
+
+// ref: FUN_00775bb0
+void SLogWrite(HSLOG log, const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    SLogVWrite(log, format, args);
+    va_end(args);
 }
 
 #endif

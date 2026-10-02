@@ -19,6 +19,10 @@ void* GxDevWindow();
 
 int32_t GxMasterEnable(EGxMasterEnables state);
 
+void GxLogOpen();
+
+void GxLogClose();
+
 void GxCaptureRequest();
 
 void GxCaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits);

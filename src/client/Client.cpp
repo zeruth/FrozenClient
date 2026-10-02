@@ -12,6 +12,7 @@
 #include "object/client/NameCache.hpp"
 #include "object/client/ItemCache.hpp"
 #include "client/Client.hpp"
+#include <storm/Log.hpp>
 #include "ui/InputControl.hpp"
 #include "client/gui/OsGui.hpp"
 #include "gx/Device.hpp"
@@ -772,7 +773,7 @@ void StormInitialize() {
     // TODO
     // SStrInitialize();
     // SErrInitialize();
-    // SLogInitialize();
+    SLogInitialize();
     // SFile::Initialize();
 
     Blizzard::Debug::SetAssertHandler(BlizzardAssertCallback);

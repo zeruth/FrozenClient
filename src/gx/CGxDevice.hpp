@@ -9,6 +9,7 @@
 #include "gx/Types.hpp"
 #include "gx/Shader.hpp"
 #include "gx/texture/CGxTex.hpp"
+#include <cstdarg>
 #include <cstdint>
 #include <storm/Array.hpp>
 #include <storm/Hash.hpp>
@@ -172,6 +173,9 @@ class CGxDevice {
         static void GLLAdapterFormats(TSGrowableArray<CGxFormat>& adapterFormats);
         static int32_t GLLAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes);
 #endif
+        static void LogOpen();
+        static void LogClose();
+        static void ILogWrite(const char* format, va_list args);
         static void Log(const char* format, ...);
         static void Log(const CGxFormat& format);
 #if defined(WHOA_SYSTEM_MAC)

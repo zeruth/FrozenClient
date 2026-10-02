@@ -94,3 +94,13 @@ void ScreenshotSetQuality(int32_t quality) {
 
     s_screenshotQuality = static_cast<int32_t>(static_cast<float>(quality) * 5.5f + 45.0f + 0.5f);
 }
+
+// ref: FUN_006817c0
+void GxLogOpen() {
+    CGxDevice::LogOpen();
+}
+
+// ref: FUN_006817d0
+void GxLogClose() {
+    CGxDevice::LogClose();
+}

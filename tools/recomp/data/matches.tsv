@@ -87,10 +87,14 @@ addr	how	frozen	evidence
 00424b50	override	SFile::OpenEx	
 00424e80	callorder	SFile::Load	same slot between linked calls in 0096da40=CSimpleHTML::LoadXML
 00424f80	callgraph	SFile::Open	only unmatched callee of 007bd480=CMap::SafeOpen
+004271d0	callgraph	OsLocalizePath	only unmatched callee of 00461c00=OsDirectoryExists
 00428210	annotated	OsFileMatch	tag in src/util/Filesystem.cpp
 004283b0	override	SFileCritSectEnter	
 004283c0	override	SFileCritSectLeave	
+0042cea0	callgraph	OsMakeDirectory	only unmatched callee of 00461d10=OsCreateDirectory
 00431f30	annotated	CMapObjGroup::GetLiquidType	tag in src/world/map/CMapObjGroup.cpp
+00461c00	callgraph	OsDirectoryExists	only unmatched callee of 00766320=s_CreatePathDirectories
+00461d10	callgraph	OsCreateDirectory	only unmatched callee of 00683670=CGxDevice::LogOpen
 00461ef0	annotated	OsFileTranslateOpenFlags	tag in src/util/Filesystem.cpp
 00462000	callgraph	OsFileEnumerate	only unmatched callee of 00406740=ProcessRunOnceFiles
 00464580	annotated	CRandom::uint32	tag in lib/typhoon/tempest/random/CRandom.cpp
@@ -2310,6 +2314,8 @@ addr	how	frozen	evidence
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
 006817a0	annotated	GxMaxFpsBk	tag in src/gx/Gx.cpp
 006817b0	override	GxGetBlitFormat	
+006817c0	annotated	GxLogOpen	tag in src/gx/Device.cpp
+006817d0	annotated	GxLogClose	tag in src/gx/Device.cpp
 00681890	override	CGxDevice::XformSetViewport	
 00681950	annotated	CGxFormat::CGxFormat	tag in src/gx/CGxFormat.cpp
 00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
@@ -2355,6 +2361,8 @@ addr	how	frozen	evidence
 006833a0	annotated	CGxDevice::ShaderConstantsClear	tag in src/gx/CGxDevice.cpp
 00683560	annotated	GxShaderConstantsLock	tag in src/gx/Shader.cpp
 00683580	annotated	GxShaderConstantsUnlock	tag in src/gx/Shader.cpp
+00683670	annotated	CGxDevice::LogOpen	tag in src/gx/CGxDevice.cpp
+006836b0	annotated	CGxDevice::LogClose	tag in src/gx/CGxDevice.cpp
 006836d0	annotated	CGxDevice::ILimitFrameRate	tag in src/gx/CGxDevice.cpp
 006839f0	sticky	WowClientDB<LiquidTypeRec>::GetRecord	held from the previous run, where it was sticky
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
@@ -2383,6 +2391,7 @@ addr	how	frozen	evidence
 006848a0	annotated	CGxDevice::TexMarkForUpdate	tag in src/gx/CGxDevice.cpp
 00684900	annotated	CGxDevice::ITexMarkAsUpdated	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
+00684ba0	annotated	CGxDevice::ILogWrite	tag in src/gx/CGxDevice.cpp
 00684c20	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
 00684d10	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
 00684d70	annotated	GxWindowFitToWorkArea	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -3000,6 +3009,16 @@ addr	how	frozen	evidence
 00775250	annotated	IndentLog	tag in lib/squall/storm/Log.cpp
 007752a0	annotated	TimestampLog	tag in lib/squall/storm/Log.cpp
 00775380	annotated	FreeLogAndUnlock	tag in lib/squall/storm/Log.cpp
+007753e0	annotated	ResolveLogPath	tag in lib/squall/storm/Log.cpp
+007754a0	annotated	SLogClose	tag in lib/squall/storm/Log.cpp
+00775500	annotated	SLogFlush	tag in lib/squall/storm/Log.cpp
+00775550	annotated	SLogFlushAll	tag in lib/squall/storm/Log.cpp
+007755f0	annotated	SLogInitialize	tag in lib/squall/storm/Log.cpp
+00775630	annotated	CreateLogPath	tag in lib/squall/storm/Log.cpp
+00775740	annotated	OpenLogFile	tag in lib/squall/storm/Log.cpp
+007757e0	annotated	SLogCreate	tag in lib/squall/storm/Log.cpp
+00775a90	annotated	SLogVWrite	tag in lib/squall/storm/Log.cpp
+00775bb0	annotated	SLogWrite	tag in lib/squall/storm/Log.cpp
 00777980	string	SRgnCreate	unique "!reserved"
 00779ae0	callorder	MD5Final	same slot between linked calls in 004da5f0=CGlueMgr::Resume
 0077a560	annotated	SHA1_Transform	tag in lib/common/common/SHA1.cpp

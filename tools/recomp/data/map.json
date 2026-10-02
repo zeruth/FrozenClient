@@ -1408,6 +1408,22 @@
   "refSize": 24,
   "status": "ported"
  },
+ "004271d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/Filesystem.cpp",
+   "src/util/filesystem.cpp"
+  ],
+  "frozen": "OsLocalizePath",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 114,
+  "status": "ported"
+ },
  "00428210": {
   "branchRatio": 0.455,
   "constOverlap": 0.0,
@@ -1456,6 +1472,22 @@
   "refSize": 15,
   "status": "diverged"
  },
+ "0042cea0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/Filesystem.cpp",
+   "src/util/filesystem.cpp"
+  ],
+  "frozen": "OsMakeDirectory",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
  "00431f30": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -1470,6 +1502,38 @@
   "how": "annotated",
   "module": "OggDecompress.cpp",
   "refSize": 7,
+  "status": "ported"
+ },
+ "00461c00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/util/Filesystem.cpp",
+   "src/util/filesystem.cpp"
+  ],
+  "frozen": "OsDirectoryExists",
+  "frozenSize": 147,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 58,
+  "status": "ported"
+ },
+ "00461d10": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/util/Filesystem.cpp",
+   "src/util/filesystem.cpp"
+  ],
+  "frozen": "OsCreateDirectory",
+  "frozenSize": 166,
+  "how": "callgraph",
+  "module": "OggDecompress.cpp",
+  "refSize": 47,
   "status": "ported"
  },
  "00461ef0": {
@@ -10043,7 +10107,7 @@
   "branchRatio": 0.167,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.118,
+  "fidelity": 0.176,
   "files": [
    "src/gx/Screen.cpp",
    "src/gx/screen.cpp"
@@ -12833,7 +12897,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.136,
+  "fidelity": 0.182,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -21043,7 +21107,7 @@
   "branchRatio": 0.087,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.14,
+  "fidelity": 0.175,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -36905,6 +36969,38 @@
   "refSize": 15,
   "status": "ported"
  },
+ "006817c0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Device.cpp",
+   "src/gx/device.cpp"
+  ],
+  "frozen": "GxLogOpen",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 5,
+  "status": "ported"
+ },
+ "006817d0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Device.cpp",
+   "src/gx/device.cpp"
+  ],
+  "frozen": "GxLogClose",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 5,
+  "status": "ported"
+ },
  "00681890": {
   "branchRatio": 0.167,
   "constOverlap": 0.0,
@@ -37625,6 +37721,38 @@
   "refSize": 86,
   "status": "ported"
  },
+ "00683670": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::LogOpen",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
+ "006836b0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::LogClose",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 26,
+  "status": "ported"
+ },
  "006836d0": {
   "branchRatio": 0.857,
   "constOverlap": 0.5,
@@ -38070,11 +38198,27 @@
   "refSize": 306,
   "status": "ported"
  },
- "00684c20": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.0,
+ "00684ba0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.4,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ILogWrite",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 117,
+  "status": "ported"
+ },
+ "00684c20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -38087,7 +38231,7 @@
   "status": "ported"
  },
  "00684d10": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -46074,8 +46218,8 @@
  "00766320": {
   "branchRatio": 0.625,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.4,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/console/CVar.cpp",
    "src/console/cvar.cpp"
@@ -47955,6 +48099,173 @@
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 86,
+  "status": "ported"
+ },
+ "007753e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp"
+  ],
+  "frozen": "ResolveLogPath",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "007754a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogClose",
+  "frozenSize": 13,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "00775500": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogFlush",
+  "frozenSize": 13,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 68,
+  "status": "ported"
+ },
+ "00775550": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogFlushAll",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 146,
+  "status": "ported"
+ },
+ "007755f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogInitialize",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "00775630": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.917,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp"
+  ],
+  "frozen": "CreateLogPath",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 259,
+  "status": "ported"
+ },
+ "00775740": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp"
+  ],
+  "frozen": "OpenLogFile",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 151,
+  "status": "ported"
+ },
+ "007757e0": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogCreate",
+  "frozenSize": 159,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 246,
+  "status": "ported"
+ },
+ "00775a90": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogVWrite",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 275,
+  "status": "ported"
+ },
+ "00775bb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Log.cpp",
+   "lib/squall/storm/log.cpp",
+   "src/util/Log.cpp"
+  ],
+  "frozen": "SLogWrite",
+  "frozenSize": 101,
+  "how": "annotated",
+  "module": "SLock.cpp",
+  "refSize": 22,
   "status": "ported"
  },
  "00777980": {
@@ -68268,7 +68579,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.375,
   "files": [
    "src/sound/SESound.cpp",
    "src/sound/sesound.cpp"

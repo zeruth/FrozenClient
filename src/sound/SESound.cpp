@@ -736,7 +736,7 @@ int32_t SESound::LoadDiskSound(FMOD::System* fmodSystem, const char* filename, F
 // Writes to Logs\Sound.log like the original client; on Android the line also goes to the
 // system log so it can be read without pulling the file
 void SESound::Log_Write(int32_t line, const char* file, FMOD_RESULT result, const char* fmt, ...) {
-    static HSLOG s_log = nullptr;
+    static HSLOG s_log = 0;
     static int32_t s_logTried = 0;
 
     if (!s_logTried) {
