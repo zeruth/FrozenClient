@@ -152,7 +152,7 @@ class CWorldScene {
         // puts itself here from PrepareRender; the pass empties it.
         static STORM_EXPLICIT_LIST(DetailDoodad::CDetailDoodadData, m_frameLink) s_frameDetailDoodadList;
         // Edges waiting for reuse (the reference's free list at 0x00aeef5c) and the edges kept
-        // for the debug draw while enable 0x2000 is set (DAT_00cdb0ac).
+        // for the debug draw while enable 0x2000 is set (DAT_00cdb0b0).
         static STORM_EXPLICIT_LIST(Occluder, m_link) s_freeOccluders;
         static STORM_EXPLICIT_LIST(Occluder, m_link) s_debugOccluders;
         static C4Plane s_rowPlanes[ROW_COUNT];              // DAT_00cdab48: the front plane of each row
@@ -312,6 +312,21 @@ class CWorldScene {
         static void FreeOccluder(Occluder* occluder);
         // The map's fixed horizon occluders that the frustum reaches. ref: FUN_007cc810
         static void AddFixedOccluders();
+        // A visible group's doodads into the distance rows by their distance, never nearer than
+        // the row the group was found in; past the last row they are dropped. ref: FUN_007998a0
+        static void BucketGroupDoodads(CMapBaseObjRefList* doodads, uint32_t minRow);
+        // After the traversal: the doodads and entities of each visible group, tested against
+        // the frusta the portal walk left on the group. ref: FUN_0079a260
+        static void VisitVisibleGroupContents();
+        // A group's doodads: ones with no model yet stand in as occluder boxes; the rest are
+        // animated when near and drawn when a frustum of the group holds them. ref: FUN_00799b70
+        static void VisitGroupDoodads(CMapBaseObjRefList* doodads, CWFrustum* frustums, uint32_t band, int32_t interior);
+        // A group's entities, the same test, into the frame's entity list. ref: FUN_00793270
+        static void VisitGroupEntities(CMapBaseObjRefList* entities, CWFrustum* frustums, int32_t force, int32_t interior);
+        // The frame's group-entity visit is in progress (DAT_00adf3f0).
+        static int32_t s_visitingGroupEntities;
+        // Doodads the frame reached and drew (DAT_00cd872c).
+        static int32_t s_visibleDoodadCount;
         // File one liquid layer under the distance row its centre falls in, or drop it when
         // that is past the last row. ref: FUN_00792df0
         static void AddLiquid(CChunkLiquid* liquid, const C3Vector& center);

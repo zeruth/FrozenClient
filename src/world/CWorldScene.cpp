@@ -1,3 +1,4 @@
+#include "model/CM2Shared.hpp"
 #include <new>
 #include "world/map/MapHorizonTable.hpp"
 #include "gx/Draw.hpp"
@@ -79,6 +80,8 @@ float CWorldScene::s_horizonBuffer[CWorldScene::HORIZON_COLUMNS];
 uint8_t CWorldScene::s_horizonColumnFlags[CWorldScene::HORIZON_COLUMNS];
 STORM_EXPLICIT_LIST(CWorldScene::Occluder, m_link) CWorldScene::s_freeOccluders;
 STORM_EXPLICIT_LIST(CWorldScene::Occluder, m_link) CWorldScene::s_debugOccluders;
+int32_t CWorldScene::s_visitingGroupEntities;
+int32_t CWorldScene::s_visibleDoodadCount;
 uint32_t CWorldScene::s_rowStats[0x60];
 float CWorldScene::s_farChunkDistance;
 float CWorldScene::s_nearChunkDistance;
@@ -1422,7 +1425,7 @@ void CWorldScene::TraverseRowMapObjDefs(Row* row, const ViewWindow* window, int3
 
             auto def = static_cast<CMapObjDef*>(defGroup->m_parentLinkList.Head()->ref);
             CWorldScene::VisitMapObjDefGroup(def, defGroup, window, portal);
-            // TODO FUN_007998a0(defGroup->m_doodadDefLinkList, band): the group's own doodads
+            CWorldScene::BucketGroupDoodads(&defGroup->m_doodadDefLinkList, static_cast<uint32_t>(row - CWorldScene::s_rows));
         }
 
         defGroup = next;
@@ -1792,7 +1795,7 @@ void CWorldScene::TraverseRowStaticEntities(Row* row, uint32_t detailBand) {
 // the frustum, the occlusion volumes or the horizon hides joins the frame's hidden list, which
 // the render pass walks to keep them animating without drawing them.
 void CWorldScene::TraverseRowEntities(Row* row) {
-    // TODO DAT_00adf3f0 = 0: a per-row counter nothing ported reads.
+    CWorldScene::s_visitingGroupEntities = 0;
 
     for (auto entity = row->entities.Head(); entity; ) {
         auto next = row->entities.Next(entity);
@@ -3059,5 +3062,186 @@ void CWorldScene::AddFixedOccluders() {
 
             CWorldScene::AddOccluder({ p0[0], p0[1], p0[2] }, { p1[0], p1[1], p1[2] });
         }
+    }
+}
+
+// ref: FUN_007998a0
+void CWorldScene::BucketGroupDoodads(CMapBaseObjRefList* doodads, uint32_t minRow) {
+    if (!(CWorld::s_enables & 0x1)) {
+        return;
+    }
+
+    const C4Plane& plane = CWorldScene::s_viewPlane2d;
+
+    for (auto link = doodads->Head(); link; link = doodads->Next(link)) {
+        auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+        // Placed, not already on a row this frame, and with a model to draw.
+        if (!(entity->m_flags & 0x80) || entity->m_rowLink.IsLinked() || !entity->m_model) {
+            continue;
+        }
+
+        float distance = entity->m_sphere.c.y * plane.n.y + entity->m_sphere.c.z * plane.n.z
+            + entity->m_sphere.c.x * plane.n.x + plane.d - entity->m_sphere.r;
+
+        uint32_t row = minRow;
+
+        if (!(distance < 0.0f)) {
+            uint32_t band = static_cast<uint32_t>(static_cast<int32_t>(std::nearbyint(distance * 0.029999999329447746f - 0.5f)));
+
+            if (0x40 <= band) {
+                continue;
+            }
+
+            if (minRow <= band) {
+                row = band;
+            }
+        }
+
+        CWorldScene::s_rows[row].staticEntities.LinkToTail(entity);
+    }
+}
+
+namespace {
+
+// Whether any frustum the portal walk left on a group holds the sphere (FUN_00983fb0 per
+// frustum, along the list).
+bool SphereInGroupFrustums(CWFrustum* frustums, const CAaSphere& sphere) {
+    for (CWFrustum* frustum = frustums; frustum; frustum = frustum->link.Next()) {
+        if (frustum->SphereInside(sphere)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+}
+
+// ref: FUN_00799b70
+void CWorldScene::VisitGroupDoodads(CMapBaseObjRefList* doodads, CWFrustum* frustums, uint32_t band, int32_t interior) {
+    for (auto link = doodads->Head(); link; link = doodads->Next(link)) {
+        auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+        if (entity->m_detailLevel < band) {
+            continue;
+        }
+
+        if (!entity->m_model || !(entity->m_flags & 0x80)) {
+            // Not drawable yet: what its box would hide is still hidden.
+            if (entity->m_model && entity->m_model->m_shared) {
+                CAaBox box = TransformBox(entity->m_model->m_shared->aaBox154, static_cast<CMapDoodadDef*>(entity)->m_placement);
+                CWorldScene::SubmitOccluderBox(box, 10.0f);
+            }
+
+            continue;
+        }
+
+        if (entity->m_frameStamp != CWorldScene::s_frameStamp) {
+            entity->m_frameStamp = CWorldScene::s_frameStamp;
+            entity->m_visible = 1;
+
+            float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
+            float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
+            float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
+
+            bool close = (entity->m_flags7c & 0x400) || dz * dz + dy * dy + dx * dx < 100.0f;
+            entity->m_model->SetAnimating(close ? 1 : 0);
+        }
+
+        if (!entity->m_visible || !frustums || !SphereInGroupFrustums(frustums, entity->m_sphere)) {
+            continue;
+        }
+
+        entity->m_visible = 0;
+
+        if (interior) {
+            entity->m_flags |= 0x8000;
+        } else {
+            entity->m_flags &= ~0x8000u;
+        }
+
+        CWorldScene::VisitStaticEntity(entity);
+        CWorldScene::s_visibleDoodadCount++;
+    }
+}
+
+// ref: FUN_00793270
+void CWorldScene::VisitGroupEntities(CMapBaseObjRefList* entities, CWFrustum* frustums, int32_t force, int32_t interior) {
+    CWorldScene::s_visitingGroupEntities = 0;
+
+    for (auto link = entities->Head(); link; ) {
+        auto next = entities->Next(link);
+        auto entity = static_cast<CMapEntity*>(link->owner);
+
+        link = next;
+
+        if ((!(entity->m_flags7c & 0x1) && !force) || !entity->m_visible || (entity->m_flags7c & 0x4)) {
+            continue;
+        }
+
+        entity->m_visible = 1;
+
+        if (!frustums || !SphereInGroupFrustums(frustums, entity->m_sphere)) {
+            continue;
+        }
+
+        entity->m_entityRowLink.Unlink();
+        entity->m_visible = 0;
+
+        if (interior) {
+            entity->m_flags |= 0x8000;
+        } else {
+            entity->m_flags &= ~0x8000u;
+        }
+
+        if (entity->m_model) {
+            entity->m_model->SetAnimating(1);
+
+            uint32_t draw = ~(entity->m_flags7c >> 2) & 0x1;
+
+            if (entity->m_model->m_attachParent) {
+                entity->m_model->m_flag80 = draw;
+                entity->m_model->m_flag20000 = draw;
+            } else {
+                entity->m_model->m_flag8 = draw;
+                entity->m_model->m_flag10000 = draw;
+            }
+        }
+
+        // The entity's own handler may keep it out of the frame (event 5); with no handler it
+        // joins.
+        typedef int32_t (*Handler)(void* param, int32_t event, uint32_t guidLow, uint32_t guidHigh, uint32_t param32);
+        auto handler = reinterpret_cast<Handler>(entity->m_handler);
+
+        if (!handler || handler(entity->m_handlerParam, 5, static_cast<uint32_t>(entity->m_param64), static_cast<uint32_t>(entity->m_param64 >> 32), entity->m_param32)) {
+            CWorldScene::s_frameEntityList.LinkToTail(entity);
+        }
+    }
+
+    CWorldScene::s_visitingGroupEntities = 1;
+}
+
+// ref: FUN_0079a260
+void CWorldScene::VisitVisibleGroupContents() {
+    for (auto defGroup = CWorldScene::s_visibleMapObjGroups.Head(); defGroup; ) {
+        auto next = CWorldScene::s_visibleMapObjGroups.Next(defGroup);
+
+        auto parent = defGroup->m_parentLinkList.Head();
+        auto def = parent ? static_cast<CMapObjDef*>(parent->ref) : nullptr;
+
+        if (def && def->m_mapObj) {
+            uint32_t flags = def->m_mapObj->GroupFlags(defGroup->m_groupIndex);
+
+            if (def == CWorldScene::s_cameraDef || !(flags & 0x10008)) {
+                uint32_t band = static_cast<uint32_t>(CWorldScene::DistanceBand(defGroup->m_sortDistance));
+                int32_t interior = (defGroup->m_flags & 0x8000) != 0;
+
+                CWorldScene::VisitGroupDoodads(&defGroup->m_doodadDefLinkList, defGroup->m_frustums.Head(), band, interior);
+                CWorldScene::VisitGroupEntities(&defGroup->m_entityLinkList, defGroup->m_frustums.Head(), 0, interior);
+            }
+        }
+
+        defGroup = next;
     }
 }

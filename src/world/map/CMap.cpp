@@ -1869,7 +1869,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         // CWorldScene::VisitMapObjDefGroup. 467 bytes, and it needs FUN_00793270 and FUN_00799b70.
     }
 
-    // TODO FUN_0079a260(), FUN_00793450(): the visible map objects' doodads and the entity callbacks
+    CWorldScene::VisitVisibleGroupContents();
     // TODO FUN_007cecd0(): a list emptied here
 
     CImVector clearColor = { 0x00, 0x00, 0x00, 0xFF };
@@ -1942,7 +1942,10 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         // unported; it is ported now, so the divergence this comment used to record is closed.
     }
 
-    // The buildings' props, culled against the frustum this pass has just established.
+
+    // The buildings' props: frozen's stand-in cull until the reference doodad defs (FUN_007bf740,
+    // FUN_007bef40) replace the per-def model arrays it walks; VisitVisibleGroupContents then
+    // takes over.
     CMap::CullMapObjDoodads();
 
     GxXformPop(GxXform_World);
