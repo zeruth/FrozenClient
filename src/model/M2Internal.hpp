@@ -5,6 +5,8 @@
 
 extern uint32_t* g_modelPool;
 extern uint32_t g_m2CpuFeatures;
+extern void* g_m2ParticleQueryCallback;
+extern void* g_m2ParticleQueryContext;
 
 class CM2Model;
 

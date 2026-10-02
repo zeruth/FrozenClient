@@ -1576,6 +1576,20 @@ void CM2Scene::AddParticleElement(CM2ParticleEmitter* emitter, CM2Model* model, 
 // type-1 elements -- and so whether CM2SceneRender::DrawBatchProj is reachable at all. Nothing in
 // frozen calls it yet; the reference's one caller is world init at 0x781340.
 //
+// The particle ground query, reference 0x00dce8c8 / 0x00dce8c4: one for the whole process, so the
+// last scene to install a query is the one every emitter asks.
+void* g_m2ParticleQueryCallback;
+void* g_m2ParticleQueryContext;
+
+// ref: FUN_0081e590
+// Installs the query on the scene and as the process-wide one.
+void CM2Scene::SetParticleQueryCallback(void* callback, void* context) {
+    this->m_particleQueryCallback = callback;
+    this->m_particleQueryContext = context;
+    g_m2ParticleQueryCallback = callback;
+    g_m2ParticleQueryContext = context;
+}
+
 // ref: FUN_0081cc30
 void CM2Scene::SetProjectionCallback(void* callback, void* context) {
     this->m_projectionCallback = callback;

@@ -477,6 +477,7 @@ class CM2Model {
         // INVERTED box when the model is not loaded or has no placement yet.
         // ref: FUN_00825750
         CAaBox* GetWorldBounds(CAaBox* out);
+        CAaBox& GetAnimatedBounds(CAaBox& out, uint32_t keyBoneId);
         void SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas);
         void Sub826350(M2SequenceFallback& fallback, uint32_t sequenceId);
         // ref: FUN_008269c0

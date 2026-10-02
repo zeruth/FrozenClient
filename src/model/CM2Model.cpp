@@ -1,3 +1,4 @@
+#include <tempest/box/CAaBox.hpp>
 #include "gx/Draw.hpp"
 #include "gx/Shader.hpp"
 #include "gx/RenderState.hpp"
@@ -4923,6 +4924,69 @@ void M2PackBatchVerticesTwoCoords(CM2Model* model, const M2SkinSection* section,
         out[9] = vertex->texcoord[1].y;
         out += 10;
     }
+}
+
+// ref: FUN_00825a60
+// World bounds from what the model is playing: the authored boxes of the sequences on bone 0 and
+// on a key bone, placed by the model's matrix, grown by its spline-emitter particles and ribbon
+// trails. A model with particle emitters takes its static box instead, and one with a single
+// sequence, or no such key bone, its world bounds. An unloaded or unplaced model gets an empty box.
+CAaBox& CM2Model::GetAnimatedBounds(CAaBox& out, uint32_t keyBoneId) {
+    if (!this->m_loaded || !this->m_flag8000) {
+        out.b = { FLT_MAX, FLT_MAX, FLT_MAX };
+        out.t = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+        return out;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    auto placement = [this]() {
+        return this->m_attachParent ? this->matrixF4 * this->m_scene->m_viewInv : this->matrixB4;
+    };
+
+    if (data->particles.Count()) {
+        out = TransformBox(data->bounds.extent, placement());
+
+        return out;
+    }
+
+    if (data->sequences.Count() > 1 && keyBoneId != 0xFFFFFFFF && keyBoneId < data->boneIndicesById.Count()) {
+        uint16_t boneIndex = data->boneIndicesById[keyBoneId];
+
+        if (boneIndex != 0 && boneIndex != 0xFFFF
+            && this->m_bones[boneIndex].sequence.uint8 < data->sequences.Count()) {
+            CAaBox bounds = data->sequences[this->m_bones[0].sequence.uint8].bounds.extent;
+            bounds.GrowToInclude(data->sequences[this->m_bones[boneIndex].sequence.uint8].bounds.extent);
+
+            if (bounds.b.x < bounds.t.x && bounds.b.y < bounds.t.y && bounds.b.z < bounds.t.z) {
+                bounds = TransformBox(bounds, placement());
+            }
+
+            for (uint32_t i = 0; i < data->particles.Count(); i++) {
+                auto emitter = this->m_particleEmitters[i];
+
+                if (emitter->m_flags & 0x200) {
+                    bounds.GrowToInclude(*emitter->GetBounds());
+                }
+            }
+
+            for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+                auto ribbon = this->m_ribbonEmitters[i];
+                CAaBox trail = { ribbon->m_boundsMin, ribbon->m_boundsMax };
+
+                bounds.GrowToInclude(trail);
+            }
+
+            out = bounds;
+
+            return out;
+        }
+    }
+
+    this->GetWorldBounds(&out);
+
+    return out;
 }
 
 // Live as of 2026-10-02, with everything under it: CM2Scene::Animate groups the type-2 elements

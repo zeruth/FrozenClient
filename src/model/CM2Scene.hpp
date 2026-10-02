@@ -95,6 +95,10 @@ class CM2Scene {
         // established.
         void* m_projectionCallback = nullptr;
         void* m_projectionContext = nullptr;
+        // +0x10c / +0x110: the world query particles use to find the ground under them, and its
+        // context (SetParticleQueryCallback).
+        void* m_particleQueryCallback = nullptr;
+        void* m_particleQueryContext = nullptr;
 
         // The ray query state, reference +0x114 through +0x124. The model list is threaded through
         // CM2Model::m_rayPrev / m_rayNext; its filler (FUN_007a2760, from the map's segment query)
@@ -192,6 +196,7 @@ class CM2Scene {
         // Install the projected-decal callback. Until something calls this, the scene emits no
         // type-1 elements and DrawBatchProj cannot be reached. ref: FUN_0081cc30
         void SetProjectionCallback(void* callback, void* context);
+        void SetParticleQueryCallback(void* callback, void* context);
 
         // One axis of a point light's hash-grid index. The reference scales by the 0.05 at
         // 0x00af59d4 -- one twentieth, so twenty world units to a cell -- truncates toward zero
