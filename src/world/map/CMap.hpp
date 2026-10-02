@@ -32,6 +32,8 @@ class CM2Lighting;
 class CMapObj;
 class CMapObjGroup;
 class SFile;
+class CWFrustum;
+struct CFacetList;
 struct CAaBspNode;
 struct SMOPoly;
 
@@ -337,12 +339,27 @@ class CMap {
         static void AddCellLineSecond(const float* from, const float* to, const int32_t* cells);
         // The doodads of a list onto the ray list of the model scene, by query kind. ref: FUN_007a2760
         static void AddRayModels(CMapBaseObjRefList* list, uint32_t queryFlags);
+
+        // The world triangles a frustum touches: terrain (mask 0x100), liquid (0x30000) and
+        // doodad collision (0xf) cell by cell, then the buildings. ref: FUN_007a5dd0
+        static bool QueryFrustumFacets(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
+        // One chunk of it: `cells` is the whole query in map cells. ref: FUN_007a5330
+        static bool QueryFrustumCell(int32_t col, int32_t row, const CiRect& cells, const CWFrustum& frustum, CFacetList& list, uint32_t flags);
+        // The buildings: each one the frustum reaches, with the frustum taken into its own
+        // space. ref: FUN_007a4ee0
+        static bool QueryFrustumObjects(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
+        // One liquid layer of a chunk. ref: FUN_007a3d50
+        static void QueryFrustumLiquid(CMapChunk* chunk, const CWFrustum& frustum, const CiRect& cells, CChunkLiquid* liquid, CFacetList& list);
         // The entities of a list onto it through the object query callback. ref: FUN_007a2960
         static void AddRayObjects(CMapBaseObjRefList* list, uint32_t queryFlags);
         // What the last segment query hit, if it was an object (DAT_00cd7768).
         static uint64_t s_segmentHitGUID;
-        // Bumped by every segment query so an entity reached twice is tested once (DAT_00ce04c4).
-        static int32_t s_segmentQueryStamp;
+        // Bumped by every segment and frustum query so an entity reached twice is tested once
+        // (DAT_00ce04c4).
+        static int32_t s_queryStamp;
+        // Whether the processor has SSE (OsGetCpuInfo bit 2), read once by MapMemInitialize.
+        // The facet builders normalise with rsqrtss when it is set. DAT_00cf08f8
+        static int32_t s_useSse;
 
         // Tiles and chunks
         static CMapArea* CreateArea(int32_t x, int32_t y);

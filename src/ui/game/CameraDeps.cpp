@@ -13,24 +13,31 @@ float BarberShopGetMinDistance() {
     return 1.0f;
 }
 
-void WorldQueryFrustumFacets(CWFrustum* frustum, TSGrowableArray<CFacet>& facets) {
-    // TODO port 0x0077f330 -> FUN_007a5dd0 (the facets of the cells and buildings a frustum
-    // touches, FUN_007a5330 per cell and FUN_007a4ee0 for the buildings).
-}
+// ref: FUN_005ff670
+void CameraSetFrustumCorners(CWFrustum& frustum, const C44Matrix& view, const C44Matrix& projection, const C3Vector& sweep, float scale) {
+    C3Vector corners[8] = {};
 
-int32_t FrustumClipFacet(CWFrustum* frustum, const C3Vector* points, uint32_t count, uint32_t** clipped, uint32_t* clippedCount) {
-    // TODO the reference clips against the frustum planes; unreachable while
-    // WorldQueryFrustumFacets returns nothing.
-    *clipped = nullptr;
-    *clippedCount = 0;
+    FrustumCorners(view, projection, corners);
 
-    return 0;
-}
+    C3Vector centre = {
+        (corners[3].x + corners[2].x + corners[1].x + corners[0].x) * 0.25f,
+        (corners[3].y + corners[2].y + corners[1].y + corners[0].y) * 0.25f,
+        0.25f * (corners[1].z + corners[0].z + corners[2].z + corners[3].z),
+    };
 
-void CameraSetFrustumCorners(CWFrustum& frustum, const C44Matrix& view, const C44Matrix& projection, const C3Vector& origin, float scale) {
-    // TODO port FUN_005ff670: FrustumCorners(view, projection), the near four corners pulled
-    // toward `origin` by `scale`, then CWFrustum::SetCorners. Only CollideFrustum reads the
-    // result, and only through WorldQueryFrustumFacets.
+    for (int32_t i = 0; i < 4; i++) {
+        corners[i].x = (corners[i].x - centre.x) * scale + centre.x;
+        corners[i].y = (corners[i].y - centre.y) * scale + centre.y;
+        corners[i].z = (corners[i].z - centre.z) * scale + centre.z;
+    }
+
+    for (int32_t i = 0; i < 4; i++) {
+        corners[4 + i].x = sweep.x + corners[i].x;
+        corners[4 + i].y = sweep.y + corners[i].y;
+        corners[4 + i].z = sweep.z + corners[i].z;
+    }
+
+    frustum.SetCorners(corners);
 }
 
 // ref: FUN_004c55b0

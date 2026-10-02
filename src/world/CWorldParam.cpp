@@ -11,6 +11,7 @@
 #include "gx/Gx.hpp"
 #include "gx/Types.hpp"
 #include "gx/shader/CShaderEffect.hpp"
+#include <cstdio>
 
 CVar* CWorldParam::cvar_baseMip;
 CVar* CWorldParam::cvar_bspCache;
@@ -59,8 +60,32 @@ uint32_t CWorldParam::s_mapObjLightLOD = 0;
 int32_t CWorldParam::s_waterLOD = 0;
 bool CWorldParam::s_mapShadows = false;
 
+// ref: FUN_0078df00
 bool CWorldParam::BaseMipCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    uint32_t level = SStrToInt(value);
+
+    if (level == g_theGxDevicePtr->m_baseMipLevel) {
+        return true;
+    }
+
+    if (level > 1) {
+        ConsoleWrite("BaseMip must be 0 or 1", DEFAULT_COLOR);
+
+        return false;
+    }
+
+    g_theGxDevicePtr->DeviceSetBaseMipLevel(level);
+
+    // TODO FUN_004b65e0 reloads every loaded texture at the new base level (FUN_004b63b0 per
+    // texture), and FUN_00617070 marks the portrait buttons for a redraw. Frozen has neither yet,
+    // so textures already loaded keep the old level until they are next created.
+
+    CWorld::s_textureCacheDirty = 1;
+
+    char buffer[256];
+    SStrPrintf(buffer, sizeof(buffer), "BaseMip level changed to %d", level);
+    ConsoleWrite(buffer, DEFAULT_COLOR);
+
     return true;
 }
 
@@ -120,19 +145,57 @@ bool CWorldParam::FarClipOverrideCallback(CVar* var, const char* oldValue, const
     return false;
 }
 
+// ref: FUN_0078d940
+// Only validates: the bias itself is read from the CVar by whoever draws footprints.
 bool CWorldParam::FootstepBiasCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    float bias;
+    sscanf(value, "%f", &bias);
+
+    if (bias >= 0.0f && bias <= 1.0f) {
+        char buffer[256];
+        sprintf(buffer, "Footstep bias set to %f", static_cast<double>(bias));
+        ConsoleWrite(buffer, DEFAULT_COLOR);
+
+        return true;
+    }
+
+    ConsoleWrite("Footstep bias must be in the range (0, 1)", DEFAULT_COLOR);
+
+    return false;
 }
 
+// ref: FUN_0078dab0
 bool CWorldParam::GroundEffectDensityCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    int32_t density = SStrToInt(value);
+
+    if (static_cast<uint32_t>(density - 16) <= 240) {
+        CWorld::SetGroundEffectDensity(density);
+
+        return true;
+    }
+
+    char buffer[256];
+    sprintf(buffer, "Ground effect density must be in range %d to %d.", 16, 256);
+    ConsoleWriteA(buffer, DEFAULT_COLOR);
+
+    return false;
 }
 
+// ref: FUN_0078db10
 bool CWorldParam::GroundEffectDistCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    float dist = SStrToFloat(value);
+
+    if (dist >= 0.0f && dist <= 140.0f) {
+        CWorld::SetGroundEffectDist(dist);
+
+        return true;
+    }
+
+    char buffer[256];
+    sprintf(buffer, "Ground effect distance must be in range %0f to %0f.", 0.0, 140.0);
+    ConsoleWriteA(buffer, DEFAULT_COLOR);
+
+    return false;
 }
 
 // ref: FUN_0078d7c0
@@ -639,8 +702,18 @@ void CWorldParam::Initialize() {
     // defaults for groundEffectDensity and terrain shadows (FUN_0078dd40 / FUN_0078ddf0)
 }
 
+// ref: FUN_0078d610
 bool CWorldParam::LodCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value)) {
+        ConsoleWrite("Terrain LOD enabled.", DEFAULT_COLOR);
+        CWorld::s_enables |= CWorld::Enable_Lod;
+
+        return true;
+    }
+
+    ConsoleWrite("Terrain LOD disabled.", DEFAULT_COLOR);
+    CWorld::s_enables &= ~CWorld::Enable_Lod;
+
     return true;
 }
 
@@ -797,18 +870,66 @@ bool CWorldParam::ShowFootprintsCallback(CVar* var, const char* oldValue, const 
     return true;
 }
 
+// ref: FUN_0078de60
+// Takes effect on restart: the bit is read when the map's shaders are chosen.
 bool CWorldParam::SpecularCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
-    return true;
+    if (!SStrToInt(value)) {
+        ConsoleWrite("Specular disabled on restart.", DEFAULT_COLOR);
+        CWorld::s_enables &= ~CWorld::Enable_8000000;
+
+        return true;
+    }
+
+    if (GxCaps().m_shaderTargets[GxSh_Pixel] > 0) {
+        ConsoleWrite("Specular enabled on restart.", DEFAULT_COLOR);
+        CWorld::s_enables |= CWorld::Enable_8000000;
+
+        return true;
+    }
+
+    ConsoleWrite("Specular not enabled.  Requires pixel shaders.", DEFAULT_COLOR);
+
+    return false;
 }
 
+// ref: FUN_0078da50
+// Only validates: the depth is read when the map memory is set up, hence "on restart".
 bool CWorldParam::TerrainAlphaBitDepthCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    int32_t depth = SStrToInt(value);
+
+    if (depth != 4 && depth != 8) {
+        ConsoleWrite("Alpha map bit depth must be 4 or 8.", DEFAULT_COLOR);
+
+        return false;
+    }
+
+    char buffer[256];
+    sprintf(buffer, "Alpha map bit depth set to %dbit on restart.", depth);
+    ConsoleWrite(buffer, DEFAULT_COLOR);
+
     return true;
 }
 
+// ref: FUN_0078e110
+// The reference hands the size to the device through vtable slot 0xf4, which on the D3D9 device
+// is an empty `ret 4` (0x00632050); frozen keeps the size and skips the call.
 bool CWorldParam::TextureCacheSizeCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    int32_t megabytes = SStrToInt(value);
+
+    if (megabytes) {
+        CWorld::s_textureCacheSize = megabytes << 20;
+
+        char buffer[256];
+        sprintf(buffer, "Texture cache size set to %dMB.", megabytes);
+        ConsoleWrite(buffer, DEFAULT_COLOR);
+
+        return true;
+    }
+
+    CWorld::s_textureCacheSize = 0;
+    CWorld::s_textureCacheDirty = 1;
+    ConsoleWrite("Texture cache size set to default.", DEFAULT_COLOR);
+
     return true;
 }
 

@@ -12,6 +12,7 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CWFrustum;
 class CAsyncObject;
 class CMapObjDef;
 class CMapObjDefGroup;
@@ -415,6 +416,9 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         bool IsGroupLoaded(uint32_t index);
         // A box query over every loaded, solid group the box reaches. ref: FUN_007aef00
         bool QueryBoxGroups(const CAaBox& box, uint32_t queryFlags, const C44Matrix* placement, void* object);
+        // QueryBoxGroups against a frustum: every loaded group whose box meets the box around
+        // the frustum's corners runs CMapObjGroup::QueryBox. ref: FUN_007af0f0
+        bool QueryHullGroups(const CWFrustum& frustum, uint32_t queryFlags, const C44Matrix* placement, void* object);
 
         // Does the segment touch one group's bounds? Also false when that group's own file has not
         // arrived -- a group whose state bit 0 is clear has no geometry to hit. ref: FUN_007ae880

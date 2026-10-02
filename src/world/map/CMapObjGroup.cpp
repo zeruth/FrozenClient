@@ -1,4 +1,5 @@
 #include "world/map/CMapObjGroup.hpp"
+#include "world/CWFrustum.hpp"
 #include <tempest/matrix/C33Matrix.hpp>
 #include "world/map/CMapDoodadDef.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
@@ -924,7 +925,7 @@ bool CMapObjGroup::QuerySegmentDual(const C3Segment& segment, float* collisionT,
 }
 
 // ref: FUN_007cb180
-bool CMapObjGroup::QueryBox(const C4Plane* hull, const C3Vector* corners, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object) {
+bool CMapObjGroup::QueryBox(const CWFrustum& frustum, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object) {
     // A group with no BSP has nothing to walk. The reference always has one; frozen only builds
     // it when MOPY, MOBN and MOBR all parsed, so entering with a null tree is possible here and
     // would fault on the root node.
@@ -943,10 +944,10 @@ bool CMapObjGroup::QueryBox(const C4Plane* hull, const C3Vector* corners, uint32
         query.overflow = &overflow;
         query.indices = this->m_indices;
         query.skipFlags = skipFlags | SMOPoly::F_COLLIDE_HIT;
-        query.hull = hull;
+        query.hull = frustum.planes;
 
         CAaBox queryBox;
-        BoundsFromPoints(queryBox, corners, 8);
+        BoundsFromPoints(queryBox, frustum.corners, 8);
 
         this->BoxQueryNode(query, 0, queryBox, this->m_bounds);
         this->RecordHits(placement, object, overflow);
@@ -954,7 +955,7 @@ bool CMapObjGroup::QueryBox(const C4Plane* hull, const C3Vector* corners, uint32
     }
 
     if (queryFlags & 0x30000) {
-        // TODO FUN_007cab70: the group's doodads against the box
+        this->QueryLiquidHull(frustum, queryFlags, placement, object);
     }
 
     return CMapObjGroup::s_hitRecordCount != recordsBefore;
@@ -1167,6 +1168,145 @@ bool CMapObjGroup::QueryLiquidBox(const CAaBox& box, uint32_t queryFlags, const 
                     // One record for the group, allocated on the first triangle kept. Like the
                     // terrain collector this marks itself as having collected even when the pool
                     // was full, and carries on without appending.
+                    if (!collected) {
+                        record = CMapObjGroup::AllocHitRecord();
+
+                        if (record) {
+                            record->object = object;
+                            record->placement = &static_cast<CMapObjDef*>(object)->m_placement;
+                            record->vertices = vertices;
+                            indices = CMapObjGroup::AllocHitIndices(static_cast<uint32_t>((spanY + 1) * (spanX + 1) * 6));
+                            record->indices = indices;
+                        }
+                    }
+
+                    collected = true;
+
+                    if (!record || !record->indices) {
+                        continue;
+                    }
+
+                    for (int32_t k = 0; k < 3; k++) {
+                        uint16_t index = static_cast<uint16_t>(vertex + vertexSplit[t][k]);
+
+                        indices[record->indexCount] = index;
+                        record->indexCount++;
+
+                        if (index <= record->minIndex) {
+                            record->minIndex = index;
+                        }
+
+                        if (index >= record->maxIndex) {
+                            record->maxIndex = index;
+                        }
+                    }
+
+                    record->faceCount++;
+                }
+            }
+
+            outcode++;
+        }
+
+        outcode++;
+    }
+
+    return collected;
+}
+
+// ref: FUN_007cab70
+// QueryLiquidBox's frustum twin. The grid range comes from the frustum's corners moved into the
+// liquid grid's space (a copy, translated by the grid corner); the vertices are classified
+// against the ORIGINAL frustum, since they stay in the group's own space.
+bool CMapObjGroup::QueryLiquidHull(const CWFrustum& frustum, uint32_t queryFlags, const C44Matrix* placement, void* object) {
+    (void)placement;
+
+    // 1 / (CHUNK_SIZE / 8), the liquid tile step, DAT_00aeee54.
+    static const float INV_TILE_STEP = 0.23999999463558197f;
+
+    if (!this->m_liquidType || !this->m_liquidXTiles || !this->m_liquidYTiles) {
+        return false;
+    }
+
+    if ((queryFlags & 0x10000) && !(queryFlags & 0x20000)) {
+        auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(this->m_liquidType));
+
+        // Frozen-only null check: the reference trusts the row to exist.
+        if (!rec || !(rec->m_flags & 0x4)) {
+            return false;
+        }
+    }
+
+    // Frozen-only: a group whose MLIQ did not parse fully has no tiles or vertices to walk.
+    if (!this->m_liquidTiles || !this->m_liquidVertices.Count()) {
+        return false;
+    }
+
+    CWFrustum moved = frustum;
+    moved.Translate({ -this->m_liquidPos.x, -this->m_liquidPos.y, -this->m_liquidPos.z });
+
+    CAaBox grid;
+    BoundsFromPoints(grid, moved.corners, 8);
+
+    int32_t maxX = static_cast<int32_t>(floorf(grid.t.x * INV_TILE_STEP));
+    int32_t maxY = static_cast<int32_t>(floorf(grid.t.y * INV_TILE_STEP));
+    int32_t minY = static_cast<int32_t>(floorf(grid.b.y * INV_TILE_STEP));
+    int32_t minX = static_cast<int32_t>(floorf(grid.b.x * INV_TILE_STEP));
+
+    if (maxX < 0 || maxY < 0
+        || minX >= static_cast<int32_t>(this->m_liquidXTiles)
+        || minY >= static_cast<int32_t>(this->m_liquidYTiles)) {
+        return false;
+    }
+
+    CiRect wanted = { minY, minX, maxY, maxX };
+    CiRect all = { 0, 0, static_cast<int32_t>(this->m_liquidYTiles) - 1, static_cast<int32_t>(this->m_liquidXTiles) - 1 };
+    CiRect rect = CiRect::Intersection(wanted, all);
+
+    int32_t spanY = rect.maxY - rect.minY;
+    int32_t spanX = rect.maxX - rect.minX;
+    int32_t rectStride = spanX + 2;
+    uint32_t vertexCount = static_cast<uint32_t>((spanY + 2) * rectStride);
+
+    if (vertexCount > 0x2000) {
+        return false;
+    }
+
+    // The reference sizes this on the stack with alloca; 0x2000 is its own ceiling.
+    uint8_t outcodes[0x2000];
+
+    const C3Vector* vertices = this->m_liquidVertices.Ptr();
+    int32_t vertexStride = static_cast<int32_t>(this->m_liquidXVerts);
+
+    uint8_t* outcode = outcodes;
+
+    for (int32_t y = rect.minY; y <= rect.maxY + 1; y++) {
+        for (int32_t x = rect.minX; x <= rect.maxX + 1; x++) {
+            ClassifyPointPlanes6(frustum.planes, vertices[vertexStride * y + x], outcode++);
+        }
+    }
+
+    const int32_t vertexSplit[2][3] = { { 0, vertexStride + 1, vertexStride }, { 0, 1, vertexStride + 1 } };
+    const int32_t outcodeSplit[2][3] = { { 0, rectStride + 1, rectStride }, { 0, 1, rectStride + 1 } };
+
+    CMapObjHitRecord* record = nullptr;
+    uint16_t* indices = nullptr;
+    bool collected = false;
+
+    outcode = outcodes;
+
+    for (int32_t y = rect.minY; y <= rect.maxY; y++) {
+        for (int32_t x = rect.minX; x <= rect.maxX; x++) {
+            int32_t vertex = vertexStride * y + x;
+
+            if ((this->m_liquidTiles[this->m_liquidXTiles * y + x] & 0xf) != 0xf) {
+                for (int32_t t = 0; t < 2; t++) {
+                    const int32_t* oc = outcodeSplit[t];
+
+                    if ((outcode[oc[0]] & outcode[oc[1]] & outcode[oc[2]]) != 0) {
+                        continue;
+                    }
+
                     if (!collected) {
                         record = CMapObjGroup::AllocHitRecord();
 

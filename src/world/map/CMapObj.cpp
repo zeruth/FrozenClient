@@ -1,4 +1,5 @@
 #include "world/map/CMapObj.hpp"
+#include "world/CWFrustum.hpp"
 #include <cfloat>
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObjGroup.hpp"
@@ -253,6 +254,29 @@ bool CMapObj::QueryBoxGroups(const CAaBox& box, uint32_t queryFlags, const C44Ma
             && this->m_rootLoaded && (group->m_state & 0x1)
             && !(group->m_flags & 0x80)) {
             hit |= group->QueryAaBox(box, queryFlags, skipFlags, placement, object);
+        }
+    }
+
+    return hit;
+}
+
+// ref: FUN_007af0f0
+bool CMapObj::QueryHullGroups(const CWFrustum& frustum, uint32_t queryFlags, const C44Matrix* placement, void* object) {
+    bool hit = false;
+    uint16_t skipFlags = static_cast<uint16_t>(CMapObj::QuerySkipFlags(queryFlags));
+
+    CAaBox box;
+    BoundsFromPoints(box, frustum.corners, 8);
+
+    for (uint32_t i = 0; i < this->m_groupCount; i++) {
+        const CAaBox& groupBounds = this->m_mogi[i].bounds;
+        CMapObjGroup* group = this->m_groups[i];
+
+        if (groupBounds.b.x <= box.t.x && groupBounds.b.y <= box.t.y && groupBounds.b.z <= box.t.z
+            && box.b.x <= groupBounds.t.x && box.b.y <= groupBounds.t.y && box.b.z <= groupBounds.t.z
+            && this->m_rootLoaded && (group->m_state & 0x1)
+            && !(group->m_flags & 0x80)) {
+            hit |= group->QueryBox(frustum, queryFlags, skipFlags, placement, object);
         }
     }
 

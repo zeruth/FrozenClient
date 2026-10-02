@@ -1,4 +1,7 @@
 #include "model/CM2Scene.hpp"
+#include "util/OsSystem.hpp"
+#include "world/CWFrustum.hpp"
+#include "world/WorldFacets.hpp"
 #include "model/CM2Model.hpp"
 #include <tempest/Intersect.hpp>
 #include <tempest/Ray.hpp>
@@ -536,7 +539,11 @@ void CMap::MapMemInitialize() {
 
     CMap::MapMemInitializeHeaps();
 
-    // TODO FUN_0086b9a0 -> DAT_00cf08f8 when bit 2 is set
+    uint32_t vendor;
+
+    if (OsGetCpuInfo(&vendor) & 0x4) {
+        CMap::s_useSse = 1;
+    }
 }
 
 void CMap::MapMemInitializeHeaps() {
@@ -2686,7 +2693,8 @@ void CMap::UpdateEntity(CMapEntity* entity) {
 }
 
 uint64_t CMap::s_segmentHitGUID;
-int32_t CMap::s_segmentQueryStamp;
+int32_t CMap::s_queryStamp;
+int32_t CMap::s_useSse;
 
 static const float SEGMENT_CELL_SIZE = 4.166666507720947f;   // an eighth of a chunk
 static const float SEGMENT_CELL_SCALE = 0.23999999463558197f; // DAT_00a3fda0
@@ -2827,7 +2835,7 @@ void CMap::AddRayModels(CMapBaseObjRefList* list, uint32_t queryFlags) {
             continue;
         }
 
-        if ((entity->m_flags & 0x100) || !(entity->m_flags & 0x80) || entity->m_queryStamp == CMap::s_segmentQueryStamp) {
+        if ((entity->m_flags & 0x100) || !(entity->m_flags & 0x80) || entity->m_queryStamp == CMap::s_queryStamp) {
             continue;
         }
 
@@ -2861,7 +2869,7 @@ void CMap::AddRayModels(CMapBaseObjRefList* list, uint32_t queryFlags) {
             LinkRayModel(model, 0, entity);
         }
 
-        entity->m_queryStamp = CMap::s_segmentQueryStamp;
+        entity->m_queryStamp = CMap::s_queryStamp;
     }
 }
 
@@ -3227,7 +3235,7 @@ bool CMap::QuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hi
                         uint32_t queryFlags, void* result) {
     (void)result;
 
-    CMap::s_segmentQueryStamp++;
+    CMap::s_queryStamp++;
     bool found = false;
 
     CM2Scene* scene = CWorld::GetM2Scene();
@@ -3272,4 +3280,172 @@ bool CMap::QuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hi
     }
 
     return true;
+}
+
+// ref: FUN_007a3d50
+void CMap::QueryFrustumLiquid(CMapChunk* chunk, const CWFrustum& frustum, const CiRect& cells, CChunkLiquid* liquid, CFacetList& list) {
+    (void)chunk;
+
+    CMapObjGroup::s_hitFlags = 0;
+    CMapObjGroup::s_hitRecordCount = 0;
+    CMapObjGroup::s_hitFacePoolCount = 0;
+    CMapObjGroup::s_hitIndexPoolCount = 0;
+    CMapObjGroup::s_hitPlacementCount = 0;
+
+    // The owner the reference threads through is the address of a local byte; the liquid
+    // collector never reads it.
+    uint8_t owner;
+
+    if (liquid->QueryHull(&owner, frustum, cells)) {
+        CWorld::AddHitFacets(list, 0, 0);
+    }
+}
+
+// ref: FUN_007a5330
+bool CMap::QueryFrustumCell(int32_t col, int32_t row, const CiRect& cells, const CWFrustum& frustum, CFacetList& list, uint32_t flags) {
+    uint32_t before = list.facets.Count();
+
+    CMapArea* area = CMap::s_areaGrid[((row >> 4) & 0x3f) * 64 + ((col >> 4) & 0x3f)];
+
+    if (!area || area->m_asyncObject) {
+        return false;
+    }
+
+    CMapChunk* chunk = area->m_chunks[(row & 0xf) * 16 + (col & 0xf)];
+
+    if (!chunk) {
+        return false;
+    }
+
+    CiRect local;
+    local.minY = std::max(cells.minY - row * 8, 0);
+    local.minX = std::max(cells.minX - col * 8, 0);
+    local.maxY = std::min(cells.maxY - row * 8, 7);
+    local.maxX = std::min(cells.maxX - col * 8, 7);
+
+    CWFrustum moved = frustum;
+    moved.Translate({ -chunk->m_position.x, -chunk->m_position.y, -chunk->m_position.z });
+
+    if (flags & 0x100) {
+        chunk->GatherFacets(local, moved, list);
+    }
+
+    if (flags & 0x30000) {
+        bool waterOnly = (flags & 0x10000) && !(flags & 0x20000);
+
+        for (auto liquid = chunk->m_liquidList.Head(); liquid; liquid = chunk->m_liquidList.Next(liquid)) {
+            if (waterOnly) {
+                auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(liquid->m_liquidType));
+
+                // Frozen-only null check: the reference reads the row's flags unguarded.
+                if (!rec || !(rec->m_flags & 0x4)) {
+                    continue;
+                }
+            }
+
+            CMap::QueryFrustumLiquid(chunk, moved, local, liquid, list);
+        }
+    }
+
+    if (flags & 0xf) {
+        CAaBox box;
+        BoundsFromPoints(box, frustum.corners, 8);
+
+        for (auto link = chunk->m_entityLinkList.Head(); link; link = chunk->m_entityLinkList.Next(link)) {
+            auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+            if ((entity->m_flags & 0x100) || !(entity->m_flags & 0x80) || entity->m_queryStamp == CMap::s_queryStamp) {
+                continue;
+            }
+
+            if (!entity->m_model || !box.Intersects(entity->m_collisionBounds)) {
+                continue;
+            }
+
+            // The reference reads the placement at +0xd8, which both entity kinds share. Frozen
+            // keeps it on CMapDoodadDef; a unit's CMapEntity never carries flag 0x80 here
+            // (CMap::UpdateEntity sets only bit 0), so no other kind reaches this point.
+            if (!(entity->m_type & CMapBaseObj::Type_DoodadDef)) {
+                continue;
+            }
+
+            entity->m_model->GetCollisionTriangles(box, static_cast<CMapDoodadDef*>(entity)->m_placement, list.facets);
+            entity->m_queryStamp = CMap::s_queryStamp;
+        }
+    }
+
+    return before != list.facets.Count();
+}
+
+// ref: FUN_007a4ee0
+bool CMap::QueryFrustumObjects(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
+    bool hit = false;
+
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (def->m_flags & 0x100) {
+            continue;
+        }
+
+        if (!AaBoxVsPlanes6(frustum.planes, def->m_bounds)) {
+            continue;
+        }
+
+        C3Vector corners[8] = {};
+
+        for (int32_t i = 0; i < 8; i++) {
+            corners[i] = frustum.corners[i] * def->m_inversePlacement;
+        }
+
+        CWFrustum local(corners);
+
+        if (!def->m_mapObj) {
+            continue;
+        }
+
+        CMapObjGroup::s_hitFlags = 0;
+        CMapObjGroup::s_hitRecordCount = 0;
+        CMapObjGroup::s_hitFacePoolCount = 0;
+        CMapObjGroup::s_hitIndexPoolCount = 0;
+        CMapObjGroup::s_hitPlacementCount = 0;
+
+        // The reference passes the address of a local byte as the placement; CMapObjGroup's
+        // RecordHits ignores it and places every record by the def (object + 0x70). Frozen's
+        // RecordHits stores what it is given, so it is given that matrix.
+        hit |= def->m_mapObj->QueryHullGroups(local, flags, &def->m_placement, def);
+
+        CWorld::AddHitFacets(list, 0, 0);
+
+        if (hitFlags) {
+            *hitFlags |= CMapObjGroup::s_hitFlags;
+        }
+    }
+
+    return hit;
+}
+
+// ref: FUN_007a5dd0
+bool CMap::QueryFrustumFacets(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
+    CMap::s_queryStamp++;
+
+    list.facets.SetCount(0);
+
+    CAaBox bounds;
+    BoundsFromPoints(bounds, frustum.corners, 8);
+
+    // Map cells, rows from x and columns from y, both counted down from the map's far corner.
+    CiRect cells;
+    cells.maxX = static_cast<int32_t>(std::nearbyint(-(bounds.b.y - MAP_HALF_EXTENT) * CELLS_PER_YARD - 0.5f));
+    cells.maxY = static_cast<int32_t>(std::nearbyint(-(bounds.b.x - MAP_HALF_EXTENT) * CELLS_PER_YARD - 0.5f));
+    cells.minX = static_cast<int32_t>(std::nearbyint(-(bounds.t.y - MAP_HALF_EXTENT) * CELLS_PER_YARD - 0.5f));
+    cells.minY = static_cast<int32_t>(std::nearbyint(-(bounds.t.x - MAP_HALF_EXTENT) * CELLS_PER_YARD - 0.5f));
+
+    for (int32_t row = cells.minY >> 3; row <= cells.maxY >> 3; row++) {
+        for (int32_t col = cells.minX >> 3; col <= cells.maxX >> 3; col++) {
+            CMap::QueryFrustumCell(col, row, cells, frustum, list, flags);
+        }
+    }
+
+    CMap::QueryFrustumObjects(frustum, list, flags, hitFlags);
+
+    return list.facets.Count() != 0;
 }

@@ -12,6 +12,9 @@
 #include <cstdint>
 
 class CMapArea;
+class CWFrustum;
+class CiRect;
+struct CFacetList;
 class CMapRenderChunk;
 
 // The MCNK header, 128 bytes after the chunk's 8-byte IFF header, as it sits in the ADT.
@@ -161,6 +164,10 @@ class CMapChunk : public CMapBaseObj {
         // A ray (in the chunk's own space) against the four triangles of one of its 8x8 cells,
         // unless the cell is a hole. `t` keeps the nearest positive hit. ref: FUN_007d8730
         bool IntersectCell(uint32_t cellX, uint32_t cellY, const C3Ray& ray, float* t);
+        // The terrain triangles of the cells in `cells` (chunk-local rows and columns) that the
+        // frustum (already in the chunk's own space) does not reject, appended to the list in
+        // world space. ref: FUN_007d8e00
+        void GatherFacets(const CiRect& cells, const CWFrustum& frustum, CFacetList& list);
 
         CMapChunk();
         ~CMapChunk() override;

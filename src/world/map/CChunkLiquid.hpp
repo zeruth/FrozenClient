@@ -10,6 +10,7 @@
 #include <cstdint>
 
 class CMapChunk;
+class CWFrustum;
 
 namespace Liquid {
     class CVertexData;
@@ -126,6 +127,9 @@ class CChunkLiquid {
         // `box` is in the chunk's own space, both as the world query hands them over.
         // ref: FUN_007ce960
         bool QueryBox(void* object, const CAaBox& box, const CiRect& cellRect);
+        // QueryBox against a frustum instead of a box: every vertex of the clipped rectangle is
+        // classified against all six planes. ref: FUN_007ceb80
+        bool QueryHull(void* object, const CWFrustum& frustum, const CiRect& cellRect);
         // ref: FUN_007ce5d0
         bool RecordHits(void* object, const uint8_t* outcodes, const CiRect& rect, const int32_t* span);
 };

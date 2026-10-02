@@ -20,24 +20,14 @@ class VehicleSeatRec;
 // input-control facing, the world's frustum facet query -- say so and return the reference's
 // "nothing there" answer, which is also what the reference returns while that state is empty.
 
-// One world triangle a frustum query returns (three points, in world space).
-struct CFacet {
-    C3Vector m_points[3];
-};
-
 // ref: FUN_0052e480
 float BarberShopGetMinDistance();
 
-// The world triangles a frustum touches: World.cpp's 0x0077f330 -> FUN_007a5dd0.
-void WorldQueryFrustumFacets(CWFrustum* frustum, TSGrowableArray<CFacet>& facets);
-
-// The part of a triangle inside a frustum, as pointers to its clipped points.
-int32_t FrustumClipFacet(CWFrustum* frustum, const C3Vector* points, uint32_t count, uint32_t** clipped, uint32_t* clippedCount);
-
 // ref: FUN_005ff670
-// A frustum from the camera's view and projection whose far corners are pulled toward `origin`
-// by `scale`.
-void CameraSetFrustumCorners(CWFrustum& frustum, const C44Matrix& view, const C44Matrix& projection, const C3Vector& origin, float scale);
+// The volume the camera's near rectangle sweeps: the view and projection's near four corners,
+// scaled about their centre by `scale`, become the near face, and the same four moved by `sweep`
+// become the far face.
+void CameraSetFrustumCorners(CWFrustum& frustum, const C44Matrix& view, const C44Matrix& projection, const C3Vector& sweep, float scale);
 
 // Turn the camera's facing matrix about its right axis by `angle`.
 void CameraRollFacing(C33Matrix& facing, float angle);

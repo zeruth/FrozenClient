@@ -380,7 +380,7 @@ class CMapObjGroup {
         bool QuerySegment(const C3Segment& segment, float* t, uint32_t queryFlags, uint16_t skipFlags, void* unused, const C44Matrix* placement, void* object);
         bool QuerySegmentFace(const C3Segment& segment, float* t, uint32_t queryFlags, uint16_t skipFlags, uint32_t* outFace);
         bool QuerySegmentDual(const C3Segment& segment, float* collisionT, int32_t* collisionFace, float* renderT, int32_t* renderFace);
-        bool QueryBox(const C4Plane* hull, const C3Vector* corners, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object);
+        bool QueryBox(const CWFrustum& frustum, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object);
         bool SampleColorAtFace(const C3Vector& point, uint16_t face, CImVector* outColor, uint8_t* outFlag);
 
         void SegmentQueryNode(CMapObjGroupSegmentQuery& query, int32_t nodeIdx, const C3Segment& segment, const CAaBox& box);
@@ -391,6 +391,9 @@ class CMapObjGroup {
         void BoxQueryLeaf(CMapObjGroupBoxQuery& query, const CAaBspNode* node);
         bool QueryAaBox(const CAaBox& box, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object);
         bool QueryLiquidBox(const CAaBox& box, uint32_t queryFlags, const C44Matrix* placement, void* object);
+        // QueryLiquidBox against a frustum: the grid range from the frustum moved into the
+        // grid's own space, each vertex classified against the six planes. ref: FUN_007cab70
+        bool QueryLiquidHull(const CWFrustum& frustum, uint32_t queryFlags, const C44Matrix* placement, void* object);
         void AaBoxQueryNode(CMapObjGroupAaBoxQuery& query, int32_t nodeIdx, const CAaBox& queryBox, const CAaBox& box);
         void AaBoxQueryLeaf(CMapObjGroupAaBoxQuery& query, const CAaBspNode* node);
         void RecordHits(const C44Matrix* placement, void* object, uint32_t flags);

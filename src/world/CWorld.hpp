@@ -7,6 +7,8 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class CWFrustum;
+struct CFacetList;
 class CM2Model;
 class CM2Lighting;
 class CM2Scene;
@@ -127,6 +129,9 @@ class CWorld {
         // A liquid type as the zone overrides it (AreaTable LiquidTypeID, the parent zone's when
         // the zone has none). ref: FUN_009905c0
         static const LiquidTypeRec* GetAreaLiquidType(uint32_t areaID, uint32_t liquidType);
+        // Every face in the hit-record pool as a world-space facet, with the owner pair beside
+        // each one added. ref: FUN_00782740
+        static void AddHitFacets(CFacetList& list, uint32_t owner0, uint32_t owner1);
         static void SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam);
         static int32_t GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4);
         static void UpdateWindowAndMap(const C3Vector& targetPos);
@@ -188,8 +193,17 @@ class CWorld {
         static int32_t s_prevWindowMaxX;
         static int32_t s_reloadMap;
         static int32_t s_mapDirty;              // DAT_00d4314c
+        // The groundEffectDensity and groundEffectDist CVars, as their callbacks store them.
+        static int32_t s_groundEffectDensity;   // DAT_00cd773c
+        static float s_groundEffectDistSq;      // DAT_00cd7674
+        // gxTextureCacheSize in bytes (0 = let the client choose), and the flag that asks the
+        // world update (FUN_0077f900) to choose again.
+        static int32_t s_textureCacheSize;      // DAT_00cd7760
+        static int32_t s_textureCacheDirty;     // DAT_00adeee0
         static int32_t s_updateCount;           // DAT_00cd7690
         static int32_t OnTick(const EVENT_DATA_TICK* data, void* param);
+        static void SetGroundEffectDensity(int32_t density);
+        static void SetGroundEffectDist(float dist);
         static void SetFarClip(float farClip);
         static void SetNearClip(float nearClip);
         static void SetHorizonFarClipScale(float scale);
@@ -247,6 +261,10 @@ class CWorld {
         // Private static functions
         static uint32_t GetFixedPrecisionTime(float timeSec);
 };
+
+// The world triangles a frustum touches, as the rest of the client calls it.
+// ref: FUN_0077f330
+int32_t WorldQueryFrustumFacets(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
 
 // The world segment query, as the rest of the client calls it. ref: FUN_0077f310
 int32_t WorldQuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t, uint32_t flags, void* result);

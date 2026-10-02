@@ -1,4 +1,5 @@
 #include "ui/game/CGCamera.hpp"
+#include "world/WorldFacets.hpp"
 #include "console/Command.hpp"
 #include "math/Utils.hpp"
 #include "model/CM2Model.hpp"
@@ -2996,44 +2997,55 @@ C3Vector& CGCamera::CalcPosition(C3Vector& out, const C3Vector& target, float di
 }
 
 // ref: FUN_006057b0
-// The world triangles inside a view frustum, each taken into the camera's space; the furthest
-// depth any of them reaches is the collision depth.
-static int32_t CameraFrustumDepth(CWFrustum* frustum, const C3Vector& origin, float* depth) {
-    static TSGrowableArray<CFacet> s_facets;
+// The world triangles inside the sweep volume, each taken into the volume's unit cube and clipped
+// to it; the deepest z any clipped point reaches is how far along the sweep the world begins.
+static int32_t CameraFrustumDepth(CWFrustum* frustum, uint32_t flags, float* depth) {
+    static CFacetList s_facets;
 
     if (!frustum) {
         return 0;
     }
 
-    s_facets.SetCount(0);
-    WorldQueryFrustumFacets(frustum, s_facets);
+    s_facets.facets.SetCount(0);
+    s_facets.owners.SetCount(0);
 
-    if (!s_facets.Count()) {
+    WorldQueryFrustumFacets(*frustum, s_facets, flags, nullptr);
+
+    if (!s_facets.facets.Count()) {
+        return 0;
+    }
+
+    C44Matrix toUnit;
+
+    if (!FrustumUnitBasis(*frustum, toUnit, 0)) {
         return 0;
     }
 
     int32_t hit = 0;
+    const C3Vector& origin = frustum->corners[0];
 
-    for (uint32_t i = 0; i < s_facets.Count(); i++) {
-        CFacet& facet = s_facets[i];
+    for (uint32_t i = 0; i < s_facets.facets.Count(); i++) {
+        M2CollisionTriangle& facet = s_facets.facets[i];
 
         for (int32_t v = 0; v < 3; v++) {
-            facet.m_points[v].x -= origin.x;
-            facet.m_points[v].y -= origin.y;
-            facet.m_points[v].z -= origin.z;
+            C3Vector relative = {
+                facet.vertices[v].x - origin.x,
+                facet.vertices[v].y - origin.y,
+                facet.vertices[v].z - origin.z,
+            };
+
+            facet.vertices[v] = relative * toUnit;
         }
 
-        uint32_t* clipped = nullptr;
+        const C3Vector* const* clipped = nullptr;
         uint32_t clippedCount = 0;
 
-        if (FrustumClipFacet(frustum, facet.m_points, 3, &clipped, &clippedCount)) {
+        if (ClipToUnitCube(facet.vertices, 3, &clipped, &clippedCount)) {
             hit = 1;
 
             for (uint32_t c = 0; c < clippedCount; c++) {
-                auto point = reinterpret_cast<const C3Vector*>(clipped[c]);
-
-                if (*depth < point->z) {
-                    *depth = point->z;
+                if (*depth < clipped[c]->z) {
+                    *depth = clipped[c]->z;
                 }
             }
         }
@@ -3084,10 +3096,14 @@ int32_t CGCamera::CollideFrustum(float* distance, const C3Vector& from, const C3
     float depth = 0.0f;
     CWFrustum frustum;
 
-    CameraSetFrustumCorners(frustum, view, projection, from, 1.0f);
-    int32_t nearHit = CameraFrustumDepth(&frustum, from, &depth);
-    CameraSetFrustumCorners(frustum, view, projection, from, 1.75f);
-    int32_t wideHit = CameraFrustumDepth(&frustum, from, &depth);
+    // The near rectangle swept along the view by the distance being tested: first as it is, for
+    // liquid only, then widened by 1.75 for everything else.
+    C3Vector sweep = { direction.x * reach, direction.y * reach, direction.z * reach };
+
+    CameraSetFrustumCorners(frustum, view, projection, sweep, 1.0f);
+    int32_t nearHit = CameraFrustumDepth(&frustum, flags & 0x30000, &depth);
+    CameraSetFrustumCorners(frustum, view, projection, sweep, 1.75f);
+    int32_t wideHit = CameraFrustumDepth(&frustum, flags & ~0x30000u, &depth);
 
     if (!wideHit && !nearHit) {
         return 0;

@@ -1,3 +1,7 @@
+#include "world/map/DetailDoodad.hpp"
+#include "util/Log.hpp"
+#include "world/CWFrustum.hpp"
+#include "world/WorldFacets.hpp"
 #include "console/Console.hpp"
 #include "console/Command.hpp"
 #include "world/Shadow.hpp"
@@ -81,6 +85,10 @@ int32_t CWorld::s_prevWindowMaxY;
 int32_t CWorld::s_prevWindowMaxX;
 int32_t CWorld::s_reloadMap;
 int32_t CWorld::s_mapDirty;
+int32_t CWorld::s_groundEffectDensity;
+float CWorld::s_groundEffectDistSq;
+int32_t CWorld::s_textureCacheSize;
+int32_t CWorld::s_textureCacheDirty = 1;
 int32_t CWorld::s_updateCount;
 // Zenith first, horizon last, then the fog band -- the order the dome's rings read them in.
 C3Vector CWorld::s_skyColors[6] = {
@@ -1174,7 +1182,7 @@ void CWorld::SetFarClip(float farClip) {
     CWorld::s_nearClip = 0.2f;
 
     // TODO dword_D1C410 = 1;
-    // TODO dword_ADEEE0 = 1;
+    CWorld::s_textureCacheDirty = 1;
 }
 
 // The reference's counterpart is FUN_004e3a20, identified 2026-09-23. CM2Model::SetupLighting
@@ -1654,4 +1662,89 @@ const LiquidTypeRec* CWorld::GetAreaLiquidType(uint32_t areaID, uint32_t liquidT
 // ref: FUN_0077f310
 int32_t WorldQuerySegment(const C3Vector& start, const C3Vector& end, C3Vector* hit, float* t, uint32_t flags, void* result) {
     return CMap::QuerySegment(start, end, hit, t, flags, result) ? 1 : 0;
+}
+
+// ref: FUN_00780710
+// A new density asks the detail doodads to rebuild.
+void CWorld::SetGroundEffectDensity(int32_t density) {
+    if (CWorld::s_groundEffectDensity != density) {
+        CWorld::s_groundEffectDensity = density;
+        DetailDoodad::s_rebuild = 1;
+    }
+}
+
+// ref: FUN_00780730
+void CWorld::SetGroundEffectDist(float dist) {
+    if (dist != DetailDoodad::s_fadeDistance) {
+        DetailDoodad::s_fadeDistance = dist;
+        DetailDoodad::s_rebuild = 1;
+        CWorld::s_groundEffectDistSq = dist * dist;
+    }
+}
+
+// ref: FUN_00782740
+// The hit records are in each owner's own space; every face is taken out to the world by its
+// record's placement, its normal turned by the placement's rotation and normalised (rsqrtss when
+// CMap::s_useSse is set, which is the only difference between the reference's two copies of the
+// loop).
+void CWorld::AddHitFacets(CFacetList& list, uint32_t owner0, uint32_t owner1) {
+    uint32_t first = list.facets.Count();
+
+    for (uint32_t r = 0; r < CMapObjGroup::s_hitRecordCount; r++) {
+        const CMapObjHitRecord& record = CMapObjGroup::s_hitRecords[r];
+        const uint16_t* tri = record.indices;
+
+        for (uint32_t f = 0; f < record.faceCount; f++, tri += 3) {
+            M2CollisionTriangle* facet = list.facets.New();
+
+            facet->plane.n = { 0.0f, 0.0f, 1.0f };
+            facet->plane.d = 0.0f;
+
+            const C3Vector& v0 = record.vertices[tri[0]];
+            const C3Vector& v1 = record.vertices[tri[1]];
+            const C3Vector& v2 = record.vertices[tri[2]];
+            const C44Matrix& m = *record.placement;
+
+            float nx = (v1.y - v0.y) * (v2.z - v0.z) - (v1.z - v0.z) * (v2.y - v0.y);
+            float ny = (v1.z - v0.z) * (v2.x - v0.x) - (v2.z - v0.z) * (v1.x - v0.x);
+            float nz = (v2.y - v0.y) * (v1.x - v0.x) - (v1.y - v0.y) * (v2.x - v0.x);
+
+            facet->plane.n.x = m.a0 * nx + m.b0 * ny + m.c0 * nz;
+            facet->plane.n.y = m.a1 * nx + m.b1 * ny + m.c1 * nz;
+            facet->plane.n.z = m.c2 * nz + m.b2 * ny + m.a2 * nx;
+
+            facet->vertices[0] = v0 * m;
+            facet->vertices[1] = v1 * m;
+            facet->vertices[2] = v2 * m;
+
+            C3Vector& n = facet->plane.n;
+            float lengthSq = n.x * n.x + n.y * n.y + n.z * n.z;
+
+            if (lengthSq == 0.0f) {
+                SysMsgPrintf(SYSMSG_ERROR, "Found degenerate triangle -- data needs to be fixed\n");
+                n = { 0.0f, 0.0f, 1.0f };
+            } else {
+                float inv = CMap::s_useSse ? FacetRsqrt(lengthSq) : 1.0f / sqrtf(lengthSq);
+                n = { inv * n.x, inv * n.y, inv * n.z };
+            }
+
+            const C3Vector& p0 = facet->vertices[0];
+            facet->plane.d = -(p0.x * n.x + p0.y * n.y + p0.z * n.z);
+        }
+    }
+
+    uint32_t count = list.facets.Count();
+
+    if (count != first) {
+        list.owners.SetCount(count);
+
+        for (uint32_t i = first; i < count; i++) {
+            list.owners[i] = { owner0, owner1 };
+        }
+    }
+}
+
+// ref: FUN_0077f330
+int32_t WorldQueryFrustumFacets(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
+    return CMap::QueryFrustumFacets(frustum, list, flags, hitFlags) ? 1 : 0;
 }

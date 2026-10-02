@@ -1,4 +1,6 @@
 #include "world/map/CMapDoodadDef.hpp"
+#include "world/CWFrustum.hpp"
+#include "world/WorldFacets.hpp"
 #include "world/map/CMapChunk.hpp"
 #include <tempest/Intersect.hpp>
 #include "world/map/CMap.hpp"
@@ -1100,4 +1102,67 @@ bool CMapChunk::IntersectCell(uint32_t cellX, uint32_t cellY, const C3Ray& ray, 
     }
 
     return hit;
+}
+
+// ref: FUN_007d8e00
+// Each cell's five vertices (its corners and centre) take their heights into the shared vertex
+// table and are classified against the frustum; each of the cell's four triangles that the
+// frustum does not wholly reject becomes a facet, moved out to world space by the chunk origin.
+void CMapChunk::GatherFacets(const CiRect& cells, const CWFrustum& frustum, CFacetList& list) {
+    static const int32_t s_cellPoints[5] = { 0, 9, 17, 1, 18 };                                  // DAT_00a40618
+    static const int32_t s_cellFacets[4][3] = { { 17, 9, 0 }, { 9, 1, 0 }, { 9, 17, 18 }, { 9, 18, 1 } }; // DAT_00a405e8
+
+    auto table = reinterpret_cast<C3Vector*>(CMapChunk::s_vertexTable);
+
+    for (int32_t row = cells.minY; row <= cells.maxY; row++) {
+        for (int32_t col = cells.minX; col <= cells.maxX; col++) {
+            if (CMapChunk::s_holeMask[(col >> 1) + (row >> 1) * 4] & this->m_header->holes) {
+                continue;
+            }
+
+            int32_t base = row * 17 + col;
+            uint8_t outcodes[20];
+
+            for (int32_t point : s_cellPoints) {
+                table[base + point].z = this->m_heights[base + point];
+                ClassifyPointPlanes6(frustum.planes, table[base + point], &outcodes[point]);
+            }
+
+            for (auto& tri : s_cellFacets) {
+                if (outcodes[tri[0]] & outcodes[tri[1]] & outcodes[tri[2]]) {
+                    continue;
+                }
+
+                M2CollisionTriangle* facet = list.facets.New();
+
+                facet->plane.n = { 0.0f, 0.0f, 1.0f };
+                facet->plane.d = 0.0f;
+
+                for (int32_t k = 0; k < 3; k++) {
+                    const C3Vector& local = table[base + tri[k]];
+                    facet->vertices[k] = {
+                        this->m_position.x + local.x,
+                        local.y + this->m_position.y,
+                        local.z + this->m_position.z,
+                    };
+                }
+
+                const C3Vector& p0 = facet->vertices[0];
+                const C3Vector& p1 = facet->vertices[1];
+                const C3Vector& p2 = facet->vertices[2];
+
+                if (!CMap::s_useSse) {
+                    PlaneFromPoints(&facet->plane, p0, p1, p2);
+                } else {
+                    float nx = (p1.y - p0.y) * (p2.z - p0.z) - (p1.z - p0.z) * (p2.y - p0.y);
+                    float ny = (p1.z - p0.z) * (p2.x - p0.x) - (p2.z - p0.z) * (p1.x - p0.x);
+                    float nz = (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
+                    float inv = FacetRsqrt(nx * nx + ny * ny + nz * nz);
+
+                    facet->plane.n = { nx * inv, ny * inv, nz * inv };
+                    facet->plane.d = -(facet->plane.n.x * p0.x + facet->plane.n.z * p0.z + p0.y * facet->plane.n.y);
+                }
+            }
+        }
+    }
 }

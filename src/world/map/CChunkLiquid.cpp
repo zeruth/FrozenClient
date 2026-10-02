@@ -1,4 +1,6 @@
 #include "world/map/CChunkLiquid.hpp"
+#include <tempest/Intersect.hpp>
+#include "world/CWFrustum.hpp"
 #include "world/map/LiquidSurface.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMapChunk.hpp"
@@ -398,6 +400,37 @@ bool CChunkLiquid::QueryBox(void* object, const CAaBox& box, const CiRect& cellR
     for (int32_t row = 0; row <= span[1]; row++) {
         for (int32_t col = 0; col <= span[0]; col++) {
             *out++ = ClassifyCornerZ(box, this->m_vertices[vertex + col]);
+        }
+
+        vertex += layerStride;
+    }
+
+    return this->RecordHits(object, outcodes, rect, span);
+}
+
+// ref: FUN_007ceb80
+bool CChunkLiquid::QueryHull(void* object, const CWFrustum& frustum, const CiRect& cellRect) {
+    CiRect wanted;
+    wanted.minY = cellRect.minY;
+    wanted.minX = cellRect.minX;
+    wanted.maxY = cellRect.maxY + 1;
+    wanted.maxX = cellRect.maxX + 1;
+
+    CiRect rect = CiRect::Intersection(this->TileRect(), wanted);
+
+    int32_t span[2] = { rect.maxX - rect.minX, rect.maxY - rect.minY };
+
+    uint8_t outcodes[84];
+
+    int32_t layerStride = static_cast<int32_t>(this->m_tileEndY - this->m_tileY) + 1;
+    int32_t vertex = (rect.minY - static_cast<int32_t>(this->m_tileX)) * layerStride
+                   - static_cast<int32_t>(this->m_tileY) + rect.minX;
+
+    uint8_t* out = outcodes;
+
+    for (int32_t row = 0; row <= span[1]; row++) {
+        for (int32_t col = 0; col <= span[0]; col++) {
+            ClassifyPointPlanes6(frustum.planes, this->m_vertices[vertex + col], out++);
         }
 
         vertex += layerStride;
