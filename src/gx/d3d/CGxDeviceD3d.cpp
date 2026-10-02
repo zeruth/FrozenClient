@@ -565,6 +565,11 @@ CGxDeviceD3d::CGxDeviceD3d() : CGxDevice() {
     this->DeviceCreateStreamBufs();
 }
 
+// ref: FUN_0068fe80
+// The declaration cache is freed with its member; the rest is the base destructor's.
+CGxDeviceD3d::~CGxDeviceD3d() {
+}
+
 // ref: FUN_0068fce0
 char* CGxDeviceD3d::BufLock(CGxBuf* buf) {
     CGxDevice::BufLock(buf);
@@ -757,95 +762,50 @@ int32_t CGxDeviceD3d::DeviceSetFormat(const CGxFormat& format) {
     return 0;
 }
 
+// ref: FUN_0069fed0
 void* CGxDeviceD3d::DeviceWindow() {
     return this->m_hwnd;
 }
 
 // ref: FUN_00690230
-// One recorded divergence: on a size message whose back buffer already matches the window, frozen
-// skips the reset (see the note inside). Everything else follows the reference, including the
-// focus messages, which drive the window-active flag the frame cap reads.
+// A size message resets the device to the new back buffer; when the reset fails the context is
+// dropped and ISceneBegin keeps trying. Focus drives the window-active flag the frame cap reads,
+// marks the hardware cursor for re-upload, and confines the mouse to a full-screen window.
 void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
     switch (wm) {
     case GxWM_Size: {
         if (param2 == 1 || param2 == 2) {
             this->m_windowVisible = 0;
-        } else {
-            this->m_windowVisible = 1;
 
-            auto& windowRect = *reinterpret_cast<CRect*>(param1);
-            this->DeviceSetDefWindow(windowRect);
-
-            if (this->m_d3dDevice && this->m_context) {
-                D3DPRESENT_PARAMETERS wanted;
-                this->ISetPresentParms(wanted, this->m_format);
-
-                // Resetting a device whose back buffer already matches the window is pointless,
-                // and not free. Windows sends a WM_SIZE on entering the world with the size
-                // unchanged; resetting on it failed with D3DERR_INVALIDCALL, which cleared
-                // m_context, and nothing ever set it again -- so the client rendered at full rate
-                // and presented nothing for the rest of the run. The window kept its last frame,
-                // which looks exactly like a hang and is not one.
-                uint32_t haveWidth = 0;
-                uint32_t haveHeight = 0;
-
-                LPDIRECT3DSURFACE9 back = nullptr;
-
-                if (SUCCEEDED(this->m_d3dDevice->GetRenderTarget(0, &back)) && back) {
-                    D3DSURFACE_DESC desc;
-
-                    if (SUCCEEDED(back->GetDesc(&desc))) {
-                        haveWidth = desc.Width;
-                        haveHeight = desc.Height;
-                    }
-
-                    back->Release();
-                }
-
-                if (haveWidth == wanted.BackBufferWidth && haveHeight == wanted.BackBufferHeight) {
-                    this->intF6C = 1;
-
-                    return;
-                }
-
-                this->IReleaseD3dResources(0);
-
-                D3DPRESENT_PARAMETERS d3dpp;
-                this->ISetPresentParms(d3dpp, this->m_format);
-
-                HRESULT resetResult = this->m_d3dDevice->Reset(&d3dpp);
-
-                if (SUCCEEDED(resetResult)) {
-                    this->IStateSetD3dDefaults();
-                    this->IWindowActiveSet(1);
-
-                    this->m_context = 1;
-                    this->intF5C = 0;
-
-                    this->intF6C = 1;
-
-                    return;
-                } else {
-                    // Name the failure instead of guessing. D3DERR_INVALIDCALL means something in
-                    // D3DPOOL_DEFAULT is still alive; D3DERR_DEVICELOST means the device is not
-                    // ready to be reset and retrying right now cannot help. Those two want opposite
-                    // responses, so the distinction is worth printing.
-                    fprintf(stderr, "Reset FAILED 0x%08lX (%s)\n", resetResult,
-                            resetResult == D3DERR_INVALIDCALL
-                                ? "INVALIDCALL - a default-pool resource is still alive"
-                            : resetResult == D3DERR_DEVICELOST ? "DEVICELOST - device not ready"
-                            : resetResult == D3DERR_DRIVERINTERNALERROR ? "DRIVERINTERNALERROR"
-                            : resetResult == D3DERR_OUTOFVIDEOMEMORY ? "OUTOFVIDEOMEMORY"
-                            : "unknown");
-
-                    this->m_context = 0;
-                }
-            }
-
-            this->intF6C = 1;
+            return;
         }
 
-        break;
+        this->m_windowVisible = 1;
+        this->DeviceSetDefWindow(*reinterpret_cast<CRect*>(param1));
+
+        if (this->m_d3dDevice && this->m_context) {
+            this->IReleaseD3dResources(0);
+
+            D3DPRESENT_PARAMETERS d3dpp;
+            this->ISetPresentParms(d3dpp, this->m_format);
+
+            if (this->m_d3dDevice->Reset(&d3dpp) == D3D_OK) {
+                this->IStateSetD3dDefaults();
+                this->IWindowActiveSet(1);
+                this->m_context = 1;
+                this->intF5C = 0;
+                this->ICallbacksRestored();
+                this->intF6C = 1;
+
+                return;
+            }
+
+            this->m_context = 0;
+        }
+
+        this->intF6C = 1;
+
+        return;
     }
 
     case GxWM_DisplayChange: {
@@ -861,16 +821,19 @@ void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
     case GxWM_KillFocus: {
         this->intF64 = 0;
 
-        break;
+        return;
     }
 
     case GxWM_SetFocus: {
         this->intF64 = 1;
+        this->m_cursorDirty = 1;
 
         if (!this->m_format.window) {
             RECT windowRect;
             GetWindowRect(this->m_hwnd, &windowRect);
             ClipCursor(&windowRect);
+
+            return;
         }
 
         break;
@@ -2360,19 +2323,18 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
 // (vtable slot 5, FUN_006843b0).
 void CGxDeviceD3d::ISceneBegin() {
     if (!this->m_context) {
-        HRESULT coop = this->m_d3dDevice ? this->m_d3dDevice->TestCooperativeLevel() : D3DERR_DEVICELOST;
-
-        if (coop == D3DERR_DEVICENOTRESET) {
+        if (this->m_d3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
             this->IReleaseD3dResources(0);
 
             D3DPRESENT_PARAMETERS d3dpp;
             this->ISetPresentParms(d3dpp, this->m_format);
 
-            if (SUCCEEDED(this->m_d3dDevice->Reset(&d3dpp))) {
+            if (this->m_d3dDevice->Reset(&d3dpp) == D3D_OK) {
                 this->IStateSetD3dDefaults();
                 this->IWindowActiveSet(1);
                 this->m_context = 1;
                 this->intF5C = 0;
+                this->m_stereoDirty = 1;
                 this->ICallbacksRestored();
             }
         }

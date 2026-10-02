@@ -253,7 +253,7 @@ class CGxDeviceD3d : public CGxDevice {
     LPDIRECT3DVERTEXDECLARATION9 m_d3dCurrentVertexDecl;
     // Reference +0x3b4c: the hardware cursor image needs re-uploading. DeviceSetFormat and
     // CursorUnlock raise it; ICursorDraw clears it once the image is on the cursor surface.
-    int32_t m_cursorDirty = 0;
+    int32_t m_cursorDirty = 1;
     // Reference +0x3b50, +0x3b54: the hardware cursor's 32x32 texture and its top surface.
     LPDIRECT3DTEXTURE9 m_d3dCursorTexture = nullptr;
     LPDIRECT3DSURFACE9 m_d3dCursorSurface = nullptr;
@@ -398,6 +398,7 @@ class CGxDeviceD3d : public CGxDevice {
 
     // Member functions
     CGxDeviceD3d();
+    virtual ~CGxDeviceD3d();
     int32_t CreatePoolAPI(CGxPool* pool);
     void DsSet(EDeviceState state, uint32_t val);
     char* IBufLock(CGxBuf* buf);
