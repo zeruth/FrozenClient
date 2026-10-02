@@ -4,6 +4,7 @@
 #include <cstdint>
 
 extern uint32_t* g_modelPool;
+extern uint32_t g_m2CpuFeatures;
 
 class CM2Model;
 

@@ -15,6 +15,10 @@
 
 CM2Cache CM2Cache::s_cache;
 
+// Reference 0x00d3fcec: the processor features, read once by Initialize. Bit 0x4 selects the
+// SSE bone blends and, without shaders, keeps the multi-bone path.
+uint32_t g_m2CpuFeatures;
+
 // ref: FUN_0081bfa0
 // Hands the animate thread its work for this frame and wakes it.
 void CM2Cache::BeginThread(void (*callback)(void*), void* arg) {
@@ -228,6 +232,8 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
     // M2UseThreads (0x4) only takes on a machine with a second processor, and then the animate
     // thread starts here and lives until Destroy. CM2Scene::Animate hands it the odd entries of
     // the animate list each frame.
+    g_m2CpuFeatures = OsGetCpuFeatures();
+
     if (OsGetProcessorCount() > 1) {
         this->m_flags |= flags & 0x4;
     }
@@ -275,6 +281,12 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
     // The reference propagates these three unmasked, as `flags & 0x1a0` (00081c211). Nothing in
     // frozen reads them yet -- M2BatchDoodads, M2BatchParticles and M2ForceAdditiveParticleSort --
     // so this is inert today and carried so the bits are right when something does read them.
+    // Without shaders, and without the SSE blends to make the CPU skinning cheap, models draw
+    // single-bone (0x40).
+    if (!(this->m_flags & 0x8) && !(g_m2CpuFeatures & 0x4)) {
+        this->m_flags |= 0x40;
+    }
+
     this->m_flags |= flags & 0x1a0;
 
     // (0x4, M2UseThreads, is taken at the top, with the thread it needs.)

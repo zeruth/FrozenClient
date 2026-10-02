@@ -476,8 +476,83 @@ void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* indices) {
     }
 }
 
+// ref: FUN_00820720
+// A batch flagged for projection (0x4) is not drawn as geometry: its section's world bounds and
+// texture mapping are handed to the scene's projection callback, which draws the decal onto
+// whatever lies under it. Texture stage 0 maps camera-relative positions to the batch's texture
+// coordinates, stage 1 maps height across the bounds (widened by 2 each way) to u. The colour is
+// the model's diffuse by the batch colour, plus its emissive, with the element's alpha.
 void CM2SceneRender::DrawBatchProj() {
-    // TODO
+    auto element = this->m_curElement;
+
+    this->m_curBatch = element->batch;
+    this->m_curSkinSection = element->skinSection;
+    this->m_curMaterial = &this->m_data->materials[element->batch->materialIndex];
+
+    CAaBox bounds;
+    C44Matrix texMatrix;
+
+    if (!this->m_curModel->ComputeProjection(this->m_curSkinSection, bounds, texMatrix)) {
+        return;
+    }
+
+    bounds.b.z -= 2.0f;
+    bounds.t.z += 2.0f;
+
+    const C44Matrix& viewInv = this->m_scene->m_viewInv;
+    float heightScale = 1.0f / (bounds.t.z - bounds.b.z);
+
+    C44Matrix heightMatrix;
+    heightMatrix.a0 = 0.0f; heightMatrix.a1 = 0.0f; heightMatrix.a2 = 0.0f; heightMatrix.a3 = 0.0f;
+    heightMatrix.b0 = 0.0f; heightMatrix.b1 = 0.0f; heightMatrix.b2 = 0.0f; heightMatrix.b3 = 0.0f;
+    heightMatrix.c0 = heightScale; heightMatrix.c1 = 0.0f; heightMatrix.c2 = 0.0f; heightMatrix.c3 = 0.0f;
+    heightMatrix.d0 = heightScale * (viewInv.d2 - bounds.b.z);
+    heightMatrix.d1 = 0.5f;
+    heightMatrix.d2 = 0.0f;
+    heightMatrix.d3 = 1.0f;
+
+    auto model = this->m_curModel;
+    C3Vector color = model->m_currentDiffuse;
+
+    if (this->m_curBatch->colorIndex < this->m_data->colors.Count()) {
+        const C3Vector& batchColor = model->m_colors[this->m_curBatch->colorIndex].colorTrack.currentValue;
+
+        color.y = batchColor.y * color.y;
+        color.z = batchColor.z * color.z;
+        color.x = batchColor.x * color.x;
+    }
+
+    color.x += model->m_currentEmissive.x;
+    color.y += model->m_currentEmissive.y;
+    color.z += model->m_currentEmissive.z;
+
+    auto channel = [](float value) {
+        float clamped = value < 0.0f ? 0.0f : value < 1.0f ? value : 1.0f;
+        return static_cast<uint8_t>(lrintf(clamped * 255.0f));
+    };
+
+    CImVector decalColor;
+    decalColor.r = channel(color.x);
+    decalColor.g = channel(color.y);
+    decalColor.b = channel(color.z);
+    decalColor.a = channel(element->alpha);
+
+    this->SetupTextures();
+    this->SetupLighting();
+    this->SetupMaterial();
+    element->effect->SetCurrent();
+
+    C3Vector cameraPosition = { viewInv.d0, viewInv.d1, viewInv.d2 };
+    this->SetupParticleTransform(cameraPosition);
+
+    CShaderEffect::SetTexMtx_EyeSpace(2, texMatrix, 0);
+    CShaderEffect::SetTexMtx_EyeSpace(2, heightMatrix, 1);
+
+    using ProjectionCallback = void (*)(const CAaBox& bounds, const CImVector& color, uint32_t shaded, void* context, uint32_t flag4);
+    reinterpret_cast<ProjectionCallback>(this->m_scene->m_projectionCallback)(
+        bounds, decalColor, this->m_curShaded, this->m_scene->m_projectionContext, model->m_flag4);
+
+    GxXformSet(GxXform_World, CM2SceneRender::s_identity);
 }
 
 // ref: FUN_00823070

@@ -1436,8 +1436,8 @@
   },
   "00820720": {
     "frozen": "CM2SceneRender::DrawBatchProj",
-    "status": "stub",
-    "note": "logs 'BatchProj: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind"
+    "status": "ported",
+    "note": "Ported 2026-10-02 with its texture-matrix builder (FUN_008292a0) and FUN_00873730. Unreached until the world installs the projection callback (CWorld::Initialize, 0x781340)."
   },
   "00820ae0": {
     "frozen": "CM2SceneRender::DrawBatchDoodad",

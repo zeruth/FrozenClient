@@ -1,3 +1,9 @@
+#include "gx/Draw.hpp"
+#include "gx/Shader.hpp"
+#include "gx/RenderState.hpp"
+#include "gx/shader/CShaderEffect.hpp"
+#include <algorithm>
+#include <cfloat>
 #include "gx/Texture.hpp"
 #include "model/Model2.hpp"
 #include "model/CM2Model.hpp"
@@ -4600,6 +4606,323 @@ int32_t CM2Model::PackBatchVertices(int32_t merged, M2SkinSection* section, uint
     GxPrimVertexPtr(buffer, GxVBF_PNT);
 
     return 1;
+}
+
+// ref: FUN_008292a0
+// For a projected decal: the section's world-space bounds, and the texture matrix that maps a
+// camera-relative position to the section's own texture coordinates, solved from its first three
+// vertices -- the u and v gradients along x from the edge the middle vertex splits by height, and
+// along y from the edge it splits by width. Returns 0 for a section of fewer than four vertices
+// or a degenerate triangle.
+int32_t CM2Model::ComputeProjection(M2SkinSection* section, CAaBox& bounds, C44Matrix& texMatrix) {
+    if (section->vertexCount < 4) {
+        return 0;
+    }
+
+    auto data = this->m_shared->m_data;
+    auto skinProfile = this->m_shared->skinProfile;
+
+    C44Matrix blend;
+    ubyte4 weights = { };
+    ubyte4 indices = { };
+
+    C3Vector points[3] = {};
+    C2Vector coords[3] = {};
+
+    bounds.b = { FLT_MAX, FLT_MAX, FLT_MAX };
+    bounds.t = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+    const C44Matrix& viewInv = this->m_scene->m_viewInv;
+
+    for (uint32_t i = 0; i < section->vertexCount; i++) {
+        const M2Vertex& vertex = data->vertices[skinProfile->vertices[section->vertexStart + i]];
+
+        if (vertex.weights.u != weights.u || vertex.indices.u != indices.u) {
+            weights = vertex.weights;
+            indices = vertex.indices;
+
+            if (g_m2CpuFeatures & 0x4) {
+                CM2Scene::BlendBoneMatrices(this->m_boneMatrices, weights, indices, &blend);
+            } else {
+                CM2Scene::BlendBoneMatrices3x4(this->m_boneMatrices, weights, indices, &blend);
+            }
+
+            blend = blend * viewInv;
+        }
+
+        C3Vector world = vertex.position * blend;
+
+        bounds.b.x = std::min(bounds.b.x, world.x);
+        bounds.b.y = std::min(bounds.b.y, world.y);
+        bounds.b.z = std::min(bounds.b.z, world.z);
+        bounds.t.x = std::max(bounds.t.x, world.x);
+        bounds.t.y = std::max(bounds.t.y, world.y);
+        bounds.t.z = std::max(bounds.t.z, world.z);
+
+        if (i < 3) {
+            points[i] = { world.x - viewInv.d0, world.y - viewInv.d1, world.z - viewInv.d2 };
+            coords[i] = vertex.texcoord[0];
+        }
+    }
+
+    const float epsilon = 2.3841858e-07f;
+
+    // Along y: the lowest and highest vertex, and the point on their edge level with the third.
+    uint32_t low = points[0].y < points[1].y ? 0 : 1;
+    if (points[2].y <= points[low].y) {
+        low = 2;
+    }
+
+    uint32_t high = points[0].y <= points[1].y ? 1 : 0;
+    if (points[high].y <= points[2].y) {
+        high = 2;
+    }
+
+    uint32_t middle = 3 - high - low;
+
+    if (!(std::fabs(points[low].y - points[high].y) >= epsilon)) {
+        return 0;
+    }
+
+    float t = (points[middle].y - points[low].y) / (points[high].y - points[low].y);
+    float splitX = (points[high].x - points[low].x) * t + points[low].x;
+    C2Vector splitCoord = {
+        (coords[high].x - coords[low].x) * t + coords[low].x,
+        coords[low].y + (coords[high].y - coords[low].y) * t
+    };
+
+    float scale = 1.0f / (splitX - points[middle].x);
+
+    texMatrix.a0 = (splitCoord.x - coords[middle].x) * scale;
+    texMatrix.a1 = (splitCoord.y - coords[middle].y) * scale;
+    texMatrix.a2 = 0.0f;
+    texMatrix.a3 = 0.0f;
+
+    // Along x, the same with the roles swapped.
+    low = points[1].x <= points[0].x ? 1 : 0;
+    if (points[2].x <= points[low].x) {
+        low = 2;
+    }
+
+    high = points[0].x <= points[1].x ? 1 : 0;
+    if (points[high].x <= points[2].x) {
+        high = 2;
+    }
+
+    middle = 3 - high - low;
+
+    if (!(std::fabs(points[low].x - points[high].x) >= epsilon)) {
+        return 0;
+    }
+
+    t = (points[middle].x - points[low].x) / (points[high].x - points[low].x);
+    float splitY = points[low].y + (points[high].y - points[low].y) * t;
+    splitCoord = {
+        (coords[high].x - coords[low].x) * t + coords[low].x,
+        coords[low].y + (coords[high].y - coords[low].y) * t
+    };
+
+    scale = 1.0f / (splitY - points[middle].y);
+
+    texMatrix.b0 = (splitCoord.x - coords[middle].x) * scale;
+    texMatrix.b1 = (splitCoord.y - coords[middle].y) * scale;
+    texMatrix.b2 = 0.0f;
+    texMatrix.b3 = 0.0f;
+    texMatrix.c0 = 0.0f;
+    texMatrix.c1 = 0.0f;
+    texMatrix.c2 = 0.0f;
+    texMatrix.c3 = 0.0f;
+    texMatrix.d0 = (coords[0].x - texMatrix.a0 * points[0].x) - texMatrix.b0 * points[0].y;
+    texMatrix.d1 = (coords[0].y - texMatrix.a1 * points[0].x) - texMatrix.b1 * points[0].y;
+    texMatrix.d2 = 0.0f;
+    texMatrix.d3 = 1.0f;
+
+    return 1;
+}
+
+// ref: FUN_00829ba0
+// One shadow caster and the run merged with it, drawn as instances: the texture (for the alpha-
+// tested list), the instance chunks the shared buffers can hold, each chunk's bone matrices at c31
+// unless a single instance reuses the previous section's, and the geometry shaders when the bone
+// influence count changes.
+void CM2Model::DrawShadowCasterBatch(int32_t untextured, M2Batch* batch, M2ShadowCasterList* list, uint32_t first, M2SkinSection* section, M2SkinSection* prevSection) {
+    auto data = this->m_shared->m_data;
+
+    if (!untextured) {
+        uint16_t textureIndex = data->textureCombos[batch->textureComboIndex];
+
+        if (textureIndex >= data->textures.Count()) {
+            return;
+        }
+
+        auto texture = this->m_textures[textureIndex];
+
+        if (!texture) {
+            return;
+        }
+
+        auto gxTex = TextureGetGxTex(texture, 0, nullptr);
+
+        if (!gxTex) {
+            return;
+        }
+
+        GxRsSet(GxRs_Texture0, gxTex);
+    }
+
+    uint32_t total = list->data[first].mergeCount;
+    uint32_t chunk = this->m_shared->ReserveInstances(total);
+
+    if (chunk > total) {
+        chunk = total;
+    }
+
+    if (total > 1) {
+        this->m_shared->SetIndices();
+        this->m_shared->SetVertices(0);
+    }
+
+    CGxBatch gxBatch;
+    gxBatch.m_primType = GxPrim_Triangles;
+    gxBatch.m_start = section->indexStart;
+    gxBatch.m_minIndex = 0;
+
+    for (uint32_t done = 0; done < total; done += chunk) {
+        if (done + chunk > total) {
+            chunk = total - done;
+        }
+
+        if (total > 1 || !prevSection || section->boneComboIndex != prevSection->boneComboIndex) {
+            C4Vector* constants = reinterpret_cast<C4Vector*>(GxShaderConstantsLock(GxSh_Vertex)) + 31;
+            uint32_t bones = 0;
+
+            for (uint32_t i = 0; i < chunk; i++) {
+                CM2Model* instance = list->data[first + done + i].model;
+
+                for (uint32_t j = 0; j < section->boneCount; j++) {
+                    const C44Matrix& bone = instance->m_boneMatrices[data->boneCombos[section->boneComboIndex + j]];
+
+                    constants[0] = { bone.a0, bone.b0, bone.c0, bone.d0 };
+                    constants[1] = { bone.a1, bone.b1, bone.c1, bone.d1 };
+                    constants[2] = { bone.a2, bone.b2, bone.c2, bone.d2 };
+                    constants += 3;
+                    bones++;
+                }
+            }
+
+            GxShaderConstantsUnlock(GxSh_Vertex, 31, bones * 3);
+        }
+
+        if (!prevSection || section->boneInfluences != prevSection->boneInfluences) {
+            CShaderEffect::SetShadersForGeometry(section->boneInfluences);
+        }
+
+        gxBatch.m_count = section->indexCount * chunk;
+        gxBatch.m_maxIndex = this->m_shared->skinProfile->vertices.Count() * chunk - 1;
+
+        GxDraw(&gxBatch, 1);
+    }
+}
+
+// ref: FUN_00829e40
+// A shadow caster list, run by run: a new model binds its index and vertex buffers first when its
+// run is a single batch (a merged run binds its own in DrawShadowCasterBatch).
+void CM2Model::DrawShadowCasterList(int32_t untextured, M2ShadowCasterList* list) {
+    CM2Model* prevModel = nullptr;
+    M2SkinSection* prevSection = nullptr;
+
+    for (uint32_t i = 0; i < list->count;) {
+        auto& caster = list->data[i];
+        auto model = caster.model;
+        auto shared = model->m_shared;
+
+        if (model != prevModel) {
+            prevSection = nullptr;
+            prevModel = model;
+
+            if (caster.mergeCount == 1) {
+                int32_t bound = model->ptr2D0 ? model->SetIndices() : shared->SetIndices();
+
+                // On failure the reference goes round again, finds the same model, and draws.
+                if (!bound || !shared->SetVertices(0)) {
+                    continue;
+                }
+            }
+        }
+
+        M2Batch* batch;
+        M2SkinSection* section;
+
+        if (!model->ptr2D0) {
+            batch = &shared->skinProfile->batches[caster.batchIndex];
+            section = &shared->m_skinSections[batch->skinSectionIndex];
+        } else {
+            batch = &model->ptr2D0->batches[caster.batchIndex];
+            section = &model->ptr2D0->skinSections[batch->skinSectionIndex];
+        }
+
+        model->DrawShadowCasterBatch(untextured, batch, list, i, section, prevSection);
+
+        i += caster.mergeCount;
+        prevSection = section;
+    }
+}
+
+// ref: FUN_00829f40
+void M2PackBatchVerticesTwoCoords(CM2Model* model, const M2SkinSection* section, void* dst) {
+    auto data = model->m_shared->m_data;
+    auto bones = model->m_boneMatrices;
+    auto out = static_cast<float*>(dst);
+
+    // The blended matrix is rebuilt only when the weights or indices change from the previous
+    // vertex; it starts as the identity, which a vertex with all-zero weights and indices keeps.
+    C44Matrix blend;
+    uint32_t weights = 0;
+    uint32_t indices = 0;
+
+    const M2Vertex* vertex = &data->vertices[section->vertexStart];
+    const M2Vertex* end = vertex + section->vertexCount;
+
+    for (; vertex < end; vertex++) {
+        if (vertex->weights.u != weights || vertex->indices.u != indices) {
+            weights = vertex->weights.u;
+            indices = vertex->indices.u;
+
+            float w = vertex->weights.b[0] * (1.0f / 255.0f);
+            const C44Matrix& first = bones[vertex->indices.b[0]];
+
+            blend = C44Matrix();
+            blend.a0 = first.a0 * w; blend.a1 = first.a1 * w; blend.a2 = first.a2 * w;
+            blend.b0 = first.b0 * w; blend.b1 = first.b1 * w; blend.b2 = first.b2 * w;
+            blend.c0 = first.c0 * w; blend.c1 = first.c1 * w; blend.c2 = first.c2 * w;
+            blend.d0 = first.d0 * w; blend.d1 = first.d1 * w; blend.d2 = first.d2 * w;
+
+            for (uint32_t k = 1; k < 4 && vertex->weights.b[k]; k++) {
+                float wk = vertex->weights.b[k] * (1.0f / 255.0f);
+                const C44Matrix& bone = bones[vertex->indices.b[k]];
+
+                blend.a0 += bone.a0 * wk; blend.a1 += bone.a1 * wk; blend.a2 += bone.a2 * wk;
+                blend.b0 += bone.b0 * wk; blend.b1 += bone.b1 * wk; blend.b2 += bone.b2 * wk;
+                blend.c0 += bone.c0 * wk; blend.c1 += bone.c1 * wk; blend.c2 += bone.c2 * wk;
+                blend.d0 += bone.d0 * wk; blend.d1 += bone.d1 * wk; blend.d2 += bone.d2 * wk;
+            }
+        }
+
+        C3Vector position = vertex->position * blend;
+        const C3Vector& n = vertex->normal;
+
+        out[0] = position.x;
+        out[1] = position.y;
+        out[2] = position.z;
+        out[3] = blend.b0 * n.y + n.x * blend.a0 + n.z * blend.c0;
+        out[4] = blend.b1 * n.y + n.x * blend.a1 + n.z * blend.c1;
+        out[5] = blend.b2 * n.y + n.x * blend.a2 + n.z * blend.c2;
+        out[6] = vertex->texcoord[0].x;
+        out[7] = vertex->texcoord[0].y;
+        out[8] = vertex->texcoord[1].x;
+        out[9] = vertex->texcoord[1].y;
+        out += 10;
+    }
 }
 
 // Live as of 2026-10-02, with everything under it: CM2Scene::Animate groups the type-2 elements

@@ -88,6 +88,7 @@ class CShaderEffect : public TSHashObject<CShaderEffect, HASHKEY_STRI> {
         static void SetTexMtx(const C44Matrix& matrix, uint32_t tcIndex);
         static void SetTexMtx_Identity(uint32_t tcIndex);
         static void SetTexMtx_SphereMap(uint32_t tcIndex);
+        static void SetTexMtx_EyeSpace(uint32_t mode, const C44Matrix& matrix, uint32_t tcIndex);
         static void UpdateProjMatrix();
 
         // Member variables

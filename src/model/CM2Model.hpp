@@ -48,6 +48,10 @@ typedef void (*M2PackBatchVerticesFn)(CM2Model* model, const M2SkinSection* sect
 // reference keeps at 0x00d4118c, whose index is the skin section's boneInfluences field.
 M2PackBatchVerticesFn M2GetPackBatchVerticesFn(uint32_t boneInfluences);
 
+// A section's vertices blended on the CPU into 40-byte records: position, normal and both
+// authored texture coordinate sets.
+void M2PackBatchVerticesTwoCoords(CM2Model* model, const M2SkinSection* section, void* dst);
+
 
 // The two callbacks a model's owner may register on it. The sequence-done one fires when a bone's
 // animation is replaced or runs out; the anim-event one fires on an authored event key. Both carry
@@ -394,6 +398,9 @@ class CM2Model {
         // Collect this model's shadow-casting batches into the two lists, then recurse into
         // everything attached to it. ref: FUN_00834660
         void CollectShadowCasters(M2ShadowCasterList* lists);
+        static void DrawShadowCasterList(int32_t untextured, M2ShadowCasterList* list);
+        void DrawShadowCasterBatch(int32_t untextured, M2Batch* batch, M2ShadowCasterList* list, uint32_t first, M2SkinSection* section, M2SkinSection* prevSection);
+        int32_t ComputeProjection(M2SkinSection* section, CAaBox& bounds, C44Matrix& texMatrix);
         // ref: FUN_006f1d20
         // Animate, then matrixF4 carried through the scene's inverse view: this frame's placement
         // of the model in world space.

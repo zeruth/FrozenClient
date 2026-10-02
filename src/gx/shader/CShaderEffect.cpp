@@ -1,3 +1,4 @@
+#include <utility>
 #include "gx/shader/CShaderEffect.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
@@ -458,6 +459,42 @@ void CShaderEffect::SetTexMtx_SphereMap(uint32_t tcIndex) {
     }
 
     // TODO non-shader path
+}
+
+// ref: FUN_00873730
+// A texture matrix applied to the vertex's eye-space position. Without shaders the device generates
+// coordinates from the camera-space position (texgen state 1) through the stage's transform; with
+// them, the matrix is taken back to world space by the view's transposed rotation and negated
+// translation and uploaded as the stage's two rows. The first argument is not read.
+void CShaderEffect::SetTexMtx_EyeSpace(uint32_t mode, const C44Matrix& matrix, uint32_t tcIndex) {
+    (void)mode;
+
+    if (!CShaderEffect::s_enableShaders) {
+        GxRsSet(static_cast<EGxRenderState>(GxRs_Unk61 + tcIndex), 1);
+        GxXformSet(static_cast<EGxXform>(GxXform_Tex0 + tcIndex), matrix);
+        GxRsSet(static_cast<EGxRenderState>(GxRs_TexGen0 + tcIndex), 2);
+
+        return;
+    }
+
+    C44Matrix view;
+    GxXformView(view);
+
+    std::swap(view.a1, view.b0);
+    std::swap(view.a2, view.c0);
+    std::swap(view.b2, view.c1);
+    view.d0 *= -1.0f;
+    view.d1 *= -1.0f;
+    view.d2 *= -1.0f;
+
+    C44Matrix eye = view * matrix;
+
+    float constants[] = {
+        eye.a0, eye.b0, eye.c0, eye.d0,
+        eye.a1, eye.b1, eye.c1, eye.d1
+    };
+
+    GxShaderConstantsSet(GxSh_Vertex, 2 * tcIndex + 6, constants, 2);
 }
 
 void CShaderEffect::UpdateProjMatrix() {
