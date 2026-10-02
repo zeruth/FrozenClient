@@ -80,6 +80,11 @@ uint32_t CGxDeviceD3d::s_gxAttribToD3dAttribSize[] = {
     4,                      // type 6
 };
 
+// Reference 0x00a2e4e4: Gx query type to D3DQUERYTYPE. Only occlusion is defined.
+static D3DQUERYTYPE s_gxQueryToD3dQuery[] = {
+    D3DQUERYTYPE_OCCLUSION,
+};
+
 D3DDECLTYPE CGxDeviceD3d::s_gxAttribToD3dAttribType[] = {
     D3DDECLTYPE_D3DCOLOR,   // type 0
     D3DDECLTYPE_UBYTE4,     // type 1
@@ -1539,6 +1544,8 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
         this->m_d3dFrameQuery->Release();
         this->m_d3dFrameQuery = nullptr;
     }
+
+    this->IReleaseD3dQueries();
 
     // TODO
 
@@ -3983,5 +3990,138 @@ void CGxDeviceD3d::PoolDestroy(CGxPool* pool) {
         this->IPoolRelease(pool);
         pool->~CGxPool();
         SMemFree(pool, __FILE__, __LINE__, 0x0);
+    }
+}
+
+// ref: FUN_0068e9c0
+void CGxDeviceD3d::QueryCreate(CGxQuery*& query, uint32_t type) {
+    CGxDevice::QueryCreate(query, type);
+
+    if (!query->m_apiSpecific) {
+        LPDIRECT3DQUERY9 d3dQuery;
+
+        if (this->m_d3dDevice->CreateQuery(s_gxQueryToD3dQuery[query->m_type], &d3dQuery) == D3D_OK) {
+            query->m_apiSpecific = d3dQuery;
+        }
+    }
+}
+
+// ref: FUN_006a0190
+void CGxDeviceD3d::QueryDestroy(CGxQuery*& query) {
+    if (query->m_apiSpecific) {
+        static_cast<LPDIRECT3DQUERY9>(query->m_apiSpecific)->Release();
+    }
+
+    query->m_apiSpecific = nullptr;
+
+    CGxDevice::QueryDestroy(query);
+}
+
+// ref: FUN_0068ea10
+// A query whose object went with a reset is made again here.
+int32_t CGxDeviceD3d::QueryBegin(CGxQuery* query) {
+    if (!this->m_context) {
+        return 0;
+    }
+
+    if (!query->m_apiSpecific) {
+        LPDIRECT3DQUERY9 d3dQuery;
+
+        if (this->m_d3dDevice->CreateQuery(s_gxQueryToD3dQuery[query->m_type], &d3dQuery) == D3D_OK) {
+            query->m_apiSpecific = d3dQuery;
+        }
+
+        if (!query->m_apiSpecific) {
+            return 0;
+        }
+    }
+
+    HRESULT result = D3D_OK;
+
+    if (query->m_type == 0) {
+        result = static_cast<LPDIRECT3DQUERY9>(query->m_apiSpecific)->Issue(D3DISSUE_BEGIN);
+    }
+
+    return result == D3D_OK;
+}
+
+// ref: FUN_006a0240
+int32_t CGxDeviceD3d::QueryEnd(CGxQuery* query) {
+    if (!this->m_context || !query->m_apiSpecific) {
+        return 0;
+    }
+
+    HRESULT result = D3D_OK;
+
+    if (query->m_type == 0) {
+        result = static_cast<LPDIRECT3DQUERY9>(query->m_apiSpecific)->Issue(D3DISSUE_END);
+    }
+
+    return result == D3D_OK;
+}
+
+// ref: FUN_0068ea90
+// 0 asks for the size of the result; 1 asks whether it has arrived, without waiting.
+int32_t CGxDeviceD3d::QueryGetParam(CGxQuery* query, uint32_t which, uint32_t& value) {
+    if (!this->m_context) {
+        return 0;
+    }
+
+    if (!query->m_apiSpecific) {
+        LPDIRECT3DQUERY9 d3dQuery;
+
+        if (this->m_d3dDevice->CreateQuery(s_gxQueryToD3dQuery[query->m_type], &d3dQuery) == D3D_OK) {
+            query->m_apiSpecific = d3dQuery;
+        }
+
+        if (!query->m_apiSpecific) {
+            return 0;
+        }
+    }
+
+    auto d3dQuery = static_cast<LPDIRECT3DQUERY9>(query->m_apiSpecific);
+
+    if (which == 0) {
+        value = d3dQuery->GetDataSize();
+        return 1;
+    }
+
+    if (which == 1) {
+        value = d3dQuery->GetData(nullptr, 0, 0) == S_OK;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006a0310
+int32_t CGxDeviceD3d::QueryGetData(CGxQuery* query, void* data) {
+    if (!this->m_context) {
+        return 0;
+    }
+
+    auto d3dQuery = static_cast<LPDIRECT3DQUERY9>(query->m_apiSpecific);
+
+    if (!d3dQuery) {
+        return 0;
+    }
+
+    HRESULT result;
+
+    do {
+        result = d3dQuery->GetData(data, d3dQuery->GetDataSize(), D3DGETDATA_FLUSH);
+    } while (result == S_FALSE);
+
+    return result == S_OK;
+}
+
+// ref: FUN_006a1690
+// A reset destroys every query object; the queries themselves stay and re-create on next use.
+void CGxDeviceD3d::IReleaseD3dQueries() {
+    for (auto query = this->m_queryList.Head(); query; query = this->m_queryList.Next(query)) {
+        if (query->m_apiSpecific) {
+            static_cast<LPDIRECT3DQUERY9>(query->m_apiSpecific)->Release();
+        }
+
+        query->m_apiSpecific = nullptr;
     }
 }

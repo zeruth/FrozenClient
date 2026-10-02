@@ -390,6 +390,41 @@ void GxPrimVertexPtr(uint32_t vertexCount, const C3Vector* pos, uint32_t posStri
     GxPrimVertexPtr(buf, format);
 }
 
+// The primitive and index count the next GxPrimDrawLockedElements draws (reference 0x00c5df78,
+// 0x00c5df80).
+static EGxPrim s_lockPrimType;
+static uint32_t s_lockIndexCount;
+
+// ref: FUN_006823a0
+// Streams the indices and records what GxPrimDrawLockedElements is to draw; the reference's
+// callers always make the pair of calls.
+void GxPrimLockIndexPtr(EGxPrim primType, uint32_t indexCount, const uint16_t* indices) {
+    s_lockPrimType = primType;
+    s_lockIndexCount = indexCount;
+
+    auto buf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, indexCount);
+    g_theGxDevicePtr->BufData(buf, indices, buf->m_itemCount * buf->m_itemSize, 0);
+    buf->unk1C = 1;
+
+    g_theGxDevicePtr->PrimIndexPtr(buf);
+}
+
+// ref: FUN_00681a60
+void GxPrimDrawLockedElements() {
+    if (!Buffer::s_lockVertexCount) {
+        return;
+    }
+
+    CGxBatch batch;
+    batch.m_primType = s_lockPrimType;
+    batch.m_start = 0;
+    batch.m_count = s_lockIndexCount;
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = Buffer::s_lockVertexCount - 1;
+
+    g_theGxDevicePtr->Draw(&batch, 1);
+}
+
 // ref: FUN_006828c0
 // The bone pointer and stride are accepted and dropped, as in the reference.
 void GxPrimLockVertexPtrs(uint32_t vertexCount, const C3Vector* pos, uint32_t posStride, const C3Vector* normal, uint32_t normalStride, const CImVector* color, uint32_t colorStride, const uint8_t* bone, uint32_t boneStride, const C2Vector* tex0, uint32_t tex0Stride, const C2Vector* tex1, uint32_t tex1Stride) {

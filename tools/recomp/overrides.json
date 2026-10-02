@@ -3578,10 +3578,6 @@
     "status": "ported",
     "note": "Identified 2026-10-02: destroys the buffer list (FUN_005bd800) and unlinks the pool's list links; reached through the deleting destructor FUN_00688340 from the D3D PoolDestroy. Replaces the 2026-10-01 rejection of the order matcher's ShaderConstantsClear proposal."
   },
-  "006877c0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::ShaderConstantsLock` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this allocates a 0x10-byte node from CGxDevice.cpp line 0x99f, fills it and hands it out; nothing to do with locking constants. Re-link any of these only from a call site or a body."
-  },
   "00687820": {
     "frozen": "CGxDevice::ShaderDestroy",
     "status": "ported",
@@ -3606,10 +3602,6 @@
     "status": "faithful",
     "note": "Checked 2026-10-01 against the decompilation, condition for condition: needs an update and a context; create when creation is pending or there is no object; then, if an object exists, upload when there is a callback and clear the update. The branch gate reads 0.44 only because the reference compiles each || chain into separate compares."
   },
-  "006a1690": {
-    "status": "unlinked",
-    "note": "the callgraph matcher proposed `CGxDeviceD3d::ResetRsSendCaches` for this on 2026-10-01; it is not that. It walks a linked list headed at device +0x2930 and releases the COM object each node holds (node +0, next at +0xc); ResetRsSendCaches only resets cached state values. Called from IReleaseD3dResources (FUN_00690150) and the D3D9Ex equivalent; frozen has no such list yet."
-  },
   "0068fe80": {
     "status": "unlinked",
     "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the CGxDeviceD3d destructor: stores the vtable, frees the vertex-declaration cache at +0x3ad8, runs the base destructor (FUN_006890c0) and frees the object when asked. Frozen declares no destructor for the device."
@@ -3625,14 +3617,6 @@
   "00683810": {
     "status": "excluded",
     "note": "TSFixedArray<CGxStateBom>::SetCount (0x10-byte elements) instantiation, reached from the CGxDevice constructor; squall owns the template and frozen instantiates it inline. Identified 2026-10-02."
-  },
-  "00682f70": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::WinAdapterMonitorModes` for this on 2026-10-02; it is not that. It is the immediate-mode normal setter (vtable slot 47): stores a C3Vector at device +0x90 and raises bit 0x200 of the prim dirty mask at +0x160. Frozen has no immediate-mode prim API yet."
-  },
-  "00682fa0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::CGxDevice` for this on 2026-10-02; it is not that. It is the immediate-mode texcoord setter (vtable slot 46): stores a C2Vector at device +0x50 + 8n and raises bit 2<<n of the prim dirty mask. Frozen has no immediate-mode prim API yet."
   },
   "006a3720": {
     "status": "unlinked",

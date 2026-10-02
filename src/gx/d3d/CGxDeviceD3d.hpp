@@ -314,6 +314,13 @@ class CGxDeviceD3d : public CGxDevice {
     virtual int32_t DeviceCreate(void* window, const CGxFormat& format);
     virtual void DeviceDestroy();
     virtual void PoolDestroy(CGxPool* pool);
+    virtual void QueryCreate(CGxQuery*& query, uint32_t type);
+    virtual void QueryDestroy(CGxQuery*& query);
+    virtual int32_t QueryBegin(CGxQuery* query);
+    virtual int32_t QueryEnd(CGxQuery* query);
+    virtual int32_t QueryGetParam(CGxQuery* query, uint32_t which, uint32_t& value);
+    virtual int32_t QueryGetData(CGxQuery* query, void* data);
+    void IReleaseD3dQueries();
     virtual int32_t DeviceSetFormat(const CGxFormat& format);
     virtual void* DeviceWindow();
     virtual void DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2);

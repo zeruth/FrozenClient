@@ -1,4 +1,5 @@
 #include "gx/CGxDevice.hpp"
+#include "gx/Buffer.hpp"
 #include <cmath>
 #include <common/Time.hpp>
 #include "gx/CGxMonitorMode.hpp"
@@ -570,6 +571,109 @@ void CGxDevice::DeviceOverride(int32_t which, uint32_t value) {
         this->m_caps.m_pointScale = value > 1;
         this->m_caps.m_maxPointSize = static_cast<float>(value);
     }
+}
+
+// ref: FUN_006855c0
+void CGxDevice::PrimBegin(EGxPrim primType) {
+    this->m_primImmType = primType;
+    this->m_primImmActive = 1;
+    this->m_primImmDirty = 0;
+    this->m_primImmIndices.SetCount(0);
+    this->m_primImmPositions.SetCount(0);
+
+    for (uint32_t tmu = 0; tmu < static_cast<uint32_t>(this->m_caps.m_numTmus); tmu++) {
+        this->m_primImmTexCoords[tmu].SetCount(0);
+    }
+
+    this->m_primImmNormals.SetCount(0);
+    this->m_primImmColors.SetCount(0);
+}
+
+// ref: FUN_006845b0
+void CGxDevice::PrimEnd() {
+    this->m_primImmActive = 0;
+
+    if (!this->m_primImmPositions.Count()) {
+        return;
+    }
+
+    GxPrimLockVertexPtrs(this->m_primImmPositions.Count(), this->m_primImmPositions.Ptr(), sizeof(C3Vector),
+        this->m_primImmNormals.Ptr(), sizeof(C3Vector), this->m_primImmColors.Ptr(), sizeof(CImVector),
+        nullptr, 0, this->m_primImmTexCoords[0].Ptr(), sizeof(C2Vector), this->m_primImmTexCoords[1].Ptr(),
+        sizeof(C2Vector));
+
+    GxPrimLockIndexPtr(this->m_primImmType, this->m_primImmIndices.Count(), this->m_primImmIndices.Ptr());
+    GxPrimDrawLockedElements();
+}
+
+// ref: FUN_00685640
+// Appends the vertex with the current texcoords, normal and colour. A batch that has reached the
+// most primitives one 16-bit-indexed draw can carry is drawn and restarted, the dirty mask kept.
+void CGxDevice::PrimVertex(const C3Vector& position) {
+    this->m_primImmPosition = position;
+    this->m_primImmDirty |= 0x1;
+
+    *this->m_primImmIndices.New() = static_cast<uint16_t>(this->m_primImmPositions.Count());
+    *this->m_primImmPositions.New() = this->m_primImmPosition;
+
+    for (uint32_t tmu = 0; tmu < static_cast<uint32_t>(this->m_caps.m_numTmus); tmu++) {
+        *this->m_primImmTexCoords[tmu].New() = this->m_primImmTexCoord[tmu];
+    }
+
+    *this->m_primImmNormals.New() = this->m_primImmNormal;
+    *this->m_primImmColors.New() = this->m_primImmColor;
+
+    auto prim = this->m_primImmType;
+    uint32_t limit = CGxDevice::s_primVtxDiv[prim] == 1 ? 0x20000 : 0x20000 / CGxDevice::s_primVtxDiv[prim];
+
+    if (CGxDevice::PrimCalcCount(prim, this->m_primImmIndices.Count()) == limit - CGxDevice::s_primVtxAdjust[prim]) {
+        auto dirty = this->m_primImmDirty;
+        this->PrimEnd();
+        this->PrimBegin(this->m_primImmType);
+        this->m_primImmDirty = dirty;
+    }
+}
+
+// ref: FUN_00682fa0
+void CGxDevice::PrimTexCoord(uint32_t tmu, const C2Vector& texCoord) {
+    this->m_primImmTexCoord[tmu] = texCoord;
+    this->m_primImmDirty |= 2 << tmu;
+}
+
+// ref: FUN_00682f70
+void CGxDevice::PrimNormal(const C3Vector& normal) {
+    this->m_primImmNormal = normal;
+    this->m_primImmDirty |= 0x200;
+}
+
+// ref: FUN_00684590
+void CGxDevice::PrimColor(const CImVector& color) {
+    this->m_primImmColor = color;
+    this->m_primImmDirty |= 0x400;
+}
+
+// ref: FUN_006877c0
+void CGxDevice::QueryCreate(CGxQuery*& query, uint32_t type) {
+    auto m = SMemAlloc(sizeof(CGxQuery), __FILE__, __LINE__, 0x0);
+    query = m ? new (m) CGxQuery() : nullptr;
+
+    if (query) {
+        query->m_type = type;
+    }
+
+    this->m_queryList.LinkToTail(query);
+}
+
+// ref: FUN_006879f0
+void CGxDevice::QueryDestroy(CGxQuery*& query) {
+    query->m_link.Unlink();
+
+    if (query) {
+        query->~CGxQuery();
+        SMemFree(query, __FILE__, __LINE__, 0x0);
+    }
+
+    query = nullptr;
 }
 
 // ref: FUN_006843b0

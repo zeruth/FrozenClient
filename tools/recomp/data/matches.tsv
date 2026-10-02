@@ -2312,6 +2312,7 @@ addr	how	frozen	evidence
 00681890	override	CGxDevice::XformSetViewport	
 00681950	annotated	CGxFormat::CGxFormat	tag in src/gx/CGxFormat.cpp
 00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
+00681a60	annotated	GxPrimDrawLockedElements	tag in src/gx/Buffer.cpp
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
@@ -2319,6 +2320,7 @@ addr	how	frozen	evidence
 00681f60	override	GxXformSetViewport	
 00682130	annotated	GxXformViewProj	tag in src/gx/Transform.cpp
 00682340	annotated	GxDrawLockedElements	tag in src/gx/Draw.cpp
+006823a0	annotated	GxPrimLockIndexPtr	tag in src/gx/Buffer.cpp
 00682400	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 006828c0	annotated	GxPrimLockVertexPtrs	tag in src/gx/Buffer.cpp
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
@@ -2340,6 +2342,8 @@ addr	how	frozen	evidence
 00682ee0	annotated	CGxDevice::PrimVertexPtr	tag in src/gx/CGxDevice.cpp
 00682f10	annotated	CGxDevice::PrimIndexPtr	tag in src/gx/CGxDevice.cpp
 00682f40	annotated	CGxDevice::PrimCalcCount	tag in src/gx/CGxDevice.cpp
+00682f70	annotated	CGxDevice::PrimNormal	tag in src/gx/CGxDevice.cpp
+00682fa0	annotated	CGxDevice::PrimTexCoord	tag in src/gx/CGxDevice.cpp
 00682fd0	annotated	CGxDevice::LightGet	tag in src/gx/CGxDevice.cpp
 00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2365,6 +2369,8 @@ addr	how	frozen	evidence
 00684410	annotated	CGxDevice::ICallbacks2	tag in src/gx/CGxDevice.cpp
 00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
 006844c0	annotated	CGxDevice::PrimVertexFormat	tag in src/gx/CGxDevice.cpp
+00684590	annotated	CGxDevice::PrimColor	tag in src/gx/CGxDevice.cpp
+006845b0	annotated	CGxDevice::PrimEnd	tag in src/gx/CGxDevice.cpp
 00684620	annotated	CGxLightState::Set	tag in src/gx/CGxDevice.cpp
 006847d0	annotated	CGxDevice::LightSet	tag in src/gx/CGxDevice.cpp
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
@@ -2383,6 +2389,8 @@ addr	how	frozen	evidence
 00685480	annotated	CGxDevice::CallbackRemoveTexturesLost	tag in src/gx/CGxDevice.cpp
 00685510	annotated	CGxDevice::CallbackAdd2	tag in src/gx/CGxDevice.cpp
 00685530	annotated	CGxDevice::CallbackRemove2	tag in src/gx/CGxDevice.cpp
+006855c0	annotated	CGxDevice::PrimBegin	tag in src/gx/CGxDevice.cpp
+00685640	annotated	CGxDevice::PrimVertex	tag in src/gx/CGxDevice.cpp
 00685970	override	CGxDevice::IRsDirty	
 006859e0	override	CGxDevice::IRsForceUpdate	
 00685a70	override	CGxDevice::IRsForceUpdate	
@@ -2400,10 +2408,12 @@ addr	how	frozen	evidence
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687740	override	CGxPool::~CGxPool	
+006877c0	annotated	CGxDevice::QueryCreate	tag in src/gx/CGxDevice.cpp
 00687820	override	CGxDevice::ShaderDestroy	
 00687900	annotated	CGxDevice::DeviceCreateStreamBufs	tag in src/gx/CGxDevice.cpp
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00687980	annotated	CGxDevice::TexDestroy	tag in src/gx/CGxDevice.cpp
+006879f0	annotated	CGxDevice::QueryDestroy	tag in src/gx/CGxDevice.cpp
 00688230	annotated	CGxPool::Invalidate	tag in src/gx/buffer/CGxPool.cpp
 00688260	annotated	CGxPool::Discard	tag in src/gx/buffer/CGxPool.cpp
 00688290	override	CGxDevice::BufDestroy	
@@ -2417,6 +2427,9 @@ addr	how	frozen	evidence
 0068e250	annotated	CGxDeviceD3d::ISetPresentParms	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e4c0	annotated	CGxDeviceD3d::DeviceSetGamma	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e720	annotated	CGxDeviceD3d::PoolDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e9c0	annotated	CGxDeviceD3d::QueryCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068ea10	annotated	CGxDeviceD3d::QueryBegin	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068ea90	annotated	CGxDeviceD3d::QueryGetParam	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068eb20	annotated	WindowClassCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ebb0	annotated	CGxDeviceD3d::ICreateWindow	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
@@ -2445,6 +2458,10 @@ addr	how	frozen	evidence
 0069fe80	annotated	CGxDeviceD3d::DeviceSetGammaRamp	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069ff40	annotated	CGxDeviceD3d::DeviceOverride	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069ff80	annotated	CGxDeviceD3d::PoolSizeSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a0190	annotated	CGxDeviceD3d::QueryDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a0240	annotated	CGxDeviceD3d::QueryEnd	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a0310	annotated	CGxDeviceD3d::QueryGetData	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a1690	annotated	CGxDeviceD3d::IReleaseD3dQueries	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a1c60	annotated	CGxDeviceD3d::IReleaseD3dPools	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2aa0	annotated	CGxDeviceD3d::IReleaseD3dTextures	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2bb0	annotated	CGxDeviceD3d::TexDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp

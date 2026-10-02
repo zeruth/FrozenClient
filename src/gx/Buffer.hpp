@@ -47,6 +47,10 @@ void GxPoolDestroy(CGxPool*);
 
 void GxBufDestroy(CGxBuf*&);
 
+void GxPrimLockIndexPtr(EGxPrim primType, uint32_t indexCount, const uint16_t* indices);
+
+void GxPrimDrawLockedElements();
+
 void GxPrimIndexPtr(CGxBuf*);
 
 void GxPrimIndexPtr(uint32_t indexCount, const uint16_t* indices);

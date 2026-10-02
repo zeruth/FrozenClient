@@ -43,6 +43,14 @@ struct CGxGammaRamp {
 
 typedef void (*GXDEVICECALLBACK)();
 
+// A GPU query, 0x10 bytes in the reference: the backend's object, the query type (0 is occlusion),
+// and the device-list link.
+struct CGxQuery {
+    void* m_apiSpecific = nullptr;
+    uint32_t m_type = 0;
+    TSLink<CGxQuery> m_link;
+};
+
 struct CGxAppRenderState {
     CGxStateBom m_value;
     uint32_t m_stackDepth;
@@ -187,6 +195,20 @@ class CGxDevice {
 #endif
 
         // Member variables
+        // The immediate-mode primitive (reference +0x34..+0x160): PrimBegin, then a PrimVertex per
+        // vertex, each one appending the current texcoords, normal and colour; PrimEnd draws it.
+        EGxPrim m_primImmType = GxPrim_Points;
+        int32_t m_primImmActive = 0;
+        C3Vector m_primImmPosition;
+        C2Vector m_primImmTexCoord[8];
+        C3Vector m_primImmNormal;
+        CImVector m_primImmColor;
+        TSGrowableArray<C3Vector> m_primImmPositions;
+        TSGrowableArray<C2Vector> m_primImmTexCoords[8];
+        TSGrowableArray<C3Vector> m_primImmNormals;
+        TSGrowableArray<CImVector> m_primImmColors;
+        TSGrowableArray<uint16_t> m_primImmIndices;
+        uint32_t m_primImmDirty = 0;
         TSGrowableArray<CGxPushedRenderState> m_pushedStates;
         TSGrowableArray<size_t> m_stackOffsets;
         TSGrowableArray<EGxRenderState> m_dirtyStates;
@@ -238,6 +260,8 @@ class CGxDevice {
         TSList<CGxPool, TSGetLink<CGxPool>> m_poolList;
         // Reference +0x2904: every live texture, newest first.
         STORM_EXPLICIT_LIST(CGxTex, m_link) m_texList;
+        // Reference +0x2928: every live query, oldest first.
+        STORM_EXPLICIT_LIST(CGxQuery, m_link) m_queryList;
         CGxBuf* m_bufLocked[GxPoolTargets_Last] = {};
         CGxBufScratch m_bufScratch[GxPoolTargets_Last];
         CGxPool* m_vertexPool = nullptr;
@@ -334,6 +358,18 @@ class CGxDevice {
         virtual void CallbackAdd2(GXDEVICECALLBACK callback);
         virtual void CallbackRemove2(GXDEVICECALLBACK callback);
         void DeviceDesktopGammaRamp(CGxGammaRamp& ramp);
+        virtual void PrimBegin(EGxPrim primType);
+        virtual void PrimEnd();
+        virtual void PrimVertex(const C3Vector& position);
+        virtual void PrimTexCoord(uint32_t tmu, const C2Vector& texCoord);
+        virtual void PrimNormal(const C3Vector& normal);
+        virtual void PrimColor(const CImVector& color);
+        virtual void QueryCreate(CGxQuery*& query, uint32_t type);
+        virtual void QueryDestroy(CGxQuery*& query);
+        virtual int32_t QueryBegin(CGxQuery* query) { return 0; };
+        virtual int32_t QueryEnd(CGxQuery* query) { return 0; };
+        virtual int32_t QueryGetParam(CGxQuery* query, uint32_t which, uint32_t& value) { return 0; };
+        virtual int32_t QueryGetData(CGxQuery* query, void* data) { return 0; };
         virtual void ShaderConstantsSet(EGxShTarget, uint32_t, const float*, uint32_t);
         virtual void IShaderCreate(CGxShader*) = 0;
         virtual int32_t StereoEnabled(void) = 0;
