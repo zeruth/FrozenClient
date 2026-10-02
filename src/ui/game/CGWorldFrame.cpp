@@ -225,7 +225,13 @@ void CGWorldFrame::OnWorldRender() {
     // restored afterwards.
     float savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ;
     GxXformViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
-    GxXformSetViewport(this->m_viewport.minX, this->m_viewport.maxX, this->m_viewport.minY, this->m_viewport.maxY, 0.0f, 1.0f);
+    //
+    // The depth range is the saved minimum to 0.94 (DAT_00adeee4, pushed at 0x004f9019), not the
+    // whole buffer: everything past 0.94 is held for what draws behind the world -- the
+    // low-detail horizon at [0.998, 0.999] and the sky at [0.999, 1.0]. With the world on [0, 1]
+    // its far terrain wrote depth above 0.998 and the horizon's mesh won the test against it,
+    // drawing a fog-coloured ring along the ground at the far clip.
+    GxXformSetViewport(this->m_viewport.minX, this->m_viewport.maxX, this->m_viewport.minY, this->m_viewport.maxY, savedMinZ, 0.94f);
 
     // The reference brackets the whole world render in a render-state push and turns multisampling
     // on inside it: `calll 0x409670` (GxRsPush) then `push $0x1; push $0x13; calll 0x408bf0`
@@ -611,6 +617,14 @@ void CGWorldFrame::OnWorldUpdate() {
                 // The map's entity for the object follows it (the reference does this from the
                 // object's own movement update; this loop is where frozen places objects).
                 object->UpdateWorldObject(0);
+
+                // The entity's light eases toward what its placement found. The reference makes
+                // this call from the unit and game object per-frame updates (FUN_00734390 at
+                // 0x0073452f, FUN_0070d040 at 0x0070d065), both reached from this same visible-
+                // object walk (FUN_004f6970) and neither ported yet, so frozen makes it here.
+                if (object->m_worldObject && (object->IsA(TYPE_UNIT) || object->IsA(TYPE_GAMEOBJECT))) {
+                    CWorld::UpdateObjectLighting(object->m_worldObject);
+                }
 
                 // A world model is drawn when it is animating, visible, and flagged for draw,
                 // the same set the character preview uses; the animate list is drained each frame

@@ -923,7 +923,9 @@ float CWorld::GetTickTimeSec() {
 uint32_t CWorld::s_maxLod = 3;
 uint32_t CWorld::s_waterRipples;
 uint32_t CWorld::s_detailDoodadAlpha = 0x80;
-float CWorld::s_characterAmbient;
+// DAT_00adeebc, 1.0 in the image: characters take the plain ambient until a zone or the console
+// says otherwise. Left at zero it blacked out every character.
+float CWorld::s_characterAmbient = 1.0f;
 uint32_t CWorld::s_characterAmbientActive;
 uint32_t CWorld::s_showSimpleDoodads;
 
@@ -1472,7 +1474,36 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
 
     CWorld::s_weather->Update();
 
-    // TODO the zone light blend at the end
+    // The characters' ambient multiplier follows the zone the player stands in (0x007833fa ..
+    // 0x007834df): AreaTable's ambient multiplier m, taken from the parent zone unless the area
+    // carries flag 0x2000, gives a target of 2m + 1, eased toward at the frame's tick and snapped
+    // within a hundredth or after a second. The console's characterAmbient holds it while active.
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+    if (player && !CWorld::s_characterAmbientActive && player->m_worldObject) {
+        uint32_t areaID = 0;
+        CWorld::GetEntityAreaID(reinterpret_cast<CMapStaticEntity*>(player->m_worldObject), &areaID);
+
+        auto area = g_areaTableDB.GetRecord(areaID);
+
+        if (area && !(area->m_flags & 0x2000) && area->m_parentAreaID) {
+            area = g_areaTableDB.GetRecord(area->m_parentAreaID);
+        }
+
+        if (area) {
+            float target = area->m_ambientMultiplier * 2.0f + 1.0f;
+            float delta = target - CWorld::s_characterAmbient;
+            float dt = CWorld::s_tickTimeSec;
+
+            if (std::fabs(delta) < 0.01f || dt >= 1.0f) {
+                CWorld::s_characterAmbient = target;
+            } else {
+                CWorld::s_characterAmbient += delta * dt;
+            }
+        }
+    }
+
+    // TODO the scene's +0x140 from DAT_00cd8794, which follows at 0x007834e5
 }
 
 // ref: FUN_0077f030
@@ -1811,6 +1842,11 @@ void CWorld::RenderParticulates() {
     if ((CWorld::s_enables & CWorld::Enable_Particulates) && CWorldScene::s_cameraLiquidType != 0) {
         CWorld::s_particulates->Render();
     }
+}
+
+// ref: FUN_0077f2e0
+void CWorld::UpdateObjectLighting(HWORLDOBJECT object) {
+    CMap::UpdateEntityLighting(reinterpret_cast<CMapEntity*>(object));
 }
 
 // ref: FUN_0077f9a0

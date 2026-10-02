@@ -2,6 +2,9 @@
 #include "world/CWFrustum.hpp"
 #include "world/WorldFacets.hpp"
 #include "world/map/CMapChunk.hpp"
+#include "world/map/CMapLight.hpp"
+#include "world/DayNightLight.hpp"
+#include "model/CM2Lighting.hpp"
 #include <tempest/Intersect.hpp>
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
@@ -48,6 +51,22 @@ static const uint32_t NO_VERTEX_COLOR = 0xFF7FFFFF;       // the float -3.396151
 CMapChunk::CMapChunk() {
     this->m_type |= CMapBaseObj::Type_Chunk;
     this->m_flags |= 0x1;
+}
+
+// ref: FUN_007c3db0
+// Slot 1 of the chunk's vtable (0x00a40388). Until 2026-10-02 frozen had no override, so the
+// grass took only the scene's lights -- the sun -- and drew dark on its shaded side.
+void CMapChunk::SelectLights(CM2Lighting* lighting) {
+    lighting->AddLight(&CMap::s_outdoorLight->m_light);
+
+    if (this->m_sortDistance < CWorld::s_frameFogEnd && (this->m_flags & 0x1)) {
+        this->m_flags &= ~0x1u;
+    }
+
+    auto block = DayNightGetBlock();
+    const float k = 1.0f / 255.0f;
+    C3Vector color = { block->fogColor.r * k, block->fogColor.g * k, block->fogColor.b * k };
+    lighting->SetFog(color, block->fogStart, block->fogEnd, block->fogRate);
 }
 
 // ref: FUN_007c5e50

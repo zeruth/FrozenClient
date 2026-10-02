@@ -2843,6 +2843,79 @@ void CMap::UpdateEntityGroupLiquid(CMapEntity* entity) {
     entity->m_fieldBC = static_cast<uint16_t>(liquidType);
 }
 
+// ref: FUN_007a1e90
+// The current light lives at +0x84 (m_ambient) and +0x8c (m_opacity, which SelectLights scales
+// the diffuse by); UpdateEntity only ever writes the targets at +0xc0 and +0xc4. Without this
+// a unit kept the ambient it was created with -- zero when it spawned before the first day/night
+// update -- and drew black but for the sun's side.
+void CMap::UpdateEntityLighting(CMapEntity* entity) {
+    int32_t step = static_cast<int32_t>(CWorld::GetTickTimeSec() * 2.0f * 255.0f);
+
+    if (step < 1) {
+        step = 1;
+    }
+
+    bool changed = false;
+
+    auto approach = [step, &changed](uint8_t current, uint8_t target) -> uint8_t {
+        if (current == target) {
+            return current;
+        }
+
+        changed = true;
+
+        int32_t value = target < current ? current - step : current + step;
+
+        if (target < current ? value < target : target < value) {
+            value = target;
+        }
+
+        return static_cast<uint8_t>(value);
+    };
+
+    uint8_t r = approach(entity->m_ambient.r, entity->m_ambientTarget.r);
+    uint8_t g = approach(entity->m_ambient.g, entity->m_ambientTarget.g);
+    uint8_t b = approach(entity->m_ambient.b, entity->m_ambientTarget.b);
+
+    entity->m_ambient.r = r;
+    entity->m_ambient.g = g;
+    entity->m_ambient.b = b;
+
+    // At rest and not on a building floor: the frame's ambient, straight.
+    if (!(entity->m_flags7c & 0x1) && !changed) {
+        entity->m_ambient = DayNightGetBlock()->ambient;
+        entity->m_ambientTarget = entity->m_ambient;
+    }
+
+    float delta = entity->m_opacity - entity->m_dirLightScaleTarget;
+
+    if (delta != 0.0f) {
+        float rate = CWorld::GetTickTimeSec() * 3.3333333f;
+
+        if (0.0f <= delta) {
+            entity->m_opacity -= rate;
+
+            if (entity->m_opacity < entity->m_dirLightScaleTarget) {
+                entity->m_opacity = entity->m_dirLightScaleTarget;
+            }
+        } else {
+            entity->m_opacity += rate;
+
+            if (entity->m_dirLightScaleTarget < entity->m_opacity) {
+                entity->m_opacity = entity->m_dirLightScaleTarget;
+            }
+        }
+    }
+
+    if (1.0f < entity->m_opacity) {
+        entity->m_opacity = 1.0f;
+    }
+
+    if (!entity->m_parentLinkList.Head()) {
+        CMap::UpdateEntity(entity);
+    }
+}
+
 // ref: FUN_007a1bc0
 // The ambient an outdoor entity eases toward is the outdoor light's (the day/night block's sun at
 // DAT_00ce04a8 + 0x58, whose ambient colour is +0x88); it is dimmed to half in the terrain's baked

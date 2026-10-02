@@ -1770,7 +1770,11 @@ void CGCamera::MouseLook(float deltaX, float deltaY, float* pitchOut) {
     }
 
 adjust:
-    bool apply = tracking;
+    // The pitch is held back in one case only: a tracked offset that has come back to zero or
+    // below while the camera looks down. Every other look -- an untracked one above all --
+    // turns the pitch. (0x006022ce .. 0x00602343; this used to apply only while tracking, which
+    // left ordinary mouse look with no vertical at all.)
+    bool apply = true;
 
     if (tracking) {
         float offset = pitchSign * pitch + this->m_pitchOffset;
@@ -1782,7 +1786,7 @@ adjust:
             this->m_pitchOffset = limit;
         }
 
-        apply = 0.0f < this->m_pitchOffset;
+        apply = 0.0f < this->m_pitchOffset || 0.0f <= this->m_pitch;
     }
 
     if (!apply) {

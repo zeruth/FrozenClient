@@ -144,6 +144,8 @@ class CWorld {
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
         static void RemoveObject(HWORLDOBJECT object);
+        // ref: FUN_0077f2e0
+        static void UpdateObjectLighting(HWORLDOBJECT object);
         // The day/night step of the frame: the light, the sky's inputs, the fog, the sun's light.
         static void UpdateDayNight(int32_t force, const C3Vector* cameraPos);
         static void PublishDayNight();

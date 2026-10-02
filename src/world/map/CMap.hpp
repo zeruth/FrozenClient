@@ -365,6 +365,11 @@ class CMap {
         // An entity that moved: relinked where it now stands, its liquid and the liquid's kind,
         // and the light it should ease toward. ref: FUN_007a1bc0
         static void UpdateEntity(CMapEntity* entity);
+        // Once a frame per visible unit and game object: move its ambient a step toward the
+        // target its placement left (a full swing in half a second), and its directional
+        // light scale the same way; at rest outdoors, take the frame's ambient straight. Then
+        // place it if it is in no chunk yet. ref: FUN_007a1e90
+        static void UpdateEntityLighting(CMapEntity* entity);
         // The liquid at a point: a building's first, the terrain's otherwise. ref: FUN_007a0b00
         static bool GetLiquidAt(const C3Vector& point, uint32_t* liquidType, float* height, int32_t* unused, int32_t flag);
         // The liquid inside the buildings at a point. ref: FUN_007a09d0
