@@ -4138,6 +4138,19 @@ int32_t CM2Model::InitializeLoaded() {
                     static_cast<CM2ParticleEmitterSpline*>(emitter)
                         ->SetSplinePoints(&file.spline[0], file.spline.Count());
                 }
+
+                // Emitters whose particles are models: the model each particle is, and the model
+                // whose emitters this one adopts as children (0x008340f7, 0x0083410f). Then the
+                // colour, alpha and scale tracks are baked into a ramp when they allow it.
+                if (file.geometryMdl.Count() && file.geometryMdl[0]) {
+                    emitter->SetGeometryModel(this->m_scene, &file.geometryMdl[0]);
+                }
+
+                if (file.recursionMdl.Count() && file.recursionMdl[0]) {
+                    emitter->SetRecursionModel(this->m_scene, &file.recursionMdl[0]);
+                }
+
+                emitter->PrecompileRamp();
             }
 
             // Every record starts VISIBLE: the reference writes 1 to the state's +0x80 -- the
