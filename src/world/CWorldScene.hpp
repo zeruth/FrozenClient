@@ -322,6 +322,10 @@ class CWorldScene {
         // (or flagged to), and their handlers hear about it (event bits 4 = not reached, 2 = close).
         // ref: FUN_00793450
         static void FinishHiddenEntities();
+        // Indoors, after the portal traversal: each candidate group that touches a group already
+        // seen (or every candidate, once the portal window has a depth) is visited under the
+        // window's frustum, with its doodads and its entities. ref: FUN_00799f80
+        static void VisitCandidateGroups(const ViewWindow* window);
         // A group's doodads: ones with no model yet stand in as occluder boxes; the rest are
         // animated when near and drawn when a frustum of the group holds them. ref: FUN_00799b70
         static void VisitGroupDoodads(CMapBaseObjRefList* doodads, CWFrustum* frustums, uint32_t band, int32_t interior);

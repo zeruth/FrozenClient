@@ -1849,9 +1849,9 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
             CWorldScene::Traverse(&CWorldScene::s_portalWindow, 1);
         }
 
-        // TODO FUN_00799f80(&{0, 0, 1, 1}): a second map-object-def pass the reference runs after
-        // both arms, over a frustum stack indexed by its own depth counter, through
-        // CWorldScene::VisitMapObjDefGroup. 467 bytes, and it needs FUN_00793270 and FUN_00799b70.
+        // The candidate groups the portal walk did not reach, through the whole screen.
+        CWorldScene::ViewWindow wholeScreen = { 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, nullptr, 0 };
+        CWorldScene::VisitCandidateGroups(&wholeScreen);
     }
 
     CWorldScene::VisitVisibleGroupContents();

@@ -3295,3 +3295,49 @@ void CWorldScene::FinishHiddenEntities() {
         }
     }
 }
+
+// ref: FUN_00799f80
+void CWorldScene::VisitCandidateGroups(const ViewWindow* window) {
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] = CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+    CWorldScene::SubFrustum(CWorldScene::s_frustumCorners, window);
+
+    for (auto defGroup = CWorldScene::s_mapObjDefGroupCandidates.Head(); defGroup; ) {
+        auto next = CWorldScene::s_mapObjDefGroupCandidates.Next(defGroup);
+
+        defGroup->m_rowLink.Unlink();
+
+        bool touches = false;
+
+        for (auto seen = CWorldScene::s_visibleMapObjGroups.Head(); seen; seen = CWorldScene::s_visibleMapObjGroups.Next(seen)) {
+            const CAaBox& a = defGroup->m_bounds;
+            const CAaBox& b = seen->m_bounds;
+
+            if (a.b.x <= b.t.x && a.b.y <= b.t.y && a.b.z <= b.t.z
+                && b.b.x <= a.t.x && b.b.y <= a.t.y && b.b.z <= a.t.z) {
+                touches = true;
+                break;
+            }
+        }
+
+        if ((touches || 0.0f <= CWorldScene::s_portalWindow.depth)
+            && AaBoxVsPlanes6(CWorldScene::s_frustums[CWorldScene::s_frustumDepth].planes, defGroup->m_bounds)) {
+            auto parent = defGroup->m_parentLinkList.Head();
+            auto def = parent ? static_cast<CMapObjDef*>(parent->ref) : nullptr;
+
+            if (def) {
+                CWorldScene::VisitMapObjDefGroup(def, defGroup, window, 1);
+            }
+
+            uint32_t band = static_cast<uint32_t>(CWorldScene::DistanceBand(defGroup->m_sortDistance));
+            int32_t interior = (defGroup->m_flags & 0x8000) != 0;
+
+            CWorldScene::VisitGroupDoodads(&defGroup->m_doodadDefLinkList, defGroup->m_frustums.Head(), band, interior);
+            CWorldScene::VisitGroupEntities(&defGroup->m_entityLinkList, defGroup->m_frustums.Head(), 1, interior);
+        }
+
+        defGroup = next;
+    }
+
+    CWorldScene::s_frustumDepth--;
+}
