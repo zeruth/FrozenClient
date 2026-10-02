@@ -2466,7 +2466,7 @@ addr	how	frozen	evidence
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
-00687740	annotated	CGxPool::~CGxPool	tag in src/gx/buffer/CGxPool.cpp
+00687740	override	CGxPool::~CGxPool	
 006877c0	annotated	CGxDevice::QueryCreate	tag in src/gx/CGxDevice.cpp
 00687820	override	CGxDevice::ShaderDestroy	
 00687900	annotated	CGxDevice::DeviceCreateStreamBufs	tag in src/gx/CGxDevice.cpp
@@ -2476,7 +2476,7 @@ addr	how	frozen	evidence
 00687a90	annotated	CGxDevice::ICursorDraw	tag in src/gx/CGxDevice.cpp
 00688230	annotated	CGxPool::Invalidate	tag in src/gx/buffer/CGxPool.cpp
 00688260	annotated	CGxPool::Discard	tag in src/gx/buffer/CGxPool.cpp
-00688290	annotated	CGxDevice::BufDestroy	tag in src/gx/CGxDevice.cpp
+00688290	override	CGxDevice::BufDestroy	
 00688690	annotated	CGxDevice::CGxDevice	tag in src/gx/CGxDevice.cpp
 00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
 006890c0	annotated	CGxDevice::~CGxDevice	tag in src/gx/CGxDevice.cpp
@@ -2576,6 +2576,7 @@ addr	how	frozen	evidence
 006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
 006a5680	annotated	CGxDeviceD3d::IReleaseD3dVertexDecls	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
+006a5940	override	CGxDeviceD3d::IStateSync	
 006a5a00	annotated	CGxDeviceD3d::CapsWindowSize	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5a30	annotated	CGxDeviceD3d::IStateSyncWorldXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5aa0	annotated	CGxDeviceD3d::IStateSyncTexXform	tag in src/gx/d3d/CGxDeviceD3d.cpp

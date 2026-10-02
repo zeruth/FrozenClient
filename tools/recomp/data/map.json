@@ -39009,7 +39009,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 163,
-  "status": "ported"
+  "status": "faithful"
  },
  "006853b0": {
   "branchRatio": 1.0,
@@ -39025,7 +39025,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 22,
-  "status": "ported"
+  "status": "faithful"
  },
  "006853d0": {
   "branchRatio": 0.286,
@@ -39057,7 +39057,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 22,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685480": {
   "branchRatio": 0.286,
@@ -39089,7 +39089,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 22,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685530": {
   "branchRatio": 0.286,
@@ -39403,7 +39403,7 @@
   ],
   "frozen": "CGxPool::~CGxPool",
   "frozenSize": 0,
-  "how": "annotated",
+  "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 125,
   "status": "faithful"
@@ -39563,7 +39563,7 @@
   ],
   "frozen": "CGxDevice::BufDestroy",
   "frozenSize": 85,
-  "how": "annotated",
+  "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 172,
   "status": "faithful"
@@ -39950,7 +39950,7 @@
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 136,
-  "status": "ported"
+  "status": "faithful"
  },
  "0068ebb0": {
   "branchRatio": 0.611,
@@ -40206,7 +40206,7 @@
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 72,
-  "status": "ported"
+  "status": "faithful"
  },
  "0068fed0": {
   "branchRatio": 0.882,
@@ -40444,7 +40444,7 @@
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 72,
-  "status": "ported"
+  "status": "faithful"
  },
  "0069fe10": {
   "branchRatio": 1.0,
@@ -40508,7 +40508,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 77,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a00c0": {
   "branchRatio": 1.0,
@@ -40785,8 +40785,8 @@
  "006a3620": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -41150,6 +41150,22 @@
   "refSize": 557,
   "status": "ported"
  },
+ "006a5940": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::IStateSync",
+  "frozenSize": 1331,
+  "how": "override",
+  "module": "CGxD3d9ExDevice.cpp",
+  "refSize": 181,
+  "status": "faithful"
+ },
  "006a5a00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -41244,7 +41260,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 38,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a5e40": {
   "branchRatio": 0.333,
