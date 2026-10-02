@@ -65,12 +65,12 @@ int32_t GxMasterEnable(EGxMasterEnables state) {
     return g_theGxDevicePtr->MasterEnable(state);
 }
 
-int32_t GxScreenShot(const char* path) {
-    if (!g_theGxDevicePtr) {
-        return 0;
-    }
+void GxCaptureRequest() {
+    g_theGxDevicePtr->CaptureRequest();
+}
 
-    return g_theGxDevicePtr->ScreenShot(path);
+void GxCaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits) {
+    g_theGxDevicePtr->CaptureGet(width, height, bits);
 }
 
 static char s_screenshotFormat[16] = "jpeg";

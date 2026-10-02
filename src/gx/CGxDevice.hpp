@@ -255,6 +255,11 @@ class CGxDevice {
         // ScenePresent reads it just before calling the base, and the base clears it. What the
         // backends do with it has not been read, and nothing in frozen sets it yet.
         int32_t int2934 = 0;
+        // Reference +0x2938..+0x294c: the frame captured on the present after a CaptureRequest,
+        // 32 bits a pixel.
+        uint32_t m_captureWidth = 0;
+        uint32_t m_captureHeight = 0;
+        TSGrowableArray<uint32_t> m_captureBits;
         uint32_t m_appMasterEnables = 0;
         uint32_t m_hwMasterEnables = 0;
         TSList<CGxPool, TSGetLink<CGxPool>> m_poolList;
@@ -303,13 +308,10 @@ class CGxDevice {
         // Virtual member functions
         virtual void ITexMarkAsUpdated(CGxTex*) = 0;
         // Bind the slot's texture as the device's colour/depth target; null restores the default.
-        virtual void IRenderTargetSet(EGxBuffer, CGxTex*, uint32_t) {}
 
         // Debug only: read a render target back and write it to a file. There is no equivalent in
         // the reference, which had a debugger attached instead; frozen needs it because a shadow map
         // that is never sampled correctly is indistinguishable from one that was never drawn.
-        virtual int32_t IRenderTargetDump(CGxTex*, const char*) { return 0; }
-        virtual int32_t IScreenShot(const char*) { return 0; }
         virtual void IRsSendToHw(EGxRenderState) = 0;
         virtual void ICursorCreate(const CGxFormat& format);
         virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat&);
@@ -364,6 +366,11 @@ class CGxDevice {
         virtual void PrimTexCoord(uint32_t tmu, const C2Vector& texCoord);
         virtual void PrimNormal(const C3Vector& normal);
         virtual void PrimColor(const CImVector& color);
+        virtual void CaptureRequest();
+        virtual void CaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits);
+        virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {};
+        void ICapture();
+        void IClipToWindow(CiRect& rect);
         virtual void QueryCreate(CGxQuery*& query, uint32_t type);
         virtual void QueryDestroy(CGxQuery*& query);
         virtual int32_t QueryBegin(CGxQuery* query) { return 0; };
@@ -427,9 +434,7 @@ class CGxDevice {
         // Redirect rendering into a texture (or back to the frame buffer with a null texture).
         // The full-screen effects and the map shadow map both need this; until it existed the gx
         // layer could only read the current target, never set one.
-        void RenderTargetSet(EGxBuffer buffer, CGxTex* gxTex, uint32_t plane = 0);
-        int32_t RenderTargetDump(CGxTex* gxTex, const char* path);
-        int32_t ScreenShot(const char* path);
+        virtual void RenderTargetSet(EGxBuffer buffer, CGxTex* gxTex, uint32_t plane = 0);
         void RsGet(EGxRenderState, int32_t&);
         void RsSet(EGxRenderState, int32_t);
         void RsSet(EGxRenderState, float);

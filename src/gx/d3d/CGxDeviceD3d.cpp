@@ -3,6 +3,7 @@
 #include <common/Time.hpp>
 #include <cstdio>
 #include "gx/Texture.hpp"
+#include "gx/Transform.hpp"
 #include "gx/Blit.hpp"
 #include "gx/CGxBatch.hpp"
 #include "gx/texture/CGxTex.hpp"
@@ -1538,6 +1539,16 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     if (this->m_defDepthSurface) {
         this->m_defDepthSurface->Release();
         this->m_defDepthSurface = nullptr;
+    }
+
+    if (this->m_targetDepthSurface) {
+        this->m_targetDepthSurface->Release();
+        this->m_targetDepthSurface = nullptr;
+    }
+
+    if (this->m_captureSurface) {
+        this->m_captureSurface->Release();
+        this->m_captureSurface = nullptr;
     }
 
     if (this->m_d3dFrameQuery) {
@@ -3304,277 +3315,6 @@ void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
     texId->m_needsCreation = 0;
 }
 
-// Point the device at a texture's surface, or back at the frame buffer when the texture is null.
-// The default surfaces are captured at device creation (m_defColorSurface / m_defDepthSurface), so
-// restoring never has to guess. A depth target is bound as the depth-stencil surface; a colour
-// target goes to slot 0.
-void CGxDeviceD3d::IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane) {
-    if (!this->m_d3dDevice) {
-        return;
-    }
-
-    LPDIRECT3DSURFACE9 surface = nullptr;
-
-    if (texId) {
-        if (texId->m_needsCreation) {
-            this->ITexCreate(texId);
-
-            fprintf(stderr, "IRenderTargetSet: rebuilt texture, handle now %p\n",
-                    texId->m_apiSpecificData);
-        }
-
-        auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
-
-        if (!d3dTexture || FAILED(d3dTexture->GetSurfaceLevel(plane, &surface))) {
-            return;
-        }
-    }
-
-    if (buffer == GxBuffers_Depth) {
-        this->m_d3dDevice->SetDepthStencilSurface(surface ? surface : this->m_defDepthSurface);
-    } else {
-        this->m_d3dDevice->SetRenderTarget(0, surface ? surface : this->m_defColorSurface);
-
-        // THE CURRENT WINDOW RECT FOLLOWS THE COLOUR TARGET, and nothing here used to move it.
-        //
-        // IXformSetViewport turns the normalized viewport into pixels by scaling it by
-        // DeviceCurWindow(), so while that still reported the BACK BUFFER a full 0..1 viewport on a
-        // 1024x1024 shadow map covered 1024x768 of it. The bottom quarter of the map was never
-        // cleared and never drawn into -- visible as an exact 1024x256 band of zeroes in a dump of
-        // it, which is how this was found rather than reasoned about.
-        //
-        // A zero there is the NEAREST possible depth, so every lookup landing in that band reads
-        // 'something is right in front of the light' and shadows everything. It is not a cosmetic
-        // quarter of a texture.
-        //
-        // Restoring the default window on unbind is the other half: leaving the map's size in place
-        // would shrink the next frame's viewport to the top-left of the back buffer.
-        if (texId) {
-            CRect targetRect;
-            targetRect.minX = 0.0f;
-            targetRect.minY = 0.0f;
-            targetRect.maxX = static_cast<float>(texId->m_width);
-            targetRect.maxY = static_cast<float>(texId->m_height);
-
-            this->DeviceSetCurWindow(targetRect);
-        } else {
-            this->DeviceSetCurWindow(this->m_defWindowRect);
-        }
-
-        // The viewport is expressed against the rect that just changed, so it has to be pushed
-        // again even though its own values did not move.
-        this->intF6C = 1;
-    }
-
-    if (surface) {
-        surface->Release(); // the device holds its own reference
-    }
-}
-
-// Debug only: pull a render target back into system memory and write it out as a greyscale TGA.
-// D3D9 cannot lock a D3DPOOL_DEFAULT render target directly, so the surface has to be copied into
-// an offscreen plain surface first. R32F is the shadow map's own format and carries a normalized
-// depth, so it is scaled straight to 0..255; Argb8888 is reduced to its red channel so the same
-// viewer works for both.
-// Capture the back buffer to an uncompressed 24-bit TGA.
-//
-// This is the only honest way to see what the client actually drew. Grabbing the desktop with a
-// screen-capture API returns whatever window happens to be on top -- which, on a machine someone is
-// using, is not this one.
-//
-// GetRenderTargetData is the documented route off a D3DPOOL_DEFAULT surface: it needs a
-// system-memory staging surface of the same size and format, and it is the reason a back buffer
-// cannot simply be locked. GetBackBuffer rather than GetRenderTarget, so a pass that left an
-// offscreen target bound cannot redirect the capture.
-int32_t CGxDeviceD3d::IScreenShot(const char* path) {
-    if (!this->m_d3dDevice || !path) {
-        return 0;
-    }
-
-    LPDIRECT3DSURFACE9 source = nullptr;
-
-    if (FAILED(this->m_d3dDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &source)) || !source) {
-        return 0;
-    }
-
-    D3DSURFACE_DESC desc;
-    source->GetDesc(&desc);
-
-    LPDIRECT3DSURFACE9 staging = nullptr;
-
-    HRESULT hr = this->m_d3dDevice->CreateOffscreenPlainSurface(
-        desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &staging, nullptr);
-
-    if (FAILED(hr)) {
-        fprintf(stderr, "ScreenShot: CreateOffscreenPlainSurface(%ux%u fmt %u) failed 0x%08lX\n",
-                desc.Width, desc.Height, static_cast<unsigned>(desc.Format), hr);
-        source->Release();
-        return 0;
-    }
-
-    hr = this->m_d3dDevice->GetRenderTargetData(source, staging);
-
-    if (FAILED(hr)) {
-        fprintf(stderr, "ScreenShot: GetRenderTargetData failed 0x%08lX\n", hr);
-        staging->Release();
-        source->Release();
-        return 0;
-    }
-
-    D3DLOCKED_RECT locked;
-    int32_t result = 0;
-
-    if (SUCCEEDED(staging->LockRect(&locked, nullptr, D3DLOCK_READONLY))) {
-        FILE* out = fopen(path, "wb");
-
-        if (out) {
-            uint32_t w = desc.Width;
-            uint32_t h = desc.Height;
-
-            unsigned char header[18] = { 0 };
-            header[2] = 2; // uncompressed true-colour
-            header[12] = static_cast<unsigned char>(w & 0xFF);
-            header[13] = static_cast<unsigned char>((w >> 8) & 0xFF);
-            header[14] = static_cast<unsigned char>(h & 0xFF);
-            header[15] = static_cast<unsigned char>((h >> 8) & 0xFF);
-            header[16] = 24;
-            header[17] = 0x20; // top-down, so the file reads the way the frame was drawn
-            fwrite(header, 1, sizeof(header), out);
-
-            // The back buffer is X8R8G8B8 or A8R8G8B8; both are BGRA in memory, which is already
-            // the byte order TGA wants, so the three colour bytes copy straight across.
-            for (uint32_t y = 0; y < h; y++) {
-                auto row = static_cast<const unsigned char*>(locked.pBits)
-                    + static_cast<size_t>(y) * locked.Pitch;
-
-                for (uint32_t x = 0; x < w; x++) {
-                    fwrite(row + x * 4, 1, 3, out);
-                }
-            }
-
-            fclose(out);
-            result = 1;
-        } else {
-            fprintf(stderr, "ScreenShot: could not open %s for writing\n", path);
-        }
-
-        staging->UnlockRect();
-    }
-
-    staging->Release();
-    source->Release();
-
-    return result;
-}
-
-int32_t CGxDeviceD3d::IRenderTargetDump(CGxTex* texId, const char* path) {
-    if (!this->m_d3dDevice || !texId) {
-        return 0;
-    }
-
-    // Create it first if it is pending, exactly as IRenderTargetSet does. Every other consumer of a
-    // CGxTex honours m_needsCreation; this one did not, so it read a null handle and bailed while
-    // the texture was merely waiting to be rebuilt after the device reset.
-    if (texId->m_needsCreation) {
-        this->ITexCreate(texId);
-    }
-
-    auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
-
-    if (!d3dTexture) {
-        return 0;
-    }
-
-    LPDIRECT3DSURFACE9 source = nullptr;
-
-    fprintf(stderr, "RenderTargetDump: tex %p needsCreation %u %ux%u fmt %u target %u levels %u\n",
-            static_cast<void*>(d3dTexture), texId->m_needsCreation, texId->m_width, texId->m_height,
-            static_cast<unsigned>(texId->m_format), static_cast<unsigned>(texId->m_target),
-            d3dTexture->GetLevelCount());
-
-    HRESULT hr = d3dTexture->GetSurfaceLevel(0, &source);
-
-    if (FAILED(hr)) {
-        fprintf(stderr, "RenderTargetDump: GetSurfaceLevel failed 0x%08lX\n", hr);
-        return 0;
-    }
-
-    D3DSURFACE_DESC desc;
-    source->GetDesc(&desc);
-
-    LPDIRECT3DSURFACE9 staging = nullptr;
-
-    hr = this->m_d3dDevice->CreateOffscreenPlainSurface(
-        desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &staging, nullptr);
-
-    if (FAILED(hr)) {
-        fprintf(stderr, "RenderTargetDump: CreateOffscreenPlainSurface(%ux%u fmt %u) failed 0x%08lX\n",
-                desc.Width, desc.Height, static_cast<unsigned>(desc.Format), hr);
-        source->Release();
-        return 0;
-    }
-
-    hr = this->m_d3dDevice->GetRenderTargetData(source, staging);
-
-    if (FAILED(hr)) {
-        fprintf(stderr, "RenderTargetDump: GetRenderTargetData failed 0x%08lX\n", hr);
-        staging->Release();
-        source->Release();
-        return 0;
-    }
-
-    D3DLOCKED_RECT locked;
-    int32_t result = 0;
-
-    if (SUCCEEDED(staging->LockRect(&locked, nullptr, D3DLOCK_READONLY))) {
-        FILE* out = fopen(path, "wb");
-
-        if (out) {
-            uint32_t w = desc.Width;
-            uint32_t h = desc.Height;
-
-            // Uncompressed 8-bit greyscale TGA.
-            unsigned char header[18] = { 0 };
-            header[2] = 3;
-            header[12] = static_cast<unsigned char>(w & 0xFF);
-            header[13] = static_cast<unsigned char>((w >> 8) & 0xFF);
-            header[14] = static_cast<unsigned char>(h & 0xFF);
-            header[15] = static_cast<unsigned char>((h >> 8) & 0xFF);
-            header[16] = 8;
-            header[17] = 0x20; // top-down, so the image reads the way the map was rendered
-            fwrite(header, 1, sizeof(header), out);
-
-            for (uint32_t y = 0; y < h; y++) {
-                auto row = static_cast<const unsigned char*>(locked.pBits) + static_cast<size_t>(y) * locked.Pitch;
-
-                for (uint32_t x = 0; x < w; x++) {
-                    float value;
-
-                    if (desc.Format == D3DFMT_R32F) {
-                        value = reinterpret_cast<const float*>(row)[x];
-                    } else {
-                        value = row[x * 4 + 2] / 255.0f;
-                    }
-
-                    value = value < 0.0f ? 0.0f : (value > 1.0f ? 1.0f : value);
-                    unsigned char texel = static_cast<unsigned char>(value * 255.0f);
-                    fwrite(&texel, 1, 1, out);
-                }
-            }
-
-            fclose(out);
-            result = 1;
-        }
-
-        staging->UnlockRect();
-    }
-
-    staging->Release();
-    source->Release();
-
-    return result;
-}
-
 // ref: FUN_006a3070
 void CGxDeviceD3d::ITexMarkAsUpdated(CGxTex* texId) {
     if (!texId->m_needsUpdate || !this->m_context) {
@@ -3811,6 +3551,8 @@ void CGxDeviceD3d::SceneClear(uint32_t mask, CImVector color) {
 // (FUN_006841d0), and the NVAPI stereo convergence and separation updates.
 void CGxDeviceD3d::ScenePresent() {
     if (this->m_context) {
+        int32_t captureRequested = this->int2934;
+
         CGxDevice::ScenePresent();
         this->ISceneEnd();
 
@@ -3836,6 +3578,10 @@ void CGxDeviceD3d::ScenePresent() {
                     OsSleep(0);
                 }
             }
+        }
+
+        if (captureRequested) {
+            this->ICapture();
         }
 
         this->ILimitFrameRate();
@@ -4124,4 +3870,405 @@ void CGxDeviceD3d::IReleaseD3dQueries() {
 
         query->m_apiSpecific = nullptr;
     }
+}
+
+// ref: FUN_0068f770
+// Only a change does anything. The slot's old surface goes; a texture target is created if it
+// has to be and its first level (or the plane's cube face) becomes the slot's surface. Colour
+// falls back to the back buffer and depth to the default depth surface; a colour target with no
+// depth target gets the shared render-target depth surface, sized to it.
+void CGxDeviceD3d::RenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane) {
+    if (!this->m_context) {
+        return;
+    }
+
+    auto& target = this->m_textureTarget[buffer];
+
+    if (target.m_texture == texId && target.m_plane == plane) {
+        return;
+    }
+
+    CGxDevice::RenderTargetSet(buffer, texId, plane);
+
+    if (target.m_apiSpecific) {
+        static_cast<LPDIRECT3DSURFACE9>(target.m_apiSpecific)->Release();
+        target.m_apiSpecific = nullptr;
+    }
+
+    if (texId) {
+        if (texId->m_needsCreation || (!texId->m_apiSpecificData && !texId->m_apiSpecificData2)) {
+            this->ITexCreate(texId);
+        }
+
+        if (!texId->m_needsCreation && (texId->m_apiSpecificData || texId->m_apiSpecificData2)) {
+            auto surface = reinterpret_cast<LPDIRECT3DSURFACE9*>(&target.m_apiSpecific);
+
+            if (texId->m_target == GxTex_CubeMap) {
+                static_cast<LPDIRECT3DCUBETEXTURE9>(texId->m_apiSpecificData)->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[plane], 0, surface);
+            } else {
+                static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData)->GetSurfaceLevel(0, surface);
+            }
+        }
+    }
+
+    auto color = this->m_defColorSurface;
+    auto depth = this->m_defDepthSurface;
+    auto colorTarget = static_cast<LPDIRECT3DSURFACE9>(this->m_textureTarget[GxBuffers_Color].m_apiSpecific);
+    auto depthTarget = static_cast<LPDIRECT3DSURFACE9>(this->m_textureTarget[GxBuffers_Depth].m_apiSpecific);
+
+    if (colorTarget) {
+        color = colorTarget;
+
+        if (!depthTarget) {
+            this->IEnsureTargetDepth(texId->m_width, texId->m_height);
+
+            if (this->m_targetDepthSurface) {
+                depth = this->m_targetDepthSurface;
+            }
+        }
+    }
+
+    if (depthTarget) {
+        depth = depthTarget;
+    }
+
+    this->m_d3dDevice->SetRenderTarget(0, color);
+    this->m_d3dDevice->SetDepthStencilSurface(depth);
+
+    GxXformSetViewport(this->m_viewport.x.l, this->m_viewport.x.h, this->m_viewport.y.l,
+        this->m_viewport.y.h, this->m_viewport.z.l, this->m_viewport.z.h);
+
+    this->intF6C = 1;
+    this->m_scissorDirty = 1;
+}
+
+// ref: FUN_006a7940
+// Keeps the shared render-target depth surface at least as large as the target; it is remade in
+// the first of D24S8, D24X8, D16 the adapter accepts.
+void CGxDeviceD3d::IEnsureTargetDepth(uint32_t width, uint32_t height) {
+    if (this->m_targetDepthSurface) {
+        D3DSURFACE_DESC desc;
+
+        if (SUCCEEDED(this->m_targetDepthSurface->GetDesc(&desc)) && width <= desc.Width && height <= desc.Height) {
+            return;
+        }
+
+        this->m_targetDepthSurface->Release();
+    }
+
+    D3DFORMAT formats[] = { D3DFMT_D24S8, D3DFMT_D24X8, D3DFMT_D16 };
+    uint32_t i = 0;
+
+    do {
+        auto format = formats[i];
+
+        if (this->ICheckDepthFormat(format)) {
+            this->m_d3dDevice->CreateDepthStencilSurface(width, height, format, D3DMULTISAMPLE_NONE, 0, FALSE, &this->m_targetDepthSurface, nullptr);
+        }
+    } while (!this->m_targetDepthSurface && ++i < 3);
+}
+
+// ref: FUN_0069faa0
+int32_t CGxDeviceD3d::ICheckDepthFormat(D3DFORMAT format) {
+    if (FAILED(this->m_d3d->CheckDeviceFormat(0, D3DDEVTYPE_HAL, this->m_devAdapterFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, format))) {
+        return 0;
+    }
+
+    return SUCCEEDED(this->m_d3d->CheckDepthStencilMatch(0, D3DDEVTYPE_HAL, this->m_devAdapterFormat, this->m_devAdapterFormat, format));
+}
+
+// The depth surface DepthStencilSave keeps and DepthStencilRestore puts back (reference
+// 0x00c6033c).
+static LPDIRECT3DSURFACE9 s_savedDepthStencil;
+
+// ref: FUN_0068e510
+// Keeps the pointer without the reference: the device's own binding keeps the surface alive.
+void CGxDeviceD3d::DepthStencilSave() {
+    if (this->m_context) {
+        this->m_d3dDevice->GetDepthStencilSurface(&s_savedDepthStencil);
+        s_savedDepthStencil->Release();
+    }
+}
+
+// ref: FUN_0068e540
+void CGxDeviceD3d::DepthStencilRestore() {
+    if (this->m_context) {
+        this->m_d3dDevice->SetDepthStencilSurface(s_savedDepthStencil);
+    }
+}
+
+// ref: FUN_0068f900
+void CGxDeviceD3d::DepthStencilSet(CGxTex* texId) {
+    if (!this->m_context) {
+        return;
+    }
+
+    if (texId && (texId->m_needsCreation || (!texId->m_apiSpecificData && !texId->m_apiSpecificData2))) {
+        this->ITexCreate(texId);
+    }
+
+    this->m_d3dDevice->SetDepthStencilSurface(static_cast<LPDIRECT3DSURFACE9>(texId->m_apiSpecificData));
+}
+
+// ref: FUN_0068f950
+// A whole-surface copy from one texture's first level (or cube face) to another's.
+void CGxDeviceD3d::TexCopy(CGxTex* src, uint32_t srcPlane, CGxTex* dst, uint32_t dstPlane) {
+    LPDIRECT3DSURFACE9 srcSurface = nullptr;
+    LPDIRECT3DSURFACE9 dstSurface = nullptr;
+
+    if (src) {
+        if (src->m_needsCreation || (!src->m_apiSpecificData && !src->m_apiSpecificData2)) {
+            this->ITexCreate(src);
+        }
+
+        if (!src->m_needsCreation && (src->m_apiSpecificData || src->m_apiSpecificData2)) {
+            if (src->m_target == GxTex_CubeMap) {
+                static_cast<LPDIRECT3DCUBETEXTURE9>(src->m_apiSpecificData)->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[srcPlane], 0, &srcSurface);
+            } else {
+                static_cast<LPDIRECT3DTEXTURE9>(src->m_apiSpecificData)->GetSurfaceLevel(0, &srcSurface);
+            }
+        }
+    }
+
+    if (dst) {
+        if (dst->m_needsCreation || (!dst->m_apiSpecificData && !dst->m_apiSpecificData2)) {
+            this->ITexCreate(dst);
+        }
+
+        if (!dst->m_needsCreation && (dst->m_apiSpecificData || dst->m_apiSpecificData2)) {
+            if (dst->m_target == GxTex_CubeMap) {
+                static_cast<LPDIRECT3DCUBETEXTURE9>(dst->m_apiSpecificData)->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[dstPlane], 0, &dstSurface);
+            } else {
+                static_cast<LPDIRECT3DTEXTURE9>(dst->m_apiSpecificData)->GetSurfaceLevel(0, &dstSurface);
+            }
+        }
+    }
+
+    if (srcSurface) {
+        if (dstSurface) {
+            this->m_d3dDevice->StretchRect(srcSurface, nullptr, dstSurface, nullptr, D3DTEXF_NONE);
+        }
+
+        srcSurface->Release();
+    }
+
+    if (dstSurface) {
+        dstSurface->Release();
+    }
+}
+
+// ref: FUN_006a30d0
+// Copies a block of the back buffer into a level of a texture, one-to-one.
+int32_t CGxDeviceD3d::TexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane) {
+    if (!this->m_context) {
+        return 0;
+    }
+
+    if (dst->m_needsCreation || (!dst->m_apiSpecificData && !dst->m_apiSpecificData2)) {
+        this->ITexCreate(dst);
+    }
+
+    if (dst->m_needsCreation || (!dst->m_apiSpecificData && !dst->m_apiSpecificData2)) {
+        return 0;
+    }
+
+    RECT srcRect = { srcPos.x, srcPos.y, srcPos.x + size.x, srcPos.y + size.y };
+    RECT dstRect = { dstPos.x, dstPos.y, dstPos.x + size.x, dstPos.y + size.y };
+
+    LPDIRECT3DSURFACE9 surface = nullptr;
+    HRESULT result;
+
+    if (dst->m_target == GxTex_CubeMap) {
+        result = static_cast<LPDIRECT3DCUBETEXTURE9>(dst->m_apiSpecificData)->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[plane], level, &surface);
+    } else {
+        result = static_cast<LPDIRECT3DTEXTURE9>(dst->m_apiSpecificData)->GetSurfaceLevel(level, &surface);
+    }
+
+    if (SUCCEEDED(result)) {
+        result = this->m_d3dDevice->StretchRect(this->m_defColorSurface, &srcRect, surface, &dstRect, D3DTEXF_NONE);
+        surface->Release();
+    }
+
+    return SUCCEEDED(result);
+}
+
+// ref: FUN_006a31e0
+// The same from and to whole rects, either of which may be null for the whole surface; linear
+// filtering unless both rects are given and the same size.
+int32_t CGxDeviceD3d::TexCopyFromTargetRect(CGxTex* dst, const CiRect* dstRect, const CiRect* srcRect, uint32_t level, uint32_t plane) {
+    if (!this->m_context) {
+        return 0;
+    }
+
+    if (dst->m_needsCreation || (!dst->m_apiSpecificData && !dst->m_apiSpecificData2)) {
+        this->ITexCreate(dst);
+    }
+
+    if (dst->m_needsCreation || (!dst->m_apiSpecificData && !dst->m_apiSpecificData2)) {
+        return 0;
+    }
+
+    LPDIRECT3DSURFACE9 surface = nullptr;
+    HRESULT result;
+
+    if (dst->m_target == GxTex_CubeMap) {
+        result = static_cast<LPDIRECT3DCUBETEXTURE9>(dst->m_apiSpecificData)->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[plane], level, &surface);
+    } else {
+        result = static_cast<LPDIRECT3DTEXTURE9>(dst->m_apiSpecificData)->GetSurfaceLevel(level, &surface);
+    }
+
+    if (FAILED(result)) {
+        return 0;
+    }
+
+    RECT d3dSrcRect = { 0, 0, 0, 0 };
+    if (srcRect) {
+        d3dSrcRect = { srcRect->minX, srcRect->minY, srcRect->maxX, srcRect->maxY };
+    }
+
+    RECT d3dDstRect = { 0, 0, 0, 0 };
+    if (dstRect) {
+        d3dDstRect = { dstRect->minX, dstRect->minY, dstRect->maxX, dstRect->maxY };
+    }
+
+    D3DTEXTUREFILTERTYPE filter = D3DTEXF_LINEAR;
+
+    if (srcRect && dstRect
+        && d3dSrcRect.right - d3dSrcRect.left == d3dDstRect.right - d3dDstRect.left
+        && d3dSrcRect.bottom - d3dSrcRect.top == d3dDstRect.bottom - d3dDstRect.top) {
+        filter = D3DTEXF_NONE;
+    }
+
+    result = this->m_d3dDevice->StretchRect(this->m_defColorSurface, srcRect ? &d3dSrcRect : nullptr, surface,
+        dstRect ? &d3dDstRect : nullptr, filter);
+    surface->Release();
+
+    return SUCCEEDED(result);
+}
+
+// ref: FUN_0068f6a0
+// A plain render target the size of the window in the back buffer's format, which a multisampled
+// back buffer is resolved into before it can be locked.
+void CGxDeviceD3d::IEnsureCaptureTarget() {
+    if (this->m_captureSurface) {
+        return;
+    }
+
+    auto& window = this->DeviceCurWindow();
+    D3DFORMAT format;
+
+    if (!this->m_format.window) {
+        format = CGxDeviceD3d::s_GxFormatToD3dFormat[this->m_format.colorFormat];
+    } else {
+        D3DDISPLAYMODE mode;
+
+        if (FAILED(this->m_d3d->GetAdapterDisplayMode(0, &mode))) {
+            format = this->m_desktopDisplayMode.Format;
+        } else {
+            format = mode.Format;
+        }
+    }
+
+    this->m_d3dDevice->CreateRenderTarget(static_cast<UINT>(window.maxX - window.minX), static_cast<UINT>(window.maxY - window.minY),
+        format, D3DMULTISAMPLE_NONE, 0, TRUE, &this->m_captureSurface, nullptr);
+}
+
+// ref: FUN_0068fed0
+// Reads the back buffer, clipped to the window, into `bits` as 32-bit ARGB: X8R8G8B8 and A8R8G8B8
+// row for row, R5G6B5 and X1R5G5B5 / A1R5G5B5 widened, anything else white.
+void CGxDeviceD3d::ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {
+    CiRect clipped = rect;
+    this->IClipToWindow(clipped);
+
+    uint32_t rows = clipped.maxY - clipped.minY;
+    uint32_t columns = clipped.maxX - clipped.minX;
+    uint32_t count = rows * columns;
+    bits.SetCount(count);
+
+    LPDIRECT3DSURFACE9 surface = nullptr;
+    HRESULT result;
+
+    if (this->m_format.multisampleCount < 2) {
+        result = this->m_d3dDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &surface);
+    } else {
+        RECT region = { clipped.minX, clipped.minY, clipped.maxX, clipped.maxY };
+        this->IEnsureCaptureTarget();
+
+        if (!this->m_captureSurface) {
+            return;
+        }
+
+        result = this->m_d3dDevice->StretchRect(this->m_defColorSurface, &region, this->m_captureSurface, &region, D3DTEXF_NONE);
+        surface = this->m_captureSurface;
+        surface->AddRef();
+    }
+
+    if (FAILED(result)) {
+        return;
+    }
+
+    RECT region = { clipped.minX, clipped.minY, clipped.maxX, clipped.maxY };
+    D3DLOCKED_RECT locked;
+
+    if (SUCCEEDED(surface->LockRect(&locked, &region, D3DLOCK_READONLY))) {
+        D3DSURFACE_DESC desc;
+        surface->GetDesc(&desc);
+
+        if (columns <= desc.Width && rows <= desc.Height) {
+            auto src = static_cast<const uint8_t*>(locked.pBits);
+            auto dst = bits.Ptr();
+
+            switch (desc.Format) {
+                case D3DFMT_A8R8G8B8:
+                case D3DFMT_X8R8G8B8:
+                    for (uint32_t y = 0; y < rows; y++) {
+                        memcpy(dst, src, columns * 4);
+                        src += locked.Pitch;
+                        dst += columns;
+                    }
+                    break;
+
+                case D3DFMT_R5G6B5:
+                    for (uint32_t y = 0; y < rows; y++) {
+                        auto row = reinterpret_cast<const uint16_t*>(src);
+
+                        for (uint32_t x = 0; x < columns; x++) {
+                            auto out = reinterpret_cast<uint8_t*>(dst++);
+                            out[3] = 0xFF;
+                            out[2] = (row[x] >> 8) & 0xF8;
+                            out[1] = (row[x] >> 3) & 0xFC;
+                            out[0] = static_cast<uint8_t>(row[x] << 3);
+                        }
+
+                        src += locked.Pitch;
+                    }
+                    break;
+
+                case D3DFMT_X1R5G5B5:
+                case D3DFMT_A1R5G5B5:
+                    for (uint32_t y = 0; y < rows; y++) {
+                        auto row = reinterpret_cast<const uint16_t*>(src);
+
+                        for (uint32_t x = 0; x < columns; x++) {
+                            auto out = reinterpret_cast<uint8_t*>(dst++);
+                            out[3] = 0xFF;
+                            out[2] = (row[x] >> 7) & 0xF8;
+                            out[1] = (row[x] >> 2) & 0xF8;
+                            out[0] = static_cast<uint8_t>(row[x] << 3);
+                        }
+
+                        src += locked.Pitch;
+                    }
+                    break;
+
+                default:
+                    memset(bits.Ptr(), 0xFF, count * 4);
+                    break;
+            }
+        }
+
+        surface->UnlockRect();
+    }
+
+    surface->Release();
 }

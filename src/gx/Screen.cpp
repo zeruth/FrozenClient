@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <cstdlib>
 #include "gx/Screen.hpp"
 #include "event/Event.hpp"
@@ -37,6 +38,41 @@ int32_t OnIdle(const EVENT_DATA_IDLE* data, void* a2) {
 // only sound way to see what Frozen actually drew.
 //
 // Unset, it costs one getenv on the first frame and nothing after.
+// Writes the frame the device captured on the last present as an uncompressed, top-down 24-bit
+// TGA. The capture is the reference's (CaptureRequest before the present, CaptureGet after).
+static void ScreenshotWriteTga(const char* path) {
+    uint32_t width;
+    uint32_t height;
+    const uint32_t* bits;
+    GxCaptureGet(width, height, bits);
+
+    if (!bits) {
+        return;
+    }
+
+    FILE* out = fopen(path, "wb");
+
+    if (!out) {
+        return;
+    }
+
+    unsigned char header[18] = { 0 };
+    header[2] = 2;
+    header[12] = static_cast<unsigned char>(width & 0xFF);
+    header[13] = static_cast<unsigned char>((width >> 8) & 0xFF);
+    header[14] = static_cast<unsigned char>(height & 0xFF);
+    header[15] = static_cast<unsigned char>((height >> 8) & 0xFF);
+    header[16] = 24;
+    header[17] = 0x20;
+    fwrite(header, 1, sizeof(header), out);
+
+    for (uint32_t i = 0; i < width * height; i++) {
+        fwrite(&bits[i], 1, 3, out);
+    }
+
+    fclose(out);
+}
+
 static void AutoScreenshotCheck() {
     static bool s_parsed = false;
     static float s_at[8];
@@ -186,13 +222,14 @@ int32_t OnPaint(const void* a1, void* a2) {
             // Grab the finished frame before it is presented, then present it as usual. Capturing
             // here rather than inside the Lua binding is what makes the image a whole frame: at the
             // moment the binding runs, the interface is still being drawn on top of the world.
-            if (Screen::s_capturePath[0]) {
-                GxScreenShot(Screen::s_capturePath);
-            }
-
+            GxCaptureRequest();
             Screen::s_captureScreen = 0;
 
             GxSub682A00();
+
+            if (Screen::s_capturePath[0]) {
+                ScreenshotWriteTga(Screen::s_capturePath);
+            }
 
             return 1;
         }

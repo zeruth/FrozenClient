@@ -246,6 +246,10 @@ class CGxDeviceD3d : public CGxDevice {
     // Reference +0x3b48: an event query issued after each frame when gxFixLag is on, and waited
     // on before the present, so the CPU never runs more than a frame ahead of the GPU.
     LPDIRECT3DQUERY9 m_d3dFrameQuery = nullptr;
+    // Reference +0x3b38: the depth surface render targets share when none is bound with them.
+    LPDIRECT3DSURFACE9 m_targetDepthSurface = nullptr;
+    // Reference +0x3b44: a resolve target for capturing a multisampled back buffer.
+    LPDIRECT3DSURFACE9 m_captureSurface = nullptr;
     LPDIRECT3DINDEXBUFFER9 m_d3dCurrentIndexBuf;
     LPDIRECT3DVERTEXBUFFER9 m_d3dVertexStreamBuf[8];
     uint32_t m_d3dVertexStreamOfs[8];
@@ -306,9 +310,17 @@ class CGxDeviceD3d : public CGxDevice {
 
     // Virtual member functions
     virtual void ITexMarkAsUpdated(CGxTex* texId);
-    virtual void IRenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane);
-    virtual int32_t IRenderTargetDump(CGxTex* texId, const char* path);
-    virtual int32_t IScreenShot(const char* path);
+    virtual void RenderTargetSet(EGxBuffer buffer, CGxTex* texId, uint32_t plane);
+    virtual void DepthStencilSave();
+    virtual void DepthStencilRestore();
+    virtual void DepthStencilSet(CGxTex* texId);
+    virtual void TexCopy(CGxTex* src, uint32_t srcPlane, CGxTex* dst, uint32_t dstPlane);
+    virtual int32_t TexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane);
+    virtual int32_t TexCopyFromTargetRect(CGxTex* dst, const CiRect* dstRect, const CiRect* srcRect, uint32_t level, uint32_t plane);
+    virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits);
+    void IEnsureCaptureTarget();
+    void IEnsureTargetDepth(uint32_t width, uint32_t height);
+    int32_t ICheckDepthFormat(D3DFORMAT format);
     virtual void IRsSendToHw(EGxRenderState which);
     virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat& format);
     virtual int32_t DeviceCreate(void* window, const CGxFormat& format);

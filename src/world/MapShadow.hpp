@@ -85,7 +85,6 @@ void MapShadowEnd();
 CGxTex* MapShadowTexture();
 
 // Debug: write the map out as a greyscale TGA on the next frame that renders it.
-void MapShadowRequestDump(const char* path);
 
 // The plane and height the map object and interior shadow binders sample against. Built by
 // MapShadowSetupPlane; the terrain path never reads them. ref: FUN_007bb670

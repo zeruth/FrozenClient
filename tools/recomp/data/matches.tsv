@@ -2202,6 +2202,7 @@ addr	how	frozen	evidence
 00616a30	annotated	CGxDevice::XformPush	tag in src/gx/CGxDevice.cpp
 00616af0	annotated	GxMasterEnable	tag in src/gx/Device.cpp
 00616b10	annotated	CGUnit_C::GetDisplayID	tag in src/object/client/CGUnit_C.cpp
+00616ca0	callgraph	TSGrowableArray<unsigned int>::SetCount	only unmatched callee of 0068fed0=CGxDeviceD3d::ICaptureRead
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
 0061a4f0	annotated	ThreatStatusColor	tag in src/ui/game/GameScript.cpp
 0061a9e0	annotated	FormatTimeInterval	tag in src/ui/game/CGTooltip.cpp
@@ -2358,11 +2359,15 @@ addr	how	frozen	evidence
 006839f0	sticky	WowClientDB<LiquidTypeRec>::GetRecord	held from the previous run, where it was sticky
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
 00683b90	annotated	CGxMatrixStack::CGxMatrixStack	tag in src/gx/CGxMatrixStack.cpp
+00683ce0	annotated	CGxDevice::IClipToWindow	tag in src/gx/CGxDevice.cpp
 00684070	annotated	CGxGammaRamp::Build	tag in src/gx/CGxDevice.cpp
 006840f0	annotated	CGxDevice::DeviceSetFormat	tag in src/gx/CGxDevice.cpp
 00684170	annotated	CGxDevice::DeviceSetGamma	tag in src/gx/CGxDevice.cpp
 00684190	annotated	CGxDevice::DeviceSetGammaRamp	tag in src/gx/CGxDevice.cpp
 006841b0	annotated	CGxDevice::DeviceDesktopGammaRamp	tag in src/gx/CGxDevice.cpp
+006841d0	annotated	CGxDevice::ICapture	tag in src/gx/CGxDevice.cpp
+00684260	annotated	CGxDevice::CaptureGet	tag in src/gx/CGxDevice.cpp
+006842a0	annotated	CGxDevice::RenderTargetSet	tag in src/gx/CGxDevice.cpp
 00684360	annotated	CGxDevice::DeviceSetDefWindow	tag in src/gx/CGxDevice.cpp
 006843b0	annotated	CGxDevice::ICallbacksRestored	tag in src/gx/CGxDevice.cpp
 006843e0	annotated	CGxDevice::ICallbacksTexturesLost	tag in src/gx/CGxDevice.cpp
@@ -2435,12 +2440,17 @@ addr	how	frozen	evidence
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
 0068ee20	annotated	CGxDeviceD3d::ISetCaps	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068f3d0	annotated	CGxDeviceD3d::ICreateD3dDevice	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068f6a0	annotated	CGxDeviceD3d::IEnsureCaptureTarget	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068f770	annotated	CGxDeviceD3d::RenderTargetSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068f900	annotated	CGxDeviceD3d::DepthStencilSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068f950	annotated	CGxDeviceD3d::TexCopy	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fa60	annotated	CGxDeviceD3d::IBufUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fae0	annotated	CGxDeviceD3d::BufUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fb10	annotated	CGxDeviceD3d::IBufLock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fce0	annotated	CGxDeviceD3d::BufLock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fd00	annotated	CGxDeviceD3d::BufData	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fd50	annotated	CGxDeviceD3d::CGxDeviceD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068fed0	annotated	CGxDeviceD3d::ICaptureRead	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690150	annotated	CGxDeviceD3d::IReleaseD3dResources	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690230	annotated	CGxDeviceD3d::DeviceWM	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006903b0	annotated	CGxDeviceD3d::IDestroyD3dDevice	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2452,6 +2462,7 @@ addr	how	frozen	evidence
 006908b0	annotated	GxExtensionListContains	tag in src/gx/CGxDevice.cpp
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+0069faa0	annotated	CGxDeviceD3d::ICheckDepthFormat	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069fb00	annotated	CGxDeviceD3d::ICreateD3dVB	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069fb70	annotated	CGxDeviceD3d::CreatePoolAPI	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0069fe10	annotated	CGxDeviceD3d::IWindowActiveSet	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2468,6 +2479,8 @@ addr	how	frozen	evidence
 006a2c00	annotated	CGxDeviceD3d::ITexCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a2d80	annotated	CGxDeviceD3d::ITexUpload	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3070	override	CGxDeviceD3d::ITexMarkAsUpdated	
+006a30d0	annotated	CGxDeviceD3d::TexCopyFromTarget	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a31e0	annotated	CGxDeviceD3d::TexCopyFromTargetRect	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3350	annotated	CGxDeviceD3d::ISceneBegin	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3420	annotated	CGxDeviceD3d::ISceneEnd	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3450	annotated	CGxDeviceD3d::ScenePresent	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2502,6 +2515,7 @@ addr	how	frozen	evidence
 006a5e40	annotated	CGxDeviceD3d::IReleaseD3dShaders	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5ef0	override	CGxDevice::ITexWHDStartEnd	
 006a74b0	annotated	CGxDeviceD3d::SceneClear	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a7940	annotated	CGxDeviceD3d::IEnsureTargetDepth	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a9920	annotated	CGxDeviceD3d::CapsWindowSizeInScreenCoords	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a99e0	override	CGxDeviceD3d::IXformSetViewport	
 006a9b40	annotated	CGxDeviceD3d::XformSetProjection	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -4212,7 +4226,7 @@ addr	how	frozen	evidence
 0086ae20	override	OsGetAsyncTimeMs	
 0086af90	override	OsGetCpuidInfo	
 0086b240	annotated	OsGetProcessorCount	tag in src/util/win/OsSystem.cpp
-0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate
+0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate, 006a3450=CGxDeviceD3d::ScenePresent
 0086b2d0	annotated	OsGetVersion	tag in src/util/win/OsSystem.cpp
 0086b480	annotated	OsGetComputerName	tag in src/util/win/OsSystem.cpp
 0086b4a0	annotated	OsGetUserName	tag in src/util/win/OsSystem.cpp

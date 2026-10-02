@@ -19,7 +19,9 @@ void* GxDevWindow();
 
 int32_t GxMasterEnable(EGxMasterEnables state);
 
-int32_t GxScreenShot(const char* path);
+void GxCaptureRequest();
+
+void GxCaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits);
 
 // screenshotFormat / screenshotQuality CVars (reference DAT_00ac1b88 / DAT_00ac1b98)
 void ScreenshotSetFormat(const char* format);

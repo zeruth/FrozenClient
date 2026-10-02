@@ -83,7 +83,6 @@ CGxTex* s_savedDepth = nullptr;
 bool s_allocFailed = false;
 bool s_rendered = false;
 float s_savedViewport[6] = { 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
-char s_dumpPath[260] = { 0 };
 
 // A render target owns its texels -- the device writes them, nothing uploads them -- so there is
 // nothing for an upload callback to do and both targets below were created without one. GxTexCreate
@@ -357,20 +356,6 @@ int32_t MapShadowBegin() {
     // Set FROZEN_SHADOW_DUMP to a file path to have the map written out once, a hundred frames in so
     // the world has finished streaming. Reading the map back is the only way to tell an empty pass
     // from a broken bind while nothing samples it yet.
-    static int32_t frame = 0;
-
-    // Frame 30, not 100: the client currently dies about 15 seconds after entering the world, and
-    // waiting 100 frames was leaving no dump at all when the run ended early.
-    if (++frame == 30) {
-        const char* want = getenv("FROZEN_SHADOW_DUMP");
-
-        fprintf(stderr, "MapShadow: dump requested? %s\n", want ? want : "(FROZEN_SHADOW_DUMP unset)");
-
-        if (want) {
-            MapShadowRequestDump(want);
-        }
-    }
-
     GxRenderTargetGet(GxBuffers_Color, s_savedColor);
     GxRenderTargetGet(GxBuffers_Depth, s_savedDepth);
     GxXformViewport(
@@ -422,34 +407,11 @@ void MapShadowEnd() {
         s_savedViewport[3], s_savedViewport[4], s_savedViewport[5]);
 
 
-    // Read back only AFTER the target has been unbound. GetRenderTargetData refuses a surface
-    // that is still the device's active render target, which is why the dump reported FAILED
-    // while it sat at the top of this function.
-    if (s_dumpPath[0]) {
-        fprintf(stderr, "MapShadow: dumping tex %p handle %p\n",
-                static_cast<void*>(s_colorTex),
-                s_colorTex ? s_colorTex->m_apiSpecificData : nullptr);
-
-        int32_t ok = GxRenderTargetDump(s_colorTex, s_dumpPath);
-        fprintf(stderr, "MapShadow: dump to %s %s\n", s_dumpPath, ok ? "OK" : "FAILED");
-        s_dumpPath[0] = 0;
-    }
-
     s_rendered = true;
 }
 
 CGxTex* MapShadowTexture() {
     return s_rendered ? s_colorTex : nullptr;
-}
-
-void MapShadowRequestDump(const char* path) {
-    if (!path) {
-        s_dumpPath[0] = 0;
-        return;
-    }
-
-    strncpy(s_dumpPath, path, sizeof(s_dumpPath) - 1);
-    s_dumpPath[sizeof(s_dumpPath) - 1] = 0;
 }
 
 // The plane and height the MAP OBJECT and interior shadow binders read, and the last thing item 10

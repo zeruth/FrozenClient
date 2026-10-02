@@ -2074,8 +2074,9 @@
     "note": "Identified 2026-09-23 from the call site rather than the body: FUN_00837a40 makes exactly these three calls in exactly the order frozen's CM2Shared::InitializeSkinProfile makes them (SubstituteSimpleShaders, SubstituteSpecializedShaders, then GetEffect once per batch). See docs/ref/parity-m2-shaders.md. PORTED 2026-09-27 together with the whole chain under it -- PackTextureCombos, M2EnsureComboPair, RebuildComboArrays and FixUpTextureCombos -- so the batches this pass rewrites now reach GetEffect with the substituted shader ids the reference gives them. Status corrected from stub, which is what kept it out of the ported count."
   },
   "00682d30": {
-    "status": "unlinked",
-    "note": "one instruction: sets the per-frame request flag at CGxDevice+0x2934 to 1. Each backend's ScenePresent reads that field immediately before calling the base CGxDevice::ScenePresent (00682e50), which clears it. frozen now carries the field as int2934 but nothing sets it, so there is no counterpart to link. Identified 2026-09-23 while porting the base ScenePresent."
+    "frozen": "CGxDevice::CaptureRequest",
+    "status": "ported",
+    "note": "One instruction: sets the capture request at +0x2934 (int2934); the backend ScenePresent reads it before the base clears it and captures the frame. Ported 2026-10-02 with the capture path. Not in the Ghidra export, so it binds only through the tag."
   },
   "00428000": {
     "status": "unlinked",
@@ -3605,10 +3606,6 @@
   "0068fe80": {
     "status": "unlinked",
     "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the CGxDeviceD3d destructor: stores the vtable, frees the vertex-declaration cache at +0x3ad8, runs the base destructor (FUN_006890c0) and frees the object when asked. Frozen declares no destructor for the device."
-  },
-  "0068fed0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the frame read-back behind the one-shot capture request (+0x2934): copies the back buffer, or an offscreen surface FUN_0068f6a0 makes when multisampled, into a caller buffer, converting 565 and 1555 to 8888. Frozen has no counterpart yet."
   },
   "00683760": {
     "status": "excluded",

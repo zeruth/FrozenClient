@@ -573,6 +573,43 @@ void CGxDevice::DeviceOverride(int32_t which, uint32_t value) {
     }
 }
 
+// ref: FUN_00682d30
+void CGxDevice::CaptureRequest() {
+    this->int2934 = 1;
+}
+
+// ref: FUN_00684260
+void CGxDevice::CaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits) {
+    width = this->m_captureWidth;
+    height = this->m_captureHeight;
+    bits = this->m_captureBits.Count() ? this->m_captureBits.Ptr() : nullptr;
+}
+
+// ref: FUN_006841d0
+// The whole current window, read back by the backend into m_captureBits.
+void CGxDevice::ICapture() {
+    CiRect rect;
+    rect.minY = 0;
+    rect.minX = 0;
+    this->m_captureWidth = static_cast<uint32_t>(this->m_curWindowRect.maxX);
+    this->m_captureHeight = static_cast<uint32_t>(this->m_curWindowRect.maxY);
+    rect.maxY = this->m_captureHeight;
+    rect.maxX = this->m_captureWidth;
+
+    this->ICaptureRead(rect, this->m_captureBits);
+}
+
+// ref: FUN_00683ce0
+void CGxDevice::IClipToWindow(CiRect& rect) {
+    CiRect window;
+    window.minY = static_cast<int32_t>(this->m_curWindowRect.minY);
+    window.minX = static_cast<int32_t>(this->m_curWindowRect.minX);
+    window.maxY = static_cast<int32_t>(this->m_curWindowRect.maxY);
+    window.maxX = static_cast<int32_t>(this->m_curWindowRect.maxX);
+
+    rect = CiRect::Intersection(rect, window);
+}
+
 // ref: FUN_006855c0
 void CGxDevice::PrimBegin(EGxPrim primType) {
     this->m_primImmType = primType;
@@ -1668,24 +1705,25 @@ void CGxDevice::RenderTargetGet(EGxBuffer buffer, CGxTex*& gxTex) {
     gxTex = this->m_textureTarget[buffer].m_texture;
 }
 
+// ref: FUN_006842a0
+// Records the target; while a texture is bound the current window is that texture, so the
+// viewport's 0..1 covers it, and unbinding returns to the default window.
 void CGxDevice::RenderTargetSet(EGxBuffer buffer, CGxTex* gxTex, uint32_t plane) {
-    if (!this->m_context) {
-        return;
-    }
-
     this->m_textureTarget[buffer].m_texture = gxTex;
     this->m_textureTarget[buffer].m_plane = plane;
 
-    this->IRenderTargetSet(buffer, gxTex, plane);
+    if (gxTex && (this->m_textureTarget[GxBuffers_Color].m_texture || this->m_textureTarget[GxBuffers_Depth].m_texture)) {
+        this->m_curWindowRect.minY = 0.0f;
+        this->m_curWindowRect.minX = 0.0f;
+        this->m_curWindowRect.maxY = static_cast<float>(gxTex->m_height);
+        this->m_curWindowRect.maxX = static_cast<float>(gxTex->m_width);
+        return;
+    }
+
+    this->m_curWindowRect = this->m_defWindowRect;
 }
 
-int32_t CGxDevice::RenderTargetDump(CGxTex* gxTex, const char* path) {
-    return this->IRenderTargetDump(gxTex, path);
-}
 
-int32_t CGxDevice::ScreenShot(const char* path) {
-    return this->IScreenShot(path);
-}
 
 void CGxDevice::RsGet(EGxRenderState which, int32_t& value) {
     value = static_cast<int32_t>(this->m_appRenderStates[which].m_value);
