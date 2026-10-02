@@ -16,6 +16,7 @@
 #include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Types.hpp"
+#include "world/ShadowMap.hpp"
 #include <tempest/Math.hpp>
 
 C44Matrix CM2SceneRender::s_identity;
@@ -117,8 +118,7 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
 
         CShaderEffect::UpdateProjMatrix();
 
-        // TODO
-        // CShadowCache::SetShadowMapGenericGlobal();
+        ShadowMapBindScene();
     }
 
     this->m_curPass = pass;

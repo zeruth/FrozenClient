@@ -536,7 +536,7 @@ void PlaneFromPoints(C4Plane* plane, const C3Vector& a, const C3Vector& b, const
 // cube unprojected through the inverse view-projection. A perspective projection is walked at
 // its near and far distances with w set to the view depth, so no divide is needed; an
 // orthographic one at the unit cube. Near face first, each face (-x,-y) (-x,+y) (+x,+y) (+x,-y).
-static void FrustumCorners(const C44Matrix& view, const C44Matrix& proj, C3Vector* corners) {
+void FrustumCorners(const C44Matrix& view, const C44Matrix& proj, C3Vector* corners) {
     C44Matrix invView = view.Inverse(view.Determinant());
     C44Matrix invProj = proj.Inverse(proj.Determinant());
     C44Matrix inv = invProj * invView;

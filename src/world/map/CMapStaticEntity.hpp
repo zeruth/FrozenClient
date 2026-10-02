@@ -20,6 +20,9 @@ class CMapStaticEntity : public CMapBaseObj {
         // found it inside the frustum this frame.
         uint8_t m_detailLevel = 0;               // +0x24
         uint8_t m_visible = 0;                   // +0x25
+        // The shadow frame each of the three cascades last collected it on, so a doodad reached
+        // through two chunks or groups casts once per cascade.
+        uint8_t m_shadowFrame[3] = {};           // +0x28
         // How far along the camera forward its near edge is, used to sort the frame.
         float m_sortDistance = 0.0f;             // +0x30
         CM2Model* m_model = nullptr;             // +0x34

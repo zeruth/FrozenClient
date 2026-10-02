@@ -89,4 +89,9 @@ void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m);
 // identity rather than producing nonsense. ref: FUN_006bfe60
 void MatrixLookAt(C44Matrix& out, const C3Vector& eye, const C3Vector& target, const C3Vector& up);
 
+// The left-handed look-at: forward is target - eye, right is up x forward, and the true up is
+// forward x right. A forward or up shorter than 0.1 leaves `out` the identity.
+// ref: FUN_006c0050
+void MatrixLookAtLH(const C3Vector& eye, const C3Vector& target, const C3Vector& up, C44Matrix& out);
+
 #endif

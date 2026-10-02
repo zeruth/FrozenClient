@@ -6,6 +6,7 @@
 #include "world/map/CMapObjGroup.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+#include "world/CWFrustum.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
@@ -1557,4 +1558,82 @@ void CMapObj::EnterPortalWalk(CMapObjDef* def, const uint32_t* groups, uint32_t 
     def->m_mapObj->WalkFromInside(def->m_placement, def->m_inversePlacement,
                                   CWorldScene::s_cameraPos, CWorldScene::s_cameraTarget,
                                   groups, groupCount);
+}
+
+// ref: FUN_007ab760
+void MapObjDrawShadowCasters(CMapObjGroup* const* groups, uint32_t count, const C44Matrix* const* placements,
+                             const C44Matrix& toCamera, const CWFrustum& frustum) {
+    GxRsPush();
+
+    // Pixel c2: white, with the alpha reference in w.
+    float color[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+
+    for (uint32_t i = 0; i < count; i++) {
+        CMapObjGroup* group = groups[i];
+        const C44Matrix& placement = *placements[i];
+        CMapObj* mapObj = group->m_mapObj;
+
+        GxXformSet(GxXform_World, placement * toCamera);
+
+        CAaBox box = TransformBox(group->m_mogpBounds, placement);
+
+        if (group->m_batchCount == 0 || !AaBoxVsPlanes6(frustum.planes, box)) {
+            continue;
+        }
+
+        group->m_bufferIdleTime = 0.0f;
+        group->CreateBuffers();
+        group->BindIndexStream();
+        group->BindVertexStream();
+        CShaderEffect::SetWorldViewConstants();
+
+        if (!(group->m_state & 0x4)) {
+            CShaderEffect::SetAlphaRef(0.8784313797950745f);
+            CShaderEffect::SetShadersForGeometry(0);
+
+            for (uint32_t b = 0; b < group->m_batchCount; b++) {
+                const SMOBatch& batch = group->m_batches[b];
+                const SMOMaterial& material = mapObj->m_materials[batch.materialId];
+                HTEXTURE texture = mapObj->m_materialTextures[batch.materialId].texture1;
+                CGxTex* gxTex = texture ? TextureGetGxTex(texture, 0, nullptr) : nullptr;
+
+                if (!gxTex) {
+                    continue;
+                }
+
+                g_theGxDevicePtr->RsSet(GxRs_Texture0, gxTex);
+
+                color[3] = material.blendMode == 1 ? 0.8784313797950745f : 0.0f;
+                g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 2, color, 1);
+
+                CGxBatch gxBatch;
+                gxBatch.m_primType = GxPrim_Triangles;
+                gxBatch.m_start = batch.startIndex;
+                gxBatch.m_count = batch.count;
+                gxBatch.m_minIndex = batch.minVertex;
+                gxBatch.m_maxIndex = batch.maxVertex;
+
+                g_theGxDevicePtr->Draw(&gxBatch, 1);
+            }
+        } else {
+            CShaderEffect::SetAlphaRef(0.0f);
+            CShaderEffect::SetShadersForGeometry(0);
+
+            g_theGxDevicePtr->RsSet(GxRs_Texture0, static_cast<CGxTex*>(nullptr));
+
+            color[3] = 0.0f;
+            g_theGxDevicePtr->ShaderConstantsSet(GxSh_Pixel, 2, color, 1);
+
+            CGxBatch gxBatch;
+            gxBatch.m_primType = GxPrim_Triangles;
+            gxBatch.m_start = group->m_minIndex;
+            gxBatch.m_count = group->m_maxIndex - group->m_minIndex + 1;
+            gxBatch.m_minIndex = group->m_minVertex;
+            gxBatch.m_maxIndex = group->m_maxVertex;
+
+            g_theGxDevicePtr->Draw(&gxBatch, 1);
+        }
+    }
+
+    GxRsPop();
 }

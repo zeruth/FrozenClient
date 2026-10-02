@@ -542,6 +542,56 @@ void MatrixLookAt(C44Matrix& out, const C3Vector& eye, const C3Vector& target, c
     out.Translate(back);
 }
 
+// ref: FUN_006c0050
+// D3DXMatrixLookAtLH by another name. It is not FUN_006bfe60 (MatrixLookAt above): that one
+// crosses forward into up, this one up into forward, so the two bases are mirror images. The
+// shadow map builds every light view with this one.
+//
+// Both rejections leave the identity behind, and the shadow cascades rely on that: their up
+// vectors are never written, so every cascade view in the reference IS the identity.
+void MatrixLookAtLH(const C3Vector& eye, const C3Vector& target, const C3Vector& up, C44Matrix& out) {
+    out.Identity();
+
+    C3Vector forward = { target.x - eye.x, target.y - eye.y, target.z - eye.z };
+
+    if (!(0.01f <= forward.z * forward.z + forward.x * forward.x + forward.y * forward.y)) {
+        return;
+    }
+
+    if (!(0.01f <= up.z * up.z + up.x * up.x + up.y * up.y)) {
+        return;
+    }
+
+    forward.NormalizeUnchecked();
+
+    C3Vector right = {
+        forward.z * up.y - forward.y * up.z,
+        forward.x * up.z - up.x * forward.z,
+        up.x * forward.y - forward.x * up.y
+    };
+    right.NormalizeUnchecked();
+
+    C3Vector trueUp = {
+        forward.y * right.z - right.y * forward.z,
+        right.x * forward.z - forward.x * right.z,
+        forward.x * right.y - forward.y * right.x
+    };
+    trueUp.NormalizeUnchecked();
+
+    out.a0 = right.x;
+    out.a1 = trueUp.x;
+    out.a2 = forward.x;
+    out.b0 = right.y;
+    out.b1 = trueUp.y;
+    out.b2 = forward.y;
+    out.c0 = right.z;
+    out.c1 = trueUp.z;
+    out.c2 = forward.z;
+
+    C3Vector back = { -eye.x, -eye.y, -eye.z };
+    out.Translate(back);
+}
+
 // ref: FUN_004c2270
 // A row vector through a matrix
 void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m) {

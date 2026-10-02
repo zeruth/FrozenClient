@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <storm/List.hpp>
+#include <tempest/Box.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Plane.hpp>
 #include <tempest/Sphere.hpp>
@@ -56,6 +57,16 @@ class CWFrustum {
         // map's ortho frusta need it right after SetCorners. reference FUN_007ba960
         void NegatePlanes();
         int32_t SphereInside(const CAaSphere& sphere);
+        // The box around the eight corners. reference FUN_00983990
+        void GetBounds(CAaBox& bounds) const;
+        // Swap the corners across x: 0 with 3, 1 with 2, 4 with 7, 5 with 6. The planes stay as
+        // they are. The shadow map does this after turning an ortho frustum inside out.
+        // reference FUN_007baaa0
+        void MirrorCorners();
 };
+
+// The eight corners of the volume a view and a projection describe, in the space the view maps
+// from: near face first, each face (-x,-y) (-x,+y) (+x,+y) (+x,-y). reference FUN_006bf6d0
+void FrustumCorners(const C44Matrix& view, const C44Matrix& proj, C3Vector* corners);
 
 #endif

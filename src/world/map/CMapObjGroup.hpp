@@ -17,6 +17,7 @@
 class CAsyncObject;
 class CGxBuf;
 class CMapObj;
+class CWFrustum;
 class CMapObjGroup;
 struct SMOMaterial;
 
@@ -170,6 +171,13 @@ struct SMOBatch {
 };
 
 static_assert(sizeof(SMOBatch) == 0x18, "SMOBatch is 24 bytes");
+
+// The map object half of a shadow map: each group drawn through its placement, moved camera-
+// relative, if its placed box meets the frustum. A group whose batches are all untextured (state
+// bit 4) goes in one draw at alpha ref 0; the rest draw batch by batch with their own texture,
+// alpha-tested at 224/255 when the material blends by mode 1. ref: FUN_007ab760
+void MapObjDrawShadowCasters(CMapObjGroup* const* groups, uint32_t count, const C44Matrix* const* placements,
+                             const C44Matrix& toCamera, const CWFrustum& frustum);
 
 // ref: FUN_007c7a00
 bool TriangleOutsideBox(const CAaBox& box, const C3Vector& a, const C3Vector& b, const C3Vector& c);

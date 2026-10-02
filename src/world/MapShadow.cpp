@@ -1,162 +1,51 @@
 #include "world/MapShadow.hpp"
-#include "model/CM2Scene.hpp"
-#include "world/ShadowMap.hpp"
-#include "object/client/CGObject_C.hpp"
-#include "object/client/ObjMgr.hpp"
-#include "ui/game/CGCamera.hpp"
-#include "ui/game/CGWorldFrame.hpp"
-#include "world/CWorld.hpp"
+#include "console/CVar.hpp"
+#include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
 #include "gx/Draw.hpp"
 #include "gx/RenderState.hpp"
 #include "gx/RenderTarget.hpp"
+#include "gx/Shader.hpp"
 #include "gx/Texture.hpp"
 #include "gx/Transform.hpp"
+#include "gx/shader/CShaderEffect.hpp"
+#include "gx/shader/CShaderEffectManager.hpp"
 #include "gx/texture/CGxTex.hpp"
+#include "model/CM2Model.hpp"
+#include "model/CM2Shared.hpp"
+#include "model/M2Types.hpp"
+#include "object/client/CGObject_C.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "ui/game/CGWorldFrame.hpp"
+#include "world/CWFrustum.hpp"
+#include "world/CWorld.hpp"
+#include "world/CWorldScene.hpp"
+#include "world/ShadowMap.hpp"
+#include "world/map/CMap.hpp"
+#include "world/map/CMapArea.hpp"
+#include "world/map/CMapChunk.hpp"
+#include "world/map/CMapObj.hpp"
+#include "world/map/CMapObjDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
+#include "world/map/CMapObjGroup.hpp"
+#include "world/map/CMapStaticEntity.hpp"
+#include "world/map/MapOcclusion.hpp"
+#include <storm/Memory.hpp>
+#include <tempest/Intersect.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Plane.hpp>
+#include <tempest/Rect.hpp>
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <cstdlib>
-#include <cstdint>
 
-// Light volume for the map shadow map. All constants recovered in docs/ref/parity-shadowmap.md:
-//
-//   direction : the outdoor light direction with z scaled by 5 and clamped to >= -1.2. Given the
-//               solved zenith band (110-127 degrees) that clamp ALWAYS bites, so the shadow light
-//               is effectively pinned near 52 degrees elevation and barely moves over the day.
-//               That is what stops shadows stretching to the horizon at dawn and dusk.
-//   camera    : eye = focus - dir * 2000, target = focus, up = world +X (world +Z is unusable at
-//               that pitch).
-//   projection: orthographic over a 40 x 40 yard box, near 1, far 4000.
-//   depth     : column 2 of the projection is replaced by column 2 of the VIEW matrix, so the
-//               stored depth is linear distance along the light rather than a projected z; the
-//               texture matrix then scales it by 1/4000 into [0, 1]. The reader is handed the same
-//               constant, so writer and reader agree.
-//   bias      : -0.1 world units, baked into the matrix rather than set as a render state.
-
-namespace {
-
-const float SHADOW_EXTENT = 20.0f;   // half-size of the 40x40 yard box
-const float SHADOW_NEAR = 1.0f;
-const float SHADOW_FAR = 4000.0f;
-const float SHADOW_BACK = 2000.0f;   // how far back along the light the eye sits
-const float SHADOW_BIAS = -0.1f;
-const float SHADOW_DEPTH_SCALE = 1.0f / SHADOW_FAR;
-// The DEFAULT map edge. The size in force is g_shadowMapSize, which ShadowMapUpdateSize takes
-// from the quality -- two of the seven levels ask for 2048. This constant is what the quality
-// is what every tier but those two asks for, and what the compare harness
-// reports as the nominal size.
-const int32_t SHADOW_SIZE = 1024;
-
-} // namespace (reopened below)
-
-// The point the light volume was last built around. The reference caches the same thing, so
-// exposing frozen's copy turns "we pass the player position, same as the reference" from a claim in a
-// comment into a compared value.
-C3Vector g_mapShadowFocus = { 0.0f, 0.0f, 0.0f };
-
-const MapShadowConstants g_mapShadowConstants = {
-    SHADOW_SIZE,
-    SHADOW_EXTENT,
-    SHADOW_NEAR,
-    SHADOW_FAR,
-    SHADOW_BACK,
-    SHADOW_BIAS,
-    SHADOW_DEPTH_SCALE,
-    { 1.0f, 0.0f, 0.0f },
-};
-
-namespace {
-
-C44Matrix s_lightView;
-C44Matrix s_projection;
-C44Matrix s_savedProjection;
-C44Matrix s_texMatrix;
-bool s_built = false;
-
-CGxTex* s_colorTex = nullptr;
-CGxTex* s_depthTex = nullptr;
-CGxTex* s_savedColor = nullptr;
-CGxTex* s_savedDepth = nullptr;
-bool s_allocFailed = false;
-bool s_rendered = false;
-float s_savedViewport[6] = { 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
-
-// A render target owns its texels -- the device writes them, nothing uploads them -- so there is
-// nothing for an upload callback to do and both targets below were created without one. GxTexCreate
-// asserts one is present anyway, and a build with assertions live takes that literally: this killed
-// the client a few seconds into the world on Android, where assertions are not compiled out.
-void ShadowTargetCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevel, void* userArg, uint32_t& stride, const void*& texels) {
-}
-
-// Allocate both targets, not just the colour one. The reference gets away with a lone R32F colour
-// target because it keeps the default depth-stencil, but D3D9 requires the depth surface to be at
-// least as large as the colour surface, and a 1024 map against a smaller window fails the bind.
-// Taking the hardware-PCF layout unconditionally sidesteps that entirely.
-bool EnsureTargets() {
-    if (s_colorTex && s_depthTex) {
-        return true;
-    }
-
-    if (s_allocFailed) {
-        return false;
-    }
-
-    // No mips, no wrap, render target, no anisotropy: clamping matters because a lookup outside the
-    // 40 yard box must read the border, not wrap around to the far side of the map.
-    CGxTexFlags flags(GxTex_Linear, 1, 1, 0, 0, 1, 0);
-
-    // The size the quality asks for, not a constant -- see ShadowMapUpdateSize.
-    int32_t size = g_shadowMapSize;
-
-    int32_t ok = GxTexCreate(
-        GxTex_2d, size, size, 1, GxTex_R32F, GxTex_R32F,
-        flags, nullptr, ShadowTargetCallback, "ShadowCache", s_colorTex);
-
-    if (ok) {
-        ok = GxTexCreate(
-            GxTex_2d, size, size, 1, GxTex_D24X8, GxTex_D24X8,
-            flags, nullptr, ShadowTargetCallback, "ShadowCacheDepth", s_depthTex);
-    }
-
-    if (!ok || !s_colorTex || !s_depthTex) {
-        fprintf(stderr, "MapShadow: target allocation FAILED (%dx%d)\n", size, size);
-        s_allocFailed = true;
-        s_colorTex = nullptr;
-        s_depthTex = nullptr;
-        return false;
-    }
-
-    fprintf(stderr, "MapShadow: targets allocated %dx%d (R32F + D24X8)\n", size, size);
-    return true;
-}
-
-} // namespace
-
-// frozen's half of ShadowMapReleaseTargets (ref FUN_00874240), which the realloc latch calls
-// before rebuilding. The reference closes three textures -- the map and the lit and unlit
-// variants -- plus two handles in each of three filter ring entries; frozen renders one map
-// with an explicit depth surface and builds no filter chain, so these two are all of it.
-//
-// s_allocFailed is cleared as well. It is a latch that stops a failed allocation being retried
-// every frame, and a device reset is exactly the event that can make the allocation start
-// working, so keeping it set across a release would turn one bad frame into a dead feature.
-void MapShadowReleaseTargets() {
-    if (s_colorTex) {
-        GxTexDestroy(s_colorTex);
-        s_colorTex = nullptr;
-    }
-
-    if (s_depthTex) {
-        GxTexDestroy(s_depthTex);
-        s_depthTex = nullptr;
-    }
-
-    s_allocFailed = false;
-    s_rendered = false;
-}
+// The map's half of the shadow map (reference MapShadow.cpp, 0x007ba840..0x007bd450): the four
+// callbacks the shadow map draws through -- the sampling matrix, a cascade's view, collecting what
+// casts into it, and drawing that -- plus the per-frame driver and the plane the map object shaders
+// read. The maps themselves, the cascades and the binds are ShadowMap.cpp.
 
 // ref: FUN_007bb830
 // Clear one shadow target pair to white through a viewport rectangle.
@@ -243,183 +132,6 @@ C3Vector MapShadowLightDirection() {
     return dir;
 }
 
-void MapShadowSetup(const C3Vector& focus) {
-    g_mapShadowFocus = focus;
-
-    C3Vector dir = MapShadowLightDirection();
-
-    // `dir` now points the way the light travels, i.e. downward, so the eye is the focus displaced
-    // BACK along it and ends up in the sky, exactly as the reference does it
-    // (eye = centre - lightDirWorld * 2000). The forward axis is then `dir` itself.
-    C3Vector eye = { focus.x - dir.x * SHADOW_BACK, focus.y - dir.y * SHADOW_BACK, focus.z - dir.z * SHADOW_BACK };
-    C3Vector zAxis = Normalize({ focus.x - eye.x, focus.y - eye.y, focus.z - eye.z });
-    C3Vector up = { 1.0f, 0.0f, 0.0f };
-    C3Vector xAxis = Normalize(Cross(up, zAxis));
-    C3Vector yAxis = Cross(zAxis, xAxis);
-
-    C44Matrix view;
-    view.Identity();
-    view.a0 = xAxis.x; view.a1 = yAxis.x; view.a2 = zAxis.x;
-    view.b0 = xAxis.y; view.b1 = yAxis.y; view.b2 = zAxis.y;
-    view.c0 = xAxis.z; view.c1 = yAxis.z; view.c2 = zAxis.z;
-    view.d0 = -Dot(xAxis, eye);
-    view.d1 = -Dot(yAxis, eye);
-    view.d2 = -Dot(zAxis, eye);
-
-    // Orthographic over the box, then swap in linear light depth for column 2.
-    C44Matrix proj;
-    proj.Identity();
-    proj.a0 = 1.0f / SHADOW_EXTENT;
-    proj.b1 = 1.0f / SHADOW_EXTENT;
-    proj.c2 = 1.0f / (SHADOW_FAR - SHADOW_NEAR);
-    proj.d2 = -SHADOW_NEAR / (SHADOW_FAR - SHADOW_NEAR);
-
-    C44Matrix vp = view * proj;
-
-    // Column 2 = the view's column 2, i.e. distance along the light, plus the depth bias. This
-    // applies to the SAMPLING matrix only. The map is rendered with a plain orthographic
-    // projection: the reference's shadow map pixel shader writes the light-space z it receives in
-    // oT1, not the projected depth, so the two only agree if the projection stays ordinary and the
-    // comparison value is built from the view's column 2.
-    vp.a2 = view.a2;
-    vp.b2 = view.b2;
-    vp.c2 = view.c2;
-    vp.d2 = view.d2 + SHADOW_BIAS;
-
-    s_lightView = view;
-
-    // The rendering projection, in the [-1, 1] depth convention CGxDeviceD3d::IXformSetProjection
-    // expects; it does the remap to D3D's [0, 1] itself, and handing it an already-remapped matrix
-    // would push every caster outside the clip volume.
-    s_projection.Identity();
-    s_projection.a0 = 1.0f / SHADOW_EXTENT;
-    s_projection.b1 = 1.0f / SHADOW_EXTENT;
-    s_projection.c2 = 2.0f / (SHADOW_FAR - SHADOW_NEAR);
-    s_projection.d2 = -(SHADOW_FAR + SHADOW_NEAR) / (SHADOW_FAR - SHADOW_NEAR);
-
-    // world -> texture: NDC xy [-1,1] to [0,1] with y flipped, depth scaled into [0,1], plus the
-    // half-texel offset the reference applies.
-    C44Matrix remap;
-    remap.Identity();
-    remap.a0 = 0.5f;
-    remap.b1 = -0.5f;
-    remap.c2 = SHADOW_DEPTH_SCALE;
-    remap.d0 = 0.5f + 0.5f / static_cast<float>(g_shadowMapSize);
-    remap.d1 = 0.5f + 0.5f / static_cast<float>(g_shadowMapSize);
-    remap.d2 = 0.0f;
-
-    s_texMatrix = vp * remap;
-
-    // One-shot self-check, per docs/ref/parity-shadowmap.md: the focus point is the centre of the
-    // light volume by construction, so it must land at the middle of the map at half depth. If the
-    // axis choice, the column-2 swap or the remap were wrong this is where it shows, before any
-    // render target exists to confuse the picture.
-    if (!s_built) {
-        float u = focus.x * s_texMatrix.a0 + focus.y * s_texMatrix.b0 + focus.z * s_texMatrix.c0 + s_texMatrix.d0;
-        float v = focus.x * s_texMatrix.a1 + focus.y * s_texMatrix.b1 + focus.z * s_texMatrix.c1 + s_texMatrix.d1;
-        float d = focus.x * s_texMatrix.a2 + focus.y * s_texMatrix.b2 + focus.z * s_texMatrix.c2 + s_texMatrix.d2;
-
-        float halfTexel = 0.5f / static_cast<float>(g_shadowMapSize);
-        bool ok = fabsf(u - 0.5f) < halfTexel * 2.0f
-               && fabsf(v - 0.5f) < halfTexel * 2.0f
-               && fabsf(d - 0.5f) < 0.001f;
-
-        fprintf(stderr, "MapShadow: focus -> uv(%.4f %.4f) depth %.4f  light(%.3f %.3f %.3f)  %s\n",
-            u, v, d, dir.x, dir.y, dir.z, ok ? "OK" : "MISMATCH");
-    }
-
-    s_built = true;
-}
-
-const C44Matrix& MapShadowProjection() {
-    return s_projection;
-}
-
-const C44Matrix& MapShadowLightView() {
-    return s_lightView;
-}
-
-const C44Matrix& MapShadowTexMatrix() {
-    return s_texMatrix;
-}
-
-int32_t MapShadowSize() {
-    return g_shadowMapSize;
-}
-
-
-int32_t MapShadowBegin() {
-    if (!s_built || !EnsureTargets()) {
-        return 0;
-    }
-
-    // Set FROZEN_SHADOW_DUMP to a file path to have the map written out once, a hundred frames in so
-    // the world has finished streaming. Reading the map back is the only way to tell an empty pass
-    // from a broken bind while nothing samples it yet.
-    GxRenderTargetGet(GxBuffers_Color, s_savedColor);
-    GxRenderTargetGet(GxBuffers_Depth, s_savedDepth);
-    GxXformViewport(
-        s_savedViewport[0], s_savedViewport[1], s_savedViewport[2],
-        s_savedViewport[3], s_savedViewport[4], s_savedViewport[5]);
-
-    GxRsPush();
-
-    GxRenderTargetSet(GxBuffers_Depth, s_depthTex, 0);
-    GxRenderTargetSet(GxBuffers_Color, s_colorTex, 0);
-
-    // SetRenderTarget resets the viewport to the whole surface, so the viewport must be set AFTER
-    // the bind, never before. Getting this backwards leaves the map rendered at back-buffer scale
-    // into one corner, which looks like a broken projection and is not.
-    GxXformSetViewport(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-
-    // White is "nothing casts here": the sampled depth is 1.0, further than any real surface.
-    CImVector white = { 0xFF, 0xFF, 0xFF, 0xFF };
-    GxSceneClear(0x3, white);
-
-    // Casters are drawn double-sided and unfogged; a shadow only cares about the nearest surface
-    // along the light, so a back face is as good a caster as a front one.
-    GxRsSet(GxRs_Culling, 0);
-    GxRsSet(GxRs_Fog, 0);
-
-    // Save the camera's projection before replacing it. MapShadowEnd restores it.
-    //
-    // Leaving it set was the cause of entities drawing at a fixed size over everything: terrain
-    // survives because it builds its own view-projection earlier in the frame, but the model pass
-    // calls CShaderEffect::UpdateProjMatrix, which reads the DEVICE projection -- so every entity
-    // was drawn through this orthographic matrix. Orthographic means no perspective divide, hence
-    // no change with camera distance, and its depth does not match the perspective depth buffer,
-    // hence always in front.
-    GxXformProjection(s_savedProjection);
-    GxXformSetProjection(s_projection);
-
-    return 1;
-}
-
-void MapShadowEnd() {
-    GxRsPop();
-
-    GxXformSetProjection(s_savedProjection);
-
-    GxRenderTargetSet(GxBuffers_Color, s_savedColor, 0);
-    GxRenderTargetSet(GxBuffers_Depth, s_savedDepth, 0);
-    GxXformSetViewport(
-        s_savedViewport[0], s_savedViewport[1], s_savedViewport[2],
-        s_savedViewport[3], s_savedViewport[4], s_savedViewport[5]);
-
-
-    s_rendered = true;
-}
-
-CGxTex* MapShadowTexture() {
-    return s_rendered ? s_colorTex : nullptr;
-}
-
-// The plane and height the MAP OBJECT and interior shadow binders read, and the last thing item 10
-// names. Only those binders consume it -- the terrain path never reads a plane -- which is why a
-// terrain-only port could skip this.
-C4Plane g_mapShadowPlane = { { 0.0f, 0.0f, 1.0f }, 0.0f };
-float g_mapShadowHeight = 0.0f;
-
 // ref: FUN_007bb670
 // Writes exactly two things: a plane through the player, and the player's height plus two.
 //
@@ -487,46 +199,841 @@ C3Vector MapShadowFocus() {
     return focus;
 }
 
-// ref: FUN_007bb570
-// The per-frame map shadow driver, in the reference's order: store the light direction, pick the
-// focus, set the intensity, render the map, filter it.
-//
-// DIVERGENCE, and it is one of decomposition rather than behaviour. The reference's render step is
-// FUN_00875f80, which builds the light volume from the focus AND draws the casters through three
-// function pointers the map registers; frozen splits that into MapShadowSetup (the volume) and
-// MapShadowBegin / DrawShadowCasters / MapShadowEnd (the draw), so this calls four things where the
-// reference calls one. The filter chain after it (FUN_008750b0) has no counterpart at all.
-void MapShadowRender() {
-    // THE REALLOC LATCH, and the reason every line below it was dead code until 2026-09-27.
-    //
-    // ShadowMapSetQuality raises g_shadowMapRealloc to say 'the targets are the wrong size now',
-    // and ShadowMapGetQuality reports 0 while it is up so the frame that changes the setting
-    // draws unshadowed instead of sampling a stale map. Nothing in frozen ever lowered it again.
-    // So the first time anything set the quality the latch went up and stayed up, the getter
-    // returned 0 for the rest of the process, and this function, ShadowMapBindTerrain,
-    // ShadowMapBindMapObj and ShadowMapBindScene all returned at their first line forever.
-    //
-    // The reference clears it here, at the top of its render step (FUN_00875f80), after doing the
-    // reallocation the latch was asking for: free the targets, allocate them again, drop the
-    // flag. This is that, and it has to stay ABOVE the quality check -- the check is the thing
-    // the latch suppresses, so a clear underneath it would never run.
-    if (g_shadowMapRealloc) {
-        MapShadowReleaseTargets();
+// ------------------------------------------------------------------------------------------------
+// What the map puts into the shadow maps
+// ------------------------------------------------------------------------------------------------
 
-        // Both in the reference's order and for the reference's reason: the size comes from the
-        // quality and the PCF kernel is expressed in units of it, so the kernel has to be rebuilt
-        // whenever the size can have moved. EnsureTargets does the first two before it allocates.
-        ShadowMapUpdateSize();
-        ShadowMapBuildPcfTaps();
+// The far side of the map's coordinates, and the end of the last cell inside it.
+static const float MAP_HALF_EXTENT = 17066.666015625f;      // DAT_009e2acc
+static const float MAP_EXTENT = 34133.33203125f;            // DAT_009e2ac8
+static const float MAP_EXTENT_LAST = 34132.33203125f;       // DAT_00a400f8
 
-        EnsureTargets();
+// How far back along the light every view's eye sits, and the depth range.
+static const float LIGHT_BACK = 2000.0f;                    // DAT_00a400e4
+static const float LIGHT_FAR = 4000.0f;                     // DAT_00a3fa3c
 
-        g_shadowMapRealloc = 0;
+// Each cascade's casters: the map object groups with their placements, and the model batches in
+// the two lists CM2Model::CollectShadowCasters fills (DAT_00d25320, 0x24 bytes per cascade).
+struct MapShadowCasters {
+    uint32_t mapObjCount = 0;
+    CMapObjGroup** groups = nullptr;
+    const C44Matrix** placements = nullptr;
+    M2ShadowCasterList models[2];
+};
+
+static MapShadowCasters s_casters[3];
+static const uint32_t MAX_MAP_OBJ_CASTERS = 0x800;
+static const uint32_t MAX_MODEL_CASTERS = 0x2000;
+
+// Bumped by every collect, never zero, so a stamp of zero always means "not this frame"
+// (DAT_00d25300).
+static uint8_t s_collectFrame;
+
+// The most model casters either list has held (DAT_00d25390, DAT_00d2538c).
+static uint32_t s_maxCasters[2];
+
+// shadowCull, shadowScissor and shadowInstancing (DAT_00d25308, DAT_00d25310, DAT_00d25314).
+static CVar* s_shadowCull;
+static CVar* s_shadowScissor;
+static CVar* s_shadowInstancing;
+
+float g_mapShadowHeight = 0.0f;
+
+// ref: FUN_007ba840
+// Empty every cascade's lists, allocating them the first time.
+static void MapShadowResetCasters() {
+    for (auto& casters : s_casters) {
+        casters.mapObjCount = 0;
+        casters.models[0].count = 0;
+        casters.models[0].capacity = MAX_MODEL_CASTERS;
+        casters.models[1].count = 0;
+        casters.models[1].capacity = MAX_MODEL_CASTERS;
+
+        if (!casters.groups) {
+            casters.groups = static_cast<CMapObjGroup**>(SMemAlloc(MAX_MAP_OBJ_CASTERS * sizeof(CMapObjGroup*), __FILE__, __LINE__, 0));
+        }
+
+        if (!casters.placements) {
+            casters.placements = static_cast<const C44Matrix**>(SMemAlloc(MAX_MAP_OBJ_CASTERS * sizeof(C44Matrix*), __FILE__, __LINE__, 0));
+        }
+
+        if (!casters.models[0].data) {
+            casters.models[0].data = static_cast<M2ShadowCaster*>(SMemAlloc(MAX_MODEL_CASTERS * sizeof(M2ShadowCaster), __FILE__, __LINE__, 0));
+        }
+
+        if (!casters.models[1].data) {
+            casters.models[1].data = static_cast<M2ShadowCaster*>(SMemAlloc(MAX_MODEL_CASTERS * sizeof(M2ShadowCaster), __FILE__, __LINE__, 0));
+        }
     }
+}
 
-    if (ShadowMapGetQuality() <= 0) {
+// ref: FUN_007ba8f0
+// The size limits on what casts into a cascade: nothing smaller than a quarter yard, two yards or
+// ten, by cascade, and nothing above ten thousand -- except the main map's unit-only pass, which
+// takes nothing above 25.
+static void MapShadowRadiusLimits(const ShadowView& view, int32_t index, float* minRadius, float* maxRadius) {
+    *maxRadius = 10000.0f;
+
+    if (index == 0) {
+        if ((view.mask[0] & 0xC) == 4) {
+            *maxRadius = 25.0f;
+        }
+
+        *minRadius = 0.25f;
         return;
     }
+
+    if (index > 0) {
+        *minRadius = index < 2 ? 2.0f : 10.0f;
+        return;
+    }
+
+    *minRadius = 0.25f;
+}
+
+// ref: FUN_007baba0
+// How many of the model's bones face the camera (billboarded leaves and the like): those cast
+// with the mask's 4 bit, everything else with its 8.
+static uint16_t MapShadowBillboardBones(CM2Model* model) {
+    return model->m_loaded ? model->m_shared->uint198 : 0;
+}
+
+// ref: FUN_007babc0
+// Whether a doodad is further from the camera than its detail band draws.
+static int32_t MapShadowBeyondDetail(const C3Vector& position, uint8_t detailLevel) {
+    const C3Vector& camera = CWorldScene::s_cameraPos;
+    float dx = position.x - camera.x;
+    float dy = position.y - camera.y;
+    float dz = position.z - camera.z;
+
+    return CWorld::GetDetailBands().fadeStartSq[detailLevel] < dz * dz + dy * dy + dx * dx;
+}
+
+static bool BoxesOverlap(const CAaBox& a, const CAaBox& b) {
+    return a.b.x <= b.t.x && a.b.y <= b.t.y && a.b.z <= b.t.z
+        && b.b.x <= a.t.x && b.b.y <= a.t.y && b.b.z <= a.t.z;
+}
+
+// A box the cascade can see and its inner cascade does not already cover.
+static bool MapShadowCascadeSees(const ShadowView& view, int32_t index, const CAaBox& box) {
+    if (!AaBoxVsPlanes6(view.cullFrustum[index].planes, box)) {
+        return false;
+    }
+
+    return !view.behind[index] || AaBoxBehindPlanes6(view.behindFrustum[index].planes, box) != 3;
+}
+
+// ref: FUN_007bac10
+// A map's sampling matrix: from camera view space, through the light's view and the ortho box,
+// with column 2 replaced by the light-view depth less a bias that grows with the cascade (and by
+// half a yard more with hardware PCF).
+static void MapShadowBuildMatrix(const C3Vector& center, float extent, C44Matrix& out, const C3Vector& up, int32_t index) {
+    if (extent <= 0.0f) {
+        return;
+    }
+
+    const C3Vector& camera = CWorld::GetCameraPos();
+    const C3Vector& light = g_shadowMapLightDir;
+
+    C3Vector eye = {
+        (center.x - light.x * LIGHT_BACK) - camera.x,
+        (center.y - light.y * LIGHT_BACK) - camera.y,
+        (center.z - light.z * LIGHT_BACK) - camera.z
+    };
+
+    C3Vector target = { center.x - camera.x, center.y - camera.y, center.z - camera.z };
+
+    C44Matrix view;
+    GxXformView(view);
+    C44Matrix inverseView = view.Inverse(view.Determinant());
+
+    C44Matrix projection;
+    projection.Identity();
+    GxuXformCreateOrtho(-extent, extent, -extent, extent, 1.0f, LIGHT_FAR, projection);
+
+    C44Matrix lightView;
+    MatrixLookAtLH(eye, target, up, lightView);
+
+    out = inverseView * lightView * projection;
+
+    C44Matrix depth = inverseView * lightView;
+    out.a2 = depth.a2;
+    out.b2 = depth.b2;
+    out.c2 = depth.c2;
+    out.d2 = depth.d2;
+
+    float pcf = CShaderEffect::s_usePcfFiltering ? 0.5f : 0.0f;
+    float factor;
+
+    switch (index) {
+    case 0:
+        factor = 2.0f;
+        break;
+    case 1:
+        factor = 4.0f;
+        break;
+    case 2:
+        factor = 8.0f;
+        break;
+    default:
+        factor = 0.5f;
+        break;
+    }
+
+    out.d2 = depth.d2 - (factor * 0.2f + pcf);
+}
+
+// ref: FUN_007bafd0
+// A cascade's view: the ortho box around its centre seen from up the light, its frustum turned
+// inside out (the ortho's handedness is the opposite of SetCorners'), and -- unless this is a
+// progressive tile -- a cull frustum narrowed to what of it the camera can actually see, with the
+// matching scissor rectangle.
+static void MapShadowSetupView(CWFrustum& frustum, C44Matrix& projection, const C3Vector& up, ShadowView& view, int32_t index) {
+    const C3Vector& center = view.center[index];
+    const C3Vector& light = g_shadowMapLightDir;
+
+    C3Vector eye = {
+        center.x - light.x * LIGHT_BACK,
+        center.y - light.y * LIGHT_BACK,
+        center.z - light.z * LIGHT_BACK
+    };
+
+    GxuXformCreateOrtho(view.ortho[index][0], view.ortho[index][1], view.ortho[index][2], view.ortho[index][3], 1.0f, LIGHT_FAR, projection);
+
+    C44Matrix lightView;
+    MatrixLookAtLH(eye, center, up, lightView);
+
+    C3Vector corners[8];
+    FrustumCorners(lightView, projection, corners);
+    frustum.SetCorners(corners);
+    frustum.NegatePlanes();
+    frustum.MirrorCorners();
+
+    float* scissor = view.scissor[index];
+    scissor[0] = -1.0f;
+    scissor[1] = -1.0f;
+    scissor[2] = 1.0f;
+    scissor[3] = 1.0f;
+
+    view.cullFrustum[index] = frustum;
+
+    if (view.mask[index] == 8 || !s_shadowCull || !s_shadowCull->m_intValue) {
+        return;
+    }
+
+    // The camera's frustum in the light's clip space, boxed and clamped to it.
+    CWFrustum camera = CWorldScene::s_clipFrustum;
+    camera.Transform(lightView * projection);
+
+    CAaBox box;
+    BoundsFromPoints(box, camera.corners, 8);
+
+    box.b.x = std::min(std::max(box.b.x, -1.0f), 1.0f);
+    box.b.y = std::min(std::max(box.b.y, -1.0f), 1.0f);
+    box.b.z = std::min(std::max(box.b.z, -1.0f), 1.0f);
+    box.t.x = std::min(std::max(box.t.x, -1.0f), 1.0f);
+    box.t.y = std::min(std::max(box.t.y, -1.0f), 1.0f);
+    box.t.z = std::min(std::max(box.t.z, -1.0f), 1.0f);
+
+    if (!(box.b.x < box.t.x) || !(box.b.y < box.t.y) || !(box.b.z < box.t.z)) {
+        return;
+    }
+
+    const float* ortho = view.ortho[index];
+
+    C44Matrix narrow;
+    narrow.Identity();
+    GxuXformCreateOrtho(-(ortho[0] * box.b.x), ortho[1] * box.t.x, -(ortho[2] * box.b.y), box.t.y * ortho[3], 1.0f, LIGHT_FAR, narrow);
+
+    FrustumCorners(lightView, narrow, corners);
+    view.cullFrustum[index].SetCorners(corners);
+    view.cullFrustum[index].NegatePlanes();
+    view.cullFrustum[index].MirrorCorners();
+
+    scissor[1] = box.b.x;
+    scissor[3] = box.t.x;
+    scissor[0] = -box.t.y;
+    scissor[2] = -box.b.y;
+}
+
+// ref: FUN_007bb460
+// The chunk range a box covers: [0] and [2] along the map's first axis (from x), [1] and [3]
+// along its second (from y), each a chunk index counted from the far edge.
+static void MapShadowCellRange(const CAaBox& box, int32_t* range) {
+    float fromTopX = -(box.t.x - MAP_HALF_EXTENT);
+    float fromTopY = -(box.t.y - MAP_HALF_EXTENT);
+    float fromBottomX = -(box.b.x - MAP_HALF_EXTENT);
+    float fromBottomY = -(box.b.y - MAP_HALF_EXTENT);
+
+    if (fromTopY < 0.0f) {
+        fromTopY = 0.0f;
+    }
+
+    if (fromTopX < 0.0f) {
+        fromTopX = 0.0f;
+    }
+
+    if (MAP_EXTENT <= fromBottomY) {
+        fromBottomY = MAP_EXTENT_LAST;
+    }
+
+    if (MAP_EXTENT <= fromBottomX) {
+        fromBottomX = MAP_EXTENT_LAST;
+    }
+
+    // 0.24 is one over an eighth of a chunk: the cell index, shifted down to the chunk's.
+    range[0] = static_cast<int32_t>(lrintf(fromTopX * 0.24f - 0.5f)) >> 3;
+    range[1] = static_cast<int32_t>(lrintf(fromTopY * 0.24f - 0.5f)) >> 3;
+    range[2] = static_cast<int32_t>(lrintf(fromBottomX * 0.24f - 0.5f)) >> 3;
+    range[3] = static_cast<int32_t>(lrintf(fromBottomY * 0.24f - 0.5f)) >> 3;
+}
+
+static CMapChunk* MapShadowChunkAt(int32_t row, int32_t col) {
+    CMapArea* area = CMap::s_areaGrid[((row >> 4) & 0x3F) * 64 + ((col >> 4) & 0x3F)];
+
+    if (!area || area->m_asyncObject) {
+        return nullptr;
+    }
+
+    return area->m_chunks[(row & 0xF) * 16 + (col & 0xF)];
+}
+
+// ref: FUN_007bb9d0
+// Units and the like: which cascades from `first` to `last` each entity casts into.
+static void MapShadowCollectEntities(ShadowView& view, int32_t first, int32_t last) {
+    float maxRadius[3] = { 10000.0f, 10000.0f, 10000.0f };
+    const float minRadius[3] = { 0.25f, 2.0f, 10.0f };
+
+    if ((view.mask[0] & 0xC) == 4) {
+        maxRadius[0] = 25.0f;
+    }
+
+    for (auto object = CMap::s_entityList.Head(); object; object = CMap::s_entityList.Next(object)) {
+        auto entity = static_cast<CMapStaticEntity*>(object);
+
+        if ((entity->m_flags7c & 0x4) || !entity->m_model) {
+            continue;
+        }
+
+        int32_t unit = (entity->m_type & CMapBaseObj::Type_Entity) && !(entity->m_flags7c & 0x2000);
+        uint16_t billboard = MapShadowBillboardBones(entity->m_model);
+        float radius = entity->m_sphere.r;
+
+        for (int32_t i = first; i <= last; i++) {
+            uint32_t mask = view.mask[i];
+            uint32_t flags = entity->m_flags;
+            bool heightCheck;
+
+            if (!(mask & 2)) {
+                if (!(flags & CMapBaseObj::Flag_Interior)) {
+                    heightCheck = false;
+                } else if (entity->m_flags7c & 0x1000) {
+                    heightCheck = true;
+                } else {
+                    continue;
+                }
+            } else {
+                if (!unit || (flags & CMapBaseObj::Flag_Exterior)) {
+                    continue;
+                }
+
+                heightCheck = true;
+            }
+
+            if (heightCheck && !(entity->m_position.z <= g_mapShadowHeight)) {
+                continue;
+            }
+
+            uint32_t take = unit ? (mask & 1) : billboard ? (mask & 4) : (mask & 8);
+
+            if (!take || !BoxesOverlap(entity->m_bounds, view.bounds[i])) {
+                continue;
+            }
+
+            if (!(minRadius[i] <= radius)) {
+                continue;
+            }
+
+            if (!(flags & 0x20000) && !(radius <= maxRadius[i])) {
+                continue;
+            }
+
+            if (MapShadowCascadeSees(view, i, entity->m_bounds)) {
+                entity->m_model->CollectShadowCasters(s_casters[i].models);
+            }
+        }
+    }
+
+}
+
+// Every group of a placed building, with its index into the root.
+template <class Fn>
+static void ForEachDefGroup(CMapObjDef* def, Fn fn) {
+    for (uint32_t j = 0; j < def->m_defGroups.Count(); j++) {
+        CMapObjDefGroup* defGroup = def->m_defGroups[j];
+        CMapObjGroup* group = def->m_mapObj ? def->m_mapObj->GetGroup(j, 0) : nullptr;
+
+        if (!defGroup || !group || !(group->m_flags & 0x48)) {
+            continue;
+        }
+
+        if (!fn(defGroup, group)) {
+            break;
+        }
+    }
+}
+
+static bool MapShadowAddMapObj(int32_t index, CMapObjGroup* group, CMapObjDef* def) {
+    auto& casters = s_casters[index];
+
+    if (casters.mapObjCount >= MAX_MAP_OBJ_CASTERS) {
+        return false;
+    }
+
+    casters.placements[casters.mapObjCount] = &def->m_placement;
+    casters.groups[casters.mapObjCount] = group;
+    casters.mapObjCount++;
+
+    return true;
+}
+
+// ref: FUN_007bc490
+// The buildings and the doodads inside them, for every cascade at once (quality 5).
+static void MapShadowCollectMapObjsWhole(ShadowView& view, int32_t first, int32_t last) {
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (def->m_flags & 0x20) {
+            continue;
+        }
+
+        if (!BoxesOverlap(def->m_bounds, view.bounds[last]) || !AaBoxVsPlanes6(view.cullFrustum[last].planes, def->m_bounds)) {
+            continue;
+        }
+
+        ForEachDefGroup(def, [&](CMapObjDefGroup* defGroup, CMapObjGroup* group) {
+            if (!view.bounds[last].Intersects(defGroup->m_bounds) || !AaBoxVsPlanes6(view.cullFrustum[last].planes, defGroup->m_bounds)) {
+                return true;
+            }
+
+            for (int32_t k = first; k <= last; k++) {
+                if (view.bounds[k].Intersects(defGroup->m_bounds) && MapShadowCascadeSees(view, k, defGroup->m_bounds)) {
+                    if (!MapShadowAddMapObj(k, group, def)) {
+                        break;
+                    }
+                }
+            }
+
+            for (auto link = defGroup->m_doodadDefLinkList.Head(); link; link = defGroup->m_doodadDefLinkList.Next(link)) {
+                auto doodad = static_cast<CMapStaticEntity*>(link->owner);
+
+                if (!doodad->m_model || !(doodad->m_flags & 0x80)) {
+                    continue;
+                }
+
+                for (int32_t k = first; k <= last; k++) {
+                    if (doodad->m_shadowFrame[k] == s_collectFrame) {
+                        continue;
+                    }
+
+                    doodad->m_shadowFrame[k] = s_collectFrame;
+
+                    if (MapShadowBeyondDetail(doodad->m_sphere.c, doodad->m_detailLevel)) {
+                        continue;
+                    }
+
+                    if (view.bounds[k].Intersects(doodad->m_bounds) && MapShadowCascadeSees(view, k, doodad->m_bounds)) {
+                        doodad->m_model->CollectShadowCasters(s_casters[k].models);
+                    }
+                }
+            }
+
+            return true;
+        });
+    }
+}
+
+// ref: FUN_007bc890
+// The buildings and the doodads inside them, for one cascade. A building flagged 0x400 only casts
+// into a pass that takes the 4 bit, and then without the size limit.
+static void MapShadowCollectMapObjs(ShadowView& view, int32_t index) {
+    float minRadius;
+    float maxRadius;
+    MapShadowRadiusLimits(view, index, &minRadius, &maxRadius);
+
+    uint32_t mask = view.mask[index];
+
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (def->m_flags & 0x20) {
+            continue;
+        }
+
+        float radiusLimit = maxRadius;
+        int32_t onlyBillboardMask = 0;
+        uint32_t billboardOk = 0;
+        uint32_t normalOk;
+
+        if (!(def->m_flags & 0x400)) {
+            normalOk = (mask & 8) != 0;
+            billboardOk = (mask & 4) != 0;
+        } else {
+            if (!(mask & 4)) {
+                continue;
+            }
+
+            radiusLimit = 100000.0f;
+            billboardOk = 1;
+            normalOk = 1;
+            onlyBillboardMask = 1;
+        }
+
+        if (!view.bounds[index].Intersects(def->m_bounds) || !MapShadowCascadeSees(view, index, def->m_bounds)) {
+            continue;
+        }
+
+        ForEachDefGroup(def, [&](CMapObjDefGroup* defGroup, CMapObjGroup* group) {
+            if (!view.bounds[index].Intersects(defGroup->m_bounds) || !MapShadowCascadeSees(view, index, defGroup->m_bounds)) {
+                return true;
+            }
+
+            if (onlyBillboardMask ? (mask & 4) : (mask & 8)) {
+                if (!MapShadowAddMapObj(index, group, def)) {
+                    return false;
+                }
+            }
+
+            for (auto link = defGroup->m_doodadDefLinkList.Head(); link; link = defGroup->m_doodadDefLinkList.Next(link)) {
+                auto doodad = static_cast<CMapStaticEntity*>(link->owner);
+
+                if (doodad->m_shadowFrame[index] == s_collectFrame) {
+                    continue;
+                }
+
+                doodad->m_shadowFrame[index] = s_collectFrame;
+
+                if (!doodad->m_model || !(doodad->m_flags & 0x80)) {
+                    continue;
+                }
+
+                if (MapShadowBeyondDetail(doodad->m_sphere.c, doodad->m_detailLevel) || !(doodad->m_sphere.r <= radiusLimit)) {
+                    continue;
+                }
+
+                uint32_t ok = MapShadowBillboardBones(doodad->m_model) ? billboardOk : normalOk;
+
+                if (ok && view.bounds[index].Intersects(doodad->m_bounds) && MapShadowCascadeSees(view, index, doodad->m_bounds)) {
+                    doodad->m_model->CollectShadowCasters(s_casters[index].models);
+                }
+            }
+
+            return true;
+        });
+    }
+}
+
+// ref: FUN_007bcc00
+// The doodads standing on open ground, for every cascade at once (quality 5): the chunks under the
+// last cascade that are in its frustum and not hidden by an occluder.
+static void MapShadowCollectChunksWhole(ShadowView& view, int32_t first, int32_t last) {
+    int32_t range[4];
+    MapShadowCellRange(view.bounds[last], range);
+
+    for (int32_t row = range[0]; row <= range[2]; row++) {
+        for (int32_t col = range[1]; col <= range[3]; col++) {
+            CMapChunk* chunk = MapShadowChunkAt(row, col);
+
+            if (!chunk || !BoxesOverlap(chunk->m_bounds, view.bounds[last])) {
+                continue;
+            }
+
+            if (!AaBoxVsPlanes6(view.cullFrustum[last].planes, chunk->m_bounds)) {
+                continue;
+            }
+
+            CAaSphere sphere = { chunk->m_center, chunk->m_radius };
+
+            if (CWorldScene::SphereOccludedByVolumes(sphere)) {
+                continue;
+            }
+
+            for (auto link = chunk->m_entityLinkList.Head(); link; link = chunk->m_entityLinkList.Next(link)) {
+                auto doodad = static_cast<CMapStaticEntity*>(link->owner);
+
+                if (!doodad->m_model || !(doodad->m_flags & 0x80)) {
+                    continue;
+                }
+
+                uint16_t billboard = MapShadowBillboardBones(doodad->m_model);
+
+                for (int32_t k = first; k <= last; k++) {
+                    if (doodad->m_shadowFrame[k] == s_collectFrame) {
+                        continue;
+                    }
+
+                    doodad->m_shadowFrame[k] = s_collectFrame;
+
+                    if (MapShadowBeyondDetail(doodad->m_sphere.c, doodad->m_detailLevel)) {
+                        continue;
+                    }
+
+                    uint32_t take = billboard ? (view.mask[k] & 4) : (view.mask[k] & 8);
+
+                    if (take && view.bounds[k].Intersects(doodad->m_bounds) && MapShadowCascadeSees(view, k, doodad->m_bounds)) {
+                        doodad->m_model->CollectShadowCasters(s_casters[k].models);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ref: FUN_007bcf20
+// The doodads standing on open ground, for one cascade.
+static void MapShadowCollectChunks(ShadowView& view, int32_t index) {
+    float minRadius;
+    float maxRadius;
+    MapShadowRadiusLimits(view, index, &minRadius, &maxRadius);
+
+    int32_t range[4];
+    MapShadowCellRange(view.bounds[index], range);
+
+    for (int32_t row = range[0]; row <= range[2]; row++) {
+        for (int32_t col = range[1]; col <= range[3]; col++) {
+            CMapChunk* chunk = MapShadowChunkAt(row, col);
+
+            if (!chunk || !BoxesOverlap(chunk->m_bounds, view.bounds[index])) {
+                continue;
+            }
+
+            if (!MapShadowCascadeSees(view, index, chunk->m_bounds)) {
+                continue;
+            }
+
+            for (auto link = chunk->m_entityLinkList.Head(); link; link = chunk->m_entityLinkList.Next(link)) {
+                auto doodad = static_cast<CMapStaticEntity*>(link->owner);
+
+                if (doodad->m_shadowFrame[index] == s_collectFrame) {
+                    continue;
+                }
+
+                doodad->m_shadowFrame[index] = s_collectFrame;
+
+                if (!doodad->m_model || !(doodad->m_flags & 0x80)) {
+                    continue;
+                }
+
+                if (MapShadowBeyondDetail(doodad->m_sphere.c, doodad->m_detailLevel) || !(doodad->m_sphere.r <= maxRadius)) {
+                    continue;
+                }
+
+                uint32_t take = MapShadowBillboardBones(doodad->m_model) ? (view.mask[index] & 4) : (view.mask[index] & 8);
+
+                if (take && view.bounds[index].Intersects(doodad->m_bounds) && MapShadowCascadeSees(view, index, doodad->m_bounds)) {
+                    doodad->m_model->CollectShadowCasters(s_casters[index].models);
+                }
+            }
+        }
+    }
+}
+
+// ref: FUN_007bd200
+// Everything that casts into the views the shadow map set up.
+static int32_t MapShadowCollect(ShadowView& view, int32_t frame) {
+    (void)frame;
+
+    MapShadowResetCasters();
+
+    s_collectFrame++;
+
+    if (s_collectFrame == 0) {
+        s_collectFrame = 1;
+    }
+
+    uint32_t masks = 0;
+
+    for (int32_t i = 0; i <= view.last; i++) {
+        masks |= view.mask[i];
+    }
+
+    MapShadowCollectEntities(view, 0, view.last);
+
+    if (!view.whole) {
+        for (int32_t i = 0; i <= view.last; i++) {
+            if (masks & 0xC) {
+                MapOcclusion::ClearVolumes();
+                MapShadowCollectMapObjs(view, i);
+                MapShadowCollectChunks(view, i);
+            }
+        }
+    } else if (masks & 0xC) {
+        // The occluders, built from the middle of the last cascade's near face.
+        const C3Vector* corners = view.frustum[view.last].corners;
+        C3Vector center = {
+            (corners[2].x + corners[1].x + corners[0].x + corners[3].x) * 0.25f,
+            (corners[2].y + corners[1].y + corners[3].y + corners[0].y) * 0.25f,
+            0.25f * (corners[2].z + corners[1].z + corners[3].z + corners[0].z)
+        };
+
+        MapOcclusion::BuildVolumes(center, corners, 1);
+
+        MapShadowCollectMapObjsWhole(view, 0, view.last);
+        MapShadowCollectChunksWhole(view, 0, view.last);
+    }
+
+    return 1;
+}
+
+// ref: FUN_007bbc50
+// Draw one view's casters into its map: an empty view is just cleared; otherwise the light's view
+// and the cascade's projection go in, the map is cleared to white inside the scissor, and the
+// buildings and then the model batches are drawn with the depth-writing ShadowMapRenderSL effect.
+static int32_t MapShadowRenderView(ShadowView& view, int32_t index, CGxTex* color, CGxTex* depth, const C3Vector& up) {
+    auto& casters = s_casters[index];
+
+    if (casters.mapObjCount == 0 && casters.models[0].count == 0 && casters.models[1].count == 0) {
+        MapShadowClearTarget(color, depth, view.viewport[index]);
+        return 1;
+    }
+
+    if (depth) {
+        GxRenderTargetSet(GxBuffers_Depth, depth, 0);
+    }
+
+    GxRsPush();
+    GxRsSet(GxRs_Culling, 0);
+    CShaderEffect::SetTexMtx_Identity(0);
+
+    CGxTex* savedColor = nullptr;
+    GxRenderTargetGet(GxBuffers_Color, savedColor);
+
+    GxRsSet(GxRs_Fog, 0);
+
+    CShaderEffect* effect = CShaderEffectManager::GetEffect("ShadowMapRenderSL");
+
+    const C3Vector& camera = CWorld::GetCameraPos();
+    const C3Vector& center = view.center[index];
+    const C3Vector& light = g_shadowMapLightDir;
+
+    C3Vector eye = {
+        (center.x - light.x * LIGHT_BACK) - camera.x,
+        (center.y - light.y * LIGHT_BACK) - camera.y,
+        (center.z - light.z * LIGHT_BACK) - camera.z
+    };
+
+    C3Vector target = { center.x - camera.x, center.y - camera.y, center.z - camera.z };
+
+    C44Matrix toCamera;
+    toCamera.Identity();
+    C3Vector back = { -camera.x, -camera.y, -camera.z };
+    toCamera.Translate(back);
+
+    C44Matrix savedView;
+    GxXformView(savedView);
+
+    float savedViewport[6];
+    GxXformViewport(savedViewport[0], savedViewport[1], savedViewport[2], savedViewport[3], savedViewport[4], savedViewport[5]);
+
+    const float* viewport = view.viewport[index];
+    GxXformSetViewport(viewport[0], viewport[1], viewport[2], viewport[3], 0.0f, 1.0f);
+
+    C44Matrix savedProjection;
+    GxXformProjection(savedProjection);
+
+    C44Matrix inverseView = savedView.Inverse(savedView.Determinant());
+
+    if (effect) {
+        effect->SetCurrent();
+    }
+
+    // The caster pixel shader writes the light depth times c0.w; the light matrices read it back
+    // with the same scale.
+    float depthScale[4] = { 0.0f, 0.0f, 0.0f, 0.00025000001f };
+    ShadowMapSetDepthScale(depthScale[3]);
+    GxShaderConstantsSet(GxSh_Pixel, 0, depthScale, 1);
+
+    g_shadowMapCasterLevel = ShadowMapGetShaderLevel();
+
+    GxXformSetProjection(view.projection[index]);
+    CShaderEffect::UpdateProjMatrix();
+
+    GxRsSet(GxRs_ScissorTest, 0);
+    GxRenderTargetSet(GxBuffers_Color, color, 0);
+
+    CImVector white = { 0xFF, 0xFF, 0xFF, 0xFF };
+    GxSceneClear(3, white);
+
+    if (s_shadowScissor && s_shadowScissor->m_intValue) {
+        GxRsSet(GxRs_ScissorTest, 1);
+
+        const float* scissor = view.scissor[index];
+        CRect rect;
+        rect.minY = (scissor[0] + 1.0f) * 0.5f;
+        rect.minX = (scissor[1] + 1.0f) * 0.5f;
+        rect.maxY = (scissor[2] + 1.0f) * 0.5f;
+        rect.maxX = (scissor[3] + 1.0f) * 0.5f;
+
+        g_theGxDevicePtr->ScissorSet(&rect);
+    }
+
+    C44Matrix lightView;
+    MatrixLookAtLH(eye, target, up, lightView);
+    GxXformSetView(lightView);
+
+    // The model batches carry the camera's view in their bones, so the light's view reaches them
+    // through the inverse of it: three rows at vertex c14.
+    C44Matrix rebase = (inverseView * lightView).Transpose();
+    GxShaderConstantsSet(GxSh_Vertex, 0xE, reinterpret_cast<const float*>(&rebase), 3);
+
+    if (casters.mapObjCount) {
+        MapObjDrawShadowCasters(casters.groups, casters.mapObjCount, casters.placements, toCamera, view.frustum[index]);
+    }
+
+    if (casters.models[0].count || casters.models[1].count) {
+        if (s_shadowInstancing && s_shadowInstancing->m_intValue) {
+            casters.models[0].MergeRuns();
+            casters.models[1].MergeRuns();
+        }
+
+        s_maxCasters[0] = std::max(s_maxCasters[0], casters.models[0].count);
+        s_maxCasters[1] = std::max(s_maxCasters[1], casters.models[1].count);
+
+        CM2Model::DrawShadowCasterLists(&casters.models[0], &casters.models[1]);
+    }
+
+    GxRsPop();
+
+    GxXformSetViewport(savedViewport[0], savedViewport[1], savedViewport[2], savedViewport[3], savedViewport[4], savedViewport[5]);
+    GxXformSetView(savedView);
+
+    GxRsSet(GxRs_ScissorTest, 0);
+    GxRenderTargetSet(GxBuffers_Color, savedColor, 0);
+
+    GxXformSetProjection(savedProjection);
+    CShaderEffect::UpdateProjMatrix();
+
+    return 1;
+}
+
+// ref: FUN_007bd3a0
+// Hand the shadow map the map's four callbacks, register the three switches they read, and make
+// the maps.
+void MapShadowInitialize() {
+    ShadowMapSetBuildMatrixCallback(&MapShadowBuildMatrix);
+    ShadowMapSetSetupViewCallback(&MapShadowSetupView);
+    ShadowMapSetCollectCallback(&MapShadowCollect);
+    ShadowMapSetRenderCallback(&MapShadowRenderView);
+
+    s_shadowCull = CVar::Register("shadowCull", "enable shadow frustum culling", 0x0, "1", nullptr, DEFAULT);
+    s_shadowScissor = CVar::Register("shadowScissor", "enable scissoring when rendering shadowmaps", 0x0, "1", nullptr, DEFAULT);
+    s_shadowInstancing = CVar::Register("shadowInstancing", "enable instancing when rendering shadowmaps", 0x0, "1", nullptr, DEFAULT);
+
+    ShadowMapInitialize();
+}
+
+// ref: FUN_007bb570
+// The per-frame map shadow driver: the light direction, the focus, the intensity, the maps --
+// with the lit pass when the view looks through a portal or the map has buildings -- and the light
+// matrices the shaders will sample them with.
+void MapShadowRender() {
+    int32_t lit = 0.0f <= CWorldScene::s_portalWindow.depth || CWorldScene::s_hasMapObjs != 0;
 
     ShadowMapSetLightDirection(MapShadowLightDirection());
 
@@ -535,19 +1042,6 @@ void MapShadowRender() {
     // 1.0 and 0 are the constants at the reference's call site, not a choice.
     ShadowMapSetIntensity(1.0f, 0);
 
-    auto scene = CWorld::GetM2Scene();
-
-    if (!scene) {
-        return;
-    }
-
-    MapShadowSetup(focus);
-
-    if (MapShadowBegin()) {
-        scene->DrawShadowCasters(MapShadowLightView());
-        MapShadowEnd();
-    }
-
-    // TODO FUN_008750b0, 822 bytes: the blur chain that fills the three filter textures
-    // ShadowMapBindScene binds at quality > 2. Nothing in frozen stands in for it.
+    ShadowMapRender(focus, lit);
+    ShadowMapBuildLightMatrices();
 }

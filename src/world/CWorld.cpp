@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include "world/MapShadow.hpp"
+#include "world/ShadowMap.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CMapBaseObj.hpp"
 #include "world/map/CMapEntity.hpp"
@@ -1057,7 +1059,7 @@ void CWorld::Initialize() {
 
     CWorld::s_terrainShadowLevel = CWorldParam::cvar_shadowLevel ? CWorldParam::cvar_shadowLevel->GetInt() : 1;
 
-    // TODO FUN_007bd3a0
+    MapShadowInitialize();
 
     CWorldScene::Initialize();
 
@@ -1370,6 +1372,9 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
         CWorld::s_reloadMap = 1;
         CWorld::s_mapDirty = 1;
     }
+
+    // The shadow cascades were drawn over what is about to be unloaded (0x0078326d).
+    g_shadowMapCascadesStale = CWorld::s_reloadMap;
 
     CWorld::s_updateCount++;
 

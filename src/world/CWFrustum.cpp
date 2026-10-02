@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include <storm/Memory.hpp>
+#include <tempest/Intersect.hpp>
 #include <tempest/Vector.hpp>
 
 // The records handed out to visible groups, returned at the end of the map object pass. The
@@ -67,6 +68,30 @@ void CWFrustum::Free(CWFrustum* frustum) {
 // what it is for -- those frusta come from GxuXformCreateOrtho, whose handedness is the opposite
 // of the one SetCorners assumes, so the planes come out facing the wrong way and this turns them
 // back rather than reworking the derivation.
+// reference FUN_00983990
+void CWFrustum::GetBounds(CAaBox& bounds) const {
+    BoundsFromPoints(bounds, this->corners, 8);
+}
+
+// reference FUN_007baaa0
+void CWFrustum::MirrorCorners() {
+    C3Vector swap = this->corners[0];
+    this->corners[0] = this->corners[3];
+    this->corners[3] = swap;
+
+    swap = this->corners[1];
+    this->corners[1] = this->corners[2];
+    this->corners[2] = swap;
+
+    swap = this->corners[4];
+    this->corners[4] = this->corners[7];
+    this->corners[7] = swap;
+
+    swap = this->corners[5];
+    this->corners[5] = this->corners[6];
+    this->corners[6] = swap;
+}
+
 void CWFrustum::NegatePlanes() {
     for (int32_t i = 0; i < 6; i++) {
         this->planes[i].n.x = -this->planes[i].n.x;
