@@ -233,7 +233,20 @@ class CGxDeviceD3d : public CGxDevice {
     LPDIRECT3DDEVICE9 m_d3dDevice = nullptr;
     D3DCAPS9 m_d3dCaps;
     int32_t m_d3dIsHwDevice = 0;
+    // A vertex declaration for a layout outside the fixed formats (reference GxVertexDecl, 0x80
+    // bytes): the elements it was made from and the D3D object.
+    struct GxVertexDecl {
+        uint32_t m_count;
+        D3DVERTEXELEMENT9 m_elements[15];
+        LPDIRECT3DVERTEXDECLARATION9 m_d3dDecl;
+
+        bool Matches(const D3DVERTEXELEMENT9* elements, uint32_t count) const;
+    };
+
     LPDIRECT3DVERTEXDECLARATION9 m_d3dVertexDecl[GxVertexBufferFormats_Last] = { 0 };
+    // Reference +0x3ad0: the declarations made for the other layouts, searched before a new one
+    // is made.
+    TSGrowableArray<GxVertexDecl> m_vertexDecls;
     D3DDISPLAYMODE m_desktopDisplayMode;
     int32_t m_inScene;
     D3DFORMAT m_devAdapterFormat;
@@ -243,6 +256,16 @@ class CGxDeviceD3d : public CGxDevice {
     // Reference +0x3b4c: the hardware cursor image needs re-uploading. DeviceSetFormat and the
     // cursor setter raise it; the per-frame cursor upload (FUN_0068e810, not ported) clears it.
     int32_t m_cursorDirty = 0;
+    // NVIDIA stereo (reference +0x3ab4..+0x3acc): NVAPI came up; stereo is running on this
+    // device; the driver had it on before we touched it (restored on destroy); the stereo handle;
+    // convergence and separation, re-sent at the next present when dirty.
+    int32_t m_nvapiInitialized = 0;
+    int32_t m_stereoActive = 0;
+    int32_t m_stereoWasEnabled = 0;
+    void* m_stereoHandle = nullptr;
+    float m_stereoConvergence = 1.0f;
+    float m_stereoSeparation = 25.0f;
+    int32_t m_stereoDirty = 0;
     // Reference +0x3b48: an event query issued after each frame when gxFixLag is on, and waited
     // on before the present, so the CPU never runs more than a frame ahead of the GPU.
     LPDIRECT3DQUERY9 m_d3dFrameQuery = nullptr;
@@ -347,6 +370,14 @@ class CGxDeviceD3d : public CGxDevice {
     virtual void DeviceSetGammaRamp(const CGxGammaRamp& ramp);
     virtual void DeviceSetGamma(float gamma);
     virtual void DeviceOverride(int32_t which, uint32_t value);
+    virtual void DeviceSetBaseMipLevel(uint32_t level);
+    virtual void DeviceEvictResources();
+    virtual void DeviceAdapterInfo(char* buffer, uint32_t size);
+    virtual void StereoSetConvergence(float convergence);
+    virtual void StereoSetSeparation(float separation);
+    virtual float StereoGetConvergence();
+    virtual float StereoGetSeparation();
+    void IReleaseD3dVertexDecls();
     virtual void Draw(CGxBatch* batch, int32_t indexed);
     virtual void PoolSizeSet(CGxPool* pool, uint32_t size);
     virtual char* BufLock(CGxBuf* buf);

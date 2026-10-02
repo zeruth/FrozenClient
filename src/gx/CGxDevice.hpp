@@ -174,6 +174,7 @@ class CGxDevice {
         static int32_t GLLAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes);
 #endif
         static void LogOpen();
+        static void Log(const CGxCaps& caps);
         static void LogClose();
         static void ILogWrite(const char* format, va_list args);
         static void Log(const char* format, ...);
@@ -307,7 +308,8 @@ class CGxDevice {
         // TODO
         TextureTarget m_textureTarget[GxBuffers_Last] = {};
         // TODO
-        uint32_t m_baseMipLevel = 0; // TODO placeholder
+        // Reference +0x350: the mip level textures start at, which ITexWHDStartEnd skips to.
+        uint32_t m_baseMipLevel = 0;
 
         // Virtual member functions
         virtual void ITexMarkAsUpdated(CGxTex*) = 0;
@@ -371,6 +373,9 @@ class CGxDevice {
         virtual void PrimNormal(const C3Vector& normal);
         virtual void PrimColor(const CImVector& color);
         virtual void CaptureRequest();
+        virtual void DeviceSetBaseMipLevel(uint32_t level);
+        virtual void DeviceEvictResources() {};
+        virtual void DeviceAdapterInfo(char* buffer, uint32_t size) {};
         virtual void CaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits);
         virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {};
         void ICapture();

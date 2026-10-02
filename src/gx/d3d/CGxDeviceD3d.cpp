@@ -1,4 +1,5 @@
 #include "gx/d3d/CGxDeviceD3d.hpp"
+#include "gx/d3d/NvApi.hpp"
 #include <common/Os.hpp>
 #include <common/Time.hpp>
 #include <cstdio>
@@ -1062,7 +1063,36 @@ int32_t CGxDeviceD3d::ICreateD3d() {
 // FUN_0068f370) and the device's own "UI" shader sets (0x00c5dfd8, 0x00c5fffc) that the base
 // ScenePresent draws the software cursor with.
 int32_t CGxDeviceD3d::ICreateD3dDevice(const CGxFormat& format) {
-    // TODO stereoscopic setup
+    if (NvAPI_Initialize() == 0) {
+        this->m_stereoActive = 0;
+        this->m_nvapiInitialized = 1;
+
+        uint8_t enabled;
+        int32_t status = NvAPI_Stereo_IsEnabled(&enabled);
+
+        if (status == -0x68) {
+            CGxDevice::Log("No stereoscopic device present.");
+        } else if (status == -3) {
+            CGxDevice::Log("No stereoscopic driver present.");
+        } else if (status == 0) {
+            this->m_stereoWasEnabled = enabled;
+            this->m_caps.m_stereoAvailable = 1;
+
+            if (format.stereoEnabled) {
+                if (!enabled) {
+                    status = NvAPI_Stereo_Enable();
+
+                    if (status != 0) {
+                        char message[64];
+                        NvAPI_GetErrorMessage(status, message);
+                        CGxDevice::Log("Failed to enable stereoscopic mode: %s", message);
+                    }
+                }
+            } else if (enabled) {
+                NvAPI_Stereo_Disable();
+            }
+        }
+    }
 
     auto hwTnL = format.hwTnL;
     if (hwTnL && (this->m_d3dCaps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) == 0) {
@@ -1080,12 +1110,29 @@ int32_t CGxDeviceD3d::ICreateD3dDevice(const CGxFormat& format) {
     if (SUCCEEDED(this->m_d3d->CreateDevice(0, D3DDEVTYPE_HAL, this->m_hwnd, behaviorFlags, &d3dpp, &this->m_d3dDevice))) {
         // TODO
 
+        if (this->m_nvapiInitialized) {
+            uint8_t enabled = 0;
+
+            if (NvAPI_Stereo_IsEnabled(&enabled) == 0 && enabled) {
+                NvAPI_Stereo_CreateConfigurationProfileRegistryKey(0);
+                NvAPI_Stereo_CreateHandleFromIUnknown(this->m_d3dDevice, &this->m_stereoHandle);
+
+                if (this->m_stereoHandle) {
+                    this->m_stereoActive = 1;
+                    this->m_stereoDirty = 1;
+                }
+            }
+        }
+
         this->m_devAdapterFormat = d3dpp.BackBufferFormat;
         this->m_context = 1;
 
         // TODO
 
         this->ISetCaps(format);
+        CGxDevice::Log(this->m_caps);
+        CGxDevice::Log("\tNVAPI: %d", this->m_nvapiInitialized);
+        CGxDevice::Log("\tstereoHandle: %x", this->m_stereoHandle);
 
         // TODO logs
 
@@ -1142,11 +1189,6 @@ LPDIRECT3DVERTEXBUFFER9 CGxDeviceD3d::ICreateD3dVB(EGxPoolUsage usage, uint32_t 
 
 LPDIRECT3DVERTEXDECLARATION9 CGxDeviceD3d::ICreateD3dVertexDecl(D3DVERTEXELEMENT9 elements[], uint32_t count) {
     if (this->m_primVertexFormat < GxVertexBufferFormats_Last) {
-        for (int32_t i = 0; i < count; i++) {
-            auto& element = elements[i];
-            auto foo = 1;
-        }
-
         if (!this->m_d3dVertexDecl[this->m_primVertexFormat]) {
             this->m_d3dDevice->CreateVertexDeclaration(elements, &this->m_d3dVertexDecl[this->m_primVertexFormat]);
         }
@@ -1154,9 +1196,23 @@ LPDIRECT3DVERTEXDECLARATION9 CGxDeviceD3d::ICreateD3dVertexDecl(D3DVERTEXELEMENT
         return this->m_d3dVertexDecl[this->m_primVertexFormat];
     }
 
-    // TODO new vertex buffer format
+    for (uint32_t i = 0; i < this->m_vertexDecls.Count(); i++) {
+        if (this->m_vertexDecls[i].Matches(elements, count)) {
+            return this->m_vertexDecls[i].m_d3dDecl;
+        }
+    }
 
-    return nullptr;
+    auto decl = this->m_vertexDecls.New();
+    decl->m_count = count;
+    memcpy(decl->m_elements, elements, count * sizeof(D3DVERTEXELEMENT9));
+    this->m_d3dDevice->CreateVertexDeclaration(elements, &decl->m_d3dDecl);
+
+    return decl->m_d3dDecl;
+}
+
+// ref: FUN_006a3720
+bool CGxDeviceD3d::GxVertexDecl::Matches(const D3DVERTEXELEMENT9* elements, uint32_t count) const {
+    return count == this->m_count && memcmp(elements, this->m_elements, count * sizeof(D3DVERTEXELEMENT9)) == 0;
 }
 
 // ref: FUN_00684d70
@@ -1349,19 +1405,30 @@ bool CGxDeviceD3d::ICreateWindow(CGxFormat& format) {
 void CGxDeviceD3d::IDestroyD3dDevice() {
     this->IReleaseD3dResources(1);
 
-    // FUN_006a5680: the fourteen cached vertex declarations.
-    for (uint32_t i = 0; i < GxVertexBufferFormats_Last; i++) {
-        if (this->m_d3dVertexDecl[i]) {
-            this->m_d3dVertexDecl[i]->Release();
-            this->m_d3dVertexDecl[i] = nullptr;
-        }
-    }
+    this->IReleaseD3dVertexDecls();
 
     this->m_d3dCurrentVertexDecl = nullptr;
+
+    if (this->m_stereoHandle) {
+        NvAPI_Stereo_DestroyHandle(this->m_stereoHandle);
+        this->m_stereoHandle = nullptr;
+    }
 
     if (this->m_d3dDevice) {
         this->m_d3dDevice->Release();
         this->m_d3dDevice = nullptr;
+    }
+
+    uint8_t enabled;
+
+    if (this->m_nvapiInitialized && NvAPI_Stereo_IsEnabled(&enabled) == 0) {
+        if (this->m_stereoWasEnabled) {
+            if (!enabled) {
+                NvAPI_Stereo_Enable();
+            }
+        } else if (enabled) {
+            NvAPI_Stereo_Disable();
+        }
     }
 }
 
@@ -3598,6 +3665,16 @@ void CGxDeviceD3d::ScenePresent() {
         if (FAILED(this->m_d3dDevice->Present(nullptr, nullptr, nullptr, nullptr))) {
             this->m_context = 0;
         }
+
+        if (this->m_stereoHandle && this->m_stereoDirty) {
+            this->m_stereoDirty = 0;
+
+            int32_t status = NvAPI_Stereo_SetConvergence(this->m_stereoHandle, this->m_stereoConvergence);
+            CGxDevice::Log("NvAPI_Stereo_SetConvergence: status=%d convergence=%g", status, static_cast<double>(this->m_stereoConvergence));
+
+            status = NvAPI_Stereo_SetSeparation(this->m_stereoHandle, this->m_stereoSeparation);
+            CGxDevice::Log("NvAPI_Stereo_SetSeparation: status=%d separation=%g", status, static_cast<double>(this->m_stereoSeparation));
+        }
     }
 
     this->ISceneBegin();
@@ -3612,9 +3689,9 @@ void CGxDeviceD3d::ShaderCreate(CGxShader* shaders[], EGxShTarget target, const 
     }
 }
 
+// ref: FUN_006a0130
 int32_t CGxDeviceD3d::StereoEnabled() {
-    // TODO
-    return 0;
+    return this->m_stereoActive == 1;
 }
 
 // ref: FUN_006a9b40
@@ -4277,4 +4354,94 @@ void CGxDeviceD3d::ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& b
     }
 
     surface->Release();
+}
+
+// ref: FUN_006a5680
+void CGxDeviceD3d::IReleaseD3dVertexDecls() {
+    for (uint32_t i = 0; i < GxVertexBufferFormats_Last; i++) {
+        if (this->m_d3dVertexDecl[i]) {
+            this->m_d3dVertexDecl[i]->Release();
+            this->m_d3dVertexDecl[i] = nullptr;
+        }
+    }
+
+    for (uint32_t i = 0; i < this->m_vertexDecls.Count(); i++) {
+        this->m_vertexDecls[i].m_d3dDecl->Release();
+    }
+
+    this->m_vertexDecls.SetCount(0);
+}
+
+// ref: FUN_0068e4a0
+// Every texture is released first, so each is re-created starting at the new level.
+void CGxDeviceD3d::DeviceSetBaseMipLevel(uint32_t level) {
+    this->IReleaseD3dTextures(1);
+    CGxDevice::DeviceSetBaseMipLevel(level);
+}
+
+// ref: FUN_0068e450
+// A driver failure while evicting is fatal.
+void CGxDeviceD3d::DeviceEvictResources() {
+    if (!this->m_context || !this->m_d3dDevice) {
+        return;
+    }
+
+    HRESULT result = this->m_d3dDevice->EvictManagedResources();
+
+    if (result < 0 && result == D3DERR_DRIVERINTERNALERROR) {
+        SErrDisplayError(0x85100086, ".\\CGxDeviceD3d\\CGxDeviceD3d.cpp", 0x590, nullptr, 0, 1, 0x11111111);
+    }
+}
+
+// ref: FUN_0068e570
+void CGxDeviceD3d::DeviceAdapterInfo(char* buffer, uint32_t size) {
+    D3DDEVICE_CREATION_PARAMETERS creation;
+    this->m_d3dDevice->GetCreationParameters(&creation);
+
+    auto count = this->m_d3d->GetAdapterCount();
+
+    char line[0x104];
+    SStrPrintf(line, sizeof(line), "Adapter Count: %d\r\n", count);
+    SStrPack(buffer, line, size);
+
+    for (uint32_t adapter = 0; adapter < count; adapter++) {
+        SStrPrintf(line, sizeof(line), "\r\nAdapter %d%s:\r\n", adapter, creation.AdapterOrdinal == adapter ? " (primary)" : "");
+        SStrPack(buffer, line, size);
+
+        D3DADAPTER_IDENTIFIER9 identifier;
+        this->m_d3d->GetAdapterIdentifier(adapter, 0, &identifier);
+
+        SStrPrintf(line, sizeof(line), "  Driver: %s\r\n", identifier.Driver);
+        SStrPack(buffer, line, size);
+        SStrPrintf(line, sizeof(line), "  Version: %d.%d.%04d.%04d\r\n",
+            HIWORD(identifier.DriverVersion.HighPart), LOWORD(identifier.DriverVersion.HighPart),
+            HIWORD(identifier.DriverVersion.LowPart), LOWORD(identifier.DriverVersion.LowPart));
+        SStrPack(buffer, line, size);
+        SStrPrintf(line, sizeof(line), "  Description: %s\r\n", identifier.Description);
+        SStrPack(buffer, line, size);
+        SStrPrintf(line, sizeof(line), "  DeviceName: %s\r\n", identifier.DeviceName);
+        SStrPack(buffer, line, size);
+    }
+}
+
+// ref: FUN_0068e980
+void CGxDeviceD3d::StereoSetConvergence(float convergence) {
+    this->m_stereoDirty = 1;
+    this->m_stereoConvergence = convergence;
+}
+
+// ref: FUN_0068e9a0
+void CGxDeviceD3d::StereoSetSeparation(float separation) {
+    this->m_stereoDirty = 1;
+    this->m_stereoSeparation = separation;
+}
+
+// ref: FUN_006a0110
+float CGxDeviceD3d::StereoGetConvergence() {
+    return this->m_stereoConvergence;
+}
+
+// ref: FUN_006a0120
+float CGxDeviceD3d::StereoGetSeparation() {
+    return this->m_stereoSeparation;
 }

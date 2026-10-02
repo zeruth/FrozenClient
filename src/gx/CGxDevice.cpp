@@ -341,6 +341,34 @@ void CGxDevice::Log(const char* format, ...) {
     va_end(args);
 }
 
+// ref: FUN_00684c40
+void CGxDevice::Log(const CGxCaps& caps) {
+    static const char* s_pixelTargetNames[] = {
+        "none", "ps_1_1", "ps_1_4", "ps_2_0", "ps_3_0", "ps_4_0", "ps_5_0", "nvrc", "nvts", "nvts2",
+        "nvts3", "nvfp2", "arbfp1", "glsl"
+    };
+
+    static const char* s_vertexTargetNames[] = {
+        "none", "vs_1_1", "vs_2_0", "vs_3_0", "vs_4_0", "vs_5_0", "arbvp1", "arbvp1_cg12"
+    };
+
+    CGxDevice::Log("Caps:");
+    CGxDevice::Log("\tnumTmus: %d", caps.m_numTmus);
+    CGxDevice::Log("\tgenerateMipMaps: %d", caps.m_generateMipMaps);
+    CGxDevice::Log("\ttexFilterAnisotropic: %d, %d", caps.m_texFilterAnisotropic, caps.m_maxTexAnisotropy);
+    CGxDevice::Log("\trttFormat: %d, %d", caps.m_texFmtRtt[GxTex_Argb8888], caps.m_texFmtRtt[GxTex_Rgb565]);
+    CGxDevice::Log("\tpixelShaderTarget: %s", s_pixelTargetNames[caps.m_shaderTargets[GxSh_Pixel]]);
+    CGxDevice::Log("\tvertexShaderTarget: %s", s_vertexTargetNames[caps.m_shaderTargets[GxSh_Vertex]]);
+    CGxDevice::Log("\tvertexShaderConstants: %d", caps.m_shaderConsts[GxSh_Vertex]);
+    CGxDevice::Log("\tnumStreams: %d", caps.m_numStreams);
+    CGxDevice::Log("\tstereoAvailable: %d", caps.m_stereoAvailable);
+}
+
+// ref: FUN_00682d00
+void CGxDevice::DeviceSetBaseMipLevel(uint32_t level) {
+    this->m_baseMipLevel = level;
+}
+
 // ref: FUN_00684d10
 void CGxDevice::Log(const CGxFormat& format) {
     static const char* s_formatNames[] = {
@@ -1942,22 +1970,11 @@ char* CGxDevice::ShaderConstantsLock(EGxShTarget target) {
         : reinterpret_cast<char*>(&CGxDevice::s_shadowConstants[0].constants);
 }
 
+// ref: FUN_006833e0
+// Copies into the target's shadow bank and widens its dirty range over the registers that
+// changed. Anything that is not the vertex target writes the pixel bank.
 void CGxDevice::ShaderConstantsSet(EGxShTarget target, uint32_t index, const float* constants, uint32_t count) {
-    STORM_ASSERT((index + count - 1) <= 255);
-
-    if (!count) {
-        return;
-    }
-
-    ShaderConstants* dst;
-
-    if (target == GxSh_Vertex) {
-        dst = &CGxDevice::s_shadowConstants[1];
-    } else if (target == GxSh_Pixel) {
-        dst = &CGxDevice::s_shadowConstants[0];
-    } else {
-        STORM_ASSERT(false);
-    }
+    ShaderConstants* dst = target == GxSh_Vertex ? &CGxDevice::s_shadowConstants[1] : &CGxDevice::s_shadowConstants[0];
 
     const float* c = constants;
 

@@ -3614,10 +3614,6 @@
     "status": "excluded",
     "note": "TSFixedArray<CGxStateBom>::SetCount (0x10-byte elements) instantiation, reached from the CGxDevice constructor; squall owns the template and frozen instantiates it inline. Identified 2026-10-02."
   },
-  "006a3720": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDeviceD3d::IStateSetD3dDefaults` for this on 2026-10-02; it is not that. It compares two vertex-element arrays (a count, then 8-byte D3DVERTEXELEMENT9 entries byte for byte) -- the comparator of a vertex-declaration cache frozen does not have yet."
-  },
   "004b9990": {
     "status": "unlinked",
     "note": "the call-graph matcher proposed `CallbackRemove` (a frozen-only helper since inlined) on 2026-10-02; it is a TSGrowableArray reallocation the callback removals share. Squall template."
@@ -3678,5 +3674,18 @@
   "0088d0c0": {
     "status": "excluded",
     "note": "CRT _CIpow (x87 pow of st1 by st0), called by the gamma ramp build; compiler runtime. Identified 2026-10-02."
+  },
+  "006a5591": {
+    "status": "excluded",
+    "note": "Not a function: the tail of CGxDeviceD3d::ICreateD3dVertexDecl (FUN_006a5540, 81 bytes) that Ghidra split off at 0x6a5591. Identified 2026-10-02."
+  },
+  "006a54a0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CGxDeviceD3d::GxVertexDecl>::SetCount reallocation (0x80-byte elements); squall template. Identified 2026-10-02."
+  },
+  "008a09ba": {
+    "frozen": "NvAPI_Initialize",
+    "status": "diverged",
+    "note": "nvapi.lib's initialize (vendor code linked into the reference): loads the driver DLL, initializes through nvapi_QueryInterface(0x0150E828) and resolves every entry point by id. Ported 2026-10-02 in src/gx/d3d/NvApi.cpp with the same ids and failure values. Diverged for the platform only: the reference is 32-bit and loads nvapi.dll, frozen is 64-bit and loads nvapi64.dll."
   }
 }
