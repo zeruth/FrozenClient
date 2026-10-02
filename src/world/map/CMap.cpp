@@ -1,3 +1,4 @@
+#include "world/map/WaterRipples.hpp"
 #include "model/CM2Scene.hpp"
 #include "util/OsSystem.hpp"
 #include "world/CWFrustum.hpp"
@@ -507,9 +508,7 @@ void CMap::MapMemInitialize() {
     CMap::s_mapLoaded = 0;
     CMap::s_frameCountAC = 0;
 
-    // TODO FUN_0079e3c0, the liquid initialise (its depth ramps are LiquidSurface.cpp's
-    // DepthRamp, built on first use; the splash textures and the WaterRipples shaders of
-    // FUN_0079e1a0 are the Liquid.cpp port, next in line).
+    CMap::LiquidInitialize();
 
     for (int32_t i = 0; i < 0x80; i++) {
         CMap::s_terrainVertexShaders[i] = nullptr;
@@ -4057,4 +4056,25 @@ int32_t CMap::CountPendingMapObjs(CMapChunk* chunk, float* progress, int32_t ini
     *progress = static_cast<float>(static_cast<uint32_t>(initial - pending)) * share + *progress;
 
     return pending;
+}
+
+// ref: FUN_0079e3c0
+void CMap::LiquidInitialize() {
+    // DAT_00adf800, which cancels: the deep ramp is i / 255. The shallow one rises at a ninth a
+    // step, scaled by 3/14, and saturates past 14/3 -- min(i / 42, 1).
+    const float a = 0.5833333134651184f;
+    const float aFull = 255.0f * a;
+
+    for (uint32_t i = 0; i < 0x100; i++) {
+        float f = static_cast<float>(i);
+
+        float deep = f * a * (1.0f / aFull);
+        Liquid::s_depthRamps[1][i] = 1.0f <= deep ? 1.0f : deep;
+
+        float shallow = f * 0.1111111119389534f;
+        Liquid::s_depthRamps[0][i] = shallow <= 4.666666507720947f ? shallow * 0.2142857164144516f : 1.0f;
+    }
+
+    WaterRipples::Initialize();
+    Liquid::ProceduralLiquidTexture();
 }

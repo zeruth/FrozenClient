@@ -1,4 +1,5 @@
 #include "world/map/Particulates.hpp"
+#include "world/map/WaterRipples.hpp"
 #include "world/map/DetailDoodad.hpp"
 #include "util/Log.hpp"
 #include "world/CWFrustum.hpp"
@@ -1782,4 +1783,9 @@ void CWorld::RenderParticulates() {
     if ((CWorld::s_enables & CWorld::Enable_Particulates) && CWorldScene::s_cameraLiquidType != 0) {
         CWorld::s_particulates->Render();
     }
+}
+
+// ref: FUN_0077f400
+void CWorld::AddRipple(const C3Vector& position, float angle, float radius, float alphaPeak, float life, float radiusRate, int32_t kind, int32_t reserved) {
+    WaterRipples::Add(position, angle, radius, alphaPeak, life, radiusRate, kind, reserved);
 }

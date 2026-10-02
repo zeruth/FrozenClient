@@ -300,17 +300,9 @@ void ReloadAllLiquidTextures() {
 // Same two inert arms as UpdateProceduralTextures, for the same reason and with the same evidence:
 // the reference also re-registers the thirty-two handles at 0x00d43b50 and the one at 0x00d43b4c,
 // and nothing in the binary ever puts a handle in either.
-// DO NOT WIRE THIS INTO ProceduralLiquidTexture, however much the reference looks like it says to.
-// The reference calls it from the tail of FUN_008a2e20, which CREATES the three textures eagerly at
-// liquid-initialise time (from FUN_0079e3c0); at that moment reloading every settings record is
-// safe. frozen merged creation and by-name lookup into one lazily-guarded function -- the
-// divergence recorded at ProceduralLiquidTexture -- and that function is called from INSIDE
-// CMaterialSettings::LoadTextures. Adding the call there closes a loop:
-//
-//     LoadTextures -> ProceduralLiquidTexture -> RestoreLiquidTextures
-//                  -> ReloadAllLiquidTextures -> LoadTextures
-//
-// Its real home is a device-reset path, which frozen does not have yet.
+// ProceduralLiquidTexture ends by calling this, as the reference's FUN_008a2e20 does: the
+// textures it just made go back into the cache under their names and every liquid's frames are
+// reopened so the procedural ones are found.
 void RestoreLiquidTextures() {
     for (uint32_t i = 0; i < 3; i++) {
         if (!s_proceduralTextures[i]) {
@@ -402,48 +394,32 @@ void UpdateProceduralTextures() {
     }
 }
 
-HTEXTURE ProceduralLiquidTexture(const char* name) {
-    static bool s_created = false;
-
-    if (!s_created) {
-        s_created = true;
-
-        struct { const char* name; TEXTURE_CALLBACK* generate; intptr_t arg; } kTextures[3] = {
-            { "proceduralRiverDepthTex", DepthGradientGenerate, 1 },
-            { "proceduralOceanDepthTex", DepthGradientGenerate, 0 },
-            { "proceduralWmoWaterTex", WmoWaterGenerate, 0 }
-        };
-
-        for (uint32_t i = 0; i < 3; i++) {
-            CGxTexFlags flags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
-
-            HTEXTURE handle = TextureCreate(PROC_TEX_WIDTH, PROC_TEX_HEIGHT, GxTex_Argb8888,
-                                           GxTex_Argb8888, flags,
-                                           reinterpret_cast<void*>(kTextures[i].arg),
-                                           kTextures[i].generate, kTextures[i].name, 0);
-
-            if (!handle) {
-                continue;
-            }
-
-            s_proceduralTextures[i] = handle;
-
-            CTexture* texture = TextureGetTexturePtr(handle);
-
-            if (texture) {
-                TextureCacheNewTexture(texture, flags);
-            }
-        }
+// ref: FUN_008a2e20
+// The three generated textures, made once at liquid-initialise time and registered under their
+// names, then every liquid's textures reopened so they pick them up.
+void ProceduralLiquidTexture() {
+    for (uint32_t i = 0; i < 3; i++) {
+        s_proceduralUpdated[i] = false;
     }
 
-    // ref: FUN_004b6f30 -- the by-name lookup, which hashes the name and takes whatever the cache
-    // holds under it. A name nothing registered comes back null, and the caller falls through to
-    // its solid stand-in.
-    char key[CMaterialSettings::TEXTURE_NAME_SIZE];
+    struct { const char* name; TEXTURE_CALLBACK* generate; intptr_t arg; } kTextures[3] = {
+        { "proceduralRiverDepthTex", DepthGradientGenerate, 1 },
+        { "proceduralOceanDepthTex", DepthGradientGenerate, 0 },
+        { "proceduralWmoWaterTex", WmoWaterGenerate, 0 }
+    };
 
-    SStrCopy(key, name, sizeof(key));
+    for (uint32_t i = 0; i < 3; i++) {
+        CGxTexFlags flags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
 
-    return TextureCacheGetProcedural(key);
+        HTEXTURE handle = TextureCreate(PROC_TEX_WIDTH, PROC_TEX_HEIGHT, GxTex_Argb8888,
+                                       GxTex_Argb8888, flags,
+                                       reinterpret_cast<void*>(kTextures[i].arg),
+                                       kTextures[i].generate, kTextures[i].name, 0);
+
+        s_proceduralTextures[i] = handle;
+    }
+
+    RestoreLiquidTextures();
 }
 void CMaterialSettings::LoadTextures() {
     for (uint32_t slot = 0; slot < TEXTURE_SLOTS; slot++) {
@@ -466,8 +442,11 @@ void CMaterialSettings::LoadTextures() {
             HTEXTURE texture = nullptr;
 
             if (procedural) {
-                // The generated texture, looked up by name rather than read off disk.
-                texture = ProceduralLiquidTexture(name);
+                // The generated texture, looked up by name rather than read off disk (the
+                // reference calls TextureCacheGetProcedural, FUN_004b6f30, right here).
+                char key[TEXTURE_NAME_SIZE];
+                SStrCopy(key, name, sizeof(key));
+                texture = TextureCacheGetProcedural(key);
 
                 if (!texture) {
                     // The reference falls back to a solid too, and only when its generator has

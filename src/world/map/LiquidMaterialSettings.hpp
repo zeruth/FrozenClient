@@ -220,6 +220,10 @@ void ReleaseProceduralTextures();
 // Drop every settings record's texture frames and open them again. ref: FUN_008a2780
 void ReloadAllLiquidTextures();
 
+// Make the three generated liquid textures and register them under their names. Called once,
+// from the liquid initialise. ref: FUN_008a2e20
+void ProceduralLiquidTexture();
+
 // Put the procedural textures back in the cache and reopen every liquid's frames, after a device
 // reset has emptied the cache. ref: FUN_008a2a10
 void RestoreLiquidTextures();

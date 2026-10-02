@@ -1485,38 +1485,18 @@ void WriteLiquidIndices(CMapObjGroup* group, const LiquidSeams& seams, uint16_t*
 }
 
 
-// ref: FUN_0079e3c0 (the table-building half of it)
-// The two depth ramps the per-vertex writers sample, as floats in 0..1 indexed by a depth byte.
-// Ramp 0 saturates at 42 and ramp 1 at 255; see LiquidTypeBlock below for the decode and for which
-// liquid types take which.
-//
-// DIVERGED in shape only: the reference fills two file-scope arrays from its liquid initialise and
-// never rebuilds them. Frozen builds them on first use, which needs no initialisation order.
+// The two depth ramps the per-vertex writers sample, as floats in 0..1 indexed by a depth byte:
+// [0] saturates at 42 (DAT_00cdf7d0) and [1] at 255 (DAT_00cdfbd0). CMap::LiquidInitialize fills
+// them; see LiquidTypeBlock below for the decode and for which liquid types take which.
 const uint32_t DEPTH_RAMP_COUNT = 2;
 const uint32_t DEPTH_RAMP_ENTRIES = 256;
 
-// The saturation depth of each ramp: ramp 0 reaches full at 42, ramp 1 at 255.
-const float DEPTH_RAMP_FULL[DEPTH_RAMP_COUNT] = { 42.0f, 255.0f };
+float s_depthRamps[DEPTH_RAMP_COUNT][DEPTH_RAMP_ENTRIES];
 
 const uint32_t* DepthRamp(uint32_t which) {
-    static float s_ramps[DEPTH_RAMP_COUNT][DEPTH_RAMP_ENTRIES];
-    static bool s_built = false;
-
-    if (!s_built) {
-        s_built = true;
-
-        for (uint32_t r = 0; r < DEPTH_RAMP_COUNT; r++) {
-            for (uint32_t i = 0; i < DEPTH_RAMP_ENTRIES; i++) {
-                float v = static_cast<float>(i) / DEPTH_RAMP_FULL[r];
-
-                s_ramps[r][i] = v > 1.0f ? 1.0f : v;
-            }
-        }
-    }
-
     // The writers copy the entry as an opaque dword straight into the vertex, which is what the
     // reference does and why the tables are reached as uint32_t rather than float.
-    return reinterpret_cast<const uint32_t*>(s_ramps[which]);
+    return reinterpret_cast<const uint32_t*>(s_depthRamps[which]);
 }
 // ref: FUN_0079b870
 // Two DBC hops and a gate, resolving a liquid type to the block the per-vertex writer samples.

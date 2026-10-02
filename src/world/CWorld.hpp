@@ -219,6 +219,8 @@ class CWorld {
         static void RenderWeather();
         // The underwater motes, when the camera is in a liquid that takes them. ref: FUN_0077f9d0
         static void RenderParticulates();
+        // A ripple on the water at `position` (WaterRipples::Add). ref: FUN_0077f400
+        static void AddRipple(const C3Vector& position, float angle, float radius, float alphaPeak, float life, float radiusRate, int32_t kind, int32_t reserved);
 
     private:
         // Private static variables

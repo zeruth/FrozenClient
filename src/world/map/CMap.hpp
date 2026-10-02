@@ -421,6 +421,9 @@ class CMap {
         static uint32_t s_bspNodeCacheVictim;
         // A group's leaves out of the cache, before its BSP goes away. ref: FUN_0079b0d0
         static void EvictBspLeaves(const CAaBspNode* nodes, uint32_t count);
+        // The liquid system's one-time setup: the two depth ramps, the ripples and the generated
+        // liquid textures. ref: FUN_0079e3c0
+        static void LiquidInitialize();
 
         // Tiles and chunks
         static CMapArea* CreateArea(int32_t x, int32_t y);

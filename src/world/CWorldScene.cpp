@@ -5,6 +5,7 @@
 #include "world/Shadow.hpp"
 #include "gx/Shader.hpp"
 #include "world/map/Particulates.hpp"
+#include "world/map/WaterRipples.hpp"
 #include "world/DayNight.hpp"
 #include "world/map/CChunkLiquid.hpp"
 #include "world/map/LiquidSurface.hpp"
@@ -2708,16 +2709,9 @@ void CWorldScene::DrawLiquidPass() {
         Liquid::Draw(CWorldScene::s_cameraPos, 1);
     }
 
-    // MISSING: FUN_0079d5e0, 2552 bytes -- the WATER RIPPLE pass, which draws over the liquid
-    // this function just drew. The reference names the record type itself: its allocation tag is
-    // the mangled string ".?AVWater0Ripple@@", the records are 0x50 bytes, and they hang off a
-    // TSList at 0x00adfb5c. Each ripple grows and then fades through a two-phase ramp and draws
-    // as one rotated quad. The full field map is on 0079d5e0 in overrides.json.
-    //
-    // Blocked on the SPAWN side rather than on the draw: nothing would put a ripple in the list,
-    // because what creates them is movement over water, and unit movement is not ported -- the
-    // same reason CLAUDE.md gives for ribbons and footprints being unevaluable. Porting this
-    // alone would add a walk over a list that never fills.
+    // The ripples over the water just drawn. Units moving through water spawn them through
+    // CWorld::AddRipple, whose callers come with unit movement.
+    WaterRipples::Draw();
 }
 
 // ------------------------------------------------------------------------------------------------

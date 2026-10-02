@@ -180,6 +180,9 @@ void ChunkBufRelease(ChunkBufPair* pair);
 // Age the pooled pairs by `seconds`, destroying those unused for more than five. CMap::Update's.
 void ChunkBufAge(float seconds);
 
+// The two depth ramps (DAT_00cdf7d0, DAT_00cdfbd0), filled by CMap::LiquidInitialize.
+extern float s_depthRamps[2][256];
+
 // ref: FUN_007cf9e0
 // Destroy every pooled pair. The map's teardown's.
 void ChunkBufDestroyAll();
