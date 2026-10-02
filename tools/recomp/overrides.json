@@ -3816,5 +3816,9 @@
   "00688690": {
     "status": "diverged",
     "note": "CGxDevice::CGxDevice. Calls in the reference's order (IRsInit, the CPU feature word, ILightsInvalidate, the two gamma ramps, the constant caches) with its non-zero defaults on the members. DIVERGED in one place: the reference memsets the whole caps block to zero; frozen's CGxCaps is not yet layout-faithful (see CGxCaps.hpp) and two of its fields carry defaults other code reads (int130 feeds CShaderEffect's alpha-ref switch), so it keeps its initializers instead. The CPU probe is Windows-only."
+  },
+  "006897c0": {
+    "status": "faithful",
+    "note": "CGxDevice::ShaderCreate. Read side by side 2026-10-01: one permutation is looked up by name and referenced, or created, targeted and loaded; several are looked up as \"name:N\", referenced when all exist, and otherwise every one is created anew and loaded together. The reference inlines TSHashTable's lookup and insert (SStrHashHT, the bucket walk, SStrDupA of the key), which frozen calls as Ptr/New; frozen's early return for zero permutations is what the reference's zero-length memset and empty loop amount to. Hand verdict."
   }
 }
