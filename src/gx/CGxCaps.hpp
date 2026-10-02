@@ -53,6 +53,25 @@ class CGxCaps {
         int32_t int130 = 1;
         int32_t int134 = 0;
         int32_t int138 = 0;
+
+        // The rest of the reference's CGxCaps (device +0x214..+0x350), which ISetCaps fills and
+        // whoa's layout did not carry. Frozen's order differs from the reference's above this line,
+        // so offsets are given in reference terms on each.
+        int32_t m_texFmtRtt[GxTexFormats_Last] = { 0 }; // +0x7c: usable as a render target (D24X8: depth)
+        int32_t m_texNonPow2Conditional = 1;              // +0x68: non-pow2 only with the usual restrictions
+        int32_t m_shaderConsts[GxShTargets_Last] = { 0 }; // +0xcc: constant registers (vertex only, set)
+        int32_t m_colorWrite = 0;                         // +0xf4: D3DPMISCCAPS_COLORWRITEENABLE
+        uint32_t m_maxClipPlanes = 0;                     // +0xf8
+        int32_t m_hardwareCursor = 0;                     // +0xfc: D3DCURSORCAPS_COLOR
+        int32_t m_occlusionQuery = 0;                     // +0x100
+        int32_t m_pointSprites = 0;                       // +0x104: max point size above 1
+        float m_maxPointSize = 0.0f;                      // +0x108
+        int32_t m_pointScale = 0;                         // +0x10c
+        int32_t m_blendFactor = 0;                        // +0x110: D3DPBLENDCAPS_BLENDFACTOR
+        int32_t int114[5] = { 0 };                        // +0x114..+0x124: zeroed, meaning unknown
+        int32_t int130b = 1;                              // +0x130
+        int32_t m_notPs30a = 0;                           // +0x134: pixel target below ps_3_0
+        int32_t m_notPs30b = 0;                           // +0x138: the same, a second consumer
 };
 
 #endif

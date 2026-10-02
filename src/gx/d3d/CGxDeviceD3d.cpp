@@ -401,6 +401,7 @@ LRESULT CGxDeviceD3d::WindowProcD3d(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
+// ref: FUN_0068fd50
 CGxDeviceD3d::CGxDeviceD3d() : CGxDevice() {
     // TODO
 
@@ -555,6 +556,10 @@ void* CGxDeviceD3d::DeviceWindow() {
     return this->m_hwnd;
 }
 
+// ref: FUN_00690230
+// One recorded divergence: on a size message whose back buffer already matches the window, frozen
+// skips the reset (see the note inside). Everything else follows the reference, including the
+// focus messages, which drive the window-active flag the frame cap reads.
 void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
     switch (wm) {
     case GxWM_Size: {
@@ -607,12 +612,10 @@ void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
 
                 if (SUCCEEDED(resetResult)) {
                     this->IStateSetD3dDefaults();
-                    // TODO
+                    this->IWindowActiveSet(1);
 
                     this->m_context = 1;
                     this->intF5C = 0;
-
-                    // TODO
 
                     this->intF6C = 1;
 
@@ -635,6 +638,34 @@ void CGxDeviceD3d::DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) {
             }
 
             this->intF6C = 1;
+        }
+
+        break;
+    }
+
+    case GxWM_DisplayChange: {
+        if (this->m_windowVisible) {
+            this->DeviceSetDefWindow(*reinterpret_cast<CRect*>(param1));
+            this->intF6C = 1;
+        }
+
+        break;
+    }
+
+    case GxWM_Destroy:
+    case GxWM_KillFocus: {
+        this->intF64 = 0;
+
+        break;
+    }
+
+    case GxWM_SetFocus: {
+        this->intF64 = 1;
+
+        if (!this->m_format.window) {
+            RECT windowRect;
+            GetWindowRect(this->m_hwnd, &windowRect);
+            ClipCursor(&windowRect);
         }
 
         break;
@@ -939,6 +970,13 @@ int32_t CGxDeviceD3d::ICreateD3d() {
     return 0;
 }
 
+// ref: FUN_0068f3d0
+// PARTIAL. Ported: hardware T&L selection, present parameters, CreateDevice with the reference's
+// behaviour flags, the adapter format, ISetCaps, the D3D defaults. Not yet, all recorded in the
+// roadmap's Phase 3a item 5: NVAPI stereo setup, the caps log, the gamma ramp (vtable slot 15),
+// the hardware cursor (slot 2, FUN_0068e900), the 8x8 placeholder texture at +0x3b58 (callback
+// FUN_0068f370) and the device's own "UI" shader sets (0x00c5dfd8, 0x00c5fffc) that the base
+// ScenePresent draws the software cursor with.
 int32_t CGxDeviceD3d::ICreateD3dDevice(const CGxFormat& format) {
     // TODO stereoscopic setup
 
@@ -2079,119 +2117,172 @@ void CGxDeviceD3d::ISceneEnd() {
     }
 }
 
+// ref: FUN_0068ee20
+// Ported 2026-10-01 from the decompilation, field by field against D3DCAPS9. Gained: the
+// render-target format checks, vertex shader constant count, colour write, clip planes, hardware
+// cursor, occlusion queries, point sprites, the blend factor, the shader-target clamps from the
+// format (a fixed-function format clamps both to none), the ps_3_0-needs-vs_3_0 rule, the
+// GeForce FX constant cap, the GeForce non-pow2 rule, and the pre-vs_2_0 attribute remap.
 void CGxDeviceD3d::ISetCaps(const CGxFormat& format) {
-    // Texture stages
+    auto& caps = this->m_caps;
+    auto& d3dCaps = this->m_d3dCaps;
 
-    int32_t maxSimultaneousTextures = this->m_d3dCaps.MaxSimultaneousTextures;
-    this->m_caps.m_numTmus = std::min(maxSimultaneousTextures, 8);
+    caps.m_numTmus = d3dCaps.MaxSimultaneousTextures > 7 ? 8 : d3dCaps.MaxSimultaneousTextures;
+    caps.m_pixelCenterOnEdge = 0;
+    caps.m_texelCenterOnEdge = 1;
 
-    // Rasterization rules
+    uint32_t maxTextureWidth = d3dCaps.MaxTextureWidth;
+    caps.m_texMaxSize[GxTex_2d] = std::max(maxTextureWidth, 256u);
+    caps.m_texMaxSize[GxTex_CubeMap] = std::max(maxTextureWidth, 256u);
+    caps.m_texMaxSize[GxTex_Rectangle] = std::max(maxTextureWidth, 256u);
+    caps.m_texMaxSize[GxTex_NonPow2] = std::max(maxTextureWidth, 256u);
 
-    this->m_caps.m_pixelCenterOnEdge = 0;
-    this->m_caps.m_texelCenterOnEdge = 1;
+    caps.m_maxIndex = d3dCaps.MaxVertexIndex;
 
-    // Max texture size
+    caps.m_texFilterTrilinear = (d3dCaps.TextureFilterCaps & D3DPTFILTERCAPS_MIPFLINEAR) != 0;
+    caps.m_texFilterAnisotropic = (d3dCaps.TextureFilterCaps & (D3DPTFILTERCAPS_MINFANISOTROPIC | D3DPTFILTERCAPS_MAGFANISOTROPIC)) != 0;
 
-    uint32_t maxTextureWidth = this->m_d3dCaps.MaxTextureWidth;
-    this->m_caps.m_texMaxSize[GxTex_2d] = std::max(maxTextureWidth, 256u);
-    this->m_caps.m_texMaxSize[GxTex_CubeMap] = std::max(maxTextureWidth, 256u);
-    this->m_caps.m_texMaxSize[GxTex_Rectangle] = std::max(maxTextureWidth, 256u);
-    this->m_caps.m_texMaxSize[GxTex_NonPow2] = std::max(maxTextureWidth, 256u);
-
-    // Max vertex index
-
-    this->m_caps.m_maxIndex = this->m_d3dCaps.MaxVertexIndex;
-
-    // Trilinear filtering
-
-    this->m_caps.m_texFilterTrilinear =
-        (this->m_d3dCaps.TextureFilterCaps & D3DPTFILTERCAPS_MIPFLINEAR) != 0;
-
-    // Anisotropic filtering
-
-    this->m_caps.m_texFilterAnisotropic =
-        (this->m_d3dCaps.TextureFilterCaps & (D3DPTFILTERCAPS_MINFANISOTROPIC | D3DPTFILTERCAPS_MAGFANISOTROPIC)) != 0;
-
-    if (this->m_d3dCaps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC) {
+    if (d3dCaps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC) {
         CGxDeviceD3d::s_filterModes[GxTex_Anisotropic][0] = D3DTEXF_ANISOTROPIC;
     }
 
-    if (this->m_d3dCaps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC) {
+    if (d3dCaps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC) {
         CGxDeviceD3d::s_filterModes[GxTex_Anisotropic][1] = D3DTEXF_ANISOTROPIC;
     }
 
-    this->m_caps.m_maxTexAnisotropy = this->m_d3dCaps.MaxAnisotropy;
+    caps.m_maxTexAnisotropy = d3dCaps.MaxAnisotropy;
 
-    if (this->m_caps.m_texFilterAnisotropic && this->m_d3dCaps.MaxAnisotropy < 2) {
-        this->m_caps.m_texFilterAnisotropic = 0;
+    if (caps.m_texFilterAnisotropic && d3dCaps.MaxAnisotropy < 2) {
+        caps.m_texFilterAnisotropic = 0;
     }
 
-    // Misc capabilities
+    caps.m_depthBias = (d3dCaps.RasterCaps & D3DPRASTERCAPS_DEPTHBIAS) != 0;
+    caps.m_numStreams = d3dCaps.MaxStreams;
+    caps.int10 = d3dCaps.Caps2 & 1;
 
-    this->m_caps.m_depthBias = (this->m_d3dCaps.RasterCaps & D3DPRASTERCAPS_DEPTHBIAS) != 0;
-    this->m_caps.m_numStreams = this->m_d3dCaps.MaxStreams;
-    this->m_caps.int10 = (this->m_d3dCaps.Caps2 & 1) != 0; // unknown caps flag
+    for (int32_t i = 0; i < GxShTargets_Last; i++) {
+        caps.m_shaderTargets[i] = 0;
+        caps.m_shaderConsts[i] = 0;
+    }
 
-    // Shader targets
-
-    auto pixelShaderVersion = this->m_d3dCaps.PixelShaderVersion;
+    auto pixelShaderVersion = d3dCaps.PixelShaderVersion;
 
     if (pixelShaderVersion >= D3DPS_VERSION(3, 0)) {
-        this->m_caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_3_0;
+        caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_3_0;
     } else if (pixelShaderVersion >= D3DPS_VERSION(2, 0)) {
-        this->m_caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_2_0;
+        caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_2_0;
     } else if (pixelShaderVersion >= D3DPS_VERSION(1, 4)) {
-        this->m_caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_1_4;
-    } else if (pixelShaderVersion >= D3DPS_VERSION(1, 1)) {
-        this->m_caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_1_1;
+        caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_1_4;
+    } else if (pixelShaderVersion > D3DPS_VERSION(1, 0)) {
+        caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_1_1;
     }
 
-    if (this->m_caps.m_shaderTargets[GxSh_Pixel] != GxShPS_none) {
-        auto vertexShaderVersion = this->m_d3dCaps.VertexShaderVersion;
+    if (caps.m_shaderTargets[GxSh_Pixel] != GxShPS_none) {
+        auto vertexShaderVersion = d3dCaps.VertexShaderVersion;
 
         if (vertexShaderVersion >= D3DVS_VERSION(3, 0)) {
-            this->m_caps.m_shaderTargets[GxSh_Vertex] = GxShVS_vs_3_0;
+            caps.m_shaderTargets[GxSh_Vertex] = GxShVS_vs_3_0;
         } else if (vertexShaderVersion >= D3DVS_VERSION(2, 0)) {
-            this->m_caps.m_shaderTargets[GxSh_Vertex] = GxShVS_vs_2_0;
+            caps.m_shaderTargets[GxSh_Vertex] = GxShVS_vs_2_0;
         } else if (vertexShaderVersion == D3DVS_VERSION(1, 1)) {
-            this->m_caps.m_shaderTargets[GxSh_Vertex] = GxShVS_vs_1_1;
+            caps.m_shaderTargets[GxSh_Vertex] = GxShVS_vs_1_1;
         }
 
-        // TODO maxVertexShaderConst
+        caps.m_shaderConsts[GxSh_Vertex] = d3dCaps.MaxVertexShaderConst;
     }
 
-    // TODO modify shader targets based on format
+    // The format can only lower a target: -1 leaves it, a fixed-function format sets 0.
+    if (format.unk48 != -1 && format.unk48 <= caps.m_shaderTargets[GxSh_Pixel]) {
+        caps.m_shaderTargets[GxSh_Pixel] = format.unk48;
+    }
 
-    // Texture formats
+    if (format.unk38 != -1 && format.unk38 <= caps.m_shaderTargets[GxSh_Vertex]) {
+        caps.m_shaderTargets[GxSh_Vertex] = format.unk38;
+    }
+
+    if (caps.m_shaderTargets[GxSh_Pixel] == GxShPS_ps_3_0 && caps.m_shaderTargets[GxSh_Vertex] != GxShVS_vs_3_0) {
+        caps.m_shaderTargets[GxSh_Pixel] = GxShPS_ps_2_0;
+    }
+
+    D3DDEVICE_CREATION_PARAMETERS creation;
+    this->m_d3dDevice->GetCreationParameters(&creation);
+
+    D3DADAPTER_IDENTIFIER9 adapter;
+    this->m_d3d->GetAdapterIdentifier(creation.AdapterOrdinal, 0, &adapter);
+
+    // GeForce FX (device ids 0x300..0x3ff): no more than 192 vertex shader constants.
+    if (adapter.VendorId == 0x10DE && adapter.DeviceId - 0x300 < 0x100 && caps.m_shaderConsts[GxSh_Vertex] > 0xC0) {
+        caps.m_shaderConsts[GxSh_Vertex] = 0xC0;
+    }
 
     for (int32_t i = 0; i < GxTexFormats_Last; i++) {
         if (i == GxTex_Unknown) {
-            this->m_caps.m_texFmt[i] = 0;
+            caps.m_texFmt[i] = 0;
         } else {
-            this->m_caps.m_texFmt[i] = this->m_d3d->CheckDeviceFormat(
-                0,
-                D3DDEVTYPE_HAL,
-                this->m_devAdapterFormat,
-                0,
-                D3DRTYPE_TEXTURE,
-                CGxDeviceD3d::s_GxTexFmtToD3dFmt[i]
-            ) == D3D_OK;
+            caps.m_texFmt[i] = this->m_d3d->CheckDeviceFormat(0, D3DDEVTYPE_HAL, this->m_devAdapterFormat, 0,
+                D3DRTYPE_TEXTURE, CGxDeviceD3d::s_GxTexFmtToD3dFmt[i]) == D3D_OK;
         }
     }
 
-    this->m_caps.m_generateMipMaps = (this->m_d3dCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0;
+    caps.m_generateMipMaps = (d3dCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0;
 
-    // TODO
+    // Before vs_2_0 the two byte-vector attribute types travel as D3DCOLOR.
+    if (caps.m_shaderTargets[GxSh_Vertex] < GxShVS_vs_2_0) {
+        CGxDeviceD3d::s_gxAttribToD3dAttribType[1] = D3DDECLTYPE_D3DCOLOR;
+        CGxDeviceD3d::s_gxAttribToD3dAttribType[2] = D3DDECLTYPE_D3DCOLOR;
+    }
 
-    // Texture targets
+    auto checkRtt = [&](uint32_t usage, D3DFORMAT d3dFormat) {
+        return this->m_d3d->CheckDeviceFormat(0, D3DDEVTYPE_HAL, this->m_devAdapterFormat, usage, D3DRTYPE_TEXTURE, d3dFormat) == D3D_OK;
+    };
 
-    this->m_caps.m_texTarget[GxTex_2d] = 1;
-    this->m_caps.m_texTarget[GxTex_CubeMap] = (this->m_d3dCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP) != 0;
-    this->m_caps.m_texTarget[GxTex_Rectangle] = 0;
-    this->m_caps.m_texTarget[GxTex_NonPow2] =
-        (this->m_d3dCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL) != 0 || (this->m_d3dCaps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
+    caps.m_texFmtRtt[GxTex_Argb8888] = checkRtt(D3DUSAGE_RENDERTARGET, CGxDeviceD3d::s_GxTexFmtToD3dFmt[GxTex_Argb8888]);
+    caps.m_texFmtRtt[GxTex_Rgb565] = checkRtt(D3DUSAGE_RENDERTARGET, CGxDeviceD3d::s_GxTexFmtToD3dFmt[GxTex_Rgb565]);
+    caps.m_texFmtRtt[GxTex_Gr1616F] = checkRtt(D3DUSAGE_RENDERTARGET, CGxDeviceD3d::s_GxTexFmtToD3dFmt[GxTex_Gr1616F]);
+    caps.m_texFmtRtt[GxTex_R32F] = checkRtt(D3DUSAGE_RENDERTARGET, CGxDeviceD3d::s_GxTexFmtToD3dFmt[GxTex_R32F]);
+    caps.m_texFmtRtt[GxTex_D24X8] = checkRtt(D3DUSAGE_DEPTHSTENCIL, D3DFMT_D24X8);
 
-    // TODO
+    caps.m_colorWrite = (d3dCaps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
+    caps.m_hardwareCursor = (d3dCaps.CursorCaps & D3DCURSORCAPS_COLOR) != 0;
+    caps.m_maxClipPlanes = d3dCaps.MaxUserClipPlanes;
+
+    caps.m_texTarget[GxTex_2d] = 1;
+    caps.m_texTarget[GxTex_CubeMap] = (d3dCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP) != 0;
+    caps.m_texTarget[GxTex_Rectangle] = 0;
+    caps.m_texTarget[GxTex_NonPow2] = !(!(d3dCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL) && (d3dCaps.TextureCaps & D3DPTEXTURECAPS_POW2));
+
+    caps.m_texNonPow2Conditional = 1;
+
+    if (caps.m_texTarget[GxTex_NonPow2]) {
+        caps.m_texNonPow2Conditional = (d3dCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL) != 0;
+
+        if (adapter.VendorId == 0x10DE) {
+            caps.m_texNonPow2Conditional = 0;
+        }
+    }
+
+    LPDIRECT3DQUERY9 query = nullptr;
+    caps.m_occlusionQuery = this->m_d3dDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, &query) == D3D_OK;
+
+    if (query) {
+        query->Release();
+    }
+
+    caps.m_pointSprites = d3dCaps.MaxPointSize > 1.0f;
+    caps.m_maxPointSize = d3dCaps.MaxPointSize;
+    caps.m_pointScale = d3dCaps.MaxPointSize > 1.0f;
+    caps.m_blendFactor = (d3dCaps.SrcBlendCaps & D3DPBLENDCAPS_BLENDFACTOR) != 0;
+
+    caps.int130b = 1;
+
+    uint32_t notPs30 = caps.m_shaderTargets[GxSh_Pixel] != GxShPS_ps_3_0;
+
+    for (auto& unknown : caps.int114) {
+        unknown = 0;
+    }
+
+    caps.m_notPs30a = notPs30;
+    caps.m_notPs30b = notPs30;
 }
 
 // ref: FUN_0068e250

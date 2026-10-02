@@ -42,3 +42,25 @@ int32_t AdapterFormatSort(const void* a, const void* b) {
 
     return multisampleSort;
 }
+
+// ref: FUN_00681950
+// The shader-target clamps (unk38..unk4c) start at -1, "no clamp": ISetCaps lowers a target to
+// them only when they are not -1, and the fixedFunction path zeroes them. Without this they were
+// zero, which ISetCaps reads as "clamp every shader target to none".
+CGxFormat::CGxFormat() {
+    this->size.x = 0;
+    this->size.y = 0;
+    this->pos.x = 0;
+    this->pos.y = 0;
+    this->multisampleQuality = 0.0f;
+    this->maximize = 0;
+    this->stereoEnabled = 0;
+    this->multisampleCount = 1;
+    this->aspect = 1;
+    this->unk38 = -1;
+    this->unk3c = -1;
+    this->unk40 = -1;
+    this->unk44 = -1;
+    this->unk48 = -1;
+    this->unk4c = -1;
+}

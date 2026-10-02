@@ -54,6 +54,8 @@ class CGxFormat {
         // frozen-only: the window position the D3D backend creates the window at. Not part of the
         // reference struct.
         C2iVector pos;
+
+        CGxFormat();
 };
 
 int32_t AdapterFormatSort(const void* a, const void* b);

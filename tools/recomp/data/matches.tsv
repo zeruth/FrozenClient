@@ -2309,6 +2309,7 @@ addr	how	frozen	evidence
 006817a0	annotated	GxMaxFpsBk	tag in src/gx/Gx.cpp
 006817b0	override	GxGetBlitFormat	
 00681890	override	CGxDevice::XformSetViewport	
+00681950	annotated	CGxFormat::CGxFormat	tag in src/gx/CGxFormat.cpp
 00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
@@ -2343,6 +2344,7 @@ addr	how	frozen	evidence
 006839f0	sticky	WowClientDB<LiquidTypeRec>::GetRecord	held from the previous run, where it was sticky
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
 006840f0	annotated	CGxDevice::DeviceSetFormat	tag in src/gx/CGxDevice.cpp
+00684360	annotated	CGxDevice::DeviceSetDefWindow	tag in src/gx/CGxDevice.cpp
 00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
 006844c0	annotated	CGxDevice::PrimVertexFormat	tag in src/gx/CGxDevice.cpp
 00684620	annotated	CGxLightState::Set	tag in src/gx/CGxDevice.cpp
@@ -2369,6 +2371,7 @@ addr	how	frozen	evidence
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
+00687900	annotated	CGxDevice::DeviceCreateStreamBufs	tag in src/gx/CGxDevice.cpp
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00687980	annotated	CGxDevice::TexDestroy	tag in src/gx/CGxDevice.cpp
 00688230	annotated	CGxPool::Invalidate	tag in src/gx/buffer/CGxPool.cpp
@@ -2383,13 +2386,16 @@ addr	how	frozen	evidence
 0068eb20	annotated	WindowClassCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ebb0	annotated	CGxDeviceD3d::ICreateWindow	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"
-0068f3d0	callgraph	CGxDeviceD3d::ICreateD3dDevice	only unmatched callee of 006904d0=CGxDeviceD3d::DeviceSetFormat
+0068ee20	annotated	CGxDeviceD3d::ISetCaps	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068f3d0	annotated	CGxDeviceD3d::ICreateD3dDevice	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fa60	annotated	CGxDeviceD3d::IBufUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fae0	annotated	CGxDeviceD3d::BufUnlock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fb10	annotated	CGxDeviceD3d::IBufLock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fce0	annotated	CGxDeviceD3d::BufLock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fd00	annotated	CGxDeviceD3d::BufData	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068fd50	annotated	CGxDeviceD3d::CGxDeviceD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690150	annotated	CGxDeviceD3d::IReleaseD3dResources	tag in src/gx/d3d/CGxDeviceD3d.cpp
+00690230	annotated	CGxDeviceD3d::DeviceWM	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006903b0	annotated	CGxDeviceD3d::IDestroyD3dDevice	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006904d0	annotated	CGxDeviceD3d::DeviceSetFormat	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690680	annotated	CGxDeviceD3d::ICreateD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp

@@ -3588,10 +3588,6 @@
     "status": "unlinked",
     "note": "the order matcher proposed `CGxDevice::ShaderConstantsUnlock` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this is a case-insensitive name lookup in a hash table (SStrHashHT, SStrCmpI). Re-link any of these only from a call site or a body."
   },
-  "00687900": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::ShaderDestroy` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: a 55-byte function calling only BufCreate. Re-link any of these only from a call site or a body."
-  },
   "006817b0": {
     "frozen": "GxGetBlitFormat",
     "status": "ported",
@@ -3610,5 +3606,13 @@
   "006a1690": {
     "status": "unlinked",
     "note": "the callgraph matcher proposed `CGxDeviceD3d::ResetRsSendCaches` for this on 2026-10-01; it is not that. It walks a linked list headed at device +0x2930 and releases the COM object each node holds (node +0, next at +0xc); ResetRsSendCaches only resets cached state values. Called from IReleaseD3dResources (FUN_00690150) and the D3D9Ex equivalent; frozen has no such list yet."
+  },
+  "0068fe80": {
+    "status": "unlinked",
+    "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the CGxDeviceD3d destructor: stores the vtable, frees the vertex-declaration cache at +0x3ad8, runs the base destructor (FUN_006890c0) and frees the object when asked. Frozen declares no destructor for the device."
+  },
+  "0068fed0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the frame read-back behind the one-shot capture request (+0x2934): copies the back buffer, or an offscreen surface FUN_0068f6a0 makes when multisampled, into a caller buffer, converting 565 and 1555 to 8888. Frozen has no counterpart yet."
   }
 }

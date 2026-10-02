@@ -617,6 +617,7 @@ void CGxDevice::DeviceCreatePools() {
     );
 }
 
+// ref: FUN_00687900
 void CGxDevice::DeviceCreateStreamBufs() {
     this->m_streamBufs[GxPoolTarget_Vertex] = this->BufCreate(this->m_vertexPool, 0, 0, 0);
     this->m_streamBufs[GxPoolTarget_Index] = this->BufCreate(this->m_indexPool, 0, 0, 0);
@@ -704,6 +705,7 @@ void CGxDevice::DeviceSetCurWindow(const CRect& rect) {
     this->m_curWindowRect = rect;
 }
 
+// ref: FUN_00684360
 void CGxDevice::DeviceSetDefWindow(CRect const& rect) {
     this->m_defWindowRect = rect;
     this->DeviceSetCurWindow(rect);
