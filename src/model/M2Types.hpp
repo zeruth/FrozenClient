@@ -155,6 +155,12 @@ struct M2Element {
     // a real decision, not a transcription detail, which is why it is flagged here rather than
     // discovered mid-port.
     int32_t index;
+    // Reference +0x1c and +0x20, written by the doodad grouping at the end of CM2Scene::Animate:
+    // the head of a group of batchable doodad elements carries how many follow it in the doodad
+    // list (CM2SceneRender::DrawBatchDoodad draws them as instances), and every member carries
+    // the element index that represents its group.
+    uint32_t doodadCount;
+    uint32_t doodadGroup;
     int32_t priorityPlane;
     M2Batch* batch;
     M2SkinSection* skinSection;

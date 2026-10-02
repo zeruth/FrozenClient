@@ -109,7 +109,7 @@ class CM2SceneRender {
             {};
         void Draw(M2PASS pass, M2Element* elements, uint32_t* a4, uint32_t a5);
         void DrawBatch();
-        void DrawBatchDoodad(M2Element* elements, uint32_t* a3);
+        void DrawBatchDoodad(M2Element* elements, uint32_t* indices);
         void DrawBatchProj();
         void DrawCallback();
         int32_t DrawParticleBatch(uint32_t first, M2Element* elements, uint32_t* indices, uint32_t count);

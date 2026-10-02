@@ -458,6 +458,7 @@ void CMap::CullMapObjDoodads() {
         int32_t visible = CWorldScene::SphereOutsideFrustum(center, radius) ? 0 : 1;
 
         model->SetVisible(visible);
+        model->m_flag10000 = visible;
         model->SetAnimating(visible);
     }, nullptr);
 }

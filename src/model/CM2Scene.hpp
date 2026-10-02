@@ -50,6 +50,7 @@ class CM2Scene {
         static int32_t SortRayCandidates(uint32_t a, uint32_t b, const void* userArg);
         // The same, with the additive run number as its first key. ref: FUN_0081f0e0
         static int32_t SortTransparentGrouped(uint32_t a, uint32_t b, const void* userArg);
+        static int32_t SortDoodadGroups(uint32_t a, uint32_t b, const void* userArg);
 
         // Member variables
         // +0x0: references held by the scene's owners; Release destroys it at zero.
@@ -73,6 +74,7 @@ class CM2Scene {
         CM2Light* m_lightGrid[4096] = {};
         CM2Model* m_animateList = nullptr;
         CM2Model* m_drawList = nullptr;
+        CM2Model* m_particleDrawList = nullptr;
         TSGrowableArray<M2Element> m_elements;
         TSGrowableArray<uint32_t> array44;
         TSGrowableArray<uint32_t> array54[3];
@@ -122,7 +124,12 @@ class CM2Scene {
         // Born zero here, which is MORE defined than the reference, whose constructor never
         // writes this field at all -- see the long note at CM2Scene::Draw for why that makes the
         // reference's own gate unportable and why frozen does not have it.
-        uint32_t m_passMask = 0;
+        // +0x140: which side of the liquid plane a model straddling it is drawn on when clip planes
+        // are off (CM2Scene::Animate). The constructor zeroes it and nothing else writes it.
+        uint32_t uint140 = 0;
+        // +0x144: the passes CM2Scene::Draw draws. The constructor sets every bit (FUN_008216c0,
+        // 0x00821834); the world frame narrows its own scene to CWorld::s_m2PassMask.
+        uint32_t m_passMask = 0xFFFFFFFF;
 
         // Static functions
         // ref: FUN_0081d2c0

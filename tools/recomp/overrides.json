@@ -1347,7 +1347,7 @@
   "00821a20": {
     "frozen": "CM2Scene::Animate",
     "status": "ported",
-    "note": "Name recovered in docs/world-render-inventory.md; frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port's 52. Its 31% call-order recall is container plumbing rather than missing render behaviour, checked 2026-09-23 so it is not chased again as a rendering gap. FUN_00480fd0 alone accounts for six of the unmatched calls and reappears later: it is a TSGrowableArray<T>::Reserve instantiation -- grow when count + 1 exceeds capacity, falling back to the power-of-two clamp at 0x005d0040 when the growth field is zero. frozen reaches the same code through m_elements.New() and array54[k].New(), which the compiler inlines, so the call never appears on its side and never can. Tagging it needs the instantiation's element type, and this family has been mislinked before -- 0x00408490 was once tagged as CGxDevice::RsPush and is a Reserve -- so it is left alone deliberately. The genuinely unidentified callees are FUN_0081bfa0, FUN_00828a00, FUN_00831af0, FUN_0081cdc0 and FUN_00824550, all with five callers or fewer."
+    "note": "Rewritten from the decompilation 2026-10-02: the draw list (batches, ribbons, draw callback), then the separate particle draw list, then the doodad grouping and the three sorts. Name recovered in docs/world-render-inventory.md; frozen has the same name in model/CM2Scene.cpp; 5621 bytes and 54 calls against the port's 52. Its 31% call-order recall is container plumbing rather than missing render behaviour, checked 2026-09-23 so it is not chased again as a rendering gap. FUN_00480fd0 alone accounts for six of the unmatched calls and reappears later: it is a TSGrowableArray<T>::Reserve instantiation -- grow when count + 1 exceeds capacity, falling back to the power-of-two clamp at 0x005d0040 when the growth field is zero. frozen reaches the same code through m_elements.New() and array54[k].New(), which the compiler inlines, so the call never appears on its side and never can. Tagging it needs the instantiation's element type, and this family has been mislinked before -- 0x00408490 was once tagged as CGxDevice::RsPush and is a Reserve -- so it is left alone deliberately. The genuinely unidentified callees are FUN_0081bfa0, FUN_00828a00, FUN_00831af0, FUN_0081cdc0 and FUN_00824550, all with five callers or fewer."
   },
   "00823130": {
     "frozen": "CM2SceneRender::Draw",
@@ -1356,8 +1356,8 @@
   },
   "00823cb0": {
     "frozen": "CM2Scene::Draw",
-    "status": "diverged",
-    "note": "DIVERGED on purpose, 2026-09-26: frozen does not reproduce the per-pass gate this function opens with. The reference tests `scene->+0x144 & (1 << pass)` and draws nothing when the bit is clear, and +0x144 is the last field of the object (M2CreateScene allocates exactly 0x148 bytes). Only ONE of this function's five reference callers ever assigns that field -- CGWorldFrame::OnWorldRender, at 0x004f9117, from the world enables word at 0x00cd7754 -- and the constructor (FUN_008216c0) never writes it. M2CreateScene has nine callers, so most scenes reach this test with uninitialised heap memory in the field.  Porting the gate was tried and measured: it suppressed 232 of 301 draws, the first carrying 47 elements. frozen keeps the field and the world-side assignment, which are well defined, and leaves the test out. It becomes portable the day every scene gets a defined mask at construction."
+    "status": "ported",
+    "note": "The pass gate is ported. A 2026-09-26 note recorded it as a deliberate divergence on the grounds that the constructor never writes +0x144 and most scenes would test uninitialised memory; that was wrong -- FUN_008216c0 stores 0xFFFFFFFF there at 0x00821834, so every scene draws all passes until the world frame narrows its own. The 232-of-301 suppression measured then came from frozen's mask defaulting to 0. Corrected 2026-10-02."
   },
   "00872c10": {
     "frozen": "CShaderEffect::UpdateProjMatrix",
@@ -1441,8 +1441,8 @@
   },
   "00820ae0": {
     "frozen": "CM2SceneRender::DrawBatchDoodad",
-    "status": "stub",
-    "note": "logs 'BatchDoodad: model=%s index=%d' -- the reference names its own passes in a debug line that the stripped build folded onto the nullsub, leaving the format string behind"
+    "status": "ported",
+    "note": "Ported 2026-10-02 with the grouping at the end of CM2Scene::Animate. The debug line it logs goes to a no-op."
   },
   "00820f40": {
     "status": "ported",
@@ -1455,8 +1455,8 @@
   },
   "008230d0": {
     "frozen": "CM2SceneRender::DrawCallback",
-    "status": "stub",
-    "note": "logs the literal 'Callback' the same way; the only caller is CM2SceneRender::Draw"
+    "status": "ported",
+    "note": "Ported 2026-10-02 (cad19b75). The literal it logs goes to a no-op."
   },
   "0081f450": {
     "frozen": "CM2SceneRender::SetupTextures",

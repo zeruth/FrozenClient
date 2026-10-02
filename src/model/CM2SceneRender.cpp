@@ -187,8 +187,7 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
 
                 case 2: {
                     this->DrawBatchDoodad(elements, &indices[i]);
-                    // TODO
-                    // i += this->m_curElement->dword1C - 1;
+                    i += this->m_curElement->doodadCount - 1;
                     break;
                 }
 
@@ -365,82 +364,116 @@ void CM2SceneRender::DrawBatch() {
     }
 }
 
-// The other half of the doodad-batch trap. This draws type 2 elements, and nothing produces them
-// today because CM2Model::IsBatchDoodadCompatible returns 0 -- see the note there. If that changes
-// while this is still empty, the merged batches stop drawing with nothing in the log.
-//
-// ref: FUN_00820ae0, 1109 bytes. Decoded 2026-09-26 and still not ported, but the chain underneath
-// it is now most of the way in. What the reference does, and what is left:
-//
-//   The scene render caches three things off the element before drawing: the M2Batch
-//   (element+0x28) into +0x88, the M2SkinSection (element+0x2c) into +0x90, and m_curMaterial
-//   into +0x98. Then SetCurrent, SetupLighting, SetupMaterial, SetupTextures and SetIndices
-//   -- all five already linked in frozen.
-//
-//   It then draws the instances in CHUNKS, because one vertex buffer holds a bounded number of
-//   them: FUN_00836df0 asks the scene's instance pool to grow to the requested count and returns
-//   what it could manage, and the loop draws that many at a time. Two arms, selected by
-//   DAT_00d43020 -- the fixed-function arm streams transformed vertices through BufStream, and
-//   the shader arm uploads one 3x4 matrix per instance-bone into shader constants instead and
-//   lets the vertex program do the transform.
-//
-// DONE: the fixed-function arm's per-vertex work, which was the part with no specification at all.
-// The inner call `(*(&DAT_00d4118c)[skinSection->boneInfluences])(model, skinSection, dst, 0)` is
-// now CM2Model.cpp's M2GetPackBatchVerticesFn -- see the table there. Both packers are ported and
-// were checked numerically on 2026-09-26.
-//
-// LEFT: the three scene render fields above, and IsBatchDoodadCompatible's one unmapped field.
-//
-// The buffer side is DONE as of 2026-09-26. FUN_008362b0, FUN_00836df0 and FUN_008368b0 are all
-// CM2Shared methods, not scene render ones -- they read +0x150 as m_data, the offset
-// IsBatchDoodadCompatible's own expression proves -- and they are now CM2Shared::SetVertices,
-// ReserveInstances and ReleaseGeometryBuffers. Two things that looked like blockers were not:
-// SetVertices was already ported and merely untagged, and every field the trio needs already
-// existed on CM2Shared at the right offsets. The decode is kept below because it is what the
-// remaining scene-render half has to line up against:
-//
-//   FUN_008362b0, 796 bytes, 6 callers. Builds ONE shared static vertex buffer holding every
-//   instance's copy of the mesh, created on first use (guarded on +0x180 being null): PoolCreate
-//   then BufCreate at 0x30 stride for (skinProfile->vertexTotal * instanceCapacity) vertices.
-//   Then it fills the buffer in one of two layouts and declares the format to GxPrimVertexPtr:
-//
-//     DAT_00d43020 == 0  ->  40 bytes per vertex, format 5:  position, normal, BOTH authored
-//                            texture coordinate sets (the second is picked with `arg == 0`, so
-//                            the two sets swap when the argument is 1). This arm is for the other
-//                            five callers; the doodad path never takes it.
-//     otherwise          ->  48 bytes per vertex, format 0xc: the whole M2Vertex copied verbatim,
-//                            then the bone index word at +0x10 REWRITTEN to
-//                            boneCombo[i] + boneCount * instance * 0x1010101 -- one byte added to
-//                            each of the four indices, which walks each instance onto its own
-//                            block of bone matrices. This is the arm DrawBatchDoodad uses, and it
-//                            is why the shader arm uploads matrices instead of transforming:
-//                            the vertex program does the skinning.
-//
-//   The 40 against 48 is NOT an overrun and not a reference bug -- checked against the
-//   disassembly at 0x83651c (`leal 0x18(%eax,%edx,8)` with edx = i*5, so a genuine 40-byte step).
-//   The buffer is allocated at the LARGER stride so one allocation serves either format, and each
-//   arm writes its own.
-//
-//   FUN_00836df0, 69 bytes. The instance-capacity grow: +0x190 is the current capacity and +0x194
-//   the ceiling; a request above the current one is rounded up to a multiple of 16, clamped to the
-//   ceiling, stored, and FUN_008368b0 reallocates. It returns what it could manage, which is why
-//   DrawBatchDoodad draws in chunks rather than assuming it got what it asked for.
-//
-// Both of those are ported now, along with FUN_008368b0, the release that the grow depends on --
-// growing the capacity drops the buffers so the next fill rebuilds them larger. ReserveInstances
-// is still UNREACHABLE: its only callers are this function and FUN_00829ba0, so nothing raises the
-// instance capacity above 1 until one of them lands.
-//
-// What remains for this stub is therefore the scene-render half alone: the three cached fields
-// (+0x88 the M2Batch, +0x90 the M2SkinSection, +0x98 m_curMaterial) and the two draw arms.
-//
-// CORRECTED 2026-09-27: +0x98 was written here twice as "a bone lookup base". It is not. The
-// expression is `&m_data->materials[batch.materialIndex]` -- the same shape DrawRibbon uses for its
-// own first pass -- and frozen's field at that offset is m_curMaterial, which SetupMaterial reads.
-// Per the rule in CM2Model::IsBatchDoodadCompatible, that still may not be landed in a change
-// that enables either stub alone.
-void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* a3) {
-    // TODO -- see the decode above; the per-vertex packers it needs are ported already
+// ref: FUN_00820ae0
+// A group of doodad elements drawn as instances of the current one: the doodad list holds the
+// group's members from `indices` on, and the head carries how many. The instances go in chunks of
+// what CM2Shared::ReserveInstances could make room for. Without shaders each chunk's vertices are
+// skinned on the CPU by the section's packer into a stream buffer; with them, the shared instance
+// vertex buffer is bound once and each chunk uploads every instance's bone matrices at c31.
+void CM2SceneRender::DrawBatchDoodad(M2Element* elements, uint32_t* indices) {
+    auto element = this->m_curElement;
+
+    this->m_curBatch = element->batch;
+    this->m_curSkinSection = element->skinSection;
+    this->m_curMaterial = &this->m_data->materials[element->batch->materialIndex];
+
+    element->effect->SetCurrent();
+    this->SetupLighting();
+    this->SetupMaterial();
+    this->SetupTextures();
+
+    uint32_t total = element->doodadCount;
+    uint32_t chunk = this->m_curShared->ReserveInstances(total);
+
+    if (chunk > total) {
+        chunk = total;
+    }
+
+    this->m_curShared->SetIndices();
+
+    auto section = this->m_curSkinSection;
+
+    CGxBatch batch;
+    batch.m_primType = GxPrim_Triangles;
+    batch.m_start = section->indexStart;
+    batch.m_minIndex = 0;
+
+    if (!CShaderEffect::s_enableShaders) {
+        for (uint32_t done = 0; done < total; done += chunk) {
+            if (done + chunk > total) {
+                chunk = total - done;
+            }
+
+            auto buffer = GxBufStream(GxPoolTarget_Vertex, 0x20, section->vertexCount * chunk);
+            auto vertices = GxBufLock(buffer);
+
+            if (!vertices) {
+                return;
+            }
+
+            // Normals need renormalising after a blend, or after one bone that scales.
+            uint32_t normalize = section->boneCount != 1;
+            auto pack = M2GetPackBatchVerticesFn(section->boneInfluences);
+
+            for (uint32_t i = 0; i < chunk; i++) {
+                CM2Model* model = elements[indices[done + i]].model;
+
+                pack(model, section, vertices, 0);
+                vertices += section->vertexCount * 0x20;
+
+                if (!normalize) {
+                    const C44Matrix& bone = model->m_boneMatrices[this->m_data->boneCombos[section->boneComboIndex]];
+                    float lengthSquared = bone.a0 * bone.a0 + bone.a1 * bone.a1 + bone.a2 * bone.a2;
+
+                    normalize = std::fabs(lengthSquared - 1.0f) > 0.001f;
+                }
+            }
+
+            GxBufUnlock(buffer, 0);
+            GxPrimVertexPtr(buffer, GxVBF_PNT);
+            GxRsSet(GxRs_NormalizeNormals, static_cast<int32_t>(normalize));
+
+            batch.m_count = section->indexCount * chunk;
+            batch.m_maxIndex = section->vertexCount * chunk - 1;
+
+            GxDraw(&batch, 1);
+        }
+
+        return;
+    }
+
+    this->m_curShared->SetVertices(0);
+
+    for (uint32_t done = 0; done < total; done += chunk) {
+        if (done + chunk > total) {
+            chunk = total - done;
+        }
+
+        C4Vector* constants = reinterpret_cast<C4Vector*>(GxShaderConstantsLock(GxSh_Vertex)) + 31;
+        uint32_t bones = 0;
+
+        for (uint32_t i = 0; i < chunk; i++) {
+            CM2Model* model = elements[indices[done + i]].model;
+
+            for (uint32_t j = 0; j < section->boneCount; j++) {
+                const C44Matrix& bone = model->m_boneMatrices[this->m_data->boneCombos[section->boneComboIndex + j]];
+
+                constants[0] = { bone.a0, bone.b0, bone.c0, bone.d0 };
+                constants[1] = { bone.a1, bone.b1, bone.c1, bone.d1 };
+                constants[2] = { bone.a2, bone.b2, bone.c2, bone.d2 };
+                constants += 3;
+                bones++;
+            }
+        }
+
+        GxShaderConstantsUnlock(GxSh_Vertex, 31, bones * 3);
+        CShaderEffect::SetShaders(element->vertexPermute, element->pixelPermute);
+
+        batch.m_count = section->indexCount * chunk;
+        batch.m_maxIndex = this->m_curShared->skinProfile->vertices.Count() * chunk - 1;
+
+        GxDraw(&batch, 1);
+    }
 }
 
 void CM2SceneRender::DrawBatchProj() {

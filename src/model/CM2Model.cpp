@@ -1,3 +1,4 @@
+#include "model/Model2.hpp"
 #include "model/CM2Model.hpp"
 #include "util/Log.hpp"
 #include <storm/String.hpp>
@@ -383,7 +384,21 @@ CM2Model::~CM2Model() {
     this->UnlinkFromAnimateList();
     this->UnlinkFromDrawList();
 
-    // TODO
+    if (this->m_particleDrawPrev) {
+        *this->m_particleDrawPrev = this->m_particleDrawNext;
+    }
+
+    if (this->m_particleDrawNext) {
+        this->m_particleDrawNext->m_particleDrawPrev = this->m_particleDrawPrev;
+    }
+
+    if (this->m_rayPrev) {
+        *this->m_rayPrev = this->m_rayNext;
+    }
+
+    if (this->m_rayNext) {
+        this->m_rayNext->m_rayPrev = this->m_rayPrev;
+    }
 
     this->DetachFromScene();
 
@@ -2125,7 +2140,16 @@ void CM2Model::AnimateST() {
         }
     }
 
-    // TODO
+    // Animating particles that the owner asked to see join the scene's particle draw list.
+    if (this->m_flag400 && this->m_flag10000) {
+        this->m_particleDrawPrev = &this->m_scene->m_particleDrawList;
+        this->m_particleDrawNext = this->m_scene->m_particleDrawList;
+        this->m_scene->m_particleDrawList = this;
+
+        if (this->m_particleDrawNext) {
+            this->m_particleDrawNext->m_particleDrawPrev = &this->m_particleDrawNext;
+        }
+    }
 
     // Animate attached models
 
@@ -4252,58 +4276,20 @@ int32_t CM2Model::InitializeLoaded() {
 //
 //     if (this->m_currentLighting && this->m_currentLighting->m_lightCount) return 0;
 //
-// "PORT THE TWO TOGETHER" IS NOT ENOUGH, and that instruction -- which this note carried for a
-// long time -- would corrupt rendering if followed. Established 2026-09-27 by walking the chain
-// instead of trusting it:
+// Live as of 2026-10-02, with everything under it: CM2Scene::Animate groups the type-2 elements
+// and writes each group's instance count (FUN_0081cc50, FUN_0081e5c0, FUN_0081ea90), and
+// CM2SceneRender::DrawBatchDoodad draws a group as instances. The float at +0x1b8 that blocked the
+// grouping is a constructor-only zero (CM2Model::float1B8). `M2BatchDoodads 0` turns it off.
 //
-//   DrawBatchDoodad loops on element +0x1c as its INSTANCE COUNT. CORRECTED 2026-10-01: an
-//   earlier reading said nothing in CM2Scene::Animate writes that slot. Its per-element GATHER
-//   does not, but Animate's TAIL does (0x00821c8c..0x00821dc0 in the corpus rendering): when the
-//   scene's doodad index list (+0x44..+0x50) holds two or more entries it hashes each element
-//   (FUN_0081cc50: model, batch index, the lighting's fog range, fog colour, sun diffuse and
-//   ambient, the batch's colour, the model's current diffuse, emissive and the float at +0x1b8,
-//   folded by 19) into a 251-slot table at 0x00d40da0, resolving collisions with FUN_0081e5c0 (the
-//   same fields compared in that order, memcmp on each vector), writes the slot to element +0x20,
-//   heap-sorts by +0x20 (FUN_0081ea90), and then walks the runs: a run of one becomes an ordinary
-//   opaque element through ComputeElementShaders, a longer run writes its LENGTH to the head's
-//   +0x1c. The merge prep pass below is a second writer, not the only one. Still blocked on one
-//   unknown: the float at model +0x1b8, which frozen's layout does not carry (it has a pointer
-//   there).
-//
-//   What does write it is the MERGE PREP PASS, FUN_00832dd0, mapped further down this file: it
-//   sorts the batch references and collapses runs of mergeable ones, and the collapsed count is
-//   what an instanced draw needs.
-//
-//   FUN_00832dd0 has exactly ONE caller, FUN_007bbc50 -- 2098 bytes of RenderTargetGet,
-//   ScissorSet, GxSceneClear, GxXformSetViewport, UpdateProjMatrix and ShadowMapGetShaderLevel.
-//   That is the MAP SHADOW MAP render pass, which CLAUDE.md's priority list already carries as an
-//   unported item of its own.
-//
-// So element type 2 exists to draw merged doodad batches INTO THE SHADOW MAP, and the real
-// dependency set is four things deep, not two: this gate, DrawBatchDoodad, the merge prep pass,
-// and the shadow-map pass that drives it.
-//
-// AND THE FAILURE IS WORSE THAN THE OLD NOTE SAID. It claimed the merged batches would silently
-// not draw. They would not: the element allocator does not zero, so a type-2 element's +0x1c holds
-// whatever the recycled slot last had, and DrawBatchDoodad would loop that many times over a
-// vertex buffer sized for something else. A wild loop count, not a missing draw.
-//
-// Everything BELOW that tier is ready and was landed over this session: both vertex packers,
-// CM2Shared::SetVertices for the shader arm's buffer, ReserveInstances for its capacity, and the
-// three scene render fields DrawBatchDoodad caches into. The gate's own last unknown field is
-// resolved above. What remains is the shadow-map pass and the merge pass under it.
-//
-// One more thing to respect when DrawBatchDoodad is finally written: it caches element +0x28 and
-// +0x2c expecting the batch and the skin section, and frozen's fields of those names are two slots
-// earlier than the reference's. Write it against frozen's NAMES. See the layout note in
-// M2Types.hpp, and the commit that fixed exactly this mistake in the particle and ribbon builders.
-//
-// **Still not implemented, deliberately, and the reason below has not changed.**
 // ref: FUN_00824550
 int32_t CM2Model::IsBatchDoodadCompatible(M2Batch* batch) {
-    // TODO -- see the decoded body above, and read the warning above that before enabling it
+    uint32_t flags = M2GetCacheFlags();
 
-    return 0;
+    return (flags & 0x20)
+        && this->m_flag10
+        && (this->m_shared->m_data->bones.Count() > 1 || !(flags & 0x40))
+        && (batch->flags & 0x10)
+        && (!this->m_currentLighting || !this->m_currentLighting->m_lightCount);
 }
 
 // ref: FUN_00824fc0

@@ -1,3 +1,5 @@
+#include <cstring>
+#include <cfloat>
 #include <cstdio>
 #include "model/CM2Scene.hpp"
 #include <common/ObjectAlloc.hpp>
@@ -759,6 +761,186 @@ void CM2Scene::AdvanceTime(uint32_t a2) {
     this->m_flags &= ~0x4;
 }
 
+// The model's bounding sphere against its lighting's liquid plane: the signed distance of the
+// centre, and the radius scaled by the placement.
+static void M2LiquidPlaneDistance(CM2Model* model, float& distance, float& radius) {
+    auto data = model->m_shared->m_data;
+    const CAaBox& extent = data->bounds.extent;
+
+    C3Vector centre = { (extent.t.x + extent.b.x) * 0.5f,
+                        (extent.t.y + extent.b.y) * 0.5f,
+                        (extent.t.z + extent.b.z) * 0.5f };
+
+    const C44Matrix& placement = model->matrixF4;
+
+    radius = sqrtf(placement.a0 * placement.a0 + placement.a1 * placement.a1 + placement.a2 * placement.a2)
+        * data->bounds.radius;
+
+    C3Vector world = centre * placement;
+    const C4Plane& plane = model->m_currentLighting->m_liquidPlane;
+
+    distance = plane.n.x * world.x + plane.n.z * world.z + plane.n.y * world.y + plane.d;
+}
+
+static inline uint32_t M2FloatBits(float value) {
+    uint32_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+// The doodad grouping table, reference 0x00d40da0: element indices, 0xFFFFFFFF for empty.
+static uint32_t s_doodadBatchTable[251];
+
+// ref: FUN_0081cc50
+// Folds by 19 everything a doodad element shares a draw on: the model's shared data, the batch,
+// the lighting's fog range, fog colour, sun diffuse and ambient, the batch's colour, and the
+// model's current diffuse, emissive and +0x1b8. The shared pointer is folded as its low 32 bits.
+static uint32_t M2DoodadBatchHash(const M2Element* element) {
+    auto model = element->model;
+    auto lighting = model->m_currentLighting;
+
+    uint32_t hash = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(model->m_shared)) * 0x13 + element->index;
+
+    const float lightingValues[] = {
+        lighting->m_fogStart, lighting->m_fogEnd,
+        lighting->m_fogColor.x, lighting->m_fogColor.y, lighting->m_fogColor.z,
+        lighting->m_sunDiffuse.x, lighting->m_sunDiffuse.y, lighting->m_sunDiffuse.z,
+        lighting->m_sunAmbient.x, lighting->m_sunAmbient.y, lighting->m_sunAmbient.z,
+    };
+
+    for (float value : lightingValues) {
+        hash = hash * 0x13 + M2FloatBits(value);
+    }
+
+    uint32_t colorIndex = element->batch->colorIndex;
+
+    if (colorIndex < model->m_shared->m_data->colors.Count()) {
+        const C3Vector& color = model->m_colors[colorIndex].colorTrack.currentValue;
+
+        hash = hash * 0x13 + M2FloatBits(color.x);
+        hash = hash * 0x13 + M2FloatBits(color.y);
+        hash = hash * 0x13 + M2FloatBits(color.z);
+    }
+
+    const float modelValues[] = {
+        model->m_currentDiffuse.x, model->m_currentDiffuse.y, model->m_currentDiffuse.z,
+        model->m_currentEmissive.x, model->m_currentEmissive.y, model->m_currentEmissive.z,
+        model->float1B8,
+    };
+
+    for (float value : modelValues) {
+        hash = hash * 0x13 + M2FloatBits(value);
+    }
+
+    return hash;
+}
+
+static int32_t M2CompareBytes(const void* a, const void* b, size_t size) {
+    int32_t order = memcmp(a, b, size);
+    return order < 0 ? -1 : order > 0 ? 1 : 0;
+}
+
+// ref: FUN_0081e5c0
+// Orders two doodad elements by the same fields the hash folds, so that 0 means they can be drawn
+// as instances of one another.
+static int32_t M2DoodadBatchCompare(uint32_t a, uint32_t b, const CM2Scene* scene) {
+    const M2Element& elementA = scene->m_elements[a];
+    const M2Element& elementB = scene->m_elements[b];
+    auto modelA = elementA.model;
+    auto modelB = elementB.model;
+
+    if (modelA->m_shared < modelB->m_shared) {
+        return -1;
+    }
+
+    if (modelB->m_shared < modelA->m_shared) {
+        return 1;
+    }
+
+    if (static_cast<uint32_t>(elementA.index) < static_cast<uint32_t>(elementB.index)) {
+        return -1;
+    }
+
+    if (elementA.index != elementB.index) {
+        return 1;
+    }
+
+    auto lightingA = modelA->m_currentLighting;
+    auto lightingB = modelB->m_currentLighting;
+
+    if (lightingA != lightingB) {
+        if (lightingA->m_fogStart < lightingB->m_fogStart) {
+            return -1;
+        }
+
+        if (lightingB->m_fogStart < lightingA->m_fogStart) {
+            return 1;
+        }
+
+        if (lightingA->m_fogEnd < lightingB->m_fogEnd) {
+            return -1;
+        }
+
+        if (lightingB->m_fogEnd < lightingA->m_fogEnd) {
+            return 1;
+        }
+
+        if (int32_t order = M2CompareBytes(&lightingA->m_fogColor, &lightingB->m_fogColor, sizeof(C3Vector))) {
+            return order;
+        }
+
+        if (int32_t order = M2CompareBytes(&lightingA->m_sunDiffuse, &lightingB->m_sunDiffuse, sizeof(C3Vector))) {
+            return order;
+        }
+
+        if (int32_t order = M2CompareBytes(&lightingA->m_sunAmbient, &lightingB->m_sunAmbient, sizeof(C3Vector))) {
+            return order;
+        }
+    }
+
+    uint32_t colorIndex = elementA.batch->colorIndex;
+
+    if (colorIndex < modelA->m_shared->m_data->colors.Count()) {
+        if (int32_t order = M2CompareBytes(&modelA->m_colors[colorIndex].colorTrack.currentValue,
+                                           &modelB->m_colors[colorIndex].colorTrack.currentValue, sizeof(C3Vector))) {
+            return order;
+        }
+    }
+
+    if (int32_t order = M2CompareBytes(&modelA->m_currentDiffuse, &modelB->m_currentDiffuse, sizeof(C3Vector))) {
+        return order;
+    }
+
+    if (int32_t order = M2CompareBytes(&modelA->m_currentEmissive, &modelB->m_currentEmissive, sizeof(C3Vector))) {
+        return order;
+    }
+
+    if (modelA->float1B8 < modelB->float1B8) {
+        return -1;
+    }
+
+    if (modelA->float1B8 <= modelB->float1B8) {
+        return 0;
+    }
+
+    return 1;
+}
+
+// ref: FUN_0081ea90
+// Doodad elements by group, so each group's members are contiguous.
+int32_t CM2Scene::SortDoodadGroups(uint32_t a, uint32_t b, const void* userArg) {
+    auto scene = static_cast<const CM2Scene*>(userArg);
+    uint32_t groupA = scene->m_elements[a].doodadGroup;
+    uint32_t groupB = scene->m_elements[b].doodadGroup;
+
+    if (groupA < groupB) {
+        return -1;
+    }
+
+    return groupB < groupA;
+}
+
+// ref: FUN_00821a20
 void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->uint14++;
 
@@ -827,9 +1009,8 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
         }
     }
 
+    // Emptied every frame: CM2Model::SetAnimating puts a model back on for the next one.
     while (this->m_animateList) {
-        // TODO
-        // - this is clearing out the animate list; why? something must reattach things to it...
         auto model = this->m_animateList;
         this->m_animateList = model->m_animateNext;
         model->m_animatePrev = nullptr;
@@ -846,20 +1027,7 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
     this->m_elements.SetCount(0);
     int32_t elementIndex = 0;
 
-    // How many particle elements use an additive blend. WRITE-ONLY here for now, and that is
-    // faithful rather than an oversight: the reference's builder only increments it too.
-    //
-    // What consumes it is the tail this function still marks TODO, read 2026-09-24. That tail is
-    // not a sort at all -- it walks a FOURTH element list (the container at scene+0x44, count at
-    // +0x48) and groups its entries through a 251-entry open-addressing hash table at 0x00d40da0,
-    // memset to 0xff and keyed by FUN_0081cc50 of the element. Additive blending is
-    // order-independent, so grouping by material beats sorting by depth.
-    //
-    // Frozen has no container at +0x44 and nothing fills one, so the count has nothing to size
-    // yet. Do not delete it to silence the warning -- it is the reference's own bookkeeping, and
-    // removing it would have to be put back.
-    uint32_t additiveCount = 0;
-
+    // The draw list: each model's batches, ribbons and draw callback.
     while (this->m_drawList) {
         auto model = this->m_drawList;
         this->m_drawList = model->m_drawNext;
@@ -873,90 +1041,51 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             continue;
         }
 
-        auto v19 = model->m_currentLighting;
+        auto lighting = model->m_currentLighting;
         auto data = model->m_shared->m_data;
-        auto v21 = v19->m_flags & 0x20;
-        auto v22 = v19->m_flags & 0x40;
 
-        // The liquid plane test, ported 2026-09-24 -- found from the particle emission, whose
-        // pass-selection flag is this same v21.
-        //
-        // A model whose bounding sphere sits entirely below the water surface has its transparent
-        // batches routed to the other pass. That is where the transparent block's under-liquid
-        // order flip is actually decided, and it is PER MODEL rather than per camera, which the
-        // render inventory's description from the draw side does not make obvious.
-        //
-        // Scope worth noticing: v21 feeds the routing for every transparent batch registered
-        // below, not only for particles.
-        //
-        // The reference tests only when both bits are set, and the outcome is to clear v21; v22 is
-        // left alone.
-        if (v21 && v22) {
-            const CAaBox& extent = data->bounds.extent;
+        // Which transparent passes the model's elements join: 1 draws before the liquid surface
+        // and 2 after it. With both bits set the bounding sphere is tested against the liquid plane,
+        // and a model straddling it with clip planes off (M2UseClipPlanes) goes to one side only.
+        int32_t aboveLiquid = (lighting->m_flags & 0x20) != 0;
+        int32_t belowLiquid = (lighting->m_flags & 0x40) != 0;
 
-            C3Vector centre = { (extent.t.x + extent.b.x) * 0.5f,
-                                (extent.t.y + extent.b.y) * 0.5f,
-                                (extent.t.z + extent.b.z) * 0.5f };
+        if (aboveLiquid && belowLiquid) {
+            float distance;
+            float radius;
+            M2LiquidPlaneDistance(model, distance, radius);
 
-            // The radius is the authored one SCALED by the length of the placement's first row,
-            // which is how a scaled model gets a correspondingly scaled bound. matrixF4 is the
-            // same matrix the centre is transformed by below.
-            const C44Matrix& placement = model->matrixF4;
+            aboveLiquid = distance >= -radius;
+            belowLiquid = distance <= radius;
 
-            float scale = sqrtf(placement.a0 * placement.a0
-                + placement.a1 * placement.a1
-                + placement.a2 * placement.a2);
-
-            float radius = scale * data->bounds.radius;
-
-            C3Vector world = centre * placement;
-
-            const C4Plane& plane = v19->m_liquidPlane;
-
-            float distance = plane.n.x * world.x + plane.n.y * world.y + plane.n.z * world.z
-                + plane.d;
-
-            if (distance <= -radius) {
-                v21 = 0;
+            if (!(this->m_cache->m_flags & 0x2) && aboveLiquid && belowLiquid) {
+                aboveLiquid = this->uint140 == 0;
+                belowLiquid = !aboveLiquid;
             }
         }
 
         auto skinProfile = model->m_shared->skinProfile;
-        auto v17 = (this->m_cache->m_flags & 0x1) == 0;
+        int32_t merged = model->ptr2D0 != nullptr;
 
-        int32_t v229;
-        if (v17 || (model->m_flags & 0x1) != 0 || (v17 = (model->m_flag40) == 0, v229 = 1, v17)) {
-            v229 = 0;
-        }
+        // M2UseZFill: alpha-tested batches of a model that asks for it lay depth first.
+        int32_t zFill = (this->m_cache->m_flags & 0x1) && !(model->m_flags & 0x1) && model->m_flag40;
 
         // A model whose visible sections have been merged walks the MERGED batches, which are
-        // fewer. Reachable as of 2026-09-26: CM2Model::OptimizeVisibleGeometry now fills this.
-        uint32_t batchCount;
-        if (model->ptr2D0) {
-            batchCount = model->ptr2D0->batchCount;
-        } else {
-            batchCount = skinProfile->batches.Count();
-        }
+        // fewer; a merged batch exists only because its sources were visible, so it skips the
+        // per-section visibility test.
+        uint32_t batchCount = merged ? model->ptr2D0->batchCount : skinProfile->batches.Count();
 
-        for (int32_t batchIndex = 0; batchIndex < batchCount; batchIndex++) {
+        for (uint32_t batchIndex = 0; batchIndex < batchCount; batchIndex++) {
             M2Batch* batch;
             M2SkinSection* skinSection;
-            CShaderEffect* effect;
-            int32_t v221;
-            int32_t v222;
 
-            if (model->ptr2D0) {
-                // No visibility test on this side, and that is not an omission: a merged batch
-                // only exists because every source batch that went into it was visible, and its
-                // skinSectionIndex points into the merged sections rather than the model's
-                // per-section visibility array.
+            if (merged) {
                 batch = &model->ptr2D0->batches[batchIndex];
                 skinSection = &model->ptr2D0->skinSections[batch->skinSectionIndex];
             } else {
                 batch = &skinProfile->batches[batchIndex];
                 skinSection = &model->m_shared->m_skinSections[batch->skinSectionIndex];
 
-                // Skip if skin section isn't currently visible
                 if (!model->m_skinSections[batch->skinSectionIndex]) {
                     continue;
                 }
@@ -969,42 +1098,30 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             float alpha = model->alpha19C;
 
             if (batch->colorIndex < data->colors.Count()) {
-                auto& color = model->m_colors[batch->colorIndex];
-                alpha *= color.alphaTrack.currentValue;
+                alpha *= model->m_colors[batch->colorIndex].alphaTrack.currentValue;
             }
 
             if (batch->textureCount) {
-                auto& textureWeight = model->m_textureWeights[data->textureWeightCombos[batch->textureWeightComboIndex]];
-                alpha *= textureWeight.weightTrack.currentValue;
+                alpha *= model->m_textureWeights[data->textureWeightCombos[batch->textureWeightComboIndex]].weightTrack.currentValue;
             }
 
-            if (alpha < 0.000099999997f) {
+            if (!(alpha >= 0.0001f)) {
                 continue;
             }
 
             M2Material* material = &data->materials[batch->materialIndex];
 
-            auto v17 = (batch->flags & 0x4) == 0;
-            if (v17 || (v17 = this->m_projectionCallback == nullptr, v222 = 1, v17)) {
-                v222 = 0;
-            }
+            int32_t projected = (batch->flags & 0x4) && this->m_projectionCallback;
 
             M2Material* layerMaterial = batch->materialLayer
                 ? &data->materials[batch->materialIndex - batch->materialLayer]
-                : &data->materials[batch->materialIndex];
+                : material;
 
-            if (layerMaterial->blendMode > 1 || (v221 = 0, alpha < 0.99998999f)) {
-                v221 = 1;
-            }
+            int32_t transparent = layerMaterial->blendMode > 1 || alpha < 0.99999f;
 
-            if (model->ptr2D0) {
-                // Resolved per merged batch when the block was built, because the shared data's
-                // m_batchShaders is indexed by the ORIGINAL batch number and this index is not
-                // one of those any more.
-                effect = model->ptr2D0->effects[batchIndex];
-            } else {
-                effect = model->m_shared->m_batchShaders[batchIndex];
-            }
+            CShaderEffect* effect = merged
+                ? model->ptr2D0->effects[batchIndex]
+                : model->m_shared->m_batchShaders[batchIndex];
 
             if (!effect) {
                 continue;
@@ -1012,21 +1129,22 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
 
             auto element = this->m_elements.New();
 
-            if (v222) {
+            if (projected) {
                 element->type = 1;
-            } else if (!model->IsBatchDoodadCompatible(batch) || v221) {
+            } else if (!model->IsBatchDoodadCompatible(batch) || transparent) {
                 element->type = 0;
             } else {
                 element->type = 2;
             }
 
             element->model = model;
-
             element->flags = 0x0;
-            if (v221 == 1 && v21 && v22 && !v222) {
-                element->flags |= 0x2;
+
+            if (transparent && aboveLiquid && belowLiquid && !projected) {
+                element->flags = 0x2;
             }
-            if (model->ptr2D0) {
+
+            if (merged) {
                 element->flags |= 0x4;
             }
 
@@ -1039,94 +1157,94 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
 
             CM2Scene::ComputeElementShaders(element);
 
-            float v58;
+            // Two depths: float14 orders the transparent lists, float10 the opaque one. An opaque
+            // batch sorts by the model; a transparent one by its section's sort centre, pushed
+            // toward or away from the camera by the section's sort radius when the batch asks.
+            float sortDistance;
 
-            if (v221 < 1) {
+            if (!transparent) {
                 element->float14 = model->float88;
-                v58 = model->float88;
-            } else if (data->flags & 0x10) {
-                element->float14 = (skinSection->sortCenterPosition * model->m_boneMatrices[skinSection->centerBoneIndex]).SquaredMag();
-                v58 = model->float88;
-            } else {
-                // TODO other sort position logic
+                sortDistance = model->float88;
+            } else if (!(data->flags & 0x10)) {
+                const C44Matrix& bone = model->m_boneMatrices[skinSection->centerBoneIndex];
+                C3Vector center = skinSection->sortCenterPosition * bone;
+                float distance;
 
-                v58 = model->float88;
-            }
-
-            element->float10 = v58;
-
-            if (element->type == 2) {
-                // TODO
-            } else if (v221 == 1) {
-                if (v222) {
-                    if (v22) {
-                        *this->array54[2].New() = elementIndex;
-                    } else {
-                        *this->array54[1].New() = elementIndex;
-                    }
+                if (!(batch->flags & (0x1 | 0x2))) {
+                    distance = center.x * center.x + center.y * center.y + center.z * center.z;
                 } else {
-                    if (v21) {
-                        *this->array54[1].New() = elementIndex;
+                    C3Vector direction = center;
+                    float lengthSquared = center.x * center.x + center.y * center.y + center.z * center.z;
+
+                    if (lengthSquared > 2.3841858e-07f) {
+                        float scale = 1.0f / sqrtf(lengthSquared);
+                        direction = { center.x * scale, center.y * scale, center.z * scale };
                     }
 
-                    if (v22) {
-                        *this->array54[2].New() = elementIndex;
+                    float offset = sqrtf(bone.a0 * bone.a0 + bone.a1 * bone.a1 + bone.a2 * bone.a2) * skinSection->sortRadius;
+
+                    if (batch->flags & 0x1) {
+                        offset = -offset;
+                    }
+
+                    center.x += offset * direction.x;
+                    center.y += offset * direction.y;
+                    center.z += offset * direction.z;
+
+                    distance = center.x * center.x + center.y * center.y + center.z * center.z;
+
+                    if (center.z < 0.0f) {
+                        distance = -distance;
                     }
                 }
+
+                element->float14 = distance;
+                sortDistance = (!zFill || projected || (material->flags & 0x10)) ? distance : model->float88;
             } else {
-                *this->array54[v221].New() = elementIndex;
+                element->float14 = (skinSection->sortCenterPosition * model->m_boneMatrices[skinSection->centerBoneIndex]).SquaredMag();
+                sortDistance = model->float88;
+            }
+
+            element->float10 = sortDistance;
+
+            if (element->type == 2) {
+                *this->array44.New() = elementIndex;
+            } else if (transparent) {
+                if (!projected) {
+                    if (aboveLiquid) {
+                        *this->array54[1].New() = elementIndex;
+                    }
+
+                    if (belowLiquid) {
+                        *this->array54[2].New() = elementIndex;
+                    }
+                } else if (belowLiquid) {
+                    *this->array54[2].New() = elementIndex;
+                } else {
+                    *this->array54[1].New() = elementIndex;
+                }
+            } else {
+                *this->array54[0].New() = elementIndex;
             }
 
             elementIndex++;
 
-            // The alpha-tested DEPTH PREPASS, ported from FUN_00821a20 at 0x008224f7. The gate was
-            // already the reference's, condition for condition; only the body was missing, so
-            // frozen laid no depth for alpha-tested geometry such as hair and foliage.
-            //
-            // It costs one extra draw per eligible batch and cannot darken anything: the gate
-            // already excludes materials carrying the depth-write-disable bit, so the shaded
-            // element that follows writes the same depth either way, and this pass writes no
-            // colour. **Built, not seen running.**
-            //
-            // What the reference does here, read from 0x0082257f on 2026-09-23:
-            //
-            //     grow the element array by one
-            //     copy elements[elementIndex - 1] into the new slot   (0x44 bytes, rep movsl x 0x11)
-            //     newElement->flags |= 0x1
-            //     if (<a>) *array54[1].New() = elementIndex;
-            //     if (<b>) *array54[2].New() = elementIndex;
-            //     elementIndex++;
-            //
-            // So the prepass element is a verbatim duplicate distinguished only by flag 0x1.
-            // CM2SceneRender::SetupMaterial already does the rest: that flag selects alpha-key
-            // blending with colour writes off. GxRs_ColorWrite reaches D3D as of 2026-09-23, so the
-            // draw side is ready and this gather is the only thing still missing.
-            //
-            // Copy through the array rather than through a saved pointer: New() can reallocate, and
-            // the reference re-reads the base for exactly that reason.
-            //
-            // Which list the duplicate joins is the reference's water-side pair, and those default
-            // to the two lighting bits read above. The reference seeds them with v21 and v22 at
-            // 0x00821cab and only refines them -- by testing the model's bounding sphere against
-            // m_currentLighting->m_liquidPlane -- when BOTH are set. That test is no longer a
-            // TODO; it was ported 2026-09-24. It still does not fire, because
-            // CM2Lighting::Initialize sets 0x20 and nothing sets 0x40 or writes m_liquidPlane, so
-            // the pair is (true, false) for every model and this reduces to array54[1]. That is
-            // exactly what the main registration above does for v221 == 1, so the two agree today
-            // by construction rather than by luck.
-            if (v229 && !v222 && v221 >= 1 && !(material->flags & 0x10)) {
-                auto prepass = this->m_elements.New();
+            // The alpha-tested depth prepass: a verbatim copy of the element, flagged 0x1, which
+            // CM2SceneRender::SetupMaterial draws alpha-keyed with colour writes off. Both copies
+            // sort last among the transparent elements.
+            if (zFill && !projected && transparent && !(material->flags & 0x10)) {
+                element->float14 = FLT_MAX;
 
-                // Through the array, not through a saved pointer: New() can reallocate, which is
-                // why the reference re-reads the base before its own copy at 0x0082258f.
+                // Through the array: New() can reallocate.
+                auto prepass = this->m_elements.New();
                 *prepass = this->m_elements[elementIndex - 1];
                 prepass->flags |= 0x1;
 
-                if (v21) {
+                if (aboveLiquid) {
                     *this->array54[1].New() = elementIndex;
                 }
 
-                if (v22) {
+                if (belowLiquid) {
                     *this->array54[2].New() = elementIndex;
                 }
 
@@ -1134,20 +1252,131 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             }
         }
 
-        // The particle elements. The reference runs this immediately after the batch loop and
-        // before the ribbons, which is where it sits here.
+        // Ribbon elements, type 3: one per emitter with any trail to draw.
+        if (model->m_ribbonEmitters) {
+            for (int32_t i = 0; i < data->ribbons.Count(); i++) {
+                CM2Ribbon* emitter = model->m_ribbonEmitters[i];
+
+                if (emitter->IsEmpty()) {
+                    continue;
+                }
+
+                const M2Ribbon& file = data->ribbons[i];
+
+                // The model's alpha, scaled by the ribbon's own only when that track has keys.
+                float alpha = model->float198;
+
+                if (file.alphaTrack.sequenceTimes.Count()) {
+                    alpha *= model->m_ribbons[i].alphaTrack.currentValue;
+                }
+
+                // The pass is chosen from the first material only.
+                const M2Material& material = data->materials[file.materialIndices[0]];
+
+                M2Element* element = this->m_elements.New();
+
+                if (!element) {
+                    continue;
+                }
+
+                element->alpha = alpha;
+                element->index = i;
+                element->type = 3;
+                element->model = model;
+                element->flags = 0x0;
+                element->priorityPlane = file.priorityPlane;
+                element->float10 = model->float88;
+                element->effect = nullptr;
+                element->float14 = model->float88;
+                element->vertexPermute = 0xFFFFFFFF;
+                element->pixelPermute = 0xFFFFFFFF;
+                element->dword34 = 0;
+
+                if (material.blendMode > 1 || alpha < 0.99999f) {
+                    if (!aboveLiquid) {
+                        *this->array54[2].New() = elementIndex;
+                    } else {
+                        *this->array54[1].New() = elementIndex;
+                    }
+                } else {
+                    *this->array54[0].New() = elementIndex;
+                }
+
+                elementIndex++;
+            }
+        }
+
+        // The owner's own draw, type 5 (CM2SceneRender::DrawCallback): opaque when the model is
+        // flagged so, otherwise on the model's side of the liquid.
+        if (model->m_drawCallback) {
+            M2Element* element = this->m_elements.New();
+
+            if (element) {
+                element->type = 5;
+                element->alpha = 1.0f;
+                element->model = model;
+                element->flags = 0x0;
+                element->index = 0;
+                element->priorityPlane = 0;
+                element->float10 = model->float88;
+                element->effect = nullptr;
+                element->float14 = model->float88;
+                element->vertexPermute = 0xFFFFFFFF;
+                element->pixelPermute = 0xFFFFFFFF;
+                element->dword34 = 0;
+
+                if (model->m_flag20) {
+                    *this->array54[0].New() = elementIndex;
+                } else if (!aboveLiquid) {
+                    *this->array54[2].New() = elementIndex;
+                } else {
+                    *this->array54[1].New() = elementIndex;
+                }
+
+                elementIndex++;
+            }
+        }
+    }
+
+    // The particle draw list: each model's emitters. How many of the elements use an additive
+    // blend decides below whether the additive runs are regrouped.
+    uint32_t additiveCount = 0;
+
+    while (this->m_particleDrawList) {
+        auto model = this->m_particleDrawList;
+        this->m_particleDrawList = model->m_particleDrawNext;
+
+        model->m_particleDrawPrev = nullptr;
+        model->m_particleDrawNext = nullptr;
+
+        if (!model->IsDrawable(0, 0)) {
+            continue;
+        }
+
+        auto lighting = model->m_currentLighting;
+        auto data = model->m_shared->m_data;
+
+        int32_t aboveLiquid = (lighting->m_flags & 0x20) != 0;
+
+        if (aboveLiquid && (lighting->m_flags & 0x40)) {
+            float distance;
+            float radius;
+            M2LiquidPlaneDistance(model, distance, radius);
+
+            aboveLiquid = distance >= -radius;
+        }
+
         for (int32_t i = 0; i < data->particles.Count(); i++) {
             CM2ParticleEmitter* emitter = model->m_particleEmitters
                 ? model->m_particleEmitters[i]
                 : nullptr;
 
             // Frozen-only: null for an emitter type frozen does not build. The reference's
-            // factory always builds something, so it dereferences unconditionally.
+            // factory always builds something.
             if (!emitter) {
                 continue;
             }
 
-            // Four gates, in the reference's order.
             if (model->m_flag2000 && (emitter->m_flags & 0x200)) {
                 continue;
             }
@@ -1160,183 +1389,110 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
                 continue;
             }
 
-            if (!(model->float198 > 0.0001f)) {
+            float alpha = model->float198;
+
+            if (!(alpha >= 0.0001f)) {
                 continue;
             }
 
             const M2Particle& file = data->particles[i];
 
-            // FROZEN-ONLY GUARD, and the SECOND place this exact one has been needed -- the
-            // driver in CM2Model::AnimateParticleEmitter has the same one for the same reason.
-            // The reference indexes m_boneMatrices with no check because its loader guarantees
-            // the array and the index; frozen's allocates the array inside a `bones.Count()`
-            // branch and never validates boneIndex against the bone count. Both would fault, and
-            // this runs for every model every frame.
-            //
-            // Skipping leaves that emitter without an element for the frame, which is what the
-            // four gates above already do.
+            // Frozen-only guard: frozen's loader does not validate boneIndex against the bone
+            // count the way the reference's does.
             if (!model->m_boneMatrices || file.boneIndex >= data->bones.Count()) {
                 continue;
             }
 
-            // NOT a camera distance, whatever the element field is called: the emitter's own
-            // position in the model's space, squared. Transcribed; see the note at DrawParticle.
+            // The emitter's position in the model's space, squared.
             C3Vector local = file.position * model->m_boneMatrices[file.boneIndex];
-
             float distance = local.x * local.x + local.y * local.y + local.z * local.z;
 
-            this->AddParticleElement(emitter, model, distance, model->float198, v21,
-                                     elementIndex, additiveCount);
+            this->AddParticleElement(emitter, model, distance, alpha, aboveLiquid, elementIndex, additiveCount);
 
-            // Each child gets its own element, with the parent's distance and alpha.
             for (uint32_t c = 0; c < emitter->m_childCount; c++) {
-                this->AddParticleElement(emitter->m_children[c], model, distance, model->float198,
-                                         v21, elementIndex, additiveCount);
+                this->AddParticleElement(emitter->m_children[c], model, distance, alpha, aboveLiquid,
+                                         elementIndex, additiveCount);
             }
         }
-
-        // Ribbon elements, type 3: one per emitter that has any trail to draw.
-        //
-        // WHY THIS DOES NOT LIFT Animate's RECALL, so the next reader does not go looking for a
-        // mistake here: the reference makes TWO passes over the models and frozen makes one. Its
-        // first pass does IsDrawable then the particles (AddParticleElement at 0x821a20+0x226 in
-        // the corpus rendering); its second does IsDrawable again, then the batch elements,
-        // IsBatchDoodadCompatible, ComputeElementShaders, then THESE ribbons, then the draw
-        // callbacks. So the reference emits particle elements BEFORE batch elements, and frozen
-        // emits them after.
-        //
-        // This block is in the right place relative to its own neighbours -- batches before it,
-        // draw callbacks after -- which is the reference's pass-2 order. The call-sequence
-        // matcher still cannot align it, because the merged pass reorders everything around it.
-        // Splitting Animate back into two passes is what would move that number, and it would also
-        // change which elements get the low indices: the lists are heap-sorted by type first, so
-        // the index order only decides ties, but it is a real difference and not just cosmetic.
-        //
-        // THIS EMITS NOTHING TODAY, for two independent reasons, and both were measured on
-        // 2026-09-27 rather than assumed:
-        //
-        //   1. Almost no model carries ribbons. A counter in InitializeLoaded saw 5 of 6400
-        //      loaded models with any, and none of those 5 was ever in this scene's animate list
-        //      during a 45-second run on map 0 -- a probe on the loop below never iterated once.
-        //   2. Even for a model that does, IsEmpty is permanently TRUE. It compares head against
-        //      tail, and the ONLY writes to m_head in the whole tree are its default initialiser
-        //      and Initialize's reset to zero. Nothing advances the ring, because the per-frame
-        //      segment update is not ported.
-        //
-        // So this is the correct gate in place ahead of its producer, not working code. Reason 2
-        // is what has to go first: port the segment update, and this starts emitting. Until then
-        // CM2SceneRender::DrawRibbon stays empty and nothing would draw the elements anyway --
-        // which is safe here in a way it would NOT be for doodads, because ribbons displace
-        // nothing. See the note at CM2Model::IsBatchDoodadCompatible for the contrast.
-        // This gather crashed the client when it first went live, and the fault was NOT here -- it
-        // was a bare 0 clearing a texture stage in CM2SceneRender::SetupTextures, which half-wrote
-        // an eight-byte pointer slot. See the note there; it is fixed.
-        //
-        // Worth keeping because it cost real time: an earlier probe reported 1,394,001 AnimateST
-        // calls with no ribbon-bearing model and I read that as "this path is unreachable". It is
-        // not -- WeatherRender reaches CM2Scene::Draw, weather models carry ribbons, and whether
-        // any are active depends on the zone and the time of day. So the path was live all along
-        // and merely idle whenever I happened to sample it.
-        if (model->m_ribbonEmitters) {
-            for (int32_t i = 0; i < data->ribbons.Count(); i++) {
-                CM2Ribbon* emitter = model->m_ribbonEmitters[i];
-
-                // An empty ring is not worth an element, and IsEmpty is the reference's own gate.
-                if (emitter->IsEmpty()) {
-                    continue;
-                }
-
-                const M2Ribbon& file = data->ribbons[i];
-
-                // The model's alpha, scaled by the ribbon's own animated alpha ONLY when that
-                // track has keys. The reference tests the track's sequenceTimes count (+0x3c on
-                // the file record), not its key count.
-                float alpha = model->float198;
-
-                if (file.alphaTrack.sequenceTimes.Count()) {
-                    alpha *= model->m_ribbons[i].alphaTrack.currentValue;
-                }
-
-                // The pass is chosen from the FIRST material only, however many the ribbon has.
-                const M2Material& material = data->materials[file.materialIndices[0]];
-
-                M2Element* element = this->m_elements.New();
-
-                if (!element) {
-                    continue;
-                }
-
-                element->type = 3;
-                element->model = model;
-                element->flags = 0x0;
-                element->alpha = alpha;
-                // BOTH of these take model->float88. The particle element puts a distance in the
-                // second one; the ribbon element does not, and this is the reference's own
-                // duplication rather than a transcription slip.
-                element->float10 = model->float88;
-                element->float14 = model->float88;
-                // Which ribbon this element is for -- the draw has no other way back to it.
-                element->index = i;
-                // The reference writes this at dword 9. A note here used to call that an overload
-                // of the skinSection slot; it is not -- +0x24 IS priorityPlane in the reference,
-                // and frozen's field simply sits two slots earlier. See the layout note in
-                // M2Types.hpp. The field written is the right one either way.
-                element->priorityPlane = file.priorityPlane;
-                // Same correction as AddParticleElement's -- these had been copied from it while
-                // it was still transcribing by slot. By MEANING: the effect is nulled, both
-                // permutes go to -1, and the reference's +0x3c takes 0.
-                element->effect = nullptr;
-                element->vertexPermute = 0xFFFFFFFF;
-                element->pixelPermute = 0xFFFFFFFF;
-                element->dword34 = 0;
-
-                // The same pass split AddParticleElement uses, and the same 0.99999 (0x00a45528)
-                // effectively-opaque threshold. The difference is that a ribbon has no equivalent
-                // of the particle emitter's 0x40000 flag, so the choice between the two
-                // transparent passes rests on the water side alone.
-                if (material.blendMode <= 1 && alpha >= 0.9999899864196777f) {
-                    *this->array54[0].New() = elementIndex;
-                } else if (!v21) {
-                    *this->array54[2].New() = elementIndex;
-                } else {
-                    *this->array54[1].New() = elementIndex;
-                }
-
-                elementIndex++;
-            }
-        }
-
-        // TODO
-        // - draw callbacks
     }
 
-    // THE THREE LISTS ARE ALWAYS SORTED, opaque by SortOpaque and both transparent lists by
-    // SortTransparent. The reference does these three unconditionally, back to back, at
-    // 0x00822fcf / 0x00822fe2 / 0x00822ff5.
+    // The doodad list: batchable opaque elements are grouped by everything a shared draw has to
+    // agree on, through a 251-slot open-addressing table keyed by M2DoodadBatchHash; a group of two
+    // or more is drawn as instances of its head, and a lone member becomes an ordinary opaque
+    // element.
+    uint32_t doodadCount = this->array44.Count();
+
+    if (doodadCount > 1) {
+        memset(s_doodadBatchTable, 0xFF, sizeof(s_doodadBatchTable));
+
+        for (uint32_t i = 0; i < doodadCount; i++) {
+            uint32_t index = this->array44[i];
+            uint32_t start = M2DoodadBatchHash(&this->m_elements[index]) % 251;
+            uint32_t slot = start;
+
+            do {
+                slot++;
+
+                if (slot > 250) {
+                    slot = 0;
+                }
+
+                if (s_doodadBatchTable[slot] == 0xFFFFFFFF || slot == start) {
+                    s_doodadBatchTable[slot] = index;
+                    break;
+                }
+            } while (M2DoodadBatchCompare(index, s_doodadBatchTable[slot], this) != 0);
+
+            this->m_elements[index].doodadGroup = s_doodadBatchTable[slot];
+        }
+    }
+
+    M2HeapSort(CM2Scene::SortDoodadGroups, this->array44.Ptr(), doodadCount, this);
+
+    uint32_t kept = 0;
+
+    for (uint32_t first = 0; first < doodadCount; first++) {
+        uint32_t head = this->array44[first];
+        this->array44[kept] = head;
+
+        uint32_t out = kept + 1;
+        uint32_t next = first + 1;
+
+        for (; next < doodadCount; next++) {
+            uint32_t member = this->array44[next];
+
+            if (this->m_elements[head].doodadGroup != this->m_elements[member].doodadGroup) {
+                break;
+            }
+
+            this->array44[out++] = member;
+        }
+
+        if (next - first < 2) {
+            this->m_elements[head].type = 0;
+            CM2Scene::ComputeElementShaders(&this->m_elements[head]);
+            *this->array54[0].New() = head;
+            out--;
+        } else {
+            this->m_elements[head].doodadCount = next - first;
+            first = next - 1;
+        }
+
+        kept = out;
+    }
+
+    this->array44.SetCount(kept);
+
+    // The three pass lists are always sorted, opaque by SortOpaque and both transparent lists by
+    // SortTransparent.
     M2HeapSort(CM2Scene::SortOpaque, this->array54[0].Ptr(), this->array54[0].Count(), this);
     M2HeapSort(CM2Scene::SortTransparent, this->array54[1].Ptr(), this->array54[1].Count(), this);
     M2HeapSort(CM2Scene::SortTransparent, this->array54[2].Ptr(), this->array54[2].Count(), this);
 
-    // THE ADDITIVE-RUN PASS IS A GATED RE-SORT ON TOP OF THOSE, not a replacement for them. This
-    // was got wrong once and it is worth saying plainly, because the mistake was invisible in the
-    // world and wrecked the login screen: the keying pass was put here INSTEAD of the two
-    // SortTransparent calls above and run every frame, so a scene with no particles at all lost
-    // its depth sort and drew its transparent geometry in model order. On the glue screen that put
-    // the sky over the terrain -- a flat cyan wash with the foreground missing.
-    //
-    // The reference gates it on two conditions ANDed, at 0x0082300e and 0x00823014:
-    //
-    //   * bit 0x80 of the model-list head's CREATION flags -- `scene->+0x4` then `+0x4`, which is
-    //     CM2Model::m_flags. What that bit MEANS is not established and is not guessed at here;
-    //     the test is transcribed as the reference makes it. Nothing in frozen sets it today, so
-    //     this pass does not currently run -- which is correct, not broken. If a model ever asks
-    //     for the bit, the pass is already here and already right.
-    //
-    //   * more than ONE additive particle element in the scene. additiveCount is exactly that,
-    //     counted by AddParticleElement, and the comment there already said it was owed to this
-    //     sort. With nothing or one thing to group there is no run to keep contiguous, so the
-    //     depth order the sorts above produced is the better answer and is left alone.
-    if (this->m_modelList && (this->m_modelList->m_flags & 0x80) && additiveCount > 1) {
+    // M2ForceAdditiveParticleSort (cache flag 0x80): with more than one additive particle element,
+    // the transparent lists are re-sorted so additive runs stay together. A re-sort on top of the
+    // depth sort above, never instead of it.
+    if ((this->m_cache->m_flags & 0x80) && additiveCount > 1) {
         this->KeyAndSortElementList(1);
         this->KeyAndSortElementList(2);
     }
@@ -1493,30 +1649,13 @@ CM2Model* CM2Scene::CreateModel(const char* file, uint32_t a3) {
     return model;
 }
 
+// ref: FUN_00823cb0
+// One pass of the scene: that pass's list, and for pass 0 the doodad list after it. Only the passes
+// in m_passMask draw; every scene starts with all of them, and the world frame narrows its own.
 int32_t CM2Scene::Draw(M2PASS pass) {
-    // DELIBERATELY NOT GATED ON m_passMask. The reference tests `m_passMask & (1 << pass)` here
-    // and returns without drawing when the bit is clear; frozen does not, and this is a recorded
-    // divergence from a reference BUG rather than an unfinished port. The chase, in order:
-    //
-    //   1. Adding the test suppressed most of the drawing. An instrumented run counted 301 calls
-    //      through here, 69 with a non-zero mask and 232 without, the first carrying 47 elements.
-    //   2. The reference has FIVE callers of this function -- CGWorldFrame::OnWorldRender plus
-    //      00619580, 007f08c0, 0095fc30 and 009abd50 -- and only OnWorldRender assigns the mask
-    //      (at 0x004f9117, from the world enables word at 0x00cd7754).
-    //   3. M2CreateScene (FUN_0081c080) allocates 0x148 bytes, so +0x144 is the LAST field of a
-    //      CM2Scene, and it has nine callers -- there are many scenes, not one.
-    //   4. The constructor (FUN_008216c0) never writes +0x144. It clears +0x4c and stops well
-    //      short of the end of the object.
-    //
-    // So in the reference every scene that is not the world's tests UNINITIALISED HEAP MEMORY
-    // against `1 << pass`. Whether such a scene draws is whatever the allocator happened to
-    // leave there -- with Storm's uninitialised fill it would be 0xBAADF00D, whose low bits are
-    // 0b101, so passes 0 and 2 would draw and pass 1 would not. That is not behaviour to
-    // reproduce.
-    //
-    // The half that IS well defined is kept: m_passMask exists, CWorld::s_m2PassMask exists, and
-    // CGWorldFrame assigns it where the reference does. If a future change gives every scene a
-    // defined mask at construction, the gate becomes portable -- and then it belongs here.
+    if (!(this->m_passMask & (1u << pass))) {
+        return 1;
+    }
 
     if (CM2Scene::s_optFlags != (this->m_cache->m_flags & 0xE000)) {
         CM2Scene::s_optFlags = this->m_cache->m_flags & 0xE000;

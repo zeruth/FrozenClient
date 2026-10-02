@@ -294,6 +294,9 @@ class CM2Model {
         float alpha19C = 1.0f;
         C3Vector m_currentDiffuse = { 1.0f, 1.0f, 1.0f };
         C3Vector m_currentEmissive = { 0.0f, 0.0f, 0.0f };
+        // +0x1b8: zeroed by the constructor and written nowhere else in the binary. The doodad
+        // grouping hashes and compares it with the colours above it, so it is carried.
+        float float1B8 = 0.0f;
         M2ModelLight* m_lights;
         CM2Lighting m_lighting;
         CM2Lighting* m_currentLighting = nullptr;
@@ -323,6 +326,11 @@ class CM2Model {
         // InitializeLoaded. The objects themselves are carved out of the same buffer as the array,
         // so neither is owned individually.
         CM2ParticleEmitter** m_particleEmitters = nullptr;
+        // +0x2c8 / +0x2cc: membership in the scene's particle draw list, which AnimateST joins
+        // when the model is animating particles (m_flag400) and its owner asked for them drawn
+        // (m_flag10000), and which CM2Scene::Animate empties into particle elements.
+        CM2Model** m_particleDrawPrev = nullptr;
+        CM2Model* m_particleDrawNext = nullptr;
         // The OPTIMIZED VISIBLE GEOMETRY cache, traced 2026-09-23. Nothing in frozen builds
         // it, so it stays null and every path that reads it takes the unoptimized branch; that is
         // the correct resting state rather than a bug, but it is why CM2Model::SetIndices and
