@@ -145,6 +145,7 @@ class CWorld {
         static void RemoveObject(HWORLDOBJECT object);
         // The day/night step of the frame: the light, the sky's inputs, the fog, the sun's light.
         static void UpdateDayNight(int32_t force, const C3Vector* cameraPos);
+        static void PublishDayNight();
         // The Northrend zones that force a light on (DAT_00adef58), parsed once from their outlines.
         static void InitializeLightZones();
         static void UpdateLightZones(const C3Vector& cameraPos);

@@ -2290,4 +2290,56 @@ void CWorld::UpdateDayNight(int32_t force, const C3Vector* cameraPos) {
     }
 
     DayNightSetFogMode(0);
+
+    CWorld::PublishDayNight();
+}
+
+// FROZEN-ONLY. The block, copied into the float-vector statics the stand-in light used to fill,
+// because forty-odd readers (the terrain, liquid and sky passes) still take their light through
+// CWorld's getters. Each one should read DayNightGetBlock() as its reference does; this goes when
+// the last of them has been ported. The direction is the block's NEGATED, as the stand-in kept it:
+// those readers dot it as the direction TO the light.
+void CWorld::PublishDayNight() {
+    auto block = DayNightGetBlock();
+    const float k = 1.0f / 255.0f;
+
+    auto rgb = [k](const CImVector& c) {
+        return C3Vector { c.r * k, c.g * k, c.b * k };
+    };
+
+    CWorld::s_outdoorAmbient = rgb(block->ambient);
+    CWorld::s_outdoorDiffuse = rgb(block->diffuse);
+    CWorld::s_outdoorDirection = { -block->direction.x, -block->direction.y, -block->direction.z };
+    CWorld::s_fogColor = rgb(block->finalFogColor);
+    CWorld::s_fogStart = block->fogStart < 0.0f ? 0.0f : block->fogStart;
+    CWorld::s_fogEnd = block->fogEnd;
+    CWorld::s_fogRate = block->fogRate;
+
+    const DNInfo& info = block->info;
+
+    for (int32_t i = 0; i < 6; i++) {
+        CWorld::s_skyColors[i] = rgb(info.color[DNInfo::Color_SkyTop + i]);
+        CWorld::s_lightBands12to17[i] = rgb(info.color[12 + i]);
+    }
+
+    CWorld::s_bodyTint = rgb(info.color[9]);
+    CWorld::s_cloudColor1 = rgb(info.color[10]);
+    CWorld::s_cloudColor2 = rgb(info.color[11]);
+    CWorld::s_floatBand2 = info.floatBand[0];
+    CWorld::s_cloudDensity = info.floatBand[1];
+    CWorld::s_floatBand4 = info.floatBand[2];
+    CWorld::s_floatBand5 = info.floatBand[3];
+    CWorld::s_skyHighlight = info.highlightSky;
+
+    for (int32_t i = 0; i < 4; i++) {
+        CWorld::s_liquidAlpha[i] = info.liquidAlpha[i];
+    }
+
+    auto skybox = info.skybox[0].id ? g_lightSkyboxDB.GetRecord(info.skybox[0].id) : nullptr;
+
+    if (skybox && skybox->m_name) {
+        SStrCopy(s_skyboxPath, skybox->m_name, sizeof(s_skyboxPath));
+    } else {
+        s_skyboxPath[0] = '\0';
+    }
 }
