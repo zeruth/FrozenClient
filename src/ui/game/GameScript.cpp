@@ -1,6 +1,7 @@
 #include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
+#include "ui/game/Cursor.hpp"
 #include "ui/FrameScript_Object.hpp"
 #include "object/client/ItemLink.hpp"
 #include "ui/game/CGRaidInfo.hpp"
@@ -655,12 +656,103 @@ int32_t Script_Quit(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_005104a0
+// A cursor by its script name, or any other string as the path of a custom image; nil resets.
+// Answers 1, or nil when a custom image would not load.
 int32_t Script_SetCursor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    struct CursorName {
+        int32_t index;
+        const char* name;
+    };
+
+    const CursorName cursors[] = {
+        { 1, "POINT_CURSOR" },
+        { 2, "CAST_CURSOR" },
+        { 3, "BUY_CURSOR" },
+        { 4, "ATTACK_CURSOR" },
+        { 5, "INTERACT_CURSOR" },
+        { 6, "SPEAK_CURSOR" },
+        { 7, "INSPECT_CURSOR" },
+        { 8, "PICKUP_CURSOR" },
+        { 9, "TAXI_CURSOR" },
+        { 10, "TRAINER_CURSOR" },
+        { 11, "MINE_CURSOR" },
+        { 12, "SKIN_CURSOR" },
+        { 13, "GATHER_CURSOR" },
+        { 14, "LOCK_CURSOR" },
+        { 15, "MAIL_CURSOR" },
+        { 16, "LOOT_ALL_CURSOR" },
+        { 17, "REPAIR_CURSOR" },
+        { 18, "REPAIRNPC_CURSOR" },
+        { 19, "ITEM_CURSOR" },
+        { 20, "SKIN_HORDE_CURSOR" },
+        { 21, "SKIN_ALLIANCE_CURSOR" },
+        { 22, "INNKEEPER_CURSOR" },
+        { 23, "QUEST_CURSOR" },
+        { 24, "QUEST_REPEATABLE_CURSOR" },
+        { 25, "QUEST_TURNIN_CURSOR" },
+        { 26, "VEHICLE_CURSOR" },
+        { 27, "POINT_ERROR_CURSOR" },
+        { 28, "CAST_ERROR_CURSOR" },
+        { 29, "BUY_ERROR_CURSOR" },
+        { 30, "ATTACK_ERROR_CURSOR" },
+        { 31, "INTERACT_ERROR_CURSOR" },
+        { 32, "SPEAK_ERROR_CURSOR" },
+        { 33, "INSPECT_ERROR_CURSOR" },
+        { 34, "PICKUP_ERROR_CURSOR" },
+        { 35, "TAXI_ERROR_CURSOR" },
+        { 36, "TRAINER_ERROR_CURSOR" },
+        { 37, "MINE_ERROR_CURSOR" },
+        { 38, "SKIN_ERROR_CURSOR" },
+        { 39, "GATHER_ERROR_CURSOR" },
+        { 40, "LOCK_ERROR_CURSOR" },
+        { 41, "MAIL_ERROR_CURSOR" },
+        { 42, "LOOT_ALL_ERROR_CURSOR" },
+        { 43, "REPAIR_ERROR_CURSOR" },
+        { 44, "REPAIRNPC_ERROR_CURSOR" },
+        { 45, "ITEM_ERROR_CURSOR" },
+        { 46, "SKIN_HORDE_ERROR_CURSOR" },
+        { 47, "SKIN_ALLIANCE_ERROR_CURSOR" },
+        { 48, "INNKEEPER_ERROR_CURSOR" },
+        { 49, "QUEST_ERROR_CURSOR" },
+        { 50, "QUEST_REPEATABLE_ERROR_CURSOR" },
+        { 51, "QUEST_TURNIN_ERROR_CURSOR" },
+        { 52, "VEHICLE_ERROR_CURSOR" },
+    };
+
+    if (lua_type(L, 1) == LUA_TNIL) {
+        CursorReset();
+        return 0;
+    }
+
+    auto cursor = lua_tolstring(L, 1, nullptr);
+
+    if (!cursor) {
+        luaL_error(L, "Usage: SetCursor(\"cursor\" or nil)");
+        return 0;
+    }
+
+    for (uint32_t i = 0; i < 52; i++) {
+        if (SStrCmpI(cursors[i].name, cursor, STORM_MAX_STR) == 0) {
+            CursorSet(cursors[i].index);
+            lua_pushnumber(L, 1.0);
+            return 1;
+        }
+    }
+
+    if (!CursorSetCustom(cursor)) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    lua_pushnumber(L, 1.0);
+    return 1;
 }
 
+// ref: FUN_00510920
 int32_t Script_ResetCursor(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    CursorReset();
+    return 0;
 }
 
 int32_t Script_ClearCursor(lua_State* L) {
