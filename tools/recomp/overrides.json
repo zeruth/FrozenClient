@@ -1017,8 +1017,8 @@
   },
   "00681be0": {
     "frozen": "CGxTexFlags::CGxTexFlags",
-    "status": "ported",
-    "note": "bit-packs filter(3)/wrapU/wrapV/forceMip/generateMips/renderTarget, anisotropy clamped to Caps().m_maxTexAnisotropy; header-inline in frozen so only an override can link it"
+    "status": "faithful",
+    "note": "CGxTexFlags::CGxTexFlags (ten arguments). Defined in CGxTex.cpp and tagged since 2026-10-01: zeroes the word, packs the fields, clamps anisotropy to the caps, and asks for the caps once more for an anisotropic filter. Its three CGxDevice::Caps calls go to a header-inline accessor in frozen, so the call sequence is empty. Hand verdict."
   },
   "00832640": {
     "frozen": "CM2Model::~CM2Model",
@@ -1851,9 +1851,8 @@
     "note": "the order matcher proposed `UpdateBlpTextureAsync` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
   },
   "006a5940": {
-    "frozen": "CGxDeviceD3d::IStateSync",
-    "status": "ported",
-    "note": "Found 2026-09-23 by searching the text dump for `0x738(%e..)` -- app render state 77 (GxRs_VertexShader) at a 0x18 stride from the array pointer at CGxDevice+0x28f4, which is the test frozen's IStateSync makes. Exactly two functions in the binary do it, 006a5940 and 006a9860, one per D3D device class. This is the plain D3D9 one, and it matches frozen call for call as far as frozen goes: IShaderConstantsFlush, IRsSync(0), then Lights/Material/Xforms behind the vertex-shader-is-null gate. After that the reference calls FOUR more helpers (006a3810, 006a3870, 006a38d0, 006a5700) where frozen has the single empty IStateSyncEnables, and it inlines the vertex- and index-pointer sync that frozen keeps as separate functions."
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IStateSync. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch. The logic was ported from (and re-read against) the decompilation."
   },
   "006a9860": {
     "status": "unlinked",
@@ -3574,9 +3573,8 @@
     "note": "the order matcher proposed `CGxDevice::RsPush` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this is a 4,268-byte routine that resets every render state to its default, calling IRsDirty for each one that changes; RsPush saves the state stack and calls nothing of the kind. Re-link any of these only from a call site or a body."
   },
   "00687740": {
-    "frozen": "CGxPool::~CGxPool",
-    "status": "ported",
-    "note": "Identified 2026-10-02: destroys the buffer list (FUN_005bd800) and unlinks the pool's list links; reached through the deleting destructor FUN_00688340 from the D3D PoolDestroy. Replaces the 2026-10-01 rejection of the order matcher's ShaderConstantsClear proposal."
+    "status": "faithful",
+    "note": "CGxPool::~CGxPool. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
   },
   "00687820": {
     "frozen": "CGxDevice::ShaderDestroy",
@@ -3667,9 +3665,8 @@
     "note": "CGxPool scalar deleting destructor (compiler generated around FUN_00687740); squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
   },
   "00688290": {
-    "frozen": "CGxDevice::BufDestroy",
-    "status": "ported",
-    "note": "Identified 2026-10-02 from its callers (the device destructor on the stream buffers, CMap::FreeBufBlocks, CM2Shared::ReleaseGeometryBuffers): takes CGxBuf*&, detaches it from its pool (FUN_00685c00), unlinks, frees, nulls. The call-graph matcher had it as TSGrowableArray<CMapChunkBufBlock>::SetCount."
+    "status": "faithful",
+    "note": "CGxDevice::BufDestroy. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
   },
   "0088d0c0": {
     "status": "excluded",
@@ -3695,5 +3692,129 @@
   "006a1950": {
     "status": "unlinked",
     "note": "Identified 2026-10-01, not ported: device vtable slot 21 (+0x54) in both the D3D9 and D3D9Ex vtables, beside ICaptureRead at slot 20. Clips a rect to the window, grows a TSGrowableArray<uint32_t> to the rect's pixel count (rounded up to the array's granularity) and zero-fills it. No direct or vtable caller was found in the reference, so nothing in frozen needs it yet."
+  },
+  "00681cb0": {
+    "status": "faithful",
+    "note": "GxTexCreate (checked 2D overload). Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch: the size, power-of-two, format, mipmap and anisotropy checks are one `&&` chain in frozen and fourteen jumps in the binary. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006833e0": {
+    "status": "faithful",
+    "note": "CGxDevice::ShaderConstantsSet. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none, and the dirty-range widening is two min/max pairs per target. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006842a0": {
+    "status": "faithful",
+    "note": "CGxDevice::RenderTargetSet. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006844c0": {
+    "status": "faithful",
+    "note": "CGxDevice::PrimVertexFormat. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch: the five-way dirty test. The logic was ported from (and re-read against) the decompilation."
+  },
+  "00685c00": {
+    "status": "faithful",
+    "note": "CGxPool::BufRemove. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "00685dc0": {
+    "status": "faithful",
+    "note": "CGxTex::~CGxTex. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none: two link unlinks. The logic was ported from (and re-read against) the decompilation."
+  },
+  "00685fb0": {
+    "status": "faithful",
+    "note": "CGxDevice::RsPop. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none; read side by side 2026-10-01: restores from the top of the pushed stack down, marks each state dirty once, copies value and stack depth, then truncates both stacks. The logic was ported from (and re-read against) the decompilation."
+  },
+  "00687980": {
+    "status": "faithful",
+    "note": "CGxDevice::TexDestroy. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006879f0": {
+    "status": "faithful",
+    "note": "CGxDevice::QueryDestroy. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "00688230": {
+    "status": "faithful",
+    "note": "CGxPool::Invalidate. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "00688260": {
+    "status": "faithful",
+    "note": "CGxPool::Discard. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "0068e750": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::CursorSetVisible. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch: the four-sided inside-the-client-rect test. The logic was ported from (and re-read against) the decompilation."
+  },
+  "0068f900": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::DepthStencilSet. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006a1690": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IReleaseD3dQueries. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006a1c60": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IReleaseD3dPools. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006a2aa0": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IReleaseD3dTextures. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none, plus the static empty-rect guard. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006a5e40": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::IReleaseD3dShaders. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is Storm container operations the reference inlines (TSList walks and unlinks test `(link & 1) == 0 && link != 0` per step; TSGrowableArray::SetCount/New carry their granularity rounding) and frozen calls as functions, so the reference counts several conditional branches where frozen has one or none: two hash-table walks. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006a9b40": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::XformSetProjection. Hand verdict 2026-10-01: call order 1.00 against the reference; the only failing check is the branch-shape ratio, and the gap is a compound condition the reference compiles to one conditional jump per term and clang counts as a single branch. The logic was ported from (and re-read against) the decompilation."
+  },
+  "006853d0": {
+    "status": "faithful",
+    "note": "CGxDevice::CallbackRemoveRestored. Read side by side: find the callback, move the last entry into its slot, shrink by one -- the reference inlines TSGrowableArray::SetCount (its granularity rounding is FUN_005d0040 / FUN_004b9990), which frozen calls. Hand verdict 2026-10-01."
+  },
+  "00685480": {
+    "status": "faithful",
+    "note": "CGxDevice::CallbackRemoveTexturesLost. Same body as CallbackRemoveRestored on the second array; the call-order gap is the inlined SetCount. Hand verdict 2026-10-01."
+  },
+  "00685530": {
+    "status": "faithful",
+    "note": "CGxDevice::CallbackRemove2. Same body as CallbackRemoveRestored on the third array; the call-order gap is the inlined SetCount. Hand verdict 2026-10-01."
+  },
+  "006855c0": {
+    "status": "faithful",
+    "note": "CGxDevice::PrimBegin. Read side by side: primitive type, active, dirty and index count cleared, then positions, one texture-coordinate array per TMU, normals and colours emptied in that order. The index array's count is a direct store in the reference, a SetCount(0) call in frozen, and the per-element template calls do not resolve in the frozen inventory. Hand verdict 2026-10-01."
+  },
+  "006aa130": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::ShaderCreate. Base ShaderCreate, then for a single permutation not yet loaded the vertex or pixel create. Frozen follows the decompilation's source order (vertex branch first); the reference's call sequence lists the pixel call first because of block layout. Hand verdict 2026-10-01."
+  },
+  "006aa190": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::ShaderDestroy. Release the D3D object of a last-reference vertex or pixel shader, mark it unloaded, then the base destroy; the reference duplicates the base call per branch and its Release is a vtable call the sequence does not record. Hand verdict 2026-10-01."
+  },
+  "006a5d50": {
+    "status": "faithful",
+    "note": "CGxDeviceD3d::ShaderReload. Per target, drop the last reference's D3D object, reload the file (IShaderLoad with the shader's own target, 0 or 4, as the reference passes) and re-create; frozen merges the two duplicated branches. Hand verdict 2026-10-01."
+  },
+  "00684ba0": {
+    "status": "faithful",
+    "note": "CGxDevice::ILogWrite. Formats into 2048 bytes, writes while under the 2MB cap, and adds the length; the reference's inline strlen loop is a strlen call in frozen. Hand verdict 2026-10-01."
+  },
+  "00685640": {
+    "status": "faithful",
+    "note": "CGxDevice::PrimVertex. Read side by side 2026-10-01: stores the position, appends the index, position, one texture coordinate per TMU, normal and colour, then flushes (PrimEnd, PrimBegin with the dirty mask kept) when the vertex count reaches the per-primitive 0x20000 limit. The reference inlines PrimCalcCount and every TSGrowableArray growth and reaches PrimEnd/PrimBegin through the vtable, none of which its call sequence records. Hand verdict."
+  },
+  "00684d70": {
+    "status": "faithful",
+    "note": "GxWindowFitToWorkArea. Ported from the decompilation; the call-order gap is FUN_0088ce30, the CRT floor on a double, which frozen calls as floorf on the same float (identical result), and the reference's MonitorFromPoint being listed after GetMonitorInfo by block layout. Hand verdict 2026-10-01."
+  },
+  "00687a90": {
+    "status": "faithful",
+    "note": "CGxDevice::ICursorDraw, the software cursor. Ported from the decompilation 2026-10-01, including the reference's early return with the render states still pushed when the stream buffer will not lock. Call order 0.84; the branch-shape gap is the unsigned-to-float fix-ups the reference compiles per corner (`if (x < 0) x += 2^32`) and its compound bounds test. Hand verdict."
+  },
+  "006890c0": {
+    "status": "faithful",
+    "note": "CGxDevice::~CGxDevice. Stream buffers, stream pools, then every pool; the reference's explicit frees of each member array are frozen's member destructors, which the call sequence does not record. Two parts do nothing observable and are not reproduced: an 'Unfreed texture' line formatted per live texture and handed to an empty function, and a sweep of a buffer list at +0x276c that nothing fills. Hand verdict 2026-10-01."
+  },
+  "00688690": {
+    "status": "diverged",
+    "note": "CGxDevice::CGxDevice. Calls in the reference's order (IRsInit, the CPU feature word, ILightsInvalidate, the two gamma ramps, the constant caches) with its non-zero defaults on the members. DIVERGED in one place: the reference memsets the whole caps block to zero; frozen's CGxCaps is not yet layout-faithful (see CGxCaps.hpp) and two of its fields carry defaults other code reads (int130 feeds CShaderEffect's alpha-ref switch), so it keeps its initializers instead. The CPU probe is Windows-only."
   }
 }

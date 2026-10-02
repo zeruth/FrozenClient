@@ -63,38 +63,47 @@ int32_t NvAPI_Initialize() {
     return s_status;
 }
 
+// ref: FUN_008a0a54
 int32_t NvAPI_GetErrorMessage(int32_t status, char* message) {
     return s_getErrorMessage ? reinterpret_cast<int32_t (__cdecl*)(int32_t, char*)>(s_getErrorMessage)(status, message) : s_unavailable;
 }
 
+// ref: FUN_008a0fa0
 int32_t NvAPI_Stereo_Enable() {
     return s_stereoEnable ? reinterpret_cast<int32_t (__cdecl*)()>(s_stereoEnable)() : s_unavailable;
 }
 
+// ref: FUN_008a0fa6
 int32_t NvAPI_Stereo_Disable() {
     return s_stereoDisable ? reinterpret_cast<int32_t (__cdecl*)()>(s_stereoDisable)() : s_unavailable;
 }
 
+// ref: FUN_008a0fac
 int32_t NvAPI_Stereo_IsEnabled(uint8_t* enabled) {
     return s_stereoIsEnabled ? reinterpret_cast<int32_t (__cdecl*)(uint8_t*)>(s_stereoIsEnabled)(enabled) : s_unavailable;
 }
 
+// ref: FUN_008a0f88
 int32_t NvAPI_Stereo_CreateConfigurationProfileRegistryKey(uint32_t profile) {
     return s_stereoCreateProfile ? reinterpret_cast<int32_t (__cdecl*)(uint32_t)>(s_stereoCreateProfile)(profile) : s_unavailable;
 }
 
+// ref: FUN_008a0fb2
 int32_t NvAPI_Stereo_CreateHandleFromIUnknown(void* device, NvStereoHandle* handle) {
     return s_stereoCreateHandle ? reinterpret_cast<int32_t (__cdecl*)(void*, NvStereoHandle*)>(s_stereoCreateHandle)(device, handle) : s_unavailable;
 }
 
+// ref: FUN_008a0fb8
 int32_t NvAPI_Stereo_DestroyHandle(NvStereoHandle handle) {
     return s_stereoDestroyHandle ? reinterpret_cast<int32_t (__cdecl*)(NvStereoHandle)>(s_stereoDestroyHandle)(handle) : s_unavailable;
 }
 
+// ref: FUN_008a0fee
 int32_t NvAPI_Stereo_SetConvergence(NvStereoHandle handle, float convergence) {
     return s_stereoSetConvergence ? reinterpret_cast<int32_t (__cdecl*)(NvStereoHandle, float)>(s_stereoSetConvergence)(handle, convergence) : s_unavailable;
 }
 
+// ref: FUN_008a0fd6
 int32_t NvAPI_Stereo_SetSeparation(NvStereoHandle handle, float separation) {
     return s_stereoSetSeparation ? reinterpret_cast<int32_t (__cdecl*)(NvStereoHandle, float)>(s_stereoSetSeparation)(handle, separation) : s_unavailable;
 }
