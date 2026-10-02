@@ -20,6 +20,10 @@ namespace Client {
 
 extern CGameTime g_clientGameTime;
 
+// Reference DAT_00c5de9c: the client locale, as its index in the reference's table of nine
+// (enUS, koKR, frFR, deDE, zhCN, zhTW, esES, esMX, ruRU).
+extern int32_t g_localeIndex;
+
 // ref: DAT_00b2f988 ("g_accountUsesToken")
 extern CVar* s_accountUsesTokenCvar;
 

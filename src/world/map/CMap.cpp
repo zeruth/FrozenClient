@@ -174,11 +174,22 @@ void CMap::Initialize() {
     // TODO
 }
 
+// ref: FUN_007bd540
+// The map's texture blob, World\Maps\<map>\<map>.tex: the WDT's name with the extension swapped.
+void CMap::LoadTextureBlob() {
+    char path[STORM_MAX_PATH];
+
+    SStrCopy(path, CMap::s_wdtFilename, STORM_MAX_STR);
+    SStrCopy(strrchr(path, '.'), ".tex", STORM_MAX_STR);
+
+    TextureLoadBlob(path);
+}
+
 // ref: FUN_007bfce0
 // Names the map's files, tears the previous map down, reads the WDT and starts the tiles round
 // the target loading. The light block (FUN_007d9bd0 / FUN_007d9d50 / FUN_007da100), the map
 // object cache flush (FUN_007b0040), FUN_0079fa10, the WDL low-detail load (FUN_007cc310), the
-// .tex cache open (FUN_007bd540), the per-map day/night setup (FUN_007f2790) and the final
+// the per-map day/night setup (FUN_007f2790) and the final
 // AsyncFileReadWaitAll (FUN_004bae10) are not ported yet.
 void CMap::Load(const char* mapName, int32_t mapID) {
     auto nameOfs = SStrCopy(CMap::s_mapPath, "World\\Maps\\");
@@ -204,7 +215,7 @@ void CMap::Load(const char* mapName, int32_t mapID) {
 
     CMap::s_lowDetail.Load(CMap::s_mapPath, CMap::s_mapName);
     CMap::LoadWdt();
-    // TODO FUN_007bd540(): the .tex cache
+    CMap::LoadTextureBlob();
     // TODO FUN_007f2790(mapID)
 
     CMap::Update(0);

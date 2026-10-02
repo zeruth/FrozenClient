@@ -1386,8 +1386,8 @@
   },
   "004b95b0": {
     "frozen": "CreateTgaTexture",
-    "status": "stub",
-    "note": "call slot in TextureCreate (recomp --diff 004b9760): the five-argument branch (fileName, ext, createFlags & 2, flags, status) -- the TGA load path: reads the file through 006aaf40/006aafb0, allocates a CTexture, calls TextureAllocGxTex, and falls back to TextureCreateSolid on failure. frozen's body is `// TODO; return nullptr;`, so any TGA texture request yields nothing. Status corrected from \"ported\" to \"stub\" on 2026-09-23, when tools/audit-ported.py learned to see free functions; until then it only matched Class::method definitions and every stubbed free function was invisible to it."
+    "status": "ported",
+    "note": "reads the TGA header, refuses images under 8x8 with a status line and the green solid, folds a 6:1 strip into a cube map, and creates the texture with the callback FUN_004b7aa0. Ported 2026-10-02."
   },
   "004b8be0": {
     "frozen": "CreateBlpTexture",
@@ -1485,8 +1485,8 @@
   },
   "004b8a50": {
     "frozen": "CreateBlpAsync",
-    "status": "stub",
-    "note": "the other branch of CreateBlpTexture, which calls exactly these two; the sync half is 004b8910 and this is what is left -- the asynchronous BLP load path: opens the file, allocates a CTexture, checks streaming mode, allocates an async read object and queues it. frozen's body is `// TODO; return nullptr;`, so TextureCreate falls back to the synchronous path for every BLP. Status corrected from \"ported\" to \"stub\" on 2026-09-23, when tools/audit-ported.py learned to see free functions; until then it only matched Class::method definitions and every stubbed free function was invisible to it."
+    "status": "ported",
+    "note": "opens the .blp, makes the CTexture (blob stand-in through FUN_004c0710 when a texture blob names it), allocates the async read with callbacks FUN_004b7e80 / FUN_004b5300 and priority 0x81..0x83, and starts it or defers it on the 4 MB budget. Ported 2026-10-02 together with s_createBlpAsync = 1, the reference's initial value (DAT_00ac32a0)."
   },
   "004fa5f0": {
     "frozen": "CGWorldFrame::OnWorldUpdate",
@@ -1755,32 +1755,37 @@
     "note": "three instructions: return (uint8_t)FUN_00428000(). Identified 2026-09-23 from its call sites rather than its body, which is too small to identify on its own: all 30 of them read `if (result) <streaming-only work>`, and frozen's AsyncFileReadWait calls SFile::IsStreamingMode in the same guard position where the reference's 004ba060 calls this. -- Status corrected from \"ported\" to \"stub\" on 2026-09-23 by an audit that cross-checked every override claiming \"ported\" against livestubs.py's own emptiness test. The body is a `// TODO` and a constant return, which is unimplemented however it is spelled. SFile::IsStreamingMode always returns 0, so frozen never believes it is streaming. That is not cosmetic: the reference's TextureIncreasePriority opens with `if (!IsStreamingMode()) return;`, so the whole texture priority path is gated off by this one constant. See docs/ref/parity-texture-async.md."
   },
   "004b64e0": {
-    "status": "unlinked",
-    "note": "retires a finished async request: EDI = the CAsyncObject, unlinks its node at +0x28 from the list holding it (the usual Storm intrusive-list patch) and SMemFrees +0x8. AsyncTextureWait (004b6550) calls it when the request's field_4 is 0. frozen has no counterpart and AsyncTextureWait is still a stub; see docs/ref/parity-texture-async.md."
+    "frozen": "AsyncTextureStartRead",
+    "status": "ported",
+    "note": "starts a texture read that was waiting for room under the 4 MB in-flight budget: EDI = the CAsyncObject, unlinks it from the waiting list at +0x28, SMemAllocs its buffer (+4) of +8 bytes, adds them to DAT_00b49ca0 and queues it through AsyncFileReadObject with the stack argument. The earlier note here read it as retiring a finished request; the buffer is ALLOCATED, not freed. Ported 2026-10-02."
   },
   "004b63b0": {
-    "status": "unlinked",
-    "note": "the texture-atlas reload TextureGetGxTex calls when atlas->field_2 has bit 0 set: builds a .blp path on a 0x118-byte stack buffer from this+0x2c. frozen has no counterpart, and the branch is dead there because CTexture::atlas is a void* that nothing ever assigns. Needs CTextureAtlas, which is a system rather than a fix."
+    "frozen": "CTextureAtlas::Reload",
+    "status": "ported",
+    "note": "the atlas page reload TextureGetGxTex calls when the page's flags bit 0 is set (the device lost the page): every block's texture is read again as .blp through FindSubstitution and FUN_004b5c30 (GetBlpMips) into the shared chain and uploaded into its block. Ported 2026-10-02 with the rest of Texture.cpp."
   },
   "004b69e0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GetBitDepth` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "AsyncTexturePoll",
+    "status": "ported",
+    "note": "the read queue's poll callback, registered by TextureInitialize: starts waiting texture reads from the priority list (0x00ac337c) and then the deferred list (0x00ac3388) while they fit under 0x400000 - DAT_00b49ca0 (unsigned). Ported 2026-10-02."
   },
   "004b6ae0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GxCalcTexelStrideInBytes` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "TextureTrimGxTexCache",
+    "status": "ported",
+    "note": "trims the released-texture cache (DAT_00b49ce0 buckets) back under its budget DAT_00b49c9c: 16 destroys a call, 32 when over twice the budget. Ported 2026-10-02."
   },
   "004b6d90": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GxTexCreate` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::Ptr instantiation: walks the slot comparing hashval, then the key -- the case-blind name over 0x104 and, unless either key's third word has bit 0 set, the flags through CGxTexFlags::operator== (FUN_004b5820). The key compare is ported as HASHKEY_TEXTUREFILE::operator== in src/gx/texture/CTexture.cpp; the table is squall's template"
   },
   "004b6e40": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GxTexDestroy` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSList<CMipBitsCache>::NewNode instantiation (0xc-byte node, .?AVCMipBitsCache@@); squall template"
   },
   "004b6e90": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GxTexParameters` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "CTextureAtlas::Create",
+    "status": "ported",
+    "note": "allocates a 0x138-byte atlas page (string \"Atlas\"), 8x8 blocks of the texture's size, its CGxTex through TextureAllocGxTex with the page callback FUN_004b5930. Ported 2026-10-02."
   },
   "004b6f30": {
     "status": "ported",
@@ -1788,8 +1793,8 @@
     "note": "Re-linked 2026-09-27 from the BODY and the CALL SITE, which is what this entry's previous text demanded before any of the rejected 'order' run could come back. The other sixteen addresses in that run keep their rejection; the note is replicated across all seventeen, so correcting this one does not reopen them. The body, at 0x004b6f30: hash the name with the helper at 0x0076f640 (SStrHashHT), construct a CGxTexFlags on the stack with filter 1 and anisotropy 1, store the name beside it to make a HASHKEY_TEXTUREFILE, look it up in the table whose head is the ecx-loaded 0x00b49ca4, and on a hit return HandleCreate of it (0x0047bf50) rather than the CTexture itself. frozen's TextureCacheGetProcedural is that call for call. The call site corroborates it: exactly one caller, 0x008a2723, inside the procedural liquid texture creator, and it is the classic cache shape -- try this lookup, and on a miss create through 0x004b9550 or 0x004b9760 instead. Note that 0x004b6d90, the hash table Ptr this one calls, is ALSO in the rejected run and is still unlinked; it is the TSHashTable<CTexture, HASHKEY_TEXTUREFILE> instantiation and wants a PDB-qualified pin."
   },
   "004b93b0": {
-    "status": "unlinked",
-    "note": "NOT SStrHashHT. The callgraph matcher proposed that on 2026-09-23 and it is wrong; rejected here so it does not come back. Why it was proposed: recomp keys frozen by NAME, so both TextureCacheNewTexture overloads collapse to one key, and the union of their callees includes SStrHashHT -- which the filename overload calls and the CImVector one does not. 004b93b0 was then the only unmatched callee left on the reference side. Why it is wrong: SStrHashHT is a general Storm string hash used across the whole client and would have hundreds of callers. 004b93b0 has exactly three (004b9420, 004b9480, 004b94e0), all inside the texture cache neighbourhood, and it CALLS 004b8fa0, 004b9310 and 006ded60 twice. A string hash calls nothing. What it probably is, stated as a lead rather than a claim: the shared insert those three functions funnel into, i.e. the TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::Insert instantiation. Not tagged, because frozen reaches that through a template in a header and a tag on a header declaration binds to the wrong neighbour."
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::Insert instantiation (Initialize on first use, MonitorFullness, link the slot and the full list, store hashval and key) -- NOT SStrHashHT, which the callgraph matcher once proposed; squall template"
   },
   "004b7020": {
     "frozen": "TextureCacheGetTexture",
@@ -1797,8 +1802,9 @@
     "note": "TextureCacheGetTexture, the CImVector overload. This entry used to say `unlinked`, and that veto was right about what it refused and wrong to survive: on 2026-09-23 the POSITIONAL order matcher proposed `ReloadMips` for this address and the veto rejected it. The address is now identified by hand and the veto was blocking the tag, which is what the hand-claim guard printed. The identification: 004b7020 builds a CGxTexFlags (two 00681be0 calls), looks the texture up through 004b6d90 and wraps the hit with 0047bf50 HandleCreate. Its one caller is 004b9550, whose shape is frozen TextureCreateSolid line for line -- probe the cache, return a hit, else SMemAlloc a 0x170-byte CTexture, construct it, FillInSolidTexture, HandleCreate, insert. And it sits immediately after 004b6fa0, the filename overload already recorded under this same name, with both functions 128 bytes: two adjacent overloads, as the source would have them. Ported 2026-09-23 together with its insert 004b94e0, which fixed a real leak -- see the note in Texture.cpp for why the earlier \"needs a second hash table\" reasoning was wrong."
   },
   "004b70a0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `TextureFreeGxTex` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "TextureFreeGxTex",
+    "status": "ported",
+    "note": "the release side of the released-texture cache: a reusable (FUN_00681580) 32..512 texture goes into its size bucket with its callback disarmed and its cost (FUN_004b6300) counted; anything else is destroyed. Ported 2026-10-02."
   },
   "004b7220": {
     "status": "ported",
@@ -1809,36 +1815,39 @@
     "note": "TextureFreeMippedImg, ported 2026-10-01: the cacheable shapes go back on their bucket list through a spare node (allocated when none is free), the rest are freed. Replaces the 2026-09-23 rejection of an order-matcher guess (GxTexUpdate), which was rightly refused."
   },
   "004b73e0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GxuUpdateSingleColorTexture` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSList<CGxTexCache>::DeleteAll instantiation: each node's destructor destroys the CGxTex it still holds, then the node is freed (.?AVCGxTexCache@@). Frozen has it as TSList::Clear over CGxTexCache, whose destructor does the GxTexDestroy; squall template"
   },
   "004b7460": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GetDefaultTexture` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSList<CMipBitsCache>::DeleteAll instantiation: frees each cached chain, then the node; squall template over CMipBitsCache's destructor"
   },
   "004b74f0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `GetTextureFormats` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSGrowableArray<TSExplicitList<CTexture>> teardown (the texture cache's slot array); squall template"
   },
   "004b7580": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `MippedImgAllocA` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSGrowableArray<TSExplicitList<CTexture>>::ReallocData; squall template"
   },
   "004b76e0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `MippedImgCalcSize` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "CTextureAtlas::~CTextureAtlas",
+    "status": "ported",
+    "note": "releases the page's CGxTex through TextureFreeGxTex(\"ATLAS\") and unlinks the page from the list at +0x130. Ported 2026-10-02."
   },
   "004b7770": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `MippedImgSet` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "CTextureAtlas::Allocate",
+    "status": "ported",
+    "note": "finds the fullest page of the texture's size, format, flags (|0x8000) and data format with a free block, or creates one, and assigns the block. Ported 2026-10-02."
   },
   "004b78a0": {
     "status": "ported",
     "note": "TextureLoadTga, ported 2026-10-01: ARGB8888 always, further levels from _mip%d.tga (FUN_004b5a00), the rest filtered (FUN_004b5550). Register arguments recovered from the call site in FUN_004b81d0: ECX is the is-opaque out pointer, EAX where the extension is written. Replaces the 2026-09-23 rejection of an order-matcher guess (RequestImageDimensions)."
   },
   "004b7aa0": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `UpdateBlpTextureAsync` for this; that is not what it is. Rejected 2026-09-23. Adding two hand-confirmed anchors in Texture.cpp (004b6550 AsyncTextureWait and 004b6c50 TextureIncreasePriority) made the positional 'order' matcher emit this whole contiguous run of 18 links between and after them, aligning frozen's Texture.cpp function list against the reference's address order. Three were checked against the disassembly and all three were wrong, each in a way a name alone would never reveal: 004b6e40 'GxTexDestroy' allocates a node and initialises three fields; 004b7460 'GetDefaultTexture' frees memory and unlinks a list node; 004b76e0 'MippedImgCalcSize' releases a texture and unlinks a node at this+0x130, where frozen's is pure arithmetic. The run is rejected on that sample plus the mechanism, not on all eighteen individually. Seven of them point at frozen functions with an empty body, where positional evidence cannot be corroborated by anything at all. This is the second time an 'order' run in this address range has had to be undone; see the GxTexSetWrap correction. Re-link any of these only from a call site or a body."
+    "frozen": "UpdateTgaTexture",
+    "status": "ported",
+    "note": "the device callback CreateTgaTexture installs: Lock re-reads the .tga through TextureLoadTga into the shared chain (GetDefaultTexture on failure), Latch hands out the level with the cube-map face order. Ported 2026-10-02."
   },
   "006a5940": {
     "frozen": "CGxDeviceD3d::IStateSync",
@@ -2080,8 +2089,9 @@
     "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `hwPCF`.  Ported 2026-09-28 from the decompilation: the capability rejection, the flag change test, and the three steps that follow it -- the shader system setting, the shadow target realloc, and reloading the shadowed terrain pixel shaders, which have a different pair of names in each mode."
   },
   "0078df00": {
-    "status": "stub",
-    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `baseMip`."
+    "frozen": "CWorldParam::BaseMipCallback",
+    "status": "ported",
+    "note": "BaseMip: refuses anything but 0 or 1, sets the device base mip, reloads the atlas pages (FUN_004b65e0), redraws the portraits (FUN_00617070) and marks the texture cache size for the world update. Completed 2026-10-02."
   },
   "0078e110": {
     "status": "stub",
@@ -2100,8 +2110,9 @@
     "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `specular`."
   },
   "007f39b0": {
-    "status": "stub",
-    "note": "One of the twelve CWorldParam graphics CVar callbacks, every one of which is an empty body in frozen. Status corrected from \"ported\" to \"stub\" on 2026-09-23 by tools/audit-ported.py: the CVar is registered and its callback is linked, so the setting exists and changes nothing. That is the gap docs/ref/parity-shadows.md lists as item 10, \"no gating CVars\", and it is wider than shadows -- it covers ground effects, specular, mip bias, texture cache size and cloud LOD as well. This one backs `violenceLevel`."
+    "frozen": "CWorldParam::ViolenceLevelCallback",
+    "status": "ported",
+    "note": "violenceLevel: clamped to the per-locale maximum at 0x00af4e14 (by DAT_00c5de9c), then the BloodSpurtSmall01.blp substitution through FUN_004b5730 (none at level 2). Ported 2026-10-02."
   },
   "007f1cd0": {
     "status": "stub",
@@ -4453,5 +4464,165 @@
     "frozen": "Sand::RenderCpu",
     "status": "diverged",
     "note": "the reference passes Sand+0x98 to TextureGetGxTex, but +0x98 in Sand is the vertex shader slot (sand has no texture of its own; the CPU path only runs when the shader path is off). frozen does not hand a CGxShader* to the texture code: it treats it as no texture and returns before drawing, which is what a null shader slot gives in the reference."
+  },
+  "004b6690": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTexture>: frees the reuse pool's spare nodes (string .?AVCTexture@@); squall's TSHashTable template, not a linkable instance"
+  },
+  "004b8390": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE> constructor (the texture cache's static initialiser); squall template"
+  },
+  "004b83f0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE> InternalDelete (virtual destructor then SMemFree); squall template"
+  },
+  "004b84e0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE> destructor body; squall template"
+  },
+  "004b8580": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::InternalClear; squall template"
+  },
+  "004b85e0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE> deleting destructor; squall template"
+  },
+  "004b8610": {
+    "status": "excluded",
+    "note": "TSGrowableArray<TSExplicitList<CTexture>>::SetCount; squall template"
+  },
+  "004b8e70": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTexture> InternalDelete (unlink, destruct, keep the node for reuse); squall template"
+  },
+  "004b8f10": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTexture> destructor; squall template"
+  },
+  "004b8f70": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTexture> deleting destructor; squall template"
+  },
+  "004b8fa0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::Initialize (slot mask 3, four slot lists); squall template"
+  },
+  "004b9000": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::GrowListArray; squall template"
+  },
+  "004b91d0": {
+    "status": "excluded",
+    "note": "CTexture deleting destructor (scalar delete of FUN_004b8830); compiler-generated"
+  },
+  "004b9240": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTexture> InternalNew from the reuse pool (.?AVCTexture@@); squall template"
+  },
+  "004b92b0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE> InternalNew (SMemAlloc 0x170 + CTexture::CTexture); squall template"
+  },
+  "004b9310": {
+    "status": "excluded",
+    "note": "TSHashTable<CTexture, HASHKEY_TEXTUREFILE>::MonitorFullness; squall template"
+  },
+  "004bffc0": {
+    "status": "excluded",
+    "note": "TSList<CTextureBlob>::NewNode instantiation (0x120-byte node, .?AVCTextureBlob@@); squall template"
+  },
+  "004c0040": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTextureBlobTexture>: frees the reuse pool's spare nodes; squall template"
+  },
+  "004c00b0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<TSExplicitList<CTextureBlobTexture>>::ReallocData; squall template"
+  },
+  "004c0260": {
+    "status": "excluded",
+    "note": "TSGrowableArray<TSExplicitList<CTextureBlobTexture>> teardown; squall template"
+  },
+  "004c04b0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture> constructor (the blob table's static initialiser); squall template"
+  },
+  "004c0510": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture> InternalDelete; squall template"
+  },
+  "004c0540": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture> InternalNew (0x20-byte node, .?AVCTextureBlobTexture@@); squall template"
+  },
+  "004c05b0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<TSExplicitList<CTextureBlobTexture>>::SetCount; squall template"
+  },
+  "004c0890": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture> destructor body; squall template"
+  },
+  "004c0930": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture>::InternalClear; squall template"
+  },
+  "004c0990": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture> deleting destructor; squall template"
+  },
+  "004c09c0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture>::Initialize; squall template"
+  },
+  "004c0a20": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture>::GrowListArray; squall template"
+  },
+  "004c0c10": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTextureBlobTexture> InternalDelete; squall template"
+  },
+  "004c0c90": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTextureBlobTexture> InternalNew from the reuse pool; squall template"
+  },
+  "004c0d30": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTextureBlobTexture> destructor; squall template"
+  },
+  "004c0d90": {
+    "status": "excluded",
+    "note": "TSHashTableReuse<CTextureBlobTexture> deleting destructor; squall template"
+  },
+  "004c0dc0": {
+    "status": "excluded",
+    "note": "TSHashTable<CTextureBlobTexture>::MonitorFullness; squall template"
+  },
+  "004b57a0": {
+    "status": "diverged",
+    "note": "Counts a texture's file toward the streaming download statistics (called only by the M2 stats walk FUN_008245b0): appends .blp and asks FUN_004217e0 -> FUN_00461040 how much of the file is local to the archives. That query reads the streaming (BNet downloader) archive state inside Storm's MPQ layer, which frozen's StormLib-backed SFile does not have, and its one caller is not ported. Not ported, deliberately; recorded 2026-10-02."
+  },
+  "0077f900": {
+    "frozen": "CWorld::UpdateTextureCacheSize",
+    "status": "diverged",
+    "note": "Ported 2026-10-02 and called first thing in CWorld::Update, where FUN_007831a0 calls it. DIVERGED in its one device call: the chosen size (64/128 MB at base mip 0 by a far clip past 727, 16/32 MB at base mip 1 past 177) goes to the device's vtable slot 0xf4, which on the Direct3D 9 device is an empty `ret 4` at 0x00632050; frozen's D3D9 device has nothing to receive it. FUN_0088b9c0 in it is the CRT float-to-int, a static_cast here."
+  },
+  "00617070": {
+    "frozen": "PortraitButtonInvalidateAll",
+    "status": "diverged",
+    "note": "Ported 2026-10-02 for BaseMipCallback: re-runs the back-buffer alpha test FUN_00616dc0 into DAT_00c5cdfc. DIVERGED past that: the reference then marks every entry of the two portrait caches (hash tables at 0x00c5ce08 / 0x00c5ce30, +0x20 / +0x18) and queues UNIT_PORTRAIT_UPDATE through the unit event queue (FUN_006144d0 -> FUN_006143f0). Frozen has neither cache (see 00619330) nor the unit event queue, so there is nothing to mark or queue."
+  },
+  "004c03c0": {
+    "frozen": "TextureBlobUpdateTexture",
+    "status": "diverged",
+    "note": "The device callback of a texture created from a texture blob (FUN_004c0710). Ported 2026-10-02. DIVERGED in one guard: the reference looks the blob texture up only while a blob is loaded and uses the result unchecked; frozen latches no texels when the lookup misses instead of reading through an uninitialised register."
+  },
+  "00402250": {
+    "frozen": "UIFasterCalllback",
+    "status": "diverged",
+    "note": "UIFaster: bit 0 -> TextureSetAtlasEnable (FUN_004b5390), bit 1 -> DAT_00b47948. Ported 2026-10-02. DIVERGED in one branch: the reference clears bit 0 (\"Texture atlas disabled.\") on hardware its console detection (0x00769d00, DAT_00cabb38) recognised; frozen has no console hardware detection, so it is always the reference's not-detected case."
   }
 }

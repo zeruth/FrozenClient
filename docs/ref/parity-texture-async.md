@@ -1,5 +1,13 @@
 # Async texture loading: what `TextureGetGxTex` depends on
 
+> **2026-10-02: superseded.** The whole Texture.cpp module is ported now (src/gx/Texture.cpp,
+> src/gx/texture/CTextureAtlas.cpp, src/gx/texture/TextureBlob.cpp): `AsyncTextureWait`,
+> `TextureIncreasePriority`, the atlas reload, `CreateBlpAsync` with `s_createBlpAsync = 1`, the
+> read budget and its poll callback, and the released-texture cache. One correction to what follows:
+> `FUN_004b64e0` does not retire a finished request -- it STARTS a deferred one (unlinks it from the
+> waiting list, SMemAllocs its buffer, counts the bytes in flight, queues it). `field_4` is the
+> buffer, so `field_4 == 0` means "never started". Built only; nothing of it has been run.
+
 Written 2026-09-23 while making `TextureGetGxTex` faithful. Everything here was read out of
 `WoW.exe` with `llvm-objdump`, not from a decompilation, and none of it has been seen running.
 

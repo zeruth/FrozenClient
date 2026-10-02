@@ -2413,6 +2413,69 @@ void CGxDevice::TexMarkForUpdate(CGxTex* texId, const CiRect& updateRect, int32_
     }
 }
 
+// ref: FUN_00683350
+// The parameters a texture was created with, as a parameter block.
+void CGxDevice::TexParameters(const CGxTex* texId, CGxTexParms& parms) {
+    parms.target = texId->m_target;
+    parms.width = texId->m_width;
+    parms.height = texId->m_height;
+    parms.depth = texId->m_depth;
+    parms.format = texId->m_format;
+    parms.dataFormat = texId->m_dataFormat;
+    parms.flags = texId->m_flags;
+    parms.userArg = texId->m_userArg;
+    parms.userFunc = texId->m_userFunc;
+}
+
+// ref: FUN_00684930
+// A new update callback, and the whole texture marked for upload through it.
+void CGxDevice::TexSetCallback(CGxTex* texId, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), void* userArg) {
+    texId->m_userFunc = userFunc;
+    texId->m_userArg = userArg;
+
+    texId->m_updateRect = {
+        0,
+        0,
+        static_cast<int32_t>(texId->m_height),
+        static_cast<int32_t>(texId->m_width)
+    };
+
+    texId->m_needsUpdate = 1;
+}
+
+// ref: FUN_00683340
+void CGxDevice::TexSetDataFormat(CGxTex* texId, EGxTexFormat dataFormat) {
+    texId->m_dataFormat = dataFormat;
+}
+
+// ref: FUN_00685cd0
+// New texture flags. A change of filter means the texture no longer matches what it was created
+// for, which keeps it out of the released-texture cache; every texture stage it is bound to is
+// re-sent.
+void CGxDevice::TexSetFlags(CGxTex* texId, CGxTexFlags flags) {
+    if (!(flags != texId->m_flags)) {
+        return;
+    }
+
+    if (texId->m_flags.m_filter != flags.m_filter) {
+        texId->m_filterUnchanged = 0;
+    }
+
+    texId->m_flags = flags;
+    texId->m_needsFlagUpdate = 1;
+
+    for (int32_t i = 0; i < 16; i++) {
+        if (this->m_hwRenderStates[GxRs_Texture0 + i].m_data.p == texId) {
+            this->IRsForceUpdate(static_cast<EGxRenderState>(GxRs_Texture0 + i));
+        }
+    }
+}
+
+// ref: FUN_00682d10
+uint32_t CGxDevice::DeviceBaseMipLevel() {
+    return this->m_baseMipLevel;
+}
+
 void CGxDevice::TexSetWrap(CGxTex* texId, EGxTexWrapMode wrapU, EGxTexWrapMode wrapV) {
     if (texId->m_flags.m_wrapU == wrapU && texId->m_flags.m_wrapV == wrapV) {
         return;

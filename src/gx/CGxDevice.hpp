@@ -475,7 +475,12 @@ class CGxDevice {
         void ShaderConstantsClear(void);
         char* ShaderConstantsLock(EGxShTarget target);
         void ShaderConstantsUnlock(EGxShTarget target, uint32_t index, uint32_t count);
+        uint32_t DeviceBaseMipLevel();
         void TexMarkForUpdate(CGxTex*, const CiRect&, int32_t);
+        void TexParameters(const CGxTex* texId, CGxTexParms& parms);
+        void TexSetCallback(CGxTex* texId, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), void* userArg);
+        void TexSetDataFormat(CGxTex* texId, EGxTexFormat dataFormat);
+        void TexSetFlags(CGxTex* texId, CGxTexFlags flags);
         void TexSetWrap(CGxTex* texId, EGxTexWrapMode wrapU, EGxTexWrapMode wrapV);
         int32_t WindowVisibleFlag(int32_t value);
         void XformPop(EGxXform xf);

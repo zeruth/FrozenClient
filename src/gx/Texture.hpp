@@ -9,9 +9,91 @@ typedef HOBJECT HTEXTURE;
 
 typedef void (TEXTURE_CALLBACK)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&);
 
+class C2Vector;
 class CImVector;
+class CStatus;
+class SFile;
+
+// The module's shared state. Reference addresses are given on the definitions in Texture.cpp.
+namespace Texture {
+    extern int32_t s_createBlpAsync;
+    extern MipBits* s_mipBits;
+    extern int32_t s_mipBitsValid;
+    extern int32_t s_asyncBytesInFlight;
+    extern int32_t s_gxTexCacheSize;
+    extern int32_t s_gxTexCacheBudget;
+    extern uint32_t s_gxTexCacheTime;
+    extern STORM_EXPLICIT_LIST(CTexture, m_link) s_textureList;
+}
+
+// The async read callbacks a texture installs, and the cleanup a cancelled read gets.
+void AsyncTextureCleanup(CAsyncObject* object);
+
+void AsyncTextureStartRead(CAsyncObject* object, int32_t a2);
 
 void AsyncTextureWait(CTexture*);
+
+int32_t FileError(CStatus* status, const char* kind, const char* fileName);
+
+int32_t FindSubstitution(char* dest, const char* fileName);
+
+MipBits* GetDefaultTexture(uint32_t width, uint32_t height);
+
+int32_t GetBlpMips(char* fileExt, const char* fileName, int32_t openFlag, MipBits** images, uint32_t* width, uint32_t* height, EGxTexFormat* gxTexFormat, int32_t* isOpaque, uint32_t* alphaBits, PIXEL_FORMAT* pixFormat);
+
+void GetTextureFormats(PIXEL_FORMAT* pixFormat, EGxTexFormat* gxTexFormat, PIXEL_FORMAT preferredFormat, int32_t alphaBits);
+
+void GxTexCacheFlush();
+
+uint32_t GxTexMemSize(EGxTexFormat format, uint32_t width, uint32_t filter, uint32_t height);
+
+uint32_t PixelFormatBlockBytes(PIXEL_FORMAT format);
+
+int32_t ReloadMips(char* fileName, int32_t openFlag, MipBits** images);
+
+void RequestImageDimensions(uint32_t* width, uint32_t* height, uint32_t* bestMip);
+
+void TextureDestroy();
+
+void TextureFlushGxTexCache();
+
+int32_t TextureGetAtlasCoords(HTEXTURE handle, C2Vector* offset, float* scale);
+
+int32_t TextureGetDefaultCacheSize();
+
+const char* TextureGetFilename(HTEXTURE handle);
+
+int32_t TextureHasGxTexCallback(HTEXTURE handle);
+
+int32_t TextureIsAtlased(HTEXTURE handle);
+
+int32_t TextureIsGxTexUploaded(HTEXTURE handle);
+
+int32_t TextureIsLoaded(HTEXTURE handle);
+
+int32_t TextureLoadBlob(const char* fileName);
+
+SFile* TextureOpenFile(const char* fileName, int32_t openFlag);
+
+void TextureReloadAtlases();
+
+void TextureSetAtlasEnable(int32_t enable);
+
+void TextureSetCacheSize(int32_t size);
+
+void TextureSetFilterMode(int32_t mode);
+
+void TextureSetMaxAnisotropy(uint32_t maxAnisotropy);
+
+void TextureSetSubstitution(const char* name, const char* replacement);
+
+void TextureSetUpdateCallback(HTEXTURE handle, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), void* userArg);
+
+void TextureTrimGxTexCache();
+
+int32_t TextureUnloadBlob(const char* fileName);
+
+HTEXTURE TextureCreateFromBlob(const char* fileName, CGxTexFlags texFlags, CStatus* status, int32_t useFilterMode);
 
 // Bits per pixel for a BLP pixel format. Zero for a format with no fixed size.
 uint32_t PixelFormatBitsPerPixel(PIXEL_FORMAT);
@@ -56,7 +138,19 @@ void GxTexDestroy(CGxTex* texId);
 
 void GxTexParameters(const CGxTex* texId, CGxTexParms& parms);
 
-bool GxTexReusable(CGxTexParms&);
+bool GxTexReusable(const CGxTexParms&);
+
+bool GxTexReusable(const CGxTex* texId);
+
+int32_t GxTexHasCallback(const CGxTex* texId);
+
+int32_t GxTexIsUploaded(const CGxTex* texId);
+
+void GxTexSetCallback(CGxTex* texId, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), void* userArg);
+
+void GxTexSetDataFormat(CGxTex* texId, EGxTexFormat dataFormat);
+
+void GxTexSetFlags(CGxTex* texId, CGxTexFlags flags);
 
 void GxTexSetWrap(CGxTex* texId, EGxTexWrapMode wrapU, EGxTexWrapMode wrapV);
 
@@ -90,6 +184,9 @@ HTEXTURE TextureCacheGetTexture(const CImVector&);
 
 void TextureCacheNewTexture(CTexture*, CGxTexFlags);
 
+// Re-insert a texture under its own name and flags (the device-reset path of the liquids).
+void TextureCacheNewTexture(CTexture*);
+
 void TextureCacheNewTexture(CTexture*, const CImVector&);
 
 uint32_t TextureCalcMipCount(uint32_t width, uint32_t height);
@@ -113,7 +210,7 @@ void TextureInitialize(void);
 
 int32_t TextureIsSame(HTEXTURE textureHandle, const char* fileName);
 
-void TextureFreeGxTex(CGxTex* texId);
+void TextureFreeGxTex(CGxTex* texId, const char* name = nullptr);
 
 CGxTex* TextureGetGxTex(CTexture*, int32_t, CStatus*);
 

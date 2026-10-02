@@ -125,8 +125,26 @@ bool GammaCallback(CVar* var, const char* oldValue, const char* value, void* arg
     return true;
 }
 
+// ref: FUN_00402320
+// The released-texture cache's budget, in megabytes, up to what this machine allows.
 bool TextureCacheSizeCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    int32_t size = SStrToInt(value) << 20;
+    int32_t maximum = TextureGetDefaultCacheSize();
+
+    char msg[256];
+
+    if (size < 0 || size > maximum) {
+        SStrPrintf(msg, sizeof(msg), "Texture cache size (%d meg) greater than maximum allowed for your system (%d meg).", size >> 20, maximum >> 20);
+        ConsoleWrite(msg, DEFAULT_COLOR);
+
+        return false;
+    }
+
+    SStrPrintf(msg, sizeof(msg), "Texture cache size set to %d meg.", size >> 20);
+    ConsoleWrite(msg, DEFAULT_COLOR);
+
+    TextureSetCacheSize(size);
+
     return true;
 }
 
@@ -145,8 +163,27 @@ bool TextureFilteringCallback(CVar* var, const char* oldValue, const char* value
     return false;
 }
 
+// Reference 0x00b47948: the UIFaster CVar's bit 1, read by the UI render batches.
+int32_t g_uiFasterBatching;
+
+// ref: FUN_00402250
+// UIFaster: bit 0 lets small UI textures share atlas pages, bit 1 is read by the UI render batches.
+//
+// DIVERGED in one branch: the reference turns the atlas off ("Texture atlas disabled.") on the
+// hardware its console detection recognised as an Intel adapter, or as one with a known atlas
+// problem. Frozen does not port the console hardware detection (0x00769d00, DAT_00cabb38), so the
+// hardware is always the reference's "not detected" case and the bit is taken as given.
 bool UIFasterCalllback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    uint32_t mode = SStrToInt(value);
+
+    if (mode > 3) {
+        return false;
+    }
+
+    TextureSetAtlasEnable(mode & 0x1);
+
+    g_uiFasterBatching = (mode >> 1) & 0x1;
+
     return true;
 }
 
@@ -427,6 +464,10 @@ int32_t DestroyEngineCallback(const void* a1, void* a2) {
 
     WowClientDestroy();
 
+    // TODO the reference's shutdown between the two (0x004066e5..0x00406715)
+
+    TextureDestroy();
+
     // TODO
 
     return 1;
@@ -441,9 +482,9 @@ int32_t InitializeEngineCallback(const void* a1, void* a2) {
 
     ModelBlobLoad("world\\model.blob");
 
-    // if (SFile::IsStreamingMode()) {
-    //     TextureLoadBlob("world\\liquid.tex");
-    // }
+    if (SFile::IsStreamingMode()) {
+        TextureLoadBlob("world\\liquid.tex");
+    }
 
     ScrnInitialize(0);
     ConsoleScreenInitialize(nullptr); // TODO argument
@@ -475,7 +516,7 @@ int32_t InitializeEngineCallback(const void* a1, void* a2) {
         GRAPHICS
     );
 
-    // sub_4B6580(*(_DWORD *)(dword_B2F9FC + 48) << 20);
+    TextureSetCacheSize(s_textureCacheSizeCvar->m_intValue << 20);
 
     // AddConsoleDeviceDefaultCallback(SetDefaults);
 
@@ -490,9 +531,16 @@ int32_t InitializeEngineCallback(const void* a1, void* a2) {
     auto m2Flags = M2RegisterCVars();
     M2Initialize(m2Flags, 0);
 
-    // v4 = *(_DWORD *)(dword_B2FA00 + 48);
-    // sub_4B61C0(dword_AB6128[v4]);
-    // sub_4B6230(dword_AB6140[v4]);
+    // The texture filtering mode picks a filter and an anisotropy from the reference's two tables
+    // (0x00ab6128 and 0x00ab6140): bilinear, trilinear, then anisotropic at 2, 4, 8 and 16.
+    static int32_t s_filterModes[6] = { 3, 4, 5, 5, 5, 5 };
+    static uint32_t s_maxAnisotropy[6] = { 1, 1, 2, 4, 8, 16 };
+
+    int32_t filtering = s_textureFilteringModeCvar->m_intValue;
+
+    TextureSetFilterMode(s_filterModes[filtering]);
+    TextureSetMaxAnisotropy(s_maxAnisotropy[filtering]);
+
 
     WowClientInit();
 
@@ -544,6 +592,8 @@ static void Sub406B70() {
     // - display any pending fatal error
 }
 
+int32_t g_localeIndex;
+
 // TODO name this (maybe something like InitializeLocale?)
 void Sub405DD0() {
     // TODO
@@ -555,6 +605,16 @@ void Sub405DD0() {
 
     // TODO get this from the soupy mess of locale checks above
     auto locale = "enUS";
+
+    // The reference stores the locale as its index in the table at 0x00ad2fe0.
+    static const char* s_locales[9] = { "enUS", "koKR", "frFR", "deDE", "zhCN", "zhTW", "esES", "esMX", "ruRU" };
+
+    for (int32_t i = 0; i < 9; i++) {
+        if (!SStrCmpI(locale, s_locales[i], STORM_MAX_STR)) {
+            g_localeIndex = i;
+            break;
+        }
+    }
 
     ClientServices::InitLoginServerCVars(1, locale);
 

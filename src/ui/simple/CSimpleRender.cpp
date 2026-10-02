@@ -121,7 +121,9 @@ void CSimpleRender::DrawBatch(CRenderBatch* batch) {
                     }
 
                     if (mesh->onAtlas) {
-                        // TODO
+                        C2Vector* tc = &mesh->texCoord[i];
+                        vertexBuf->tc[0].x = mesh->atlasScale * tc->x + mesh->atlasOffset.x;
+                        vertexBuf->tc[0].y = tc->y * mesh->atlasScale + mesh->atlasOffset.y;
                     } else {
                         C2Vector* tc = &mesh->texCoord[i];
                         vertexBuf->tc[0].x = tc->x;

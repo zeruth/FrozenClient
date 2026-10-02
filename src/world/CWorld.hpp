@@ -177,6 +177,7 @@ class CWorld {
         static void ProjectionCallback(const CAaBox& bounds, const CImVector& color, uint32_t shaded, void* context, uint32_t force);
         static void LoadMap(const char* mapName, const C3Vector& position, int32_t mapID);
         static void UpdateWindow(const C3Vector& targetPos);
+        static void UpdateTextureCacheSize();
 
         // The position the map streams around (DAT_00cd7778) and the two boxes UpdateWindow
         // builds round it: 150 yards each way (DAT_00cd7784), and the far clip each way

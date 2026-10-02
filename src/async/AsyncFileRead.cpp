@@ -1,5 +1,7 @@
 #include <storm/Array.hpp>
 #include "async/AsyncFileRead.hpp"
+#include "async/CAsyncObject.hpp"
+#include "gx/Device.hpp"
 #include "util/SFile.hpp"
 #include <common/Prop.hpp>
 #include <common/Time.hpp>
@@ -210,6 +212,19 @@ uint32_t AsyncFileReadThread(void* param) {
     }
 
     return 0;
+}
+
+// ref: FUN_004bac20
+// Move a queued read to the front of its priority band and stamp it with the current frame.
+// The stamp is what lets a texture wanted THIS frame outrank one asked for earlier and not
+// drawn since. char25 gates the relink: an object the blocking wait path has already claimed
+// (AsyncFileReadObject clears it there) is left exactly where it is.
+void AsyncReadBumpPriority(CAsyncObject* object) {
+    object->m_frameStamp = g_theGxDevicePtr->m_frameCount;
+
+    if (object->char25) {
+        AsyncFileReadLinkObject(object, 1);
+    }
 }
 
 // ref: FUN_004ba060

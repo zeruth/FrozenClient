@@ -69,6 +69,8 @@ class CGxCaps {
         int32_t m_pointScale = 0;                         // +0x10c
         int32_t m_blendFactor = 0;                        // +0x110: D3DPBLENDCAPS_BLENDFACTOR
         int32_t int114[5] = { 0 };                        // +0x114..+0x124: zeroed, meaning unknown
+        int32_t int128 = 0;                               // +0x128: never set on D3D9; asked for by the portrait alpha test
+        int32_t int12c = 0;                               // +0x12c
         int32_t int130b = 1;                              // +0x130
         int32_t m_notPs30a = 0;                           // +0x134: pixel target below ps_3_0
         int32_t m_notPs30b = 0;                           // +0x138: the same, a second consumer
