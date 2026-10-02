@@ -1,4 +1,5 @@
 #include "console/Console.hpp"
+#include "console/Device.hpp"
 #include <cstdarg>
 #include <storm/String.hpp>
 
@@ -41,6 +42,22 @@ void ConsoleSetResizeState(CONSOLERESIZESTATE state) {
 }
 
 // ref: FUN_00765360
+// ref: FUN_007653b0
+// Nothing is formatted until there is a console to write to.
+void ConsolePrintf(const char* format, ...) {
+    if (!format || !*format || !ConsoleDeviceExists()) {
+        return;
+    }
+
+    char buffer[0x1000];
+    va_list args;
+    va_start(args, format);
+    SStrVPrintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    ConsoleWrite(buffer, DEFAULT_COLOR);
+}
+
 void ConsoleWriteA(const char* format, COLOR_T color, ...) {
     char buffer[1024];
     va_list args;

@@ -459,3 +459,13 @@ bool CVarBitField::GetBit(uint32_t index) const {
 
     return false;
 }
+
+// ref: FUN_00766700
+void CVar::SetReadOnly(bool readOnly) {
+    if (readOnly) {
+        this->m_flags |= 0x4;
+        return;
+    }
+
+    this->m_flags &= ~0x4;
+}

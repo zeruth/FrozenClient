@@ -21,6 +21,7 @@
 #include "client/ClientHandlers.hpp"
 #include "client/ClientServices.hpp"
 #include "component/CCharacterComponent.hpp"
+#include "console/Command.hpp"
 #include "console/Console.hpp"
 #include "console/CVar.hpp"
 #include "console/Device.hpp"
@@ -54,6 +55,7 @@
 #include <bc/Debug.hpp>
 #include <common/Prop.hpp>
 #include <common/Time.hpp>
+#include "util/OsSystem.hpp"
 #include <storm/Error.hpp>
 
 CVar* Client::g_accountNameVar;
@@ -557,6 +559,49 @@ bool LocaleChangedCallback(CVar* var, const char* oldValue, const char* value, v
     return true;
 }
 
+// Reference 0x00b2f9d8: the timing test's result, as InitializeGlobal read it.
+static int32_t s_timingTestError;
+
+// ref: FUN_00403200
+// Only 0..2 are methods. Picking a different one clears a recorded test error, which the next
+// start-up will measure again.
+static bool TimingMethodCallback(CVar* var, const char* oldValue, const char* newValue, void* arg) {
+    uint32_t method = atol(newValue);
+
+    if (method < 3) {
+        auto timingTestError = static_cast<CVar*>(arg);
+
+        if (oldValue && method != static_cast<uint32_t>(atol(oldValue)) && timingTestError->m_intValue) {
+            timingTestError->SetReadOnly(false);
+            timingTestError->Set("0", true, false, false, true);
+            timingTestError->SetReadOnly(true);
+        }
+
+        return true;
+    }
+
+    ConsolePrintf("'%s' is not a valid timing method. Valid methods are:", newValue);
+
+    for (int32_t i = 0; i < 3; i++) {
+        ConsolePrintf("  %d - %s", i, OsTimeGetTimingMethodName(i));
+    }
+
+    return false;
+}
+
+// ref: FUN_004032a0
+static int32_t TimingInfoCommand(const char* command, const char* arguments) {
+    int32_t desired = CVar::LookupRegistered("timingMethod")->m_intValue;
+    int32_t selected = OsTimeGetTimingMethod();
+    int32_t error = CVar::LookupRegistered("timingTestError")->m_intValue;
+
+    ConsolePrintf("Timing method desired: %d - %s", desired, OsTimeGetTimingMethodName(desired));
+    ConsolePrintf("Timing method selected: %d - %s", selected, OsTimeGetTimingMethodName(selected));
+    ConsolePrintf("Timing test error: %d", error);
+
+    return 1;
+}
+
 int32_t InitializeGlobal() {
     // TODO
 
@@ -664,49 +709,48 @@ int32_t InitializeGlobal() {
 
     EventInitialize(1, 0);
 
-    // CVar* v6 = CVar::Register(
-    //     "timingTestError",
-    //     "Error reported by the timing validation system",
-    //     6,
-    //     "0",
-    //     0,
-    //     5,
-    //     0,
-    //     0,
-    //     0
-    // );
-    // v7 = v6;
+    CVar* timingTestError = CVar::Register(
+        "timingTestError",
+        "Error reported by the timing validation system",
+        0x6,
+        "0",
+        nullptr,
+        DEFAULT,
+        false,
+        nullptr,
+        false
+    );
 
-    // CVar* v8 = CVar::Register(
-    //     "timingMethod",
-    //     "Desired method for game timing",
-    //     2,
-    //     "0",
-    //     &sub_403200,
-    //     5,
-    //     0,
-    //     v6,
-    //     0
-    // );
+    CVar* timingMethod = CVar::Register(
+        "timingMethod",
+        "Desired method for game timing",
+        0x2,
+        "0",
+        TimingMethodCallback,
+        DEFAULT,
+        false,
+        timingTestError,
+        false
+    );
 
-    // sub_86D430(v8->m_intValue);
+    OsTimeStartup(timingMethod->m_intValue);
 
-    // ConsoleCommandRegister("timingInfo", (int)sub_4032A0, 0, 0);
+    ConsoleCommandRegister("timingInfo", TimingInfoCommand, DEBUG, nullptr);
 
-    // v9 = sub_86AD50();
+    s_timingTestError = OsTimeGetTestError();
 
-    // v10 = v9 == v7->m_intValue;
+    if (s_timingTestError != timingTestError->m_intValue) {
+        char value[48];
+        SStrPrintf(value, sizeof(value), "%d", s_timingTestError);
 
-    // dword_B2F9D8 = v9;
+        timingTestError->SetReadOnly(false);
+        timingTestError->Set(value, true, false, false, true);
+        timingTestError->Update();
+        timingTestError->SetReadOnly(true);
 
-    // if (!v10) {
-    //     sprintf(&v17, "%d", v9);
-    //     CVar::SetReadOnly((int)v7, 0);
-    //     CVar::Set(v7, &v17, 1, 0, 0, 1);
-    //     CVar::Update((int)v7);
-    //     CVar::SetReadOnly((int)v7, 1);
-    //     ConsolePrintf("Timing test error: %d", (int)v7);
-    // }
+        // The reference hands the CVar itself to %d, not its value.
+        ConsolePrintf("Timing test error: %d", static_cast<int32_t>(reinterpret_cast<intptr_t>(timingTestError)));
+    }
 
     // WowClientDB<Startup_StringsRec>::Load(&g_Startup_StringsDB, 0, ".\\Client.cpp", 0x12E3u);
     // Startup_StringsRec* v11 = g_Startup_StringsDB.GetRecordByIndex(1);
@@ -775,6 +819,8 @@ void StormInitialize() {
     // SErrInitialize();
     SLogInitialize();
     // SFile::Initialize();
+
+    OsEnableCpuLog();
 
     Blizzard::Debug::SetAssertHandler(BlizzardAssertCallback);
 }

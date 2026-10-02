@@ -1,9 +1,28 @@
 #include "util/OsSystem.hpp"
+#include "util/Filesystem.hpp"
+#include <common/Time.hpp>
+#include <storm/Log.hpp>
+#include <cstdlib>
 #include <cstring>
 #include <intrin.h>
 #include <windows.h>
 
 static uint64_t s_cpuSpeed; // ref: DAT_00d415c8
+
+// What OsGetCpuInfo found, worked out once (reference 0x00d415a0..0x00d415b4).
+static int32_t s_cpuInfoQueried;
+static uint32_t s_cpuVendor;
+static uint32_t s_cpuFeatures;
+static uint32_t s_cpuSockets;
+static uint32_t s_cpuCores;
+static uint32_t s_cpuProcessors;
+
+// Whether OsGetCpuInfo writes Logs\\cpu.log (reference 0x00d415c0).
+static int32_t s_cpuLogEnabled;
+
+// OsQueryCpuSpeedFromPowerInfo's result, asked for once (reference 0x00d415d0, 0x00d415d4).
+static int32_t s_powerInfoSpeed;
+static int32_t s_powerInfoQueried;
 
 // Returns 0 when CPUID is unavailable, 1 with the standard leaves, 2 with the extended ones too.
 // ref: FUN_0086af90
@@ -211,4 +230,197 @@ int32_t OsQueryCpuSpeedFromPowerInfo() {
     }
 
     return result;
+}
+
+// ref: FUN_0086b0c0
+void OsEnableCpuLog() {
+    s_cpuLogEnabled = 1;
+}
+
+// ref: FUN_0086b0d0
+static void OsLogCpuInfo(const OsCpuidInfo* info) {
+    if (!s_cpuLogEnabled) {
+        return;
+    }
+
+    OsCreateDirectory("Logs", 0);
+
+    HSLOG log;
+    SLogCreate("Logs\\cpu.log", 0, &log);
+
+    if (s_cpuVendor == 4) {
+        SLogWrite(log, "UNABLE TO IDENTIFY CPU");
+        SLogClose(log);
+        return;
+    }
+
+    SLogWrite(log, "vendor: %d", s_cpuVendor);
+    SLogWrite(log, "features: %08X", s_cpuFeatures & 0x7FFFFFFF);
+    SLogWrite(log, "sockets: %d", s_cpuSockets);
+    SLogWrite(log, "cores: %d", s_cpuCores);
+    SLogWrite(log, "processors: %d", s_cpuProcessors);
+
+    char vendor[13];
+    strncpy(vendor, reinterpret_cast<const char*>(info->vendor), 12);
+    vendor[12] = 0;
+    SLogWrite(log, "vendor id string= %s", vendor);
+
+    SLogWrite(log, "standard (%d): 1b=%08X 1d=%08x 4a=%08X", info->maxLeaf, info->leaf1Ebx, info->leaf1Edx, info->leaf4Eax);
+    SLogWrite(log, "extended (%d): 1c=%08X 1d=%08x 8c=%08X", info->maxExtLeaf & 0x7FFFFFFF, info->ext1Ecx, info->ext1Edx, info->ext8Ecx);
+
+    auto brand = reinterpret_cast<const char*>(info->brand);
+
+    while (*brand && *brand == ' ') {
+        brand++;
+    }
+
+    SLogWrite(log, "processor brand string= %s", brand);
+    SLogClose(log);
+}
+
+// ref: FUN_0086b600
+// Reads the clock from the end of the brand string ("... @ 2.67GHz"): the digits and points
+// before a GHz, MHz or THz suffix are copied right-aligned into a field of spaces and scaled.
+static int32_t OsParseCpuSpeedFromBrand(const char* brand) {
+    if (!brand) {
+        return 0;
+    }
+
+    const char* end = brand;
+
+    while (*end) {
+        end++;
+    }
+
+    if (!(brand < end - 1 && end[-1] == 'z' && brand < end - 2 && end[-2] == 'H' && brand < end - 3)) {
+        return 0;
+    }
+
+    double multiplier;
+
+    if (end[-3] == 'G') {
+        multiplier = 1000000000.0;
+    } else if (end[-3] == 'M') {
+        multiplier = 1000000.0;
+    } else if (end[-3] == 'T') {
+        multiplier = 1000000000000.0;
+    } else {
+        return 0;
+    }
+
+    char number[48];
+    memset(number, ' ', sizeof(number));
+    number[47] = 0;
+
+    char* dst = &number[46];
+
+    for (const char* src = end - 4; brand < src && ((*src >= '0' && *src <= '9') || *src == '.'); src--) {
+        *dst = *src;
+        dst--;
+    }
+
+    double value = atof(number);
+
+    if (value == 0.0) {
+        return 0;
+    }
+
+    s_cpuSpeed = static_cast<uint64_t>(static_cast<int64_t>(value * multiplier));
+    return 1;
+}
+
+// ref: FUN_0086b9a0
+// Identifies the processor once and keeps the answer: vendor, feature word, cores per package
+// and processor count, then the clock -- from the brand string, else the power information,
+// else the timer's own rate.
+uint32_t OsGetCpuInfo(uint32_t* vendor) {
+    if (s_cpuInfoQueried) {
+        *vendor = s_cpuVendor;
+        return s_cpuFeatures;
+    }
+
+    s_cpuInfoQueried = 1;
+
+    uint32_t features = 0;
+
+    SYSTEM_INFO systemInfo = {};
+    GetSystemInfo(&systemInfo);
+
+    s_cpuProcessors = systemInfo.dwNumberOfProcessors;
+
+    if (s_cpuProcessors == 0) {
+        s_cpuProcessors = 1;
+    }
+
+    s_cpuCores = 1;
+    s_cpuSockets = 1;
+
+    OsCpuidInfo info;
+
+    if (!OsGetCpuidInfo(&info)) {
+        s_cpuVendor = 4;
+    } else {
+        features = (info.leaf1Edx & 0x10) ? 0x1 : 0x0;
+
+        if (info.leaf1Edx & 0x800000) {
+            features |= 0x2;
+        }
+
+        if (info.leaf1Edx & 0x2000000) {
+            features |= 0x4;
+        }
+
+        if (info.ext1Edx & 0x80000000) {
+            features |= 0x8;
+        }
+
+        if (info.leaf1Edx & 0x4000000) {
+            features |= 0x10;
+        }
+
+        auto vendorId = reinterpret_cast<const char*>(info.vendor);
+
+        if (strncmp(vendorId, "GenuineIntel", 12) == 0) {
+            s_cpuVendor = 1;
+
+            if (info.maxLeaf > 3 && (info.leaf4Eax >> 26) != 0) {
+                features |= 0x40;
+                s_cpuCores = (info.leaf4Eax >> 26) + 1;
+            }
+        } else if (strncmp(vendorId, "AuthenticAMD", 12) == 0) {
+            s_cpuVendor = 2;
+
+            if (static_cast<uint8_t>(info.ext8Ecx) != 0) {
+                features |= 0x40;
+                s_cpuCores = static_cast<uint8_t>(info.ext8Ecx) + 1;
+            }
+        }
+
+        // The reference goes on to compare against CyrixInstead and CentaurHauls and does
+        // nothing with either answer.
+    }
+
+    s_cpuFeatures = features | 0x80000000;
+
+    OsLogCpuInfo(&info);
+
+    if (!OsParseCpuSpeedFromBrand(reinterpret_cast<const char*>(info.brand))) {
+        if (!s_powerInfoQueried) {
+            s_powerInfoSpeed = OsQueryCpuSpeedFromPowerInfo();
+            s_powerInfoQueried = 1;
+        }
+
+        if (!s_powerInfoSpeed) {
+            s_cpuSpeed = OsGetAsyncClocksPerSecond();
+        }
+    }
+
+    *vendor = s_cpuVendor;
+    return s_cpuFeatures;
+}
+
+// ref: FUN_0086bb80
+uint32_t OsGetCpuFeatures() {
+    uint32_t vendor;
+    return OsGetCpuInfo(&vendor);
 }

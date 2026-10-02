@@ -634,8 +634,6 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("converted", "Trial to Retail", 0x0, "0", nullptr, GAME);
     CVar::Register("heapAllocTracking", "Enables/disables allocation tracking & dumping", 0x0, "1", nullptr, GAME);  // TODO callback FUN_004d2780
     CVar::Register("synchronizeSettings", "Whether client settings should be stored on the server", 0x0, "1", nullptr, DEFAULT);
-    CVar::Register("timingMethod", "Desired method for game timing", 0x2, "0", nullptr, DEFAULT);  // TODO callback FUN_00403200
-    CVar::Register("timingTestError", "Error reported by the timing validation system", 0x6, "0", nullptr, DEFAULT);
     CVar::Register("asyncThreadSleep", "Engine option: Async read thread sleep", 0x1, "0", nullptr, DEBUG);  // TODO callback FUN_00402670
     CVar::Register("asyncHandlerTimeout", "Engine option: Async read main thread timeout", 0x1, "100", nullptr, DEBUG);  // TODO callback FUN_00402690
     CVar::Register("Sound_ChaosMode", "Testing to break sound engine", 0x0, "0", nullptr, SOUND);  // TODO callback FUN_004d0f20

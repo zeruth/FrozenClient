@@ -33,4 +33,13 @@ uint64_t OsGetPhysicalMemory();
 
 int32_t OsQueryCpuSpeedFromPowerInfo();
 
+// Bits of the feature word: TSC 0x1, MMX 0x2, SSE 0x4, 3DNow! 0x8, SSE2 0x10, more than one
+// logical core per package 0x40; bit 31 is always set. The vendor is 1 Intel, 2 AMD, 4 when
+// CPUID is not available.
+uint32_t OsGetCpuInfo(uint32_t* vendor);
+
+uint32_t OsGetCpuFeatures();
+
+void OsEnableCpuLog();
+
 #endif
