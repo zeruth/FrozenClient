@@ -13,6 +13,14 @@ accepted: ports stack up unseen, and the first run at the end will find a batch 
 one texture dump). The commit log and `overrides.json` notes are how that run will be debugged, so
 every port still records what it diverges from and why.
 
+**The reference is the vanilla `WoW.exe` (12340) in `.reference`, and only that.** Until
+2026-10-02 the Ghidra side of the tooling read `RunicWorldGame.exe`, a branded patch of the same
+binary: identical layout and addresses (so every tag and address on this page holds), but 14
+strings and four code sites differ -- 0x4da7e5 and 0x52abd9 skip the GlueXML/FrameXML signature
+checks, 0x4e0481 lets every character name pass validation, 0x7f5f9f forces a branch. Two of
+those had leaked into frozen and were fixed. `recomp.GHIDRA_PROGRAM` now names the vanilla
+program and every exported data file was regenerated from it.
+
 ## What 100% means here
 
 The render surface is the 4,838 reference functions in the modules that draw the world
@@ -27,13 +35,14 @@ scene-compare suite at or above 99%) is the last phase, started when 1 to 3 are 
 
 Where it stands (updated at the end of every run; the log at the bottom has the history):
 
-| | 2026-10-01 start | now (2026-10-02 01:15) | at completion |
+| | 2026-10-01 start | now (2026-10-02) | at completion |
 |---|---|---|---|
-| render surface linked | 1,267 / 4,838 (26%) | 1,457 / 5,390 (27%) | 5,390 |
-| render surface faithful | not measured | 932 (17%) | 5,390 |
-| render surface stubs | 20 | 32 | 0 |
-| empty functions with live render call sites | 37 | 37 | 0 |
+| render surface linked | 1,267 / 4,838 (26%) | 1,575 / 5,377 (29%) | 5,377 |
+| render surface faithful | not measured | 1,054 (20%) | 5,377 |
+| render surface stubs | 20 | 33 | 0 |
+| empty functions with live render call sites | 37 | 35 | 0 |
 | render surface attributed by anchor guess | 63% | 49% | low |
+| D3D9 device census (vtable 0x00a2e718 closure, 228 functions) | 199 linked / 154 faithful | 227 / 223 | 228 / 228 |
 
 The 3,949 unlinked functions by area (module names as the report's anchors give them):
 
@@ -176,7 +185,9 @@ the reference's. `RsPop` and `TextureCreate` already score 100%, so the pattern 
   done; the glow (`FUN_004f8770`, `FUN_008c1770`, `FUN_008c1010`, `FUN_008c1100`) is not.
 - **The device:** `CGxDeviceD3d9Ex` 238 / 17, `CGxDevice` 54 / 11, `CGxDeviceD3d` 15 / 1,
   `CGxD3d9ExTexture`. State sync, buffer pools, shader load, texture upload, to the reference's
-  shape; `GxRs_TexGen` / `ColorOp` / `AlphaOp` implemented or recorded as diverged.
+  shape; `GxRs_TexGen` / `ColorOp` / `AlphaOp` implemented or recorded as diverged. The plain
+  D3D9 device is done (phase 3a); what is left here is `CGxDeviceD3d9Ex`, which the Windows path
+  frozen targets does not use.
 - **Live stubs to zero:** the 37 from `livestubs.py` (`M2Init` with 63 call sites,
   `CClientEnvironment::AddRef` with 35, `CM2Cache::GarbageCollect`, `M2BlendValue`, the
   `CGxFont` pair), each ported or recorded as a deliberate divergence.
@@ -209,25 +220,34 @@ core. In order:
    (vtable 0x00a2e718) keeps its texture code at 0x6a2aa0..0x6a31e0. Still open there: the two
    back-buffer-to-texture copies in vtable slots 59 and 60 (0x6a30d0, 0x6a31e0), which nothing
    in frozen calls yet, and the device callback array the reset walk ends on.
-5. **The D3D9 device lifecycle** (added 2026-10-01): 0x68e000..0x6909a0 plus a few helpers at
-   0x69fb00 and 0x6a1c60..0x6a5e40, 48 functions with 4 linked when found. Frozen has most of
-   them under the right names but untagged and written from whoa. In batches:
-   - ~~buffers and pools~~ (lock, unlock, data, scratch fallback, pool create and release);
-   - ~~device destroy, present parameters, DeviceSetFormat, ICreateD3d, full resource release~~;
-   - ~~window class and window creation (0x68eb20, 0x68ebb0); scene begin, end and present
-     (0x6a3350, 0x6a3420, 0x6a3450); D3D defaults (0x6a3a60)~~;
-   - ~~`ISetCaps` (0x68ee20), `DeviceWM` (0x690230), the `CGxFormat` constructor (0x681950),
-     the device constructor (0x68fd50)~~;
-   - `ICreateD3dDevice`'s tail (0x68f3d0: gamma, placeholder texture), `DeviceCreate`
-     (0x690750), the device teardown (0x6905f0) and destructor (0x68fe80), the window-sizing
-     aspect helpers (0x683d60..0x683e50);
-   - the cursor: `ICursorCreate` (0x68e900), the per-frame upload (0x68e810), the teardown
-     (0x6a00c0), and the software cursor the base `ScenePresent` (0x687a90) draws with the
-     device's own UI shaders;
-   - per-frame: `ScenePresent` and the device-lost reset (0x68e810, 0x6a3350), the hardware
-     cursor (0x68e900, 0x68e750, 0x6a00c0), the reference `IRenderTargetSet` (0x68f770) and its
-     depth and copy siblings (0x68f900, 0x68f950), occlusion queries (0x68e9c0..0x68ea90),
-     screenshots (0x68fed0, 0x68f6a0).
+5. ~~**The D3D9 device lifecycle**~~ (2026-10-01/02; see the progress log). Closed by a census of
+   the whole D3D9 device -- the closure of its vtable at 0x00a2e718 over 0x681000..0x6ac000, 228
+   functions -- rather than an address range, which is how the range's misses were found.
+   Ported: buffers, pools and the scratch fallback; device create, destroy, format change and
+   resource release; window class, window creation, the window procedure with its eight sizing
+   helpers, and `DeviceWM`; caps; scene begin, end and present with the frame cap and fixLag;
+   render targets, depth-stencil save/restore/set and the back-buffer copies; occlusion queries;
+   frame capture; gamma and the desktop ramp; the device callbacks; the vertex-declaration
+   cache; NVIDIA stereo (NVAPI, diverged for 64-bit only); the immediate-mode primitive; the
+   hardware and software cursor, the UI shaders and the placeholder texture; Storm's SLog and
+   Logs\gx.log; the base constructor and destructor. Outside the device but on its path: the
+   W32 time manager behind `OsGetAsyncTimeMs`, `TextureLoadImage` with the mip-bits cache and
+   the TGA readers, and the client cursor module. About 45 functions failed the measure only on
+   inlined templates, compound conditions or block layout; each was read against the
+   decompilation and given a hand verdict.
+
+   **Still open in the census:** `GxPrimVertexPtr` (`0x682400`) and `IRsSendToHw` (`0x6a4c30`)
+   need a proper read before a verdict; the D3D9 constructor (`0x68fd50`) has a 0x38-byte zero
+   fill at +0x3ae0 that is not identified; vtable slot 21 (`0x6a1950`) is identified and has no
+   caller; the base constructor is recorded as diverged until `CGxCaps` is layout-faithful.
+   **Frozen-only behaviour left on the device:** table fog in `IStateSetD3dDefaults`, which
+   frozen's own terrain shaders need until terrain moves to the archived `Terrain.bls` (phase 2).
+   **Not yet ported around it:** the money / object / spell item cursors (`FUN_00616510`,
+   `FUN_00616630`, `FUN_00616720`).
+
+   **Visible risk, none of it run yet:** the cursor (the system cursor is now hidden over the
+   client area, as in the reference, and the device draws its own), resize and alt-tab (the
+   reset path lost two frozen workarounds), and the timer (QPC-calibrated at start-up).
 
 ## Phase 4: entities (1,779 unlinked)
 
@@ -306,3 +326,7 @@ stubs, then live empty functions.
 | 2026-10-01 23:30 | 1,486 / 5,390 | 955 | 32 | 37 | **phase 3a, item 5 opened: the D3D9 device lifecycle, first two batches.** **Buffers**: the device keeps a scratch buffer per target (+0x28c4); a lock with no context, no D3D buffer or a failed lock now hands that out instead of null, and the unlock undoes it and asks for a re-sync, as the reference does. **Vertex buffers were created with an FVF of `D3DFMT_INDEX16`** (0x65, copied from the index-buffer twin); the reference passes 0. **`IDestroyD3dDevice` was an empty TODO**, so a format change built a second device beside the first and kept drawing with the first one's textures, buffers and shaders; it now releases every resource (textures, the shaders `FUN_006a5e40` walks, pools, vertex declarations) and then the device. **`DeviceSetFormat` fell off the end on failure** (no return, undefined behaviour); it now destroys the device before building the new one and tears both down on failure. `ISetPresentParms` gains the triple-buffer back-buffer count and the multisample quality. The base `DeviceSetFormat` clamps to 320x240 and records the aspect global. `Log` is a recorded stub: the reference writes Logs\gx.log through Storm's SLog, which frozen's Storm lacks. A call-graph link of `FUN_006a1690` to `ResetRsSendCaches` was read and rejected. **Visible risk**: buffer locks, device destroy and format changes all behave differently now; a resolution change is the first thing to try. Client linked 4,799 -> 4,824, faithful 2,570 -> 2,587 |
 | 2026-10-02 00:30 | 1,492 / 5,390 | 957 | 32 | 37 | **phase 3a, item 5, batch 3: window, scene and present.** **Frozen had no frame cap**: it stored `maxFPS` (200) and `maxFPSBk` (30) and read neither; the reference caps every present (`FUN_006836d0`), and so does frozen now. Only the foreground cap applies until `DeviceWM` raises the background flag (next batch). **gxFixLag** now works: the present waits on an event query issued for the frame (or locks the back buffer when there is none) so the CPU stays at most a frame ahead. Device-lost recovery moved from the top of `ScenePresent` into `ISceneBegin`, where the reference has it, and retries only on `D3DERR_DEVICENOTRESET`; frozen's extra retry on `D3D_OK` would have re-entered from `IStateSetD3dDefaults`. Recovery also invalidates the four lights. A windowed format is now fitted into the work area and centred, holding gxAspect (`FUN_00684d70`), and gxMaximize 1 takes the screen size. A string-matcher link of the OpenGL device's window-class registration (0x68da10) to `WindowClassCreate` was corrected to the D3D9 one. Recorded divergences: frozen's table fog in the defaults, the arrow-cursor fallback. **Visible risk**: frame pacing (a 200 FPS cap), window placement in windowed mode, and lost-device recovery all changed. Client linked 4,824 -> 4,836, faithful 2,587 -> 2,594 |
 | 2026-10-02 01:15 | 1,496 / 5,390 | 959 | 32 | 37 | **phase 3a, item 5, batch 4: caps, window messages, format defaults.** `ISetCaps` (`FUN_0068ee20`) ported field by field against D3DCAPS9; `CGxCaps` gains the reference's render-target format checks, vertex constant count, colour write, clip planes, hardware cursor, occlusion queries, point sprites and blend factor. It also applies the format's shader-target clamps, the ps_3_0-needs-vs_3_0 rule, the GeForce FX 192-constant cap and the pre-vs_2_0 attribute remap. **`CGxFormat` had no constructor**: the reference's (`FUN_00681950`) starts the shader clamps at -1, multisample at 1 and aspect on; without it the new clamp would have read zero and switched every shader off. `DeviceWM` (`FUN_00690230`) gains display change and the focus messages, which drive the window-active flag, so maxFPSBk (30) now applies in the background. Three order-matcher links (the device constructor, destructor and frame read-back given neighbouring names) were read: the constructor is tagged, the other two rejected, and the stream-buffer creator (0x687900) rejected earlier is now identified. **Visible risk**: shader targets now come through the clamp, and a background window is capped at 30 FPS. Client linked 4,836 -> 4,842, faithful 2,594 -> 2,598 |
+| 2026-10-01 late, batch 5 | 1,541 / 5,379 | 1,001 | 32 | 37 | **phase 3a, item 5: the D3D9 device census.** The device is closed by its vtable (0x00a2e718) rather than an address range: 228 functions, 199 linked and 154 faithful at the start. Ported or tagged: the Gx primitive and texture API, device overrides, shader create/destroy/reload, gamma ramps, the restored / textures-lost callbacks, buffers and pools to the reference's shape, occlusion queries, the immediate-mode primitive, render targets with depth-stencil save/restore/set and the two back-buffer copies, frame capture (frozen's debug dump hooks removed), the vertex-declaration cache (a draw with a non-standard layout had no declaration), NVIDIA stereo through NVAPI, and Storm's `SLog` with Logs\gx.log where frozen's logging was stubbed. **Bugs fixed:** `CGxTexFlags` packed anisotropy one bit low; `SceneClear` dropped alpha; shader destroy leaked; the projection went through DirectXMath where the reference uses `C44Matrix`. A recomp fix names the reference's imported Win32 calls (`data/externals.json`) so they can match frozen's |
+| 2026-10-01 late, batch 6 | 1,571 / 5,377 | 1,023 | 33 | not measured | **phase 3a, item 5 closed: the cursor, the window procedure, device create and destroy.** The device cursor end to end: base `ICursorCreate`/`Destroy`/`Draw` (the software quad, including the reference's early return with states still pushed), the D3D9 hardware cursor and its per-frame upload from `ScenePresent`, the client cursor module (54 named cursors, item icon compositing, custom cursors, Lua `SetCursor`/`ResetCursor`) and the glue's Point.blp. Underneath it, `TextureLoadImage` (BLP then TGA), the mip-bits cache (`TextureAllocMippedImg` had been a stub returning null for every cacheable size), `LockChain2` made faithful, and the TGA readers. `ICreateD3dDevice`/`IDestroyD3dDevice` complete (gamma, UI shaders, placeholder texture, NVAPI teardown). The window procedure is the reference's: WM_SETCURSOR hides the system cursor over the client area, WM_SIZING keeps the aspect ratio and a 320x240 minimum, WM_ACTIVATE reads the low word. `DeviceWM` and `IReleaseD3dResources` lost frozen's reset workarounds. The base constructor and a virtual destructor (deleting a device that failed to create was undefined behaviour). Off the device but under it: the W32 time manager (`OsGetAsyncTimeMs` was raw `GetTickCount`), the timing CVars, the CPU probe and Logs\cpu.log. **None of it run** |
+| 2026-10-01 late, verdicts | 1,575 / 5,377 | 1,054 | 33 | not measured | **phase 3a: hand verdicts.** About 45 census functions failed only on the branch-shape ratio (inlined `TSList`/`TSGrowableArray`, compound conditions) or on call order (vtable calls the sequence cannot see, inlined `strlen`/`floor`, block layout of vertex/pixel branches). Each was read against the decompilation before its verdict; the base constructor is recorded as diverged. NVAPI thunk tags (0x8a0a54..0x8a0fee) mapped by call order. A mistake in the first verdict batch dropped four override `frozen` fields, unlinking `IStateSync`; restored. Census 226 / 177 -> 227 / 223. Client faithful 2,777 -> 2,826 |
+| 2026-10-02 | 1,575 / 5,377 | 1,054 | 33 | 35 | **The reference is now the vanilla WoW.exe.** The Ghidra tooling had been reading `RunicWorldGame.exe`, a branded patch of the same binary (see the note at the top). Every exported data file regenerated from `WoW.exe`; the differences were exactly the patched strings and the three patched functions. Two leaks into frozen fixed: `CCharacterCreation::CreateCharacter` had copied the patch's name-validation bypass (with a comment calling it the original's behaviour), and `enableWowMouse`'s help string read "RunicWorld". `CGGameUI::Initialize` re-tagged from a wrong string-matcher link (0x5f4910) to 0x52a980. No metric moved, as expected |
