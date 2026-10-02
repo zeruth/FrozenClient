@@ -379,6 +379,16 @@ class CMapObjGroup {
 
         bool QuerySegment(const C3Segment& segment, float* t, uint32_t queryFlags, uint16_t skipFlags, void* unused, const C44Matrix* placement, void* object);
         bool QuerySegmentFace(const C3Segment& segment, float* t, uint32_t queryFlags, uint16_t skipFlags, uint32_t* outFace);
+        // The segment against the group's liquid surface: clipped to the liquid grid's box,
+        // walked tile by tile, each wet tile's two triangles ray-tested. With `record` set the
+        // nearest triangle goes into a hit record owned by `object`. ref: FUN_007c9dd0
+        bool QueryLiquidSegment(const C3Segment& segment, float* t, uint32_t queryFlags, int32_t record, void* object);
+        // ref: FUN_007c8dd0
+        bool TestLiquidTiles(const C3Segment& segment, float* t, uint32_t queryFlags, const uint32_t* count, const uint8_t* tiles, int32_t record, void* object);
+        // The tiles a segment crosses when it runs mostly along x / along y (tile space).
+        // ref: FUN_007c9230, FUN_007c9370
+        void WalkLiquidTilesXMajor(const float* start, const float* end, uint32_t* count, uint8_t* tiles);
+        void WalkLiquidTilesYMajor(const float* start, const float* end, uint32_t* count, uint8_t* tiles);
         bool QuerySegmentDual(const C3Segment& segment, float* collisionT, int32_t* collisionFace, float* renderT, int32_t* renderFace);
         bool QueryBox(const CWFrustum& frustum, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object);
         bool SampleColorAtFace(const C3Vector& point, uint16_t face, CImVector* outColor, uint8_t* outFlag);

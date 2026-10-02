@@ -1166,3 +1166,20 @@ void CMapChunk::GatherFacets(const CiRect& cells, const CWFrustum& frustum, CFac
         }
     }
 }
+
+// ref: FUN_007c55d0
+bool CMapChunk::GetLiquidHeight(const float* cells, float* height) {
+    int32_t whole0 = static_cast<int32_t>(std::nearbyint(cells[0] - 0.5f));
+    int32_t whole1 = static_cast<int32_t>(std::nearbyint(cells[1] - 0.5f));
+
+    float frac[2] = { cells[0] - static_cast<float>(whole0), cells[1] - static_cast<float>(whole1) };
+    uint32_t tile[2] = { static_cast<uint32_t>(whole0) & 7, static_cast<uint32_t>(whole1) & 7 };
+
+    for (auto liquid = this->m_liquidList.Head(); liquid; liquid = this->m_liquidList.Next(liquid)) {
+        if (liquid->CoversTile(tile[0], tile[1]) && liquid->GetHeightAt(frac, tile, height)) {
+            return true;
+        }
+    }
+
+    return false;
+}

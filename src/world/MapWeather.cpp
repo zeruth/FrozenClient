@@ -1,6 +1,7 @@
 #include "world/MapWeather.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+#include "world/map/CMap.hpp"
 #include "world/ShadowMap.hpp"
 #include "console/Console.hpp"
 #include "console/CVar.hpp"
@@ -134,13 +135,8 @@ void DayNightInvalidate(int32_t force) {
 }
 
 // FUN_007ade10: the highest surface (terrain, map objects, models) within `range` below the point.
-// Not ported (it walks CMap::s_areaGrid chunks, map object groups and the M2 collision list); the
-// empty answer is "nothing there".
 int32_t WorldGroundHeight(const C3Vector& position, float range, float* height) {
-    (void)position;
-    (void)range;
-    (void)height;
-    return 0;
+    return CMap::QueryGroundHeight(position, range, height) ? 1 : 0;
 }
 
 // FUN_00770840: a value from the registry. frozen reads none; the key is absent.

@@ -96,6 +96,8 @@ uint8_t CMap::s_terrainSpecular;
 
 CMapArea* CMap::s_areaGrid[64 * 64];
 STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_areaLinkList;
+int32_t CMap::s_globalMapObj;
+STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) CMap::s_mapObjDefLinkList;
 TSGrowableArray<int32_t> CMap::s_cellList;
 int32_t CMap::s_cellListCount;
 
@@ -3530,4 +3532,201 @@ void CMap::EvictBspLeaves(const CAaBspNode* nodes, uint32_t count) {
             CMap::s_bspNodeCache->Evict(&nodes[i]);
         }
     }
+}
+
+// ref: FUN_007ad940
+void CMap::AddGroundRayModels(CMapBaseObjRefList* list, const C3Vector& start, const C3Vector& end) {
+    for (auto link = list->Head(); link; link = list->Next(link)) {
+        auto entity = static_cast<CMapStaticEntity*>(link->owner);
+
+        if (entity->m_queryStamp == CMap::s_queryStamp) {
+            continue;
+        }
+
+        uint64_t guid = (entity->m_type & CMapBaseObj::Type_Entity) ? static_cast<CMapEntity*>(entity)->m_param64 : 0;
+
+        if (guid || (entity->m_flags & 0x100) || !(entity->m_flags & 0x80) || !entity->m_model) {
+            continue;
+        }
+
+        const CAaBox& b = entity->m_bounds;
+
+        if (!(start.x <= b.t.x && b.b.x <= start.x && start.y <= b.t.y && b.b.y <= start.y
+              && end.z <= b.t.z && b.b.z <= start.z)) {
+            continue;
+        }
+
+        if (entity->m_model->m_loaded) {
+            LinkRayModel(entity->m_model, 3, entity);
+        }
+
+        entity->m_queryStamp = CMap::s_queryStamp;
+    }
+}
+
+// ref: FUN_007ada80
+void CMap::QueryGroundMapObjs(CMapChunk* chunk, const C3Vector& start, const C3Vector& end, float* t) {
+    float invDrop = 1.0f / (start.z - end.z);
+
+    // What a building hit leaves: the parameter of the hit, eased back along the face's slope by
+    // how squarely the segment met it (`facing` is the segment against the unit normal).
+    auto apply = [&](float hitT, float facing) {
+        if (!(hitT < *t)) {
+            return;
+        }
+
+        *t = hitT;
+
+        if (0.0f <= facing) {
+            float eased = hitT - (invDrop + (1.0f - facing * invDrop) * invDrop);
+            *t = eased;
+
+            if (eased < 0.0f) {
+                *t = 0.0f;
+            }
+        }
+    };
+
+    auto doodads = [&](CMapObjDef* def) {
+        for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+            const CAaBox& b = defGroup->m_bounds;
+
+            if (start.x <= b.t.x && b.b.x <= start.x && start.y <= b.t.y && b.b.y <= start.y
+                && end.z <= b.t.z && b.b.z <= start.z) {
+                CMap::AddGroundRayModels(&defGroup->m_doodadDefLinkList, start, end);
+            }
+        }
+    };
+
+    if (!chunk) {
+        // The global WMO's placement. The reference hands the segment to the def's query in
+        // WORLD space here, where the chunk path below gives it the def's own space.
+        float hitT = 1.0f;
+
+        for (auto link = CMap::s_mapObjDefLinkList.Head(); link; link = CMap::s_mapObjDefLinkList.Next(link)) {
+            auto def = static_cast<CMapObjDef*>(link->owner);
+
+            if ((def->m_flags & 0x100) || !def->m_mapObj) {
+                continue;
+            }
+
+            C3Vector localStart = start * def->m_inversePlacement;
+            C3Vector localEnd = end * def->m_inversePlacement;
+
+            if (def->m_mapObj->SegmentVsBounds(localStart, localEnd)) {
+                float facing = 0.0f;
+
+                if (def->m_mapObj->QuerySegmentGroups(start, end, 0x220122, 0, &hitT, nullptr, def, &facing, nullptr)) {
+                    apply(hitT, facing);
+                }
+            }
+
+            doodads(def);
+        }
+
+        return;
+    }
+
+    float hitT = 1.0f;
+
+    for (auto link = chunk->m_mapObjDefLinkList.Head(); link; link = chunk->m_mapObjDefLinkList.Next(link)) {
+        auto def = static_cast<CMapObjDef*>(link->owner);
+
+        if ((def->m_flags & 0x500) || !def->m_mapObj) {
+            continue;
+        }
+
+        C3Vector localStart = start * def->m_inversePlacement;
+        C3Vector localEnd = end * def->m_inversePlacement;
+
+        if (def->m_mapObj->SegmentVsBounds(localStart, localEnd)) {
+            float facing = 0.0f;
+
+            if (def->m_mapObj->QuerySegmentGroups(localStart, localEnd, 0x220122, 0, &hitT, nullptr, def, &facing, nullptr)) {
+                apply(hitT, facing);
+            }
+        }
+
+        doodads(def);
+    }
+}
+
+// ref: FUN_007ade10
+bool CMap::QueryGroundHeight(const C3Vector& position, float range, float* height) {
+    if (range < 0.009999999776482582f) {
+        return false;
+    }
+
+    CMap::s_queryStamp++;
+
+    float ground = -100000.0f;
+    bool found = false;
+    CMapChunk* chunk = nullptr;
+
+    if (!CMap::s_globalMapObj) {
+        float cellFromY = -(position.y - MAP_HALF_EXTENT) * CELLS_PER_YARD;
+        float cellFromX = -(position.x - MAP_HALF_EXTENT) * CELLS_PER_YARD;
+        int32_t col = static_cast<int32_t>(std::nearbyint(cellFromY - 0.5f));
+        int32_t row = static_cast<int32_t>(std::nearbyint(cellFromX - 0.5f));
+
+        CMapArea* area = CMap::s_areaGrid[((row >> 7) & 0x3f) * 64 + ((col >> 7) & 0x3f)];
+
+        if (!area || area->m_asyncObject) {
+            return false;
+        }
+
+        chunk = area->m_chunks[((row >> 3) & 0xf) * 16 + ((col >> 3) & 0xf)];
+
+        if (chunk) {
+            found = chunk->HeightAt(position, static_cast<uint32_t>(col), static_cast<uint32_t>(row), &ground);
+
+            float cells[2] = { cellFromY, cellFromX };
+            float liquid = 0.0f;
+
+            if (chunk->GetLiquidHeight(cells, &liquid) && ground < liquid) {
+                ground = liquid;
+            }
+        }
+    }
+
+    C3Vector top = { position.x, position.y, position.z + range };
+    C3Vector bottom = { position.x, position.y, position.z - range };
+
+    CM2Scene* scene = CWorld::GetM2Scene();
+
+    if (scene) {
+        scene->BeginRayQuery();
+    }
+
+    float t = 1.0f;
+
+    CMap::QueryGroundMapObjs(chunk, top, bottom, &t);
+
+    if (chunk) {
+        CMap::AddGroundRayModels(&chunk->m_entityLinkList, top, bottom);
+    }
+
+    if (scene) {
+        scene->RayQueryCollision(top, bottom, &t);
+    }
+
+    if (1.0f <= t) {
+        if (!found) {
+            return false;
+        }
+
+        *height = ground;
+
+        return true;
+    }
+
+    top.z = top.z - (range + range) * t;
+    *height = top.z;
+
+    if (top.z < ground) {
+        *height = ground;
+    }
+
+    return true;
 }

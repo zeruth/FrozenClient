@@ -129,6 +129,10 @@ class CMap {
         // (DAT_00adfbec); a tile lives in both from CreateArea until UnloadArea
         static CMapArea* s_areaGrid[64 * 64];
         static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_areaLinkList;
+        // The map is one global WMO with no terrain (DAT_00cf08f4), and the links to its
+        // placement (DAT_00adfc04).
+        static int32_t s_globalMapObj;
+        static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_mapObjDefLinkList;
 
         // Cell pairs a map query collects, two ints per cell (DAT_00cf4928, a 0x800-entry array
         // MapMemInitialize is meant to size; that part is not ported) and the running int count
@@ -370,6 +374,14 @@ class CMap {
         // space. ref: FUN_007a4ee0
         static bool QueryFrustumObjects(const CWFrustum& frustum, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
         // One liquid layer of a chunk. ref: FUN_007a3d50
+        // The highest surface within `range` below `position`: terrain, chunk liquid, the
+        // buildings and their doodads, and placed models. ref: FUN_007ade10
+        static bool QueryGroundHeight(const C3Vector& position, float range, float* height);
+        // The buildings for it: the chunk's defs, or the global WMO's when there is no chunk.
+        // ref: FUN_007ada80
+        static void QueryGroundMapObjs(CMapChunk* chunk, const C3Vector& start, const C3Vector& end, float* t);
+        // Placed models whose box holds the segment, onto the ray list. ref: FUN_007ad940
+        static void AddGroundRayModels(CMapBaseObjRefList* list, const C3Vector& start, const C3Vector& end);
         static void QueryFrustumLiquid(CMapChunk* chunk, const CWFrustum& frustum, const CiRect& cells, CChunkLiquid* liquid, CFacetList& list);
         // The entities of a list onto it through the object query callback. ref: FUN_007a2960
         static void AddRayObjects(CMapBaseObjRefList* list, uint32_t queryFlags);

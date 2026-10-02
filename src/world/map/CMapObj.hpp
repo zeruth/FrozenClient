@@ -419,6 +419,11 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // QueryBoxGroups against a frustum: every loaded group whose box meets the box around
         // the frustum's corners runs CMapObjGroup::QueryBox. ref: FUN_007af0f0
         bool QueryHullGroups(const CWFrustum& frustum, uint32_t queryFlags, const C44Matrix* placement, void* object);
+        // The segment against every loaded group whose box it crosses (and whose MOGP flags
+        // miss `groupMask`): `t` keeps the nearest hit, `face` the first hit face, `facing` the
+        // segment dotted with that face's unit normal, `group` the last group hit.
+        // ref: FUN_007aecb0
+        bool QuerySegmentGroups(const C3Vector& start, const C3Vector& end, uint32_t queryFlags, uint32_t groupMask, float* t, uint16_t* face, CMapObjDef* def, float* facing, uint32_t* group);
 
         // Does the segment touch one group's bounds? Also false when that group's own file has not
         // arrived -- a group whose state bit 0 is clear has no geometry to hit. ref: FUN_007ae880

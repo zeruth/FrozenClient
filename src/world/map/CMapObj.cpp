@@ -283,6 +283,90 @@ bool CMapObj::QueryHullGroups(const CWFrustum& frustum, uint32_t queryFlags, con
     return hit;
 }
 
+// ref: FUN_007aecb0
+bool CMapObj::QuerySegmentGroups(const C3Vector& start, const C3Vector& end, uint32_t queryFlags, uint32_t groupMask, float* t, uint16_t* face, CMapObjDef* def, float* facing, uint32_t* group) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    C3Vector normal = { 0.0f, 0.0f, 0.0f };
+    C3Segment segment;
+    segment.start = start;
+    segment.end = end;
+    uint32_t firstFace = 0;
+    bool hit = false;
+    uint16_t skipFlags = static_cast<uint16_t>(CMapObj::QuerySkipFlags(queryFlags));
+
+    for (uint32_t i = 0; i < this->m_groupCount; i++) {
+        CMapObjGroup* g = this->m_groups[i];
+
+        if (!this->m_rootLoaded || !g || !(g->m_state & 0x1) || (g->m_flags & groupMask)) {
+            continue;
+        }
+
+        if (!SegmentIntersectsBox(this->m_mogi[i].bounds, start, end)) {
+            continue;
+        }
+
+        CMapObjGroup::s_hitFlags = 0;
+        CMapObjGroup::s_hitRecordCount = 0;
+        CMapObjGroup::s_hitFacePoolCount = 0;
+        CMapObjGroup::s_hitIndexPoolCount = 0;
+        CMapObjGroup::s_hitPlacementCount = 0;
+
+        // The reference passes the address of a local byte as the fifth argument: a non-null
+        // pointer, which is what asks the liquid half to leave a record.
+        uint8_t recordFlag;
+
+        if (!g->QuerySegment(segment, t, queryFlags, skipFlags, &recordFlag, def ? &def->m_placement : nullptr, def)) {
+            continue;
+        }
+
+        const CMapObjHitRecord& record = CMapObjGroup::s_hitRecords[0];
+
+        if (CMapObjGroup::s_hitRecordCount && record.faces) {
+            firstFace = record.faces[0];
+
+            if (facing) {
+                const C3Vector& v0 = record.vertices[record.indices[0]];
+                const C3Vector& v1 = record.vertices[record.indices[1]];
+                const C3Vector& v2 = record.vertices[record.indices[2]];
+
+                C3Vector e1 = { v1.x - v0.x, v1.y - v0.y, v1.z - v0.z };
+                C3Vector e2 = { v2.x - v0.x, v2.y - v0.y, v2.z - v0.z };
+
+                normal = {
+                    e2.z * e1.y - e1.z * e2.y,
+                    e1.z * e2.x - e2.z * e1.x,
+                    e2.y * e1.x - e2.x * e1.y,
+                };
+
+                *facing = (end.x - start.x) * normal.x + (end.y - start.y) * normal.y + (end.z - start.z) * normal.z;
+            }
+        }
+
+        if (group) {
+            *group = i;
+        }
+
+        hit = true;
+    }
+
+    if (hit && face) {
+        *face = static_cast<uint16_t>(firstFace);
+    }
+
+    if (facing) {
+        float length = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+
+        if (2.384185791015625e-07f <= std::fabs(length)) {
+            *facing = *facing / length;
+        }
+    }
+
+    return hit;
+}
+
 // ref: FUN_007ae880
 bool CMapObj::SegmentVsGroupBounds(const C3Vector& start, const C3Vector& end,
                                    uint32_t groupIndex) {

@@ -1054,12 +1054,10 @@ bool CMapObjGroup::QuerySegment(const C3Segment& segment, float* t, uint32_t que
     this->SegmentQueryNode(query, 0, segment, this->m_bounds);
     this->RecordHits(placement, object, 0);
 
+    // MOGP 0x1000 is has-water. The reference passes its fifth argument (a pointer at the call
+    // sites that want a record) as the record switch, and the def as the owner.
     if ((queryFlags & 0x30000) && (this->m_flags & 0x1000)) {
-        // TODO FUN_007c9dd0: the group's LIQUID, not its doodads -- this said doodads, and the
-        // gate above disproves it: MOGP 0x1000 is has-water (has-doodads is 0x800), and
-        // FUN_007c9dd0 reads m_liquidXTiles/YTiles, m_liquidPos and m_liquidMinZ/MaxZ. It is the
-        // segment form of the point query ported as CMapObjGroup::GetLiquidAt (FUN_007c8360),
-        // so a segment query cannot yet hit an indoor water surface.
+        this->QueryLiquidSegment(segment, t, queryFlags, unused != nullptr, object);
     }
 
     bool hit = CMapObjGroup::s_hitRecordCount != recordsBefore;
@@ -1090,7 +1088,10 @@ bool CMapObjGroup::QuerySegmentFace(const C3Segment& segment, float* t, uint32_t
     }
 
     if ((queryFlags & 0x30000) && (this->m_flags & 0x1000)) {
-        // TODO FUN_007c9dd0: the group's LIQUID (see the note above); a hit reports face 0
+        if (this->QueryLiquidSegment(segment, t, queryFlags, 0, nullptr)) {
+            *outFace = 0;
+            hit = true;
+        }
     }
 
     CMapObjGroup::QueryEnd(this->m_polys);
@@ -2230,4 +2231,347 @@ void CMapObjGroup::AcquireLiquidBuffers(EGxVertexBufferFormat format, uint32_t v
 // through a call, so inlining it away here would lose the link for no gain.
 uint32_t CMapObjGroup::GetLiquidType() {
     return this->m_liquidType;
+}
+
+namespace {
+
+// floor(v), as the reference takes it: round-to-nearest of v - 0.5 (DAT_00aeee50).
+int32_t LiquidTileFloor(float v) {
+    return static_cast<int32_t>(std::nearbyint(v - 0.5f));
+}
+
+void PushLiquidTile(uint32_t* count, uint8_t* tiles, int32_t x, int32_t y) {
+    tiles[*count] = static_cast<uint8_t>(x);
+    (*count)++;
+    tiles[*count] = static_cast<uint8_t>(y);
+    (*count)++;
+}
+
+// ref: FUN_007c9110
+// A segment with no y extent: the tiles along x at the start's row.
+void WalkLiquidTilesX(const float* start, const float* end, uint32_t* count, uint8_t* tiles) {
+    int32_t x = LiquidTileFloor(start[0]);
+    int32_t step = x <= LiquidTileFloor(end[0]) ? 1 : -1;
+    int32_t stop = LiquidTileFloor(end[0]) + step;
+
+    if (x == stop) {
+        return;
+    }
+
+    int32_t y = LiquidTileFloor(start[1]);
+
+    do {
+        PushLiquidTile(count, tiles, x, y);
+        x += step;
+    } while (x != stop);
+}
+
+// ref: FUN_007c91a0
+// A segment with no x extent: the tiles along y at the start's column.
+void WalkLiquidTilesY(const float* start, const float* end, uint32_t* count, uint8_t* tiles) {
+    int32_t y = LiquidTileFloor(start[1]);
+    int32_t last = LiquidTileFloor(end[1]);
+    int32_t step = y <= last ? 1 : -1;
+    int32_t stop = last + step;
+
+    if (y == stop) {
+        return;
+    }
+
+    int32_t x = LiquidTileFloor(start[0]);
+
+    do {
+        PushLiquidTile(count, tiles, x, y);
+        y += step;
+    } while (y != stop);
+}
+
+}
+
+// ref: FUN_007c9230
+void CMapObjGroup::WalkLiquidTilesXMajor(const float* start, const float* end, uint32_t* count, uint8_t* tiles) {
+    int32_t x = LiquidTileFloor(start[0]);
+    int32_t step;
+    float lead;
+
+    if (end[0] <= start[0]) {
+        step = -1;
+        lead = static_cast<float>(x + 1) - start[0];
+    } else {
+        step = 1;
+        lead = start[0] - static_cast<float>(x);
+    }
+
+    float slope = (end[1] - start[1]) / std::fabs(end[0] - start[0]);
+    float y0 = start[1];
+    float run = 0.0f;
+    int32_t stop = LiquidTileFloor(end[0]) + step;
+    int32_t prev = LiquidTileFloor(start[1]);
+    int32_t y = prev;
+
+    if (x == stop) {
+        return;
+    }
+
+    int32_t row;
+
+    do {
+        row = y;
+
+        if (row != prev) {
+            PushLiquidTile(count, tiles, x, prev);
+        }
+
+        run = run + slope;
+        PushLiquidTile(count, tiles, x, row);
+        x += step;
+        prev = row;
+        y = LiquidTileFloor(run + (y0 - slope * lead));
+    } while (x != stop);
+
+    if (y != row && -1 < y && y < static_cast<int32_t>(this->m_liquidYTiles)) {
+        PushLiquidTile(count, tiles, x - step, y);
+    }
+}
+
+// ref: FUN_007c9370
+void CMapObjGroup::WalkLiquidTilesYMajor(const float* start, const float* end, uint32_t* count, uint8_t* tiles) {
+    int32_t y = LiquidTileFloor(start[1]);
+    int32_t step;
+    float lead;
+
+    if (end[1] <= start[1]) {
+        step = -1;
+        lead = static_cast<float>(y + 1) - start[1];
+    } else {
+        step = 1;
+        lead = start[1] - static_cast<float>(y);
+    }
+
+    float slope = (end[0] - start[0]) / std::fabs(end[1] - start[1]);
+    float x0 = start[0];
+    float run = 0.0f;
+    int32_t stop = step + LiquidTileFloor(end[1]);
+    int32_t prev = LiquidTileFloor(start[0]);
+    int32_t x = prev;
+
+    if (y == stop) {
+        return;
+    }
+
+    int32_t col;
+
+    do {
+        col = x;
+
+        if (col != prev) {
+            PushLiquidTile(count, tiles, prev, y);
+        }
+
+        run = run + slope;
+        PushLiquidTile(count, tiles, col, y);
+        y += step;
+        prev = col;
+        x = LiquidTileFloor(run + (x0 - slope * lead));
+    } while (y != stop);
+
+    if (x != col && -1 < x && x < static_cast<int32_t>(this->m_liquidXTiles)) {
+        PushLiquidTile(count, tiles, x, y - step);
+    }
+}
+
+// ref: FUN_007c8dd0
+bool CMapObjGroup::TestLiquidTiles(const C3Segment& segment, float* t, uint32_t queryFlags, const uint32_t* count, const uint8_t* tiles, int32_t record, void* object) {
+    if (!this->m_liquidType || !this->m_liquidXTiles || !this->m_liquidYTiles) {
+        return false;
+    }
+
+    if ((queryFlags & 0x10000) && !(queryFlags & 0x20000)) {
+        auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(this->m_liquidType));
+
+        // Frozen-only null check: the reference reads the row unguarded.
+        if (!rec || !(rec->m_flags & 0x4)) {
+            return false;
+        }
+    }
+
+    // Frozen-only: a group whose MLIQ did not parse fully has no tiles or vertices to walk.
+    if (!this->m_liquidTiles || !this->m_liquidVertices.Count()) {
+        return false;
+    }
+
+    C3Vector dir = {
+        segment.end.x - segment.start.x,
+        segment.end.y - segment.start.y,
+        segment.end.z - segment.start.z,
+    };
+    float invLength = 1.0f / sqrtf(dir.y * dir.y + dir.z * dir.z + dir.x * dir.x);
+    dir = { dir.x * invLength, dir.y * invLength, dir.z * invLength };
+
+    C3Ray ray;
+    ray.origin = segment.start;
+    ray.dir = dir;
+
+    const C3Vector* vertices = this->m_liquidVertices.Ptr();
+    int32_t stride = static_cast<int32_t>(this->m_liquidXVerts);
+
+    // Each tile as two triangles, as offsets from its first vertex.
+    const int32_t split[2][3] = { { 0, stride + 1, stride }, { 0, 1, stride + 1 } };
+
+    CMapObjHitRecord* hitRecord = nullptr;
+    uint16_t* indices = nullptr;
+    bool hit = false;
+
+    for (uint32_t i = 0; i < *count; i += 2) {
+        uint32_t tx = tiles[i];
+        uint32_t ty = tiles[i + 1];
+
+        if ((this->m_liquidTiles[this->m_liquidXTiles * ty + tx] & 0xf) == 0xf) {
+            continue;
+        }
+
+        int32_t base = stride * static_cast<int32_t>(ty) + static_cast<int32_t>(tx);
+
+        for (int32_t k = 0; k < 2; k++) {
+            int32_t tri[3] = { split[k][0] + base, split[k][1] + base, split[k][2] + base };
+            float hitT = 1.0f;
+
+            if (!IntersectRayTriangle(ray, vertices, tri, &hitT, nullptr, 0.009999999776482582f)) {
+                continue;
+            }
+
+            hitT = hitT * invLength;
+
+            if (!(hitT < *t && 0.0f <= hitT)) {
+                continue;
+            }
+
+            *t = hitT;
+
+            if (!record) {
+                hit = true;
+                continue;
+            }
+
+            if (!hit) {
+                hitRecord = CMapObjGroup::AllocHitRecord();
+
+                if (hitRecord) {
+                    hitRecord->object = object;
+                    hitRecord->placement = &static_cast<CMapObjDef*>(object)->m_placement;
+                    hitRecord->vertices = vertices;
+                    indices = CMapObjGroup::AllocHitIndices(3);
+                    hitRecord->indices = indices;
+                }
+            }
+
+            hit = true;
+
+            if (!hitRecord || !hitRecord->indices) {
+                continue;
+            }
+
+            // The record keeps only the nearest triangle: its three indices are rewritten from
+            // the start each time, while the face count keeps climbing, as in the reference.
+            hitRecord->indexCount = 0;
+
+            for (int32_t c = 0; c < 3; c++) {
+                uint16_t index = static_cast<uint16_t>(tri[c]);
+                indices[hitRecord->indexCount] = index;
+                hitRecord->indexCount++;
+
+                if (index <= hitRecord->minIndex) {
+                    hitRecord->minIndex = index;
+                }
+
+                if (index >= hitRecord->maxIndex) {
+                    hitRecord->maxIndex = index;
+                }
+            }
+
+            hitRecord->faceCount++;
+        }
+    }
+
+    return hit;
+}
+
+// ref: FUN_007c9dd0
+bool CMapObjGroup::QueryLiquidSegment(const C3Segment& segment, float* t, uint32_t queryFlags, int32_t record, void* object) {
+    // The grid's box: its corner, its extent less a tenth of a yard, the liquid's height range.
+    float extentY = static_cast<float>(static_cast<int32_t>(this->m_liquidYTiles)) * 4.166666507720947f - 0.10000000149011612f;
+    float extentX = static_cast<float>(static_cast<int32_t>(this->m_liquidXTiles)) * 4.166666507720947f - 0.10000000149011612f;
+
+    CAaBox box;
+    box.b = { this->m_liquidPos.x, this->m_liquidPos.y, this->m_liquidMinZ };
+    box.t = {
+        (0.0f < extentX ? extentX : 0.0f) + this->m_liquidPos.x,
+        (0.0f < extentY ? extentY : 0.0f) + this->m_liquidPos.y,
+        this->m_liquidMaxZ,
+    };
+
+    C3Vector dir = {
+        segment.end.x - segment.start.x,
+        segment.end.y - segment.start.y,
+        segment.end.z - segment.start.z,
+    };
+    float lengthSq = dir.x * dir.x + dir.y * dir.y + dir.z * dir.z;
+
+    if (2.384185791015625e-07f < lengthSq) {
+        float inv = 1.0f / sqrtf(lengthSq);
+        dir = { dir.x * inv, dir.y * inv, dir.z * inv };
+    }
+
+    C3Vector start = segment.start;
+    C3Vector end = segment.end;
+
+    if (!box.IsPointInside(start)) {
+        C3Ray ray;
+        ray.origin = segment.start;
+        ray.dir = dir;
+
+        float hitT = 1.0f;
+
+        if (!IntersectRayAaBox(ray, box, &hitT, &start)) {
+            return false;
+        }
+    }
+
+    if (!box.IsPointInside(end)) {
+        C3Ray ray;
+        ray.origin = end;
+        ray.dir = { -dir.x, -dir.y, -dir.z };
+
+        float hitT = 1.0f;
+
+        if (!IntersectRayAaBox(ray, box, &hitT, &end)) {
+            return false;
+        }
+    }
+
+    // Into tile space (DAT_00aeee54, one over the tile width).
+    const float k = 0.23999999463558197f;
+    float a[3] = { k * (start.x - this->m_liquidPos.x), k * (start.y - this->m_liquidPos.y), start.z * k };
+    float b[3] = { k * (end.x - this->m_liquidPos.x), k * (end.y - this->m_liquidPos.y), end.z * k };
+
+    uint8_t tiles[0x800];
+    uint32_t count = 0;
+
+    const float eps = 2.384185791015625e-07f;
+
+    if (eps <= std::fabs(b[1] - a[1])) {
+        if (eps <= std::fabs(b[0] - a[0])) {
+            if (std::fabs(b[0] - a[0]) <= std::fabs(b[1] - a[1])) {
+                this->WalkLiquidTilesYMajor(a, b, &count, tiles);
+            } else {
+                this->WalkLiquidTilesXMajor(a, b, &count, tiles);
+            }
+        } else {
+            WalkLiquidTilesY(a, b, &count, tiles);
+        }
+    } else {
+        WalkLiquidTilesX(a, b, &count, tiles);
+    }
+
+    return this->TestLiquidTiles(segment, t, queryFlags, &count, tiles, record, object);
 }
