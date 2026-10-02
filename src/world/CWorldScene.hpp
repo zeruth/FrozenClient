@@ -256,6 +256,10 @@ class CWorldScene {
         static TSGrowableArray<uint32_t> s_cameraFlaggedGroupIndices;
         static float s_cameraGroundHeight;                  // DAT_00cd8790
         static int32_t s_hasMapObjs;                        // DAT_00cd8778
+        // How much further the fog end lies at the edge of the view than straight ahead:
+        // fogEnd / cos(fov / 2) - fogEnd (DAT_00cd877c). Set every frame; nothing in the
+        // reference reads it.
+        static float s_fogEdgeMargin;
         // The groups the traversal found, in the order it found them (DAT_00cdb080)
         static STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) s_visibleMapObjGroups;
         // DAT_00cdb08c: placed groups whose liquid surface has not been built yet. The traversal

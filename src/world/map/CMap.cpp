@@ -59,6 +59,8 @@
 #include "world/CWorldScene.hpp"
 #include "world/MapWeather.hpp"
 #include "ui/game/Cursor.hpp"
+#include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/CGCamera.hpp"
 #include "util/SFile.hpp"
 #include <common/Time.hpp>
 #include "world/CWorld.hpp"
@@ -1736,8 +1738,12 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     CWorldScene::s_frustums[0].SetCorners(CWorldScene::s_frustumCorners);
     CWorldScene::s_farChunkDistance = CWorld::GetFarClip() - 33.33333206176758f;
-    // TODO CWorldScene::s_hasMapObjs from the map object def list; DAT_00cd877c from the
-    // camera's field of view: fogEnd / cos(fov * 0.5) - fogEnd
+    CWorldScene::s_hasMapObjs = CWorldScene::s_mapObjDefGroupCandidates.Head() != nullptr;
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+    float fogEnd = CWorld::s_frameFogEnd;
+    CWorldScene::s_fogEdgeMargin = fogEnd / std::cos(camera->FOV() * 0.5f) - fogEnd;
+
     CWorld::UpdateFadeouts();
 
     CMap::CreateRenderChunkPools();
@@ -1816,10 +1822,10 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
             CWorldScene::s_portalWindow.points = nullptr;
             CWorldScene::s_portalWindow.pointCount = 0;
 
-            // TODO two SetCount(0) calls on the window arrays at 0x00cdd0e8 and 0x00cdd0f8, which
-            // FUN_00795d00 and FUN_00795d20 append to and which frozen does not carry. They
-            // accumulate the windows the walk opens; without them the walk still runs, it just has
-            // nowhere to record what it found for the second pass below.
+            // The windows the first walk recorded go too, so the camera's own building starts
+            // from none.
+            CWorldScene::s_portalViews.SetCount(0);
+            CWorldScene::s_exteriorViews.SetCount(0);
         }
 
         if (CWorldScene::s_cameraDef->m_mapObj && CWorldScene::s_cameraGroupIndices.Count()) {

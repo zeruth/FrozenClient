@@ -106,6 +106,7 @@ TSGrowableArray<uint32_t> CWorldScene::s_cameraGroupIndices;
 TSGrowableArray<uint32_t> CWorldScene::s_cameraFlaggedGroupIndices;
 float CWorldScene::s_cameraGroundHeight;
 int32_t CWorldScene::s_hasMapObjs;
+float CWorldScene::s_fogEdgeMargin;
 const char* CWorldScene::s_mapObjSkybox;
 CWorldScene::ViewWindow CWorldScene::s_window;
 CWorldScene::ViewWindow CWorldScene::s_portalWindow;
