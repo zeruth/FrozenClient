@@ -25,6 +25,9 @@
 #include <common/ObjectAlloc.hpp>
 #include <tempest/Math.hpp>
 #include <cmath>
+#include <tempest/Matrix.hpp>
+#include <cfloat>
+#include <algorithm>
 #include <cstring>
 #include <new>
 
@@ -2809,6 +2812,228 @@ C44Matrix CM2Model::GetAttachmentWorldTransform(uint32_t id) {
     return transform * this->m_scene->m_viewInv;
 }
 
+// ref: FUN_0082c2c0
+// The sphere the model's drawing occupies, in world space. A model with particle emitters takes
+// its authored sphere through the placement; one without takes the current root sequence's
+// bounds, and with ribbons (or particles that ask to be bounded) widens that to a sphere around
+// both. An unloaded or unplaced model has none.
+CAaSphere& CM2Model::GetDrawBoundingSphere(CAaSphere& sphere) {
+    if (!this->m_loaded || !this->m_flag8000) {
+        sphere.c = { 0.0f, 0.0f, 0.0f };
+        sphere.r = 0.0f;
+        return sphere;
+    }
+
+    auto data = this->m_shared->m_data;
+
+    if (data->particles.Count()) {
+        C44Matrix matrix = this->m_attachParent ? this->matrixF4 * this->m_scene->m_viewInv : this->matrixB4;
+
+        const CAaBox& extent = data->bounds.extent;
+        C3Vector centre = { (extent.b.x + extent.t.x) * 0.5f, (extent.t.y + extent.b.y) * 0.5f, (extent.t.z + extent.b.z) * 0.5f };
+
+        float radius = sqrtf(matrix.a0 * matrix.a0 + matrix.a1 * matrix.a1 + matrix.a2 * matrix.a2) * data->bounds.radius;
+
+        sphere.c = centre * matrix;
+        sphere.r = radius;
+
+        return sphere;
+    }
+
+    const M2Bounds& sequenceBounds = data->sequences[this->m_bones[0].sequence.uint8].bounds;
+
+    CAaSphere spheres[2] = {};
+
+    C44Matrix matrix = this->m_attachParent ? this->matrixF4 * this->m_scene->m_viewInv : this->matrixB4;
+
+    if (fabsf(sequenceBounds.radius - 0.0f) >= 2.3841858e-07f) {
+        C3Vector centre;
+        sequenceBounds.extent.GetCenter(centre);
+        spheres[0].c = centre * matrix;
+    }
+
+    spheres[0].r = sqrtf(matrix.a0 * matrix.a0 + matrix.a2 * matrix.a2 + matrix.a1 * matrix.a1) * sequenceBounds.radius;
+
+    if (data->particles.Count() || data->ribbons.Count()) {
+        CAaBox box;
+        box.b = { FLT_MAX, FLT_MAX, FLT_MAX };
+        box.t = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+        for (uint32_t i = 0; i < data->particles.Count(); i++) {
+            auto emitter = this->m_particleEmitters ? this->m_particleEmitters[i] : nullptr;
+
+            if (emitter && (emitter->m_flags & 0x200)) {
+                box.GrowToInclude(*emitter->GetBounds());
+            }
+        }
+
+        for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+            auto ribbon = this->m_ribbonEmitters[i];
+
+            box.b.x = ribbon->m_boundsMin.x < box.b.x ? ribbon->m_boundsMin.x : box.b.x;
+            box.b.y = ribbon->m_boundsMin.y < box.b.y ? ribbon->m_boundsMin.y : box.b.y;
+            box.b.z = ribbon->m_boundsMin.z < box.b.z ? ribbon->m_boundsMin.z : box.b.z;
+            box.t.x = box.t.x < ribbon->m_boundsMax.x ? ribbon->m_boundsMax.x : box.t.x;
+            box.t.y = box.t.y < ribbon->m_boundsMax.y ? ribbon->m_boundsMax.y : box.t.y;
+            box.t.z = box.t.z < ribbon->m_boundsMax.z ? ribbon->m_boundsMax.z : box.t.z;
+        }
+
+        if (box.b.x <= box.t.x || box.b.y <= box.t.y || box.b.z <= box.t.z) {
+            spheres[1].c = { (box.t.x + box.b.x) * 0.5f, (box.t.y + box.b.y) * 0.5f, (box.t.z + box.b.z) * 0.5f };
+
+            float dx = box.t.x - box.b.x;
+            float dy = box.t.y - box.b.y;
+            float dz = box.t.z - box.b.z;
+            spheres[1].r = sqrtf(dy * dy + dz * dz + dx * dx) * 0.5f;
+
+            if (fabsf(spheres[0].r) >= 2.3841858e-07f) {
+                SphereBoundSpheres(sphere, spheres, 2);
+                return sphere;
+            }
+
+            sphere = spheres[1];
+            return sphere;
+        }
+    }
+
+    sphere = spheres[0];
+
+    return sphere;
+}
+
+// The collision vertices transformed and their outcodes against the query box (reference
+// 0x00d411a4 and 0x00d411b4). Kept between calls and only ever grown.
+static TSFixedArray<C3Vector> s_collisionVertices;
+static TSFixedArray<uint32_t> s_collisionOutcodes;
+
+// ref: FUN_0082ec30
+// Append the model's collision triangles that may touch `box` once placed by `matrix`: each
+// vertex is transformed and outcoded against the box (bits 1/2, 4/8 and 0x10/0x20 for below and
+// above on x, y and z), a triangle whose three corners share an outside bit is rejected, and the
+// rest are appended with their face normal turned by the matrix's normalised rotation.
+void CM2Model::GetCollisionTriangles(const CAaBox& box, const C44Matrix& matrix, TSGrowableArray<M2CollisionTriangle>& triangles) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+    uint32_t vertexCount = data->collisionPositions.Count();
+
+    if (s_collisionVertices.Count() < vertexCount) {
+        s_collisionVertices.SetCount(vertexCount);
+    }
+
+    if (s_collisionOutcodes.Count() < vertexCount) {
+        s_collisionOutcodes.SetCount(vertexCount);
+    }
+
+    for (uint32_t i = 0; i < vertexCount; i++) {
+        C3Vector& vertex = s_collisionVertices[i];
+        vertex = data->collisionPositions[i] * matrix;
+
+        uint32_t& outcode = s_collisionOutcodes[i];
+        outcode = 0;
+
+        if (vertex.x < box.b.x) {
+            outcode = 0x1;
+        } else if (box.t.x < vertex.x) {
+            outcode = 0x2;
+        }
+
+        if (vertex.y < box.b.y) {
+            outcode |= 0x4;
+        } else if (box.t.y < vertex.y) {
+            outcode |= 0x8;
+        }
+
+        if (vertex.z < box.b.z) {
+            outcode |= 0x10;
+        } else if (box.t.z < vertex.z) {
+            outcode |= 0x20;
+        }
+    }
+
+    // The rotation, each row normalised so a scaled placement still turns normals to unit length.
+    C33Matrix rotation(matrix);
+
+    auto normalize = [](float& x, float& y, float& z) {
+        float lengthSquared = x * x + z * z + y * y;
+
+        if (lengthSquared > 2.3841858e-07f) {
+            float scale = 1.0f / sqrtf(lengthSquared);
+            x *= scale;
+            y *= scale;
+            z *= scale;
+        }
+    };
+
+    normalize(rotation.a0, rotation.a1, rotation.a2);
+    normalize(rotation.b0, rotation.b1, rotation.b2);
+    normalize(rotation.c0, rotation.c1, rotation.c2);
+
+    uint32_t triangleCount = data->collisionFaceNormals.Count();
+    const uint16_t* indices = triangleCount ? &data->collisionIndices[0] : nullptr;
+
+    // The reference counts the survivors onto the current count and then reserves that much more,
+    // which over-reserves by the current count; carried as it does it.
+    uint32_t wanted = triangles.Count();
+
+    for (uint32_t t = 0; t < triangleCount; t++) {
+        if (!(s_collisionOutcodes[indices[t * 3]] & s_collisionOutcodes[indices[t * 3 + 2]] & s_collisionOutcodes[indices[t * 3 + 1]])) {
+            wanted++;
+        }
+    }
+
+    if (triangles.Reserved() < triangles.Count() + wanted) {
+        triangles.Reserve(wanted, 0);
+    }
+
+    for (uint32_t t = 0; t < triangleCount; t++) {
+        const uint16_t* triangle = &indices[t * 3];
+
+        if (s_collisionOutcodes[triangle[0]] & s_collisionOutcodes[triangle[2]] & s_collisionOutcodes[triangle[1]]) {
+            continue;
+        }
+
+        M2CollisionTriangle* out = triangles.New();
+
+        out->vertices[0] = s_collisionVertices[triangle[0]];
+        out->vertices[1] = s_collisionVertices[triangle[1]];
+        out->vertices[2] = s_collisionVertices[triangle[2]];
+
+        const C3Vector& normal = data->collisionFaceNormals[t];
+
+        out->plane.n.x = normal.x * rotation.a0 + normal.z * rotation.c0 + normal.y * rotation.b0;
+        out->plane.n.y = normal.y * rotation.b1 + normal.x * rotation.a1 + normal.z * rotation.c1;
+        out->plane.n.z = normal.z * rotation.c2 + normal.y * rotation.b2 + normal.x * rotation.a2;
+        out->plane.d = -(out->vertices[0].x * out->plane.n.x + out->vertices[0].y * out->plane.n.y + out->vertices[0].z * out->plane.n.z);
+    }
+}
+
+// ref: FUN_00831550
+// How much the attachment's bone scales: the length of its matrix's first row, after an Animate
+// so the matrix is current. An unknown attachment measures the root bone.
+float CM2Model::GetAttachmentScale(uint32_t id) {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    auto data = this->m_shared->m_data;
+
+    uint16_t attachmentIndex = id < data->attachmentIndicesById.Count() ? data->attachmentIndicesById[id] : 0xFFFF;
+    uint16_t boneIndex = 0xFFFF;
+
+    if (attachmentIndex < data->attachments.Count()) {
+        boneIndex = data->attachments[attachmentIndex].boneIndex;
+    }
+
+    this->Animate();
+
+    C44Matrix matrix = attachmentIndex == 0xFFFF ? this->m_boneMatrices[0] : this->m_boneMatrices[boneIndex];
+
+    return sqrtf(matrix.a2 * matrix.a2 + matrix.a1 * matrix.a1 + matrix.a0 * matrix.a0);
+}
+
 // ref: FUN_00830f90
 void CM2Model::ForceAnimate() {
     if (!this->m_loaded) {
@@ -4733,187 +4958,383 @@ void CM2Model::OptimizeVisibleGeometry() {
     }
 }
 
-int32_t CM2Model::ProcessCallbacks() {
-    // Notice the bone sequences that finished during the frame just stepped, and let each one pick
-    // its next variation. This is what keeps a standing NPC alive: the model's Stand animation is a
-    // chain of variations weighted by frequency, and a new one is rolled every time the current one
-    // runs out. Returns 0 when the model was destroyed while handling a callback.
-    if (!this->m_flag400000 || !this->m_loaded || !this->m_shared || !this->m_shared->m_m2DataLoaded) {
-        return 1;
+// The model callback queue, reference 0x00d411c0. Global rather than per model: ProcessCallbacks
+// fills it with every callback that falls due at the earliest time it finds, flushes it, and goes
+// round again from that time, so the callbacks of one model fire in time order.
+static TSGrowableArray<M2ModelCallback> s_modelCallbacks;
+
+// ref: FUN_0082e720
+// Queue one sequence-done callback, unless the queue already holds 0x10000.
+static int32_t M2QueueSequenceCallback(M2SequenceDoneCallback callback, CM2Model* model, uint32_t boneId,
+                                       uint32_t id, uint32_t data, uint32_t time, uint32_t sequenceIndex,
+                                       uint32_t sequenceStart, WOWGUID owner) {
+    if (s_modelCallbacks.Count() >= 0x10000) {
+        return 0;
+    }
+
+    M2ModelCallback* record = s_modelCallbacks.New();
+
+    if (!record) {
+        return 0;
+    }
+
+    record->callback = reinterpret_cast<void*>(callback);
+    record->model = model;
+    record->boneId = boneId;
+    record->id = id;
+    record->data = data;
+    record->time = time;
+    record->sequenceIndex = sequenceIndex;
+    record->sequenceStart = sequenceStart;
+    record->type = 0;
+    record->owner = owner;
+
+    return 1;
+}
+
+// ref: FUN_0082e0c0
+// Whether this model has a parked request for the bone's primary (1) or secondary (0) sequence
+// waiting on .anim data.
+int32_t CM2Model::HasDeferredSequence(uint32_t boneIndex, int32_t primary) {
+    auto shared = this->m_shared;
+
+    for (auto load = shared->m_sequenceLoads.Head(); load; load = shared->m_sequenceLoads.Next(load)) {
+        for (auto playback = load->playbacks.Head(); playback; playback = load->playbacks.Next(playback)) {
+            if (playback->model == this && playback->boneIndex == boneIndex
+                && ((playback->flags >> 1) & 1) == static_cast<uint32_t>(primary)) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_00830fb0
+// Queue the anim-event callbacks of every event on this bone's branch whose time, within the
+// current sequence repeated from `loopBase` on, falls after `from` and no later than `cursor`. An
+// event earlier than the cursor empties the queue and becomes the new cursor, so only the
+// earliest events are kept. Returns the cursor.
+int32_t CM2Model::QueueAnimEvents(uint32_t boneIndex, uint32_t sequenceIndex, int32_t loopBase, uint32_t duration, int32_t from, int32_t cursor, int32_t now) {
+    if (!this->m_animEventCallback) {
+        return cursor;
     }
 
     auto data = this->m_shared->m_data;
-    int32_t now = this->m_scene->m_time;
-    int32_t previous = now - this->m_scene->uint10;
+    auto& bone = this->m_bones[boneIndex];
 
-    for (uint32_t boneIndex = this->m_boneSeqList; boneIndex != 0xFFFF; ) {
-        auto& modelBone = this->m_bones[boneIndex];
+    // A sequence that plays once is walked once.
+    if (data->sequences[sequenceIndex].flags & 0x1) {
+        duration = 0;
+    }
 
-        // Read the link before the handler runs: re-issuing a sequence can relink the bone.
-        uint32_t next = modelBone.word96;
+    for (uint32_t i = 0; i < data->events.Count(); i++) {
+        auto& event = data->events[i];
 
-        if (!modelBone.sequence.uintA && modelBone.sequence.uint8 < data->sequences.Count()) {
-            auto& sequence = data->sequences[modelBone.sequence.uint8];
+        if (!event.eventTrack.sequenceTimes.Count()) {
+            continue;
+        }
 
-            // The sequence plays at float18's rate, so its wall-clock length is the authored
-            // duration scaled by it.
-            uint32_t duration = sequence.duration;
+        auto& times = event.eventTrack.sequenceTimes[event.eventTrack.loopIndex != 0xFFFF ? 0 : sequenceIndex].times;
+        uint32_t timeCount = times.Count();
 
-            if (fabsf(fabsf(modelBone.sequence.float18) - 1.0f) >= 0.0000099999997f) {
-                duration = static_cast<uint32_t>(
-                    floorf(static_cast<float>(sequence.duration) * fabsf(modelBone.sequence.float18) + 0.5f));
+        if (!timeCount) {
+            continue;
+        }
+
+        // Only events on a bone below this one, unless this is the root.
+        if (boneIndex != 0) {
+            uint32_t parent = data->bones[event.boneIndex].parentIndex;
+            bool below = true;
+
+            if (parent != 0xFFFF) {
+                while (parent != boneIndex) {
+                    if (parent == 0xFFFF) {
+                        below = false;
+                        break;
+                    }
+
+                    parent = data->bones[parent].parentIndex;
+                }
+
+                if (parent == 0xFFFF) {
+                    below = false;
+                }
             }
 
-            if (duration) {
-                int32_t endTime;
-
-                if (sequence.flags & 0x1) {
-                    // Plays once: SetupBoneSequence already worked out when it stops.
-                    endTime = modelBone.sequence.uint10;
-                } else {
-                    // Loops: the end of whichever repetition the frame is inside.
-                    int32_t from = static_cast<int32_t>(modelBone.sequence.uintC);
-
-                    if (previous - from >= 0) {
-                        from = previous;
-                    }
-
-                    uint32_t loops = static_cast<uint32_t>(from - static_cast<int32_t>(modelBone.sequence.uintC)) / duration;
-                    endTime = modelBone.sequence.uintC + (loops + 1) * duration - 1;
-                }
-
-                if (endTime - previous > 0 && endTime - now <= 0) {
-                    this->SequenceFinished(
-                        static_cast<uint16_t>(boneIndex),
-                        static_cast<uint32_t>(now - endTime),
-                        modelBone.sequence.uint8,
-                        modelBone.sequence.uintC
-                    );
-
-                    // A callback may have released the model out from under us; the caller holds
-                    // one reference of its own, so anything less means it is already gone.
-                    if (this->m_refCount <= 1) {
-                        return 0;
-                    }
-                }
+            if (!below) {
+                continue;
             }
         }
 
-        boneIndex = next;
+        int32_t offset = loopBase;
+
+        do {
+            for (uint32_t k = 0; k < timeCount; k++) {
+                int32_t key = static_cast<int32_t>(times[k] - bone.sequence.uint1C);
+                int32_t time = static_cast<int32_t>(lrintf(static_cast<float>(key) * bone.sequence.float18))
+                    + static_cast<int32_t>(bone.sequence.uintC) + offset;
+
+                if (time - from > 0 && time - cursor <= 0) {
+                    if (time != cursor) {
+                        s_modelCallbacks.SetCount(0);
+                        cursor = time;
+                    }
+
+                    this->Animate();
+
+                    C3Vector position = (event.position * this->m_boneMatrices[event.boneIndex]) * this->m_scene->m_viewInv;
+
+                    if (s_modelCallbacks.Count() < 0x10000) {
+                        M2ModelCallback* record = s_modelCallbacks.New();
+
+                        if (record) {
+                            record->boneId = data->bones[event.boneIndex].boneId;
+                            record->callback = reinterpret_cast<void*>(this->m_animEventCallback);
+                            record->data = event.data;
+                            record->id = event.eventId;
+                            record->type = 1;
+                            record->model = this;
+                            record->position = position;
+                            record->time = static_cast<uint32_t>(now - time);
+                            record->owner = this->m_animEventOwner;
+                        }
+                    }
+                }
+            }
+
+            offset += duration;
+        } while (duration && (static_cast<int32_t>(bone.sequence.uintC) - cursor) + offset < 1);
+    }
+
+    return cursor;
+}
+
+// ref: FUN_0082e790
+// Queue the sequence-done callback of a key bone (or the root) whose sequence ended `overshoot`
+// milliseconds before `now`, moving the cursor to that time first. Returns the cursor.
+int32_t CM2Model::QueueSequenceFinished(uint32_t boneIndex, int32_t now, int32_t overshoot, int32_t cursor) {
+    auto data = this->m_shared->m_data;
+    auto& bone = this->m_bones[boneIndex];
+
+    if (data->bones[boneIndex].boneId != 0xFFFFFFFF || boneIndex == 0) {
+        if (now - overshoot != cursor) {
+            s_modelCallbacks.SetCount(0);
+            cursor = now - overshoot;
+        }
+
+        auto& file = data->bones[boneIndex];
+        uint32_t boneId = file.parentIndex == 0xFFFF ? 0xFFFFFFFF : file.boneId;
+
+        M2QueueSequenceCallback(this->m_sequenceDoneCallback, this, boneId, bone.uint90, 0,
+                                static_cast<uint32_t>(overshoot), bone.sequence.uint8, bone.sequence.uintC,
+                                this->m_sequenceDoneOwner);
+    }
+
+    return cursor;
+}
+
+// ref: FUN_008321e0
+// Dispatch every queued callback, then empty the queue.
+void CM2Model::FlushCallbacks() {
+    uint32_t count = s_modelCallbacks.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        // A copy: a handler can queue, and New() can move the array.
+        M2ModelCallback record = s_modelCallbacks[i];
+
+        if (record.type == 0) {
+            this->SequenceFinished(record);
+        } else if (record.type == 1) {
+            auto callback = reinterpret_cast<M2AnimEventCallback>(record.callback);
+            callback(record.model, record.boneId, record.id, record.data, &record.position, record.time, record.owner);
+        }
+    }
+
+    s_modelCallbacks.SetCount(0);
+}
+
+// ref: FUN_00832260
+// Fire the callbacks that fell due over the frame just stepped, in time order: walk the animating
+// bones, queue the earliest anim events and sequence ends after `previous`, dispatch them, and go
+// round again from that time until the frame is covered. Returns 0 when a handler released the
+// model out from under us.
+int32_t CM2Model::ProcessCallbacks() {
+    if (this->m_animationHeldTime || !this->m_flag400000) {
+        return 1;
+    }
+
+    int32_t now = static_cast<int32_t>(this->m_scene->m_time);
+    int32_t previous = now - static_cast<int32_t>(this->m_scene->uint10);
+    auto data = this->m_shared->m_data;
+
+    while (previous - now < 0) {
+        int32_t cursor = now;
+
+        for (uint32_t boneIndex = this->m_boneSeqList; boneIndex != 0xFFFF; boneIndex = this->m_bones[boneIndex].word96) {
+            auto& bone = this->m_bones[boneIndex];
+
+            if (bone.sequence.uintA) {
+                continue;
+            }
+
+            // Frozen-only: SetBoneSequence leaves 0xFFFF on a bone whose model lacks the sequence.
+            if (bone.sequence.uint8 >= data->sequences.Count()) {
+                continue;
+            }
+
+            auto& sequence = data->sequences[bone.sequence.uint8];
+
+            // The sequence plays at float18's rate, so its wall-clock length is the authored one
+            // scaled by it.
+            uint32_t duration;
+
+            if (fabsf(fabsf(bone.sequence.float18) - 1.0f) >= 2.3841858e-07f) {
+                duration = static_cast<uint32_t>(lrintf(static_cast<float>(sequence.duration) * fabsf(bone.sequence.float18)));
+            } else {
+                duration = sequence.duration;
+            }
+
+            if (!duration) {
+                continue;
+            }
+
+            int32_t loopBase;
+            int32_t end;
+            bool finished;
+
+            if (!(sequence.flags & 0x1)) {
+                // Loops: the end of whichever repetition `previous` is inside.
+                int32_t start = static_cast<int32_t>(bone.sequence.uintC);
+                int32_t from = previous - start >= 0 ? previous : start;
+                uint32_t loops = static_cast<uint32_t>(from - start) / duration;
+
+                loopBase = static_cast<int32_t>(loops * duration);
+                end = static_cast<int32_t>((loops + 1) * duration) - 1 + start;
+                finished = end - previous > 0 && end - cursor <= 0;
+            } else {
+                // Plays once: SetupBoneSequence worked out when it stops.
+                end = static_cast<int32_t>(bone.sequence.uint10);
+                loopBase = 0;
+                finished = end - cursor <= 0;
+            }
+
+            cursor = this->QueueAnimEvents(boneIndex, bone.sequence.uint8, loopBase, duration, previous, cursor, now);
+
+            if (finished) {
+                cursor = this->QueueSequenceFinished(boneIndex, now, now - end, cursor);
+            }
+        }
+
+        if (s_modelCallbacks.Count() == 0) {
+            break;
+        }
+
+        this->FlushCallbacks();
+
+        // The caller holds one reference of its own, so anything less means a handler released
+        // the model.
+        if (this->m_refCount == 1) {
+            return 0;
+        }
+
+        previous = cursor;
     }
 
     return 1;
 }
 
 // ref: FUN_00831fc0
-// One bone sequence has just run out: tell the owner, then roll the next variation of the same
-// animation and start it, carrying the overshoot so the new sequence begins where the old one
-// actually ended rather than at the frame boundary.
-//
-// The reference takes one record off a deferred queue instead of four arguments (the queue is
-// flushed by FUN_008321e0, which also carries the animation-event records); the computation is the
-// same and the record's fields are these four plus the callback and its owner.
-//
-// THE CALLBACK HERE IS THE ONE THAT REPORTS A NATURAL END. NotifySequenceDone reports a sequence
-// being REPLACED and passes 1 for `interrupted`; this passes 0, which is what lets the owner treat
-// the animation as finished -- for a unit, that is what hands back its permission to choose the
-// next one (CGUnit_C::OnAnimationFinished).
-void CM2Model::SequenceFinished(uint16_t boneIndex, uint32_t overshoot, uint16_t seqIndexWas, uint32_t startTimeWas) {
+// A bone sequence ran out: tell the owner, then roll the next variation of the same animation and
+// start it, carrying the overshoot so it begins where the old one actually ended. Nothing happens
+// if the bone has been handed something else since the callback was queued.
+void CM2Model::SequenceFinished(const M2ModelCallback& callback) {
     auto data = this->m_shared->m_data;
 
-    // Only key bones (and the root) drive sequence callbacks in the reference, and the callback is
-    // addressed by bone *id*, which resolves back to the canonical bone for that id.
+    uint32_t boneIndex;
+
+    if (callback.boneId == 0xFFFFFFFF) {
+        boneIndex = 0;
+    } else if (callback.boneId < data->boneIndicesById.Count()) {
+        boneIndex = data->boneIndicesById[callback.boneId];
+    } else {
+        boneIndex = 0xFFFF;
+    }
+
+    // Frozen-only: the reference indexes the bones with 0xFFFF here and reads past them.
     if (boneIndex >= data->bones.Count()) {
         return;
     }
 
-    if (data->bones[boneIndex].boneId == 0xFFFFFFFF && boneIndex != 0) {
+    auto& bone = this->m_bones[boneIndex];
+    uint32_t sequenceIndex = bone.sequence.uint8;
+    uint32_t sequenceStart = bone.sequence.uintC;
+
+    if (callback.sequenceStart != sequenceStart || callback.sequenceIndex != sequenceIndex || bone.sequence.uint8 == 0xFFFF) {
         return;
     }
 
-    uint32_t boneId = (data->bones[boneIndex].parentIndex == 0xFFFF) ? 0xFFFFFFFF : data->bones[boneIndex].boneId;
-    uint16_t resolved;
-
-    if (boneId == 0xFFFFFFFF) {
-        resolved = 0;
-    } else if (boneId < data->boneIndicesById.Count()) {
-        resolved = data->boneIndicesById[boneId];
-    } else {
-        return;
-    }
-
-    if (resolved >= data->bones.Count()) {
-        return;
-    }
-
-    auto& modelBone = this->m_bones[resolved];
-    uint16_t seqIndex = modelBone.sequence.uint8;
-
-    // The bone may have been handed something else in the meantime; only the sequence that actually
-    // ended gets to choose what follows it.
-    if (seqIndex != seqIndexWas || modelBone.sequence.uintC != startTimeWas || seqIndex == 0xFFFF) {
-        return;
-    }
-
-    auto& sequence = data->sequences[seqIndex];
+    auto& sequence = data->sequences[sequenceIndex];
 
     if (sequence.flags & 0x1) {
         // Plays once and holds its last frame.
-        modelBone.sequence.uintA = 1;
+        bone.sequence.uintA = 1;
     }
 
-    // The owner is told even for a play-once sequence -- it has still ended -- and may hand the
-    // bone something else from inside the handler, so the match is re-checked after.
-    if (this->m_sequenceDoneCallback) {
-        this->m_sequenceDoneCallback(this, boneId, modelBone.uint90, 0, static_cast<int32_t>(overshoot),
-                                    this->m_sequenceDoneOwner);
+    if (callback.callback) {
+        auto done = reinterpret_cast<M2SequenceDoneCallback>(callback.callback);
+        done(callback.model, callback.boneId, callback.id, static_cast<int32_t>(callback.data),
+             static_cast<int32_t>(callback.time), callback.owner);
 
-        if (modelBone.sequence.uint8 != seqIndexWas || modelBone.sequence.uintC != startTimeWas) {
+        // The handler may have given the bone something else.
+        if (sequenceStart != bone.sequence.uintC || sequenceIndex != bone.sequence.uint8) {
             return;
         }
     }
 
-    if (sequence.flags & 0x1) {
-        // Nothing follows a play-once sequence.
+    // Nothing follows a play-once sequence, a variation chosen explicitly, or an animation with
+    // only one variation.
+    if ((sequence.flags & 0x1) || !bone.sequence.uintB
+        || (sequence.variationIndex == 0 && sequence.variationNext == 0xFFFF)) {
         return;
     }
 
-    // Nothing to roll when the animation has a single variation, and nothing to roll when the
-    // variation was chosen explicitly rather than at random (uintB).
-    if (!modelBone.sequence.uintB || (sequence.variationIndex == 0 && sequence.variationNext == 0xFFFF)) {
-        return;
-    }
-
-    float rate = modelBone.sequence.float14;
+    float rate = bone.sequence.float14;
 
     M2SequenceFallback fallback;
-    this->Sub826350(fallback, modelBone.uint90);
+    this->Sub826350(fallback, callback.id);
 
-    uint32_t index = CM2Model::Sub8260C0(data, fallback.uint0, 0);
+    uint32_t index = CM2Model::Sub8260C0(data, fallback.uint0 & 0xFFFF, 0) & 0xFFFF;
     uint32_t variation = 0;
     this->Sub826E60(&variation, &index);
 
+    // Frozen-only: the reference trusts the resolved index.
     if (index >= data->sequences.Count()) {
         return;
     }
 
-    // The overshoot is measured in scene milliseconds; a sequence playing at a rate other than 1
-    // consumes it faster or slower.
-    uint32_t time = overshoot;
+    // The overshoot is in scene milliseconds; a sequence playing at another rate consumes it
+    // faster or slower.
+    uint32_t time;
 
-    if (fabsf(rate - 1.0f) >= 0.0000099999997f) {
-        time = static_cast<uint32_t>(floorf(static_cast<float>(overshoot) * modelBone.sequence.float18 + 0.5f));
+    if (fabsf(rate - 1.0f) < 2.3841858e-07f) {
+        time = callback.time;
+    } else {
+        time = static_cast<uint32_t>(lrintf(static_cast<float>(callback.time) * bone.sequence.float18));
     }
 
     if (data->sequences[index].flags & 0x20) {
-        modelBone.uint94 = static_cast<uint16_t>(variation);
+        bone.uint90 = callback.id;
+        bone.uint94 = static_cast<uint16_t>(variation);
 
-        this->SetPrimaryBoneSequence(static_cast<uint16_t>(index), resolved, fallback, time, rate, 1);
+        this->SetPrimaryBoneSequence(static_cast<uint16_t>(index), static_cast<uint16_t>(boneIndex), fallback, time, bone.sequence.float14, 1);
 
         return;
     }
 
-    this->SetBoneSequenceDeferred(static_cast<uint16_t>(index), data, resolved, time, rate, fallback, 1, 1, 1);
+    if (!this->HasDeferredSequence(boneIndex, 1)) {
+        this->SetBoneSequenceDeferred(static_cast<uint16_t>(index), data, static_cast<uint16_t>(boneIndex), time, bone.sequence.float14, fallback, 1, 1, 1);
+    }
 }
 
 void CM2Model::ProcessCallbacksRecursive() {
@@ -7445,6 +7866,46 @@ void M2ShadowCasterList::Add(CM2Model* model, uint32_t batchIndex) {
     this->data[this->count].mergeCount = 1;
 
     this->count++;
+}
+
+// ref: FUN_00832dd0
+// The shadow map's merge pass: sort the casters so batches that can share a draw sit together
+// (M2MergeEntryLess), then give the head of each run of mergeable neighbours (M2MergeEntriesGroup)
+// the run's length. A model with merged visible geometry never merges with a neighbour.
+//
+// UNREACHABLE: its callers are the map shadow-map pass (FUN_007bbc50), which frozen has not
+// ported.
+void M2ShadowCasterList::MergeRuns() {
+    auto asEntry = [](const M2ShadowCaster& caster) {
+        return M2MergeEntry { caster.model, caster.batchIndex, caster.mergeCount };
+    };
+
+    std::sort(this->data, this->data + this->count, [&](const M2ShadowCaster& a, const M2ShadowCaster& b) {
+        return M2MergeEntryLess(asEntry(a), asEntry(b));
+    });
+
+    for (uint32_t i = 0; i < this->count; i += this->data[i].mergeCount) {
+        M2ShadowCaster& head = this->data[i];
+        uint32_t next = i + 1;
+
+        if (!head.model->ptr2D0) {
+            while (next < this->count && M2MergeEntriesGroup(asEntry(head), asEntry(this->data[next]))) {
+                next++;
+            }
+        }
+
+        head.mergeCount = next - i;
+    }
+}
+
+// ref: FUN_00834630
+// Put this model and everything attached to it, at any depth, into `scene`.
+void CM2Model::AttachToSceneRecursive(CM2Scene* scene) {
+    this->AttachToScene(scene);
+
+    for (auto attached = this->m_attachList; attached; attached = attached->m_attachNext) {
+        attached->AttachToSceneRecursive(scene);
+    }
 }
 
 // How opaque a batch has to be before it is worth a shadow: DAT_009edce0.

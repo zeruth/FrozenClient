@@ -42,6 +42,7 @@ class CM2Light {
         void SetPosition(const C3Vector& pos);
         void SetLightType(M2LIGHTTYPE lightType);
         void SetVisible(int32_t visible);
+        void SetupGxLight(uint32_t index) const;
         void Unlink();
 };
 

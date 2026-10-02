@@ -139,6 +139,9 @@ struct M2ShadowCasterList {
 
     // ref: FUN_00823d50
     void Add(CM2Model* model, uint32_t batchIndex);
+
+    // ref: FUN_00832dd0
+    void MergeRuns();
 };
 
 struct M2Element {

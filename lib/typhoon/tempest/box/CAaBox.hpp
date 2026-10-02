@@ -58,6 +58,15 @@ void SphereToBox(const CAaSphere& sphere, CAaBox& box);
 // ref: FUN_0070bd20
 int32_t AaBoxIsDegenerate(const CAaBox& box);
 
+// ref: FUN_009855f0
+// The box holding every sphere of the array; all zero for none.
+void SpheresToBox(const CAaSphere* spheres, uint32_t count, CAaBox& box);
+
+// ref: FUN_00985750
+// A sphere holding every sphere of the array: centred on their bounding box, wide enough for the
+// farthest. A degenerate box gives a zero radius at its minimum corner.
+void SphereBoundSpheres(CAaSphere& out, const CAaSphere* spheres, uint32_t count);
+
 // 1 when the maximum is strictly below the minimum on all three axes.
 // ref: FUN_007bd450
 int32_t AaBoxIsInverted(const CAaBox& box);
