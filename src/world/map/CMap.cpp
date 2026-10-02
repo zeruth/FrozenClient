@@ -672,6 +672,28 @@ void CMap::FreeDoodadDef(CMapDoodadDef* def) {
     ObjectFree(*CMap::s_doodadDefHeap, memHandle);
 }
 
+// ref: FUN_007c3020
+// The last link to a doodad def has gone: its model is let go (callbacks first, so nothing calls
+// back into a def about to be freed), it leaves its distance row, and it returns to the heap.
+void CMap::ReleaseDoodadDef(CMapDoodadDef* def) {
+    if (def->m_linkCount != 0) {
+        return;
+    }
+
+    if (def->m_model) {
+        def->m_model->SetSequenceDoneCallback(nullptr, 0);
+        def->m_model->SetAnimEventCallback(nullptr, 0);
+        def->m_model->m_lightingCallback = nullptr;
+        def->m_model->m_lightingArg = nullptr;
+        def->m_model->Release();
+        def->m_model = nullptr;
+    }
+
+    def->m_rowLink.Unlink();
+
+    CMap::FreeDoodadDef(def);
+}
+
 // ref: FUN_007c02d0
 void CMap::FreeEntity(CMapEntity* entity) {
     entity->m_lameAssLink.Unlink();
@@ -927,6 +949,35 @@ static const float CELL_ROUND_BIAS = 0.5f;                // DAT_00adfd74
 // point resolves to a cell, the cell's high bits pick the tile and the middle bits the chunk.
 // The tile's row comes from x and its column from y, which is the map's own convention and the
 // reason the chunk indices look transposed.
+// The cell size of the streaming lookups, a chunk's worth (DAT_00a3ffb8), and a tile's
+// (DAT_00a3ffbc); the half the rounding wants is DAT_00aee0e8.
+static const float CHUNKS_PER_YARD = 0.029999999329447746f;
+static const float TILES_PER_YARD = 0.0018749999580904841f;
+
+// ref: FUN_007b4960
+// The tile under a point.
+CMapArea* CMap::GetTargetArea(const C3Vector& target) {
+    int32_t row = static_cast<int32_t>(roundf(-(target.x - MAP_HALF_EXTENT) * TILES_PER_YARD - 0.5f));
+    int32_t col = static_cast<int32_t>(roundf(-(target.y - MAP_HALF_EXTENT) * TILES_PER_YARD - 0.5f));
+
+    return CMap::s_areaGrid[row * 64 + col];
+}
+
+// ref: FUN_007b49c0
+// The chunk under a point, through its tile; null where the tile is not loaded.
+CMapChunk* CMap::GetTargetChunk(const C3Vector& target) {
+    uint32_t col = static_cast<uint32_t>(roundf(-(target.y - MAP_HALF_EXTENT) * CHUNKS_PER_YARD - 0.5f));
+    uint32_t row = static_cast<uint32_t>(roundf(-(target.x - MAP_HALF_EXTENT) * CHUNKS_PER_YARD - 0.5f));
+
+    auto area = CMap::s_areaGrid[((static_cast<int32_t>(row) >> 4) & 0x3f) * 64 + ((static_cast<int32_t>(col) >> 4) & 0x3f)];
+
+    if (!area) {
+        return nullptr;
+    }
+
+    return area->m_chunks[(row & 0xf) * 16 + (col & 0xf)];
+}
+
 CMapChunk* CMap::ChunkAt(const C3Vector& position) {
     float cellFromY = -(position.y - MAP_HALF_EXTENT) * CELLS_PER_YARD;
     float cellFromX = -(position.x - MAP_HALF_EXTENT) * CELLS_PER_YARD;
@@ -1566,9 +1617,11 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::s_horizonBuffer[i] = -1000000.0f;
     }
 
-    // TODO FUN_007cd910() resets the occlusion arrays and FUN_007cc810() feeds the fixed
-    // horizon occluders (MapHorizonTable.hpp has the five of them). The occlusion VOLUMES are
-    // not built here -- they belong at the top of CWorldScene::Traverse, where they now are.
+    MapOcclusion::ClearVolumes();
+
+    // TODO FUN_007cc810() feeds the fixed horizon occluders (MapHorizonTable.hpp has the five of
+    // them) through FUN_007927e0, CWorldScene's occluder segment add, which is not ported. The
+    // occlusion VOLUMES are not built here -- they belong at the top of CWorldScene::Traverse.
 
     if (!CWorldScene::s_cameraDef) {
         CWorldScene::s_frameStamp++;

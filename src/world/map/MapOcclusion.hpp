@@ -18,6 +18,16 @@ namespace MapOcclusion {
 // `restricted` keeps only the volumes flagged for it. ref: FUN_007cd850
 void BuildVolumes(const C3Vector& camera, const C3Vector* corners, int32_t restricted);
 
+// Empty the planes and volumes at the start of a frame. ref: FUN_007cd910
+void ClearVolumes();
+
+// Whether a polygon lies wholly inside one of the volumes: every one of its points on the
+// near side of every plane of that volume. ref: FUN_007ccfa0
+int32_t PolygonOccluded(const C3Vector* points, uint32_t count);
+
+// How many volumes the last build produced. ref: FUN_007ccdf0
+uint32_t GetVolumeCount();
+
 }
 
 #endif

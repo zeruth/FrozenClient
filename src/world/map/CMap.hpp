@@ -253,6 +253,9 @@ class CMap {
 
         static CMapDoodadDef* AllocDoodadDef();
         static void FreeDoodadDef(CMapDoodadDef* def);
+        static void ReleaseDoodadDef(CMapDoodadDef* def);
+        static CMapArea* GetTargetArea(const C3Vector& target);
+        static CMapChunk* GetTargetChunk(const C3Vector& target);
         static void UnlinkDoodadDef(CMapDoodadDef* def);
         // The loaded chunk a world point stands on, or null where nothing is loaded.
         // Addressed the way CMap::GetTerrainLiquid does it: in cells, with the tile's row
