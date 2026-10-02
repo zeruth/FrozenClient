@@ -1738,7 +1738,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // of the frame, which is where frozen had them.
     DetailDoodad::CreateBuffers();
 
-    // TODO FUN_007ae060(), FUN_007b2a80(): the detail doodad buffers
+    CMapObj::ClearFarClipDirty();
 
     memset(CWorldScene::s_rowStats, 0, sizeof(CWorldScene::s_rowStats));
 
@@ -1855,7 +1855,8 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     }
 
     CWorldScene::VisitVisibleGroupContents();
-    // TODO FUN_007cecd0(): a list emptied here
+    CWorldScene::FinishHiddenEntities();
+    CWorldScene::s_mapObjDefGroupCandidates.UnlinkAll();
 
     CImVector clearColor = { 0x00, 0x00, 0x00, 0xFF };
 

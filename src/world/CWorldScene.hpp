@@ -318,6 +318,10 @@ class CWorldScene {
         // After the traversal: the doodads and entities of each visible group, tested against
         // the frusta the portal walk left on the group. ref: FUN_0079a260
         static void VisitVisibleGroupContents();
+        // The entities nothing could see this frame: they stop drawing, keep animating while close
+        // (or flagged to), and their handlers hear about it (event bits 4 = not reached, 2 = close).
+        // ref: FUN_00793450
+        static void FinishHiddenEntities();
         // A group's doodads: ones with no model yet stand in as occluder boxes; the rest are
         // animated when near and drawn when a frustum of the group holds them. ref: FUN_00799b70
         static void VisitGroupDoodads(CMapBaseObjRefList* doodads, CWFrustum* frustums, uint32_t band, int32_t interior);

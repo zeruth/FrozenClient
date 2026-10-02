@@ -1645,3 +1645,10 @@ uint32_t CMapObj::DoodadSetOf(uint32_t index) {
 
     return 0xffffffff;
 }
+
+int32_t CMapObj::s_farClipDirty;
+
+// ref: FUN_007ae060
+void CMapObj::ClearFarClipDirty() {
+    CMapObj::s_farClipDirty = 0;
+}

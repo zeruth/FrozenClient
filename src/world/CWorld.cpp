@@ -1185,7 +1185,7 @@ void CWorld::SetFarClip(float farClip) {
 
     CWorld::s_nearClip = 0.2f;
 
-    // TODO dword_D1C410 = 1;
+    CMapObj::s_farClipDirty = 1;
     CWorld::s_textureCacheDirty = 1;
 }
 

@@ -3245,3 +3245,53 @@ void CWorldScene::VisitVisibleGroupContents() {
         defGroup = next;
     }
 }
+
+// ref: FUN_00793450
+void CWorldScene::FinishHiddenEntities() {
+    for (auto entity = CWorldScene::s_hiddenEntities.Head(); entity; entity = CWorldScene::s_hiddenEntities.Next(entity)) {
+        entity->m_entityRowLink.Unlink();
+
+        uint32_t close = 0;
+        uint32_t unreached = 0;
+
+        if (entity->m_model) {
+            bool animate = false;
+
+            if (!(entity->m_flags7c & 0x4000)) {
+                float dx = entity->m_sphere.c.x - CWorldScene::s_cameraPos.x;
+                float dy = entity->m_sphere.c.y - CWorldScene::s_cameraPos.y;
+                float dz = entity->m_sphere.c.z - CWorldScene::s_cameraPos.z;
+
+                animate = dy * dy + dz * dz + dx * dx < 1111.111083984375f;
+
+                if (animate) {
+                    close = 2;
+                }
+
+                animate = animate || (entity->m_flags7c & 0x400) != 0;
+
+                if (!entity->m_model->m_attachParent) {
+                    entity->m_model->m_flag8 = 0;
+                    entity->m_model->m_flag10000 = 0;
+                } else {
+                    entity->m_model->m_flag80 = 0;
+                    entity->m_model->m_flag20000 = 0;
+                }
+            }
+
+            entity->m_model->SetAnimating(animate ? 1 : 0);
+        }
+
+        typedef int32_t (*Handler)(void* param, int32_t event, uint32_t guidLow, uint32_t guidHigh, uint32_t param32);
+        auto handler = reinterpret_cast<Handler>(entity->m_handler);
+
+        if (handler) {
+            if (entity->m_visible < 2) {
+                unreached = 4;
+            }
+
+            handler(entity->m_handlerParam, static_cast<int32_t>(unreached | close),
+                    static_cast<uint32_t>(entity->m_param64), static_cast<uint32_t>(entity->m_param64 >> 32), entity->m_param32);
+        }
+    }
+}

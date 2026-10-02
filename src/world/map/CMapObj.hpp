@@ -132,6 +132,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Every loaded root by SStrHash of its path (DAT_00d1c428): Create hands back the one
         // that is already there and counts a reference instead of reading the file twice.
         static TSHashTable<CMapObj, HASHKEY_NONE> s_cache;
+        // Set when the far clip moves and by the root load paths, cleared every frame by
+        // CMap::Render; nothing reads it (DAT_00d1c410).
+        static int32_t s_farClipDirty;
+        static void ClearFarClipDirty();
 
         // Static functions
         // ref: FUN_007ae140
