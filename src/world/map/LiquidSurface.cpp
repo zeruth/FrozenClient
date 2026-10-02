@@ -663,6 +663,7 @@ uint32_t Queued(uint32_t bucket) {
 // in the direction of that key, so as the reference builds instances the two buckets sort
 // identically. Reproduced as it is rather than repaired, because a distance sort would be an
 // invention -- but if a transparent bucket ever needs back-to-front, this is where it goes.
+// ref: FUN_008a1980
 static int SortAscending(const void* a, const void* b) {
     auto left = *static_cast<CInstance* const*>(a);
     auto right = *static_cast<CInstance* const*>(b);
@@ -686,6 +687,7 @@ static int SortAscending(const void* a, const void* b) {
     return 0;
 }
 
+// ref: FUN_008a19e0
 static int SortDescending(const void* a, const void* b) {
     auto left = *static_cast<CInstance* const*>(a);
     auto right = *static_cast<CInstance* const*>(b);

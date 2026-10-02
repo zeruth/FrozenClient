@@ -353,6 +353,13 @@ void ReleaseProceduralTextures() {
     }
 }
 
+// ref: FUN_008a2aa0
+void ResetProceduralTextureLatches() {
+    s_proceduralUpdated[2] = false;
+    s_proceduralUpdated[1] = false;
+    s_proceduralUpdated[0] = false;
+}
+
 // ref: FUN_008a2f00
 // Push each procedural texture's generated pixels to the device, once.
 //
@@ -649,8 +656,9 @@ int32_t s_specularWater = 1;
 // spends the first of them in the settings-bank teardown.
 int32_t s_settingsRefs = 0;
 int32_t s_moduleRefs = 0;
-// Initialize's first and third arguments, 0x00d43af4 and 0x00d43af0. Both are read back nowhere
-// this port has found, so they are stored and named by origin rather than by meaning.
+// Initialize's first and third arguments, 0x00d43af4 and 0x00d43af0. The first says the placement
+// is made camera-relative (GetCameraRelative); the third is the bank's permission to hand out shader
+// materials, which the map load then overwrites (SetShaderMaterials).
 int32_t s_initArg0 = 0;
 int32_t s_initArg2 = 0;
 
@@ -795,9 +803,11 @@ void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
 
     C44Matrix local = placement;
 
-    local.d0 -= cameraPos.x;
-    local.d1 -= cameraPos.y;
-    local.d2 -= cameraPos.z;
+    if (GetCameraRelative()) {
+        local.d0 -= cameraPos.x;
+        local.d1 -= cameraPos.y;
+        local.d2 -= cameraPos.z;
+    }
 
     C44Matrix worldView = local * view;
 
@@ -1651,16 +1661,68 @@ void CMaterialProcWater::Draw(CClientEnvironment* environment, IGeomFactory* geo
                        sphere, settings);
 }
 
+// The factories the bank builds through, one a material class. The reference allocates each from
+// a CDataAllocator of its own (registered by the module's static initializer, FUN_008a4280) and
+// runs the shader loader on the shader flavours; frozen allocates with new, which is what that
+// allocator is underneath.
+
+// ref: FUN_008a4710
+static IMaterial* CreateProcWater() {
+    auto material = new CMaterialProcWater();
+    material->EnsureShaders();
+    return material;
+}
+
+// ref: FUN_008a4770
+static IMaterial* CreateProcWaterFFP() {
+    return new CMaterialProcWaterFFP();
+}
+
+// ref: FUN_008a4790
+static IMaterial* CreateWater() {
+    auto material = new CMaterialWater();
+    material->EnsureShaders();
+    return material;
+}
+
+// ref: FUN_008a47f0
+static IMaterial* CreateWaterNoSpec() {
+    auto material = new CMaterialWaterNoSpec();
+    material->EnsureShaders();
+    return material;
+}
+
+// ref: FUN_008a4850
+static IMaterial* CreateWaterFFP() {
+    return new CMaterialWaterFFP();
+}
+
+// ref: FUN_008a4870
+static IMaterial* CreateMagma() {
+    auto material = new CMaterialMagma();
+    material->EnsureShaders();
+    return material;
+}
+
+// ref: FUN_008a48d0
+static IMaterial* CreateMagmaFFP() {
+    return new CMaterialMagmaFFP();
+}
+
 // ref: FUN_008a1fa0
-// Which of a material's two implementations is used is decided once, from the device: the
-// shader ones need vertex shaders at all and pixel shader model 3. The two capability slots the
-// reference reads sit sixteen bytes apart, which is the distance from the vertex entry to the
-// pixel entry in the shader-target table, and the choice they drive is shader versus
-// fixed-function -- so that is the table being read.
+// The material for a liquid type, built on first use and kept by LiquidMaterial row, so every water
+// shares one. The shader flavours need the map's permission (SetShaderMaterials), vertex shaders
+// and pixel shader model 3 -- caps +0xb4 and +0xc4, the vertex and pixel entries of the target
+// table; water then takes the specular material unless SetSpecular cleared it. A row naming any
+// other material gets none.
 IMaterial* GetMaterial(int32_t liquidType) {
     LiquidTypeRec* typeRec = nullptr;
 
     while (true) {
+        if (!s_moduleRefs) {
+            return nullptr;
+        }
+
         typeRec = g_liquidTypeDB.GetRecord(liquidType);
 
         if (typeRec) {
@@ -1669,8 +1731,8 @@ IMaterial* GetMaterial(int32_t liquidType) {
 
         SysMsgPrintf(SYSMSG_ERROR, "Material Bank: Liquid type [%d] not found, defaulting to water!", liquidType);
 
-        // The same divergence as the settings bank above: the reference would spin here if the
-        // water row were missing, and frozen's is.
+        // The same divergence as the settings bank: the reference would spin here if the water
+        // row were missing.
         if (liquidType == 1) {
             return nullptr;
         }
@@ -1686,41 +1748,24 @@ IMaterial* GetMaterial(int32_t liquidType) {
 
     const CGxCaps& caps = GxCaps();
 
-    bool shaders = caps.m_shaderTargets[GxSh_Vertex] >= 1
+    bool shaders = s_initArg2
+                && caps.m_shaderTargets[GxSh_Vertex] >= 1
                 && caps.m_shaderTargets[GxSh_Pixel] >= 3;
 
     IMaterial* material = nullptr;
 
-    // Material 1 is water, 2 magma and slime, 3 procedural water. Each has a shader flavour and
-    // a fixed-function one, and the caps decide which.
-    //
-    // The specular choice is SETTLED and now READ rather than assumed: Liquid::Initialize writes
-    // the flag this consults, so the branch below is the reference's own rather than a comment
-    // explaining why the hardcoded answer happens to be right.
-    // The specular choice is SETTLED, and frozen's guess was right. The reference reads a global at
-    // 0x00b23f68: zero picks CMaterialWaterNoSpec, anything else CMaterialWater. Liquid::Initialize
-    // writes 1 there and the only other writer is a one-line setter, so specular water is the
-    // default and staying on CMaterialWater matches an unmodified client.
-    switch (materialId) {
-    case 2:
-        material = shaders ? static_cast<IMaterial*>(new CMaterialMagma())
-                           : static_cast<IMaterial*>(new CMaterialMagmaFFP());
-        break;
-
-    case 3:
-        material = shaders ? static_cast<IMaterial*>(new CMaterialProcWater())
-                           : static_cast<IMaterial*>(new CMaterialProcWaterFFP());
-        break;
-
-    default:
-        material = shaders ? static_cast<IMaterial*>(new CMaterialWater())
-                           : static_cast<IMaterial*>(new CMaterialWaterFFP());
-        break;
+    if (materialId == 1) {
+        if (shaders) {
+            material = s_specularWater ? CreateWater() : CreateWaterNoSpec();
+        } else {
+            material = CreateWaterFFP();
+        }
+    } else if (materialId == 2) {
+        material = shaders ? CreateMagma() : CreateMagmaFFP();
+    } else if (materialId == 3) {
+        material = shaders ? CreateProcWater() : CreateProcWaterFFP();
     }
 
-    if (material) {
-        material->EnsureShaders();
-    }
     s_materialBank.GrowToFit(materialId, 1);
     s_materialBank[materialId] = material;
 
@@ -1742,6 +1787,16 @@ void ReleaseMaterials() {
     }
 
     s_materialBank.SetCount(0);
+}
+
+// ref: FUN_008a16c0
+int32_t CMaterialSettings::GetInt(uint32_t index) const {
+    return this->m_int[index];
+}
+
+// ref: FUN_008a16e0
+float CMaterialSettings::GetStageFloat(uint32_t index) const {
+    return this->m_stage[index / STAGE_FLOATS][index % STAGE_FLOATS];
 }
 
 // ref: FUN_008a1c90
@@ -1845,6 +1900,21 @@ void ReleaseMaterialSettings() {
     s_settingsBank.SetCount(0);
 }
 
+
+// ref: FUN_008a1720
+void SetShaderMaterials(int32_t enable) {
+    s_initArg2 = enable;
+}
+
+// ref: FUN_008a1730
+void SetSpecular(int32_t enable) {
+    s_specularWater = enable;
+}
+
+// ref: FUN_008a1740
+int32_t GetCameraRelative() {
+    return s_initArg0;
+}
 
 // ref: FUN_008a2400
 // Give back the hold Initialize took, and tear the module down when the last one goes.

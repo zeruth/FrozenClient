@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include "world/map/LiquidMaterialSettings.hpp"
 #include "world/map/CMapBaseObj.hpp"
 #include "world/map/CMapEntity.hpp"
 #include "world/CWorldScene.hpp"
@@ -986,6 +987,19 @@ void CWorld::LoadMap(const char* mapName, const C3Vector& position, int32_t mapI
     CWorld::s_prevWindowMaxX = CMap::s_chunkWindowMaxX;
 
     CMap::Load(mapName, mapID);
+
+    // The liquid bank, after the map has settled what the device may do (FUN_00781430 tail): shader
+    // materials need both the vertex and the pixel shader enable, specular water the map's
+    // specular permission (0x00ce04a0, which CMap::LoadSettings derives from the same two words),
+    // and the bank is emptied so the next lookup builds against the new settings.
+    Liquid::SetShaderMaterials(
+        (CWorld::s_enables2 & CWorld::Enables2::Enable_VertexShader)
+        && (CWorld::s_enables & CWorld::Enables::Enable_PixelShader));
+    Liquid::SetSpecular(
+        (CWorld::s_enables & CWorld::Enables::Enable_8000000)
+        && (CWorld::s_enables & CWorld::Enables::Enable_PixelShader));
+    Liquid::ReleaseMaterials();
+
     // The stand-in's own load hook is gone; what it did that still matters is release the
     // sky's private scenes so the next map does not inherit the last one's skybox.
     SkyRelease();
