@@ -25,18 +25,6 @@ static bool AsyncReadIsUnstarted(CAsyncObject* object) {
     return !object->isCurrent && !object->isRead && !object->isProcessed;
 }
 
-// ref: FUN_004bac20
-// Move a queued read to the front of its priority band and stamp it with the current frame.
-// The stamp is what lets a texture wanted THIS frame outrank one asked for earlier and not
-// drawn since. char25 gates the relink: an object the blocking wait path has already claimed
-// (AsyncFileReadObject clears it there) is left exactly where it is.
-static void AsyncReadBumpPriority(CAsyncObject* object) {
-    object->m_frameStamp = g_theGxDevicePtr->m_frameCount;
-
-    if (object->char25) {
-        AsyncFileReadLinkObject(object, 1);
-    }
-}
 
 void LoadSuccessCallback(void* handle) {
     auto entry = static_cast<CACHEENTRY*>(handle);

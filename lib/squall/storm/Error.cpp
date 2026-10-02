@@ -128,6 +128,31 @@ uint32_t STORMAPI SErrGetLastError() {
     return s_lasterror;
 }
 
+// ref: FUN_00771a80
+// The text for an error code. Storm's own archive error has a fixed string; anything else is the
+// system's message for the code. The reference first looks the code's facility up in message tables
+// Storm registered from its own resources, which squall does not carry, so those codes fall through
+// to the system's table as well.
+int32_t STORMAPI SErrGetErrorStr(uint32_t errorcode, char* buffer, uint32_t bufferchars) {
+    if (!buffer || !bufferchars) {
+        SErrSetLastError(ERROR_INVALID_PARAMETER);
+        return 0;
+    }
+
+    *buffer = '\0';
+
+    if (errorcode == 0x6C) {
+        snprintf(buffer, bufferchars, "%s", "Invalid or corrupt archive.\n");
+        return 1;
+    }
+
+#if defined(WHOA_SYSTEM_WIN)
+    return FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, errorcode, 0x400, buffer, bufferchars, nullptr) != 0;
+#else
+    return 0;
+#endif
+}
+
 void STORMAPI SErrSuppressErrors(uint32_t suppress) {
     s_suppress = suppress;
 }

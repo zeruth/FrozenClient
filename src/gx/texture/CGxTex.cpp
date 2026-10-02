@@ -39,6 +39,8 @@ bool CGxTexFlags::operator!=(const CGxTexFlags& texFlags) const {
     return memcmp(this, &texFlags, sizeof(*this)) != 0;
 }
 
+// ref: FUN_004b5820
+// The same bytes compared, the other way round.
 bool CGxTexFlags::operator==(const CGxTexFlags& texFlags) {
     return !(*this != texFlags);
 }

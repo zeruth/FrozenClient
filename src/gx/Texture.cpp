@@ -1,33 +1,85 @@
 #include "gx/Texture.hpp"
+#include "async/AsyncFileRead.hpp"
+#include "event/Event.hpp"
 #include "gx/Blp.hpp"
 #include "gx/Device.hpp"
 #include "gx/Gx.hpp"
 #include "gx/blp/CBLPFile.hpp"
+#include "gx/texture/CTextureAtlas.hpp"
+#include "gx/texture/TextureBlob.hpp"
 #include "gx/texture/TgaFile.hpp"
 #include "util/CStatus.hpp"
 #include <storm/List.hpp>
 #include "util/Filesystem.hpp"
+#include "util/OsSystem.hpp"
 #include "util/SFile.hpp"
 #include <algorithm>
+#include <common/Time.hpp>
 #include <cstring>
 #include <new>
 #include <storm/Error.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
+#include <tempest/Vector.hpp>
 
 #define ALIGN_PTR(ptr, align) \
     ((void*)(((uintptr_t)(ptr) + ((uintptr_t)(align) - 1)) & ~((uintptr_t)(align) - 1)))
 
 #define MIPPED_IMG_ALIGN 16
 
+// One released device texture kept for reuse (reference CGxTexCache, 0x14 bytes): the texture,
+// when it was released, what it costs, and its link in a size bucket or the spare-node list.
+// Destroying a node destroys the texture it still holds -- which is what flushing the cache does.
+struct CGxTexCache {
+    CGxTex* m_gxTex = nullptr;
+    uint32_t m_time = 0;
+    uint32_t m_size = 0;
+    TSLink<CGxTexCache> m_link;
+
+    ~CGxTexCache() {
+        if (this->m_gxTex) {
+            GxTexDestroy(this->m_gxTex);
+        }
+    }
+};
+
+// One cached mip chain (reference CMipBitsCache, 0xc bytes). Destroying a node frees the chain.
+struct CMipBitsCache {
+    MipBits* m_data = nullptr;
+    TSLink<CMipBitsCache> m_link;
+
+    ~CMipBitsCache() {
+        if (this->m_data) {
+            SMemFree(this->m_data, __FILE__, __LINE__, 0);
+        }
+    }
+};
+
 namespace Texture {
-    // Invented name. Never assigned, so it is zero and CreateBlpAsync -- a stub -- is unreachable.
-    // Do not set it without porting that function: its call site has no fallback. See the note
-    // there.
-    int32_t s_createBlpAsync;
-    MipBits* s_mipBits;
-    int32_t s_mipBitsValid;
+    // Reference DAT_00ac32a0, initialised to 1: every BLP is read asynchronously. CreateBlpSync is
+    // the path only for a build that clears it.
+    int32_t s_createBlpAsync = 1;
+    MipBits* s_mipBits;                     // DAT_00b49c90, a 1024 x 1024 ARGB8888 chain
+    int32_t s_mipBitsValid;                 // DAT_00b49c94: s_mipBits already holds this upload
+    int32_t s_asyncBytesInFlight;           // DAT_00b49ca0: bytes of texture reads started
+    int32_t s_gxTexCacheSize;               // DAT_00b49c98: bytes held by the released-texture cache
+    int32_t s_gxTexCacheBudget;             // DAT_00b49c9c: what it may hold
+    uint32_t s_gxTexCacheTime;              // DAT_00b49c78: the clock, read once per poll
+    int32_t s_atlasEnable;                  // DAT_00b49c84
+    const char* s_substituteName;           // DAT_00b49c7c
+    const char* s_substituteWith;           // DAT_00b49c80
     TSHashTable<CTexture, HASHKEY_TEXTUREFILE> s_textureCache;
+    STORM_EXPLICIT_LIST(CTexture, m_link) s_textureList;                    // 0x00ac3348
+
+    // Released device textures by size, width and height of 32..512 as log2(size / 32) -- the
+    // bucket of width w and height h is [log2(w / 32) * 6 + log2(h / 32)] -- and the spare nodes.
+    STORM_EXPLICIT_LIST(CGxTexCache, m_link) s_gxTexCacheNodes;            // 0x00ac3358
+    STORM_EXPLICIT_LIST(CGxTexCache, m_link) s_gxTexCache[6 * 6];          // 0x00b49cd8
+
+    // Texture reads waiting for room under the in-flight budget: the ones a draw asked for again,
+    // and the rest (reference 0x00ac337c and 0x00ac3388). Both link through CAsyncObject::link.
+    STORM_EXPLICIT_LIST(CAsyncObject, link) s_asyncPriorityList;
+    STORM_EXPLICIT_LIST(CAsyncObject, link) s_asyncDeferredList;
 
     EGxTexFormat s_pixelFormatToGxTexFormat[10] = {
         GxTex_Dxt1,         // PIXEL_DXT1
@@ -56,27 +108,301 @@ int32_t s_pixelFormatToMipBitsCache[NUM_PIXEL_FORMATS] = {
     1,      // PIXEL_ARGB2565
 };
 
+// Reference 0x00ac3354: 0xff00ff00, opaque green.
 static CImVector CRAPPY_GREEN = { 0x00, 0xFF, 0x00, 0xFF };
 
-// Waits for a texture's pending async read to land. **Still a stub**, and it has live callers:
-// TextureGetGxTex calls it on every blocking fetch (a2 == 1), so today that fetch never actually
-// waits and simply returns whatever gxTex happens to be there, usually null.
-//
-// The reference (FUN_004b6550, ESI = the texture) is only seven instructions:
-//
-//     CAsyncObject* a = texture->asyncObject;   // +0x40
-//     if (!a) return;
-//     if (a->field_4 == 0) FUN_004b64e0(1);     // EDI = a: unlink its node at a+0x28 and
-//                                               //   SMemFree a+0x8 -- release a finished request
-//     AsyncFileReadWait(a);                     // 004ba060, which frozen has
-//
-// Not ported here deliberately. frozen already has AsyncFileReadWait, but FUN_004b64e0 frees the
-// request out from under the list it is linked into, and getting the order or the guard wrong in
-// a blocking path is a hang or a use-after-free rather than a wrong pixel. It needs the async
-// texture queue read properly first; see docs/ref/parity-texture-async.md.
+// The update callback a released texture is left with while it waits in the cache: it answers no
+// texels, so a device reset re-creating the texture uploads nothing. The reference installs its
+// shared empty function (FUN_005eeb70) here.
+static void TextureCacheNullCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t face, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
+}
+
+// ref: FUN_004b5130
+// The cleanup a texture read gets when its texture goes away mid-read: the bytes leave the
+// in-flight total, and the buffer and the request are freed.
+void AsyncTextureCleanup(CAsyncObject* object) {
+    Texture::s_asyncBytesInFlight -= object->size;
+
+    void* buffer = object->buffer;
+
+    AsyncFileReadDestroyObject(object);
+
+    SMemFree(buffer, __FILE__, __LINE__, 0);
+}
+
+// ref: FUN_004b5300
+// A texture read that failed outright. The texture keeps its pointer to the request, as in the
+// reference.
+static void AsyncTextureFailed(void* param) {
+    auto texture = static_cast<CTexture*>(param);
+    auto object = texture->asyncObject;
+
+    Texture::s_asyncBytesInFlight -= object->size;
+
+    void* buffer = object->buffer;
+
+    AsyncFileReadDestroyObject(object);
+
+    SMemFree(buffer, __FILE__, __LINE__, 0);
+}
+
+// ref: FUN_004b64e0
+// Start a texture read that was waiting for room: take it off the waiting list, give it its
+// buffer, count the bytes in flight and queue it. `a2` is passed through to the queue.
+void AsyncTextureStartRead(CAsyncObject* object, int32_t a2) {
+    object->link.Unlink();
+
+    object->buffer = SMemAlloc(object->size, __FILE__, __LINE__, 0);
+    Texture::s_asyncBytesInFlight += object->size;
+
+    AsyncFileReadObject(object, a2);
+}
+
 // ref: FUN_004b6550
+// Block until a texture's read has landed. A read still waiting for room is started first, at the
+// front of the queue.
 void AsyncTextureWait(CTexture* texture) {
-    // TODO
+    if (!texture->asyncObject) {
+        return;
+    }
+
+    if (!texture->asyncObject->buffer) {
+        AsyncTextureStartRead(texture->asyncObject, 1);
+    }
+
+    AsyncFileReadWait(texture->asyncObject);
+}
+
+// ref: FUN_004b69e0
+// The read queue's poll callback: start as many waiting texture reads as fit under 4 MB in flight,
+// the ones asked for again first. The room is unsigned, as in the reference.
+static void AsyncTexturePoll() {
+    uint32_t room = 0x400000 - Texture::s_asyncBytesInFlight;
+
+    for (auto object = Texture::s_asyncPriorityList.Head(); object; ) {
+        auto next = Texture::s_asyncPriorityList.Next(object);
+
+        if (object->size <= room) {
+            AsyncTextureStartRead(object, 0);
+            room -= object->size;
+        }
+
+        object = next;
+    }
+
+    for (auto object = Texture::s_asyncDeferredList.Head(); object; ) {
+        auto next = Texture::s_asyncDeferredList.Next(object);
+
+        if (object->size <= room) {
+            object->link.Unlink();
+
+            object->buffer = SMemAlloc(object->size, __FILE__, __LINE__, 0);
+            Texture::s_asyncBytesInFlight += object->size;
+
+            AsyncFileReadObject(object, 0);
+
+            room -= object->size;
+        }
+
+        object = next;
+    }
+}
+
+// ref: FUN_004b7f10
+// How many texture reads are still waiting to start, for AsyncFileReadWaitAll.
+static int32_t AsyncTexturePendingCount() {
+    int32_t count = 0;
+
+    for (auto object = Texture::s_asyncPriorityList.Head(); object; object = Texture::s_asyncPriorityList.Next(object)) {
+        count++;
+    }
+
+    for (auto object = Texture::s_asyncDeferredList.Head(); object; object = Texture::s_asyncDeferredList.Next(object)) {
+        count++;
+    }
+
+    return count;
+}
+
+// ref: FUN_004b5170
+// "Error loading texture file "name": <the last Storm error>" into the caller's status, after which
+// the last error is cleared.
+int32_t FileError(CStatus* status, const char* kind, const char* fileName) {
+    char errorStr[256];
+    SErrGetErrorStr(SErrGetLastError(), errorStr, sizeof(errorStr));
+
+    status->Add(STATUS_FATAL, "Error loading %s file \"%s\": %s\n", kind, fileName, errorStr);
+
+    SErrSetLastError(0);
+
+    return 0;
+}
+
+// ref: FUN_004b5210
+// The one file-name substitution the client keeps (TextureSetSubstitution): when the base name of
+// `fileName` is the substituted name, `dest` receives the same path with the replacement's base
+// name. Used for the blood splats the violence level swaps.
+int32_t FindSubstitution(char* dest, const char* fileName) {
+    if (!Texture::s_substituteName) {
+        return 0;
+    }
+
+    const char* baseName = SStrChrR(fileName, '\\');
+
+    baseName = baseName ? baseName + 1 : fileName;
+
+    if (SStrCmpI(Texture::s_substituteName, baseName, STORM_MAX_STR)) {
+        return 0;
+    }
+
+    uint32_t pathLength = static_cast<uint32_t>(baseName - fileName);
+
+    SStrCopy(dest, fileName, STORM_MAX_PATH);
+    SStrCopy(dest + pathLength, Texture::s_substituteWith, STORM_MAX_PATH - pathLength);
+
+    return 1;
+}
+
+// ref: FUN_004b5280
+// The image a texture that will not load is drawn with: every level of the shared chain filled
+// opaque white.
+MipBits* GetDefaultTexture(uint32_t width, uint32_t height) {
+    auto images = Texture::s_mipBits;
+
+    BuildMipLevelPointers(PIXEL_ARGB8888, width, height, reinterpret_cast<void**>(images));
+
+    auto level = reinterpret_cast<void**>(images);
+
+    while (width > 1 || height > 1) {
+        memset(*level, 0xFF, width * height * 4);
+
+        level++;
+
+        width = (width >> 1) ? width >> 1 : 1;
+        height = (height >> 1) ? height >> 1 : 1;
+    }
+
+    return images;
+}
+
+// ref: FUN_004b5340
+// Open a file the way the texture loaders do: a failure that set no error of its own reports
+// ERROR_FILE_NOT_FOUND.
+SFile* TextureOpenFile(const char* fileName, int32_t openFlag) {
+    SFile* file = nullptr;
+
+    SErrSetLastError(0);
+
+    if (!SFile::OpenEx(nullptr, fileName, openFlag != 0, &file)) {
+        if (!SErrGetLastError()) {
+            SErrSetLastError(2);
+        }
+
+        return nullptr;
+    }
+
+    return file;
+}
+
+// ref: FUN_004b5390
+// The UIFaster CVar's bit 0: whether textures created with the atlas flag may share pages.
+void TextureSetAtlasEnable(int32_t enable) {
+    Texture::s_atlasEnable = enable;
+}
+
+// ref: FUN_004b5430
+// Give a texture's device texture a new update callback, which also marks the whole texture for
+// upload. The shadow ramps use it to regenerate.
+void TextureSetUpdateCallback(HTEXTURE handle, TEXTURE_CALLBACK* userFunc, void* userArg) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END_VOID;
+
+    GxTexSetCallback(TextureGetTexturePtr(handle)->gxTex, userFunc, userArg);
+}
+
+// ref: FUN_004b5460
+int32_t TextureIsAtlased(HTEXTURE handle) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END;
+
+    return TextureGetTexturePtr(handle)->atlas != nullptr;
+}
+
+// ref: FUN_004b5490
+// Where an atlased texture sits in its page, as a texture-coordinate offset and the scale of one
+// block (an eighth of the page).
+int32_t TextureGetAtlasCoords(HTEXTURE handle, C2Vector* offset, float* scale) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END;
+
+    auto texture = TextureGetTexturePtr(handle);
+
+    if (!texture->atlas) {
+        return 0;
+    }
+
+    *scale = 0.125f;
+
+    uint32_t block = texture->atlasBlockIndex;
+
+    offset->x = 0.125f * static_cast<float>(block & 0x7);
+    offset->y = static_cast<float>((static_cast<int32_t>(block) >> 3) & 0x7) * *scale;
+
+    return 1;
+}
+
+// ref: FUN_004b56f0
+const char* TextureGetFilename(HTEXTURE handle) {
+    STORM_VALIDATE_BEGIN;
+    STORM_VALIDATE(handle);
+    STORM_VALIDATE_END;
+
+    return TextureGetTexturePtr(handle)->filename;
+}
+
+// ref: FUN_004b5710
+// Whether the texture's data has arrived: no read is outstanding for it.
+int32_t TextureIsLoaded(HTEXTURE handle) {
+    return handle && !TextureGetTexturePtr(handle)->asyncObject;
+}
+
+// ref: FUN_004b5730
+// Set (or with two nulls clear) the substitution FindSubstitution applies.
+void TextureSetSubstitution(const char* name, const char* replacement) {
+    Texture::s_substituteName = name;
+    Texture::s_substituteWith = replacement;
+}
+
+// ref: FUN_004b5770
+// Bytes in one compressed block of a BLP pixel format; zero for an uncompressed one.
+uint32_t PixelFormatBlockBytes(PIXEL_FORMAT format) {
+    static uint16_t s_blockBytes[NUM_PIXEL_FORMATS] = {
+        8,      // PIXEL_DXT1
+        16,     // PIXEL_DXT3
+        0,      // PIXEL_ARGB8888
+        0,      // PIXEL_ARGB1555
+        0,      // PIXEL_ARGB4444
+        0,      // PIXEL_RGB565
+        0,      // PIXEL_A8
+        16,     // PIXEL_DXT5
+        0,      // PIXEL_UNSPECIFIED
+        0       // PIXEL_ARGB2565
+    };
+
+    return s_blockBytes[format];
+}
+
+// ref: FUN_004b5780
+int32_t TextureLoadBlob(const char* fileName) {
+    return TextureBlobLoad(fileName);
+}
+
+// ref: FUN_004b5790
+int32_t TextureUnloadBlob(const char* fileName) {
+    return TextureBlobUnload(fileName);
 }
 
 // ref: FUN_006ab5c0
@@ -455,6 +781,8 @@ uint32_t GxCalcTexelStrideInBytes(EGxTexFormat format, uint32_t width) {
     }
 }
 
+// ref: FUN_00681ee0
+// The parameter-block form, under the empty name.
 int32_t GxTexCreate(const CGxTexParms& parms, CGxTex*& texId) {
     return GxTexCreate(
         parms.target,
@@ -529,105 +857,343 @@ void GxTexDestroy(CGxTex* texId) {
     g_theGxDevicePtr->TexDestroy(texId);
 }
 
+// ref: FUN_00681490
 void GxTexParameters(const CGxTex* texId, CGxTexParms& parms) {
-    // TODO
+    g_theGxDevicePtr->TexParameters(texId, parms);
 }
 
-// **Do not make this return true without porting the pool on both sides at once.** It is the
-// predicate of a texture reuse pool, and `false` is the safe answer: never reuse, always create
-// and always destroy, which is correct and merely wasteful.
-//
-// `true` is not safe today. TextureFreeGxTex reads
-//
-//     if (GxTexReusable(parms)) { /* TODO */ return; }
-//     GxTexDestroy(texId);
-//
-// so the moment this says yes, the free path returns without destroying the texture AND without
-// putting it anywhere -- every texture leaks. TextureAllocGxTex has the other half, a bucketed
-// pool keyed on width >> 5 and height >> 5 with a 512 cap, and its lookup is written; the release
-// side is the `// TODO` above.
-//
-// That is the same shape as the three traps already found in this port (M2UseThreads,
-// IsBatchDoodadCompatible, s_createBlpAsync): a stub whose caller changes its own control flow
-// assuming the stub succeeded. This one is disarmed only because the constant is `false`.
-//
-// It is also a pure performance feature -- nothing it changes is visible -- so it is a poor
-// candidate for an unverified change.
-bool GxTexReusable(CGxTexParms& parms) {
-    // TODO -- see above before implementing
-    return false;
+// ref: FUN_006815c0
+// Whether a texture of these parameters may come out of, and go back into, the released-texture
+// cache: a flat 2D texture of one of the first nine formats, with no generated mips and not a
+// render target.
+bool GxTexReusable(const CGxTexParms& parms) {
+    return parms.depth == 0
+        && !parms.flags.m_generateMipMaps
+        && !parms.flags.m_renderTarget
+        && parms.target == GxTex_2d
+        && parms.format < GxTex_Uv88;
+}
+
+// ref: FUN_00681580
+// The same test on a texture that exists, which must also still have the filter it was created
+// with (a flags change that alters the filter clears m_filterUnchanged).
+bool GxTexReusable(const CGxTex* texId) {
+    return texId
+        && texId->m_filterUnchanged
+        && texId->m_depth == 0
+        && !texId->m_flags.m_generateMipMaps
+        && !texId->m_flags.m_renderTarget
+        && texId->m_target == GxTex_2d
+        && texId->m_format < GxTex_Uv88;
+}
+
+// ref: FUN_00681410
+void GxTexSetCallback(CGxTex* texId, TEXTURE_CALLBACK* userFunc, void* userArg) {
+    g_theGxDevicePtr->TexSetCallback(texId, userFunc, userArg);
+}
+
+// ref: FUN_00681430
+void GxTexSetFlags(CGxTex* texId, CGxTexFlags flags) {
+    g_theGxDevicePtr->TexSetFlags(texId, flags);
+}
+
+// ref: FUN_006814b0
+void GxTexSetDataFormat(CGxTex* texId, EGxTexFormat dataFormat) {
+    g_theGxDevicePtr->TexSetDataFormat(texId, dataFormat);
+}
+
+// ref: FUN_006831c0
+// Whether the device copy exists and holds the latest texels.
+int32_t GxTexIsUploaded(const CGxTex* texId) {
+    return texId->m_apiSpecificData && !texId->m_needsUpdate && !texId->m_needsCreation;
+}
+
+// ref: FUN_006831f0
+int32_t GxTexHasCallback(const CGxTex* texId) {
+    return texId->m_userFunc != nullptr;
 }
 
 void GxTexSetWrap(CGxTex* texId, EGxTexWrapMode wrapU, EGxTexWrapMode wrapV) {
     g_theGxDevicePtr->TexSetWrap(texId, wrapU, wrapV);
 }
 
-int32_t ReloadMips(const char* filename, uint32_t a2, MipBits*& mipBits) {
-    // TODO
+// ref: FUN_004b6300
+// What a device texture costs in bytes, for the released-texture cache's budget: whole blocks of
+// the format at the device's base mip level, and every level below it when the filter mips.
+uint32_t GxTexMemSize(EGxTexFormat format, uint32_t width, uint32_t filter, uint32_t height) {
+    // Bytes per block, and the block's edge in texels (four for the DXT formats), by EGxTexFormat
+    // (reference 0x009f1120 and 0x009f1154).
+    static uint32_t s_blockBytes[] = { 0, 4, 4, 2, 2, 2, 8, 16, 16, 2, 4, 4, 4 };
+    static uint32_t s_blockSize[] = { 1, 1, 1, 1, 1, 1, 4, 4, 4, 1, 1, 1, 1 };
 
-    return 0;
+    uint32_t baseMip = g_theGxDevicePtr->DeviceBaseMipLevel();
+
+    width >>= baseMip;
+    height >>= baseMip;
+
+    if (!width) {
+        width = 1;
+    }
+
+    if (!height) {
+        height = 1;
+    }
+
+    uint32_t blockSize = s_blockSize[format];
+    uint32_t blockBytes = s_blockBytes[format];
+
+    uint32_t size = ((blockSize - 1 + width) / blockSize) * ((blockSize - 1 + height) / blockSize) * blockBytes;
+
+    if (filter <= GxTex_Linear) {
+        return size;
+    }
+
+    while (true) {
+        if (width == 1) {
+            if (height == 1) {
+                return size;
+            }
+        } else if (width > 1) {
+            width >>= 1;
+        }
+
+        if (height > 1) {
+            height >>= 1;
+        }
+
+        size += ((blockSize - 1 + width) / blockSize) * ((blockSize - 1 + height) / blockSize) * blockBytes;
+    }
 }
 
-void TextureFreeGxTex(CGxTex* texId) {
-    STORM_ASSERT(texId);
+// ref: FUN_004b5c30
+// Open a BLP and read its levels from the device's base mip into `images`, in the format the
+// device takes for it. The out parameters, any of which may be null, describe what was read.
+// `fileExt`, when given, receives ".blp" first.
+int32_t GetBlpMips(char* fileExt, const char* fileName, int32_t openFlag, MipBits** images, uint32_t* width, uint32_t* height, EGxTexFormat* gxTexFormat, int32_t* isOpaque, uint32_t* alphaBits, PIXEL_FORMAT* pixFormat) {
+    if (fileExt) {
+        SStrCopy(fileExt, ".blp", STORM_MAX_STR);
+    }
 
-    CGxTexParms gxTexParms;
-    GxTexParameters(texId, gxTexParms);
+    CBLPFile image;
 
-    if (GxTexReusable(gxTexParms)) {
-        // TODO
+    if (!image.Open(fileName, openFlag)) {
+        image.Close();
+        return 0;
+    }
+
+    EGxTexFormat gxFormat = GxTex_Argb8888;
+    PIXEL_FORMAT format = PIXEL_ARGB8888;
+
+    if (image.m_header.colorEncoding == COLOR_DXT) {
+        format = static_cast<PIXEL_FORMAT>(image.m_header.preferredFormat);
+
+        if (format == PIXEL_DXT1) {
+            if (GxCaps().m_texFmt[GxTex_Dxt1]) {
+                gxFormat = GxTex_Dxt1;
+            } else if (image.m_header.alphaSize == 0) {
+                gxFormat = GxTex_Rgb565;
+                format = PIXEL_RGB565;
+            } else {
+                gxFormat = GxTex_Argb1555;
+                format = PIXEL_ARGB1555;
+            }
+        } else if (format == PIXEL_DXT3) {
+            if (GxCaps().m_texFmt[GxTex_Dxt3]) {
+                gxFormat = GxTex_Dxt3;
+            } else {
+                gxFormat = GxTex_Argb4444;
+                format = PIXEL_ARGB4444;
+            }
+        } else if (format == PIXEL_DXT5) {
+            if (GxCaps().m_texFmt[GxTex_Dxt5]) {
+                gxFormat = GxTex_Dxt5;
+            } else {
+                gxFormat = GxTex_Argb4444;
+                format = PIXEL_ARGB4444;
+            }
+        }
+    }
+
+    uint32_t imageWidth = image.m_header.width;
+    uint32_t imageHeight = image.m_header.height;
+    uint32_t bestMip = 0;
+
+    RequestImageDimensions(&imageWidth, &imageHeight, &bestMip);
+
+    if (width) {
+        *width = imageWidth;
+    }
+
+    if (height) {
+        *height = imageHeight;
+    }
+
+    if (gxTexFormat) {
+        *gxTexFormat = gxFormat;
+    }
+
+    uint32_t alpha = static_cast<uint8_t>(image.m_header.alphaSize);
+
+    if (isOpaque) {
+        *isOpaque = alpha == 0;
+    }
+
+    if (alphaBits) {
+        *alphaBits = alpha;
+    }
+
+    if (pixFormat) {
+        *pixFormat = format;
+    }
+
+    if (!image.LockChain(format, *images, bestMip)) {
+        image.Close();
+        return 0;
+    }
+
+    image.Close();
+    return 1;
+}
+
+// ref: FUN_004b5e10
+// Read a texture's levels again, for a device that lost them: the stored name is tried as a .blp
+// (or what the substitution makes of it). The extension is appended in place and cut again.
+int32_t ReloadMips(char* fileName, int32_t openFlag, MipBits** images) {
+    char* fileExt = fileName + SStrLen(fileName);
+
+    fileExt[0] = 0x2E; // .blp
+    fileExt[1] = 0x62;
+    fileExt[2] = 0x6C;
+    fileExt[3] = 0x70;
+    fileExt[4] = 0;
+
+    char substitute[STORM_MAX_PATH];
+    const char* name = fileName;
+
+    if (FindSubstitution(substitute, fileName)) {
+        name = substitute;
+    }
+
+    int32_t result = GetBlpMips(nullptr, name, openFlag, images, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+
+    *fileExt = '\0';
+
+    return result;
+}
+
+// ref: FUN_004b70a0
+// Give a device texture back. One the cache can take -- a flat 32..512 texture that still has its
+// creation filter -- is kept in its size bucket, its update callback disarmed, and counted against
+// the budget; anything else is destroyed. `name` is the owner's, and unused.
+void TextureFreeGxTex(CGxTex* texId, const char* name) {
+    CGxTexParms parms;
+    GxTexParameters(texId, parms);
+
+    if (!GxTexReusable(texId) || parms.width - 32 > 480 || parms.height - 32 > 480) {
+        GxTexMemSize(parms.format, parms.width, parms.flags.m_filter, parms.height);
+        GxTexDestroy(texId);
 
         return;
     }
 
-    GxTexDestroy(texId);
+    uint32_t widthLog = 0;
+
+    for (uint32_t w = parms.width >> 5; !(w & 1); w >>= 1) {
+        widthLog++;
+    }
+
+    uint32_t heightLog = 0;
+
+    for (uint32_t h = parms.height >> 5; !(h & 1); h >>= 1) {
+        heightLog++;
+    }
+
+    auto node = Texture::s_gxTexCacheNodes.Head();
+
+    if (!node) {
+        node = Texture::s_gxTexCacheNodes.NewNode(STORM_LIST_HEAD, 0, 0);
+    }
+
+    node->m_link.Unlink();
+
+    node->m_gxTex = texId;
+    node->m_time = Texture::s_gxTexCacheTime;
+    node->m_size = GxTexMemSize(parms.format, parms.width, parms.flags.m_filter, parms.height);
+
+    Texture::s_gxTexCache[heightLog + widthLog * 6].LinkToTail(node);
+
+    Texture::s_gxTexCacheSize += node->m_size;
+
+    GxTexSetCallback(node->m_gxTex, &TextureCacheNullCallback, nullptr);
 }
 
+// ref: FUN_004b6760
+// A device texture for these parameters: a released one of the same size, format, target, depth
+// and filter if the cache holds one (the most recently released first), re-armed with the new
+// callback, data format and flags; otherwise a new one.
 CGxTex* TextureAllocGxTex(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t depth, EGxTexFormat format, CGxTexFlags flags, void* userArg, TEXTURE_CALLBACK* userFunc, EGxTexFormat dataFormat) {
-    CGxTexParms gxTexParms;
+    CGxTexParms parms;
 
-    gxTexParms.height = height;
-    gxTexParms.depth = depth;
-    gxTexParms.target = target;
-    gxTexParms.dataFormat = dataFormat;
-    gxTexParms.userArg = userArg;
-    gxTexParms.format = format;
-    gxTexParms.width = width;
-    gxTexParms.userFunc = userFunc;
-    gxTexParms.flags = flags;
-    gxTexParms.flags.m_generateMipMaps = 0;
+    parms.target = target;
+    parms.width = width;
+    parms.height = height;
+    parms.depth = depth;
+    parms.format = format;
+    parms.dataFormat = dataFormat;
+    parms.flags = flags;
+    parms.flags.m_generateMipMaps = 0;
+    parms.userArg = userArg;
+    parms.userFunc = userFunc;
 
-    CGxTexParms gxTexParms2;
+    if (GxTexReusable(parms) && width - 32 <= 480 && height - 32 <= 480) {
+        uint32_t widthLog = 0;
 
-    if (!GxTexReusable(gxTexParms) || width > 512 || height > 512) {
-        CGxTex* texture = nullptr;
-        memcpy(&gxTexParms2, &gxTexParms, sizeof(gxTexParms2));
-        GxTexCreate(gxTexParms2, texture);
+        for (uint32_t w = width >> 5; !(w & 1); w >>= 1) {
+            widthLog++;
+        }
 
-        return texture;
+        uint32_t heightLog = 0;
+
+        for (uint32_t h = height >> 5; !(h & 1); h >>= 1) {
+            heightLog++;
+        }
+
+        auto& bucket = Texture::s_gxTexCache[heightLog + widthLog * 6];
+
+        for (auto node = bucket.Tail(); node; node = node->m_link.Prev()) {
+            CGxTexParms cached;
+            GxTexParameters(node->m_gxTex, cached);
+
+            if (cached.flags.m_filter != parms.flags.m_filter
+                || cached.format != parms.format
+                || cached.target != parms.target
+                || cached.depth != parms.depth) {
+                continue;
+            }
+
+            Texture::s_gxTexCacheSize -= node->m_size;
+
+            node->m_link.Unlink();
+
+            CGxTex* texId = node->m_gxTex;
+            node->m_gxTex = nullptr;
+
+            Texture::s_gxTexCacheNodes.LinkToHead(node);
+
+            GxTexSetDataFormat(texId, parms.dataFormat);
+            GxTexSetCallback(texId, parms.userFunc, parms.userArg);
+            GxTexSetFlags(texId, parms.flags);
+
+            return texId;
+        }
     }
 
-    uint32_t v9 = width >> 5;
-    uint32_t v10 = height >> 5;
+    CGxTex* texId = nullptr;
+    CGxTexParms create = parms;
+    GxTexCreate(create, texId);
 
-    for (int32_t i = 0; !(v9 & 1); i++) {
-        v9 >>= 1;
-    }
-
-    for (int32_t j = 0; !(v10 & 1); j++) {
-        v10 >>= 1;
-    }
-
-    // TODO
-
-    return nullptr;
+    return texId;
 }
-
-// One cached mip chain (reference CMipBitsCache, 0xc bytes).
-struct CMipBitsCache {
-    MipBits* m_data;
-    TSLink<CMipBitsCache> m_link;
-};
 
 // Spare nodes (reference 0x00ac3364), and the cached chains by shape (reference 0x00b49e88):
 // width and height of 8..256 as log2(size / 8), times the two cached format families.
@@ -1022,10 +1588,9 @@ void GxuUpdateSingleColorTexture(EGxTexCommand cmd, uint32_t w, uint32_t h, uint
     }
 }
 
-void GetDefaultTexture(uint32_t height, uint32_t width) {
-    // TODO
-}
-
+// ref: FUN_004b5fe0
+// The pixel format a BLP is decoded to and the device format it is uploaded as, from the format it
+// was saved for and its alpha depth.
 void GetTextureFormats(PIXEL_FORMAT* pixFormat, EGxTexFormat* gxTexFormat, PIXEL_FORMAT preferredFormat, int32_t alphaBits) {
     switch (preferredFormat) {
         case PIXEL_DXT1:
@@ -1161,36 +1726,45 @@ void MippedImgSet(MipBits* images, uint32_t fourCC, uint32_t width, uint32_t hei
     }
 }
 
-// TODO
-// - order: width, height or height, width?
+// ref: FUN_004b5bb0
+// Halve an image until it fits the device's largest 2D texture, counting the levels skipped. A
+// device that reports no limit is a bad parameter.
 void RequestImageDimensions(uint32_t* width, uint32_t* height, uint32_t* bestMip) {
     CGxCaps systemCaps;
     memcpy(&systemCaps, &GxCaps(), sizeof(systemCaps));
 
     auto maxTextureSize = systemCaps.m_texMaxSize[GxTex_2d];
 
-    if (maxTextureSize) {
-        while (*height > maxTextureSize || *width > maxTextureSize) {
-            *height >>= 1;
-            *width >>= 1;
+    if (!maxTextureSize) {
+        SErrSetLastError(0x57);
+        return;
+    }
 
-            ++*bestMip;
+    while (*width > maxTextureSize || *height > maxTextureSize) {
+        *width >>= 1;
+        *height >>= 1;
 
-            if (!*height) {
-                *height = 1;
-            }
+        ++*bestMip;
 
-            if (!*width) {
-                *width = 1;
-            }
+        if (!*width) {
+            *width = 1;
         }
-    } else {
-        // TODO
-        // SErrSetLastError(0x57u);
+
+        if (!*height) {
+            *height = 1;
+        }
     }
 }
 
-void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
+// The order the six faces of a cube map sit in a strip, by the face the device asks for.
+static uint32_t s_cubeFaceOrder[6] = { 0, 2, 4, 5, 3, 1 };
+
+// ref: FUN_004b5e80
+// A BLP texture's device callback. The texels are in the shared chain: put there by the load that
+// is uploading now (s_mipBitsValid), or read from the file again when the device asks on its own,
+// with a white image standing in for a file that will not read. A cube map's faces sit side by side
+// in each level, so a face is an offset into the row and the row is six faces wide.
+void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t face, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
     CTexture* texture = static_cast<CTexture*>(userArg);
 
     switch (cmd) {
@@ -1199,29 +1773,31 @@ void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d
                 return;
             }
 
-            if (!ReloadMips(texture->filename, texture->flags & 0x2, Texture::s_mipBits)) {
-                GetDefaultTexture(h, w);
+            if (!ReloadMips(texture->filename, texture->flags & 0x2, &Texture::s_mipBits)) {
+                GetDefaultTexture(w, h);
 
-                // TODO
-                // GetGlobalStatusObj()->Add(
-                //     STATUS_ERROR,
-                //     "Texture %s not loaded -- replaced with default.\n",
-                //     texture->filename
-                // );
+                GetGlobalStatusObj().Add(
+                    STATUS_ERROR,
+                    "Texture %s not loaded -- replaced with default.\n",
+                    texture->filename
+                );
             }
 
             return;
 
-        case GxTex_Latch:
+        case GxTex_Latch: {
             texelStrideInBytes = GxCalcTexelStrideInBytes(texture->dataFormat, w);
 
+            auto level = reinterpret_cast<const uint8_t*>(Texture::s_mipBits->mip[mipLevel]);
+            texels = level;
+
             if (texture->gxTexTarget == GxTex_CubeMap) {
-                // TODO
-            } else {
-                texels = reinterpret_cast<MipBits**>(Texture::s_mipBits)[mipLevel];
+                texels = level + texelStrideInBytes * s_cubeFaceOrder[face];
+                texelStrideInBytes *= 6;
             }
 
             return;
+        }
 
         default:
             return;
@@ -1263,6 +1839,9 @@ static void ReportTextureAllocFailure(const char* filename, uint32_t w, uint32_t
                  w, h, fmt, filename ? filename : "?");
 }
 
+// ref: FUN_004b7bd0
+// Decode a BLP that is in memory into the shared chain and upload it: into an atlas page when the
+// texture is atlased, otherwise into a device texture of its own.
 int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
     CBLPFile image;
 
@@ -1357,23 +1936,21 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
         }
     }
 
+    // An atlased texture is uploaded into its block of a shared page; the texture itself gets no
+    // device texture. One the pages will not take loses the flag and is uploaded on its own.
     if (texture->flags & 0x4) {
-        // TODO
+        texture->atlas = CTextureAtlas::Allocate(texture);
 
-        // CTextureAtlas* atlas = CTextureAtlas::Get(v2);
-
-        // texture->atlas = atlas;
-
-        // if (atlas) {
-        //    sub_4B50D0(atlas, v2);
-        // } else {
-        //    texture->flags &= 0xFFFBu;
-        // }
+        if (texture->atlas) {
+            texture->atlas->UpdateBlock(texture);
+        } else {
+            texture->flags &= ~0x4;
+        }
     }
 
     if (!texture->atlas) {
         if (texture->gxTex) {
-            TextureFreeGxTex(texture->gxTex);
+            TextureFreeGxTex(texture->gxTex, texture->filename);
             texture->gxTex = nullptr;
         }
 
@@ -1420,39 +1997,125 @@ int32_t PumpBlpTextureAsync(CTexture* texture, void* buf) {
     return 1;
 }
 
-int32_t FindSubstitution(const char* a1, char* a2) {
-    // TODO
-
-    return 0;
-}
-
-// **A stub with a trap attached, and the trap is one flag away.** Its only call site chooses
-// between this and CreateBlpSync on Texture::s_createBlpAsync, with no fallback: when that flag is
-// set and this returns nullptr, the texture is simply not created. s_createBlpAsync is declared and
-// never assigned, so it is zero and every BLP currently takes the synchronous path. Setting it --
-// which is what porting the reference's own initialisation would do -- stops every BLP texture in
-// the client from loading, silently.
+// ref: FUN_004b7e80
+// A texture read has landed: decode and upload it (a solid green square when that fails), then
+// close the file and release the request, whose bytes leave the in-flight total.
 //
-// The reference (FUN_004b8a50) opens the file, allocates a CTexture, checks SFile::IsStreamingMode,
-// allocates an async read object and queues the read. Port it and set the flag in the same change,
-// or leave both alone.
-CTexture* CreateBlpAsync(char* fileExt, char* fileName, int32_t createFlags, CGxTexFlags texFlags) {
-    // TODO
+// On a failure the reference also hands a non-empty load status to FUN_004b4f90, a system-message
+// display whose output is compiled out of 12340: it formats the status into text and frees it, and
+// its only effect is the last error. Frozen does not carry that formatter; the failure is logged by
+// ReportTextureFailure inside PumpBlpTextureAsync instead.
+static void AsyncTextureLoaded(void* param) {
+    auto texture = static_cast<CTexture*>(param);
 
-    return nullptr;
+    if (!PumpBlpTextureAsync(texture, texture->asyncObject->buffer)) {
+        FillInSolidTexture(CRAPPY_GREEN, texture);
+    }
+
+    SFile::Close(texture->asyncObject->file);
+    texture->asyncObject->file = nullptr;
+
+    Texture::s_asyncBytesInFlight -= texture->asyncObject->size;
+
+    SMemFree(texture->asyncObject->buffer, __FILE__, __LINE__, 0);
+
+    AsyncFileReadDestroyObject(texture->asyncObject);
+
+    texture->asyncObject = nullptr;
 }
 
+// ref: FUN_004b8a50
+// Open a BLP and queue its read. The texture exists at once, with no data: its CGxTex arrives when
+// the read lands (AsyncTextureLoaded), or straight away from a texture blob when one carries a
+// low-detail copy of it. The read starts now if it fits under 4 MB in flight, and otherwise waits
+// for the read queue's poll to find room.
+CTexture* CreateBlpAsync(char* fileExt, char* fileName, int32_t createFlags, CGxTexFlags texFlags) {
+    SFile* file = nullptr;
+
+    SErrSetLastError(0);
+
+    if (!SFile::OpenEx(nullptr, fileName, (createFlags >> 1) & 1, &file)) {
+        if (!SErrGetLastError()) {
+            SErrSetLastError(2);
+        }
+
+        return nullptr;
+    }
+
+    if (!file) {
+        return nullptr;
+    }
+
+    if (fileExt) {
+        *fileExt = '\0';
+    }
+
+    CTextureBlobTexture* blobTexture = nullptr;
+
+    if (!(createFlags & 0x4)) {
+        blobTexture = TextureBlobFind(fileName);
+    }
+
+    auto m = SMemAlloc(sizeof(CTexture), "HTEXTURE", -2, 0x0);
+    auto texture = m ? new (m) CTexture() : nullptr;
+
+    texture->gxTexFlags = texFlags;
+
+    if (createFlags & 0x2) {
+        texture->flags |= 0x2;
+    }
+
+    if ((createFlags & 0x4) && Texture::s_atlasEnable) {
+        texture->flags |= 0x4;
+    }
+
+    if ((createFlags & 0x20) && SFile::IsStreamingMode()) {
+        texture->flags |= 0x20;
+    }
+
+    SStrCopy(texture->filename, fileName, STORM_MAX_STR);
+
+    if (blobTexture) {
+        TextureBlobCreateGxTex(texture, blobTexture);
+    }
+
+    texture->asyncObject = AsyncFileReadAllocObject();
+    texture->asyncObject->userArg = texture;
+    texture->asyncObject->userPostloadCallback = &AsyncTextureLoaded;
+    texture->asyncObject->userFailedCallback = &AsyncTextureFailed;
+    texture->asyncObject->file = file;
+    texture->asyncObject->size = SFile::GetFileSize(file, nullptr);
+
+    if (blobTexture) {
+        texture->asyncObject->priority = 0x83;
+    } else if (createFlags & 0x10) {
+        texture->asyncObject->priority = 0x81;
+    } else {
+        texture->asyncObject->priority = 0x82;
+    }
+
+    auto object = texture->asyncObject;
+
+    if (object->size <= static_cast<uint32_t>(0x400000 - Texture::s_asyncBytesInFlight)) {
+        AsyncTextureStartRead(object, 0);
+    } else {
+        Texture::s_asyncDeferredList.LinkToTail(object);
+    }
+
+    return texture;
+}
+
+// ref: FUN_004b8910
+// The same, read and decoded at once. The reference reaches it only when s_createBlpAsync is clear.
 CTexture* CreateBlpSync(int32_t createFlags, char* fileName, char* fileExt, CGxTexFlags texFlags) {
     SFile* file = nullptr;
 
-    // TODO
-    // SErrSetLastError(0);
+    SErrSetLastError(0);
 
     if (!SFile::OpenEx(nullptr, fileName, (createFlags >> 1) & 1, &file)) {
-        // TODO
-        // if (!sub_7717E0()) {
-        //     SErrSetLastError(2u);
-        // }
+        if (!SErrGetLastError()) {
+            SErrSetLastError(2);
+        }
 
         return nullptr;
     }
@@ -1470,10 +2133,9 @@ CTexture* CreateBlpSync(int32_t createFlags, char* fileName, char* fileExt, CGxT
         texture->flags |= 0x2;
     }
 
-    // TODO
-    // if (createFlags & 0x4 && dword_B49C84) {
-    //     texture->flags |= 0x4;
-    // }
+    if ((createFlags & 0x4) && Texture::s_atlasEnable) {
+        texture->flags |= 0x4;
+    }
 
     if (fileExt) {
         *fileExt = 0;
@@ -1486,7 +2148,7 @@ CTexture* CreateBlpSync(int32_t createFlags, char* fileName, char* fileExt, CGxT
     void* buf = SMemAlloc(fileSize, __FILE__, __LINE__, 0);
 
     if (!SFile::Read(file, buf, fileSize, nullptr, nullptr, nullptr)) {
-        // nullsub_3();
+        // The reference logs "CreateBlpTexture() failed read" through its release-build nullsub.
     }
 
     if (!PumpBlpTextureAsync(texture, buf)) {
@@ -1500,6 +2162,7 @@ CTexture* CreateBlpSync(int32_t createFlags, char* fileName, char* fileExt, CGxT
     return texture;
 }
 
+// ref: FUN_004b8be0
 HTEXTURE CreateBlpTexture(char* fileExt, char* fileName, int32_t createFlags, CGxTexFlags texFlags) {
     if (fileExt) {
         SStrCopy(fileExt, ".blp", 0x7FFFFFFF);
@@ -1528,37 +2191,130 @@ HTEXTURE CreateBlpTexture(char* fileExt, char* fileName, int32_t createFlags, CG
     return handle;
 }
 
-// Every TGA texture request yields nothing. Unlike the BLP pair above there is no synchronous
-// alternative to fall back to, so this one is a live gap rather than a dormant trap -- it just
-// happens to be narrow, because the game's art is BLP and TGA turns up only in a few places.
-//
-// FULLY DECODED 2026-09-27, and the blocker is NOT where this note used to imply. What the
-// reference function itself does is straightforward and every one of ITS callees is linked now:
-//
-//   TgaFile::Open, then reject anything smaller than 8x8 by logging through the CStatus and
-//   returning TextureCreateSolid(CRAPPY_GREEN) instead;
-//   `header.width == header.height * 6` means a CUBE MAP -- six square faces SIDE BY SIDE, not
-//   stacked -- so the width is divided by six and the target becomes GxTex_CubeMap. The same test
-//   appears in CalcLevelCount above, which is the independent confirmation of the orientation;
-//   allocate 0x170 for a CTexture and construct it, then alphaBits = header.imageDescriptor & 0xf
-//   (its low nibble IS the alpha depth), flags |= 1 when that nibble is zero -- an opaque image --
-//   and flags |= 2 from the caller's flag;
-//   copy the name into filename, call TextureAllocGxTex with GxTex_Argb8888 for both the texture
-//   and the data format, and store gxTex, gxTexTarget, gxWidth = the FACE width and gxHeight = the
-//   RAW header height (equal for a cube map, since the faces are square);
-//   on failure destruct and SMemFree, returning 0; on success HandleCreate.
-//
-// THE BLOCKER IS THE UPLOAD CALLBACK, three levels down. TextureAllocGxTex is handed
-// FUN_004b7aa0, which frozen has no equivalent of; that calls FUN_004b78a0, which DOES use the
-// TgaFile::Open / SetTopDown / GetImage32 / Close set ported earlier today -- but adds six more
-// unlinked helpers of its own (FUN_004b5510 was one and is now CalcLevelCountFlat above;
-// FUN_004b5550, FUN_004b5a00, FUN_004b7220, FUN_006ab4b0 and FUN_006ab810 remain).
-//
-// So porting THIS function now would produce a CTexture whose data never arrives, which is worse
-// than the honest stub. The order is the callback chain first, bottom up.
-HTEXTURE CreateTgaTexture(const char* fileName, const char* fileExt, int32_t a3, CGxTexFlags texFlags, CStatus* status) {
-    // TODO
+// ref: FUN_004b7aa0
+// A TGA texture's device callback: the image is read again from the file into the shared chain on
+// every upload (a white image standing in when it will not read), always as ARGB8888.
+static void UpdateTgaTexture(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t face, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
+    CTexture* texture = static_cast<CTexture*>(userArg);
 
+    switch (cmd) {
+        case GxTex_Lock: {
+            if (Texture::s_mipBitsValid) {
+                return;
+            }
+
+            char* fileExt = texture->filename + SStrLen(texture->filename);
+
+            int32_t loaded = TextureLoadTga(fileExt, nullptr, texture->filename, texture->flags & 0x2, &Texture::s_mipBits, nullptr, nullptr, nullptr, nullptr, nullptr);
+
+            *fileExt = '\0';
+
+            if (!loaded) {
+                GetDefaultTexture(w, h);
+
+                GetGlobalStatusObj().Add(
+                    STATUS_ERROR,
+                    "Texture %s not loaded -- replaced with default.\n",
+                    texture->filename
+                );
+            }
+
+            return;
+        }
+
+        case GxTex_Latch: {
+            texelStrideInBytes = w * 4;
+
+            auto level = reinterpret_cast<const uint8_t*>(Texture::s_mipBits->mip[mipLevel]);
+            texels = level;
+
+            if (texture->gxTexTarget == GxTex_CubeMap) {
+                texels = level + texelStrideInBytes * s_cubeFaceOrder[face];
+                texelStrideInBytes *= 6;
+            }
+
+            return;
+        }
+
+        default:
+            return;
+    }
+}
+
+// ref: FUN_004b95b0
+// A .tga texture. Only the header is read here; the device callback reads the image when it
+// uploads. An image narrower or shorter than 8 is refused with a solid green square. A strip six
+// times as wide as it is high is a cube map of six square faces side by side.
+HTEXTURE CreateTgaTexture(const char* fileName, char* fileExt, int32_t openFlag, CGxTexFlags texFlags, CStatus* status) {
+    if (fileExt) {
+        SStrCopy(fileExt, ".tga", STORM_MAX_STR);
+    }
+
+    TgaFile tga = {};
+
+    if (!tga.Open(fileName, openFlag)) {
+        tga.Close();
+        return nullptr;
+    }
+
+    uint32_t height = tga.m_header.height;
+    uint32_t width = tga.m_header.width;
+
+    EGxTexTarget target = GxTex_2d;
+
+    if (width == height * 6) {
+        width /= 6;
+        target = GxTex_CubeMap;
+    }
+
+    if (width < 8 || height < 8) {
+        status->Add(STATUS_FATAL, "Error loading file \"%s\": Texture size must be at least %dx%d\n", fileName, 8, 8);
+
+        HTEXTURE solid = TextureCreateSolid(CRAPPY_GREEN);
+
+        tga.Close();
+        return solid;
+    }
+
+    auto m = SMemAlloc(sizeof(CTexture), "HTEXTURE", -2, 0x0);
+
+    if (m) {
+        auto texture = new (m) CTexture();
+
+        texture->alphaBits = tga.m_header.imageDescriptor & 0xF;
+
+        if (texture->alphaBits == 0) {
+            texture->flags |= 0x1;
+        }
+
+        if (openFlag) {
+            texture->flags |= 0x2;
+        }
+
+        if (fileExt) {
+            *fileExt = '\0';
+        }
+
+        SStrCopy(texture->filename, fileName, STORM_MAX_PATH);
+
+        texture->gxTex = TextureAllocGxTex(target, width, height, 0, GxTex_Argb8888, texFlags, texture, &UpdateTgaTexture, GxTex_Argb8888);
+
+        if (texture->gxTex) {
+            texture->gxTexTarget = target;
+            texture->gxWidth = width;
+            texture->gxHeight = tga.m_header.height;
+
+            HTEXTURE handle = HandleCreate(texture);
+
+            tga.Close();
+            return handle;
+        }
+
+        texture->~CTexture();
+        SMemFree(texture, __FILE__, __LINE__, 0);
+    }
+
+    tga.Close();
     return nullptr;
 }
 
@@ -1625,12 +2381,12 @@ HTEXTURE TextureCacheGetTexture(const CImVector& color) {
 // a handle unless it was given somewhere to put the dot. A procedural name has no extension, so it
 // hashes whole.
 //
-// The flags are the reference's own, and the same ones the generated textures are registered with --
-// linear, no wrap, one anisotropy -- because the cache key carries them and a mismatch would miss.
+// The key's third word has bit 0 set, which makes the cache match on the name alone: the flags a
+// generated texture was registered with do not matter to a by-name fetch.
 HTEXTURE TextureCacheGetProcedural(char* name) {
     auto hashval = SStrHashHT(name);
 
-    HASHKEY_TEXTUREFILE key = { name, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1) };
+    HASHKEY_TEXTUREFILE key = { name, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1), 0x1 };
 
     auto texture = Texture::s_textureCache.Ptr(hashval, key);
 
@@ -1640,9 +2396,19 @@ HTEXTURE TextureCacheGetProcedural(char* name) {
 
     return HandleCreate(texture);
 }
+// ref: FUN_004b9480
 void TextureCacheNewTexture(CTexture* texture, CGxTexFlags texFlags) {
     auto hashval = SStrHashHT(texture->filename);
     HASHKEY_TEXTUREFILE key = { texture->filename, texFlags };
+
+    Texture::s_textureCache.Insert(texture, hashval, key);
+}
+
+// ref: FUN_004b9420
+// The same, under the flags the texture was made with.
+void TextureCacheNewTexture(CTexture* texture) {
+    auto hashval = SStrHashHT(texture->filename);
+    HASHKEY_TEXTUREFILE key = { texture->filename, texture->gxTexFlags };
 
     Texture::s_textureCache.Insert(texture, hashval, key);
 }
@@ -1677,10 +2443,16 @@ uint32_t TextureCalcMipCount(uint32_t width, uint32_t height) {
 }
 
 // ref: FUN_004b9760
+// Create flags: 0x1 keep the filter the caller built, 0x2 open the file with the caller's flag,
+// 0x4 the texture may share an atlas page, 0x8 the extension given decides the loader, 0x10 and
+// 0x20 read priority and streaming hints for the async read.
 HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* status, int32_t createFlags) {
-    STORM_ASSERT(fileName);
-    STORM_ASSERT(*fileName);
-    STORM_ASSERT(status);
+    // The reference checks each in turn, naming the parameter, and fails with
+    // ERROR_INVALID_PARAMETER.
+    if (!fileName || !*fileName || !status) {
+        SErrSetLastError(ERROR_INVALID_PARAMETER);
+        return nullptr;
+    }
 
     // Bit 0 CLEAR means "no explicit filter", so the global texture-filtering mode wins; only the
     // loading screen, the one caller passing 1, keeps the flags it built. This had been inverted,
@@ -1695,41 +2467,34 @@ HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* stat
         texFlags.m_maxAnisotropy = 1;
     }
 
-    int32_t v16 = 2;
-    int32_t v8 = 1;
+    // Two loaders, the BLP one first: each attempt that fails hands over to the other. A name whose
+    // own extension is to decide (create flag 0x8) gets one attempt, with that loader.
+    int32_t attempts = 2;
+    uint32_t loader = 1;
 
-    char tmpFileName[260];
+    char tmpFileName[STORM_MAX_PATH];
 
-    SStrCopy(tmpFileName, fileName, 260);
+    SStrCopy(tmpFileName, fileName, STORM_MAX_PATH);
 
     char* fileExt = OsPathFindExtensionWithDot(tmpFileName);
 
-    char* v10 = fileExt;
-
-    if (createFlags & 0x8) {
-        if (fileExt) {
-            v16 = 1;
-            v8 = SStrCmpI(fileExt, ".blp", 0x7FFFFFFFu) == 0;
-            v10 = 0;
-        }
+    if ((createFlags & 0x8) && fileExt) {
+        attempts = 1;
+        loader = SStrCmpI(fileExt, ".blp", STORM_MAX_STR) == 0;
+        fileExt = nullptr;
     }
 
-    HTEXTURE texture = TextureCacheGetTexture(tmpFileName, v10, texFlags);
+    HTEXTURE texture = TextureCacheGetTexture(tmpFileName, fileExt, texFlags);
 
     if (texture) {
         return texture;
     }
 
-    for (int32_t i = 0; i < v16; ++i) {
-        if (v8) {
-            if (v8 != 1) {
-                v8 = (v8 + 1) % 2;
-                continue;
-            }
-
-            texture = CreateBlpTexture(v10, tmpFileName, createFlags, texFlags);
-        } else {
-            texture = CreateTgaTexture(tmpFileName, v10, createFlags & 0x2, texFlags, status);
+    for (int32_t i = 0; i < attempts; i++) {
+        if (loader == 0) {
+            texture = CreateTgaTexture(tmpFileName, fileExt, createFlags & 0x2, texFlags, status);
+        } else if (loader == 1) {
+            texture = CreateBlpTexture(fileExt, tmpFileName, createFlags, texFlags);
         }
 
         if (texture) {
@@ -1737,25 +2502,21 @@ HTEXTURE TextureCreate(const char* fileName, CGxTexFlags texFlags, CStatus* stat
             return texture;
         }
 
-        v8 = (v8 + 1) % 2;
+        loader = (loader + 1) % 2;
     }
 
-    // TODO
-    // FileError(status, "texture", fileName);
+    FileError(status, "texture", fileName);
 
+    // Frozen's own: the failure also goes to the log, since nothing reads the caller's status.
     ReportTextureFailure(fileName, "no loader accepted it");
 
-    // THE GREEN SQUARE IS THE REFERENCE'S OWN BEHAVIOUR -- checked 2026-09-27 and recorded here
-    // because a run logs this for Character\Skeleton\Hair00_00.blp and it looks like a frozen bug.
-    // It is not. The reference ends this function with TextureCreateSolid(&DAT_00ac3354), and that
-    // constant is 0xff00ff00, which is exactly CRAPPY_GREEN: green at full alpha. A texture the
-    // loaders will not take draws as a green block in the real client too.
-    //
-    // What IS still missing is the FileError call above, which is why the CStatus the caller passed
-    // learns nothing about the failure.
+    // The green square is the reference's own behaviour: TextureCreateSolid(&DAT_00ac3354), and
+    // that constant is 0xff00ff00, opaque green.
     return TextureCreateSolid(CRAPPY_GREEN);
 }
 
+// ref: FUN_004b9200
+// A 2D texture the caller fills through its callback.
 HTEXTURE TextureCreate(uint32_t width, uint32_t height, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags texFlags, void* userArg, TEXTURE_CALLBACK* userFunc, const char* a8, int32_t a9) {
     return TextureCreate(
         GxTex_2d,
@@ -1831,7 +2592,11 @@ int32_t TextureGetDimensions(CTexture* texture, uint32_t* width, uint32_t* heigh
             return 0;
         }
 
-        // TODO
+        if (!texture->asyncObject->buffer) {
+            AsyncTextureStartRead(texture->asyncObject, 1);
+        }
+
+        AsyncFileReadWait(texture->asyncObject);
     }
 
     if (width) {
@@ -1873,14 +2638,13 @@ CGxTex* TextureGetGxTex(CTexture* texture, int32_t a2, CStatus* status) {
             }
         }
 
+        // An atlased texture draws through its page, which the device may have lost since.
         if (texture->atlas) {
-            // TODO
-            // atlas->Reload();
+            if (texture->atlas->m_flags & 0x1) {
+                texture->atlas->Reload();
+            }
 
-            // TODO
-            // - pull texture out of atlas
-
-            return nullptr;
+            return texture->atlas->m_gxTex;
         }
     }
 
@@ -1955,34 +2719,304 @@ int32_t TextureGetRefCount(HTEXTURE handle) {
     return TextureGetTexturePtr(handle)->m_refcount;
 }
 
-// Promotes a texture's pending async read to the front of the queue. **Still a stub**, with live
-// callers: TextureGetGxTex calls it on every non-blocking fetch, which is what should make a
-// texture that is being drawn load before one that is not.
-//
-// The reference (FUN_004b6c50) is:
-//
-//     if (!FUN_00422130()) return;              // async/streaming enabled at all?
-//     CAsyncObject* a = texture->asyncObject;   // +0x40
-//     if (a->field_4 == 0) { FUN_007b5020(0xac337c, a); return; }   // already done
-//     FUN_004b9950();                                               // take the queue lock
-//     if (!a->byte_21 && !a->byte_22 && !a->byte_23) FUN_004bac20(a);  // requeue at priority
-//     FUN_004b9970();                                               // release the lock (tail jmp)
-//
-// Not ported here deliberately: the requeue and the three priority bytes are the async texture
-// queue's internals, and frozen's queue is not yet known to have the same shape. See
-// docs/ref/parity-texture-async.md.
 // ref: FUN_004b6c50
+// A texture being drawn whose data has not arrived: in streaming mode its read moves up. One still
+// waiting for room goes to the front of the waiting reads; one already queued is bumped within its
+// queue, unless a thread has it already.
 void TextureIncreasePriority(CTexture* texture) {
-    // TODO
+    if (!SFile::IsStreamingMode()) {
+        return;
+    }
+
+    auto object = texture->asyncObject;
+
+    if (!object->buffer) {
+        Texture::s_asyncPriorityList.LinkToHead(object);
+        return;
+    }
+
+    AsyncFileReadLockQueue();
+
+    if (!object->isCurrent && !object->isRead && !object->isProcessed) {
+        AsyncReadBumpPriority(object);
+    }
+
+    AsyncFileReadUnlockQueue();
 }
 
+// The poll-event handler that keeps the released-texture cache under its budget (reference
+// 0x004b7200, registered by TextureInitialize).
+static int32_t TextureCachePoll(const void* data, void* param) {
+    Texture::s_gxTexCacheTime = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    TextureTrimGxTexCache();
+
+    return 1;
+}
+
+// ref: FUN_004b7f80
+// The shared chain every BLP and TGA upload passes through (room for 1024 x 1024 ARGB8888 with all
+// its levels), the read queue's two texture hooks, and the cache's poll handler.
 void TextureInitialize() {
-    uint32_t v0 = MippedImgCalcSize(PIXEL_ARGB8888, 1024, 1024) + MIPPED_IMG_ALIGN;
-    Texture::s_mipBits = reinterpret_cast<MipBits*>(SMemAlloc(v0, __FILE__, __LINE__, 0));
+    uint32_t size = MippedImgCalcSize(PIXEL_ARGB8888, 1024, 1024) + MIPPED_IMG_ALIGN;
+    Texture::s_mipBits = reinterpret_cast<MipBits*>(SMemAlloc(size, __FILE__, __LINE__, 0));
 
-    // TODO
-    // - rest of function
+    AsyncFileReadRegisterPollCallback(&AsyncTexturePoll);
+    AsyncFileReadRegisterPendingCounter(&AsyncTexturePendingCount);
+
+    Texture::s_gxTexCacheTime = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    Texture::s_gxTexCacheSize = 0;
+    Texture::s_gxTexCacheBudget = 0;
+
+    EventRegisterEx(EVENT_ID_POLL, &TextureCachePoll, nullptr, 0.0f);
 }
+
+// ref: FUN_004b8420
+// Shutdown: the texture blobs, the released-texture cache and its spare nodes, the shared chain,
+// the cached mip chains, and the poll handler. Live textures are named here by the reference
+// through its release-build nullsub, so nothing is printed.
+void TextureDestroy() {
+    TextureBlobDestroy();
+
+    GxTexCacheFlush();
+    Texture::s_gxTexCacheNodes.Clear();
+
+    SMemFree(Texture::s_mipBits, __FILE__, __LINE__, 0);
+    Texture::s_mipBits = nullptr;
+
+    for (uint32_t i = 0; i < 6 * 6; i++) {
+        s_mipBitsCache[i * 2].Clear();
+        s_mipBitsCache[i * 2 + 1].Clear();
+    }
+
+    s_mipBitsCacheNodes.Clear();
+
+    EventUnregisterEx(EVENT_ID_POLL, &TextureCachePoll, nullptr, 0xFFFFFFFF);
+}
+
+// ref: FUN_004b8000
+// Destroy every texture the released-texture cache holds, bucket by bucket.
+void GxTexCacheFlush() {
+    for (uint32_t i = 0; i < 6 * 6; i++) {
+        auto& bucket = Texture::s_gxTexCache[i];
+
+        for (auto node = bucket.Head(); node; node = bucket.Next(node)) {
+            Texture::s_gxTexCacheSize -= node->m_size;
+        }
+
+        bucket.Clear();
+    }
+}
+
+// ref: FUN_004b8060
+// The same, and the spare nodes with it (entering the world, and on a map change).
+void TextureFlushGxTexCache() {
+    GxTexCacheFlush();
+    Texture::s_gxTexCacheNodes.Clear();
+}
+
+// ref: FUN_004b6ae0
+// Destroy released textures, smallest buckets first, until the cache is back under its budget:
+// up to 16 a call, or 32 when it holds more than twice its budget. A budget of nothing empties it.
+void TextureTrimGxTexCache() {
+    uint32_t pressure;
+
+    if (Texture::s_gxTexCacheBudget) {
+        if (Texture::s_gxTexCacheBudget * 2 < Texture::s_gxTexCacheSize) {
+            pressure = 2;
+        } else if (Texture::s_gxTexCacheSize <= Texture::s_gxTexCacheBudget) {
+            return;
+        } else {
+            pressure = 1;
+        }
+    } else {
+        pressure = 1;
+    }
+
+    int32_t limit = pressure > 1 ? 32 : 16;
+    int32_t destroyed = 0;
+
+    for (int32_t row = 0; ; ) {
+        if (Texture::s_gxTexCacheSize <= Texture::s_gxTexCacheBudget) {
+            return;
+        }
+
+        for (int32_t col = 0; col < 6; col++) {
+            if (Texture::s_gxTexCacheSize <= Texture::s_gxTexCacheBudget) {
+                break;
+            }
+
+            auto& bucket = Texture::s_gxTexCache[col + row];
+
+            for (auto node = bucket.Head(); node && destroyed < limit && Texture::s_gxTexCacheBudget < Texture::s_gxTexCacheSize; ) {
+                Texture::s_gxTexCacheSize -= node->m_size;
+
+                GxTexDestroy(node->m_gxTex);
+                destroyed++;
+
+                node->m_gxTex = nullptr;
+                node->m_size = 0;
+                node->m_time = 0xFFFFFFFF;
+
+                auto next = bucket.Next(node);
+
+                node->m_link.Unlink();
+                Texture::s_gxTexCacheNodes.LinkToHead(node);
+
+                node = next;
+            }
+        }
+
+        row += 6;
+
+        if (row > 35) {
+            return;
+        }
+    }
+}
+
+// ref: FUN_004b6580
+// The released-texture cache's budget in bytes, never more than the default for this machine;
+// a negative request is none at all.
+void TextureSetCacheSize(int32_t size) {
+    int32_t limit = 0x4000000;
+
+    uint64_t memory = OsGetPhysicalMemory();
+
+    if (memory <= 0x40000000) {
+        limit = 0x2000000;
+    }
+
+    if (GxDevApi() == GxApi_D3d9Ex) {
+        limit = 0;
+    }
+
+    if (size < 0) {
+        Texture::s_gxTexCacheBudget = 0;
+        return;
+    }
+
+    Texture::s_gxTexCacheBudget = size <= limit ? size : limit;
+}
+
+// ref: FUN_004b6180
+// The largest budget TextureSetCacheSize allows: 64 MB, 32 MB on a machine with a gigabyte or less,
+// none on a Direct3D 9Ex device.
+int32_t TextureGetDefaultCacheSize() {
+    int32_t limit = 0x4000000;
+
+    uint64_t memory = OsGetPhysicalMemory();
+
+    if (memory <= 0x40000000) {
+        limit = 0x2000000;
+    }
+
+    if (GxDevApi() != GxApi_D3d9Ex) {
+        return limit;
+    }
+
+    return 0;
+}
+
+// ref: FUN_004b61c0
+// The filter every texture made without an explicit one gets. Trilinear and anisotropic fall back
+// a step on a device that cannot do them, and anisotropy is then off.
+void TextureSetFilterMode(int32_t mode) {
+    if (mode > GxTex_LinearMipNearest && !GxCaps().m_texFilterTrilinear) {
+        CTexture::s_maxAnisotropy = 1;
+        CTexture::s_filterMode = GxTex_LinearMipNearest;
+        return;
+    }
+
+    if (mode > GxTex_LinearMipLinear && !GxCaps().m_texFilterAnisotropic) {
+        CTexture::s_maxAnisotropy = 1;
+        CTexture::s_filterMode = GxTex_LinearMipLinear;
+        return;
+    }
+
+    CTexture::s_filterMode = static_cast<EGxTexFilter>(mode);
+}
+
+// ref: FUN_004b6230
+// The anisotropy an anisotropic texture gets, up to what the device allows; none for any other
+// filter mode.
+void TextureSetMaxAnisotropy(uint32_t maxAnisotropy) {
+    if (CTexture::s_filterMode != GxTex_Anisotropic) {
+        CTexture::s_maxAnisotropy = 1;
+        return;
+    }
+
+    if (GxCaps().m_maxTexAnisotropy < maxAnisotropy) {
+        maxAnisotropy = GxCaps().m_maxTexAnisotropy;
+    }
+
+    CTexture::s_maxAnisotropy = maxAnisotropy;
+}
+
+// ref: FUN_004b62a0
+// Whether the texture's device copy exists and is current.
+int32_t TextureIsGxTexUploaded(HTEXTURE handle) {
+    if (!handle || !TextureGetTexturePtr(handle)->gxTex) {
+        return 0;
+    }
+
+    return GxTexIsUploaded(TextureGetTexturePtr(handle)->gxTex);
+}
+
+// ref: FUN_004b62d0
+int32_t TextureHasGxTexCallback(HTEXTURE handle) {
+    if (!handle || !TextureGetTexturePtr(handle)->gxTex) {
+        return 0;
+    }
+
+    return GxTexHasCallback(TextureGetTexturePtr(handle)->gxTex);
+}
+
+// ref: FUN_004b8d70
+// A texture made from a texture blob's low-detail copy alone, for a caller that wants a stand-in
+// while the real file streams. Null when no blob carries the name. The name's own extension is cut
+// for the lookup and put back.
+HTEXTURE TextureCreateFromBlob(const char* fileName, CGxTexFlags texFlags, CStatus* status, int32_t useFilterMode) {
+    if (!fileName || !*fileName || !status) {
+        SErrSetLastError(ERROR_INVALID_PARAMETER);
+        return nullptr;
+    }
+
+    if (useFilterMode) {
+        texFlags.m_filter = CTexture::s_filterMode;
+    }
+
+    texFlags.m_maxAnisotropy = texFlags.m_filter == GxTex_Anisotropic ? CTexture::s_maxAnisotropy : 1;
+
+    char* fileExt = OsPathFindExtensionWithDot(const_cast<char*>(fileName));
+
+    if (fileExt) {
+        *fileExt = '\0';
+    }
+
+    HTEXTURE handle = nullptr;
+    auto blobTexture = TextureBlobFind(fileName);
+
+    if (blobTexture) {
+        auto m = SMemAlloc(sizeof(CTexture), "HTEXTURE", -2, 0x0);
+        auto texture = m ? new (m) CTexture() : nullptr;
+
+        texture->gxTexFlags = texFlags;
+
+        SStrCopy(texture->filename, fileName, STORM_MAX_STR);
+
+        TextureBlobCreateGxTex(texture, blobTexture);
+
+        handle = HandleCreate(texture);
+    }
+
+    if (fileExt) {
+        *fileExt = '.';
+    }
+
+    return handle;
+}
+
 
 // ref: FUN_004b53a0
 // Does this texture already hold that file? The name is normalised the way the cache stores it

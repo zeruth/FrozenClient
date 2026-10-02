@@ -1,4 +1,6 @@
 #include "util/android/OsAndroid.hpp"
+#include "util/OsSystem.hpp"
+#include <unistd.h>
 
 static android_app* s_app = nullptr;
 static ANativeWindow* s_window = nullptr;
@@ -67,4 +69,10 @@ void OsAndroidMapTouch(int32_t& x, int32_t& y) {
 
     x = static_cast<int32_t>(mappedX);
     y = static_cast<int32_t>(mappedY);
+}
+
+// The machine's physical memory in bytes, as the Windows build reads it from
+// GlobalMemoryStatusEx (FUN_0086b4c0).
+uint64_t OsGetPhysicalMemory() {
+    return static_cast<uint64_t>(sysconf(_SC_PHYS_PAGES)) * static_cast<uint64_t>(sysconf(_SC_PAGE_SIZE));
 }

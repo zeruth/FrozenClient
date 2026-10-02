@@ -476,6 +476,293 @@ int32_t CBLPFile::GetMipSize(PIXEL_FORMAT format, uint32_t mipLevel, uint32_t* s
     }
 }
 
+// ref: FUN_006af810
+// Decode one level of a palettized image into `data` in `format`. A palettized image is one palette
+// index per texel, followed by an alpha plane of 0, 1, 4 or 8 bits per texel.
+int32_t CBLPFile::DecompPal(PIXEL_FORMAT format, uint32_t mipLevel, unsigned char* data, const unsigned char* in) {
+    const unsigned char* mipData = in;
+    size_t mipSize = this->m_header.mipSizes[mipLevel];
+
+    // An 8-bit alpha plane has a decoder of its own; the other depths share the general one below.
+    if (format == PIXEL_ARGB8888 && this->m_header.alphaSize == 8) {
+        this->DecompPalARGB8888Alpha8(reinterpret_cast<uint32_t*>(data), mipData, this->GetMipPixelCount(mipLevel));
+
+        return 1;
+    }
+
+    // A palettized image is one palette index per texel, followed by an alpha plane of
+    // 0, 1, 4 or 8 bits per texel. Which decoder runs depends on the format asked for.
+    uint32_t width = this->m_header.width >> mipLevel;
+    uint32_t height = this->m_header.height >> mipLevel;
+
+    if (width < 1) {
+        width = 1;
+    }
+
+    if (height < 1) {
+        height = 1;
+    }
+
+    // The reference's dispatch (FUN_006af810), which frozen was answering 0 to for every
+    // format but ARGB8888 -- even though the two dither decoders it wants were already
+    // here, ported and tagged, with nothing calling them. They are reached now.
+    //
+    // Both dither rather than truncate, which is why they take width and height instead
+    // of a texel count: Floyd-Steinberg carries its error along the row and into the
+    // next, so the decoder has to know where the rows end.
+    switch (format) {
+        case PIXEL_ARGB1555:
+            this->DecompPalARGB1555DitherFS(
+                reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+            return 1;
+
+        case PIXEL_ARGB4444:
+            this->DecompPalARGB4444DitherFS(
+                reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+            return 1;
+
+        case PIXEL_RGB565:
+            this->DecompPalRGB565DitherFS(
+                reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+            return 1;
+
+        case PIXEL_ARGB8888:
+            // Handled below, because it is the one case that needs the alpha plane.
+            break;
+
+        case PIXEL_ARGB2565:
+            this->DecompPalARGB2565DitherFS(
+                reinterpret_cast<uint16_t*>(data), mipData, width, height);
+
+            return 1;
+
+        default:
+            // Every palette target the reference has is now handled. What is left here is
+            // the formats it does not decode from a palette either -- DXT1/3/5 and A8 --
+            // and it answers 0 for those too.
+            return 0;
+    }
+
+    uint32_t texelCount = width * height;
+    const unsigned char* indices = mipData;
+    const unsigned char* alpha = mipData + texelCount;
+    const BlpPalPixel* palette = this->m_header.extended.palette;
+
+    if (mipSize < texelCount) {
+        return 0;
+    }
+
+    // The alpha plane's polarity was CHECKED against the reference rather than assumed:
+    // its 1-bit path indexes a two-byte table at 0x00ad90c0 holding { 0x00, 0xFF }, so a
+    // clear bit is transparent and a set bit opaque, which is what the ternary below
+    // says. Getting that backwards would invert every 1-bit-alpha texture in the game
+    // and still look plausible in a screenshot, so it is worth not re-deriving.
+    //
+    // Bit order is LSB-first within each byte, also the reference's.
+    for (uint32_t i = 0; i < texelCount; i++) {
+        const BlpPalPixel& color = palette[indices[i]];
+
+        unsigned char a;
+
+        switch (this->m_header.alphaSize) {
+            case 1:
+                a = (alpha[i >> 3] >> (i & 7)) & 1 ? 0xFF : 0x00;
+                break;
+
+            case 4:
+                a = ((alpha[i >> 1] >> ((i & 1) * 4)) & 0xF) * 0x11;
+                break;
+
+            case 8:
+                a = alpha[i];
+                break;
+
+            default:
+                a = 0xFF;
+                break;
+        }
+
+        data[i * 4 + 0] = color.b;
+        data[i * 4 + 1] = color.g;
+        data[i * 4 + 2] = color.r;
+        data[i * 4 + 3] = a;
+    }
+
+    return 1;
+}
+
+// ref: FUN_006af990
+// One level, in `format`, without a buffer from the caller: data the file already holds in that
+// format is answered in place, and anything decoded goes to a buffer of its own that the caller
+// frees through m_lockDecompMem once it has copied it.
+int32_t CBLPFile::Lock(PIXEL_FORMAT format, uint32_t mipLevel, unsigned char** data, uint32_t* stride) {
+    if (!this->m_inMemoryImage) {
+        SErrSetLastError(0x57);
+        return 0;
+    }
+
+    this->m_lockDecompMem = nullptr;
+
+    if (mipLevel && (!(this->m_header.hasMips & 0xF) || mipLevel >= this->m_numLevels)) {
+        return 0;
+    }
+
+    unsigned char* mipData = static_cast<unsigned char*>(this->m_inMemoryImage) + this->m_header.mipOffsets[mipLevel];
+
+    if (!this->m_header.mipSizes[mipLevel]) {
+        return 0;
+    }
+
+    switch (this->m_header.colorEncoding) {
+        case COLOR_PAL: {
+            uint32_t size;
+
+            if (!this->GetMipSize(format, mipLevel, &size, stride)) {
+                return 0;
+            }
+
+            *data = static_cast<unsigned char*>(SMemAlloc(size, __FILE__, __LINE__, 0));
+
+            int32_t result = this->DecompPal(format, mipLevel, *data, mipData);
+
+            this->m_lockDecompMem = reinterpret_cast<char*>(*data);
+
+            return result;
+        }
+
+        case COLOR_DXT:
+            switch (format) {
+                case PIXEL_DXT1:
+                case PIXEL_DXT3:
+                case PIXEL_DXT5:
+                    *data = mipData;
+                    return 1;
+
+                case PIXEL_ARGB8888:
+                case PIXEL_ARGB1555:
+                case PIXEL_ARGB4444:
+                case PIXEL_RGB565: {
+                    uint32_t size;
+
+                    if (!this->GetMipSize(format, mipLevel, &size, stride)) {
+                        return 0;
+                    }
+
+                    auto preferred = static_cast<uint32_t>(this->m_header.preferredFormat);
+
+                    if (preferred >= NUM_PIXEL_FORMATS) {
+                        return 0;
+                    }
+
+                    BlitFormat srcFmt = s_pixelToBlitFormat[preferred];
+                    BlitFormat dstFmt = s_pixelToBlitFormat[format];
+
+                    *data = static_cast<unsigned char*>(SMemAlloc(size, __FILE__, __LINE__, 0));
+                    this->m_lockDecompMem = reinterpret_cast<char*>(*data);
+
+                    uint32_t width = this->m_header.width >> mipLevel;
+                    uint32_t height = this->m_header.height >> mipLevel;
+
+                    if (width < 1) {
+                        width = 1;
+                    }
+
+                    if (height < 1) {
+                        height = 1;
+                    }
+
+                    uint32_t srcStride = CGxDevice::TexFormatStride(static_cast<EGxTexFormat>(srcFmt), width, height);
+
+                    C2iVector extent = {
+                        static_cast<int32_t>(width),
+                        static_cast<int32_t>(height)
+                    };
+
+                    if (!Blit(extent, BlitAlpha_0, mipData, srcStride, srcFmt, *data, *stride, dstFmt)) {
+                        SMemFree(*data, __FILE__, __LINE__, 0);
+                        return 0;
+                    }
+
+                    return 1;
+                }
+
+                default:
+                    // The reference answers success without a level for the formats it cannot
+                    // convert a DXT image to; LockChain skips a level it is given none for.
+                    return 1;
+            }
+
+        case COLOR_3:
+            *data = mipData;
+            return 1;
+
+        default:
+            return 0;
+    }
+}
+
+// ref: FUN_006afb70
+// Every level from `mipLevel` down into `images`, allocating the chain when none is given (and
+// freeing it again if a level will not lock).
+int32_t CBLPFile::LockChain(PIXEL_FORMAT format, MipBits*& images, uint32_t mipLevel) {
+    if (mipLevel && (!(this->m_header.hasMips & 0xF) || mipLevel >= this->m_numLevels)) {
+        return 0;
+    }
+
+    uint32_t height = this->m_header.height >> mipLevel;
+
+    if (height < 2) {
+        height = 1;
+    }
+
+    uint32_t width = this->m_header.width >> mipLevel;
+
+    if (width < 2) {
+        width = 1;
+    }
+
+    void** allocated = nullptr;
+
+    if (!images) {
+        allocated = AllocMipChain(format, width, height, __FILE__, __LINE__);
+        images = reinterpret_cast<MipBits*>(allocated);
+
+        if (!allocated) {
+            return 0;
+        }
+    } else {
+        BuildMipLevelPointers(format, width, height, reinterpret_cast<void**>(images));
+    }
+
+    for (uint32_t level = mipLevel, i = 0; level < this->m_numLevels; level++, i++) {
+        unsigned char* data = nullptr;
+        uint32_t stride;
+
+        if (!this->Lock(format, level, &data, &stride)) {
+            if (allocated) {
+                SMemFree(allocated, __FILE__, __LINE__, 0);
+                images = nullptr;
+            }
+
+            return 0;
+        }
+
+        if (data) {
+            size_t size = PixelFormatLevelSize(level, this->m_header.width, this->m_header.height, format);
+            memcpy(images->mip[i], data, size);
+        }
+
+        if (this->m_lockDecompMem) {
+            SMemFree(this->m_lockDecompMem, __FILE__, __LINE__, 0);
+        }
+    }
+
+    return 1;
+}
+
 // ref: FUN_006afce0
 int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipLevel, unsigned char* data, uint32_t& stride) {
     STORM_ASSERT(this->m_inMemoryImage);
@@ -488,110 +775,8 @@ int32_t CBLPFile::Lock2(const char* fileName, PIXEL_FORMAT format, uint32_t mipL
     size_t mipSize = this->m_header.mipSizes[mipLevel];
 
     switch (this->m_header.colorEncoding) {
-        case COLOR_PAL: {
-            // A palettized image is one palette index per texel, followed by an alpha plane of
-            // 0, 1, 4 or 8 bits per texel. Which decoder runs depends on the format asked for.
-            uint32_t width = this->m_header.width >> mipLevel;
-            uint32_t height = this->m_header.height >> mipLevel;
-
-            if (width < 1) {
-                width = 1;
-            }
-
-            if (height < 1) {
-                height = 1;
-            }
-
-            // The reference's dispatch (FUN_006af810), which frozen was answering 0 to for every
-            // format but ARGB8888 -- even though the two dither decoders it wants were already
-            // here, ported and tagged, with nothing calling them. They are reached now.
-            //
-            // Both dither rather than truncate, which is why they take width and height instead
-            // of a texel count: Floyd-Steinberg carries its error along the row and into the
-            // next, so the decoder has to know where the rows end.
-            switch (format) {
-                case PIXEL_ARGB1555:
-                    this->DecompPalARGB1555DitherFS(
-                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
-
-                    return 1;
-
-                case PIXEL_ARGB4444:
-                    this->DecompPalARGB4444DitherFS(
-                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
-
-                    return 1;
-
-                case PIXEL_RGB565:
-                    this->DecompPalRGB565DitherFS(
-                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
-
-                    return 1;
-
-                case PIXEL_ARGB8888:
-                    // Handled below, because it is the one case that needs the alpha plane.
-                    break;
-
-                case PIXEL_ARGB2565:
-                    this->DecompPalARGB2565DitherFS(
-                        reinterpret_cast<uint16_t*>(data), mipData, width, height);
-
-                    return 1;
-
-                default:
-                    // Every palette target the reference has is now handled. What is left here is
-                    // the formats it does not decode from a palette either -- DXT1/3/5 and A8 --
-                    // and it answers 0 for those too.
-                    return 0;
-            }
-
-            uint32_t texelCount = width * height;
-            const unsigned char* indices = mipData;
-            const unsigned char* alpha = mipData + texelCount;
-            const BlpPalPixel* palette = this->m_header.extended.palette;
-
-            if (mipSize < texelCount) {
-                return 0;
-            }
-
-            // The alpha plane's polarity was CHECKED against the reference rather than assumed:
-            // its 1-bit path indexes a two-byte table at 0x00ad90c0 holding { 0x00, 0xFF }, so a
-            // clear bit is transparent and a set bit opaque, which is what the ternary below
-            // says. Getting that backwards would invert every 1-bit-alpha texture in the game
-            // and still look plausible in a screenshot, so it is worth not re-deriving.
-            //
-            // Bit order is LSB-first within each byte, also the reference's.
-            for (uint32_t i = 0; i < texelCount; i++) {
-                const BlpPalPixel& color = palette[indices[i]];
-
-                unsigned char a;
-
-                switch (this->m_header.alphaSize) {
-                    case 1:
-                        a = (alpha[i >> 3] >> (i & 7)) & 1 ? 0xFF : 0x00;
-                        break;
-
-                    case 4:
-                        a = ((alpha[i >> 1] >> ((i & 1) * 4)) & 0xF) * 0x11;
-                        break;
-
-                    case 8:
-                        a = alpha[i];
-                        break;
-
-                    default:
-                        a = 0xFF;
-                        break;
-                }
-
-                data[i * 4 + 0] = color.b;
-                data[i * 4 + 1] = color.g;
-                data[i * 4 + 2] = color.r;
-                data[i * 4 + 3] = a;
-            }
-
-            return 1;
-        }
+        case COLOR_PAL:
+            return this->DecompPal(format, mipLevel, data, mipData);
 
         case COLOR_DXT:
             switch (format) {

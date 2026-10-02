@@ -59,6 +59,8 @@ bool AsyncFileReadIsBusy();
 
 void AsyncFileReadWaitAll();
 
+void AsyncReadBumpPriority(CAsyncObject* object);
+
 void AsyncFileReadRegisterPollCallback(void (*callback)());
 
 void AsyncFileReadRegisterPendingCounter(int32_t (*counter)());
