@@ -5227,6 +5227,99 @@ CAaBox& CM2Model::GetAnimatedBounds(CAaBox& out, uint32_t keyBoneId) {
     return out;
 }
 
+// ref: FUN_0082d1a0
+// The draws the model costs this frame: its drawing batches, a draw per material of each visible
+// ribbon that is not faded out, and the batches its active emitters break into.
+uint32_t CM2Model::CountDrawCalls() {
+    if (!this->m_loaded) {
+        this->WaitForLoad(nullptr);
+    }
+
+    uint32_t count = this->CountVisibleBatches();
+    auto data = this->m_shared->m_data;
+
+    for (uint32_t i = 0; i < data->ribbons.Count(); i++) {
+        auto& ribbon = this->m_ribbons[i];
+
+        if (!ribbon.visibilityTrack.currentValue) {
+            continue;
+        }
+
+        float alpha = this->float198;
+
+        if (data->ribbons[i].alphaTrack.sequenceTimes.Count()) {
+            alpha *= ribbon.alphaTrack.currentValue;
+        }
+
+        if (alpha >= 0.0001f) {
+            count += this->m_ribbonEmitters[i]->GetMaterialCount();
+        }
+    }
+
+    for (uint32_t i = 0; i < data->particles.Count(); i++) {
+        // Frozen-only: null for an emitter type frozen does not build.
+        auto emitter = this->m_particleEmitters ? this->m_particleEmitters[i] : nullptr;
+
+        if (this->m_particles[i].active && this->float198 >= 0.0001f && emitter) {
+            count += emitter->CountBatchedEmitters();
+        }
+    }
+
+    return count;
+}
+
+// ref: FUN_0082d910
+// PackBatchVertices for batches that sample both texture coordinate sets: 40-byte records,
+// declared as position, normal and two coordinates.
+int32_t CM2Model::PackBatchVerticesTwoCoords(int32_t merged, M2SkinSection* section) {
+    auto buffer = GxBufStream(GxPoolTarget_Vertex, 0x28, section->vertexCount);
+    auto vertices = GxBufLock(buffer);
+
+    if (!vertices) {
+        return 0;
+    }
+
+    if (!merged) {
+        M2PackBatchVerticesTwoCoords(this, section, vertices);
+    } else {
+        auto skinProfile = this->m_shared->skinProfile;
+        auto& range = this->ptr2D0->sourceBatchRange[section->skinSectionId];
+
+        for (uint32_t i = range[0]; i <= range[1]; i++) {
+            uint16_t sectionIndex = skinProfile->batches[i].skinSectionIndex;
+
+            if (!this->m_skinSections[sectionIndex]) {
+                continue;
+            }
+
+            M2SkinSection* source = &skinProfile->skinSections[sectionIndex];
+
+            M2PackBatchVerticesTwoCoords(this, source, vertices);
+            vertices += source->vertexCount * 0x28;
+        }
+    }
+
+    GxBufUnlock(buffer, 0);
+    GxPrimVertexPtr(buffer, GxVBF_PNT2);
+
+    return 1;
+}
+
+// ref: FUN_0082da40
+// The shadow map's caster draw: opaque casters with blending off and no alpha test, then the
+// alpha-tested ones textured at an alpha reference of 128/255.
+void CM2Model::DrawShadowCasterLists(M2ShadowCasterList* opaque, M2ShadowCasterList* alphaTested) {
+    GxRsSet(GxRs_BlendingMode, 0);
+
+    CShaderEffect::SetAlphaRef(0.0f);
+    CShaderEffect::SetShadersForGeometry(0);
+    CM2Model::DrawShadowCasterList(1, opaque);
+
+    CShaderEffect::SetAlphaRef(128.0f / 255.0f);
+    CShaderEffect::SetShadersForGeometry(0);
+    CM2Model::DrawShadowCasterList(0, alphaTested);
+}
+
 // Live as of 2026-10-02, with everything under it: CM2Scene::Animate groups the type-2 elements
 // and writes each group's instance count (FUN_0081cc50, FUN_0081e5c0, FUN_0081ea90), and
 // CM2SceneRender::DrawBatchDoodad draws a group as instances. The float at +0x1b8 that blocked the

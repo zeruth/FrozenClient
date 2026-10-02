@@ -1055,9 +1055,34 @@ void CM2SceneRender::SetBatchVertices(int32_t a2) {
         if (this->m_curType != this->m_prevType || this->m_curShared != this->m_prevShared) {
             this->m_curShared->SetVertices(0);
         }
-    } else {
-        // TODO
-        // - non-shader code path
+
+        return;
+    }
+
+    // Without shaders: a single-bone model streams its shared vertices with the batch's choice
+    // of texture coordinate set (shader bit 0x4000); anything else is skinned on the CPU, again
+    // only when something that shapes the vertices changed since the previous element.
+    uint16_t shader = this->m_curBatch->shader;
+    bool sameCoordSet = this->m_prevBatch && (shader & 0x4000) == (this->m_prevBatch->shader & 0x4000);
+
+    if (a2) {
+        if (this->m_curType != this->m_prevType || this->m_curShared != this->m_prevShared || !sameCoordSet) {
+            this->m_curShared->SetVertices((shader & 0x4000) != 0);
+        }
+
+        return;
+    }
+
+    if (this->m_curType != this->m_prevType || this->m_curModel != this->m_prevModel
+        || this->m_curSkinSection != this->m_prevSkinSection || !sameCoordSet) {
+        int32_t merged = this->m_curElement->flags & 0x4;
+
+        if (this->m_curBatch->flags & 0x40) {
+            this->m_curModel->PackBatchVerticesTwoCoords(merged, this->m_curSkinSection);
+            return;
+        }
+
+        this->m_curModel->PackBatchVertices(merged, this->m_curSkinSection, (shader & 0x4000) != 0);
     }
 }
 

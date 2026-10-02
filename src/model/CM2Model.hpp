@@ -432,6 +432,9 @@ class CM2Model {
         // everything attached to it. ref: FUN_00834660
         void CollectShadowCasters(M2ShadowCasterList* lists);
         static void DrawShadowCasterList(int32_t untextured, M2ShadowCasterList* list);
+        static void DrawShadowCasterLists(M2ShadowCasterList* opaque, M2ShadowCasterList* alphaTested);
+        uint32_t CountDrawCalls();
+        int32_t PackBatchVerticesTwoCoords(int32_t merged, M2SkinSection* section);
         void DrawShadowCasterBatch(int32_t untextured, M2Batch* batch, M2ShadowCasterList* list, uint32_t first, M2SkinSection* section, M2SkinSection* prevSection);
         int32_t ComputeProjection(M2SkinSection* section, CAaBox& bounds, C44Matrix& texMatrix);
         // ref: FUN_006f1d20
