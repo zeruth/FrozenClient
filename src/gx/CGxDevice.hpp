@@ -10,6 +10,7 @@
 #include "gx/Shader.hpp"
 #include "gx/texture/CGxTex.hpp"
 #include <cstdint>
+#include <storm/Array.hpp>
 #include <storm/Hash.hpp>
 #include <tempest/Box.hpp>
 #include <tempest/Plane.hpp>
@@ -19,6 +20,17 @@ class CGxBatch;
 class CGxMonitorMode;
 class CGxTex;
 class CGxTexFlags;
+
+// Reference +0x28c4, one per buffer target, 0x14 bytes: a byte array and a locked flag. When a
+// backend cannot lock real buffer memory -- no context, no API object, or the lock failed -- it
+// hands the caller this instead, so the write lands somewhere harmless rather than through null.
+struct CGxBufScratch {
+    TSGrowableArray<uint8_t> m_data;
+    uint8_t m_locked = 0;
+
+    char* Lock(uint32_t size);
+    void Unlock();
+};
 
 struct CGxAppRenderState {
     CGxStateBom m_value;
@@ -106,6 +118,10 @@ class CGxDevice {
 
         // Static variables
         static uint32_t s_alphaRef[];
+        // Reference 0x00c5fff0: width / height of the format when gxAspect is on, otherwise 0.
+        // The window-sizing helpers (FUN_00683d60 and its three siblings) read it to hold the
+        // aspect while the window is dragged.
+        static float s_aspectRatio;
         static C3Vector s_pointScaleIdentity;
         static uint32_t s_primVtxAdjust[];
         static uint32_t s_primVtxDiv[];
@@ -198,6 +214,7 @@ class CGxDevice {
         // Reference +0x2904: every live texture, newest first.
         STORM_EXPLICIT_LIST(CGxTex, m_link) m_texList;
         CGxBuf* m_bufLocked[GxPoolTargets_Last] = {};
+        CGxBufScratch m_bufScratch[GxPoolTargets_Last];
         CGxPool* m_vertexPool = nullptr;
         CGxPool* m_indexPool = nullptr;
         CGxBuf* m_streamBufs[GxPoolTargets_Last] = {};

@@ -283,12 +283,27 @@ int32_t CGxDevice::GLLAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monit
 }
 #endif
 
+// ref: FUN_00684c20
+// STUB, recorded: the reference writes to Logs\gx.log through Storm's SLog API (opened by
+// FUN_00683670, written by FUN_00684ba0, capped at 2 MB), which frozen's Storm does not have.
 void CGxDevice::Log(const char* format, ...) {
-    // TODO
 }
 
+// ref: FUN_00684d10
 void CGxDevice::Log(const CGxFormat& format) {
-    // TODO
+    static const char* s_formatNames[] = {
+        "Rgb565", "ArgbX888", "Argb8888", "Argb2101010", "Ds160", "Ds24X", "Ds248", "Ds320"
+    };
+
+    if (format.window) {
+        CGxDevice::Log("\tFormat: %d x %d Window, %s, multisample %d", format.size.x, format.size.y,
+            s_formatNames[format.depthFormat], format.multisampleCount);
+        return;
+    }
+
+    CGxDevice::Log("\tFormat %d x %d @ %d Fullscreen, %s, %s, multisample %d", format.size.x,
+        format.size.y, format.refreshRate, s_formatNames[format.colorFormat],
+        s_formatNames[format.depthFormat], format.multisampleCount);
 }
 
 #if defined(WHOA_SYSTEM_MAC)
@@ -517,6 +532,23 @@ CGxBuf* CGxDevice::BufCreate(CGxPool* pool, uint32_t itemSize, uint32_t itemCoun
     return buf;
 }
 
+// ref: FUN_00685e90
+char* CGxBufScratch::Lock(uint32_t size) {
+    if (this->m_data.Count() < size) {
+        this->m_data.SetCount(size);
+    }
+
+    this->m_locked = 1;
+
+    return reinterpret_cast<char*>(this->m_data.Ptr());
+}
+
+// ref: FUN_00682c40
+void CGxBufScratch::Unlock() {
+    this->m_locked = 0;
+}
+
+// ref: FUN_00683150
 char* CGxDevice::BufLock(CGxBuf* buf) {
     buf->unk1E = 1;
     buf->unk1F = 0;
@@ -543,12 +575,14 @@ CGxBuf* CGxDevice::BufStream(EGxPoolTarget target, uint32_t itemSize, uint32_t i
     return buf;
 }
 
+// ref: FUN_00683180
 int32_t CGxDevice::BufUnlock(CGxBuf* buf, uint32_t size) {
     this->m_bufLocked[buf->m_pool->m_target] = nullptr;
 
     return 1;
 }
 
+// ref: FUN_00683130
 void CGxDevice::BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t offset) {
     buf->unk1E = 1;
     buf->unk1F = 0;
@@ -602,8 +636,24 @@ const CRect& CGxDevice::DeviceCurWindow() {
     return this->m_curWindowRect;
 }
 
+float CGxDevice::s_aspectRatio = 0.0f;
+
+// ref: FUN_006840f0
+// Stores the format, raises a size below 320x240 to that minimum, and records the aspect the
+// window sizing holds to.
 int32_t CGxDevice::DeviceSetFormat(const CGxFormat& format) {
     memcpy(&this->m_format, &format, sizeof(this->m_format));
+
+    if (this->m_format.size.x < 320 && this->m_format.size.y < 240) {
+        this->m_format.size.x = 320;
+        this->m_format.size.y = 240;
+    }
+
+    if (this->m_format.aspect) {
+        CGxDevice::s_aspectRatio = static_cast<float>(this->m_format.size.x) / static_cast<float>(this->m_format.size.y);
+    } else {
+        CGxDevice::s_aspectRatio = 0.0f;
+    }
 
     return 1;
 }

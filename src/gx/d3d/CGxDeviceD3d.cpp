@@ -411,11 +411,13 @@ CGxDeviceD3d::CGxDeviceD3d() : CGxDevice() {
     this->DeviceCreateStreamBufs();
 }
 
+// ref: FUN_0068fce0
 char* CGxDeviceD3d::BufLock(CGxBuf* buf) {
     CGxDevice::BufLock(buf);
     return this->IBufLock(buf);
 }
 
+// ref: FUN_0068fae0
 int32_t CGxDeviceD3d::BufUnlock(CGxBuf* buf, uint32_t size) {
     CGxDevice::BufUnlock(buf, size);
     this->IBufUnlock(buf);
@@ -423,19 +425,15 @@ int32_t CGxDeviceD3d::BufUnlock(CGxBuf* buf, uint32_t size) {
     return 1;
 }
 
+// ref: FUN_0068fd00
+// IBufLock never returns null now -- it falls back to the device scratch -- so the copy is
+// unconditional, as the reference's is.
 void CGxDeviceD3d::BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t offset) {
     CGxDevice::BufData(buf, data, size, offset);
 
     auto bufData = this->IBufLock(buf);
-
-    // A failed lock returns null, and &bufData[offset] is then a small address rather than an
-    // obviously bad one: this crashed as a write to 0x20, which is simply offset 0x20 from null.
-    // That is the third place in this backend where an unchecked lock result was written through.
-    if (!bufData) {
-        return;
-    }
-
     memcpy(&bufData[offset], data, size);
+
     this->IBufUnlock(buf);
 }
 
@@ -464,6 +462,7 @@ void CGxDeviceD3d::CapsWindowSizeInScreenCoords(CRect& dst) {
     }
 }
 
+// ref: FUN_0069fb70
 int32_t CGxDeviceD3d::CreatePoolAPI(CGxPool* pool) {
     if (pool->m_target == GxPoolTarget_Vertex) {
         pool->m_apiSpecific = this->ICreateD3dVB(pool->m_usage, pool->m_size);
@@ -497,15 +496,19 @@ int32_t CGxDeviceD3d::DeviceCreate(int32_t (*windowProc)(void* window, uint32_t 
     return 0;
 }
 
+// ref: FUN_006904d0
+// The old device is destroyed before the new window and device are made (it was not), and a
+// failure tears both down and returns 0 (it fell off the end of the function, which is
+// undefined behaviour).
 int32_t CGxDeviceD3d::DeviceSetFormat(const CGxFormat& format) {
     CGxDevice::Log("CGxDeviceD3d::DeviceSetFormat():");
     CGxDevice::Log(format);
 
     if (this->m_hwnd) {
-        ShowWindow(this->m_hwnd, 0);
+        ShowWindow(this->m_hwnd, SW_HIDE);
     }
 
-    // TODO
+    this->IDestroyD3dDevice();
 
     if (this->m_hwnd) {
         DestroyWindow(this->m_hwnd);
@@ -517,10 +520,9 @@ int32_t CGxDeviceD3d::DeviceSetFormat(const CGxFormat& format) {
 
     CGxFormat createFormat = format;
 
-    if (this->ICreateWindow(createFormat) && this->ICreateD3dDevice(createFormat) && this->CGxDevice::DeviceSetFormat(format)) {
+    if (this->ICreateWindow(createFormat) && this->ICreateD3dDevice(createFormat) && this->CGxDevice::DeviceSetFormat(createFormat)) {
         this->intF64 = 1;
-
-        // TODO
+        this->m_cursorDirty = 1;
 
         if (this->m_format.window == 0) {
             RECT windowRect;
@@ -530,6 +532,18 @@ int32_t CGxDeviceD3d::DeviceSetFormat(const CGxFormat& format) {
 
         return 1;
     }
+
+    CGxDevice::Log("CGxDeviceD3d::DeviceSetFormat(): unable to set format!");
+
+    this->IDestroyD3dDevice();
+
+    if (this->m_hwnd) {
+        DestroyWindow(this->m_hwnd);
+    }
+
+    this->m_hwnd = nullptr;
+
+    return 0;
 }
 
 void* CGxDeviceD3d::DeviceWindow() {
@@ -801,21 +815,28 @@ void CGxDeviceD3d::DsSet(EDeviceState state, uint32_t val) {
     this->m_deviceStates[state] = val;
 }
 
+// ref: FUN_0068fb10
+// Every way of not getting real buffer memory -- no context, no D3D buffer, a failed lock --
+// ends in the device scratch for the pool's target rather than null. The reference also guards
+// the touch of the first byte with a structured exception handler and takes the same scratch
+// path if it faults; frozen does not reproduce the SEH frame.
 char* CGxDeviceD3d::IBufLock(CGxBuf* buf) {
+    auto pool = buf->m_pool;
+
     if (!this->m_context) {
-        // TODO
-        return nullptr;
+        return this->m_bufScratch[pool->m_target].Lock(buf->m_size);
     }
 
-    auto pool = buf->m_pool;
     uint32_t lockFlags = 0x0;
 
     if (pool->m_usage == GxPoolUsage_Stream) {
-        auto v6 = buf->m_itemSize + pool->unk1C - 1 - (buf->m_itemSize + pool->unk1C - 1) % buf->m_itemSize;
-        if (buf->m_size + v6 <= pool->m_size) {
+        uint32_t index = buf->m_itemSize + pool->unk1C - 1;
+        index -= index % buf->m_itemSize;
+
+        if (buf->m_size + index <= pool->m_size) {
             lockFlags = D3DLOCK_NOOVERWRITE;
-            buf->m_index = v6;
-            pool->unk1C = buf->m_size + v6;
+            buf->m_index = index;
+            pool->unk1C = buf->m_size + index;
         } else {
             lockFlags = D3DLOCK_DISCARD;
             pool->Discard();
@@ -826,21 +847,16 @@ char* CGxDeviceD3d::IBufLock(CGxBuf* buf) {
         lockFlags = D3DLOCK_NOOVERWRITE;
     }
 
+    char* data = nullptr;
+
     if (!pool->m_apiSpecific) {
         this->CreatePoolAPI(pool);
     }
 
     if (!pool->m_apiSpecific) {
-        // TODO
-        return nullptr;
+        return this->m_bufScratch[pool->m_target].Lock(buf->m_size);
     }
 
-    // Invalid target
-    if (pool->m_target >= GxPoolTargets_Last) {
-        return nullptr;
-    }
-
-    char* data = nullptr;
     HRESULT lockResult = S_OK;
 
     if (pool->m_target == GxPoolTarget_Vertex) {
@@ -852,31 +868,37 @@ char* CGxDeviceD3d::IBufLock(CGxBuf* buf) {
     }
 
     if (SUCCEEDED(lockResult)) {
+        // Touch the first byte while the lock is fresh, as the reference does.
         if (buf->m_size) {
-            // TODO
-
             if (pool->m_usage == GxPoolUsage_Stream) {
                 *data = 0;
             } else {
                 *data = *data;
             }
-
-            // TODO
         }
-    } else {
-        this->IBufUnlock(buf);
 
-        // TODO
-        return nullptr;
+        return data;
     }
 
-    return data;
+    this->IBufUnlock(buf);
+
+    return this->m_bufScratch[pool->m_target].Lock(buf->m_size);
 }
 
+// ref: FUN_0068fa60
+// A lock that was served from the scratch is undone there; the buffer is marked as not written
+// (unk1D) and the device asks for a full re-sync (intF5C, reference +0xf5c).
 void CGxDeviceD3d::IBufUnlock(CGxBuf* buf) {
-    // TODO
-
     auto pool = buf->m_pool;
+    auto& scratch = this->m_bufScratch[pool->m_target];
+
+    if (scratch.m_locked) {
+        scratch.Unlock();
+        buf->unk1D = 0;
+        this->intF5C = 1;
+
+        return;
+    }
 
     if (pool->m_target == GxPoolTarget_Vertex) {
         auto d3dBuf = static_cast<LPDIRECT3DVERTEXBUFFER9>(pool->m_apiSpecific);
@@ -889,6 +911,7 @@ void CGxDeviceD3d::IBufUnlock(CGxBuf* buf) {
     }
 }
 
+// ref: FUN_00690680
 int32_t CGxDeviceD3d::ICreateD3d() {
     if (CGxDeviceD3d::ILoadD3dLib(this->m_d3dLib, this->m_d3d) && SUCCEEDED(this->m_d3d->GetDeviceCaps(0, D3DDEVTYPE_HAL, &this->m_d3dCaps))) {
         if (this->m_desktopDisplayMode.Format != D3DFMT_UNKNOWN) {
@@ -950,6 +973,7 @@ int32_t CGxDeviceD3d::ICreateD3dDevice(const CGxFormat& format) {
     return 0;
 }
 
+// ref: FUN_0068e180
 LPDIRECT3DINDEXBUFFER9 CGxDeviceD3d::ICreateD3dIB(EGxPoolUsage usage, uint32_t size) {
     uint32_t d3dUsage = this->m_d3dIsHwDevice ? D3DUSAGE_WRITEONLY : D3DUSAGE_SOFTWAREPROCESSING;
     D3DPOOL d3dPool = D3DPOOL_MANAGED;
@@ -968,6 +992,9 @@ LPDIRECT3DINDEXBUFFER9 CGxDeviceD3d::ICreateD3dIB(EGxPoolUsage usage, uint32_t s
     return nullptr;
 }
 
+// ref: FUN_0069fb00
+// No FVF: the reference passes 0. This passed D3DFMT_INDEX16 (0x65) here, copied from the index
+// buffer twin, which D3D reads as a set of FVF bits and fixes the buffer's vertex layout to.
 LPDIRECT3DVERTEXBUFFER9 CGxDeviceD3d::ICreateD3dVB(EGxPoolUsage usage, uint32_t size) {
     uint32_t d3dUsage = this->m_d3dIsHwDevice ? D3DUSAGE_WRITEONLY : D3DUSAGE_SOFTWAREPROCESSING;
     D3DPOOL d3dPool = D3DPOOL_MANAGED;
@@ -979,7 +1006,7 @@ LPDIRECT3DVERTEXBUFFER9 CGxDeviceD3d::ICreateD3dVB(EGxPoolUsage usage, uint32_t 
 
     LPDIRECT3DVERTEXBUFFER9 vertexBuf = nullptr;
 
-    if (SUCCEEDED(this->m_d3dDevice->CreateVertexBuffer(size, d3dUsage, D3DFMT_INDEX16, d3dPool, &vertexBuf, nullptr))) {
+    if (SUCCEEDED(this->m_d3dDevice->CreateVertexBuffer(size, d3dUsage, 0, d3dPool, &vertexBuf, nullptr))) {
         return vertexBuf;
     }
 
@@ -1068,13 +1095,67 @@ void CGxDeviceD3d::IDestroyD3d() {
     CGxDeviceD3d::IUnloadD3dLib(this->m_d3dLib, this->m_d3d);
 }
 
+// ref: FUN_006903b0
+// Everything the device created is released before the device itself, so DeviceSetFormat can
+// build a new one. This was an empty TODO: a format change created a second device beside the
+// first and kept drawing with the first one's textures, buffers and shaders.
+//
+// Not ported, recorded: the reference first destroys the two default shader sets ICreateD3dDevice
+// loads (Shaders\Vertex, Shaders\Pixel), calls the cursor teardown (vtable slot 3,
+// FUN_006a00c0), destroys the 8x8 placeholder texture at +0x3b58 and releases the NVAPI stereo
+// handle. Frozen creates none of those yet.
 void CGxDeviceD3d::IDestroyD3dDevice() {
-    // TODO
+    this->IReleaseD3dResources(1);
+
+    // FUN_006a5680: the fourteen cached vertex declarations.
+    for (uint32_t i = 0; i < GxVertexBufferFormats_Last; i++) {
+        if (this->m_d3dVertexDecl[i]) {
+            this->m_d3dVertexDecl[i]->Release();
+            this->m_d3dVertexDecl[i] = nullptr;
+        }
+    }
+
+    this->m_d3dCurrentVertexDecl = nullptr;
+
+    if (this->m_d3dDevice) {
+        this->m_d3dDevice->Release();
+        this->m_d3dDevice = nullptr;
+    }
+}
+
+// ref: FUN_006a5e40
+// On a full release, every pixel and vertex shader drops its D3D object and is marked unloaded;
+// the next bind re-creates it on whatever device exists then.
+void CGxDeviceD3d::IReleaseD3dShaders(int32_t all) {
+    if (!all) {
+        return;
+    }
+
+    for (auto shader = this->m_shaderList[GxSh_Pixel].Head(); shader; shader = this->m_shaderList[GxSh_Pixel].Next(shader)) {
+        if (shader->apiSpecific) {
+            static_cast<IUnknown*>(shader->apiSpecific)->Release();
+            shader->apiSpecific = nullptr;
+            shader->loaded = 0;
+        }
+    }
+
+    for (auto shader = this->m_shaderList[GxSh_Vertex].Head(); shader; shader = this->m_shaderList[GxSh_Vertex].Next(shader)) {
+        if (shader->apiSpecific) {
+            static_cast<IUnknown*>(shader->apiSpecific)->Release();
+            shader->apiSpecific = nullptr;
+            shader->loaded = 0;
+        }
+    }
 }
 
 // The per-pool half of IReleaseD3dPools, lifted out unchanged so that PoolDestroy and the
 // device-lost walk release a pool the same way rather than by two copies of the same code.
+// ref: FUN_0068e1f0
 void CGxDeviceD3d::IPoolRelease(CGxPool* pool) {
+    if (pool->m_usage == GxPoolUsage_Stream) {
+        pool->unk1C = 0;
+    }
+
     pool->Invalidate();
 
     if (pool->m_apiSpecific) {
@@ -1090,6 +1171,7 @@ void CGxDeviceD3d::IPoolRelease(CGxPool* pool) {
     }
 }
 
+// ref: FUN_006a1c60
 void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
     for (auto pool = this->m_poolList.Head(); pool; pool = this->m_poolList.Next(pool)) {
         if (!a2) {
@@ -1161,6 +1243,7 @@ void CGxDeviceD3d::TexDestroy(CGxTex* texId) {
     CGxDevice::TexDestroy(texId);
 }
 
+// ref: FUN_00690150
 void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     static int32_t releases = 0;
 
@@ -1201,8 +1284,10 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
         this->m_d3dCurrentIndexBuf = nullptr;
     }
 
-    // Then the textures the reset destroys, so it leaves no dangling handles.
+    // Then the textures the reset destroys, so it leaves no dangling handles, and on a full
+    // release the shaders, as the reference does in this order.
     this->IReleaseD3dTextures(a2);
+    this->IReleaseD3dShaders(a2);
 
     // TODO
 
@@ -1938,38 +2023,37 @@ void CGxDeviceD3d::ISetCaps(const CGxFormat& format) {
     // TODO
 }
 
+// ref: FUN_0068e250
+// Two things were missing here: the back-buffer count, which is gxTripleBuffer's whenever vsync
+// is on (it was always 1), and the multisample quality, which the reference sets to the top
+// quality level D3D reports for the format scaled by gxMultisampleQuality (it was left at 0).
 void CGxDeviceD3d::ISetPresentParms(D3DPRESENT_PARAMETERS& d3dpp, const CGxFormat& format) {
     memset(&d3dpp, 0, sizeof(d3dpp));
 
-    if (format.window) {
+    if (!format.window) {
+        d3dpp.BackBufferWidth = format.size.x;
+        d3dpp.BackBufferHeight = format.size.y;
+        d3dpp.BackBufferFormat = CGxDeviceD3d::s_GxFormatToD3dFormat[format.colorFormat];
+        d3dpp.BackBufferCount = format.vsync ? format.backBufferCount : 1;
+        d3dpp.FullScreen_RefreshRateInHz = format.refreshRate;
+    } else {
         D3DDISPLAYMODE currentMode;
         D3DFORMAT backBufferFormat;
-        if (SUCCEEDED(this->m_d3d->GetAdapterDisplayMode(0, &currentMode))) {
-            backBufferFormat = currentMode.Format;
-        } else {
+
+        if (FAILED(this->m_d3d->GetAdapterDisplayMode(0, &currentMode))) {
             backBufferFormat = this->m_desktopDisplayMode.Format;
+        } else {
+            backBufferFormat = currentMode.Format;
         }
 
         auto& windowRect = this->DeviceCurWindow();
 
         d3dpp.Windowed = true;
-        d3dpp.BackBufferWidth = windowRect.maxX;
-        d3dpp.BackBufferHeight = windowRect.maxY;
+        d3dpp.BackBufferWidth = static_cast<UINT>(windowRect.maxX);
         d3dpp.BackBufferFormat = backBufferFormat;
-
-        if (format.vsync) {
-            // TODO d3dpp.BackBufferCount = format.int1C;
-            d3dpp.BackBufferCount = 1;
-        } else {
-            d3dpp.BackBufferCount = 1;
-        }
-
+        d3dpp.BackBufferHeight = static_cast<UINT>(windowRect.maxY);
+        d3dpp.BackBufferCount = format.vsync ? format.backBufferCount : 1;
         d3dpp.FullScreen_RefreshRateInHz = 0;
-    } else {
-        d3dpp.BackBufferWidth = format.size.x;
-        d3dpp.BackBufferHeight = format.size.y;
-        d3dpp.BackBufferFormat = CGxDeviceD3d::s_GxFormatToD3dFormat[format.colorFormat];
-        d3dpp.FullScreen_RefreshRateInHz = format.refreshRate;
     }
 
     d3dpp.hDeviceWindow = this->m_hwnd;
@@ -1978,30 +2062,38 @@ void CGxDeviceD3d::ISetPresentParms(D3DPRESENT_PARAMETERS& d3dpp, const CGxForma
     d3dpp.AutoDepthStencilFormat = CGxDeviceD3d::s_GxFormatToD3dFormat[format.depthFormat];
 
     switch (format.vsync) {
-    case 1:
-        d3dpp.PresentationInterval = 1;
-        break;
-    case 2:
-        d3dpp.PresentationInterval = format.window ? 1 : 2;
-        break;
-    case 3:
-        d3dpp.PresentationInterval = format.window ? 1 : 4;
-        break;
-    case 4:
-        d3dpp.PresentationInterval = format.window ? 1 : 8;
-        break;
-    default:
-        d3dpp.PresentationInterval = CW_USEDEFAULT;
-        break;
+        case 1:
+            d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+            break;
+        case 2:
+            d3dpp.PresentationInterval = format.window ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_TWO;
+            break;
+        case 3:
+            d3dpp.PresentationInterval = format.window ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_THREE;
+            break;
+        case 4:
+            d3dpp.PresentationInterval = format.window ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_FOUR;
+            break;
+        default:
+            d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+            break;
     }
 
-    if (format.multisampleCount <= 1) {
+    if (format.multisampleCount < 2) {
         d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-    } else {
-        d3dpp.MultiSampleType = static_cast<D3DMULTISAMPLE_TYPE>(format.multisampleCount);
-
-        // TODO MultiSampleQuality
+        return;
     }
+
+    d3dpp.MultiSampleType = static_cast<D3DMULTISAMPLE_TYPE>(format.multisampleCount);
+
+    DWORD qualityLevels = 0;
+
+    if (FAILED(this->m_d3d->CheckDeviceMultiSampleType(0, D3DDEVTYPE_HAL, d3dpp.BackBufferFormat,
+            format.window, d3dpp.MultiSampleType, &qualityLevels)) || qualityLevels < 2) {
+        qualityLevels = 1;
+    }
+
+    d3dpp.MultiSampleQuality = static_cast<DWORD>(static_cast<float>(qualityLevels - 1) * format.multisampleQuality);
 }
 
 // ref: FUN_006a4900

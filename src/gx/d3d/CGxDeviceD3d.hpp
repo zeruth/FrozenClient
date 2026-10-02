@@ -240,6 +240,9 @@ class CGxDeviceD3d : public CGxDevice {
     LPDIRECT3DSURFACE9 m_defColorSurface = nullptr;
     LPDIRECT3DSURFACE9 m_defDepthSurface = nullptr;
     LPDIRECT3DVERTEXDECLARATION9 m_d3dCurrentVertexDecl;
+    // Reference +0x3b4c: the hardware cursor image needs re-uploading. DeviceSetFormat and the
+    // cursor setter raise it; the per-frame cursor upload (FUN_0068e810, not ported) clears it.
+    int32_t m_cursorDirty = 0;
     LPDIRECT3DINDEXBUFFER9 m_d3dCurrentIndexBuf;
     LPDIRECT3DVERTEXBUFFER9 m_d3dVertexStreamBuf[8];
     uint32_t m_d3dVertexStreamOfs[8];
@@ -339,6 +342,7 @@ class CGxDeviceD3d : public CGxDevice {
     void IDestroyD3dDevice();
     void IReleaseD3dPools(int32_t a2);
     void IReleaseD3dTextures(int32_t all);
+    void IReleaseD3dShaders(int32_t all);
     virtual void IPoolRelease(CGxPool* pool);
     void IReleaseD3dResources(int32_t a2);
     void ISceneBegin();

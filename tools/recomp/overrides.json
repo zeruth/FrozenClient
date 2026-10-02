@@ -3606,5 +3606,9 @@
     "frozen": "CGxDeviceD3d::ITexMarkAsUpdated",
     "status": "faithful",
     "note": "Checked 2026-10-01 against the decompilation, condition for condition: needs an update and a context; create when creation is pending or there is no object; then, if an object exists, upload when there is a callback and clear the update. The branch gate reads 0.44 only because the reference compiles each || chain into separate compares."
+  },
+  "006a1690": {
+    "status": "unlinked",
+    "note": "the callgraph matcher proposed `CGxDeviceD3d::ResetRsSendCaches` for this on 2026-10-01; it is not that. It walks a linked list headed at device +0x2930 and releases the COM object each node holds (node +0, next at +0xc); ResetRsSendCaches only resets cached state values. Called from IReleaseD3dResources (FUN_00690150) and the D3D9Ex equivalent; frozen has no such list yet."
   }
 }
