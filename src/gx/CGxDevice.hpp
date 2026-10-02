@@ -8,6 +8,7 @@
 #include "gx/CGxStateBom.hpp"
 #include "gx/Types.hpp"
 #include "gx/Shader.hpp"
+#include "gx/texture/CGxTex.hpp"
 #include <cstdint>
 #include <storm/Hash.hpp>
 #include <tempest/Box.hpp>
@@ -194,6 +195,8 @@ class CGxDevice {
         uint32_t m_appMasterEnables = 0;
         uint32_t m_hwMasterEnables = 0;
         TSList<CGxPool, TSGetLink<CGxPool>> m_poolList;
+        // Reference +0x2904: every live texture, newest first.
+        STORM_EXPLICIT_LIST(CGxTex, m_link) m_texList;
         CGxBuf* m_bufLocked[GxPoolTargets_Last] = {};
         CGxPool* m_vertexPool = nullptr;
         CGxPool* m_indexPool = nullptr;

@@ -1106,62 +1106,60 @@ void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
     }
 }
 
-namespace {
-
-// Direct3D destroys every D3DPOOL_DEFAULT resource on a device reset, and a render target texture
-// has to be in that pool. Nothing here tracked them, so after the first window resize their CGxTex
-// still held the dead pointer with m_needsCreation clear, and every later bind and read-back used
-// it. The symptom was baffling: the texture reported 1024x1024 in the right format, yet
-// GetLevelCount() answered 0 and GetSurfaceLevel returned D3DERR_INVALIDCALL, because the object
-// behind the pointer was gone. The shadow map had therefore not rendered at all since that reset.
+// ref: FUN_006a2aa0
+// Direct3D destroys every D3DPOOL_DEFAULT resource on a device reset, and a render target has to
+// live there. The reference walks the device's texture list and, for every texture holding a D3D
+// object -- every one when `all` is set, otherwise only render targets -- releases it, marks it
+// for re-creation and a full upload, and tells its owner (command 3) that the contents are gone.
+// This replaces a tracker frozen kept of its own for the same purpose (the 2026-09 resize fix:
+// a render target that outlived the reset made Reset fail with D3DERR_INVALIDCALL).
 //
-// A flat array is enough: there are only ever a handful of render targets, and they are created
-// once.
-const int32_t MAX_TRACKED_TARGETS = 32;
-CGxTex* s_renderTargets[MAX_TRACKED_TARGETS] = { nullptr };
+// Two divergences, both recorded here. The reference stores the device field at +0x3b58 into the
+// texture where frozen stores null; frozen does not model that field, and the texture is
+// re-created before anything reads it either way. And it ends by running the device's callback
+// array (vtable slot 6, gated on +0x3968), which frozen does not have.
+void CGxDeviceD3d::IReleaseD3dTextures(int32_t all) {
+    static CiRect s_emptyRect = { 0, 0, 0, 0 };
 
-void TrackRenderTarget(CGxTex* texId) {
-    if (!texId->m_flags.m_renderTarget) {
-        return;
-    }
-
-    for (int32_t i = 0; i < MAX_TRACKED_TARGETS; i++) {
-        if (s_renderTargets[i] == texId) {
-            return;
-        }
-
-        if (!s_renderTargets[i]) {
-            s_renderTargets[i] = texId;
-            return;
-        }
-    }
-
-    fprintf(stderr, "ITexCreate: more than %d render targets; the rest will not survive a device reset\n",
-            MAX_TRACKED_TARGETS);
-}
-
-void ForgetRenderTargets() {
-    for (int32_t i = 0; i < MAX_TRACKED_TARGETS; i++) {
-        auto texId = s_renderTargets[i];
-
-        if (!texId) {
+    for (auto texId = this->m_texList.Head(); texId; texId = this->m_texList.Next(texId)) {
+        if (!texId->m_apiSpecificData) {
             continue;
         }
 
-        if (texId->m_apiSpecificData) {
-            // Through IUnknown: the tracker holds plain, cube and depth-stencil textures, and they
-            // are not all LPDIRECT3DTEXTURE9. Release lives on IUnknown, so this is correct for all
-            // three instead of relying on the vtables happening to line up.
-            static_cast<IUnknown*>(texId->m_apiSpecificData)->Release();
-            texId->m_apiSpecificData = nullptr;
+        if (!all && !texId->m_flags.m_renderTarget) {
+            continue;
         }
 
-        // Rebuilt lazily: every bind already calls ITexCreate when this is set.
+        if (!texId->m_needsCreation && (texId->m_apiSpecificData || texId->m_apiSpecificData2)) {
+            static_cast<IUnknown*>(texId->m_apiSpecificData)->Release();
+        }
+
+        texId->m_apiSpecificData = nullptr;
         texId->m_needsCreation = 1;
+
+        this->TexMarkForUpdate(texId, s_emptyRect, 0);
+
+        // The reference calls it unconditionally; every texture it reaches there has one.
+        if (texId->m_userFunc) {
+            uint32_t texelStrideInBytes;
+            const void* texels;
+            texId->m_userFunc(static_cast<EGxTexCommand>(3), texId->m_width, texId->m_height, 0, 0,
+                texId->m_userArg, texelStrideInBytes, texels);
+        }
     }
 }
 
-} // namespace
+// ref: FUN_006a2bb0
+// Releases the D3D object, then hands the texture to the device to unlink and free. Before this
+// override existed every destroyed texture leaked its D3D object.
+void CGxDeviceD3d::TexDestroy(CGxTex* texId) {
+    if (!texId->m_needsCreation && (texId->m_apiSpecificData || texId->m_apiSpecificData2)) {
+        static_cast<IUnknown*>(texId->m_apiSpecificData)->Release();
+        texId->m_apiSpecificData = nullptr;
+    }
+
+    CGxDevice::TexDestroy(texId);
+}
 
 void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
     static int32_t releases = 0;
@@ -1203,8 +1201,8 @@ void CGxDeviceD3d::IReleaseD3dResources(int32_t a2) {
         this->m_d3dCurrentIndexBuf = nullptr;
     }
 
-    // Then drop the tracked render-target textures, so the reset leaves no dangling handles.
-    ForgetRenderTargets();
+    // Then the textures the reset destroys, so it leaves no dangling handles.
+    this->IReleaseD3dTextures(a2);
 
     // TODO
 
@@ -2812,99 +2810,61 @@ void CGxDeviceD3d::IStateSyncTexXform(uint32_t tmu) {
     texGen.m_dirty = 0;
 }
 
+// ref: FUN_006a2c00
+// Render targets go in D3DPOOL_DEFAULT, everything else in D3DPOOL_MANAGED. A depth format is
+// always one level of D3DFMT_D24X8. When an ordinary texture is refused the format is demoted for
+// good through s_tolerableTexFmtMapping and tried once more; a refused render target is not
+// retried. The three format tables were checked byte for byte against the reference's data at
+// 0x00a2f81c, 0x00a2f7e8 and 0x00ad8ef0 on 2026-10-01.
 void CGxDeviceD3d::ITexCreate(CGxTex* texId) {
     uint32_t width, height, startLevel, endLevel;
     this->ITexWHDStartEnd(texId, width, height, startLevel, endLevel);
 
-    texId->m_format = CGxDeviceD3d::s_GxTexFmtToUse[texId->m_format];
+    auto format = CGxDeviceD3d::s_GxTexFmtToUse[texId->m_format];
+    texId->m_format = format;
 
-    uint32_t d3dUsage = 0;
-    D3DPOOL d3dPool = D3DPOOL_MANAGED;
-
-    if (texId->m_flags.m_renderTarget) {
-        d3dUsage = D3DUSAGE_RENDERTARGET;
-        d3dPool = D3DPOOL_DEFAULT;
-    }
+    uint32_t d3dUsage = texId->m_flags.m_renderTarget ? D3DUSAGE_RENDERTARGET : 0;
+    D3DPOOL d3dPool = texId->m_flags.m_renderTarget ? D3DPOOL_DEFAULT : D3DPOOL_MANAGED;
 
     if (texId->m_flags.m_generateMipMaps) {
         d3dUsage |= D3DUSAGE_AUTOGENMIPMAP;
     }
 
-    // Cube map
+    HRESULT result;
+    void* d3dTexture = nullptr;
+
     if (texId->m_target == GxTex_CubeMap) {
-        auto d3dFormat = CGxDeviceD3d::s_GxTexFmtToD3dFmt[texId->m_format];
-        LPDIRECT3DCUBETEXTURE9 d3dTexture;
+        result = this->m_d3dDevice->CreateCubeTexture(width, endLevel - startLevel, d3dUsage,
+            CGxDeviceD3d::s_GxTexFmtToD3dFmt[format], d3dPool,
+            reinterpret_cast<LPDIRECT3DCUBETEXTURE9*>(&d3dTexture), nullptr);
+    } else if (format == GxTex_D24X8) {
+        result = this->m_d3dDevice->CreateTexture(width, height, 1, D3DUSAGE_DEPTHSTENCIL, D3DFMT_D24X8,
+            d3dPool, reinterpret_cast<LPDIRECT3DTEXTURE9*>(&d3dTexture), nullptr);
+    } else {
+        result = this->m_d3dDevice->CreateTexture(width, height, endLevel - startLevel, d3dUsage,
+            CGxDeviceD3d::s_GxTexFmtToD3dFmt[format], d3dPool,
+            reinterpret_cast<LPDIRECT3DTEXTURE9*>(&d3dTexture), nullptr);
 
-        if (SUCCEEDED(this->m_d3dDevice->CreateCubeTexture(width, endLevel - startLevel, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
-            texId->m_apiSpecificData = d3dTexture;
-            texId->m_needsCreation = 0;
-
-            // Anything created in D3DPOOL_DEFAULT has to be tracked, or the reset that destroys it
-            // cannot happen: Reset fails with D3DERR_INVALIDCALL while it is still alive.
-            if (d3dPool == D3DPOOL_DEFAULT) {
-                TrackRenderTarget(texId);
+        if (FAILED(result)) {
+            if (texId->m_flags.m_renderTarget) {
+                return;
             }
+
+            CGxDeviceD3d::s_GxTexFmtToUse[texId->m_format] = CGxDeviceD3d::s_tolerableTexFmtMapping[texId->m_format];
+            texId->m_format = CGxDeviceD3d::s_GxTexFmtToUse[texId->m_format];
+
+            result = this->m_d3dDevice->CreateTexture(width, height, endLevel - startLevel, d3dUsage,
+                CGxDeviceD3d::s_GxTexFmtToD3dFmt[texId->m_format], d3dPool,
+                reinterpret_cast<LPDIRECT3DTEXTURE9*>(&d3dTexture), nullptr);
         }
+    }
 
+    if (FAILED(result)) {
         return;
     }
 
-    // Depth stencil
-    if (texId->m_format == GxTex_D24X8) {
-        d3dUsage = D3DUSAGE_DEPTHSTENCIL;
-        auto d3dFormat = D3DFMT_D24X8;
-        LPDIRECT3DTEXTURE9 d3dTexture;
-
-        if (SUCCEEDED(this->m_d3dDevice->CreateTexture(width, height, 1, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
-            texId->m_apiSpecificData = d3dTexture;
-            texId->m_needsCreation = 0;
-
-            // THE resize bug: a depth-stencil texture for a render target lives in D3DPOOL_DEFAULT
-            // exactly like the colour one, but this branch returned before tracking it. It survived
-            // every IReleaseD3dResources, so Reset always answered D3DERR_INVALIDCALL.
-            if (d3dPool == D3DPOOL_DEFAULT) {
-                TrackRenderTarget(texId);
-            }
-        }
-
-        return;
-    }
-
-    // Ordinary texture
-    LPDIRECT3DTEXTURE9 d3dTexture;
-    auto d3dFormat = CGxDeviceD3d::s_GxTexFmtToD3dFmt[texId->m_format];
-
-    if (SUCCEEDED(this->m_d3dDevice->CreateTexture(width, height, endLevel - startLevel, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
-        texId->m_apiSpecificData = d3dTexture;
-        texId->m_needsCreation = 0;
-
-        TrackRenderTarget(texId);
-
-        return;
-    }
-
-    // A render target that fails to create is worth saying out loud: the caller keeps its CGxTex
-    // and every later bind and read-back of it fails for reasons that look unrelated to the format
-    // the device actually refused.
-    if (texId->m_flags.m_renderTarget) {
-        fprintf(stderr, "ITexCreate: RENDER TARGET %ux%u format %u (D3D %u) refused; trying fallback\n",
-                width, height, static_cast<unsigned>(texId->m_format), static_cast<unsigned>(d3dFormat));
-    }
-
-    // TODO flag check SLOBYTE(texId->m_flags)
-
-    // If texture creation failed, try again with a fallback format
-    CGxDeviceD3d::s_GxTexFmtToUse[texId->m_format] = CGxDeviceD3d::s_tolerableTexFmtMapping[texId->m_format];
-    texId->m_format = CGxDeviceD3d::s_GxTexFmtToUse[texId->m_format];
-    d3dFormat = CGxDeviceD3d::s_GxTexFmtToD3dFmt[texId->m_format];
-
-    if (SUCCEEDED(this->m_d3dDevice->CreateTexture(width, height, endLevel - startLevel, d3dUsage, d3dFormat, d3dPool, &d3dTexture, nullptr))) {
-        texId->m_apiSpecificData = d3dTexture;
-        texId->m_needsCreation = 0;
-    } else if (texId->m_flags.m_renderTarget) {
-        fprintf(stderr, "ITexCreate: RENDER TARGET fallback format %u ALSO refused; texture unusable\n",
-                static_cast<unsigned>(d3dFormat));
-    }
+    texId->m_apiSpecificData = d3dTexture;
+    texId->m_needsCreation = 0;
 }
 
 // Point the device at a texture's surface, or back at the frame buffer when the texture is null.
@@ -3178,6 +3138,7 @@ int32_t CGxDeviceD3d::IRenderTargetDump(CGxTex* texId, const char* path) {
     return result;
 }
 
+// ref: FUN_006a3070
 void CGxDeviceD3d::ITexMarkAsUpdated(CGxTex* texId) {
     if (!texId->m_needsUpdate || !this->m_context) {
         return;
@@ -3196,6 +3157,16 @@ void CGxDeviceD3d::ITexMarkAsUpdated(CGxTex* texId) {
     }
 }
 
+// ref: FUN_006a2d80
+// Ported from the decompilation on 2026-10-01; three behaviours changed with it.
+//  - The surface is asked for by its index in the D3D texture, counted from the first uploaded
+//    level, not by the absolute mip level. They differ whenever a base mip level is skipped
+//    (ITexWHDStartEnd), because ITexCreate only allocates the levels it uploads.
+//  - On a compressed format the 4-aligned rect is clamped to THIS level's size. It was clamped
+//    to the first level's, so a 2x2 DXT mip asked for a 4x4 lock, the lock failed, and the
+//    failure ended the upload: the smallest mips of every DXT texture were never written.
+//  - A level the owner latches no texels for is skipped, as is every level of a render target,
+//    instead of asserting.
 void CGxDeviceD3d::ITexUpload(CGxTex* texId) {
     uint32_t texelStrideInBytes;
     const void* texels = nullptr;
@@ -3208,100 +3179,91 @@ void CGxDeviceD3d::ITexUpload(CGxTex* texId) {
     uint32_t endLevel;
     this->ITexWHDStartEnd(texId, width, height, startLevel, endLevel);
 
-    int32_t numFace = texId->m_target == GxTex_CubeMap ? 6 : 1;
+    bool srcCompressed = texId->m_dataFormat == GxTex_Dxt1 || texId->m_dataFormat == GxTex_Dxt3 || texId->m_dataFormat == GxTex_Dxt5;
+    uint32_t numFace = texId->m_target == GxTex_CubeMap ? 6 : 1;
 
-    for (int32_t face = 0; face < numFace; face++) {
-        for (int32_t level = startLevel; level < endLevel; level++) {
+    for (uint32_t face = 0; face < numFace; face++) {
+        uint32_t levelWidth = width;
+        uint32_t levelHeight = height;
+        uint32_t surfaceLevel = 0;
+
+        for (uint32_t level = startLevel; level != endLevel; level++, surfaceLevel++) {
             texels = nullptr;
 
-            texId->m_userFunc(
-                GxTex_Latch,
-                texId->m_width >> level,
-                texId->m_height >> level,
-                face,
-                level,
-                texId->m_userArg,
-                texelStrideInBytes,
-                texels
-            );
+            texId->m_userFunc(GxTex_Latch, levelWidth, levelHeight, face, level, texId->m_userArg, texelStrideInBytes, texels);
 
-            STORM_ASSERT(texels != nullptr || texId->m_flags.m_renderTarget);
+            if (texels && !texId->m_flags.m_renderTarget) {
+                LPDIRECT3DSURFACE9 surface = nullptr;
+                HRESULT surfaceResult;
 
-            LPDIRECT3DSURFACE9 surface = nullptr;
-            HRESULT surfaceResult;
-
-            if (texId->m_target == GxTex_CubeMap) {
-                auto d3dTexture = static_cast<LPDIRECT3DCUBETEXTURE9>(texId->m_apiSpecificData);
-                surfaceResult = d3dTexture->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[face], level, &surface);
-            } else {
-                auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
-                surfaceResult = d3dTexture->GetSurfaceLevel(level, &surface);
-            }
-
-            if (FAILED(surfaceResult)) {
-                goto UNLOCK;
-            }
-
-            RECT rect = {
-                texId->m_updateRect.minX >> level,  // left
-                texId->m_updateRect.minY >> level,  // top
-                texId->m_updateRect.maxX >> level,  // right
-                texId->m_updateRect.maxY >> level,  // bottom
-            };
-
-            rect.right = std::max(rect.right, rect.left + 1);
-            rect.bottom = std::max(rect.bottom, rect.top + 1);
-
-            if (texId->m_format == GxTex_Dxt1 || texId->m_format == GxTex_Dxt3 || texId->m_format == GxTex_Dxt5) {
-                rect.left &= 0xFFFFFFFC;
-                rect.top &= 0xFFFFFFFC;
-                rect.bottom = (rect.bottom + 3) & 0xFFFFFFFC;
-                rect.right = (rect.right + 3) & 0xFFFFFFFC;
-
-                rect.bottom = std::min(rect.bottom, static_cast<LONG>(height));
-                rect.right = std::min(rect.right, static_cast<LONG>(width));
-            }
-
-            D3DLOCKED_RECT lockedRect;
-            if (FAILED(surface->LockRect(&lockedRect, &rect, 0x0))) {
-                surface->Release();
-                goto UNLOCK;
-            }
-
-            if (texId->m_flags.m_bit15) {
-                // TODO
-            }
-
-            C2iVector size = { rect.right - rect.left, rect.bottom - rect.top };
-
-            // The latched texels cover the whole mip level, so step the source to the update rect
-            auto srcTexels = static_cast<const uint8_t*>(texels);
-
-            if (srcTexels) {
-                bool srcCompressed = texId->m_dataFormat == GxTex_Dxt1 || texId->m_dataFormat == GxTex_Dxt3 || texId->m_dataFormat == GxTex_Dxt5;
-
-                if (srcCompressed) {
-                    uint32_t blockBytes = GxCalcTexelStrideInBytes(texId->m_dataFormat, 4);
-                    srcTexels += (rect.top >> 2) * texelStrideInBytes + (rect.left >> 2) * blockBytes;
+                if (texId->m_target == GxTex_CubeMap) {
+                    auto d3dTexture = static_cast<LPDIRECT3DCUBETEXTURE9>(texId->m_apiSpecificData);
+                    surfaceResult = d3dTexture->GetCubeMapSurface(CGxDeviceD3d::s_faceTypes[face], surfaceLevel, &surface);
                 } else {
-                    uint32_t texelBytes = GxCalcTexelStrideInBytes(texId->m_dataFormat, 1);
-                    srcTexels += rect.top * texelStrideInBytes + rect.left * texelBytes;
+                    auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
+                    surfaceResult = d3dTexture->GetSurfaceLevel(surfaceLevel, &surface);
                 }
+
+                if (FAILED(surfaceResult)) {
+                    goto UNLOCK;
+                }
+
+                RECT rect;
+                rect.left = texId->m_updateRect.minX >> level;
+                rect.top = texId->m_updateRect.minY >> level;
+                rect.right = std::max(rect.left + 1, static_cast<LONG>(texId->m_updateRect.maxX >> level));
+                rect.bottom = std::max(rect.top + 1, static_cast<LONG>(texId->m_updateRect.maxY >> level));
+
+                if (texId->m_format == GxTex_Dxt1 || texId->m_format == GxTex_Dxt3 || texId->m_format == GxTex_Dxt5) {
+                    rect.left &= ~3;
+                    rect.top &= ~3;
+                    rect.right = (rect.right + 3) & ~3;
+                    rect.bottom = (rect.bottom + 3) & ~3;
+
+                    rect.bottom = std::min(rect.bottom, static_cast<LONG>(levelHeight));
+                    rect.right = std::min(rect.right, static_cast<LONG>(levelWidth));
+                }
+
+                D3DLOCKED_RECT lockedRect;
+                if (FAILED(surface->LockRect(&lockedRect, &rect, 0x0))) {
+                    surface->Release();
+                    goto UNLOCK;
+                }
+
+                // The latched texels cover the whole level; step to the update rect, unless the
+                // owner set bit 15 to say it latched the rect alone.
+                auto srcTexels = static_cast<const uint8_t*>(texels);
+
+                if (!texId->m_flags.m_bit15) {
+                    if (srcCompressed) {
+                        uint32_t blockBytes = GxCalcTexelStrideInBytes(texId->m_dataFormat, 4);
+                        srcTexels += (rect.top >> 2) * texelStrideInBytes + (rect.left >> 2) * blockBytes;
+                    } else {
+                        uint32_t texelBytes = GxCalcTexelStrideInBytes(texId->m_dataFormat, 1);
+                        srcTexels += rect.top * texelStrideInBytes + rect.left * texelBytes;
+                    }
+                }
+
+                C2iVector size = { rect.right - rect.left, rect.bottom - rect.top };
+                auto dstFormat = GxGetBlitFormat(texId->m_format);
+                auto srcFormat = GxGetBlitFormat(texId->m_dataFormat);
+
+                Blit(size, BlitAlpha_0, srcTexels, texelStrideInBytes, srcFormat, lockedRect.pBits, lockedRect.Pitch, dstFormat);
+
+                surface->UnlockRect();
+                surface->Release();
             }
 
-            Blit(
-                size,
-                BlitAlpha_0,
-                srcTexels,
-                texelStrideInBytes,
-                GxGetBlitFormat(texId->m_dataFormat),
-                lockedRect.pBits,
-                lockedRect.Pitch,
-                GxGetBlitFormat(texId->m_format)
-            );
+            levelHeight >>= 1;
+            levelWidth >>= 1;
 
-            surface->UnlockRect();
-            surface->Release();
+            if (levelWidth == 0) {
+                levelWidth = 1;
+            }
+
+            if (levelHeight == 0) {
+                levelHeight = 1;
+            }
         }
     }
 
@@ -3310,8 +3272,7 @@ UNLOCK:
     texId->m_userFunc(GxTex_Unlock, texId->m_width, texId->m_height, 0, 0, texId->m_userArg, texelStrideInBytes, texels);
 
     if (!texId->m_flags.m_renderTarget) {
-        auto d3dTexture = static_cast<LPDIRECT3DTEXTURE9>(texId->m_apiSpecificData);
-        d3dTexture->PreLoad();
+        static_cast<LPDIRECT3DBASETEXTURE9>(texId->m_apiSpecificData)->PreLoad();
     }
 }
 

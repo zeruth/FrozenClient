@@ -2305,6 +2305,7 @@ addr	how	frozen	evidence
 00681470	annotated	GxTexDestroy	tag in src/gx/Texture.cpp
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
 00681790	annotated	GxMaxFpsBkSet	tag in src/gx/Gx.cpp
+006817b0	override	GxGetBlitFormat	
 00681890	override	CGxDevice::XformSetViewport	
 00681a20	annotated	GxBufData	tag in src/gx/Buffer.cpp
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
@@ -2338,12 +2339,14 @@ addr	how	frozen	evidence
 006847d0	annotated	CGxDevice::LightSet	tag in src/gx/CGxDevice.cpp
 00684850	annotated	CGxDevice::BufStream	tag in src/gx/CGxDevice.cpp
 006848a0	annotated	CGxDevice::TexMarkForUpdate	tag in src/gx/CGxDevice.cpp
+00684900	annotated	CGxDevice::ITexMarkAsUpdated	tag in src/gx/CGxDevice.cpp
 00684970	string	CGxDevice::IShaderLoad	unique "%s\%s\%s.bls"
 00685130	override	TSGrowableArray<enum EGxRenderState>::New	
 00685970	override	CGxDevice::IRsDirty	
 006859e0	override	CGxDevice::IRsForceUpdate	
 00685a70	override	CGxDevice::IRsForceUpdate	
 00685b50	override	CGxDevice::IRsSync	
+00685c00	annotated	CGxDevice::TexCreate	tag in src/gx/CGxDevice.cpp
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
 00685e40	callgraph	TSGrowableArray<unsigned char>::SetCount	only unmatched callee of 006aff10=CBLPFile::Open
 00685eb0	annotated	CGxDevice::MasterEnableSet	tag in src/gx/CGxDevice.cpp
@@ -2353,6 +2356,7 @@ addr	how	frozen	evidence
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
+00687980	annotated	CGxDevice::TexDestroy	tag in src/gx/CGxDevice.cpp
 00688290	callgraph	TSGrowableArray<CMapChunkBufBlock>::SetCount	only unmatched callee of 007ba3d0=CMap::FreeBufBlocks
 00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
@@ -2363,6 +2367,11 @@ addr	how	frozen	evidence
 006908b0	annotated	GxExtensionListContains	tag in src/gx/CGxDevice.cpp
 006909a0	override	CGxDeviceGLES::ISetCaps	
 0069ed50	string	CGxDeviceGLL::PatchVertexShader	unique " [%d..%d]%n"
+006a2aa0	annotated	CGxDeviceD3d::IReleaseD3dTextures	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a2bb0	annotated	CGxDeviceD3d::TexDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a2c00	annotated	CGxDeviceD3d::ITexCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a2d80	annotated	CGxDeviceD3d::ITexUpload	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a3070	override	CGxDeviceD3d::ITexMarkAsUpdated	
 006a3810	annotated	CGxDeviceD3d::IStateSyncEnables	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a3870	override	CGxDeviceD3d::IStateSyncClipPlanes	
 006a38d0	override	CGxDeviceD3d::IStateSyncScissorRect	
@@ -2386,6 +2395,7 @@ addr	how	frozen	evidence
 006a5a30	annotated	CGxDeviceD3d::IStateSyncWorldXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5aa0	annotated	CGxDeviceD3d::IStateSyncTexXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5c70	annotated	CGxDeviceD3d::IShaderBindPixel	tag in src/gx/d3d/CGxDeviceD3d.cpp
+006a5ef0	override	CGxDevice::ITexWHDStartEnd	
 006a99e0	override	CGxDeviceD3d::IXformSetViewport	
 006a9fe0	override	CGxDeviceD3d::IShaderConstantsFlush	
 006aa0d0	callgraph	CGxDeviceD3d::IShaderCreateVertex	only unmatched callee of 006aa2f0=CGxDeviceD3d::IShaderBindVertex

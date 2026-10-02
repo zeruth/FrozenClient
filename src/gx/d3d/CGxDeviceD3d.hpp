@@ -338,6 +338,7 @@ class CGxDeviceD3d : public CGxDevice {
     void IDestroyD3d();
     void IDestroyD3dDevice();
     void IReleaseD3dPools(int32_t a2);
+    void IReleaseD3dTextures(int32_t all);
     virtual void IPoolRelease(CGxPool* pool);
     void IReleaseD3dResources(int32_t a2);
     void ISceneBegin();
@@ -363,6 +364,7 @@ class CGxDeviceD3d : public CGxDevice {
     void IStateSyncWorldXform();
     void IStateSyncTexXform(uint32_t tmu);
     void ITexCreate(CGxTex* texId);
+    void TexDestroy(CGxTex* texId) override;
     void ITexUpload(CGxTex* texId);
     void IXformSetProjection(const C44Matrix& matrix);
     void IXformSetViewport();

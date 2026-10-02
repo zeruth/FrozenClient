@@ -3567,5 +3567,44 @@
     "frozen": "CGxDevice::XformSetViewport",
     "status": "faithful",
     "note": "Checked 2026-10-01 line for line against the decompilation: compare all six bounds against the stored viewport, return if equal, otherwise raise the viewport-dirty flag (+0xf6c, intF6C) and store them. The branch gate reads 0.17 only because the reference compiles the six-way equality into six x87 compare-and-branch pairs where frozen's single condition counts as one."
+  },
+  "006865b0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::RsPush` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this is a 4,268-byte routine that resets every render state to its default, calling IRsDirty for each one that changes; RsPush saves the state stack and calls nothing of the kind. Re-link any of these only from a call site or a body."
+  },
+  "00687740": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::ShaderConstantsClear` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this unlinks two list links (+0x24 and +0) after one call; frozen's fills both shadow constant banks with FLT_MAX. Re-link any of these only from a call site or a body."
+  },
+  "006877c0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::ShaderConstantsLock` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this allocates a 0x10-byte node from CGxDevice.cpp line 0x99f, fills it and hands it out; nothing to do with locking constants. Re-link any of these only from a call site or a body."
+  },
+  "00687820": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::ShaderConstantsSet` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this drops a reference count at +0x1c and, at zero, unlinks the object and destroys it through a per-target table at +0x2668. That reads like a shader release (frozen's ShaderDestroy has the same refcount shape) but it is left unlinked until a call site confirms it. Re-link any of these only from a call site or a body."
+  },
+  "00687870": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::ShaderConstantsUnlock` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this is a case-insensitive name lookup in a hash table (SStrHashHT, SStrCmpI). Re-link any of these only from a call site or a body."
+  },
+  "00687900": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::ShaderDestroy` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: a 55-byte function calling only BufCreate. Re-link any of these only from a call site or a body."
+  },
+  "006817b0": {
+    "frozen": "GxGetBlitFormat",
+    "status": "ported",
+    "note": "Identified 2026-10-01: `return table[format]` over 0x00ad8af8, called twice per level by the D3D texture upload (FUN_006a2d80) to turn the texture and data formats into blit formats, exactly where frozen calls GxGetBlitFormat."
+  },
+  "006a5ef0": {
+    "frozen": "CGxDevice::ITexWHDStartEnd",
+    "status": "faithful",
+    "note": "Checked 2026-10-01 against the decompilation: no mips unless the filter mips and mips are not generated (or tracking is forced); otherwise count levels down to 4 on the short edge for DXT and to 1 on the long edge for the rest, take the base level as min(device base mip, count - 1), shift the size by it, and with forced tracking stop one level past the base. The branch gate reads 0.33 because the reference compiles the filter test and the three-way DXT test into separate compares where frozen writes each as one condition."
+  },
+  "006a3070": {
+    "frozen": "CGxDeviceD3d::ITexMarkAsUpdated",
+    "status": "faithful",
+    "note": "Checked 2026-10-01 against the decompilation, condition for condition: needs an update and a context; create when creation is pending or there is no object; then, if an object exists, upload when there is a callback and clear the update. The branch gate reads 0.44 only because the reference compiles each || chain into separate compares."
   }
 }

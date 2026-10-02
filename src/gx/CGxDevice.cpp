@@ -946,6 +946,7 @@ void CGxDevice::IShaderLoad(CGxShader* shaders[], EGxShTarget target, const char
     }
 }
 
+// ref: FUN_00684900
 void CGxDevice::ITexMarkAsUpdated(CGxTex* texId) {
     if (!texId->m_needsUpdate) {
         return;
@@ -1675,6 +1676,7 @@ void CGxDevice::ShaderCreate(CGxShader* shaders[], EGxShTarget target, const cha
     this->IShaderLoad(shaders, target, a4, a5, permutations);
 }
 
+// ref: FUN_00685c00
 int32_t CGxDevice::TexCreate(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t depth, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags flags, void* userArg, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char* name, CGxTex*& texId) {
     auto m = SMemAlloc(sizeof(CGxTex), __FILE__, __LINE__, 0);
     auto tex = new (m) CGxTex(
@@ -1692,14 +1694,16 @@ int32_t CGxDevice::TexCreate(EGxTexTarget target, uint32_t width, uint32_t heigh
 
     texId = tex;
 
-    // TODO
-    // - link tex to list in device
+    this->m_texList.LinkToHead(tex);
 
     return 1;
 }
 
+// ref: FUN_00687980
+// Unlinks the texture from the device list and frees it. A backend releases its own object first
+// and then calls this.
 void CGxDevice::TexDestroy(CGxTex* texId) {
-    // TODO
+    texId->m_link.Unlink();
 
     if (texId) {
         delete texId;

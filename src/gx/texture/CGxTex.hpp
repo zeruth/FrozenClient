@@ -3,6 +3,7 @@
 
 #include "gx/Types.hpp"
 #include <cstdint>
+#include <storm/List.hpp>
 #include <tempest/Rect.hpp>
 
 class CGxTexFlags {
@@ -58,6 +59,10 @@ class CGxTex {
         void (*m_userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&);
         void* m_apiSpecificData;
         void* m_apiSpecificData2; // invented name
+        // Reference +0x40: the texture's link in the device's texture list (CGxDevice::m_texList).
+        // TexCreate links every texture at the head; the D3D device walks the list on a reset to
+        // release what the reset destroys. The destructor unlinks it.
+        TSLink<CGxTex> m_link;
         uint8_t m_needsUpdate;
         uint8_t m_needsCreation;
         uint8_t m_needsFlagUpdate;
