@@ -11,6 +11,7 @@ class CRandom {
         // Static functions
         static uint32_t dice(uint32_t sides, CRndSeed& seed);
         static uint32_t uint32(CRndSeed& seed);
+        static float uniform(float range, CRndSeed& seed);
 };
 
 #endif

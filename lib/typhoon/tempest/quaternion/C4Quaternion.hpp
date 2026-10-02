@@ -1,7 +1,10 @@
 #ifndef TEMPEST_QUATERNION_C_4QUATERNION_HPP
 #define TEMPEST_QUATERNION_C_4QUATERNION_HPP
 
+#include <cstdint>
+
 class C33Matrix;
+class C44Matrix;
 class C3Vector;
 
 class C4Quaternion {
@@ -28,6 +31,8 @@ class C4Quaternion {
         , w(w) {};
     // The rotation a 3x3 matrix describes. ref: FUN_009828b0
     explicit C4Quaternion(const C33Matrix& m);
+    explicit C4Quaternion(const C44Matrix& m);
+    explicit C4Quaternion(uint64_t packed);
     // A rotation of `angle` radians about a unit `axis`. ref: FUN_00982400
     C4Quaternion(float angle, const C3Vector& axis);
     // Scale to unit length, unless the length is too small to divide by. ref: FUN_00979110

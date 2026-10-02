@@ -1,3 +1,4 @@
+#include <cstring>
 #include "tempest/random/CRandom.hpp"
 #include "tempest/math/CMath.hpp"
 
@@ -68,4 +69,14 @@ uint32_t CRandom::uint32(CRndSeed& seed) {
     seed.rndvls = r4 | (r3 << 8) | ((r2 | (r1 << 8)) << 16);
 
     return acc;
+}
+
+// ref: FUN_00982310
+// A float in [0, range): the generator's low 23 bits as the mantissa of a number in [1, 2), less 1.
+float CRandom::uniform(float range, CRndSeed& seed) {
+    uint32_t bits = (CRandom::uint32(seed) & 0x7FFFFF) | 0x3F800000;
+    float unit;
+    memcpy(&unit, &bits, sizeof(unit));
+
+    return (unit - 1.0f) * range;
 }
