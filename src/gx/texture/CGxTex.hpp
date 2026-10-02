@@ -63,12 +63,19 @@ class CGxTex {
         // TexCreate links every texture at the head; the D3D device walks the list on a reset to
         // release what the reset destroys. The destructor unlinks it.
         TSLink<CGxTex> m_link;
+        // Reference +0x48: a second list link. The destructor unlinks it before m_link; which list
+        // it belongs to is not identified yet.
+        TSLink<CGxTex> m_link2;
         uint8_t m_needsUpdate;
         uint8_t m_needsCreation;
         uint8_t m_needsFlagUpdate;
+        // Reference +0x5d: set at creation, cleared when a flags change alters the filter. The reuse
+        // test (FUN_00681580) only hands back a texture that still has it.
+        uint8_t m_filterUnchanged;
 
         // Member functions
         CGxTex(EGxTexTarget, uint32_t, uint32_t, uint32_t, EGxTexFormat, EGxTexFormat, CGxTexFlags, void*, void (*)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char*);
+        ~CGxTex();
         float GetHeight(void);
         float GetWidth(void);
 };

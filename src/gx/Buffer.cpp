@@ -268,6 +268,7 @@ void GxPrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
     g_theGxDevicePtr->PrimVertexPtr(buf, format);
 }
 
+// ref: FUN_00682400
 void GxPrimVertexPtr(uint32_t vertexCount, const C3Vector* pos, uint32_t posStride, const C3Vector* normal, uint32_t normalStride, const CImVector* color, uint32_t colorStride, const C2Vector* tex0, uint32_t tex0Stride, const C2Vector* tex1, uint32_t tex1Stride) {
     // Select vertex buffer format based on given parameters
     auto format = GxVBF_P;
@@ -389,13 +390,15 @@ void GxPrimVertexPtr(uint32_t vertexCount, const C3Vector* pos, uint32_t posStri
     GxPrimVertexPtr(buf, format);
 }
 
+// ref: FUN_006828c0
+// The bone pointer and stride are accepted and dropped, as in the reference.
 void GxPrimLockVertexPtrs(uint32_t vertexCount, const C3Vector* pos, uint32_t posStride, const C3Vector* normal, uint32_t normalStride, const CImVector* color, uint32_t colorStride, const uint8_t* bone, uint32_t boneStride, const C2Vector* tex0, uint32_t tex0Stride, const C2Vector* tex1, uint32_t tex1Stride) {
-    BLIZZARD_ASSERT(Buffer::s_lockVertexCount == 0);
     Buffer::s_lockVertexCount = vertexCount;
 
     GxPrimVertexPtr(vertexCount, pos, posStride, normal, normalStride, color, colorStride, tex0, tex0Stride, tex1, tex1Stride);
 }
 
+// The reference has no out-of-line unlock and nothing in it ever clears the locked vertex count
+// (0x00c5df84 is written only by GxPrimLockVertexPtrs); its callers' unlock is an empty inline.
 void GxPrimUnlockVertexPtrs() {
-    Buffer::s_lockVertexCount = 0;
 }

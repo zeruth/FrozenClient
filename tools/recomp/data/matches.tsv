@@ -634,6 +634,7 @@ addr	how	frozen	evidence
 004b51c0	override	OsPathFindExtensionWithDot	
 004b5210	callgraph	FindSubstitution	only unmatched callee of 004b8be0=CreateBlpTexture
 004b53a0	annotated	TextureIsSame	tag in src/gx/Texture.cpp
+004b5430	callgraph	RampRect	only unmatched callee of 007e3980=ShadowSetLOD
 004b54f0	annotated	TextureHasAlpha	tag in src/gx/Texture.cpp
 004b5510	annotated	CalcLevelCountFlat	tag in src/gx/Texture.cpp
 004b55e0	annotated	TextureFreeMem	tag in src/gx/Texture.cpp
@@ -2301,6 +2302,7 @@ addr	how	frozen	evidence
 00681240	callgraph	GxVertexAttribOffset	only unmatched callee of 0097a2e0=CM2ParticleEmitter::SetupVertexCursor
 00681260	annotated	GxVertexBufferFormatHasAttrib	tag in src/gx/Buffer.cpp
 006813b0	override	GxSceneClear	
+006813d0	annotated	GxTexUpdate	tag in src/gx/Texture.cpp
 00681450	override	GxTexSetWrap	
 00681470	annotated	GxTexDestroy	tag in src/gx/Texture.cpp
 00681770	annotated	GxMaxFpsSet	tag in src/gx/Gx.cpp
@@ -2314,15 +2316,21 @@ addr	how	frozen	evidence
 00681ab0	annotated	GxPrimIndexPtr	tag in src/gx/Buffer.cpp
 00681b00	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
 00681be0	override	CGxTexFlags::CGxTexFlags	
-00681f20	callorder	GxTexUpdate	same slot between linked calls in 004b7bd0=PumpBlpTextureAsync, 007b9de0=CMapRenderChunk::BuildLayerAlphaTexture, 007b9ee0=CMapRenderChunk::BuildShadowTexture
+00681f20	annotated	GxTexUpdate	tag in src/gx/Texture.cpp
 00681f60	override	GxXformSetViewport	
 00682130	annotated	GxXformViewProj	tag in src/gx/Transform.cpp
+00682340	annotated	GxDrawLockedElements	tag in src/gx/Draw.cpp
+00682400	annotated	GxPrimVertexPtr	tag in src/gx/Buffer.cpp
+006828c0	annotated	GxPrimLockVertexPtrs	tag in src/gx/Buffer.cpp
 00682a00	callorder	GxScenePresent	same slot between linked calls in 0040a920=LoadingScreenUpdate
 00682c40	annotated	CGxBufScratch::Unlock	tag in src/gx/CGxDevice.cpp
 00682c50	annotated	CGxDevice::ILightsInvalidate	tag in src/gx/CGxDevice.cpp
+00682cb0	annotated	CGxDevice::DeviceCreate	tag in src/gx/CGxDevice.cpp
 00682d20	callgraph	GxCaps	only unmatched callee of 008740d0=ShadowMapQualitySupported
+00682d40	annotated	CGxDevice::IDevIsWindowed	tag in src/gx/CGxDevice.cpp
 00682d50	annotated	CGxDevice::RenderTargetGet	tag in src/gx/CGxDevice.cpp
 00682d70	override	CGxDevice::DeviceCurWindow	
+00682d80	annotated	CGxDevice::DeviceDefWindow	tag in src/gx/CGxDevice.cpp
 00682dc0	annotated	CGxDevice::WindowVisibleFlag	tag in src/gx/CGxDevice.cpp
 00682e20	annotated	CGxDevice::ContextFlag	tag in src/gx/CGxDevice.cpp
 00682e50	annotated	CGxDevice::ScenePresent	tag in src/gx/CGxDevice.cpp
@@ -2330,6 +2338,7 @@ addr	how	frozen	evidence
 00682eb0	annotated	CGxDevice::PrimVertexMask	tag in src/gx/CGxDevice.cpp
 00682ee0	annotated	CGxDevice::PrimVertexPtr	tag in src/gx/CGxDevice.cpp
 00682f10	annotated	CGxDevice::PrimIndexPtr	tag in src/gx/CGxDevice.cpp
+00682f40	annotated	CGxDevice::PrimCalcCount	tag in src/gx/CGxDevice.cpp
 00682fd0	annotated	CGxDevice::LightGet	tag in src/gx/CGxDevice.cpp
 00683080	annotated	CGxDevice::LightEnable	tag in src/gx/CGxDevice.cpp
 006830b0	annotated	MasterEnableChanged	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2343,6 +2352,7 @@ addr	how	frozen	evidence
 006836d0	annotated	CGxDevice::ILimitFrameRate	tag in src/gx/CGxDevice.cpp
 006839f0	sticky	WowClientDB<LiquidTypeRec>::GetRecord	held from the previous run, where it was sticky
 00683a20	annotated	CiRect::Intersection	tag in lib/typhoon/tempest/rect/CiRect.cpp
+00683b90	annotated	CGxMatrixStack::CGxMatrixStack	tag in src/gx/CGxMatrixStack.cpp
 006840f0	annotated	CGxDevice::DeviceSetFormat	tag in src/gx/CGxDevice.cpp
 00684360	annotated	CGxDevice::DeviceSetDefWindow	tag in src/gx/CGxDevice.cpp
 00684440	annotated	CGxDevice::ClipPlaneSet	tag in src/gx/CGxDevice.cpp
@@ -2357,12 +2367,14 @@ addr	how	frozen	evidence
 00684d10	annotated	CGxDevice::Log	tag in src/gx/CGxDevice.cpp
 00684d70	annotated	GxWindowFitToWorkArea	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00685130	override	TSGrowableArray<enum EGxRenderState>::New	
+006852c0	annotated	CGxTex::CGxTex	tag in src/gx/texture/CGxTex.cpp
 00685970	override	CGxDevice::IRsDirty	
 006859e0	override	CGxDevice::IRsForceUpdate	
 00685a70	override	CGxDevice::IRsForceUpdate	
 00685b50	override	CGxDevice::IRsSync	
-00685c00	annotated	CGxDevice::TexCreate	tag in src/gx/CGxDevice.cpp
+00685c60	annotated	CGxDevice::TexCreate	tag in src/gx/CGxDevice.cpp
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
+00685dc0	annotated	CGxTex::~CGxTex	tag in src/gx/texture/CGxTex.cpp
 00685e40	callgraph	TSGrowableArray<unsigned char>::SetCount	only unmatched callee of 00685e90=CGxBufScratch::Lock
 00685e90	annotated	CGxBufScratch::Lock	tag in src/gx/CGxDevice.cpp
 00685eb0	annotated	CGxDevice::MasterEnableSet	tag in src/gx/CGxDevice.cpp

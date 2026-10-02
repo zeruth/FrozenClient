@@ -1015,7 +1015,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/gx/LoadingScreen.cpp",
    "src/gx/loadingscreen.cpp"
@@ -10149,6 +10149,22 @@
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 131,
+  "status": "ported"
+ },
+ "004b5430": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/Shadow.cpp",
+   "src/world/shadow.cpp"
+  ],
+  "frozen": "RampRect",
+  "frozenSize": 0,
+  "how": "callgraph",
+  "module": "Texture.cpp",
+  "refSize": 41,
   "status": "ported"
  },
  "004b54f0": {
@@ -36764,6 +36780,22 @@
   "refSize": 29,
   "status": "ported"
  },
+ "006813d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexUpdate",
+  "frozenSize": 105,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
  "00681450": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -36983,7 +37015,7 @@
   ],
   "frozen": "GxTexUpdate",
   "frozenSize": 105,
-  "how": "callorder",
+  "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 57,
   "status": "ported"
@@ -37018,6 +37050,54 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 193,
+  "status": "ported"
+ },
+ "00682340": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "GxDrawLockedElements",
+  "frozenSize": 137,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
+ "00682400": {
+  "branchRatio": 0.439,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxPrimVertexPtr",
+  "frozenSize": 1142,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 897,
+  "status": "ported"
+ },
+ "006828c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Buffer.cpp",
+   "src/gx/buffer.cpp"
+  ],
+  "frozen": "GxPrimLockVertexPtrs",
+  "frozenSize": 103,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 62,
   "status": "ported"
  },
  "00682a00": {
@@ -37068,6 +37148,22 @@
   "refSize": 88,
   "status": "ported"
  },
+ "00682cb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::DeviceCreate",
+  "frozenSize": 17,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 27,
+  "status": "ported"
+ },
  "00682d20": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37082,6 +37178,22 @@
   "how": "callgraph",
   "module": "DBCache.cpp",
   "refSize": 7,
+  "status": "ported"
+ },
+ "00682d40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::IDevIsWindowed",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 8,
   "status": "ported"
  },
  "00682d50": {
@@ -37112,6 +37224,22 @@
   "frozen": "CGxDevice::DeviceCurWindow",
   "frozenSize": 5,
   "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
+ "00682d80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::DeviceDefWindow",
+  "frozenSize": 5,
+  "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 7,
   "status": "ported"
@@ -37226,6 +37354,22 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 44,
+  "status": "ported"
+ },
+ "00682f40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::PrimCalcCount",
+  "frozenSize": 38,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 38,
   "status": "ported"
  },
  "00682fd0": {
@@ -37431,6 +37575,22 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 88,
+  "status": "ported"
+ },
+ "00683b90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxMatrixStack.cpp",
+   "src/gx/cgxmatrixstack.cpp"
+  ],
+  "frozen": "CGxMatrixStack::CGxMatrixStack",
+  "frozenSize": 90,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 336,
   "status": "ported"
  },
  "006840f0": {
@@ -37654,6 +37814,22 @@
   "refSize": 73,
   "status": "ported"
  },
+ "006852c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/texture/CGxTex.cpp",
+   "src/gx/texture/cgxtex.cpp"
+  ],
+  "frozen": "CGxTex::CGxTex",
+  "frozenSize": 188,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 163,
+  "status": "ported"
+ },
  "00685970": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -37718,10 +37894,10 @@
   "refSize": 174,
   "status": "ported"
  },
- "00685c00": {
+ "00685c60": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
@@ -37730,8 +37906,8 @@
   "frozen": "CGxDevice::TexCreate",
   "frozenSize": 180,
   "how": "annotated",
-  "module": "DBCache.cpp",
-  "refSize": 83,
+  "module": "CGxDevice.cpp",
+  "refSize": 107,
   "status": "ported"
  },
  "00685d40": {
@@ -37748,6 +37924,22 @@
   "how": "callgraph",
   "module": "CGxDevice.cpp",
   "refSize": 127,
+  "status": "ported"
+ },
+ "00685dc0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/CGxTex.cpp",
+   "src/gx/texture/cgxtex.cpp"
+  ],
+  "frozen": "CGxTex::~CGxTex",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxDevice.cpp",
+  "refSize": 118,
   "status": "ported"
  },
  "00685e40": {
@@ -37830,8 +38022,8 @@
  "00686120": {
   "branchRatio": 0.0,
   "constOverlap": 0.021,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -55341,8 +55533,8 @@
  "007e3980": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/world/Shadow.cpp",
    "src/world/shadow.cpp"

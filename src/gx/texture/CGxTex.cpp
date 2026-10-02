@@ -30,6 +30,7 @@ bool CGxTexFlags::operator==(const CGxTexFlags& texFlags) {
         && this->m_bit15 == texFlags.m_bit15;
 }
 
+// ref: FUN_006852c0
 CGxTex::CGxTex(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t depth, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags flags, void* userArg, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char* name) {
     this->m_updateRect = { 0, 0, static_cast<int32_t>(height), static_cast<int32_t>(width) };
     this->m_target = target;
@@ -46,8 +47,13 @@ CGxTex::CGxTex(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t de
     this->m_needsUpdate = 1;
     this->m_needsFlagUpdate = 1;
     this->m_needsCreation = 1;
+    this->m_filterUnchanged = 1;
+}
 
-    // TODO remaining constructor logic
+// ref: FUN_00685dc0
+CGxTex::~CGxTex() {
+    this->m_link2.Unlink();
+    this->m_link.Unlink();
 }
 
 float CGxTex::GetHeight() {

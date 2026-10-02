@@ -67023,9 +67023,9 @@
 "consts": [],
 "branches": 0,
 "stub": false,
-"lines": 6,
+"lines": 5,
 "refs": [],
-"line": 392
+"line": 395
 },
 "GxPrimUnlockVertexPtrs": {
 "files": [
@@ -67033,14 +67033,12 @@
 ],
 "callseq": [],
 "strings": [],
-"consts": [
-"0"
-],
+"consts": [],
 "branches": 0,
 "stub": false,
-"lines": 3,
+"lines": 2,
 "refs": [],
-"line": 399
+"line": 403
 },
 "CGxPool::Discard": {
 "files": [
@@ -67449,7 +67447,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 465
+"line": 466
 },
 "CGxDevice::WinAdapterMonitorModes": {
 "files": [
@@ -67478,7 +67476,7 @@
 "stub": false,
 "lines": 31,
 "refs": [],
-"line": 475
+"line": 476
 },
 "CGxDevice::CGxDevice": {
 "files": [
@@ -67501,7 +67499,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 508
+"line": 509
 },
 "CGxDevice::BufCreate": {
 "files": [
@@ -67522,7 +67520,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 527
+"line": 528
 },
 "CGxBufScratch::Lock": {
 "files": [
@@ -67541,7 +67539,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 537
+"line": 538
 },
 "CGxBufScratch::Unlock": {
 "files": [
@@ -67556,7 +67554,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 548
+"line": 549
 },
 "CGxDevice::BufLock": {
 "files": [
@@ -67572,7 +67570,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 553
+"line": 554
 },
 "CGxDevice::BufStream": {
 "files": [
@@ -67589,7 +67587,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 563
+"line": 564
 },
 "CGxDevice::BufUnlock": {
 "files": [
@@ -67604,7 +67602,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 580
+"line": 581
 },
 "CGxDevice::BufData": {
 "files": [
@@ -67620,7 +67618,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 587
+"line": 588
 },
 "CGxDevice::Caps": {
 "files": [
@@ -67633,7 +67631,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 592
+"line": 593
 },
 "CGxDevice::DeviceCreate": {
 "files": [
@@ -67648,7 +67646,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 596
+"line": 598
 },
 "CGxDevice::DeviceCreatePools": {
 "files": [
@@ -67667,7 +67665,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 602
+"line": 604
 },
 "CGxDevice::DeviceCreateStreamBufs": {
 "files": [
@@ -67685,7 +67683,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 621
+"line": 623
 },
 "CGxDevice::DeviceCurWindow": {
 "files": [
@@ -67698,7 +67696,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 637
+"line": 639
 },
 "CGxDevice::ILimitFrameRate": {
 "files": [
@@ -67724,7 +67722,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 649
+"line": 651
 },
 "CGxDevice::ILightsInvalidate": {
 "files": [
@@ -67740,7 +67738,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 676
+"line": 678
 },
 "CGxDevice::DeviceSetFormat": {
 "files": [
@@ -67760,7 +67758,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 687
+"line": 689
 },
 "CGxDevice::DeviceSetCurWindow": {
 "files": [
@@ -67775,7 +67773,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 704
+"line": 706
 },
 "CGxDevice::DeviceSetDefWindow": {
 "files": [
@@ -67791,7 +67789,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 709
+"line": 711
 },
 "CGxDevice::DeviceDefWindow": {
 "files": [
@@ -67804,7 +67802,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 714
+"line": 717
 },
 "CGxDevice::ICursorCreate": {
 "files": [
@@ -67817,7 +67815,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 718
+"line": 721
 },
 "CGxDevice::IDevIsWindowed": {
 "files": [
@@ -67830,7 +67828,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 722
+"line": 726
 },
 "CGxDevice::IRsDirty": {
 "files": [
@@ -67852,7 +67850,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 735
+"line": 739
 },
 "CGxDevice::IRsForceUpdate": {
 "files": [
@@ -67880,7 +67878,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 757
+"line": 761
 },
 "CGxDevice::IRsInit": {
 "files": [
@@ -68082,7 +68080,7 @@
 "stub": false,
 "lines": 114,
 "refs": [],
-"line": 820
+"line": 824
 },
 "CGxDevice::IRsSync": {
 "files": [
@@ -68108,7 +68106,7 @@
 "stub": false,
 "lines": 20,
 "refs": [],
-"line": 935
+"line": 939
 },
 "CGxDevice::IShaderLoad": {
 "files": [
@@ -68142,7 +68140,7 @@
 "stub": false,
 "lines": 86,
 "refs": [],
-"line": 956
+"line": 960
 },
 "CGxDevice::ITexMarkAsUpdated": {
 "files": [
@@ -68159,7 +68157,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 1044
+"line": 1048
 },
 "CGxDevice::ITexWHDStartEnd": {
 "files": [
@@ -68181,7 +68179,7 @@
 "stub": false,
 "lines": 38,
 "refs": [],
-"line": 1059
+"line": 1063
 },
 "CGxDevice::ContextFlag": {
 "files": [
@@ -68196,7 +68194,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1100
+"line": 1104
 },
 "CGxDevice::MasterEnable": {
 "files": [
@@ -68212,7 +68210,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1110
+"line": 1114
 },
 "CGxDevice::MasterEnableSet": {
 "files": [
@@ -68234,7 +68232,7 @@
 "stub": false,
 "lines": 32,
 "refs": [],
-"line": 1115
+"line": 1119
 },
 "CGxDevice::PrimIndexPtr": {
 "files": [
@@ -68250,7 +68248,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1149
+"line": 1153
 },
 "CGxLightState::Set": {
 "files": [
@@ -68281,7 +68279,7 @@
 "stub": false,
 "lines": 52,
 "refs": [],
-"line": 1180
+"line": 1184
 },
 "CGxDevice::LightSet": {
 "files": [
@@ -68299,7 +68297,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1241
+"line": 1245
 },
 "CGxDevice::LightGet": {
 "files": [
@@ -68321,7 +68319,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 1255
+"line": 1259
 },
 "CGxDevice::LightEnable": {
 "files": [
@@ -68336,7 +68334,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1282
+"line": 1286
 },
 "CGxDevice::ClipPlaneSet": {
 "files": [
@@ -68351,7 +68349,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 1292
+"line": 1296
 },
 "CGxDevice::ScissorSet": {
 "files": [
@@ -68366,7 +68364,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1309
+"line": 1313
 },
 "CGxDevice::PrimVertexFormat": {
 "files": [
@@ -68382,7 +68380,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1319
+"line": 1323
 },
 "CGxDevice::PrimVertexMask": {
 "files": [
@@ -68395,7 +68393,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1348
+"line": 1352
 },
 "CGxDevice::PrimVertexPtr": {
 "files": [
@@ -68408,7 +68406,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1355
+"line": 1359
 },
 "CGxDevice::BufDestroy": {
 "files": [
@@ -68428,7 +68426,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1361
+"line": 1365
 },
 "CGxDevice::PoolDestroy": {
 "files": [
@@ -68452,7 +68450,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1372
+"line": 1376
 },
 "CGxDevice::PoolCreate": {
 "files": [
@@ -68473,7 +68471,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1397
+"line": 1401
 },
 "CGxDevice::RenderTargetGet": {
 "files": [
@@ -68486,7 +68484,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1417
+"line": 1421
 },
 "CGxDevice::RenderTargetSet": {
 "files": [
@@ -68501,7 +68499,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1421
+"line": 1425
 },
 "CGxDevice::RenderTargetDump": {
 "files": [
@@ -68516,7 +68514,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1432
+"line": 1436
 },
 "CGxDevice::ScreenShot": {
 "files": [
@@ -68531,7 +68529,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1436
+"line": 1440
 },
 "CGxDevice::RsGet": {
 "files": [
@@ -68547,7 +68545,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1440
+"line": 1444
 },
 "CGxDevice::RsSet": {
 "files": [
@@ -68582,7 +68580,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1444
+"line": 1448
 },
 "CGxDevice::RsSetAlphaRef": {
 "files": [
@@ -68598,7 +68596,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1501
+"line": 1505
 },
 "CGxDevice::RsPop": {
 "files": [
@@ -68627,7 +68625,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1529
+"line": 1533
 },
 "CGxDevice::RsPush": {
 "files": [
@@ -68643,7 +68641,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1556
+"line": 1560
 },
 "CGxDevice::ScenePresent": {
 "files": [
@@ -68658,7 +68656,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1571
+"line": 1575
 },
 "CGxDevice::ShaderConstantsClear": {
 "files": [
@@ -68689,7 +68687,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1578
+"line": 1582
 },
 "CGxDevice::ShaderConstantsLock": {
 "files": [
@@ -68705,7 +68703,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1602
+"line": 1606
 },
 "CGxDevice::ShaderConstantsSet": {
 "files": [
@@ -68724,7 +68722,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1608
+"line": 1612
 },
 "CGxDevice::ShaderConstantsUnlock": {
 "files": [
@@ -68745,7 +68743,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1662
+"line": 1666
 },
 "CGxDevice::ShaderDestroy": {
 "files": [
@@ -68762,7 +68760,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1684
+"line": 1688
 },
 "CGxDevice::ShaderCreate": {
 "files": [
@@ -68791,7 +68789,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 1706
+"line": 1710
 },
 "CGxDevice::TexCreate": {
 "files": [
@@ -68814,7 +68812,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1775
+"line": 1779
 },
 "CGxDevice::TexDestroy": {
 "files": [
@@ -68829,7 +68827,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1800
+"line": 1804
 },
 "CGxDevice::TexMarkForUpdate": {
 "files": [
@@ -68849,7 +68847,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1809
+"line": 1813
 },
 "CGxDevice::TexSetWrap": {
 "files": [
@@ -68866,7 +68864,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1829
+"line": 1833
 },
 "CGxDevice::WindowVisibleFlag": {
 "files": [
@@ -68881,7 +68879,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1845
+"line": 1849
 },
 "CGxDevice::ValidateDraw": {
 "files": [
@@ -68894,7 +68892,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1854
+"line": 1858
 },
 "CGxDevice::XformPop": {
 "files": [
@@ -68909,7 +68907,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1858
+"line": 1862
 },
 "CGxDevice::XformProjection": {
 "files": [
@@ -68924,7 +68922,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1862
+"line": 1866
 },
 "CGxDevice::XformProjNative": {
 "files": [
@@ -68941,7 +68939,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1866
+"line": 1870
 },
 "CGxDevice::XformPush": {
 "files": [
@@ -68959,7 +68957,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1878
+"line": 1882
 },
 "CGxDevice::XformSet": {
 "files": [
@@ -68975,7 +68973,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1899
+"line": 1903
 },
 "CGxDevice::XformSetProjection": {
 "files": [
@@ -68990,7 +68988,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1903
+"line": 1907
 },
 "CGxDevice::XformSetView": {
 "files": [
@@ -69011,7 +69009,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1912
+"line": 1916
 },
 "CGxDevice::XformSetViewport": {
 "files": [
@@ -69026,7 +69024,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1922
+"line": 1926
 },
 "CGxDevice::XformView": {
 "files": [
@@ -69041,7 +69039,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1944
+"line": 1948
 },
 "CGxDevice::XformWorld": {
 "files": [
@@ -69056,7 +69054,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1951
+"line": 1955
 },
 "CGxDevice::XformViewport": {
 "files": [
@@ -69069,7 +69067,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1955
+"line": 1959
 },
 "GxExtensionListContains": {
 "files": [
@@ -69087,7 +69085,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1965
+"line": 1969
 },
 "AdapterFormatSort": {
 "files": [
@@ -69134,7 +69132,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 3
+"line": 4
 },
 "CGxMatrixStack::Pop": {
 "files": [
@@ -69150,7 +69148,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 7
+"line": 8
 },
 "CGxMatrixStack::Push": {
 "files": [
@@ -69168,7 +69166,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 15
+"line": 16
 },
 "CGxMatrixStack::Top": {
 "files": [
@@ -69183,7 +69181,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 26
+"line": 27
 },
 "CGxMatrixStack::TopConst": {
 "files": [
@@ -69196,7 +69194,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 32
+"line": 33
 },
 "CGxMatrixStack::SetIdentity": {
 "files": [
@@ -69214,7 +69212,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 41
+"line": 42
 },
 "CGxMonitorModeSort": {
 "files": [
@@ -71788,9 +71786,9 @@
 ],
 "branches": 1,
 "stub": false,
-"lines": 18,
+"lines": 16,
 "refs": [],
-"line": 10
+"line": 11
 },
 "GxSceneClear": {
 "files": [
@@ -71806,7 +71804,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 29
+"line": 28
 },
 "GxScenePresent": {
 "files": [
@@ -71821,7 +71819,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 33
+"line": 32
 },
 "GxSub682A00": {
 "files": [
@@ -71841,7 +71839,7 @@
 "stub": false,
 "lines": 6,
 "refs": [],
-"line": 37
+"line": 36
 },
 "GxuFlushDrawList": {
 "files": [
@@ -71854,7 +71852,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 44
+"line": 43
 },
 "GetCharacterWidth": {
 "files": [
@@ -78533,7 +78531,7 @@
 "src/gx/texture.cpp"
 ],
 "callseq": [
-"GxTexUpdate",
+"CGxDevice::TexMarkForUpdate",
 "CGxDevice::TexMarkForUpdate"
 ],
 "strings": [],
@@ -78542,7 +78540,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 613
+"line": 614
 },
 "GxuUpdateSingleColorTexture": {
 "files": [
@@ -78559,7 +78557,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 622
+"line": 624
 },
 "GetDefaultTexture": {
 "files": [
@@ -78572,7 +78570,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 649
+"line": 651
 },
 "GetTextureFormats": {
 "files": [
@@ -78593,7 +78591,7 @@
 "stub": false,
 "lines": 85,
 "refs": [],
-"line": 653
+"line": 655
 },
 "MippedImgAllocA": {
 "files": [
@@ -78616,7 +78614,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 739
+"line": 741
 },
 "MippedImgCalcSize": {
 "files": [
@@ -78632,7 +78630,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 764
+"line": 766
 },
 "MippedImgSet": {
 "files": [
@@ -78652,7 +78650,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 774
+"line": 776
 },
 "RequestImageDimensions": {
 "files": [
@@ -78671,7 +78669,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 790
+"line": 792
 },
 "UpdateBlpTextureAsync": {
 "files": [
@@ -78690,7 +78688,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 817
+"line": 819
 },
 "ReportTextureFailure": {
 "files": [
@@ -78713,7 +78711,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 859
+"line": 861
 },
 "ReportTextureAllocFailure": {
 "files": [
@@ -78734,7 +78732,7 @@
 "stub": false,
 "lines": 12,
 "refs": [],
-"line": 877
+"line": 879
 },
 "PumpBlpTextureAsync": {
 "files": [
@@ -78783,7 +78781,7 @@
 "stub": false,
 "lines": 156,
 "refs": [],
-"line": 890
+"line": 892
 },
 "FindSubstitution": {
 "files": [
@@ -78798,7 +78796,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 1047
+"line": 1049
 },
 "CreateBlpAsync": {
 "files": [
@@ -78811,7 +78809,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 1063
+"line": 1065
 },
 "CreateBlpSync": {
 "files": [
@@ -78847,7 +78845,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 1069
+"line": 1071
 },
 "CreateBlpTexture": {
 "files": [
@@ -78874,7 +78872,7 @@
 "stub": false,
 "lines": 27,
 "refs": [],
-"line": 1127
+"line": 1129
 },
 "CreateTgaTexture": {
 "files": [
@@ -78887,7 +78885,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 1183
+"line": 1185
 },
 "TextureCacheGetTexture": {
 "files": [
@@ -78909,7 +78907,7 @@
 "stub": false,
 "lines": 33,
 "refs": [],
-"line": 1189
+"line": 1191
 },
 "TextureCacheGetProcedural": {
 "files": [
@@ -78930,7 +78928,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1254
+"line": 1256
 },
 "TextureCacheNewTexture": {
 "files": [
@@ -78950,7 +78948,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1267
+"line": 1269
 },
 "TextureCalcMipCount": {
 "files": [
@@ -78967,7 +78965,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1283
+"line": 1285
 },
 "TextureCreate": {
 "files": [
@@ -79020,7 +79018,7 @@
 "stub": false,
 "lines": 117,
 "refs": [],
-"line": 1304
+"line": 1306
 },
 "TextureCreateSolid": {
 "files": [
@@ -79044,7 +79042,7 @@
 "stub": false,
 "lines": 16,
 "refs": [],
-"line": 1431
+"line": 1433
 },
 "TextureGetDimensions": {
 "files": [
@@ -79063,7 +79061,7 @@
 "stub": false,
 "lines": 22,
 "refs": [],
-"line": 1452
+"line": 1454
 },
 "TextureGetGxTex": {
 "files": [
@@ -79092,7 +79090,7 @@
 "stub": false,
 "lines": 55,
 "refs": [],
-"line": 1477
+"line": 1479
 },
 "TextureGetTexturePtr": {
 "files": [
@@ -79105,7 +79103,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1534
+"line": 1536
 },
 "TextureHasAlpha": {
 "files": [
@@ -79123,7 +79121,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1539
+"line": 1541
 },
 "TextureFreeMem": {
 "files": [
@@ -79142,7 +79140,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1550
+"line": 1552
 },
 "TextureGetTexFlags": {
 "files": [
@@ -79162,7 +79160,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1557
+"line": 1559
 },
 "TextureHasPendingData": {
 "files": [
@@ -79180,7 +79178,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1566
+"line": 1568
 },
 "TextureGetRefCount": {
 "files": [
@@ -79199,7 +79197,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1574
+"line": 1576
 },
 "TextureIncreasePriority": {
 "files": [
@@ -79212,7 +79210,7 @@
 "stub": true,
 "lines": 3,
 "refs": [],
-"line": 1599
+"line": 1601
 },
 "TextureInitialize": {
 "files": [
@@ -79234,7 +79232,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1603
+"line": 1605
 },
 "TextureIsSame": {
 "files": [
@@ -79256,7 +79254,7 @@
 "stub": false,
 "lines": 17,
 "refs": [],
-"line": 1618
+"line": 1620
 },
 "CGxTexFlags::operator==": {
 "files": [
@@ -79286,9 +79284,25 @@
 ],
 "branches": 0,
 "stub": false,
-"lines": 19,
+"lines": 18,
 "refs": [],
-"line": 33
+"line": 34
+},
+"CGxTex::~CGxTex": {
+"files": [
+"src/gx/texture/cgxtex.cpp"
+],
+"callseq": [
+"TSLink<CGxTex>::Unlink",
+"TSLink<CGxTex>::Unlink"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 54
 },
 "CGxTex::GetHeight": {
 "files": [
@@ -79301,7 +79315,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 53
+"line": 59
 },
 "CGxTex::GetWidth": {
 "files": [
@@ -79314,7 +79328,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 57
+"line": 63
 },
 "HASHKEY_TEXTUREFILE::operator==": {
 "files": [

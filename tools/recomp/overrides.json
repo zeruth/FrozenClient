@@ -3614,5 +3614,21 @@
   "0068fed0": {
     "status": "unlinked",
     "note": "the order matcher proposed a neighbouring frozen function for this on 2026-10-01; it is not that. It is the frame read-back behind the one-shot capture request (+0x2934): copies the back buffer, or an offscreen surface FUN_0068f6a0 makes when multisampled, into a caller buffer, converting 565 and 1555 to 8888. Frozen has no counterpart yet."
+  },
+  "00683760": {
+    "status": "excluded",
+    "note": "TSFixedArray<CGxAppRenderState>::SetCount (0x18-byte elements, SMemReAlloc then alloc-and-copy) instantiation, reached from the CGxDevice constructor; squall owns the template and frozen instantiates it inline. Identified 2026-10-02."
+  },
+  "00683810": {
+    "status": "excluded",
+    "note": "TSFixedArray<CGxStateBom>::SetCount (0x10-byte elements) instantiation, reached from the CGxDevice constructor; squall owns the template and frozen instantiates it inline. Identified 2026-10-02."
+  },
+  "00682f70": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::WinAdapterMonitorModes` for this on 2026-10-02; it is not that. It is the immediate-mode normal setter (vtable slot 47): stores a C3Vector at device +0x90 and raises bit 0x200 of the prim dirty mask at +0x160. Frozen has no immediate-mode prim API yet."
+  },
+  "00682fa0": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDevice::CGxDevice` for this on 2026-10-02; it is not that. It is the immediate-mode texcoord setter (vtable slot 46): stores a C2Vector at device +0x50 + 8n and raises bit 2<<n of the prim dirty mask. Frozen has no immediate-mode prim API yet."
   }
 }

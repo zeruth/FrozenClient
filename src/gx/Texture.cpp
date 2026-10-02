@@ -610,11 +610,13 @@ MipBits* TextureAllocMippedImg(PIXEL_FORMAT pixelFormat, uint32_t width, uint32_
     return nullptr;
 }
 
+// ref: FUN_00681f20
 void GxTexUpdate(CGxTex* texId, int32_t minX, int32_t minY, int32_t maxX, int32_t maxY, int32_t immediate) {
     CiRect rect = { minY, minX, maxY, maxX };
-    GxTexUpdate(texId, rect, immediate);
+    g_theGxDevicePtr->TexMarkForUpdate(texId, rect, immediate);
 }
 
+// ref: FUN_006813d0
 void GxTexUpdate(CGxTex* texId, CiRect& updateRect, int32_t immediate) {
     g_theGxDevicePtr->TexMarkForUpdate(texId, updateRect, immediate);
 }

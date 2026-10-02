@@ -7,6 +7,7 @@ void GxDraw(CGxBatch* batch, int32_t indexed) {
     g_theGxDevicePtr->Draw(batch, indexed);
 }
 
+// ref: FUN_00682340
 void GxDrawLockedElements(EGxPrim primType, uint32_t indexCount, const uint16_t* indices) {
     if (Buffer::s_lockVertexCount == 0) {
         return;
@@ -20,8 +21,6 @@ void GxDrawLockedElements(EGxPrim primType, uint32_t indexCount, const uint16_t*
     batch.m_maxIndex = Buffer::s_lockVertexCount - 1;
     batch.m_start = 0;
     batch.m_count = indexCount;
-
-    BLIZZARD_ASSERT(batch.m_count > 0);
 
     g_theGxDevicePtr->Draw(&batch, 1);
 }

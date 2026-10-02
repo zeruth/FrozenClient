@@ -462,6 +462,7 @@ void CGxDevice::OpenGlAdapterFormats(TSGrowableArray<CGxFormat>& adapterFormats)
 #endif
 }
 
+// ref: FUN_00682f40
 uint32_t CGxDevice::PrimCalcCount(EGxPrim primType, uint32_t count) {
     auto div = CGxDevice::s_primVtxDiv[primType];
     if (div != 1) {
@@ -593,6 +594,7 @@ const CGxCaps& CGxDevice::Caps() const {
     return this->m_caps;
 }
 
+// ref: FUN_00682cb0
 int32_t CGxDevice::DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat& format) {
     this->m_windowProc = windowProc;
 
@@ -711,6 +713,7 @@ void CGxDevice::DeviceSetDefWindow(CRect const& rect) {
     this->DeviceSetCurWindow(rect);
 }
 
+// ref: FUN_00682d80
 const CRect& CGxDevice::DeviceDefWindow() {
     return this->m_defWindowRect;
 }
@@ -719,6 +722,7 @@ void CGxDevice::ICursorCreate(const CGxFormat& format) {
     // TODO
 }
 
+// ref: FUN_00682d40
 int32_t CGxDevice::IDevIsWindowed() {
     return this->m_format.window;
 }
@@ -1771,7 +1775,7 @@ void CGxDevice::ShaderCreate(CGxShader* shaders[], EGxShTarget target, const cha
     this->IShaderLoad(shaders, target, a4, a5, permutations);
 }
 
-// ref: FUN_00685c00
+// ref: FUN_00685c60
 int32_t CGxDevice::TexCreate(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t depth, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags flags, void* userArg, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char* name, CGxTex*& texId) {
     auto m = SMemAlloc(sizeof(CGxTex), __FILE__, __LINE__, 0);
     auto tex = new (m) CGxTex(
