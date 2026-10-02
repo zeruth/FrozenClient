@@ -1,3 +1,10 @@
+#include "world/map/CMapObj.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "gx/Texture.hpp"
+#include "world/map/CMapLight.hpp"
+#include "world/DayNightLight.hpp"
+#include "world/LightZonePaths.hpp"
 #include "world/map/Particulates.hpp"
 #include "world/map/WaterRipples.hpp"
 #include "world/map/DetailDoodad.hpp"
@@ -1097,6 +1104,8 @@ void CWorld::Initialize() {
     ConsoleCommandRegister("showSimpleDoodads", ConsoleShowSimpleDoodads, GRAPHICS, nullptr);
     ConsoleCommandRegister("detailDoodadAlpha", ConsoleDetailDoodadAlpha, GRAPHICS, nullptr);
     ConsoleCommandRegister("characterAmbient", ConsoleCharacterAmbient, GRAPHICS, nullptr);
+
+    CWorld::InitializeLightZones();
 }
 
 int32_t CWorld::GetOutdoorParamsID() {
@@ -1471,7 +1480,14 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
     // nothing it falls back to the outdoor traversal rather than to the unported teardown.
     CWorldScene::UpdateCameraDef();
 
-    // TODO the day/night update FUN_007816f0 and the fog-end read into DAT_00cd7668
+    CWorld::UpdateDayNight(CWorld::s_forceDayNight | CWorld::s_reloadMap, &cameraPos);
+    CWorld::s_frameFogEnd = DayNightGetBlock()->fogEnd;
+
+    if (!g_theGxDevicePtr->MasterEnable(GxMasterEnable_Fog)) {
+        CWorld::s_frameFogEnd = 1e10f;
+    }
+
+    CWorld::s_forceDayNight = 0;
 
     if ((CWorld::s_enables & CWorld::Enable_Particulates) && CWorldScene::s_cameraLiquidType != 0) {
         CWorld::s_particulates->Update();
@@ -1979,4 +1995,317 @@ void CWorld::FreeFadeoutPool() {
         fadeout->~SWModelFadeout();
         SMemFree(fadeout, ".?AUSWModelFadeout@@", -2, 0);
     }
+}
+
+int32_t CWorld::s_forceDayNight;
+float CWorld::s_frameFogEnd;
+
+namespace {
+
+const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
+
+// One light zone (0x30 bytes): an outline on a map that forces a light on near and inside it.
+struct LightZone {
+    int32_t mapID;          // +0x00
+    int32_t unknown04;      // +0x04
+    int32_t lightID;        // +0x08
+    float* points;          // +0x0c, (x, y) pairs
+    int32_t count;          // +0x10
+    float offsetX;          // +0x14
+    float offsetY;          // +0x18
+    const char* path;       // +0x1c, an SVG path of L commands
+    float minX;             // +0x20
+    float minY;             // +0x24
+    float maxX;             // +0x28
+    float maxY;             // +0x2c
+};
+
+// The table as the reference's static constructor (0x009cdbc0) leaves it: every zone on map 571,
+// in tile units shifted by the same origin, with its bounds emptied for the parser to grow.
+LightZone s_lightZones[11] = {
+    { 571, -1, 914, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[0], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 825, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[1], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 959, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[2], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 862, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[3], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1847, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[4], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1703, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[5], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1796, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[6], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1777, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[7], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1792, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[8], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1589, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[9], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+    { 571, -1, 1740, nullptr, 0, -1.6623375f, -145.7316f, s_lightZonePaths[10], 3.4028235e38f, 3.4028235e38f, -3.4028235e38f, -3.4028235e38f },
+};
+
+// The terrain shadow's colour, as an 8x8 texture of one colour (DAT_00cd7554..DAT_00cd7878).
+HTEXTURE s_shadowModTexture;
+uint32_t s_shadowModTexels[64];
+uint32_t s_shadowModColor;
+
+// ref: FUN_0077f4c0
+void ShadowModCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uint32_t mip, void* userArg, uint32_t& stride, const void*& texels) {
+    if (cmd == GxTex_Latch) {
+        stride = w * 4;
+        texels = userArg;
+    }
+}
+
+// ref: FUN_007f9bf0
+// The squared distance from `p` to the segment a..b.
+float SegmentDistanceSq(const float* a, const float* b, const float* p) {
+    float px = p[0] - a[0];
+    float py = p[1] - a[1];
+    float ex = b[0] - a[0];
+    float ey = b[1] - a[1];
+    float t = (ex * px + ey * py) / (ex * ex + ey * ey);
+
+    if (t < 0.0f) {
+        return py * py + px * px;
+    }
+
+    if (1.0f < t) {
+        return (p[1] - b[1]) * (p[1] - b[1]) + (p[0] - b[0]) * (p[0] - b[0]);
+    }
+
+    float dx = p[0] - (ex * t + a[0]);
+    float dy = p[1] - (t * ey + a[1]);
+
+    return dy * dy + dx * dx;
+}
+
+// ref: FUN_007f9c90
+// Whether `p` is inside the polygon, and its distance to the nearest edge.
+bool PolygonContains(int32_t count, const float* points, const float* p, float* distance) {
+    float best = 3.4028235e38f;
+    bool inside = false;
+
+    for (int32_t i = 0, j = count - 1; i < count; j = i++) {
+        const float* a = &points[i * 2];
+        const float* b = &points[j * 2];
+
+        float d = SegmentDistanceSq(a, b, p);
+
+        if (d < best) {
+            best = d;
+        }
+
+        if (((a[1] < p[1] && p[1] <= b[1]) || (b[1] < p[1] && p[1] <= a[1]))
+            && (b[0] - a[0]) * ((p[1] - a[1]) / (b[1] - a[1])) + a[0] < p[0]) {
+            inside = !inside;
+        }
+    }
+
+    *distance = sqrtf(best);
+
+    return inside;
+}
+
+}
+
+// ref: FUN_0077ed40
+void CWorld::InitializeLightZones() {
+    for (auto& zone : s_lightZones) {
+        const char* p = zone.path;
+
+        if (p) {
+            for (const char* c = p; *c != 'z'; c++) {
+                if (*c == 'M' || *c == 'L') {
+                    zone.count++;
+                }
+            }
+
+            float* out = static_cast<float*>(SMemAlloc(zone.count * 0xc, __FILE__, __LINE__, 0));
+            zone.points = out;
+
+            while (*p != 'z') {
+                if (*p == 'M' || *p == 'L') {
+                    const char* x = p + 2;
+
+                    while (*p != ',') {
+                        p++;
+                    }
+
+                    const char* y = p + 1;
+                    p = y;
+
+                    while (*p != ' ') {
+                        p++;
+                    }
+
+                    out[0] = static_cast<float>(atof(x));
+                    out[1] = static_cast<float>(atof(y));
+                    out += 2;
+                }
+
+                p++;
+            }
+        }
+
+        float* pt = zone.points;
+
+        for (int32_t i = 0; i < zone.count; i++, pt += 2) {
+            float x = zone.offsetX + pt[0];
+            float y = (zone.offsetY + pt[1]) * 0.0009765625f;
+            pt[0] = x * CHUNK_SIZE;
+            pt[1] = y * 34133.332f;
+
+            if (pt[0] < zone.minX) {
+                zone.minX = pt[0];
+            }
+
+            if (pt[1] < zone.minY) {
+                zone.minY = pt[1];
+            }
+
+            if (zone.maxX < pt[0]) {
+                zone.maxX = pt[0];
+            }
+
+            if (zone.maxY < pt[1]) {
+                zone.maxY = pt[1];
+            }
+        }
+
+        zone.minX -= 50.0f;
+        zone.minY -= 50.0f;
+        zone.maxX += 50.0f;
+        zone.maxY += 50.0f;
+    }
+}
+
+// ref: FUN_00780660
+void CWorld::SetShadowColor(const CImVector& color) {
+    if (s_shadowModColor != color.value) {
+        for (auto& texel : s_shadowModTexels) {
+            texel = color.value;
+        }
+
+        if (!s_shadowModTexture) {
+            CGxTexFlags flags(GxTex_Linear, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+            s_shadowModTexture = TextureCreate(static_cast<EGxTexTarget>(0), 8, 8, 0, static_cast<EGxTexFormat>(3), static_cast<EGxTexFormat>(2), flags, s_shadowModTexels, ShadowModCallback, "CWorld::shadowMod", 0);
+        }
+
+        auto gxTex = TextureGetGxTex(s_shadowModTexture, 1, nullptr);
+
+        if (gxTex) {
+            GxTexUpdate(gxTex, 0, 0, 8, 8, 1);
+        }
+    }
+
+    s_shadowModColor = color.value;
+}
+
+// ref: FUN_0077eed0
+void CWorld::UpdateLightZones(const C3Vector& cameraPos) {
+    if (!DayNightGetBlock()) {
+        return;
+    }
+
+    float p[2] = { -(cameraPos.y - 17066.666f), -(cameraPos.x - 17066.666f) };
+
+    for (auto& zone : s_lightZones) {
+        if (zone.mapID != CMap::s_mapID || !zone.points) {
+            continue;
+        }
+
+        if (zone.minX <= p[0] && zone.minY <= p[1] && p[0] <= zone.maxX && p[1] <= zone.maxY) {
+            float distance = 3.4028235e38f;
+
+            if (PolygonContains(zone.count, zone.points, p, &distance)) {
+                distance = -distance;
+            }
+
+            if (distance - 50.0f < 0.0f) {
+                DayNightAddForcedLight(zone.lightID, -(distance - 50.0f));
+            }
+        }
+    }
+}
+
+// ref: FUN_0077fb90
+int32_t CWorld::QueryMapObjFog(SMOFog* fog, CMapObjDef** def, uint8_t* inside, TSGrowableArray<uint32_t>** groups, float* distance) {
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+
+    if (player && (player->Player()->flags & 0x10)) {
+        return 0;
+    }
+
+    *distance = 3.4028235e38f;
+
+    return CMap::QueryCameraFog(fog, def, inside, groups, distance);
+}
+
+// ref: FUN_007816f0
+void CWorld::UpdateDayNight(int32_t force, const C3Vector* cameraPos) {
+    auto block = DayNightGetBlock();
+    float darken = 0.0f;
+
+    int32_t fogMode = 1;
+    int32_t vertexTarget = g_theGxDevicePtr->Caps().m_shaderTargets[GxSh_Vertex];
+
+    if (vertexTarget == 0 || vertexTarget == 1) {
+        fogMode = 0;
+    }
+
+    if (CMap::s_mapID < 0x212) {
+        fogMode = 0;
+    }
+
+    DayNightSetFogMode(fogMode);
+
+    for (int32_t i = 0; i < 5; i++) {
+        block->forcedLight[i] = nullptr;
+        block->forcedLightDepth[i] = 0.0f;
+    }
+
+    block->forcedLightCount = 0;
+
+    if (cameraPos) {
+        CWorld::UpdateLightZones(*cameraPos);
+    }
+
+    if (force) {
+        if (cameraPos) {
+            block->cameraPos = *cameraPos;
+        }
+
+        DayNightResetLightFade(1);
+        DayNightClearFadeFlag(1);
+    } else {
+        darken = DayNightGetBodies()->sunGlareDarken * 0.35f;
+
+        if (darken == 0.0f) {
+            DayNightClearFadeFlag(1);
+        }
+    }
+
+    DayNightUpdateCamera();
+    DayNightUpdateClouds();
+    DayNightUpdateStars();
+    DayNightUpdateFog();
+
+    CWorld::SetShadowColor(block->shadowColor);
+
+    // A glare in view dims the outdoor colours.
+    uint32_t keep = static_cast<uint32_t>(lrintf((1.0f - darken) * 255.0f)) & 0xFF;
+
+    auto scale = [keep](CImVector& c) {
+        uint32_t r = (c.r * keep + 0xFF) >> 8;
+        uint32_t g = (c.g * keep + 0xFF) >> 8;
+        uint32_t b = (c.b * keep + 0xFF) >> 8;
+        c.value = (c.value & 0xFF000000) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
+    };
+
+    scale(block->ambient);
+    scale(block->diffuse);
+
+    if (CMap::s_outdoorLight) {
+        CM2Light& light = CMap::s_outdoorLight->m_light;
+        light.SetDirection(block->direction);
+        light.m_ambColor = { block->ambient.r / 255.0f, block->ambient.g / 255.0f, block->ambient.b / 255.0f };
+        light.m_dirColor = { block->diffuse.r / 255.0f, block->diffuse.g / 255.0f, block->diffuse.b / 255.0f };
+        const CImVector& spec = block->info.color[9];
+        light.m_specColor = { spec.r / 255.0f, spec.g / 255.0f, spec.b / 255.0f };
+    }
+
+    DayNightSetFogMode(0);
 }

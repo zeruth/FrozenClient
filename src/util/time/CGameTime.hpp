@@ -13,6 +13,8 @@ class CGameTime : public WowTime {
         float GameTimeSetMinutesPerSecond(float minutesPerSec);
         void GameTimeSetTime(const WowTime& time, bool shouldTick);
         void GameTimeUpdate(float elapsedSec);
+        // How far through the day the clock is, 0..1, advanced in real time since the last minute.
+        float GetDayFraction() const;
 
     private:
         // Private member variables

@@ -1,3 +1,5 @@
+#include "world/DayNightLight.hpp"
+#include <tempest/ColorConvert.hpp>
 #include "world/map/WaterRipples.hpp"
 #include "model/CM2Scene.hpp"
 #include "util/OsSystem.hpp"
@@ -199,7 +201,10 @@ void CMap::Load(const char* mapName, int32_t mapID) {
 
     SStrPrintf(CMap::s_wdtFilename, sizeof(CMap::s_wdtFilename), "%s\\%s.wdt", CMap::s_mapPath, CMap::s_mapName);
 
-    // TODO DAT_00ce04a8 = FUN_007d9bd0(1, 0); CM2Light::SetLightType(0); FUN_007d9d50; FUN_007da100
+    CMap::s_outdoorLight = CMapLight::Create(1, 0);
+    CMap::s_outdoorLight->m_light.SetLightType(M2LIGHT_0);
+    CMap::s_outdoorLight->Enable();
+    CMap::s_outdoorLight->Link();
 
     CMap::UnloadAll();
 
@@ -216,7 +221,7 @@ void CMap::Load(const char* mapName, int32_t mapID) {
     CMap::s_lowDetail.Load(CMap::s_mapPath, CMap::s_mapName);
     CMap::LoadWdt();
     CMap::LoadTextureBlob();
-    // TODO FUN_007f2790(mapID)
+    DayNightInitialize(mapID);
 
     CMap::Update(0);
 
@@ -229,7 +234,8 @@ void CMap::Load(const char* mapName, int32_t mapID) {
     }
 
     CMap::s_loading = 0;
-    // TODO DAT_00cdfff4 = 0; DAT_00cd7678 = 1 (day/night: force a full update)
+    // TODO DAT_00cdfff4 = 0 (the load progress callback)
+    CWorld::s_forceDayNight = 1;
 }
 
 // ref: FUN_007bf8b0
@@ -1858,23 +1864,19 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     CWorldScene::FinishHiddenEntities();
     CWorldScene::s_mapObjDefGroupCandidates.UnlinkAll();
 
-    CImVector clearColor = { 0x00, 0x00, 0x00, 0xFF };
+    // Indoors the interior fog colour; outdoors transparent black under the sky, unless a fog
+    // override with no glare is on, and the fog colour under liquid.
+    auto dayNight = DayNightGetBlock();
+    CImVector clearColor;
 
     if (!g_theGxDevicePtr->MasterEnable(GxMasterEnable_PolygonFill)) {
         clearColor.value = 0xFF000000;
     } else if (CWorldScene::s_window.depth < 0.0f) {
-        // TODO the interior fog colour (light block +0xa0)
-        clearColor.value = 0xFF000000;
-    } else if (!CWorld::IsCameraUnderLiquid()) {
-        // TODO with no skybox override (light block +0x1cc) and the sky flag DAT_00d38ad0 set,
-        // the fog colour; otherwise transparent black
-        clearColor.value = 0;
+        clearColor = dayNight->finalFogColor;
+    } else if (CWorldScene::s_cameraLiquidType != 0 || (dayNight->drawGlare == 0 && DayNightOverrideActive())) {
+        clearColor = dayNight->fogColor;
     } else {
-        const C3Vector& fog = CWorld::GetFogColor();
-        clearColor.b = CM2Lighting::FogColorByte(fog.z);
-        clearColor.g = CM2Lighting::FogColorByte(fog.y);
-        clearColor.r = CM2Lighting::FogColorByte(fog.x);
-        clearColor.a = 0xFF;
+        clearColor.value = 0;
     }
 
     GxSceneClear(0x3, clearColor);
@@ -4059,4 +4061,188 @@ void CMap::LiquidInitialize() {
 
     WaterRipples::Initialize();
     Liquid::ProceduralLiquidTexture();
+}
+
+CMapLight* CMap::s_outdoorLight;
+
+namespace {
+
+// The reference's FogQ (FUN_007a0ed0): a 1-based max-heap of (distance, fog index) pairs, so the
+// farthest fog volume is blended first and the one the camera is deepest in last.
+struct FogQE {
+    float distance;
+    uint32_t index;
+};
+
+struct FogQueue {
+    FogQE data[32];
+    uint32_t count = 1;
+
+    // ref: FUN_007a0f50
+    void Push(float distance, uint32_t index) {
+        if (this->count >= 32) {
+            return;
+        }
+
+        this->count++;
+        uint32_t i = this->count - 1;
+
+        while (1 < i) {
+            uint32_t parent = i >> 1;
+
+            if (distance < this->data[parent].distance) {
+                break;
+            }
+
+            this->data[i] = this->data[parent];
+            i = parent;
+        }
+
+        this->data[i] = { distance, index };
+    }
+
+    FogQE Pop() {
+        FogQE top = this->data[1];
+        FogQE last = this->data[this->count - 1];
+        this->count--;
+
+        if (1 < this->count) {
+            uint32_t n = this->count - 1;
+            uint32_t i = 1;
+
+            while (i * 2 <= n) {
+                uint32_t child = i * 2;
+
+                if (child < n && this->data[child].distance <= this->data[child + 1].distance) {
+                    child++;
+                }
+
+                if (this->data[child].distance <= last.distance) {
+                    break;
+                }
+
+                this->data[i] = this->data[child];
+                i = child;
+            }
+
+            this->data[i] = last;
+        }
+
+        return top;
+    }
+};
+
+// ref: FUN_007a0cd0
+// Pull both of `fog`'s fogs toward `target`'s by `t`.
+void BlendMapObjFog(SMOFog* fog, const SMOFog* target, float t) {
+    uint32_t alpha = static_cast<uint32_t>(lrintf(255.0f * t)) & 0xFF;
+
+    for (int32_t i = 0; i < 2; i++) {
+        fog->fog[i].end = (target->fog[i].end - fog->fog[i].end) * t + fog->fog[i].end;
+        fog->fog[i].startScalar = (target->fog[i].startScalar - fog->fog[i].startScalar) * t + fog->fog[i].startScalar;
+
+        if (alpha) {
+            LerpColor(fog->fog[i].color, alpha, target->fog[i].color);
+        }
+    }
+}
+
+}
+
+// ref: FUN_007a1150
+int32_t CMap::QueryCameraFog(SMOFog* fog, CMapObjDef** def, uint8_t* inside, TSGrowableArray<uint32_t>** groups, float* distance) {
+    CMapObjDef* cameraDef = CWorldScene::s_cameraDef;
+
+    if (!cameraDef) {
+        return 0;
+    }
+
+    CMapObj* mapObj = cameraDef->m_mapObj;
+
+    if (!mapObj || mapObj->m_fogCount == 1) {
+        return 0;
+    }
+
+    C3Vector local = CWorldScene::s_cameraPos * cameraDef->m_inversePlacement;
+    auto& indices = CWorldScene::s_cameraGroupIndices;
+
+    *inside = 0;
+
+    for (uint32_t i = 0; i < indices.Count(); i++) {
+        auto group = mapObj->GetGroup(indices[i], 0);
+
+        if (group && (group->m_flags & 0x48) == 0) {
+            *inside = 1;
+            float d = mapObj->NearestPortalDistance(group, local, 1.0f);
+
+            if (d < *distance) {
+                *distance = d;
+            }
+        }
+    }
+
+    if (*inside) {
+        *def = cameraDef;
+        *groups = &indices;
+    } else {
+        *distance = 0.0f;
+    }
+
+    auto fogs = reinterpret_cast<const SMOFog*>(mapObj->m_mfog);
+    *fog = fogs[0];
+
+    static FogQueue s_queue;
+
+    if (!indices.Count()) {
+        return 1;
+    }
+
+    auto group = mapObj->GetGroup(indices[0], 0);
+
+    if (group) {
+        for (uint32_t i = 0; i < 4; i++) {
+            uint8_t id = (group->m_fogIds >> (i * 8)) & 0xFF;
+
+            if (!id) {
+                continue;
+            }
+
+            const SMOFog* volume = &fogs[id];
+            float dx = volume->pos.x - local.x;
+            float dy = volume->pos.y - local.y;
+            float dz = volume->pos.z - local.z;
+            float d = sqrtf(dz * dz + dy * dy + dx * dx);
+
+            if (d < volume->end && !(volume->flags & 1)) {
+                s_queue.Push(d, id);
+            }
+        }
+    }
+
+    while (1 < s_queue.count) {
+        FogQE entry = s_queue.Pop();
+        const SMOFog* volume = &fogs[entry.index];
+
+        float d = volume->end;
+
+        if (entry.distance < 0.0f) {
+            d = 0.0f;
+        } else if (entry.distance < volume->end) {
+            d = entry.distance;
+        }
+
+        float t = 1.0f;
+
+        if (volume->start <= d) {
+            t = 1.0f - (d - volume->start) / (volume->end - volume->start);
+        }
+
+        BlendMapObjFog(fog, volume, t);
+
+        if (s_queue.count == 1) {
+            fog->flags = volume->flags;
+        }
+    }
+
+    return 1;
 }

@@ -34,6 +34,10 @@
 #include "event/CEvent.hpp"
 #include "ui/game/PlayerName.hpp"
 #include "world/World.hpp"
+#include "db/Db.hpp"
+#include "client/Client.hpp"
+#include "world/MapWeather.hpp"
+#include "world/DayNightLight.hpp"
 #include <storm/Memory.hpp>
 #include <tempest/Matrix.hpp>
 
@@ -561,6 +565,8 @@ void CGWorldFrame::OnWorldUpdate() {
         ? target->GetPosition()
         : this->m_camera->Position();
 
+    this->UpdateDayNight(CWorld::GetTickTimeSec());
+
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
     // What the stand-in's per-frame update still did: refresh the outdoor light, and hand the
@@ -613,4 +619,60 @@ void CGWorldFrame::OnWorldUpdate() {
             }
         }
     }
+}
+
+// ref: FUN_004f8410
+void CGWorldFrame::UpdateDayNight(float elapsedSec) {
+    auto block = DayNightGetBlock();
+
+    block->farClip = this->m_camera->FarZ();
+    block->frameDelta = elapsedSec;
+    block->timeSec = static_cast<float>(static_cast<uint32_t>(OsGetAsyncTimeMs())) * 0.001f;
+    block->cameraPos = this->m_camera->Position();
+
+    C3Vector forward = this->m_camera->Forward();
+    float inv = 1.0f / sqrtf(forward.x * forward.x + forward.y * forward.y + forward.z * forward.z);
+    block->cameraDir = { forward.x * inv, forward.y * inv, forward.z * inv };
+
+    auto target = ClntObjMgrObjectPtr(this->m_camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
+    block->queryPos = target ? target->GetPosition() : block->cameraPos;
+
+    bool noon = false;
+    auto playerGuid = ClntObjMgrGetActivePlayer();
+
+    if (playerGuid) {
+        auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(playerGuid, TYPE_PLAYER, __FILE__, __LINE__));
+
+        if (player) {
+            block->playerPos = player->GetPosition();
+
+            if ((player->Unit()->flags & 0x100000) && (player->Player()->flags & 0x20000)) {
+                block->minutes = 0;
+                block->timeOfDay = 0.5f;
+                block->dayCount = 0.0f;
+                noon = true;
+            }
+        }
+    }
+
+    if (!noon) {
+        block->minutes = g_clientGameTime.GetHourAndMinutes();
+        block->timeOfDay = g_clientGameTime.GetDayFraction();
+        block->dayCount = static_cast<float>(g_clientGameTime.GetDaysSinceEpoch());
+    }
+
+    auto map = g_mapDB.GetRecord(CMap::s_mapID);
+
+    if (map && map->m_timeOfDayOverride != -1) {
+        block->minutes = 0;
+        block->timeOfDay = static_cast<float>(map->m_timeOfDayOverride) * 0.00069444446f;
+        block->dayCount = 0.0f;
+
+        if (block->timeOfDay < 0.0f || 1.0f < block->timeOfDay) {
+            block->timeOfDay = 0.5f;
+        }
+    }
+
+    auto weather = CWorld::s_weather;
+    block->stormInput = weather ? weather->m_density * weather->m_fog : 0.0f;
 }

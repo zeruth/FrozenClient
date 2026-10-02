@@ -318,3 +318,18 @@ bool WowTime::SetHourAndMinutes(uint32_t hour, uint32_t minutes) {
 
     return true;
 }
+
+// ref: FUN_0076c1f0
+int32_t WowTime::GetDaysSinceEpoch() const {
+    if (this->m_year < 0 || this->m_month < 0 || this->m_monthday < 0) {
+        return 0;
+    }
+
+    tm date = {};
+    date.tm_mday = this->m_monthday + 1;
+    date.tm_mon = this->m_month;
+    date.tm_year = this->m_year % 100 + 100;
+    date.tm_isdst = -1;
+
+    return static_cast<int32_t>(mktime(&date) / 86400);
+}

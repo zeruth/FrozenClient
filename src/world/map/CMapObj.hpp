@@ -126,6 +126,20 @@ struct SMOMaterialTextures {
 // The reference's field offsets are noted per field. They hold from m_name (+0x1c) on; the hash
 // fields above it sit at +0x04..+0x18 there and the memory handle at +0x00, which is the one
 // place frozen's layout differs (the base class has to come first here).
+// One MFOG entry (0x30 bytes): a fog volume of the building, and the two fogs it lays, above and
+// under water. Entry 0 is the building's own.
+struct SMOFog {
+    uint32_t flags;                 // +0x00, 0x1 infinite radius, 0x10 the under-water fog is set
+    C3Vector pos;                   // +0x04
+    float start;                    // +0x10, the smaller radius
+    float end;                      // +0x14, the larger radius
+    struct {
+        float end;
+        float startScalar;
+        CImVector color;
+    } fog[2];                       // +0x18
+};
+
 class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
     public:
         // Static variables

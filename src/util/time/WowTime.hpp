@@ -31,6 +31,8 @@ class WowTime {
         int32_t CompareMonthday(const WowTime& other) const;
         int32_t CompareWeekday(const WowTime& other) const;
         int32_t GetHourAndMinutes();
+        // Whole days from the epoch to this date, or 0 when the date is not set.
+        int32_t GetDaysSinceEpoch() const;
         bool Matches(const WowTime& other) const;
         bool SetDate(uint32_t month, uint32_t monthday, uint32_t year);
         void SetHourAndMinutes(int32_t minutes);

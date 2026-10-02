@@ -52,6 +52,9 @@ struct SWModelFadeout {
     TSLink<SWModelFadeout> m_link;        // +0x58
 };
 
+struct SMOFog;
+class CMapObjDef;
+
 class CWorld {
     public:
         // Bands 14..17, the liquid gradient endpoints (reference FUN_008a2bf0). Type 0 is OCEAN
@@ -140,6 +143,19 @@ class CWorld {
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
         static void RemoveObject(HWORLDOBJECT object);
+        // The day/night step of the frame: the light, the sky's inputs, the fog, the sun's light.
+        static void UpdateDayNight(int32_t force, const C3Vector* cameraPos);
+        // The Northrend zones that force a light on (DAT_00adef58), parsed once from their outlines.
+        static void InitializeLightZones();
+        static void UpdateLightZones(const C3Vector& cameraPos);
+        // The building fog the camera stands in, unless the player is a ghost.
+        static int32_t QueryMapObjFog(SMOFog* fog, CMapObjDef** def, uint8_t* inside, TSGrowableArray<uint32_t>** groups, float* distance);
+        // A full day/night update is owed (DAT_00cd7678), set when a map loads.
+        static int32_t s_forceDayNight;
+        // The terrain shadow's colour (FUN_00780660), kept as a one-colour texture.
+        static void SetShadowColor(const CImVector& color);
+        // The fog end the frame's lighting tests against (DAT_00cd7668).
+        static float s_frameFogEnd;
         // Takes the object out of the world over two seconds instead of at once: its model keeps
         // drawing while its alpha runs from `alpha` to zero, and (given a transport) keeps riding
         // it. A model that cannot draw, an alpha under 0.01, or entity flag 0x4 removes it now.

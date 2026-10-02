@@ -104,3 +104,21 @@ void CGameTime::TickMinute() {
 
     this->m_dayProgression = this->m_gameMinutesThisTick + static_cast<float>(minutes);
 }
+
+// ref: FUN_0076cff0
+float CGameTime::GetDayFraction() const {
+    uint32_t elapsed = 0;
+
+    if (this->uint40) {
+        OsGetAsyncTimeMs();
+        elapsed = static_cast<uint32_t>(OsGetAsyncTimeMs()) - this->m_lastTickMinute;
+    }
+
+    float minutes = static_cast<float>(elapsed) * 0.001f * this->m_gameMinutesPerRealSecond + this->m_dayProgression;
+
+    while (1440.0f < minutes) {
+        minutes -= 1440.0f;
+    }
+
+    return minutes * 0.00069444446f;
+}

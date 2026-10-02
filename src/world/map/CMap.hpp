@@ -337,6 +337,12 @@ class CMap {
         static void ForEachMapObjDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
+        // The fog the camera stands in when it is inside a building: the building's own MFOG,
+        // pulled toward each fog volume of the camera's group by how deep into it the camera is,
+        // and how far the camera is from the nearest way out. Zero outside.
+        static int32_t QueryCameraFog(SMOFog* fog, CMapObjDef** def, uint8_t* inside, TSGrowableArray<uint32_t>** groups, float* distance);
+        // The sun's light (DAT_00ce04a8), made with the map.
+        static CMapLight* s_outdoorLight;
         static void FreeLight(CMapLight* light);
         static CMapObjDefGroup* AllocMapObjDefGroup();
         static void FreeMapObjDefGroup(CMapObjDefGroup* group);

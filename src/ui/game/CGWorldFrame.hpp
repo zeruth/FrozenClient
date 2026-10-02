@@ -36,6 +36,8 @@ class CGWorldFrame : public CSimpleFrame {
         CGWorldFrame(CSimpleFrame* parent);
         void OnWorldRender();
         void OnWorldUpdate();
+        // Hands the day/night block the camera, the clock and the weather for the frame.
+        void UpdateDayNight(float elapsedSec);
 
     private:
         // Private member variables
