@@ -21,6 +21,11 @@ uint32_t M2RegisterCVars();
 
 void M2SetGlobalOptFlags(uint16_t flags);
 
-int32_t ModelBlobQuery(const char* a1, C3Vector& a2, C3Vector& a3);
+int32_t ModelBlobQuery(const char* name, C3Vector& min, C3Vector& max);
+
+// world\model.blob: the authored bounding box of every model by name, loaded at start-up.
+int32_t ModelBlobLoad(const char* path);
+
+void ModelBlobDestroy();
 
 #endif

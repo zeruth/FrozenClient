@@ -1,3 +1,6 @@
+#include "util/SFile.hpp"
+#include <storm/Error.hpp>
+#include <storm/Hash.hpp>
 #include "model/Model2.hpp"
 #include "model/CM2Cache.hpp"
 #include "model/M2Internal.hpp"
@@ -335,25 +338,150 @@ uint32_t M2RegisterCVars() {
     return flags;
 }
 
-// Traced 2026-09-23. It is live in the sense livestubs means -- CM2Cache::CreateShared calls it
-// on every model load -- and inert in the sense that matters: it fills a CAaBox that goes nowhere.
+// The model blob (ModelBlob.cpp): world\model.blob holds one 0x1c-byte record per model -- a
+// name offset and an axis-aligned box -- and the client hashes them by name so CM2Cache::
+// CreateShared can hand each shared model its authored bounds (CM2Shared::aaBox154).
 //
-//     CreateShared          CAaBox v28; ModelBlobQuery(path, v28.b, v28.t);
-//     CM2Shared::Load       if (a4) this->aaBox154 = *a4;
-//     aaBox154              written there and READ NOWHERE.
-//
-// So the box is all zeros today (CAaBox is two C3Vectors and those zero-initialise, so it is zeros
-// rather than garbage), and nothing looks at it either way. Porting this function alone would move
-// real numbers into a field no code reads.
-//
-// The consumer is a documented gap rather than an unknown one. docs/ref/parity-shadows.md lists
-// caster footprints as open, and CLAUDE.md records that frozen's blob-shadow caster radius comes
-// from the cull extent rather than the animated bounds -- aaBox154 is where the authored blob
-// bounds are meant to live. Three pieces, one of which exists.
-//
-// Neither CM2Cache::CreateShared nor CM2Shared::Load is linked yet, so the reference counterpart of
-// this function has not been located; finding it means identifying CreateShared first.
-int32_t ModelBlobQuery(const char* a1, C3Vector& a2, C3Vector& a3) {
-    // TODO -- see above: the field this fills is read by nothing, so port the consumer first
-    return 0;
+// The file is three chunks of {tag, size, data}: one the loader skips, the records, the names.
+struct ModelBlobRecord {
+    uint32_t nameOffset;
+    C3Vector min;
+    C3Vector max;
+};
+
+class CModelBlob {
+    public:
+        class CHashEntry : public TSHashObject<CHashEntry, HASHKEY_STRI> {
+            public:
+                CModelBlob* m_blob = nullptr;
+                const ModelBlobRecord* m_record = nullptr;
+        };
+
+        char m_path[STORM_MAX_PATH] = {};
+        uint8_t* m_data = nullptr;
+        const ModelBlobRecord* m_records = nullptr;
+        uint32_t m_recordCount = 0;
+        const char* m_names = nullptr;
+
+        ~CModelBlob();
+        void Load(const char* path);
+        void AddEntry(const ModelBlobRecord* record);
+        int32_t Query(const char* name, C3Vector& min, C3Vector& max);
+};
+
+// Reference 0x00b4a274: the records by name.
+static TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI> s_modelBlobTable;
+
+// Reference 0x00b4a270.
+static CModelBlob* s_modelBlob;
+
+// ref: FUN_004baf60
+CModelBlob::~CModelBlob() {
+    if (this->m_data) {
+        SMemFree(this->m_data, __FILE__, __LINE__, 0);
+    }
+
+    this->m_records = nullptr;
+    this->m_recordCount = 0;
+    this->m_names = nullptr;
+
+    s_modelBlobTable.Clear();
+}
+
+// ref: FUN_004bba70
+// A name already in the table keeps its first record.
+void CModelBlob::AddEntry(const ModelBlobRecord* record) {
+    auto name = this->m_names + record->nameOffset;
+
+    if (s_modelBlobTable.Ptr(name)) {
+        return;
+    }
+
+    auto entry = s_modelBlobTable.New(name, 0, 0);
+    entry->m_blob = this;
+    entry->m_record = record;
+}
+
+// ref: FUN_004bbb20
+void CModelBlob::Load(const char* path) {
+    SFile* file = nullptr;
+    SErrSetLastError(0);
+
+    if (!SFile::OpenEx(nullptr, path, 0, &file)) {
+        if (!SErrGetLastError()) {
+            SErrSetLastError(2);
+        }
+
+        return;
+    }
+
+    SStrCopy(this->m_path, path, sizeof(this->m_path));
+
+    auto size = SFile::GetFileSize(file, nullptr);
+    this->m_data = static_cast<uint8_t*>(SMemAlloc(size, __FILE__, __LINE__, 0));
+    SFile::Read(file, this->m_data, size, nullptr, nullptr, nullptr);
+    SFile::Close(file);
+
+    auto chunk = this->m_data + 8 + *reinterpret_cast<uint32_t*>(this->m_data + 4);
+    auto recordBytes = *reinterpret_cast<uint32_t*>(chunk + 4);
+
+    this->m_records = reinterpret_cast<const ModelBlobRecord*>(chunk + 8);
+    this->m_recordCount = recordBytes / sizeof(ModelBlobRecord);
+    this->m_names = reinterpret_cast<const char*>(chunk + 8) + recordBytes + 8;
+
+    for (uint32_t i = 0; i < this->m_recordCount; i++) {
+        this->AddEntry(&this->m_records[i]);
+    }
+}
+
+// ref: FUN_004bb370
+int32_t CModelBlob::Query(const char* name, C3Vector& min, C3Vector& max) {
+    auto entry = s_modelBlobTable.Ptr(name);
+
+    if (!entry) {
+        return 0;
+    }
+
+    min = entry->m_record->min;
+    max = entry->m_record->max;
+
+    return 1;
+}
+
+// ref: FUN_004bbc20
+int32_t ModelBlobLoad(const char* path) {
+    ModelBlobDestroy();
+
+    auto m = SMemAlloc(sizeof(CModelBlob), __FILE__, __LINE__, 0);
+    s_modelBlob = m ? new (m) CModelBlob() : nullptr;
+
+    if (s_modelBlob) {
+        s_modelBlob->Load(path);
+    }
+
+    if (!s_modelBlob || !s_modelBlob->m_data) {
+        ModelBlobDestroy();
+        return 0;
+    }
+
+    return 1;
+}
+
+// ref: FUN_004bb1c0
+void ModelBlobDestroy() {
+    if (s_modelBlob) {
+        s_modelBlob->~CModelBlob();
+        SMemFree(s_modelBlob, __FILE__, __LINE__, 0);
+        s_modelBlob = nullptr;
+    }
+}
+
+// ref: FUN_004bb3e0
+// The name arrives without its extension (CM2Cache::CreateShared cuts it off for the call).
+int32_t ModelBlobQuery(const char* name, C3Vector& min, C3Vector& max) {
+    if (!s_modelBlob) {
+        return 0;
+    }
+
+    return s_modelBlob->Query(name, min, max);
 }

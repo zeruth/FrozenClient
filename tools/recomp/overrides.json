@@ -3855,5 +3855,69 @@
   "006a5e10": {
     "note": "CGxDeviceD3d::IShaderCreate. Dispatches to the vertex or pixel create; same block-layout ordering. Hand verdict 2026-10-01.",
     "status": "faithful"
+  },
+  "004bafd0": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: its slot array teardown. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb060": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSGrowableArray<TSExplicitList<CHashEntry>>::Reserve. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb1e0": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::Ptr (the bucket walk with SStrCmpI over 0x104 -- HASHKEY_STRI). Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb270": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: the TSHashTable constructor. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb2d0": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::InternalDelete. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb300": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::InternalNew. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb410": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: the TSHashTable destructor. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb4b0": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::InternalClear. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb510": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: the deleting destructor. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb540": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSGrowableArray<TSExplicitList<CHashEntry>>::SetCount. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb670": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::InternalNewNode. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb710": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTableReuse destructor. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb770": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: its deleting destructor. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb7a0": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::Initialize. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb800": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::GrowListArray. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "004bb9d0": {
+    "status": "excluded",
+    "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::MonitorFullness. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
   }
 }

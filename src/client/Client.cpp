@@ -431,7 +431,7 @@ int32_t InitializeEngineCallback(const void* a1, void* a2) {
     AsyncFileInitialize();
     TextureInitialize();
 
-    // ModelBlobLoad("world\\model.blob");
+    ModelBlobLoad("world\\model.blob");
 
     // if (SFile::IsStreamingMode()) {
     //     TextureLoadBlob("world\\liquid.tex");
