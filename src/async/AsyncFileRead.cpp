@@ -1,3 +1,4 @@
+#include <storm/Array.hpp>
 #include "async/AsyncFileRead.hpp"
 #include "util/SFile.hpp"
 #include <common/Prop.hpp>
@@ -73,6 +74,15 @@ void AsyncFileReadLinkObject(CAsyncObject* object, int32_t a2) {
     object->char25 = 0;
 }
 
+// Called after every poll (0x00b4a224 / 0x00b4a228), and asked how many reads they still have
+// outstanding when a wait for everything begins (0x00b4a234 / 0x00b4a238). The texture system
+// registers one of each at startup.
+static TSGrowableArray<void (*)()> s_asyncPollCallbacks;
+static TSGrowableArray<int32_t (*)()> s_asyncPendingCounters;
+
+// ref: FUN_004b9b20
+// Hand finished reads to their callbacks, for as long as the handler's time budget allows, then
+// run the registered poll callbacks.
 int32_t AsyncFileReadPollHandler(const void* a1, void* a2) {
     uint32_t start = OsGetAsyncTimeMsPrecise();
 
@@ -106,10 +116,9 @@ int32_t AsyncFileReadPollHandler(const void* a1, void* a2) {
         }
     }
 
-    // TODO
-    // for (int32_t i = 0; i < DwordB4A224; i++) {
-    //     DwordB4A228[i]();
-    // }
+    for (uint32_t i = 0; i < s_asyncPollCallbacks.Count(); i++) {
+        s_asyncPollCallbacks[i]();
+    }
 
     return 1;
 }
@@ -297,4 +306,66 @@ bool AsyncFileReadIsBusy() {
     AsyncFileRead::s_queueLock.Leave();
 
     return busy;
+}
+
+// ref: FUN_004b9c60
+// Adds a callback to run after every poll, once.
+void AsyncFileReadRegisterPollCallback(void (*callback)()) {
+    for (uint32_t i = 0; i < s_asyncPollCallbacks.Count(); i++) {
+        if (s_asyncPollCallbacks[i] == callback) {
+            return;
+        }
+    }
+
+    *s_asyncPollCallbacks.New() = callback;
+}
+
+// ref: FUN_004b9d20
+// Adds a counter of outstanding reads for AsyncFileReadWaitAll to sum, once.
+void AsyncFileReadRegisterPendingCounter(int32_t (*counter)()) {
+    for (uint32_t i = 0; i < s_asyncPendingCounters.Count(); i++) {
+        if (s_asyncPendingCounters[i] == counter) {
+            return;
+        }
+    }
+
+    *s_asyncPendingCounters.New() = counter;
+}
+
+// ref: FUN_004bae10
+// Blocks until every outstanding read has been handed to its callback, reporting progress as the
+// share of the reads outstanding at the start that have since finished. The progress callback is
+// one-shot: it is cleared on the way out.
+void AsyncFileReadWaitAll() {
+    int32_t total = 0;
+
+    for (uint32_t i = 0; i < s_asyncPendingCounters.Count(); i++) {
+        total += s_asyncPendingCounters[i]();
+    }
+
+    AsyncFileRead::s_progressCount = total;
+
+    while (AsyncFileReadIsBusy()) {
+        AsyncFileReadPollHandler(nullptr, nullptr);
+
+        if (AsyncFileRead::s_progressCallback) {
+            float progress = 1.0f;
+
+            if (total) {
+                progress = static_cast<float>(total - AsyncFileRead::s_progressCount) / static_cast<float>(total);
+
+                if (progress < 0.0f) {
+                    progress = 0.0f;
+                } else if (progress > 1.0f) {
+                    progress = 1.0f;
+                }
+            }
+
+            reinterpret_cast<void (*)(float, void*)>(AsyncFileRead::s_progressCallback)(progress, AsyncFileRead::s_progressParam);
+        }
+
+        OsSleep(1);
+    }
+
+    AsyncFileRead::s_progressCallback = nullptr;
 }

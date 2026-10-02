@@ -4234,5 +4234,9 @@
   "009845d0": {
     "status": "excluded",
     "note": "CRT memset entry: a fall-through switch for fewer than 16 bytes, else FUN_00984540. Identified 2026-10-02."
+  },
+  "007a2c60": {
+    "status": "unlinked",
+    "note": "NOT CMap::MapMemInitialize, which is FUN_0079e7c0 (tagged). The string matcher bound this because it also carries a string beginning \"Terrain\": it is a MapObj-side query that describes the object under a point (terrain chunk, map object group with its doodad set, or a static entity) into a 0x7c-dword record. Unported. Recorded 2026-10-02."
   }
 }
