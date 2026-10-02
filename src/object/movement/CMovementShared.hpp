@@ -15,6 +15,8 @@ class CMovementShared : public CPassenger {
         float GetCurrentSpeed(int walk) const;
         uint32_t GetMoveFlags() const { return this->m_moveFlags; }
         uint16_t GetMoveFlags2() const { return this->m_moveFlags2; }
+        float GetFloatB8() const { return this->m_floatB8; }
+        const CMoveSpline* GetSpline() const { return this->m_spline; }
         float GetWalkSpeed() const { return this->m_walkSpeed; }
         void ClearSplineEnabled();
         void SetWaterWalking(int32_t enable);

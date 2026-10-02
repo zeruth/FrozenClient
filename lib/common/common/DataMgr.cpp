@@ -22,6 +22,22 @@ void DataMgrGetCoord(HDATAMGR mgr, uint32_t fieldId, C3Vector* coord) {
     *coord = field->m_data;
 }
 
+// ref: FUN_004c11f0
+// A float field's value, or 0 when the field is missing or not a float (the reference's shared
+// field lookup, FUN_004c1180, sets error 0x57 then).
+float DataMgrGetFloat(HDATAMGR mgr, uint32_t fieldId) {
+    auto mgrPtr = reinterpret_cast<CDataMgr*>(mgr);
+
+    if (!mgrPtr || fieldId >= mgrPtr->m_managedArray.Count() || !mgrPtr->m_managedArray[fieldId]
+        || mgrPtr->m_managedArray[fieldId]->m_dataTypeId != CBaseManaged::FLOAT) {
+        return 0.0f;
+    }
+
+    auto field = static_cast<TManaged<float>*>(mgrPtr->m_managedArray[fieldId]);
+
+    return field->m_data;
+}
+
 // ref: FUN_004c12b0
 // Identified 2026-09-27 after the call-graph matcher bound this address to
 // CM2Model::AnimateCamerasST instead -- a callee taking its caller's name, which is the matcher

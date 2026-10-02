@@ -90,6 +90,7 @@ void LoadScriptFunctions() {
     GuildRegisterScriptFunctions();
     VoiceRegisterScriptFunctions();
     UIBindingsRegisterScriptFunctions();
+    CameraRegisterScriptFunctions();
 
     // TODO
 
@@ -628,9 +629,8 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("hwDetect", "do hardware detection", 0x1, "1", nullptr, GRAPHICS);
     CVar::Register("ffxNetherWorld", "full screen nether world effect (for invisibility)", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_008c02a0
     CVar::Register("ffxRectangle", "use rectangle texture for full screen effects", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_008c02a0
-    CVar::Register("shadowCull", "enable shadow frustum culling", 0x0, "1", nullptr, DEFAULT);
-    CVar::Register("shadowInstancing", "enable instancing when rendering shadowmaps", 0x0, "1", nullptr, DEFAULT);
-    CVar::Register("shadowScissor", "enable scissoring when rendering shadowmaps", 0x0, "1", nullptr, DEFAULT);
+    // shadowCull, shadowInstancing and shadowScissor are registered by MapShadowInitialize, with
+    // the shadow callbacks that read them, as the reference does (FUN_007bd3a0).
     CVar::Register("ObjectSelectionCircle", "", 0x0, "1", nullptr, DEBUG);
     CVar::Register("FootstepSounds", "", 0x0, "1", nullptr, DEFAULT);
     CVar::Register("pathDistTol", "Sets acceptable distance from pathing destination in yards", 0x0, "1", nullptr, GAME);

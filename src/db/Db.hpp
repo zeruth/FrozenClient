@@ -31,6 +31,7 @@
 #include "db/rec/SpellVisualEffectNameRec.hpp"
 #include "db/rec/LightRec.hpp"
 #include "db/rec/LightParamsRec.hpp"
+#include "db/rec/CameraShakesRec.hpp"
 #include "db/rec/LightSkyboxRec.hpp"
 #include "db/rec/LiquidMaterialRec.hpp"
 #include "db/rec/LiquidTypeRec.hpp"
@@ -93,6 +94,7 @@ extern WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 extern WowClientDB<VehicleSeatRec> g_vehicleSeatDB;
 extern WowClientDB<LightRec> g_lightDB;
 extern WowClientDB<LightParamsRec> g_lightParamsDB;
+extern WowClientDB<CameraShakesRec> g_cameraShakesDB;
 extern WowClientDB<LightSkyboxRec> g_lightSkyboxDB;
 extern WowClientDB<LiquidMaterialRec> g_liquidMaterialDB;
 extern WowClientDB<LiquidTypeRec> g_liquidTypeDB;

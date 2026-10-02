@@ -32,6 +32,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
     // at +0xfa4), so CVehicle_C reaches them directly here rather than through accessors the
     // reference does not have.
     friend class CVehicle_C;
+    friend class CGCamera;
 
     public:
         // Public static variables

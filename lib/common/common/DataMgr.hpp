@@ -10,6 +10,8 @@ class C3Vector;
 
 void DataMgrGetCoord(HDATAMGR mgr, uint32_t fieldId, C3Vector* coord);
 
+float DataMgrGetFloat(HDATAMGR mgr, uint32_t fieldId);
+
 void DataMgrSetCoord(HDATAMGR mgr, uint32_t fieldId, const C3Vector& coord, uint32_t coordFlags);
 
 void DataMgrSetFloat(HDATAMGR mgr, uint32_t fieldId, float val);

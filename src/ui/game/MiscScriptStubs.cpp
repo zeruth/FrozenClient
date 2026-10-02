@@ -104,18 +104,6 @@ WHOA_LUA_STUB(MoveBackwardStart)
 WHOA_LUA_STUB(MoveBackwardStop)
 WHOA_LUA_STUB(MoveForwardStart)
 WHOA_LUA_STUB(MoveForwardStop)
-WHOA_LUA_STUB(MoveViewDownStart)
-WHOA_LUA_STUB(MoveViewDownStop)
-WHOA_LUA_STUB(MoveViewInStart)
-WHOA_LUA_STUB(MoveViewInStop)
-WHOA_LUA_STUB(MoveViewLeftStart)
-WHOA_LUA_STUB(MoveViewLeftStop)
-WHOA_LUA_STUB(MoveViewOutStart)
-WHOA_LUA_STUB(MoveViewOutStop)
-WHOA_LUA_STUB(MoveViewRightStart)
-WHOA_LUA_STUB(MoveViewRightStop)
-WHOA_LUA_STUB(MoveViewUpStart)
-WHOA_LUA_STUB(MoveViewUpStop)
 WHOA_LUA_STUB(PickupCompanion)
 WHOA_LUA_STUB(PickupContainerItem)
 WHOA_LUA_STUB(PickupEquipmentSet)
@@ -148,7 +136,6 @@ WHOA_LUA_STUB(ResetChatWindows)
 WHOA_LUA_STUB(ResetGroupPreviewTalentPoints)
 WHOA_LUA_STUB(ResetPreviewTalentPoints)
 WHOA_LUA_STUB(ResetTutorials)
-WHOA_LUA_STUB(ResetView)
 WHOA_LUA_STUB(SendAddonMessage)
 WHOA_LUA_STUB(SendChatMessage)
 WHOA_LUA_STUB(SendMail)
@@ -218,7 +205,6 @@ WHOA_LUA_STUB(SetTradeSkillItemNameFilter)
 WHOA_LUA_STUB(SetTradeSkillSubClassFilter)
 WHOA_LUA_STUB(SetTrainerServiceTypeFilter)
 WHOA_LUA_STUB(SetTrainerSkillLineFilter)
-WHOA_LUA_STUB(SetView)
 WHOA_LUA_STUB(SetWatchedFactionIndex)
 WHOA_LUA_STUB(SortArenaTeamRoster)
 WHOA_LUA_STUB(SortAuctionApplySort)
@@ -375,8 +361,6 @@ WHOA_LUA_STUB(CalendarUpdateEvent)
 WHOA_LUA_STUB(CallCompanion)
 WHOA_LUA_STUB(CameraOrSelectOrMoveStart)
 WHOA_LUA_STUB(CameraOrSelectOrMoveStop)
-WHOA_LUA_STUB(CameraZoomIn)
-WHOA_LUA_STUB(CameraZoomOut)
 WHOA_LUA_STUB(CastPetAction)
 WHOA_LUA_STUB(CastShapeshiftForm)
 WHOA_LUA_STUB(CastSpellByID)
@@ -496,7 +480,6 @@ WHOA_LUA_STUB(ExpandTrainerSkillLine)
 WHOA_LUA_STUB(FactionToggleAtWar)
 WHOA_LUA_STUB(FindSpellBookSlotByID)
 WHOA_LUA_STUB(FlagTutorial)
-WHOA_LUA_STUB(FlipCameraYaw)
 WHOA_LUA_STUB(ForceGossip)
 WHOA_LUA_STUB(GetAbandonQuestItems)
 WHOA_LUA_STUB(GetAbandonQuestName)
@@ -943,7 +926,6 @@ WHOA_LUA_STUB(MakeMinigameMove)
 WHOA_LUA_STUB(ManageBackpackTokenFrame)
 WHOA_LUA_STUB(MouselookStart)
 WHOA_LUA_STUB(MouselookStop)
-WHOA_LUA_STUB(NextView)
 WHOA_LUA_STUB(NumTaxiNodes)
 WHOA_LUA_STUB(OfferPetition)
 WHOA_LUA_STUB(OpenCalendar)
@@ -1002,7 +984,6 @@ WHOA_LUA_STUB(PlaceGlyphInSocket)
 WHOA_LUA_STUB(PlayDance)
 WHOA_LUA_STUB(PositionMiniWorldMapArrowFrame)
 WHOA_LUA_STUB(PositionWorldMapArrowFrame)
-WHOA_LUA_STUB(PrevView)
 WHOA_LUA_STUB(ProcessMapClick)
 WHOA_LUA_STUB(ProcessQuestLogRewardFactions)
 WHOA_LUA_STUB(PurchaseSlot)
@@ -1028,7 +1009,6 @@ WHOA_LUA_STUB(RollOnLoot)
 WHOA_LUA_STUB(RunMacro)
 WHOA_LUA_STUB(RunMacroText)
 WHOA_LUA_STUB(SaveEquipmentSet)
-WHOA_LUA_STUB(SaveView)
 WHOA_LUA_STUB(SearchLFGGetEncounterResults)
 WHOA_LUA_STUB(SearchLFGGetJoinedID)
 WHOA_LUA_STUB(SearchLFGGetNumResults)
@@ -1140,8 +1120,6 @@ WHOA_LUA_STUB(VehicleAimRequestNormAngle)
 WHOA_LUA_STUB(VehicleAimSetNormPower)
 WHOA_LUA_STUB(VehicleAimUpStart)
 WHOA_LUA_STUB(VehicleAimUpStop)
-WHOA_LUA_STUB(VehicleCameraZoomIn)
-WHOA_LUA_STUB(VehicleCameraZoomOut)
 WHOA_LUA_STUB(VehicleExit)
 WHOA_LUA_STUB(VehicleNextSeat)
 WHOA_LUA_STUB(VehiclePrevSeat)
@@ -1224,18 +1202,6 @@ const ScriptFunction s_stubs[] = {
     { "MoveBackwardStop",                        &Script_Stub_MoveBackwardStop },
     { "MoveForwardStart",                        &Script_Stub_MoveForwardStart },
     { "MoveForwardStop",                         &Script_Stub_MoveForwardStop },
-    { "MoveViewDownStart",                       &Script_Stub_MoveViewDownStart },
-    { "MoveViewDownStop",                        &Script_Stub_MoveViewDownStop },
-    { "MoveViewInStart",                         &Script_Stub_MoveViewInStart },
-    { "MoveViewInStop",                          &Script_Stub_MoveViewInStop },
-    { "MoveViewLeftStart",                       &Script_Stub_MoveViewLeftStart },
-    { "MoveViewLeftStop",                        &Script_Stub_MoveViewLeftStop },
-    { "MoveViewOutStart",                        &Script_Stub_MoveViewOutStart },
-    { "MoveViewOutStop",                         &Script_Stub_MoveViewOutStop },
-    { "MoveViewRightStart",                      &Script_Stub_MoveViewRightStart },
-    { "MoveViewRightStop",                       &Script_Stub_MoveViewRightStop },
-    { "MoveViewUpStart",                         &Script_Stub_MoveViewUpStart },
-    { "MoveViewUpStop",                          &Script_Stub_MoveViewUpStop },
     { "PickupCompanion",                         &Script_Stub_PickupCompanion },
     { "PickupContainerItem",                     &Script_Stub_PickupContainerItem },
     { "PickupEquipmentSet",                      &Script_Stub_PickupEquipmentSet },
@@ -1268,7 +1234,6 @@ const ScriptFunction s_stubs[] = {
     { "ResetGroupPreviewTalentPoints",           &Script_Stub_ResetGroupPreviewTalentPoints },
     { "ResetPreviewTalentPoints",                &Script_Stub_ResetPreviewTalentPoints },
     { "ResetTutorials",                          &Script_Stub_ResetTutorials },
-    { "ResetView",                               &Script_Stub_ResetView },
     { "SendAddonMessage",                        &Script_Stub_SendAddonMessage },
     { "SendChatMessage",                         &Script_Stub_SendChatMessage },
     { "SendMail",                                &Script_Stub_SendMail },
@@ -1338,7 +1303,6 @@ const ScriptFunction s_stubs[] = {
     { "SetTradeSkillSubClassFilter",             &Script_Stub_SetTradeSkillSubClassFilter },
     { "SetTrainerServiceTypeFilter",             &Script_Stub_SetTrainerServiceTypeFilter },
     { "SetTrainerSkillLineFilter",               &Script_Stub_SetTrainerSkillLineFilter },
-    { "SetView",                                 &Script_Stub_SetView },
     { "SetWatchedFactionIndex",                  &Script_Stub_SetWatchedFactionIndex },
     { "SortArenaTeamRoster",                     &Script_Stub_SortArenaTeamRoster },
     { "SortAuctionApplySort",                    &Script_Stub_SortAuctionApplySort },
@@ -1489,8 +1453,6 @@ const ScriptFunction s_stubs[] = {
     { "CallCompanion",                           &Script_Stub_CallCompanion },
     { "CameraOrSelectOrMoveStart",               &Script_Stub_CameraOrSelectOrMoveStart },
     { "CameraOrSelectOrMoveStop",                &Script_Stub_CameraOrSelectOrMoveStop },
-    { "CameraZoomIn",                            &Script_Stub_CameraZoomIn },
-    { "CameraZoomOut",                           &Script_Stub_CameraZoomOut },
     { "CastPetAction",                           &Script_Stub_CastPetAction },
     { "CastShapeshiftForm",                      &Script_Stub_CastShapeshiftForm },
     { "CastSpellByID",                           &Script_Stub_CastSpellByID },
@@ -1599,7 +1561,6 @@ const ScriptFunction s_stubs[] = {
     { "FactionToggleAtWar",                      &Script_Stub_FactionToggleAtWar },
     { "FindSpellBookSlotByID",                   &Script_Stub_FindSpellBookSlotByID },
     { "FlagTutorial",                            &Script_Stub_FlagTutorial },
-    { "FlipCameraYaw",                           &Script_Stub_FlipCameraYaw },
     { "ForceGossip",                             &Script_Stub_ForceGossip },
     { "GetAbandonQuestItems",                    &Script_Stub_GetAbandonQuestItems },
     { "GetAbandonQuestName",                     &Script_Stub_GetAbandonQuestName },
@@ -1959,7 +1920,6 @@ const ScriptFunction s_stubs[] = {
     { "ManageBackpackTokenFrame",                &Script_Stub_ManageBackpackTokenFrame },
     { "MouselookStart",                          &Script_Stub_MouselookStart },
     { "MouselookStop",                           &Script_Stub_MouselookStop },
-    { "NextView",                                &Script_Stub_NextView },
     { "NumTaxiNodes",                            &Script_Stub_NumTaxiNodes },
     { "OfferPetition",                           &Script_Stub_OfferPetition },
     { "OpenCalendar",                            &Script_Stub_OpenCalendar },
@@ -1987,7 +1947,6 @@ const ScriptFunction s_stubs[] = {
     { "PlayDance",                               &Script_Stub_PlayDance },
     { "PositionMiniWorldMapArrowFrame",          &Script_Stub_PositionMiniWorldMapArrowFrame },
     { "PositionWorldMapArrowFrame",              &Script_Stub_PositionWorldMapArrowFrame },
-    { "PrevView",                                &Script_Stub_PrevView },
     { "ProcessMapClick",                         &Script_Stub_ProcessMapClick },
     { "ProcessQuestLogRewardFactions",           &Script_Stub_ProcessQuestLogRewardFactions },
     { "PurchaseSlot",                            &Script_Stub_PurchaseSlot },
@@ -2013,7 +1972,6 @@ const ScriptFunction s_stubs[] = {
     { "RunMacro",                                &Script_Stub_RunMacro },
     { "RunMacroText",                            &Script_Stub_RunMacroText },
     { "SaveEquipmentSet",                        &Script_Stub_SaveEquipmentSet },
-    { "SaveView",                                &Script_Stub_SaveView },
     { "SearchLFGGetEncounterResults",            &Script_Stub_SearchLFGGetEncounterResults },
     { "SearchLFGGetJoinedID",                    &Script_Stub_SearchLFGGetJoinedID },
     { "SearchLFGGetNumResults",                  &Script_Stub_SearchLFGGetNumResults },
@@ -2095,8 +2053,6 @@ const ScriptFunction s_stubs[] = {
     { "VehicleAimSetNormPower",                  &Script_Stub_VehicleAimSetNormPower },
     { "VehicleAimUpStart",                       &Script_Stub_VehicleAimUpStart },
     { "VehicleAimUpStop",                        &Script_Stub_VehicleAimUpStop },
-    { "VehicleCameraZoomIn",                     &Script_Stub_VehicleCameraZoomIn },
-    { "VehicleCameraZoomOut",                    &Script_Stub_VehicleCameraZoomOut },
     { "VehicleExit",                             &Script_Stub_VehicleExit },
     { "VehicleNextSeat",                         &Script_Stub_VehicleNextSeat },
     { "VehiclePrevSeat",                         &Script_Stub_VehiclePrevSeat },

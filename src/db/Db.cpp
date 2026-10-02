@@ -30,6 +30,7 @@ WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 WowClientDB<VehicleSeatRec> g_vehicleSeatDB;
 WowClientDB<LightRec> g_lightDB;
 WowClientDB<LightParamsRec> g_lightParamsDB;
+WowClientDB<CameraShakesRec> g_cameraShakesDB;
 WowClientDB<LightSkyboxRec> g_lightSkyboxDB;
 WowClientDB<LiquidMaterialRec> g_liquidMaterialDB;
 WowClientDB<LiquidTypeRec> g_liquidTypeDB;
@@ -98,6 +99,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_lightDB, __FILE__, __LINE__);
     loadFn(&g_lightParamsDB, __FILE__, __LINE__);
     loadFn(&g_lightSkyboxDB, __FILE__, __LINE__);
+    loadFn(&g_cameraShakesDB, __FILE__, __LINE__);
     loadFn(&g_liquidTypeDB, __FILE__, __LINE__);
     loadFn(&g_liquidMaterialDB, __FILE__, __LINE__);
     loadFn(&g_weatherDB, __FILE__, __LINE__);
