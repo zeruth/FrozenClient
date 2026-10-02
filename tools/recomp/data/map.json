@@ -37917,7 +37917,7 @@
   "branchRatio": 0.692,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38548,7 +38548,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.182,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38563,8 +38563,8 @@
  "0068ebb0": {
   "branchRatio": 0.611,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38580,7 +38580,7 @@
   "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38740,7 +38740,7 @@
   "branchRatio": 0.471,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.75,
+  "fidelity": 0.875,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38771,8 +38771,8 @@
  "006904d0": {
   "branchRatio": 0.714,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.615,
+  "faithful": true,
+  "fidelity": 0.846,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38787,8 +38787,8 @@
  "006905f0": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38803,8 +38803,8 @@
  "00690680": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38819,8 +38819,8 @@
  "00690750": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -38868,7 +38868,7 @@
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.01,
+  "fidelity": 0.024,
   "files": [
    "src/gx/gles/CGxDeviceGLES.cpp"
   ],
@@ -38929,8 +38929,8 @@
  "0069fe10": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -39633,8 +39633,8 @@
  "006a9920": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -47112,7 +47112,7 @@
   "branchRatio": 0.273,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.88,
+  "fidelity": 0.96,
   "files": [
    "lib/squall/storm/error/win/Error.cpp",
    "lib/squall/storm/error/win/error.cpp"
@@ -47144,8 +47144,8 @@
  "00771870": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/Error.cpp",
    "lib/squall/storm/error.cpp",
@@ -47208,8 +47208,8 @@
  "00774620": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/thread/SCritSect.cpp",
    "lib/squall/storm/thread/scritsect.cpp"
@@ -47224,8 +47224,8 @@
  "00774630": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/thread/SCritSect.cpp",
    "lib/squall/storm/thread/scritsect.cpp"
@@ -47240,8 +47240,8 @@
  "00774640": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/thread/SCritSect.cpp",
    "lib/squall/storm/thread/scritsect.cpp"
@@ -47256,8 +47256,8 @@
  "00774650": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/thread/SCritSect.cpp",
    "lib/squall/storm/thread/scritsect.cpp"
@@ -47304,8 +47304,8 @@
  "00775140": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/Log.cpp",
    "lib/squall/storm/log.cpp"
@@ -47321,7 +47321,7 @@
   "branchRatio": 0.833,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.75,
   "files": [
    "lib/squall/storm/Log.cpp",
    "lib/squall/storm/log.cpp"
@@ -47352,8 +47352,8 @@
  "007752a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/Log.cpp",
    "lib/squall/storm/log.cpp"
@@ -47368,8 +47368,8 @@
  "00775380": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/squall/storm/Log.cpp",
    "lib/squall/storm/log.cpp"
@@ -66697,8 +66697,8 @@
  "0086b240": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/util/win/OsSystem.cpp",
    "src/util/win/ossystem.cpp"
@@ -66713,8 +66713,8 @@
  "0086b280": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/common/common/Time.cpp",
    "lib/common/common/time.cpp"
@@ -66729,8 +66729,8 @@
  "0086b2d0": {
   "branchRatio": 0.889,
   "constOverlap": 0.312,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/util/win/OsSystem.cpp",
    "src/util/win/ossystem.cpp"
@@ -66745,8 +66745,8 @@
  "0086b480": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/util/win/OsSystem.cpp",
    "src/util/win/ossystem.cpp"
@@ -66761,8 +66761,8 @@
  "0086b4a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/util/win/OsSystem.cpp",
    "src/util/win/ossystem.cpp"
@@ -66777,8 +66777,8 @@
  "0086b4c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/util/win/OsSystem.cpp",
    "src/util/win/ossystem.cpp"
@@ -66793,8 +66793,8 @@
  "0086b710": {
   "branchRatio": 1.0,
   "constOverlap": 0.6,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/util/win/OsSystem.cpp",
    "src/util/win/ossystem.cpp"
@@ -66860,8 +66860,8 @@
  "0086d6d0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/common/common/thread/OsTls.cpp",
    "lib/common/common/thread/ostls.cpp"
@@ -66876,8 +66876,8 @@
  "008714e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/common/common/Os.cpp",
    "lib/common/common/os.cpp"
@@ -66892,8 +66892,8 @@
  "00871510": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "lib/common/common/Os.cpp",
    "lib/common/common/os.cpp"

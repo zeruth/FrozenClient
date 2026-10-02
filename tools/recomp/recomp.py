@@ -105,14 +105,31 @@ def export_reference():
             print('  ', line.strip())
 
 
+def load_externals():
+    """external:000001xx -> crt:<api>, from data/externals.json (tools/recomp/externals.py). An
+    import the reference calls by id is otherwise an opaque token no port call can ever match."""
+    path = os.path.join(os.path.dirname(REF_JSONL), 'externals.json')
+    if not os.path.exists(path):
+        return {}
+    with io.open(path, encoding='utf-8') as f:
+        names = json.load(f)
+    out = {}
+    for ext, name in names.items():
+        token = crt_token('_' + name)
+        if token:
+            out[ext.lower()] = token
+    return out
+
+
 def load_reference():
     refs = {}
+    externals = load_externals()
     with io.open(REF_JSONL, encoding='utf-8') as f:
         for line in f:
             r = json.loads(line)
             r['addr'] = r['addr'].lower()
-            r['callees'] = [c.lower() for c in r['callees'] if not c.startswith('ext:')]
-            r['calls'] = [c.lower() for c in r.get('calls', r['callees']) if not c.startswith('ext:')]
+            r['callees'] = [externals.get(c.lower(), c.lower()) for c in r['callees'] if not c.startswith('ext:')]
+            r['calls'] = [externals.get(c.lower(), c.lower()) for c in r.get('calls', r['callees']) if not c.startswith('ext:')]
             r.setdefault('branches', 0)
             r['consts'] = set(r.get('consts', []))
             refs[r['addr']] = r
@@ -835,7 +852,12 @@ def crt_token(name):
     m = CRT_NAME_RE.match(name)
     if not m:
         return None
-    base = m.group(1).lower().split('@')[0]
+    base = m.group(1).split('@')[0]
+    # Win32 imports come as FooA or FooW; a port that calls the generic Foo macro reaches one of
+    # them, so the suffix is not evidence either way.
+    if re.search(r'[a-z0-9][AW]$', base):
+        base = base[:-1]
+    base = base.lower()
     if base in IMPLICIT_CRT:
         return None
     return 'crt:' + base
