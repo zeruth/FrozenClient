@@ -72,9 +72,8 @@
     "note": "Liquid::CVertexDataMH2O::CVertexDataMH2O. run 2026-09-25 on map 609 with a counter in CreateLiquid: 448 chunks built liquid, all MH2O, none MCLQ. First layers read type 2 / LVF 2 with partial tile rectangles (0..6,4..8 and 2..8,6..8), and the vertices came out stepping 4.167 per tile from the rectangle's corner with every height resolving to world z 0 -- sea level, which is what an ocean layer at min=max=0 under a chunk origin of 17.0 should give"
   },
   "004c4b80": {
-    "frozen": "CWorld::GetTickTimeSec",
-    "status": "ported",
-    "note": "pinned 2026-09-25: the callgraph re-paired it with FUN_008a1710, the Liquid module's surface release, the moment CChunkLiquid::UpdateAnim started calling the getter"
+    "status": "unlinked",
+    "note": "the call-graph matcher proposed `CWorld::GetTickTimeSec` for this; it is not that. CGxDevice::PrimBegin (FUN_006855c0) calls it with 0 on the position and normal arrays: it is TSGrowableArray<C3Vector>::SetCount. Squall template. Rejected 2026-10-02."
   },
   "008a1710": {
     "status": "unlinked",
@@ -3675,5 +3674,9 @@
     "frozen": "CGxDevice::BufDestroy",
     "status": "ported",
     "note": "Identified 2026-10-02 from its callers (the device destructor on the stream buffers, CMap::FreeBufBlocks, CM2Shared::ReleaseGeometryBuffers): takes CGxBuf*&, detaches it from its pool (FUN_00685c00), unlinks, frees, nulls. The call-graph matcher had it as TSGrowableArray<CMapChunkBufBlock>::SetCount."
+  },
+  "0088d0c0": {
+    "status": "excluded",
+    "note": "CRT _CIpow (x87 pow of st1 by st0), called by the gamma ramp build; compiler runtime. Identified 2026-10-02."
   }
 }

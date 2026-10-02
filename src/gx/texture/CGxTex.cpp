@@ -1,33 +1,46 @@
+#include <cstring>
+#include "gx/Device.hpp"
 #include "gx/texture/CGxTex.hpp"
 #include "gx/Gx.hpp"
 #include <algorithm>
 
-CGxTexFlags::CGxTexFlags(EGxTexFilter filter, uint32_t wrapU, uint32_t wrapV, uint32_t force, uint32_t generateMipMaps, uint32_t renderTarget, uint32_t maxAnisotropy) {
+// ref: FUN_00681be0
+// Bit 8 is a flag of its own and the anisotropy sits in bits 9..13 (frozen had it one bit low);
+// the anisotropy is clamped to what the device supports.
+CGxTexFlags::CGxTexFlags(EGxTexFilter filter, uint32_t wrapU, uint32_t wrapV, uint32_t force, uint32_t generateMipMaps, uint32_t renderTarget, uint32_t maxAnisotropy, uint32_t bit8, uint32_t bit14, uint32_t bit15) {
+    *reinterpret_cast<uint32_t*>(this) = 0;
+
     this->m_filter = filter;
     this->m_wrapU = wrapU;
     this->m_wrapV = wrapV;
     this->m_forceMipTracking = force;
     this->m_generateMipMaps = generateMipMaps;
     this->m_renderTarget = renderTarget;
-    this->m_maxAnisotropy = std::min(maxAnisotropy, GxCaps().m_maxTexAnisotropy);
 
-    // TODO
-    this->m_bit13 = 0;
-    this->m_bit14 = 0;
-    this->m_bit15 = 0;
+    if (g_theGxDevicePtr->Caps().m_maxTexAnisotropy <= maxAnisotropy) {
+        maxAnisotropy = g_theGxDevicePtr->Caps().m_maxTexAnisotropy;
+    }
+
+    this->m_bit8 = bit8;
+    this->m_maxAnisotropy = maxAnisotropy;
+    this->m_bit14 = bit14;
+    this->m_bit15 = bit15;
+
+    // The reference asks for the caps once more for an anisotropic filter and does nothing with
+    // them.
+    if (filter == GxTex_Anisotropic) {
+        g_theGxDevicePtr->Caps();
+    }
+}
+
+// ref: FUN_00683ae0
+// The whole flags word compared as bytes.
+bool CGxTexFlags::operator!=(const CGxTexFlags& texFlags) const {
+    return memcmp(this, &texFlags, sizeof(*this)) != 0;
 }
 
 bool CGxTexFlags::operator==(const CGxTexFlags& texFlags) {
-    return this->m_filter == texFlags.m_filter
-        && this->m_wrapU == texFlags.m_wrapU
-        && this->m_wrapV == texFlags.m_wrapV
-        && this->m_forceMipTracking == texFlags.m_forceMipTracking
-        && this->m_generateMipMaps == texFlags.m_generateMipMaps
-        && this->m_renderTarget == texFlags.m_renderTarget
-        && this->m_maxAnisotropy == texFlags.m_maxAnisotropy
-        && this->m_bit13 == texFlags.m_bit13
-        && this->m_bit14 == texFlags.m_bit14
-        && this->m_bit15 == texFlags.m_bit15;
+    return !(*this != texFlags);
 }
 
 // ref: FUN_006852c0

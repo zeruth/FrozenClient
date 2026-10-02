@@ -250,6 +250,7 @@ ATOM WindowClassCreate() {
     return RegisterClassEx(&wc);
 }
 
+// ref: FUN_0068ed80
 int32_t CGxDeviceD3d::ILoadD3dLib(HINSTANCE& d3dLib, LPDIRECT3D9& d3d) {
     d3dLib = nullptr;
     d3d = nullptr;
@@ -274,7 +275,15 @@ int32_t CGxDeviceD3d::ILoadD3dLib(HINSTANCE& d3dLib, LPDIRECT3D9& d3d) {
         CGxDevice::Log("CGxDeviceD3d::ILoadD3dLib(): unable to LoadLibrary()");
     }
 
-    CGxDeviceD3d::IUnloadD3dLib(d3dLib, d3d);
+    if (d3d) {
+        d3d->Release();
+        d3d = nullptr;
+    }
+
+    if (d3dLib) {
+        FreeLibrary(d3dLib);
+        d3dLib = nullptr;
+    }
 
     return 0;
 }
@@ -2509,33 +2518,31 @@ void CGxDeviceD3d::ISetVertexBuffer(uint32_t stream, LPDIRECT3DVERTEXBUFFER9 buf
 
 // ref: FUN_006a5c70
 void CGxDeviceD3d::IShaderBindPixel(CGxShader* shader) {
-    if (!shader) {
-        this->m_d3dDevice->SetPixelShader(nullptr);
-
-        // Back to fixed function: every stage without a texture has its combiners disabled, every
-        // stage with one gets the app's back, and the op states are marked clean.
-        for (uint32_t tmu = 0; tmu < 8; tmu++) {
-            if (!this->m_stageTextured[tmu]) {
-                this->DsSet(static_cast<EDeviceState>(Ds_TssColorOp0 + tmu), D3DTOP_DISABLE);
-                this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaOp0 + tmu), D3DTOP_DISABLE);
-            } else {
-                this->ISetColorOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_value));
-                this->ISetAlphaOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_value));
-            }
-
-            this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_dirty = 0;
-            this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_dirty = 0;
+    if (shader) {
+        if (!shader->loaded) {
+            this->IShaderCreatePixel(shader);
         }
 
+        this->m_d3dDevice->SetPixelShader(static_cast<LPDIRECT3DPIXELSHADER9>(shader->apiSpecific));
         return;
     }
 
-    if (!shader->loaded) {
-        this->IShaderCreatePixel(shader);
-    }
+    this->m_d3dDevice->SetPixelShader(nullptr);
 
-    auto d3dShader = static_cast<LPDIRECT3DPIXELSHADER9>(shader->apiSpecific);
-    this->m_d3dDevice->SetPixelShader(d3dShader);
+    // Back to fixed function: every stage with a texture gets the app's combiners back, every
+    // stage without one has them disabled, and the op states are marked clean.
+    for (uint32_t tmu = 0; tmu < 8; tmu++) {
+        if (this->m_stageTextured[tmu]) {
+            this->ISetColorOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_value));
+            this->ISetAlphaOp(tmu, static_cast<uint32_t>(this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_value));
+        } else {
+            this->DsSet(static_cast<EDeviceState>(Ds_TssColorOp0 + tmu), D3DTOP_DISABLE);
+            this->DsSet(static_cast<EDeviceState>(Ds_TssAlphaOp0 + tmu), D3DTOP_DISABLE);
+        }
+
+        this->m_appRenderStates[GxRs_ColorOp0 + tmu].m_dirty = 0;
+        this->m_appRenderStates[GxRs_AlphaOp0 + tmu].m_dirty = 0;
+    }
 }
 
 // ref: FUN_006aa2f0
@@ -3102,8 +3109,10 @@ void CGxDeviceD3d::IStateSyncVertexPtrs() {
         return;
     }
 
-    CGxBuf* streamBufs[GxVAs_Last] = { 0 };
-    uint32_t streamSizes[GxVAs_Last] = { 0 };
+    CGxBuf* streamBufs[GxVAs_Last];
+    uint32_t streamSizes[GxVAs_Last];
+    memset(streamBufs, 0, sizeof(streamBufs));
+    memset(streamSizes, 0, sizeof(streamSizes));
 
     D3DVERTEXELEMENT9 elements[GxVAs_Last + 1];
     uint32_t elementCount = 0;
@@ -3613,39 +3622,36 @@ int32_t CGxDeviceD3d::StereoEnabled() {
 // rows remapped from [-1, 1] to D3D's [0, 1], and scaled by 0.2 unless NormalProjection is on.
 void CGxDeviceD3d::XformSetProjection(const C44Matrix& matrix) {
     this->m_projection = matrix;
-    DirectX::XMMATRIX projNative;
-    memcpy(&projNative, &matrix, sizeof(projNative));
 
-    if (NotEqual(projNative._34, 1.0f, WHOA_EPSILON_1) && NotEqual(projNative._34, 0.0f, WHOA_EPSILON_1)) {
-        projNative /= projNative._34;
+    C44Matrix native = matrix;
+
+    if (fabsf(native.c3 - 1.0f) >= 2.3841858e-07f && fabsf(native.c3) >= 2.3841858e-07f) {
+        native *= 1.0f / native.c3;
     }
 
-    if (projNative._44 == 0.0f) {
-        auto v5 = -(projNative._43 / (projNative._33 + 1.0f));
-        auto v6 = -(projNative._43 / (projNative._33 - 1.0f));
-        projNative._33 = v6 / (v6 - v5);
-        projNative._43 = v6 * v5 / (v5 - v6);
+    if (native.d3 == 0.0f) {
+        float n = -(native.d2 / (native.c2 + 1.0f));
+        float f = -(native.d2 / (native.c2 - 1.0f));
+        native.c2 = f / (f - n);
+        native.d2 = f * n / (n - f);
     } else {
-        auto v8 = 1.0f / projNative._33;
-        auto v9 = (-1.0f - projNative._43) * v8;
-        auto v10 = v8 * (1.0f - projNative._43);
-        projNative._33 = 1.0f / (v10 - v9);
-        projNative._43 = v9 / (v9 - v10);
+        float invC2 = 1.0f / native.c2;
+        float n = (-1.0f - native.d2) * invC2;
+        float f = (1.0f - native.d2) * invC2;
+        native.c2 = 1.0f / (f - n);
+        native.d2 = n / (n - f);
     }
 
-    if (!this->MasterEnable(GxMasterEnable_NormalProjection) && projNative._44 != 1.0f) {
-        DirectX::XMMATRIX shrink = {
-            0.2f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.2f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.2f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        };
-
-        projNative *= shrink;
+    if (!this->MasterEnable(GxMasterEnable_NormalProjection) && native.d3 != 1.0f) {
+        C44Matrix shrink;
+        shrink.a0 = 0.2f;
+        shrink.b1 = 0.2f;
+        shrink.c2 = 0.2f;
+        native = native * shrink;
     }
 
     this->m_xforms[GxXform_Projection].m_dirty = 1;
-    memcpy(&this->m_projNative, &projNative, sizeof(this->m_projNative));
+    this->m_projNative = native;
 }
 
 // ref: FUN_006a9e00
@@ -4154,7 +4160,7 @@ void CGxDeviceD3d::IEnsureCaptureTarget() {
         return;
     }
 
-    auto& window = this->DeviceCurWindow();
+    auto& window = this->DeviceDefWindow();
     D3DFORMAT format;
 
     if (!this->m_format.window) {

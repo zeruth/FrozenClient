@@ -2081,7 +2081,8 @@ void CGxDevice::TexDestroy(CGxTex* texId) {
     texId->m_link.Unlink();
 
     if (texId) {
-        delete texId;
+        texId->~CGxTex();
+        SMemFree(texId, __FILE__, __LINE__, 0x0);
     }
 }
 

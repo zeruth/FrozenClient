@@ -68,6 +68,7 @@ class C44Matrix {
 
     // Multiply in place, receiver on the LEFT: `*this = *this * r`. Tagged at the definition.
     C44Matrix& operator*=(const C44Matrix& r);
+    C44Matrix& operator*=(float a);
 };
 
 C44Matrix operator+(const C44Matrix& l, const C44Matrix& r);

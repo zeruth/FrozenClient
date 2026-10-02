@@ -15,8 +15,8 @@ class CGxTexFlags {
         uint32_t m_forceMipTracking : 1;
         uint32_t m_generateMipMaps : 1;
         uint32_t m_renderTarget : 1;
+        uint32_t m_bit8 : 1;
         uint32_t m_maxAnisotropy : 5;
-        uint32_t m_bit13 : 1;
         uint32_t m_bit14 : 1;
         uint32_t m_bit15 : 1;
 
@@ -24,8 +24,9 @@ class CGxTexFlags {
         CGxTexFlags()
             : CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1)
             {};
-        CGxTexFlags(EGxTexFilter, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+        CGxTexFlags(EGxTexFilter, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t bit8 = 0, uint32_t bit14 = 0, uint32_t bit15 = 0);
         bool operator==(const CGxTexFlags& texFlags);
+        bool operator!=(const CGxTexFlags& texFlags) const;
 };
 
 class CGxTexParms {

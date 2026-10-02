@@ -542,3 +542,9 @@ void TransformVector4(C4Vector* out, const C4Vector& v, const C44Matrix& m) {
     out->z = m.c2 * v.z + m.a2 * v.x + m.b2 * v.y + m.d2 * v.w;
     out->w = m.c3 * v.z + m.a3 * v.x + m.b3 * v.y + m.d3 * v.w;
 }
+
+// ref: FUN_004c23a0
+C44Matrix& C44Matrix::operator*=(float a) {
+    *this = *this * a;
+    return *this;
+}
