@@ -1,4 +1,8 @@
 #include "world/map/CMapObjGroup.hpp"
+#include <tempest/matrix/C33Matrix.hpp>
+#include "world/map/CMapDoodadDef.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
+#include "world/map/CMapObjDef.hpp"
 #include "gx/Buffer.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMap.hpp"
@@ -956,6 +960,293 @@ bool CMapObjGroup::QueryBox(const C4Plane* hull, const C3Vector* corners, uint32
     return CMapObjGroup::s_hitRecordCount != recordsBefore;
 }
 
+// FUN_007c7230 (see overrides.json: diverged, as CMapObjGroupSegmentQuery::CachedLeaf). The
+// reference resolves the leaf through CMap's node cache when bspcache is on; the cache is not
+// ported, so every leaf takes the uncached loop, which finds the same faces.
+bool CMapObjGroupAaBoxQuery::CachedLeaf(CMapObjGroup* group, const CAaBspNode* node) {
+    return false;
+}
+
+// ref: FUN_007c9b10
+void CMapObjGroupAaBoxQuery::TestFace(uint16_t face) {
+    if (static_cast<uint8_t>(this->skipFlags) & this->polys[face].flags) {
+        return;
+    }
+
+    if (s_collideHitCount < 0x2000) {
+        s_collideHitFaces[s_collideHitCount] = face;
+        s_collideHitCount++;
+        this->polys[face].flags |= SMOPoly::F_COLLIDE_HIT;
+
+        const uint16_t* tri = &this->indices[face * 3];
+        const C3Vector* vertices = this->vertices;
+
+        if (!TriangleOutsideBox(*this->box, vertices[tri[0]], vertices[tri[1]], vertices[tri[2]])) {
+            s_hitFaces[s_hitCount] = face;
+            s_hitCount++;
+        }
+    } else if (this->overflow) {
+        *this->overflow |= 0x1;
+    }
+}
+
+// ref: FUN_007ca920
+// BoxQueryNode's walk, instruction for instruction, over the plain-box leaf.
+void CMapObjGroup::AaBoxQueryNode(CMapObjGroupAaBoxQuery& query, int32_t nodeIdx, const CAaBox& queryBox, const CAaBox& box) {
+    const CAaBspNode* node = &this->m_bspNodes[nodeIdx];
+
+    if (node->flags & CAaBspNode::Flag_Leaf) {
+        this->AaBoxQueryLeaf(query, node);
+        return;
+    }
+
+    uint32_t axis = node->flags & CAaBspNode::Flag_AxisMask;
+
+    const float* queryMin = &queryBox.b.x;
+    const float* queryMax = &queryBox.t.x;
+    const float* boxMin = &box.b.x;
+    const float* boxMax = &box.t.x;
+
+    if (boxMin[axis] <= queryMax[axis] && queryMin[axis] <= boxMax[axis]) {
+        CAaBox posBox = box;
+        (&posBox.b.x)[axis] = node->planeDist;
+
+        CAaBox negBox = box;
+        (&negBox.t.x)[axis] = node->planeDist;
+
+        if (queryMin[axis] <= node->planeDist) {
+            if (node->planeDist <= queryMax[axis]) {
+                if (node->posChild != CAaBspNode::NoChild) {
+                    CAaBox clipped = queryBox;
+                    (&clipped.b.x)[axis] = node->planeDist;
+                    this->AaBoxQueryNode(query, node->posChild, clipped, posBox);
+                }
+
+                if (node->negChild != CAaBspNode::NoChild) {
+                    CAaBox clipped = queryBox;
+                    (&clipped.t.x)[axis] = node->planeDist;
+                    this->AaBoxQueryNode(query, node->negChild, clipped, negBox);
+                }
+            } else if (node->negChild != CAaBspNode::NoChild) {
+                this->AaBoxQueryNode(query, node->negChild, queryBox, negBox);
+                return;
+            }
+        } else if (node->posChild != CAaBspNode::NoChild) {
+            this->AaBoxQueryNode(query, node->posChild, queryBox, posBox);
+            return;
+        }
+    }
+}
+
+// ref: FUN_007ca8c0
+void CMapObjGroup::AaBoxQueryLeaf(CMapObjGroupAaBoxQuery& query, const CAaBspNode* node) {
+    if (query.CachedLeaf(this, node)) {
+        return;
+    }
+
+    uint32_t faceStart = node->faceStart;
+    const uint16_t* faceRefs = this->m_bspFaceRefs;
+
+    // The same clamp BoxQueryLeaf makes: the reference trusts MOBN's range against MOBR.
+    uint32_t count = node->nFaces;
+
+    if (faceStart >= this->m_bspFaceRefCount) {
+        return;
+    }
+
+    if (faceStart + count > this->m_bspFaceRefCount) {
+        count = this->m_bspFaceRefCount - faceStart;
+    }
+
+    for (uint32_t i = 0; i < count; i++) {
+        query.TestFace(faceRefs[faceStart + i]);
+    }
+}
+
+// ref: FUN_007c94b0
+// The group's liquid as a box query: the tiles under the box (in liquid-grid space, clipped to the
+// grid, and no more than 0x2000 vertices), each vertex classified against the box's z faces, and
+// both triangles of every tile that renders appended to one hit record. The record is placed by
+// `object`'s own matrix -- the caller's owner is the CMapObjDef, whose placement sits at +0x70 --
+// and the `placement` argument is not read.
+//
+// With mask 0x10000 but not 0x20000 only liquids whose LiquidType row has flag 0x4 take part.
+bool CMapObjGroup::QueryLiquidBox(const CAaBox& box, uint32_t queryFlags, const C44Matrix* placement, void* object) {
+    (void)placement;
+
+    // 1 / (CHUNK_SIZE / 8), the liquid tile step, DAT_00aeee54.
+    static const float INV_TILE_STEP = 0.23999999463558197f;
+
+    if (!this->m_liquidType || !this->m_liquidXTiles || !this->m_liquidYTiles) {
+        return false;
+    }
+
+    if ((queryFlags & 0x10000) && !(queryFlags & 0x20000)) {
+        auto rec = g_liquidTypeDB.GetRecord(static_cast<int32_t>(this->m_liquidType));
+
+        // Frozen-only null check: the reference trusts the row to exist.
+        if (!rec || !(rec->m_flags & 0x4)) {
+            return false;
+        }
+    }
+
+    // Frozen-only: a group whose MLIQ did not parse fully has no tiles or vertices to walk.
+    if (!this->m_liquidTiles || !this->m_liquidVertices.Count()) {
+        return false;
+    }
+
+    C3Vector corners[2] = {
+        { box.b.x - this->m_liquidPos.x, box.b.y - this->m_liquidPos.y, box.b.z },
+        { box.t.x - this->m_liquidPos.x, box.t.y - this->m_liquidPos.y, box.t.z },
+    };
+
+    CAaBox grid;
+    BoundsFromPoints(grid, corners, 2);
+
+    int32_t maxX = static_cast<int32_t>(floorf(grid.t.x * INV_TILE_STEP));
+    int32_t maxY = static_cast<int32_t>(floorf(grid.t.y * INV_TILE_STEP));
+    int32_t minY = static_cast<int32_t>(floorf(grid.b.y * INV_TILE_STEP));
+    int32_t minX = static_cast<int32_t>(floorf(grid.b.x * INV_TILE_STEP));
+
+    if (maxX < 0 || maxY < 0
+        || minX >= static_cast<int32_t>(this->m_liquidXTiles)
+        || minY >= static_cast<int32_t>(this->m_liquidYTiles)) {
+        return false;
+    }
+
+    CiRect wanted = { minY, minX, maxY, maxX };
+    CiRect all = { 0, 0, static_cast<int32_t>(this->m_liquidYTiles) - 1, static_cast<int32_t>(this->m_liquidXTiles) - 1 };
+    CiRect rect = CiRect::Intersection(wanted, all);
+
+    int32_t spanY = rect.maxY - rect.minY;
+    int32_t spanX = rect.maxX - rect.minX;
+    int32_t rectStride = spanX + 2;
+    uint32_t vertexCount = static_cast<uint32_t>((spanY + 2) * rectStride);
+
+    if (vertexCount > 0x2000) {
+        return false;
+    }
+
+    // The reference sizes this on the stack with alloca; 0x2000 is its own ceiling.
+    uint8_t outcodes[0x2000];
+
+    const C3Vector* vertices = this->m_liquidVertices.Ptr();
+    int32_t vertexStride = static_cast<int32_t>(this->m_liquidXVerts);
+
+    uint8_t* outcode = outcodes;
+
+    for (int32_t y = rect.minY; y <= rect.maxY + 1; y++) {
+        for (int32_t x = rect.minX; x <= rect.maxX + 1; x++) {
+            *outcode++ = ClassifyCornerZ(box, vertices[vertexStride * y + x]);
+        }
+    }
+
+    // Each tile as two triangles, as offsets from its first vertex, in the vertex array and in the
+    // outcode array, whose rows differ in length.
+    const int32_t vertexSplit[2][3] = { { 0, vertexStride + 1, vertexStride }, { 0, 1, vertexStride + 1 } };
+    const int32_t outcodeSplit[2][3] = { { 0, rectStride + 1, rectStride }, { 0, 1, rectStride + 1 } };
+
+    CMapObjHitRecord* record = nullptr;
+    uint16_t* indices = nullptr;
+    bool collected = false;
+
+    outcode = outcodes;
+
+    for (int32_t y = rect.minY; y <= rect.maxY; y++) {
+        for (int32_t x = rect.minX; x <= rect.maxX; x++) {
+            int32_t vertex = vertexStride * y + x;
+
+            if ((this->m_liquidTiles[this->m_liquidXTiles * y + x] & 0xf) != 0xf) {
+                for (int32_t t = 0; t < 2; t++) {
+                    const int32_t* oc = outcodeSplit[t];
+
+                    if ((outcode[oc[0]] & outcode[oc[1]] & outcode[oc[2]]) != 0) {
+                        continue;
+                    }
+
+                    // One record for the group, allocated on the first triangle kept. Like the
+                    // terrain collector this marks itself as having collected even when the pool
+                    // was full, and carries on without appending.
+                    if (!collected) {
+                        record = CMapObjGroup::AllocHitRecord();
+
+                        if (record) {
+                            record->object = object;
+                            record->placement = &static_cast<CMapObjDef*>(object)->m_placement;
+                            record->vertices = vertices;
+                            indices = CMapObjGroup::AllocHitIndices(static_cast<uint32_t>((spanY + 1) * (spanX + 1) * 6));
+                            record->indices = indices;
+                        }
+                    }
+
+                    collected = true;
+
+                    if (!record || !record->indices) {
+                        continue;
+                    }
+
+                    for (int32_t k = 0; k < 3; k++) {
+                        uint16_t index = static_cast<uint16_t>(vertex + vertexSplit[t][k]);
+
+                        indices[record->indexCount] = index;
+                        record->indexCount++;
+
+                        if (index <= record->minIndex) {
+                            record->minIndex = index;
+                        }
+
+                        if (index >= record->maxIndex) {
+                            record->maxIndex = index;
+                        }
+                    }
+
+                    record->faceCount++;
+                }
+            }
+
+            outcode++;
+        }
+
+        outcode++;
+    }
+
+    return collected;
+}
+
+// ref: FUN_007cb7b0
+// QueryBox with a plain box: the BSP walk, the hit record, and on mask 0x30000 the group's own
+// liquid collector.
+bool CMapObjGroup::QueryAaBox(const CAaBox& box, uint32_t queryFlags, uint16_t skipFlags, const C44Matrix* placement, void* object) {
+    // Frozen-only, as in QueryBox: a group whose BSP chunks did not parse has no tree to walk.
+    if (!this->m_bspNodes || !this->m_bspNodeCount) {
+        return false;
+    }
+
+    uint32_t recordsBefore = CMapObjGroup::s_hitRecordCount;
+    uint32_t overflow = 0;
+
+    CMapObjGroupAaBoxQuery query;
+    query.overflow = &overflow;
+    query.polys = this->m_polys;
+    query.vertices = this->m_vertices;
+    query.indices = this->m_indices;
+    query.box = &box;
+    query.skipFlags = skipFlags | SMOPoly::F_COLLIDE_HIT;
+
+    this->AaBoxQueryNode(query, 0, box, this->m_bounds);
+    this->RecordHits(placement, object, overflow);
+
+    if (queryFlags & 0x30000) {
+        this->QueryLiquidBox(box, queryFlags, placement, object);
+    }
+
+    bool hit = CMapObjGroup::s_hitRecordCount != recordsBefore;
+
+    CMapObjGroup::QueryEnd(this->m_polys);
+
+    return hit;
+}
+
 // ref: FUN_007c7fe0
 bool CMapObjGroup::SampleColorAtFace(const C3Vector& point, uint16_t face, CImVector* outColor, uint8_t* outFlag) {
     if (face >= this->m_faceCount) {
@@ -1326,20 +1617,112 @@ bool MapQueryBoxTerrain(const CAaBox& box, void* object, uint32_t queryMask) {
     return hit;
 }
 
+// ref: FUN_007a6940
+// Every placed building the box reaches: the box is carried into the building's space -- its
+// centre through the inverse placement, its half-extents through that matrix's rotation -- tested
+// against the MOHD bounds, then handed to the groups.
+bool MapQueryBoxMapObjs(const CAaBox& box, void* object, uint32_t queryMask) {
+    bool hit = false;
+
+    C3Vector center = {
+        (box.b.x + box.t.x) * 0.5f,
+        (box.t.y + box.b.y) * 0.5f,
+        (box.t.z + box.b.z) * 0.5f
+    };
+
+    CAaBox extents;
+    extents.b = { box.b.x + -center.x, box.b.y + -center.y, box.b.z + -center.z };
+    extents.t = { box.t.x + -center.x, -center.y + box.t.y, -center.z + box.t.z };
+
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if ((def->m_flags & 0x20) || !def->m_mapObj) {
+            continue;
+        }
+
+        C3Vector localCenter = center * def->m_inversePlacement;
+
+        CAaBox local;
+        TransformBoxExtents(C33Matrix(def->m_inversePlacement), extents, local);
+
+        local.b.x = local.b.x + localCenter.x;
+        local.b.y = local.b.y + localCenter.y;
+        local.b.z = local.b.z + localCenter.z;
+        local.t.x = local.t.x + localCenter.x;
+        local.t.y = localCenter.y + local.t.y;
+        local.t.z = localCenter.z + local.t.z;
+
+        if (def->m_mapObj->BoxVsBounds(local)) {
+            hit |= def->m_mapObj->QueryBoxGroups(local, queryMask, static_cast<const C44Matrix*>(object), def);
+        }
+    }
+
+    return hit;
+}
+
+// ref: FUN_007a2aa0
+// The doodads of every placed building whose group and own bounds meet the box. Which ones count
+// depends on the mask: 0x200122 takes any, 0x2000000 those flagged 0x1000, 0x100111 those without
+// 0x100.
+uint32_t MapQueryBoxModels(CM2Model** models, uint32_t maxModels, const CAaBox& box, uint32_t queryMask) {
+    if (maxModels == 0) {
+        return 0;
+    }
+
+    uint32_t count = 0;
+
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if ((def->m_flags & 0x100) || !def->m_bounds.Intersects(box)) {
+            continue;
+        }
+
+        for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+            if (!def->m_mapObj->IsGroupLoaded(defGroup->m_groupIndex) || !defGroup->m_bounds.Intersects(box)) {
+                continue;
+            }
+
+            for (auto doodadLink = defGroup->m_doodadDefLinkList.Head(); doodadLink;
+                 doodadLink = defGroup->m_doodadDefLinkList.Next(doodadLink)) {
+                auto doodad = static_cast<CMapDoodadDef*>(doodadLink->owner);
+                CM2Model* model = doodad->m_model;
+                uint32_t flags = doodad->m_flags;
+
+                if (!model || !(flags & 0x80) || !doodad->m_bounds.Intersects(box)) {
+                    continue;
+                }
+
+                uint32_t take = (queryMask & 0x200122) != 0;
+
+                if (queryMask & 0x2000000) {
+                    take |= flags & 0x1000;
+                }
+
+                if (queryMask & 0x100111) {
+                    take |= ~(flags >> 8) & 1;
+                }
+
+                if (take) {
+                    models[count] = model;
+                    count++;
+
+                    if (count == maxModels) {
+                        return count;
+                    }
+                }
+            }
+        }
+    }
+
+    return count;
+}
+
 // ref: FUN_007a6af0
 bool MapQueryBox(const CAaBox& box, void* object, uint32_t queryMask) {
     bool hit = false;
 
     if (queryMask & 0x300f0) {
-        // TODO FUN_007a6940, 419 bytes: the MAP-OBJECT half. It walks the loaded instance list
-        // (DAT_00d25438 / DAT_00d25440, which frozen does not carry yet), brings the box into each
-        // instance's space through its matrix at +0xb0, tests the instance bounds, then walks its
-        // groups (FUN_007aef00, 252 bytes) and each group's BSP against the plain box
-        // (FUN_007cb7b0, 183 bytes, the sibling of CMapObjGroup::QueryBox that takes a box where
-        // QueryBox takes a plane hull, calling the box node walk FUN_007ca920 and then
-        // CMapObjGroup::RecordHits, both of which frozen already has). Until it lands a blob does
-        // not fall on a building floor through this path; BlobShadowDrawWmo covers that case its own
-        // way. docs/ref/parity-shadows.md maps the chain function by function.
+        hit = MapQueryBoxMapObjs(box, object, queryMask);
     }
 
     if (queryMask & 0x30100) {
