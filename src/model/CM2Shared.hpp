@@ -113,7 +113,12 @@ class CM2Shared {
         CM2Model* m_callbackList = nullptr;
         CM2Model** m_callbackListTail = &this->m_callbackList;
         char m_filePath[STORM_MAX_PATH];
-        char* ext = nullptr;
+        // +0x140: the basename within m_filePath (the cache's hash key), +0x144 / +0x148 the
+        // bucket chain links, +0x14c the hash.
+        char* m_baseName = nullptr;
+        CM2Shared** m_hashPrev = nullptr;
+        CM2Shared* m_hashNext = nullptr;
+        uint32_t m_hash = 0;
         M2Data* m_data = nullptr;
         CAaBox aaBox154;
         uint32_t m_dataSize = 0;
@@ -132,6 +137,10 @@ class CM2Shared {
         CM2Shared** m_freePrev = nullptr;
         CM2Shared* m_freeNext = nullptr;
         uint32_t uint38 = 0;
+        // +0x19c / +0x1a0: when this model's geometry buffers were last used, and its link in the
+        // cache's geometry list.
+        uint32_t m_geometryTime = 0;
+        TSLink<CM2Shared> m_geometryLink;
 
         // Member functions
         CM2Shared(CM2Cache* cache)

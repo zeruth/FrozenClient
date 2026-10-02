@@ -4735,7 +4735,7 @@ void CM2Model::OptimizeVisibleGeometry() {
         GxPoolUsage_Static,
         indexTotal * 2,
         GxPoolHintBit_Unk0,
-        shared->ext
+        shared->m_baseName
     );
 
     block->m_indexBuf = GxBufCreate(block->m_indexPool, 2, indexTotal, 0);

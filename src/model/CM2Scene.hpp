@@ -196,6 +196,8 @@ class CM2Scene {
             : m_cache(cache)
             {};
         void AdvanceTime(uint32_t a2);
+        void SetTime(uint32_t time);
+        void CollectSharedGarbage();
         void Animate(const C3Vector& cameraPos);
 
         // Register one emitter's particles as a draw element, and file it in the right pass.

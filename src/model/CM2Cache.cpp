@@ -6,6 +6,7 @@
 #include "util/Filesystem.hpp"
 #include "util/SFile.hpp"
 #include <cstring>
+#include <common/Time.hpp>
 #include <new>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
@@ -42,6 +43,12 @@ void CM2Cache::BeginThread(void (*callback)(void*), void* arg) {
 // extension, constructs a CM2Shared and calls Load then AddRef on it, destroys it again when Load
 // fails, and carries the two strings "Model2: File not found: %s" and
 // "Model2: Invalid file extension: %s". That is this function.
+//
+// The name is normalised, hashed over its basename (the whole path with flag 0x10) as
+// `hash * 0x13 + c`, and looked up in its bucket, whose chain is ordered by hash and then name.
+// A hit is revived with AddRef and returned -- the same object, so fifty trees share one model.
+// A miss loads the file and links the new shared in at the place the walk stopped, unless flag
+// 0x8 asks for an uncached model, which then dies on its last release instead of being queued.
 CM2Shared* CM2Cache::CreateShared(const char* path, uint32_t flags) {
     char convertedPath[STORM_MAX_PATH];
     if (!M2ConvertModelFileName(path, convertedPath, STORM_MAX_PATH, flags)) {
@@ -50,6 +57,10 @@ CM2Shared* CM2Cache::CreateShared(const char* path, uint32_t flags) {
 
     char* ext = OsPathFindExtensionWithDot(convertedPath);
 
+    if (ext) {
+        *ext = 0;
+    }
+
     CAaBox v28;
     ModelBlobQuery(convertedPath, v28.b, v28.t);
 
@@ -57,40 +68,124 @@ CM2Shared* CM2Cache::CreateShared(const char* path, uint32_t flags) {
         *ext = '.';
     }
 
-    // TODO
+    uint32_t wholePath = flags & 0x10;
+    const char* name = convertedPath;
+
+    if (!wholePath && ext) {
+        for (char* c = ext; c > convertedPath; c--) {
+            if (*c == '\\' || *c == '/') {
+                name = c + 1;
+                break;
+            }
+        }
+    }
+
+    uint32_t hash = 0;
+
+    for (const char* c = name; *c; c++) {
+        hash = hash * 0x13 + static_cast<int32_t>(static_cast<signed char>(*c));
+    }
+
+    CM2Shared** link = &this->m_buckets[hash % 0x3fd];
+
+    for (auto entry = *link; entry; entry = entry->m_hashNext) {
+        if (hash <= entry->m_hash) {
+            if (entry->m_hash != hash) {
+                break;
+            }
+
+            int32_t order = strcmp(wholePath ? entry->m_filePath : entry->m_baseName, name);
+
+            if (order >= 0) {
+                if (order == 0) {
+                    entry->AddRef();
+                    return entry;
+                }
+
+                break;
+            }
+        }
+
+        link = &entry->m_hashNext;
+    }
 
     SFile* fileptr;
 
-    if (SFile::OpenEx(nullptr, convertedPath, (flags >> 2) & 1, &fileptr)) {
-        auto m = SMemAlloc(sizeof(CM2Shared), __FILE__, __LINE__, 0x0);
-        auto shared = new (m) CM2Shared(this);
-
-        if (shared->Load(fileptr, flags & 0x4, &v28)) {
-            strcpy(shared->m_filePath, convertedPath);
-            shared->ext = strrchr(shared->m_filePath, '.');;
-
-            if (shared->ext > shared->m_filePath) {
-                // TODO
-            }
-
-            // TODO
-
-            return shared;
-        }
-
-        SFile::Close(fileptr);
-        delete shared;
+    if (!SFile::OpenEx(nullptr, convertedPath, (flags >> 2) & 1, &fileptr)) {
+        return nullptr;
     }
 
-    return nullptr;
+    auto m = SMemAlloc(sizeof(CM2Shared), __FILE__, __LINE__, 0x0);
+
+    if (!m) {
+        SFile::Close(fileptr);
+        return nullptr;
+    }
+
+    auto shared = new (m) CM2Shared(this);
+
+    if (!shared->Load(fileptr, flags & 0x4, &v28)) {
+        SFile::Close(fileptr);
+        delete shared;
+        return nullptr;
+    }
+
+    strcpy(shared->m_filePath, convertedPath);
+    shared->m_hash = hash;
+
+    shared->m_baseName = strrchr(shared->m_filePath, '.');
+
+    while (shared->m_baseName > shared->m_filePath) {
+        if (*shared->m_baseName == '\\' || *shared->m_baseName == '/') {
+            shared->m_baseName++;
+            break;
+        }
+
+        shared->m_baseName--;
+    }
+
+    if (!(flags & 0x8)) {
+        shared->m_hashPrev = link;
+        shared->m_hashNext = *link;
+
+        if (*link) {
+            (*link)->m_hashPrev = &shared->m_hashNext;
+        }
+
+        *link = shared;
+    }
+
+    if (flags & 0x40) {
+        shared->m_flag40 = 1;
+    }
+
+    return shared;
 }
 
-void CM2Cache::GarbageCollect(int32_t a2) {
-    // Nothing to collect: this cache has no hash table and CM2Shared::Release destroys on the
-    // spot, so no model is ever queued. The reference pops its pending list while entries are
-    // older than 9999ms, or all of them when a2 is non-zero. Porting it means porting the cache
-    // itself -- see docs/ref/parity-model-cache.md, which has all three functions worked out.
-    // TODO
+// ref: FUN_0081c290
+// Destroys queued shared models from the oldest while they have waited more than 9999ms, or all
+// of them when asked to.
+void CM2Cache::GarbageCollect(int32_t all) {
+    int32_t now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+    while (auto shared = this->m_freeListHead) {
+        if (!all && now - static_cast<int32_t>(shared->uint38) <= 9999) {
+            break;
+        }
+
+        this->m_freeListHead = shared->m_freeNext;
+
+        if (shared->m_freeNext) {
+            shared->m_freeNext->m_freePrev = &this->m_freeListHead;
+        } else {
+            this->m_freeListTail = &this->m_freeListHead;
+        }
+
+        shared->m_freePrev = nullptr;
+        shared->m_freeNext = nullptr;
+
+        delete shared;
+    }
 }
 
 int32_t CM2Cache::Initialize(uint32_t flags) {
@@ -168,8 +263,29 @@ int32_t CM2Cache::Initialize(uint32_t flags) {
     return 1;
 }
 
+// ref: FUN_0081c790
+// Gives back the geometry buffers of every shared model not drawn for ten seconds; the list is
+// kept least recently used first, so the walk stops at the first recent one.
 void CM2Cache::UpdateShared() {
-    // TODO
+    this->m_geometryTime = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    auto shared = this->m_geometryList.Head();
+
+    while (shared && this->m_geometryTime - shared->m_geometryTime > 9999) {
+        auto next = this->m_geometryList.Next(shared);
+
+        shared->ReleaseGeometryBuffers();
+        shared->m_geometryLink.Unlink();
+
+        shared = next;
+    }
+}
+
+// ref: FUN_0081c840
+// A shared model whose geometry is being drawn moves to the young end of the list.
+void CM2Cache::TouchGeometry(CM2Shared* shared) {
+    shared->m_geometryTime = this->m_geometryTime;
+    this->m_geometryList.LinkToTail(shared);
 }
 
 void CM2Cache::WaitThread() {

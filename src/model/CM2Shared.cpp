@@ -1,3 +1,4 @@
+#include <common/Time.hpp>
 #include "model/CM2Shared.hpp"
 #include "async/AsyncFile.hpp"
 #include "async/CAsyncObject.hpp"
@@ -458,6 +459,21 @@ CM2Shared::~CM2Shared() {
     // without cancelling their reads first, which left an outstanding read pointing at freed
     // memory; CancelSequenceLoads (FUN_0083d510) is what the reference opens with.
     this->CancelSequenceLoads();
+
+    // Out of the cache's bucket and its geometry list.
+    if (this->m_cache) {
+        if (this->m_hashPrev) {
+            *this->m_hashPrev = this->m_hashNext;
+        }
+
+        if (this->m_hashNext) {
+            this->m_hashNext->m_hashPrev = this->m_hashPrev;
+        }
+
+        this->m_hashPrev = nullptr;
+        this->m_hashNext = nullptr;
+        this->m_geometryLink.Unlink();
+    }
 
     if (this->m_sequenceBuffers) {
         for (uint32_t i = 0; i < this->m_sequenceBufferCount; i++) {
@@ -1107,20 +1123,26 @@ int32_t CM2Shared::LoadSkinProfile(uint32_t profile) {
     return 1;
 }
 
+// ref: FUN_0083dc90
+// The last release of a cached model queues it on the cache's pending list, stamped, where
+// CreateShared can still find and revive it; an uncached one (in no bucket) dies at once.
 uint32_t CM2Shared::Release() {
-    STORM_ASSERT(this->m_refCount > 0);
-
     this->m_refCount--;
 
-    if (this->m_refCount > 0) {
-        return this->m_refCount;
+    if (this->m_refCount == 0) {
+        if (!this->m_cache || !this->m_hashPrev) {
+            delete this;
+            return 0;
+        }
+
+        this->uint38 = static_cast<uint32_t>(OsGetAsyncTimeMs());
+        this->m_freePrev = this->m_cache->m_freeListTail;
+        this->m_freeNext = nullptr;
+        *this->m_cache->m_freeListTail = this;
+        this->m_cache->m_freeListTail = &this->m_freeNext;
     }
 
-    // TODO free list management etc
-
-    delete this;
-
-    return 0;
+    return this->m_refCount;
 }
 
 // ref: FUN_008368b0
@@ -1201,7 +1223,7 @@ int32_t CM2Shared::SetIndices() {
             GxPoolUsage_Dynamic,
             2 * this->uint190 * this->skinProfile->indices.Count(),
             GxPoolHintBit_Unk1,
-            this->ext
+            this->m_baseName
         );
 
         this->m_indexBuf = GxBufCreate(
@@ -1275,7 +1297,7 @@ int32_t CM2Shared::SetVertices(uint32_t a2) {
             GxPoolUsage_Static,
             sizeof(CGxVertexPBNT2) * this->uint190 * this->skinProfile->vertices.Count(),
             GxPoolHintBit_Unk1,
-            this->ext
+            this->m_baseName
         );
 
         this->m_vertexBuf = GxBufCreate(

@@ -591,6 +591,23 @@ int32_t CM2Scene::SortTransparent(uint32_t a, uint32_t b, const void* userArg) {
     return CM2Scene::SortOpaque(a, b, userArg);
 }
 
+// ref: FUN_0081c990
+// The scene clock set outright rather than advanced; the cache gets the same per-frame upkeep.
+void CM2Scene::SetTime(uint32_t time) {
+    this->m_time = time;
+
+    this->m_cache->UpdateShared();
+    this->m_cache->GarbageCollect(0);
+}
+
+// ref: FUN_0081cab0
+// Destroys every shared model waiting on the cache's pending list at once (the map calls it on unload).
+void CM2Scene::CollectSharedGarbage() {
+    if (this->m_cache) {
+        this->m_cache->GarbageCollect(1);
+    }
+}
+
 void CM2Scene::AdvanceTime(uint32_t a2) {
     this->m_time += a2;
 

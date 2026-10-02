@@ -144,8 +144,7 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element* elements, uint32_t* indices, u
             this->m_curMaterial = &this->m_scratchMaterial;
             this->m_data = element->model->m_shared->m_data;
 
-            // TODO
-            // this->m_cache->LinkToSharedUpdateList(this->m_curShared);
+            this->m_cache->TouchGeometry(this->m_curShared);
 
             // TYPE 4 IS NOW REACHABLE as of 2026-09-24: CM2Scene::AddParticleElement builds
             // particle elements and files them in the pass lists, so DrawParticle is a live stub
