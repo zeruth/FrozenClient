@@ -4266,5 +4266,13 @@
   "0079ba30": {
     "status": "excluded",
     "note": "TSGrowableArray<LiquidQueryResult>::Reserve. Storm template internal. Identified 2026-10-02."
+  },
+  "007bdd80": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef, HASHKEY_NONE>::Ptr(hash, key): walk the bucket for the matching hash and key. Template internal; frozen calls Ptr. Identified 2026-10-02."
+  },
+  "007bea70": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef>::Insert(obj, hash, key). Template internal; frozen calls Insert. Identified 2026-10-02."
   }
 }
