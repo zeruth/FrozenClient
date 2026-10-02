@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-10-01 23:20 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-10-01 23:34 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,32 +8,32 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26921 | 5.35M |
-| mapped to a frozen function | 5031 (+36) (18.7%) | 1.05M (19.7%) |
-| &nbsp;&nbsp;ported | 4356 (+35) | 900.5k |
-| &nbsp;&nbsp;stub (unimplemented body) | 568 (+1) | 122.6k |
+| mapped to a frozen function | 5034 (=) (18.7%) | 1.05M (19.7%) |
+| &nbsp;&nbsp;ported | 4359 (+1) | 900.0k |
+| &nbsp;&nbsp;stub (unimplemented body) | 567 (-1) | 121.5k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2777 (+30) (10.3%)** | **404.5k (7.4%)** |
-| unmapped | 21890 | 4.30M |
-| world spine (reachable from OnFrameRender) | 5373, mapped 1698 (+18) (31.6%) | |
-| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5640, mapped 1729 (+18) (30.7%) | |
-| **render surface** (the modules that draw the world) | **5377, mapped 1571 (+15) (29.2%)** | |
-| &nbsp;&nbsp;of which faithful / stub | 1023 (+11) (19.0%) / 33 (+1) | |
+| **faithful** (linked, not stub, call order >= 80%) | **2815 (+1) (10.5%)** | **415.2k (7.6%)** |
+| unmapped | 21887 | 4.30M |
+| world spine (reachable from OnFrameRender) | 5373, mapped 1700 (=) (31.6%) | |
+| &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5640, mapped 1731 (=) (30.7%) | |
+| **render surface** (the modules that draw the world) | **5377, mapped 1574 (=) (29.3%)** | |
+| &nbsp;&nbsp;of which faithful / stub | 1047 (+1) (19.5%) / 33 (=) | |
 | of which the module is an anchor GUESS | 2630 (48.9%) | |
-| frozen functions (src/, from PDB + source) | 14219, stubs 1628 | |
+| frozen functions (src/, from PDB + source) | 14219, stubs 1626 | |
 
-Match evidence: annotated 2720, callgraph 256, callorder 110, cvar 28, handler 29, order 142, override 392, sticky 32, string 302, table 1020. Module anchors: 1718 assert strings.
+Match evidence: annotated 2727, callgraph 256, callorder 110, cvar 28, handler 29, order 142, override 389, sticky 32, string 302, table 1019. Module anchors: 1718 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-10-01 22:55 -- mapped 4995, ported 4321, stub 567, spine mapped 1680.
+Previous run: 2026-10-01 23:33 -- mapped 5034, ported 4358, stub 568, spine mapped 1700.
 
 ## Lua API coverage (binding tables)
 
-The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2924 of them (=); 1380 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (=). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
+The reference registers 2964 Lua bindings across 100 tables (widget methods per class, and the global function blocks). frozen registers 2924 of them (=); 1378 of those are stubs (a WHOA_UNIMPLEMENTED body, or one of the WHOA_LUA_STUB bindings in MiscScriptStubs.cpp) (-2). A missing name is a FrameXML call that raises "attempt to call a nil value"; a stub returns nothing, which is the arity bug class tools/arity.py hunts.
 
 | ref table | entries | frozen array | missing | stubbed | first missing / stubbed names |
 |---|---:|---|---:|---:|---|
-| 00ac80b0 (FrameXML_Debug..) | 310 | `s_ScriptFunctions` | 0 | 151 |  / stubs: ReloadUI, RegisterForSave, RegisterForSavePerCharacter, SetLayoutMode ... |
+| 00ac80b0 (FrameXML_Debug..) | 310 | `s_ScriptFunctions` | 0 | 149 |  / stubs: ReloadUI, RegisterForSave, RegisterForSavePerCharacter, SetLayoutMode ... |
 | 00ad0030 (CalendarGetMonthNames..) | 95 | `s_stubs` | 0 | 89 |  / stubs: CalendarGetMonthNames, CalendarGetWeekdayNames, CalendarGetMinDate, CalendarGetMaxDate ... |
 | 00acd668 (SetLFGDungeon..) | 67 | `s_ScriptFunctions, s_stubs` | 0 | 56 |  / stubs: SetLFGDungeon, ClearLFGDungeon, ClearAllLFGDungeons, GetLFGInfoLocal ... |
 | 00ac7a58 (SendChatMessage..) | 89 | `s_ScriptFunctions` | 0 | 55 |  / stubs: SendChatMessage, SendAddonMessage, SendSystemMessage, GetLanguageByIndex ... |
@@ -140,12 +140,12 @@ Module = the source file named by the reference's own assert strings near the fu
 | Player_C.cpp | 479 | 104.7k | 54 (11.3%) | 12.9% | 0 | 0 | 100 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
 | GameUI.cpp | 487 | 95.7k | 231 (47.4%) | 47.7% | 77 | 0 | 70 |
-| ChatFrame.cpp | 399 | 87.5k | 101 (25.3%) | 18.0% | 35 | 2 | 38 |
+| ChatFrame.cpp | 399 | 87.5k | 101 (25.3%) | 18.0% | 34 | 2 | 38 |
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
 | lmemPool.cpp | 342 | 80.2k | 88 (25.7%) | 33.3% | 0 | 0 | 107 |
 | SpellCast.cpp | 261 | 70.6k | 0 (0.0%) | 0.0% | 0 | 0 | 7 |
-| CGxD3dDevice.cpp | 106 | 63.6k | 45 (42.5%) | 22.4% | 0 | 0 | 0 |
+| CGxD3dDevice.cpp | 106 | 63.6k | 46 (43.4%) | 22.5% | 0 | 0 | 0 |
 | M2Model.cpp | 163 | 61.7k | 115 (70.6%) | 74.3% | 1 | 0 | 136 |
 | Map.cpp | 150 | 60.8k | 52 (34.7%) | 37.5% | 0 | 1 | 88 |
 | SoundEngine.cpp | 407 | 60.2k | 34 (8.4%) | 19.4% | 0 | 0 | 59 |
@@ -187,7 +187,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | XMLTree.cpp | 163 | 28.6k | 85 (52.1%) | 52.7% | 5 | 0 | 20 |
 | fmod_sample_software.cpp | 51 | 28.1k | 0 (0.0%) | 0.0% | 0 | 0 | 1 |
 | CScriptRegion.cpp | 203 | 27.3k | 119 (58.6%) | 60.8% | 1 | 4 | 49 |
-| CGxD3d9ExDevice.cpp | 100 | 26.8k | 53 (53.0%) | 51.0% | 0 | 0 | 1 |
+| CGxD3d9ExDevice.cpp | 100 | 26.8k | 52 (52.0%) | 50.3% | 0 | 0 | 1 |
 | CSimpleRender.cpp | 166 | 26.6k | 48 (28.9%) | 34.9% | 2 | 0 | 50 |
 | UnitCombatLog_C.cpp | 105 | 26.1k | 5 (4.8%) | 3.7% | 0 | 0 | 32 |
 | PaperDollInfoFrame.cpp | 110 | 24.9k | 38 (34.5%) | 30.4% | 12 | 0 | 8 |
@@ -199,7 +199,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | MovementShared.cpp | 83 | 23.1k | 4 (4.8%) | 1.5% | 0 | 0 | 42 |
 | fmod_dspi.cpp | 113 | 22.8k | 0 (0.0%) | 0.0% | 0 | 0 | 72 |
 | BattlefieldInfo.cpp | 120 | 22.7k | 52 (43.3%) | 46.7% | 15 | 0 | 0 |
-| Texture.cpp | 145 | 22.1k | 49 (33.8%) | 36.5% | 5 | 0 | 74 |
+| Texture.cpp | 145 | 22.1k | 52 (35.9%) | 40.7% | 5 | 0 | 74 |
 | TextureBlob.cpp | 166 | 22.0k | 58 (34.9%) | 44.8% | 0 | 0 | 74 |
 | World.cpp | 138 | 21.9k | 13 (9.4%) | 19.9% | 1 | 0 | 54 |
 | InputControl.cpp | 156 | 21.5k | 30 (19.2%) | 22.4% | 6 | 0 | 63 |
@@ -520,7 +520,6 @@ Module = the source file named by the reference's own assert strings near the fu
 | 00488540 | CSimpleRender.cpp? | 42 | 33 | `CScriptRegion::ProtectedFunctionsAllowed` [override] |  |
 | 0050f990 | ChatFrame.cpp? | 1255 | 0 | `Script_SetConsoleKey` [table] | BACKSPACE, DECIMAL |
 | 005bd8a0 | Calendar.cpp | 1253 | 0 | `Script_Stub_CalendarGetEventInfo` [table] |  |
-| 005104a0 | ChatFrame.cpp? | 1143 | 0 | `Script_SetCursor` [table] | ATTACK_CURSOR, ATTACK_ERROR_CURSOR |
 | 005c1070 | Calendar.cpp | 1029 | 0 | `Script_Stub_CalendarGetDayEvent` [table] | Usage: CalendarGetDayEvent([-1.0.1], mon |
 | 006afce0 | blp.cpp | 507 | 1 | `CBLPFile::Lock2` [annotated] | %s: JPEG decompresion not enabled, %s: component texture saved as DXT compr |
 | 00573690 | RaidInfo.cpp | 975 | 0 | `Script_GetRaidRosterInfo` [table] | .\RaidInfo.cpp, MAINASSIST |
@@ -552,6 +551,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | 0049edb0 | CSimpleFrameScript.cpp | 552 | 0 | `CSimpleFrame_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 | 004a5df0 | CSimpleFrameScript.cpp? | 552 | 0 | `CSimpleAnim_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
 | 004a7780 | CSimpleFrameScript.cpp? | 552 | 0 | `CSimpleAnimGroup_HookScript` [table] | %s doesn't have a "%s" script, Usage: %s:HookScript("type", function) |
+| 00403910 | Client.cpp | 538 | 0 | `TransferAbortedHandler` [handler] | TRANSFER_ABORT_DIFFICULTY%d, TRANSFER_ABORT_ERROR |
 
 ## Divergence smells: reference strings the frozen counterpart never mentions
 
@@ -562,7 +562,6 @@ A reference function that formats, asserts or looks up a string its port does no
 | 006277f0 | `TooltipSetItemInfo` | 			<setspelldesc_%d>; 			<setspelldesc_%d></setspelldesc_%d>\n; 			<spelldesc_%d>;  (%s) |
 | 00877aa0 | `FMOD_ErrorString` | A CDDA read error occurred. ; A HTTP error occurred. This is a catch-all for HTT; A HTTP server error occurred. ; A Win32 COM related error occured. COM failed to i |
 | 0087c710 | `SESound::Init` |  - %d Channels Requested.;  - %d Output drivers detected;  - DSPBufferSize = %d [Valid values are 0 = AUTO D;  - DSPBufferSize = AUTO DETECT |
-| 005104a0 | `Script_SetCursor` | ATTACK_CURSOR; ATTACK_ERROR_CURSOR; BUY_CURSOR; BUY_ERROR_CURSOR |
 | 004d1600 | `SI2::RegisterUserCVars` |  - ========= PLAYBACK =========;  - ========== VOLUME ==========;  - =========== MISC ===========;  - Ambience Volume       [%.2f] |
 | 0051d9b0 | `CGGameUI::RegisterGameCVars` | Automatically loot items when the loot window open; Clear the target when clicking on terrain; Enables the equipment management UI; How long to display Battle.net toast windows, in s |
 | 0079e7c0 | `CMap::CreateTerrainShadowShaders` | CMap::lowDetailIndexPool; Shaders\Vertex; Terrain; Terrain0 |
@@ -599,6 +598,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `BattlenetUI::Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `BattlenetUI::Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
+| 0052a980 | `WowClientInit` | Cannot create WOWClient log file "%s"!; GameTooltip; Interface\FrameXML\Bindings.xml; Interface\FrameXML\FrameXML.toc |
 
 ## Largest frozen functions with no reference link
 
@@ -669,7 +669,6 @@ The port exists but does not make the calls the reference makes, in the order it
 | 007b1b50 | `DetailDoodad::FillVertexBuffer` | 100% | 4 | 14 | 17 | 8 | 2% | 2655 |
 | 00526530 | `ReceiveWeather` | 3% | 115 | 7 | 40 | 3 | 0% | 2495 |
 | 006d8870 | `ReceiveGroupList` | 34% | 77 | 37 | 80 | 11 | 2% | 2482 |
-| 00688690 | `CGxDevice::CGxDevice` | 42% | 13 | 9 | 4 | 0 | 0% | 2469 |
 | 00795400 | `CWorldScene::UpdateCamera` | 56% | 19 | 30 | 8 | 8 | 0% | 2291 |
 | 004d1600 | `SI2::RegisterUserCVars` | 29% | 79 | 23 | 25 | 0 | 0% | 2232 |
 | 008a48f0 | `Liquid::DrawProcWaterMaterial` | 56% | 52 | 41 | 27 | 7 | 6% | 2173 |
@@ -693,6 +692,7 @@ The port exists but does not make the calls the reference makes, in the order it
 | 008385a0 | `M2Init` | 100% | 6 | 90 | 63 | 130 | 6% | 1368 |
 | 00839ef0 | `M2Init` | 100% | 6 | 90 | 63 | 130 | 0% | 1368 |
 | 0079a870 | `CMap::Render` | 42% | 54 | 39 | 24 | 13 | 0% | 1355 |
+| 0078e400 | `CWorldParam::Initialize` | 84% | 37 | 34 | 4 | 0 | 0% | 1354 |
 
 ## Runtime: last call trace (tools/recomp/calltrace.py + tracecompare.py)
 
@@ -773,31 +773,31 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 
 | run | linked | faithful | stub | spine linked | lua bindings | lua stubs |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-10-01 21:46 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:46 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:46 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:47 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:47 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:47 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:47 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:48 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:48 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:48 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:48 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:48 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:49 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:49 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:49 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:49 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:49 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:50 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:50 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:50 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 21:50 | 4927 (18.3%) | 2683 (10.0%) | 567 | 1666/5374 | 2924/2964 | 1380 |
-| 2026-10-01 22:01 | 4928 (18.3%) | 2690 (10.0%) | 567 | 1666/5373 | 2924/2964 | 1380 |
-| 2026-10-01 22:16 | 4945 (18.4%) | 2704 (10.0%) | 567 | 1674/5373 | 2924/2964 | 1380 |
-| 2026-10-01 22:55 | 4995 (18.6%) | 2747 (10.2%) | 567 | 1680/5373 | 2924/2964 | 1380 |
 | 2026-10-01 23:20 | 5031 (18.7%) | 2777 (10.3%) | 568 | 1698/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:23 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:23 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:23 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:24 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:24 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:24 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:24 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:25 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:25 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:27 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:28 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:28 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:29 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:29 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:29 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:31 | 5034 (18.7%) | 2809 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:31 | 5034 (18.7%) | 2809 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:31 | 5034 (18.7%) | 2809 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:33 | 5034 (18.7%) | 2814 (10.5%) | 568 | 1700/5373 | 2924/2964 | 1380 |
+| 2026-10-01 23:34 | 5034 (18.7%) | 2815 (10.5%) | 567 | 1700/5373 | 2924/2964 | 1378 |
 
 ## How to move a row
 

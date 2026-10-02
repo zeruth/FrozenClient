@@ -669,6 +669,9 @@ addr	how	frozen	evidence
 004b6f30	override	TextureCacheGetProcedural	
 004b6fa0	override	TextureCacheGetTexture	
 004b7020	override	TextureCacheGetTexture	
+004b7220	annotated	TextureAllocMippedImg	tag in src/gx/Texture.cpp
+004b7300	annotated	TextureFreeMippedImg	tag in src/gx/Texture.cpp
+004b78a0	annotated	TextureLoadTga	tag in src/gx/Texture.cpp
 004b7bd0	string	PumpBlpTextureAsync	unique "BLP Texture failure: "%s" decompression failed. "
 004b8070	annotated	TextureLoadBlp	tag in src/gx/Texture.cpp
 004b81d0	annotated	TextureLoadImage	tag in src/gx/Texture.cpp
@@ -1072,7 +1075,7 @@ addr	how	frozen	evidence
 00510360	annotated	Script_GetBaseMip	tag in src/ui/game/GameScript.cpp
 00510390	annotated	Script_SetBaseMip	tag in src/ui/game/GameScript.cpp
 00510470	table	Script_GetFramerate	binding "GetFramerate" in s_ScriptFunctions ~ table 00ac80b0
-005104a0	table	Script_SetCursor	binding "SetCursor" in s_ScriptFunctions ~ table 00ac80b0
+005104a0	annotated	Script_SetCursor	tag in src/ui/game/GameScript.cpp
 00510930	table	Script_ReportBug	binding "ReportBug" in s_ScriptFunctions ~ table 00ac80b0
 00510980	table	Script_ReportSuggestion	binding "ReportSuggestion" in s_ScriptFunctions ~ table 00ac80b0
 00510a10	table	Script_GetCursorPosition	binding "GetCursorPosition" in s_ScriptFunctions ~ table 00ac80b0
@@ -2463,7 +2466,7 @@ addr	how	frozen	evidence
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
-00687740	override	CGxPool::~CGxPool	
+00687740	annotated	CGxPool::~CGxPool	tag in src/gx/buffer/CGxPool.cpp
 006877c0	annotated	CGxDevice::QueryCreate	tag in src/gx/CGxDevice.cpp
 00687820	override	CGxDevice::ShaderDestroy	
 00687900	annotated	CGxDevice::DeviceCreateStreamBufs	tag in src/gx/CGxDevice.cpp
@@ -2473,7 +2476,7 @@ addr	how	frozen	evidence
 00687a90	annotated	CGxDevice::ICursorDraw	tag in src/gx/CGxDevice.cpp
 00688230	annotated	CGxPool::Invalidate	tag in src/gx/buffer/CGxPool.cpp
 00688260	annotated	CGxPool::Discard	tag in src/gx/buffer/CGxPool.cpp
-00688290	override	CGxDevice::BufDestroy	
+00688290	annotated	CGxDevice::BufDestroy	tag in src/gx/CGxDevice.cpp
 00688690	annotated	CGxDevice::CGxDevice	tag in src/gx/CGxDevice.cpp
 00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
 006890c0	annotated	CGxDevice::~CGxDevice	tag in src/gx/CGxDevice.cpp
@@ -2513,6 +2516,7 @@ addr	how	frozen	evidence
 0068fce0	annotated	CGxDeviceD3d::BufLock	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fd00	annotated	CGxDeviceD3d::BufData	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fd50	annotated	CGxDeviceD3d::CGxDeviceD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068fe80	annotated	CGxDeviceD3d::~CGxDeviceD3d	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068fed0	annotated	CGxDeviceD3d::ICaptureRead	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690150	annotated	CGxDeviceD3d::IReleaseD3dResources	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00690230	annotated	CGxDeviceD3d::DeviceWM	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -2572,7 +2576,6 @@ addr	how	frozen	evidence
 006a5540	callgraph	CGxDeviceD3d::ICreateD3dVertexDecl	only unmatched callee of 006a5700=CGxDeviceD3d::IStateSyncVertexPtrs
 006a5680	annotated	CGxDeviceD3d::IReleaseD3dVertexDecls	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5700	override	CGxDeviceD3d::IStateSyncVertexPtrs	
-006a5940	override	CGxDeviceD3d::IStateSync	
 006a5a00	annotated	CGxDeviceD3d::CapsWindowSize	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5a30	annotated	CGxDeviceD3d::IStateSyncWorldXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
 006a5aa0	annotated	CGxDeviceD3d::IStateSyncTexXform	tag in src/gx/d3d/CGxDeviceD3d.cpp
@@ -4328,7 +4331,7 @@ addr	how	frozen	evidence
 0086b0c0	annotated	OsEnableCpuLog	tag in src/util/win/OsSystem.cpp
 0086b0d0	annotated	OsLogCpuInfo	tag in src/util/win/OsSystem.cpp
 0086b240	annotated	OsGetProcessorCount	tag in src/util/win/OsSystem.cpp
-0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate, 0086ab30=OsTimeManager::Calibrate
+0086b280	callgraph	OsSleep	only unmatched callee of 006836d0=CGxDevice::ILimitFrameRate, 006a3450=CGxDeviceD3d::ScenePresent, 0086ab30=OsTimeManager::Calibrate
 0086b2d0	annotated	OsGetVersion	tag in src/util/win/OsSystem.cpp
 0086b480	annotated	OsGetComputerName	tag in src/util/win/OsSystem.cpp
 0086b4a0	annotated	OsGetUserName	tag in src/util/win/OsSystem.cpp
@@ -4430,8 +4433,15 @@ addr	how	frozen	evidence
 0088a200	annotated	BigEndianReadU32	tag in src/util/BigEndian.cpp
 0088be0d	callorder	sscanf	same slot between linked calls in 0076a220=CVGxResolutionCallback, 007e3a20=ShadowLODCallback
 008a09ba	override	NvAPI_Initialize	
-008a0fac	callorder	NvAPI_Stereo_IsEnabled	same slot between linked calls in 0068f3d0=CGxDeviceD3d::ICreateD3dDevice
-008a0fd6	callorder	NvAPI_Stereo_SetSeparation	same slot between linked calls in 006a3450=CGxDeviceD3d::ScenePresent
+008a0a54	annotated	NvAPI_GetErrorMessage	tag in src/gx/d3d/NvApi.cpp
+008a0f88	annotated	NvAPI_Stereo_CreateConfigurationProfileRegistryKey	tag in src/gx/d3d/NvApi.cpp
+008a0fa0	annotated	NvAPI_Stereo_Enable	tag in src/gx/d3d/NvApi.cpp
+008a0fa6	annotated	NvAPI_Stereo_Disable	tag in src/gx/d3d/NvApi.cpp
+008a0fac	annotated	NvAPI_Stereo_IsEnabled	tag in src/gx/d3d/NvApi.cpp
+008a0fb2	annotated	NvAPI_Stereo_CreateHandleFromIUnknown	tag in src/gx/d3d/NvApi.cpp
+008a0fb8	annotated	NvAPI_Stereo_DestroyHandle	tag in src/gx/d3d/NvApi.cpp
+008a0fd6	annotated	NvAPI_Stereo_SetSeparation	tag in src/gx/d3d/NvApi.cpp
+008a0fee	annotated	NvAPI_Stereo_SetConvergence	tag in src/gx/d3d/NvApi.cpp
 008a1420	cvar	ComponentTextureLevelCallback	callback of CVar::Register("componentTextureLevel") on both sides
 008a1700	annotated	Liquid::CInstance::AddRef	tag in src/world/map/LiquidSurface.cpp
 008a1750	override	Liquid::TextureScaleMultiplier	

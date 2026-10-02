@@ -10711,6 +10711,54 @@
   "refSize": 128,
   "status": "ported"
  },
+ "004b7220": {
+  "branchRatio": 0.182,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureAllocMippedImg",
+  "frozenSize": 314,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 212,
+  "status": "ported"
+ },
+ "004b7300": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.2,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureFreeMippedImg",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 217,
+  "status": "ported"
+ },
+ "004b78a0": {
+  "branchRatio": 0.923,
+  "constOverlap": 0.304,
+  "faithful": true,
+  "fidelity": 0.933,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "TextureLoadTga",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Texture.cpp",
+  "refSize": 506,
+  "status": "ported"
+ },
  "004b7bd0": {
   "branchRatio": 0.857,
   "constOverlap": 0.077,
@@ -10730,8 +10778,8 @@
  "004b8070": {
   "branchRatio": 1.0,
   "constOverlap": 0.154,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
@@ -15629,7 +15677,7 @@
   "branchRatio": 0.9,
   "constOverlap": 0.286,
   "faithful": false,
-  "fidelity": 0.4,
+  "fidelity": 0.7,
   "files": [
    "src/component/CCharacterComponent.cpp",
    "src/component/ccharactercomponent.cpp"
@@ -17196,20 +17244,20 @@
   "status": "ported"
  },
  "005104a0": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.0,
+  "branchRatio": 1.0,
+  "constOverlap": 0.208,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.778,
   "files": [
    "src/ui/game/GameScript.cpp",
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetCursor",
   "frozenSize": 75,
-  "how": "table",
+  "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 1143,
-  "status": "stub"
+  "status": "ported"
  },
  "00510930": {
   "branchRatio": 0.5,
@@ -35474,8 +35522,8 @@
  "006163b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.111,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/Cursor.cpp",
    "src/ui/game/cursor.cpp"
@@ -37495,7 +37543,7 @@
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 203,
-  "status": "ported"
+  "status": "faithful"
  },
  "00681cb0": {
   "branchRatio": 0.071,
@@ -37511,7 +37559,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 215,
-  "status": "ported"
+  "status": "faithful"
  },
  "00681f20": {
   "branchRatio": 1.0,
@@ -38119,7 +38167,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 372,
-  "status": "ported"
+  "status": "faithful"
  },
  "00683560": {
   "branchRatio": 0.0,
@@ -38580,7 +38628,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 189,
-  "status": "ported"
+  "status": "faithful"
  },
  "00684360": {
   "branchRatio": 1.0,
@@ -38676,7 +38724,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 196,
-  "status": "ported"
+  "status": "faithful"
  },
  "00684590": {
   "branchRatio": 1.0,
@@ -38852,7 +38900,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 117,
-  "status": "ported"
+  "status": "faithful"
  },
  "00684c20": {
   "branchRatio": 0.5,
@@ -38916,7 +38964,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 618,
-  "status": "ported"
+  "status": "faithful"
  },
  "00684fe0": {
   "branchRatio": 0.5,
@@ -38993,7 +39041,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 140,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685460": {
   "branchRatio": 1.0,
@@ -39025,7 +39073,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 140,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685510": {
   "branchRatio": 1.0,
@@ -39057,7 +39105,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 140,
-  "status": "ported"
+  "status": "faithful"
  },
  "006855c0": {
   "branchRatio": 0.5,
@@ -39073,7 +39121,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 120,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685640": {
   "branchRatio": 0.094,
@@ -39089,7 +39137,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 798,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685970": {
   "branchRatio": 1.0,
@@ -39169,7 +39217,7 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 83,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685c60": {
   "branchRatio": 0.0,
@@ -39217,7 +39265,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 118,
-  "status": "ported"
+  "status": "faithful"
  },
  "00685e40": {
   "branchRatio": -1.0,
@@ -39294,7 +39342,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 358,
-  "status": "ported"
+  "status": "faithful"
  },
  "00686120": {
   "branchRatio": 0.0,
@@ -39355,10 +39403,10 @@
   ],
   "frozen": "CGxPool::~CGxPool",
   "frozenSize": 0,
-  "how": "override",
+  "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 125,
-  "status": "ported"
+  "status": "faithful"
  },
  "006877c0": {
   "branchRatio": 0.5,
@@ -39438,7 +39486,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 97,
-  "status": "ported"
+  "status": "faithful"
  },
  "006879f0": {
   "branchRatio": 0.143,
@@ -39454,7 +39502,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 158,
-  "status": "ported"
+  "status": "faithful"
  },
  "00687a90": {
   "branchRatio": 0.391,
@@ -39470,7 +39518,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 1338,
-  "status": "ported"
+  "status": "faithful"
  },
  "00688230": {
   "branchRatio": 0.25,
@@ -39486,7 +39534,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 33,
-  "status": "ported"
+  "status": "faithful"
  },
  "00688260": {
   "branchRatio": 0.0,
@@ -39502,7 +39550,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 36,
-  "status": "ported"
+  "status": "faithful"
  },
  "00688290": {
   "branchRatio": 0.222,
@@ -39515,10 +39563,10 @@
   ],
   "frozen": "CGxDevice::BufDestroy",
   "frozenSize": 85,
-  "how": "override",
+  "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 172,
-  "status": "ported"
+  "status": "faithful"
  },
  "00688690": {
   "branchRatio": 0.0,
@@ -39534,7 +39582,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 2469,
-  "status": "ported"
+  "status": "diverged"
  },
  "00689050": {
   "branchRatio": 1.0,
@@ -39566,7 +39614,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 919,
-  "status": "ported"
+  "status": "faithful"
  },
  "006897c0": {
   "branchRatio": 0.421,
@@ -39582,7 +39630,7 @@
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 649,
-  "status": "ported"
+  "status": "faithful"
  },
  "00689a50": {
   "branchRatio": 1.0,
@@ -39758,7 +39806,7 @@
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 134,
-  "status": "ported"
+  "status": "faithful"
  },
  "0068e7e0": {
   "branchRatio": 1.0,
@@ -39971,8 +40019,8 @@
  "0068f3d0": {
   "branchRatio": 0.833,
   "constOverlap": 0.029,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -40030,7 +40078,7 @@
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 74,
-  "status": "ported"
+  "status": "faithful"
  },
  "0068f950": {
   "branchRatio": 0.55,
@@ -40144,6 +40192,22 @@
   "refSize": 304,
   "status": "ported"
  },
+ "0068fe80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::~CGxDeviceD3d",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxD3dDevice.cpp",
+  "refSize": 72,
+  "status": "ported"
+ },
  "0068fed0": {
   "branchRatio": 0.882,
   "constOverlap": 0.1,
@@ -40195,8 +40259,8 @@
  "006903b0": {
   "branchRatio": 0.846,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.571,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -40540,7 +40604,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 60,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a1c60": {
   "branchRatio": 0.364,
@@ -40556,7 +40620,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 124,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a2aa0": {
   "branchRatio": 0.4,
@@ -40572,7 +40636,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 259,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a2bb0": {
   "branchRatio": 0.333,
@@ -40706,7 +40770,7 @@
   "branchRatio": 0.75,
   "constOverlap": 0.043,
   "faithful": true,
-  "fidelity": 0.889,
+  "fidelity": 1.0,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -40721,8 +40785,8 @@
  "006a3620": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.667,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -41086,22 +41150,6 @@
   "refSize": 557,
   "status": "ported"
  },
- "006a5940": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 1.0,
-  "files": [
-   "src/gx/d3d/CGxDeviceD3d.cpp",
-   "src/gx/d3d/cgxdeviced3d.cpp"
-  ],
-  "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 1331,
-  "how": "override",
-  "module": "CGxD3d9ExDevice.cpp",
-  "refSize": 181,
-  "status": "ported"
- },
  "006a5a00": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -41180,7 +41228,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 183,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a5e10": {
   "branchRatio": 1.0,
@@ -41212,7 +41260,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 172,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a5ef0": {
   "branchRatio": 0.333,
@@ -41308,7 +41356,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 578,
-  "status": "ported"
+  "status": "faithful"
  },
  "006a9e00": {
   "branchRatio": 1.0,
@@ -41388,7 +41436,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 90,
-  "status": "ported"
+  "status": "faithful"
  },
  "006aa190": {
   "branchRatio": 0.333,
@@ -41404,7 +41452,7 @@
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 119,
-  "status": "ported"
+  "status": "faithful"
  },
  "006aa2f0": {
   "branchRatio": 1.0,
@@ -70545,6 +70593,70 @@
   "refSize": 154,
   "status": "diverged"
  },
+ "008a0a54": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_GetErrorMessage",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a0f88": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_Stereo_CreateConfigurationProfileRegistryKey",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a0fa0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_Stereo_Enable",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a0fa6": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_Stereo_Disable",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "008a0fac": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -70556,7 +70668,39 @@
   ],
   "frozen": "NvAPI_Stereo_IsEnabled",
   "frozenSize": 0,
-  "how": "callorder",
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a0fb2": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_Stereo_CreateHandleFromIUnknown",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a0fb8": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_Stereo_DestroyHandle",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
   "status": "ported"
@@ -70572,7 +70716,23 @@
   ],
   "frozen": "NvAPI_Stereo_SetSeparation",
   "frozenSize": 0,
-  "how": "callorder",
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
+ "008a0fee": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/NvApi.cpp",
+   "src/gx/d3d/nvapi.cpp"
+  ],
+  "frozen": "NvAPI_Stereo_SetConvergence",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
   "status": "ported"
