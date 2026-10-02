@@ -57,4 +57,10 @@ void AsyncFileReadUnlockQueue();
 
 bool AsyncFileReadIsBusy();
 
+void AsyncFileReadWaitAll();
+
+void AsyncFileReadRegisterPollCallback(void (*callback)());
+
+void AsyncFileReadRegisterPendingCounter(int32_t (*counter)());
+
 #endif

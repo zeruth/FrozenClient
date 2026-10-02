@@ -137,7 +137,10 @@ class CMap {
         // Set while a map is loading behind a loading screen (DAT_00adfbc8); streaming waits for
         // the tiles round the target only when clear
         static int32_t s_loading;
-        static int32_t s_streamingMode;       // DAT_00ce0494: SFile streaming mode or trial
+        static int32_t s_streamingMode;
+        // The loading screen's progress callback while a map loads (DAT_00cdfff4 / DAT_00cdfff0).
+        static void (*s_loadProgressCallback)(float progress, void* arg);
+        static void* s_loadProgressArg;       // DAT_00ce0494: SFile streaming mode or trial
 
         // The terrain shaders MapMemInitialize loads (docs/ref/parity-map-memory.md)
         static CGxShader* s_terrainVertexShaders[0x80];   // DAT_00ce0008: Terrain, 128 permutations
@@ -250,6 +253,9 @@ class CMap {
 
         static CMapDoodadDef* AllocDoodadDef();
         static void FreeDoodadDef(CMapDoodadDef* def);
+        static void ReleaseDoodadDef(CMapDoodadDef* def);
+        static CMapArea* GetTargetArea(const C3Vector& target);
+        static CMapChunk* GetTargetChunk(const C3Vector& target);
         static void UnlinkDoodadDef(CMapDoodadDef* def);
         // The loaded chunk a world point stands on, or null where nothing is loaded.
         // Addressed the way CMap::GetTerrainLiquid does it: in cells, with the tile's row

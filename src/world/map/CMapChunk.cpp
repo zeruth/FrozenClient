@@ -1,3 +1,4 @@
+#include "world/map/CMapDoodadDef.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMap.hpp"
 #include "world/map/CMapArea.hpp"
@@ -95,8 +96,8 @@ void CMapChunk::Load(uint8_t* data, int32_t fixSizes) {
 }
 
 // ref: FUN_007c3370
-// Releases everything the chunk owns before CMap::FreeChunk returns it to the heap. The entity
-// and def releases the reference runs on the owners it unlinks (FUN_007c3020, FUN_007c3250),
+// Releases everything the chunk owns before CMap::FreeChunk returns it to the heap. The map obj
+// def release the reference runs on the owners it unlinks (FUN_007c3250),
 // the detail-doodad release (FUN_007b3960), the liquid destroy (FUN_007cde10) and the sound
 // handle release (FUN_007c3330 / FUN_004cb1d0) are not ported yet.
 void CMapChunk::Destroy() {
@@ -125,7 +126,7 @@ void CMapChunk::Destroy() {
         auto owner = link->owner;
         CMap::FreeBaseObjLink(link);
         if (!(owner->m_type & CMapBaseObj::Type_200)) {
-            // TODO FUN_007c3020(owner): release the entity once nothing links it
+            CMap::ReleaseDoodadDef(static_cast<CMapDoodadDef*>(owner));
         }
         link = next;
     }

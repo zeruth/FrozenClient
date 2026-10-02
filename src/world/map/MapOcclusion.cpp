@@ -114,4 +114,54 @@ void BuildVolumes(const C3Vector& camera, const C3Vector* corners, int32_t restr
     }
 }
 
+// ref: FUN_007cd910
+void ClearVolumes() {
+    CWorldScene::s_occlusionPlanes.SetCount(0);
+    CWorldScene::s_occlusionVolumes.SetCount(0);
+}
+
+// ref: FUN_007ccfa0
+int32_t PolygonOccluded(const C3Vector* points, uint32_t count) {
+    uint32_t volumeCount = CWorldScene::s_occlusionVolumes.Count();
+
+    if (!volumeCount) {
+        return 0;
+    }
+
+    for (uint32_t v = 0; v < volumeCount; v++) {
+        const CWorldScene::OcclusionVolume& volume = CWorldScene::s_occlusionVolumes[v];
+        uint32_t planeCount = static_cast<uint32_t>(volume.planeCount);
+        uint32_t plane = 0;
+
+        for (; plane < planeCount; plane++) {
+            const C4Plane& p = CWorldScene::s_occlusionPlanes[volume.firstPlane + plane];
+            uint32_t i = 0;
+
+            for (; i < count; i++) {
+                const C3Vector& point = points[i];
+
+                if (0.0f < point.y * p.n.y + point.x * p.n.x + point.z * p.n.z + p.d) {
+                    break;
+                }
+            }
+
+            // A point in front of this plane: the polygon is not wholly inside the volume.
+            if (i < count) {
+                break;
+            }
+        }
+
+        if (plane == planeCount) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_007ccdf0
+uint32_t GetVolumeCount() {
+    return CWorldScene::s_occlusionVolumes.Count();
+}
+
 }

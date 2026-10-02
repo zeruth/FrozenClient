@@ -105,6 +105,8 @@ uint32_t CMap::s_areaInfo[64 * 64][2];
 
 int32_t CMap::s_loading;
 int32_t CMap::s_streamingMode;
+void (*CMap::s_loadProgressCallback)(float progress, void* arg);
+void* CMap::s_loadProgressArg;
 
 CGxShader* CMap::s_terrainVertexShaders[0x80];
 CGxShader* CMap::s_terrain3PixelShaders[0x60];
@@ -188,10 +190,12 @@ void CMap::Load(const char* mapName, int32_t mapID) {
     CMap::Update(0);
 
     if (waitAll) {
-        // TODO FUN_004bae10(): AsyncFileReadWaitAll
+        AsyncFileReadWaitAll();
     }
 
-    // TODO the load progress callback (DAT_00cdfff4)(1.0f, DAT_00cdfff0)
+    if (CMap::s_loadProgressCallback) {
+        CMap::s_loadProgressCallback(1.0f, CMap::s_loadProgressArg);
+    }
 
     CMap::s_loading = 0;
     // TODO DAT_00cdfff4 = 0; DAT_00cd7678 = 1 (day/night: force a full update)
@@ -354,12 +358,6 @@ CGxShader* CMap::GetTerrain0PixelShader(int32_t a1, int32_t a2, int32_t env) {
     return CMap::s_terrainPixelShaders[2];
 }
 
-// ref: FUN_0079e7c0
-// The static init the reference runs once: the chunk tables, the module inits, the grids, the
-// terrain shaders, the low-detail index pool, then the object heaps. The module inits
-// (FUN_007afee0, FUN_007cb990, FUN_007b2760, FUN_007a03c0, FUN_0079e3c0, FUN_0079e4f0), the
-// liquid vertex buffer list (FUN_007d58b0) and the final capability flag (FUN_0086b9a0) are not
-// ported yet.
 // ref: FUN_0079e4f0
 // Load the two shadow-mapped terrain pixel shader sets, replacing whatever is already there.
 //
@@ -442,7 +440,8 @@ void CMap::CreateTerrainShadowShaders() {
 // CreateTerrainShadowShaders sits at 0x0079e979.
 void CMap::MapMemInitialize() {
     CMapChunk::Initialize();
-
+    CMapObj::Initialize();
+    VBBList::InitializeLists();
     DetailDoodad::Initialize();
 
     // TODO FUN_007afee0, FUN_007cb990, FUN_007a03c0; the two 0x2c-byte records at
@@ -455,7 +454,12 @@ void CMap::MapMemInitialize() {
 
     // TODO the 0x800-entry growable array at DAT_00cf4928 and the map state flags
     // (DAT_00ce04c8, DAT_00ce04c4, DAT_00ce04a4 = -2, DAT_00adfbc4 = -1, DAT_00cf08f4 = 0,
-    // DAT_00cf08f0 = 0, DAT_00ce04ac = 0), FUN_0079e3c0, FUN_0079e4f0
+    // DAT_00cf08f0 = 0, DAT_00ce04ac = 0), none of which frozen carries yet; and FUN_0079e3c0,
+    // the liquid initialise (its depth ramps are LiquidSurface.cpp's DepthRamp, built on first
+    // use; the splash textures and the WaterRipples shaders of FUN_0079e1a0 are not ported).
+
+    // The shadowed terrain sets load before the unshadowed ones (0x0079e979).
+    CMap::CreateTerrainShadowShaders();
 
     for (int32_t i = 0; i < 0x80; i++) {
         CMap::s_terrainVertexShaders[i] = nullptr;
@@ -512,9 +516,6 @@ void CMap::MapMemInitialize() {
 
     g_theGxDevicePtr->ShaderCreate(CMap::s_terrainShadowMapPixelShader, GxSh_Pixel, "Shaders\\Pixel", "TerrainSM", 1);
 
-    // The shadowed sets, which the reference loads from right here (its call to FUN_0079e4f0 is
-    // at 0x0079e979, inside MapMemInitialize).
-    CMap::CreateTerrainShadowShaders();
 
     CMap::s_lowDetailIndexPool = g_theGxDevicePtr->PoolCreate(GxPoolTarget_Index, GxPoolUsage_Dynamic, 0x1800, GxPoolHintBit_Unk0, "CMap::lowDetailIndexPool");
     CMap::s_lowDetailIndexBuf = g_theGxDevicePtr->BufCreate(CMap::s_lowDetailIndexPool, 2, 0xc00, 0);
@@ -527,9 +528,6 @@ void CMap::MapMemInitialize() {
 }
 
 void CMap::MapMemInitializeHeaps() {
-    CMapObj::Initialize();
-    VBBList::InitializeLists();
-
     CMap::s_lightHeap           = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapLight),         128,    "WLIGHT",           true));
     CMap::s_cacheLightHeap      = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapCacheLight),    256,    "WCACHELIGHT",      true));
     CMap::s_mapObjGroupHeap     = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CMapObjGroup),      128,    "WMAPOBJGROUP",     true));
@@ -672,6 +670,28 @@ void CMap::FreeDoodadDef(CMapDoodadDef* def) {
     uint32_t memHandle = def->m_memHandle;
     def->~CMapDoodadDef();
     ObjectFree(*CMap::s_doodadDefHeap, memHandle);
+}
+
+// ref: FUN_007c3020
+// The last link to a doodad def has gone: its model is let go (callbacks first, so nothing calls
+// back into a def about to be freed), it leaves its distance row, and it returns to the heap.
+void CMap::ReleaseDoodadDef(CMapDoodadDef* def) {
+    if (def->m_linkCount != 0) {
+        return;
+    }
+
+    if (def->m_model) {
+        def->m_model->SetSequenceDoneCallback(nullptr, 0);
+        def->m_model->SetAnimEventCallback(nullptr, 0);
+        def->m_model->m_lightingCallback = nullptr;
+        def->m_model->m_lightingArg = nullptr;
+        def->m_model->Release();
+        def->m_model = nullptr;
+    }
+
+    def->m_rowLink.Unlink();
+
+    CMap::FreeDoodadDef(def);
 }
 
 // ref: FUN_007c02d0
@@ -929,6 +949,35 @@ static const float CELL_ROUND_BIAS = 0.5f;                // DAT_00adfd74
 // point resolves to a cell, the cell's high bits pick the tile and the middle bits the chunk.
 // The tile's row comes from x and its column from y, which is the map's own convention and the
 // reason the chunk indices look transposed.
+// The cell size of the streaming lookups, a chunk's worth (DAT_00a3ffb8), and a tile's
+// (DAT_00a3ffbc); the half the rounding wants is DAT_00aee0e8.
+static const float CHUNKS_PER_YARD = 0.029999999329447746f;
+static const float TILES_PER_YARD = 0.0018749999580904841f;
+
+// ref: FUN_007b4960
+// The tile under a point.
+CMapArea* CMap::GetTargetArea(const C3Vector& target) {
+    int32_t row = static_cast<int32_t>(roundf(-(target.x - MAP_HALF_EXTENT) * TILES_PER_YARD - 0.5f));
+    int32_t col = static_cast<int32_t>(roundf(-(target.y - MAP_HALF_EXTENT) * TILES_PER_YARD - 0.5f));
+
+    return CMap::s_areaGrid[row * 64 + col];
+}
+
+// ref: FUN_007b49c0
+// The chunk under a point, through its tile; null where the tile is not loaded.
+CMapChunk* CMap::GetTargetChunk(const C3Vector& target) {
+    uint32_t col = static_cast<uint32_t>(roundf(-(target.y - MAP_HALF_EXTENT) * CHUNKS_PER_YARD - 0.5f));
+    uint32_t row = static_cast<uint32_t>(roundf(-(target.x - MAP_HALF_EXTENT) * CHUNKS_PER_YARD - 0.5f));
+
+    auto area = CMap::s_areaGrid[((static_cast<int32_t>(row) >> 4) & 0x3f) * 64 + ((static_cast<int32_t>(col) >> 4) & 0x3f)];
+
+    if (!area) {
+        return nullptr;
+    }
+
+    return area->m_chunks[(row & 0xf) * 16 + (col & 0xf)];
+}
+
 CMapChunk* CMap::ChunkAt(const C3Vector& position) {
     float cellFromY = -(position.y - MAP_HALF_EXTENT) * CELLS_PER_YARD;
     float cellFromX = -(position.x - MAP_HALF_EXTENT) * CELLS_PER_YARD;
@@ -1441,8 +1490,27 @@ void CMap::Update(int32_t update) {
 
     if (CMap::s_loading) {
         if (CMap::s_streamingMode == 0) {
-            // TODO four rounds of: AsyncFileReadWaitAll (FUN_004bae10), the progress callback,
-            // UpdateAreas, FUN_007b6110, FUN_007ad020, FUN_007b5630
+            // Loading behind a loading screen: drain every read, update, and repeat, so each
+            // round loads what the previous one's reads revealed. The progress callback marks a
+            // quarter, a half, two thirds and three quarters.
+            static const float LOAD_PROGRESS[4] = { 0.25f, 0.5f, 0.66f, 0.75f };
+
+            for (int32_t round = 0; round < 4; round++) {
+                AsyncFileReadWaitAll();
+
+                if (CMap::s_loadProgressCallback) {
+                    CMap::s_loadProgressCallback(LOAD_PROGRESS[round], CMap::s_loadProgressArg);
+                }
+
+                if (round == 3) {
+                    break;
+                }
+
+                CMap::UpdateAreas(update);
+                CMap::UpdateMapObjDefs(update);
+                CMapObj::UpdateAll();
+                CMap::UpdatePendingEntities();
+            }
         } else {
             // TODO the streaming-mode load loop (FUN_007b4960, FUN_007b5e80, FUN_007b50b0)
         }
@@ -1549,9 +1617,11 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::s_horizonBuffer[i] = -1000000.0f;
     }
 
-    // TODO FUN_007cd910() resets the occlusion arrays and FUN_007cc810() feeds the fixed
-    // horizon occluders (MapHorizonTable.hpp has the five of them). The occlusion VOLUMES are
-    // not built here -- they belong at the top of CWorldScene::Traverse, where they now are.
+    MapOcclusion::ClearVolumes();
+
+    // TODO FUN_007cc810() feeds the fixed horizon occluders (MapHorizonTable.hpp has the five of
+    // them) through FUN_007927e0, CWorldScene's occluder segment add, which is not ported. The
+    // occlusion VOLUMES are not built here -- they belong at the top of CWorldScene::Traverse.
 
     if (!CWorldScene::s_cameraDef) {
         CWorldScene::s_frameStamp++;

@@ -4282,5 +4282,45 @@
   "00792300": {
     "status": "excluded",
     "note": "Implicit destructor of the barrier sink's four TSGrowableArrays (CMapObjDefGroup*, CMapChunk*, CBarrier::SContact, CGxVertexPCT0T1). Compiler-generated. Identified 2026-10-02."
+  },
+  "007a2c60": {
+    "status": "unlinked",
+    "note": "NOT CMap::MapMemInitialize, which is FUN_0079e7c0 (tagged). The string matcher bound this because it also carries a string beginning \"Terrain\": it is a MapObj-side query that describes the object under a point (terrain chunk, map object group with its doodad set, or a static entity) into a 0x7c-dword record. Unported. Recorded 2026-10-02."
+  },
+  "007ccbe0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<C4Plane>::Reserve (16-byte elements). Storm template internal. Identified 2026-10-02."
+  },
+  "007ccc80": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CClipVolume>::Reserve (8-byte elements). Storm template internal. Identified 2026-10-02."
+  },
+  "007cd140": {
+    "status": "excluded",
+    "note": "TSGrowableArray<C4Plane>::Add(n, src). Storm template internal; frozen calls Add. Identified 2026-10-02."
+  },
+  "007cd1d0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<C4Plane>::New, default plane (0, 0, 1, 0). Storm template internal. Identified 2026-10-02."
+  },
+  "007cd3f0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CClipVolume>::Add(n, src). Storm template internal. Identified 2026-10-02."
+  },
+  "0079b370": {
+    "status": "excluded",
+    "note": "TSGrowableArray<LiquidChunkAndDistance>::Reserve (12-byte elements). Storm template internal. Identified 2026-10-02."
+  },
+  "0079ba30": {
+    "status": "excluded",
+    "note": "TSGrowableArray<LiquidQueryResult>::Reserve. Storm template internal. Identified 2026-10-02."
+  },
+  "007bdd80": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef, HASHKEY_NONE>::Ptr(hash, key): walk the bucket for the matching hash and key. Template internal; frozen calls Ptr. Identified 2026-10-02."
+  },
+  "007bea70": {
+    "status": "excluded",
+    "note": "TSHashTable<CMapDoodadDef>::Insert(obj, hash, key). Template internal; frozen calls Insert. Identified 2026-10-02."
   }
 }
