@@ -458,9 +458,6 @@ void CMap::MapMemInitialize() {
     // the liquid initialise (its depth ramps are LiquidSurface.cpp's DepthRamp, built on first
     // use; the splash textures and the WaterRipples shaders of FUN_0079e1a0 are not ported).
 
-    // The shadowed terrain sets load before the unshadowed ones (0x0079e979).
-    CMap::CreateTerrainShadowShaders();
-
     for (int32_t i = 0; i < 0x80; i++) {
         CMap::s_terrainVertexShaders[i] = nullptr;
     }
@@ -479,6 +476,12 @@ void CMap::MapMemInitialize() {
         CMap::s_terrain1wPixelShaders[i] = nullptr;
     }
     CMap::s_terrainShadowMapPixelShader[0] = nullptr;
+
+    // The shadowed terrain sets load after the slots above are cleared and before the unshadowed
+    // ones (0x0079e979). It must stay below the clearing: the reference never clears the Terrain2
+    // and Terrain3 arrays here, and calling this above the loop wipes both sets as soon as they
+    // load, so every shadowed terrain shader falls back to its unshadowed one.
+    CMap::CreateTerrainShadowShaders();
 
     g_theGxDevicePtr->ShaderCreate(CMap::s_terrainVertexShaders, GxSh_Vertex, "Shaders\\Vertex", "Terrain", 0x80);
     g_theGxDevicePtr->ShaderCreate(CMap::s_terrainPixelShaders, GxSh_Pixel, "Shaders\\Pixel", "Terrain0", 3);
