@@ -1509,3 +1509,144 @@ void CWorld::SetEnvironmentDetail(float detail) {
         s_detailBands.fadeStartSq[i] = s_detailBands.fadeStart[i] * s_detailBands.fadeStart[i];
     }
 }
+
+// ref: FUN_00780240
+void CWorld::UpdateObject(HWORLDOBJECT object, const C44Matrix& matrix, const CAaBox& box,
+                          const CAaSphere& sphere, const C3Vector& collisionCenter,
+                          int32_t noRelink, uint32_t param) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    C3Vector position = { matrix.d0, matrix.d1, matrix.d2 };
+    float scale = sqrtf(matrix.a0 * matrix.a0 + matrix.a1 * matrix.a1 + matrix.a2 * matrix.a2);
+    C3Vector collision = collisionCenter * matrix;
+
+    CAaSphere placedSphere = { position, 0.0f };
+
+    if (0.001f < sphere.r) {
+        placedSphere.r = scale * sphere.r;
+        placedSphere.c = sphere.c * matrix;
+    }
+
+    CAaBox placedBox = { position, position };
+
+    if (box.b.x < box.t.x && box.b.y < box.t.y && box.b.z < box.t.z) {
+        placedBox = TransformBox(box, matrix);
+    }
+
+    auto distSq = [](const C3Vector& a, const C3Vector& b) {
+        float x = a.x - b.x;
+        float y = a.y - b.y;
+        float z = a.z - b.z;
+
+        return z * z + y * y + x * x;
+    };
+
+    float moved = distSq(entity->m_position, position);
+    float collisionMoved = distSq(entity->m_collisionCenter, collision);
+    float bottomMoved = distSq(entity->m_bounds.b, placedBox.b);
+    float topMoved = distSq(entity->m_bounds.t, placedBox.t);
+    float sphereMoved = distSq(entity->m_sphere.c, placedSphere.c);
+    float shrunk = entity->m_sphere.r - placedSphere.r;
+
+    entity->m_position = position;
+    entity->m_collisionCenter = collision;
+    entity->m_scale = scale;
+    entity->m_bounds = placedBox;
+    entity->m_sphere = placedSphere;
+    entity->m_param32 = param;
+
+    if (noRelink) {
+        return;
+    }
+
+    if (9.999999974752427e-07f < moved || 9.999999747378752e-05f < collisionMoved
+        || 9.999999747378752e-05f < bottomMoved || 9.999999747378752e-05f < topMoved
+        || 9.999999747378752e-05f < sphereMoved || 9.999999747378752e-05f < shrunk) {
+        CMap::UpdateEntity(entity);
+    }
+}
+
+// ref: FUN_00990560
+// WMOAreaTable by (WMO id, name set, WMOGroupID). The reference binary-searches a copy sorted on
+// those three; a linear walk of the table finds the same record.
+static const WMOAreaTableRec* FindWMOArea(int32_t wmoID, int32_t nameSet, int32_t wmoGroupID) {
+    for (uint32_t i = 0; i < g_wmoAreaTableDB.GetNumRecords(); i++) {
+        const WMOAreaTableRec* rec = g_wmoAreaTableDB.GetRecordByIndex(i);
+
+        if (rec && rec->m_wmoID == wmoID && rec->m_nameSetID == nameSet && rec->m_wmoGroupID == wmoGroupID) {
+            return rec;
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00782560
+// FROZEN DIVERGENCE, the same one QueryEntityMapObj records: a global-WMO map (DAT_00cf08f4)
+// answers from its one definition first; frozen tracks no such map, so that arm is absent.
+int32_t CWorld::GetEntityAreaID(CMapStaticEntity* entity, uint32_t* areaID) {
+    if (!entity) {
+        return 0;
+    }
+
+    auto link = entity->m_parentLinkList.Head();
+
+    if (link) {
+        if (link->ref && (link->ref->m_type & CMapBaseObj::Type_Chunk)) {
+            *areaID = static_cast<CMapChunk*>(link->ref)->m_areaId;
+            return 1;
+        }
+
+        CMapObjDef* def = nullptr;
+
+        for (; link; link = entity->m_parentLinkList.Next(link)) {
+            auto defGroupLink = link->ref ? link->ref->m_parentLinkList.Head() : nullptr;
+            def = defGroupLink ? static_cast<CMapObjDef*>(defGroupLink->ref) : nullptr;
+
+            if (def && !(def->m_flags & 0x400)) {
+                break;
+            }
+        }
+
+        if (link && def && def->m_mapObj && def->m_mapObj->m_mohd) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->ref);
+            CMapObjGroup* group = def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+            if (group) {
+                const WMOAreaTableRec* rec = FindWMOArea(def->m_mapObj->m_mohd->wmoID, def->m_nameSet, group->m_groupID);
+
+                if (rec && rec->m_areaTableID) {
+                    *areaID = rec->m_areaTableID;
+                    return 1;
+                }
+            }
+        }
+    }
+
+    *areaID = CMap::GetChunkAreaID(entity->m_position);
+    return 1;
+}
+
+// ref: FUN_009905c0
+const LiquidTypeRec* CWorld::GetAreaLiquidType(uint32_t areaID, uint32_t liquidType) {
+    if (liquidType == 0) {
+        return nullptr;
+    }
+
+    if (areaID && liquidType < 0x15) {
+        uint32_t index = (liquidType - 1) & 0x3;
+        const AreaTableRec* area = g_areaTableDB.GetRecord(areaID);
+
+        if (area) {
+            if (area->m_liquidTypeID[index] == 0 && area->m_parentAreaID != 0) {
+                area = g_areaTableDB.GetRecord(area->m_parentAreaID);
+            }
+
+            if (area && area->m_liquidTypeID[index]) {
+                return g_liquidTypeDB.GetRecord(area->m_liquidTypeID[index]);
+            }
+        }
+    }
+
+    return g_liquidTypeDB.GetRecord(liquidType);
+}

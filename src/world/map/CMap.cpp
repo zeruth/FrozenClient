@@ -2434,3 +2434,244 @@ void CMap::AddCellSpanX(const int32_t* line) {
         x++;
     } while (x <= line[2]);
 }
+
+static const float AREA_HALF_EXTENT = 17066.666015625f;     // DAT_009e2acc
+static const float AREA_EXTENT = 34133.33203125f;           // DAT_009e2ac8
+
+// ref: FUN_007a0490
+uint32_t CMap::GetChunkAreaID(const C3Vector& point) {
+    int32_t col = static_cast<int32_t>(lrintf(-(point.y - AREA_HALF_EXTENT) * 0.03f - 0.5f));
+    int32_t row = static_cast<int32_t>(lrintf(-(point.x - AREA_HALF_EXTENT) * 0.03f - 0.5f));
+
+    CMapArea* area = CMap::s_areaGrid[((row >> 4) & 0x3F) * 64 + ((col >> 4) & 0x3F)];
+
+    if (!area || area->m_asyncObject) {
+        return 0;
+    }
+
+    CMapChunk* chunk = area->m_chunks[(row & 0xF) * 16 + (col & 0xF)];
+
+    return chunk ? chunk->m_areaId : 0;
+}
+
+// ref: FUN_007a06a0
+// MCSH holds one bit per sixty-fourth of a chunk (64 >> mampValue on a side), row by row.
+bool CMap::IsTerrainShadowed(const C3Vector& point) {
+    float fromY = -(point.y - AREA_HALF_EXTENT);
+    float fromX = -(point.x - AREA_HALF_EXTENT);
+
+    if (fromY <= 0.0f || fromX <= 0.0f || AREA_EXTENT <= fromY || AREA_EXTENT <= fromX) {
+        return false;
+    }
+
+    int32_t col = static_cast<int32_t>(lrintf(fromY * 0.03f - 0.5f));
+    int32_t row = static_cast<int32_t>(lrintf(fromX * 0.03f - 0.5f));
+
+    CMapArea* area = CMap::GetLoadedArea((col >> 4) & 0x3F, (row >> 4) & 0x3F);
+
+    if (!area) {
+        return false;
+    }
+
+    CMapChunk* chunk = area->m_chunks[(row & 0xF) * 16 + (col & 0xF)];
+
+    if (!chunk || !chunk->m_shadow) {
+        return false;
+    }
+
+    uint8_t shift = area->m_header ? area->m_header->mampValue : 0;
+    int32_t x = (static_cast<int32_t>(lrintf(fromY * 1.92f - 0.5f)) & 0x3F) >> shift;
+    int32_t y = (static_cast<int32_t>(lrintf(fromX * 1.92f - 0.5f)) & 0x3F) >> shift;
+
+    uint8_t bits = chunk->m_shadow[(8 >> shift) * y + (x >> 3)];
+
+    return (bits & (1 << (x & 7))) != 0;
+}
+
+// ref: FUN_007a13e0
+bool CMap::GetEntityMapObjGroup(CMapStaticEntity* entity, CMapObjDef** def, CMapObj** mapObj,
+                                CMapObjDefGroup** defGroup, CMapObjGroup** group, int32_t skipFlagged) {
+    for (auto link = entity->m_parentLinkList.Head(); link; link = entity->m_parentLinkList.Next(link)) {
+        CMapBaseObj* ref = link->ref;
+
+        if (!ref || !(ref->m_type & CMapBaseObj::Type_MapObjDefGroup)) {
+            continue;
+        }
+
+        *defGroup = static_cast<CMapObjDefGroup*>(ref);
+
+        auto parent = (*defGroup)->m_parentLinkList.Head();
+
+        if (!parent) {
+            continue;
+        }
+
+        *def = static_cast<CMapObjDef*>(parent->ref);
+
+        if (skipFlagged && ((*def)->m_flags & 0x400)) {
+            continue;
+        }
+
+        *mapObj = (*def)->m_mapObj;
+        *group = *mapObj ? (*mapObj)->GetGroup((*defGroup)->m_groupIndex, 0) : nullptr;
+
+        if (*group) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_007a09d0
+bool CMap::GetMapObjLiquid(const C3Vector& point, uint32_t* liquidType, float* height) {
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (def->m_flags & 0x100) {
+            continue;
+        }
+
+        const CAaBox& box = def->m_bounds;
+
+        if (!(box.b.x <= point.x && box.b.y <= point.y && box.b.z <= point.z
+              && point.x <= box.t.x && point.y <= box.t.y && point.z <= box.t.z)) {
+            continue;
+        }
+
+        if (!def->m_mapObj) {
+            continue;
+        }
+
+        C3Vector local = point * def->m_inversePlacement;
+
+        if (def->m_mapObj->PointInBounds(local) && def->m_mapObj->GetLiquidAt(0x2000, local, liquidType, height)) {
+            C3Vector surface = { local.x, local.y, *height };
+            *height = (surface * def->m_placement).z;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_007a0b00
+bool CMap::GetLiquidAt(const C3Vector& point, uint32_t* liquidType, float* height, int32_t* unused, int32_t flag) {
+    *unused = 0;
+
+    if (CMap::GetMapObjLiquid(point, liquidType, height)) {
+        return true;
+    }
+
+    return CMap::GetTerrainLiquid(point, liquidType, height, flag);
+}
+
+// ref: FUN_007a1a30
+void CMap::UpdateEntityGroupLiquid(CMapEntity* entity) {
+    entity->m_flags7c &= ~0x60u;
+
+    CMapObjDef* def = nullptr;
+    CMapObj* mapObj = nullptr;
+    CMapObjDefGroup* defGroup = nullptr;
+    CMapObjGroup* group = nullptr;
+
+    if (!CMap::GetEntityMapObjGroup(entity, &def, &mapObj, &defGroup, &group, 0)) {
+        return;
+    }
+
+    C3Vector bottom = { entity->m_position.x, entity->m_position.y, entity->m_bounds.b.z };
+    C3Vector local = bottom * def->m_inversePlacement;
+
+    uint32_t liquidType = 0;
+    float height = 0.0f;
+
+    if (!group->GetLiquidAt(local, &liquidType, &height)) {
+        return;
+    }
+
+    entity->m_flags7c |= 0x20;
+
+    C3Vector surface = { local.x, local.y, height };
+    entity->m_liquidHeight = (surface * def->m_placement).z;
+
+    if (entity->m_bounds.t.z < entity->m_liquidHeight) {
+        entity->m_flags7c &= ~0x40u;
+    } else {
+        entity->m_flags7c |= 0x40;
+    }
+
+    entity->m_fieldBC = static_cast<uint16_t>(liquidType);
+}
+
+// ref: FUN_007a1bc0
+// The ambient an outdoor entity eases toward is the outdoor light's (the day/night block's sun at
+// DAT_00ce04a8 + 0x58, whose ambient colour is +0x88); it is dimmed to half in the terrain's baked
+// shadow below shadow quality 2, and raised to 2.5 otherwise.
+void CMap::UpdateEntity(CMapEntity* entity) {
+    entity->m_flags7c &= 0xFFFFFC96;
+    entity->m_flags = (entity->m_flags & ~0x6u) | 0x1;
+
+    RelinkEntity(entity);
+
+    if (!(entity->m_flags7c & 0x1)) {
+        uint32_t liquidType = 0;
+        int32_t unused = 0;
+
+        if (CMap::GetLiquidAt(entity->m_position, &liquidType, &entity->m_liquidHeight, &unused, 1)) {
+            entity->m_flags7c |= 0x20;
+
+            if (entity->m_liquidHeight <= entity->m_bounds.t.z) {
+                entity->m_flags7c |= 0x40;
+            } else {
+                entity->m_flags7c &= ~0x40u;
+            }
+
+            entity->m_fieldBC = static_cast<uint16_t>(liquidType);
+        }
+    } else {
+        CMap::UpdateEntityGroupLiquid(entity);
+    }
+
+    uint32_t areaID = 0;
+
+    if (!(entity->m_flags7c & 0x2000) && (entity->m_flags7c & 0x40)
+        && entity->m_position.z < entity->m_liquidHeight + 0.01f
+        && CWorld::GetEntityAreaID(entity, &areaID)) {
+        const LiquidTypeRec* liquid = CWorld::GetAreaLiquidType(areaID, entity->m_fieldBC);
+
+        if (liquid && ((liquid->m_flags & 0x4) || entity->m_position.z < entity->m_liquidHeight)) {
+            entity->m_flags7c = (entity->m_flags7c & ~0x300u) | ((static_cast<uint32_t>(liquid->m_flags) << 8) & 0x300);
+        }
+    }
+
+    if (!(entity->m_flags & CMapBaseObj::Flag_Interior)) {
+        auto channel = [](float value) -> uint8_t {
+            if (!(0.0f < value)) {
+                return 0;
+            }
+
+            return static_cast<uint8_t>(lrintf(value < 1.0f ? value * 255.0f + 0.5f : 255.0f));
+        };
+
+        const C3Vector& ambient = CWorld::GetOutdoorAmbient();
+        entity->m_ambientTarget.b = channel(ambient.z);
+        entity->m_ambientTarget.g = channel(ambient.y);
+        entity->m_ambientTarget.r = channel(ambient.x);
+        entity->m_ambientTarget.a = 0xFF;
+
+        if (ShadowMapGetQuality() < 2 && !(entity->m_flags & 0x200) && CMap::IsTerrainShadowed(entity->m_position)) {
+            entity->m_flags7c |= 0x8;
+            entity->m_dirLightScaleTarget = 0.5f;
+            return;
+        }
+
+        entity->m_dirLightScaleTarget = 2.5f;
+        return;
+    }
+
+    if (!(entity->m_flags7c & 0x1000)) {
+        entity->m_dirLightScaleTarget = 1.0f;
+        return;
+    }
+
+    entity->m_dirLightScaleTarget = static_cast<float>(entity->m_interiorDirColor.a) * 0.003921568859368563f * (2.5f - 1.0f) + 1.0f;
+}

@@ -11,6 +11,10 @@ class CM2Model;
 class CM2Lighting;
 class CM2Scene;
 class Weather;
+class CMapStaticEntity;
+class LiquidTypeRec;
+class CAaBox;
+class CAaSphere;
 
 // The five model distance bands the reference keeps at DAT_00adf350: per band a default near and
 // far distance and a fade width, and the environmentDetail-scaled results derived from them (far,
@@ -112,6 +116,17 @@ class CWorld {
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
         static void RemoveObject(HWORLDOBJECT object);
+        // An object moved: its placement, collision centre, scale, box and sphere, and a relink
+        // into the map when any of them moved enough (unless `noRelink`). ref: FUN_00780240
+        static void UpdateObject(HWORLDOBJECT object, const C44Matrix& matrix, const CAaBox& box,
+                                 const CAaSphere& sphere, const C3Vector& collisionCenter,
+                                 int32_t noRelink, uint32_t param);
+        // The zone an entity stands in: its building group's WMOAreaTable zone, or the chunk's.
+        // ref: FUN_00782560
+        static int32_t GetEntityAreaID(CMapStaticEntity* entity, uint32_t* areaID);
+        // A liquid type as the zone overrides it (AreaTable LiquidTypeID, the parent zone's when
+        // the zone has none). ref: FUN_009905c0
+        static const LiquidTypeRec* GetAreaLiquidType(uint32_t areaID, uint32_t liquidType);
         static void SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam);
         static int32_t GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4);
         static void UpdateWindowAndMap(const C3Vector& targetPos);

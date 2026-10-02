@@ -156,6 +156,22 @@ bool LinkEntityToChunks(CMapStaticEntity* entity);
 // building groups it is inside, and its floor light. ref: FUN_007c2a70
 void ResolveEntityGround(CMapStaticEntity* entity);
 
+// The same for an object that owns its own placement (state bit 0x2000, the game objects):
+// probed from a little above its collision centre, linked to the building it hit or to every
+// building box and chunk it overlaps. ref: FUN_007c2e70
+void ResolveObjectGround(CMapStaticEntity* entity);
+
+// Drop every link an entity holds and link it again where it now stands. ref: FUN_007c2f80
+void RelinkEntity(CMapStaticEntity* entity);
+
+// Link an entity into every exterior group of every building whose box it overlaps.
+// ref: FUN_007c2bf0
+void LinkEntityToMapObjDefs(CMapStaticEntity* entity);
+
+// Link an entity into the group it was found in, and into that building's other groups its
+// box overlaps. ref: FUN_007c2d30
+void LinkEntityToMapObjDef(CMapStaticEntity* entity, CMapObjDef* def, CMapObjDefGroup* defGroup);
+
 // Which side of a building's wall a placed entity ended up on, and its floor light if it
 // ended up inside. A free function in the reference too -- it returns with a plain `ret`,
 // so the caller cleans the stack and there is no `this`. ref: FUN_007c15f0

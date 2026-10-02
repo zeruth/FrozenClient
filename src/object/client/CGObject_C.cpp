@@ -1,5 +1,7 @@
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CGObject_C.hpp"
+#include "model/CM2Shared.hpp"
+#include "model/M2Data.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "model/Model2.hpp"
 #include "model/CM2Model.hpp"
@@ -340,6 +342,41 @@ void CGObject_C::SetTypeID(OBJECT_TYPE_ID typeID) {
     }
 }
 
-void CGObject_C::UpdateWorldObject(int32_t a2) {
-    // TODO
+// ref: FUN_007438e0
+// Hand the world where the object is: placed and turned and scaled, with its model's bounds and
+// the centre of its collision box once the model is in.
+void CGObject_C::UpdateWorldObject(int32_t noRelink) {
+    if (!this->m_worldObject) {
+        return;
+    }
+
+    C44Matrix matrix;
+    matrix.Identity();
+    matrix.Translate(this->GetPosition());
+    matrix.RotateAroundZ(this->GetFacing());
+    matrix.Scale(this->GetScale());
+
+    CAaBox box = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+    CAaSphere sphere = { { 0.0f, 0.0f, 0.0f }, 0.0f };
+    C3Vector collisionCenter = { 0.0f, 0.0f, 0.0f };
+
+    CM2Model* model = this->m_model;
+
+    if (model && model->IsLoaded(0, 0)) {
+        if (!model->m_shared->m_m2DataLoaded) {
+            model->WaitForLoad(nullptr);
+        }
+
+        const CAaBox& collision = model->m_shared->m_data->collisionBounds.extent;
+        collisionCenter = {
+            (collision.t.x + collision.b.x) * 0.5f,
+            (collision.t.y + collision.b.y) * 0.5f,
+            (collision.t.z + collision.b.z) * 0.5f
+        };
+
+        model->GetBoundingBox(box);
+        model->GetBoundingSphere(sphere);
+    }
+
+    CWorld::UpdateObject(this->m_worldObject, matrix, box, sphere, collisionCenter, noRelink, 0xFFFFFFFF);
 }

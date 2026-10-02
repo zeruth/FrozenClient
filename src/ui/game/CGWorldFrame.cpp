@@ -597,6 +597,10 @@ void CGWorldFrame::OnWorldUpdate() {
 
                 object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), scale);
 
+                // The map's entity for the object follows it (the reference does this from the
+                // object's own movement update; this loop is where frozen places objects).
+                object->UpdateWorldObject(0);
+
                 // A world model is drawn when it is animating, visible, and flagged for draw,
                 // the same set the character preview uses; the animate list is drained each frame
                 // so this runs every update

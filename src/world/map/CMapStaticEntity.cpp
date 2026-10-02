@@ -678,3 +678,113 @@ void ResolveEntityGround(CMapStaticEntity* entity) {
 
     entity->m_flags = flags | 0x4;
 }
+
+// ref: FUN_007c2bf0
+void LinkEntityToMapObjDefs(CMapStaticEntity* entity) {
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if ((def->m_flags & 0x20) || !def->m_mapObj || !def->m_mapObj->m_rootLoaded) {
+            continue;
+        }
+
+        CAaBox box = TransformBox(entity->m_bounds, def->m_inversePlacement);
+
+        if (!def->m_mapObj->BoxVsBounds(box)) {
+            continue;
+        }
+
+        for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+            auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+            uint32_t flags = def->m_mapObj->GroupFlags(defGroup->m_groupIndex);
+
+            if (!(flags & 0x410080) && (flags & 0x8) && def->m_mapObj->GroupBoxIntersects(box, defGroup->m_groupIndex, 1)) {
+                CMap::LinkToMapObjDefGroup(entity, defGroup);
+            }
+        }
+    }
+}
+
+// ref: FUN_007c2d30
+void LinkEntityToMapObjDef(CMapStaticEntity* entity, CMapObjDef* def, CMapObjDefGroup* defGroup) {
+    if (!def->m_mapObj || !def->m_mapObj->m_rootLoaded) {
+        return;
+    }
+
+    CAaBox box = TransformBox(entity->m_bounds, def->m_inversePlacement);
+
+    if (!def->m_mapObj->BoxVsBounds(box)) {
+        return;
+    }
+
+    CMap::LinkToMapObjDefGroup(entity, defGroup);
+
+    for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+        auto other = static_cast<CMapObjDefGroup*>(link->owner);
+
+        if (other == defGroup) {
+            continue;
+        }
+
+        uint32_t flags = def->m_mapObj->GroupFlags(other->m_groupIndex);
+
+        if (!(flags & 0x410088) && def->m_mapObj->GroupBoxIntersects(box, other->m_groupIndex, 1)) {
+            CMap::LinkToMapObjDefGroup(entity, other);
+        }
+    }
+}
+
+// ref: FUN_007c2e70
+void ResolveObjectGround(CMapStaticEntity* entity) {
+    const C3Vector& center = entity->m_collisionCenter;
+
+    C3Vector start = { center.x, center.y, center.z + 4.0f };
+    C3Vector end = { center.x, center.y, center.z - 1000.0f };
+    C3Vector point = { center.x, center.y, center.z + 0.15f };
+
+    float top = entity->m_bounds.t.z + 0.1f;
+
+    if (top < start.z) {
+        start.z = top;
+    }
+
+    uint32_t interior = 0;
+    uint32_t hit = 0;
+    SMapObjHit collision[2];
+    SMapObjHit render[2];
+
+    QueryEntityMapObj(entity, &start, &end, point, &interior, &hit, collision, render);
+
+    if (interior) {
+        LinkEntityToMapObjDef(entity, collision[0].def, collision[0].defGroup);
+
+        entity->m_flags7c |= 0x1;
+
+        C3Vector floor = { center.x, center.y, center.z - (end.z - start.z) * render[0].distance };
+        ClassifyEntityInterior(entity, render[0].def, render[0].defGroup, render[0].face, floor);
+
+        return;
+    }
+
+    LinkEntityToMapObjDefs(entity);
+    LinkEntityToChunks(entity);
+    entity->m_flags |= 0x4;
+}
+
+// ref: FUN_007c2f80
+void RelinkEntity(CMapStaticEntity* entity) {
+    for (auto link = entity->m_parentLinkList.Head(); link; ) {
+        auto next = entity->m_parentLinkList.Next(link);
+        CMap::FreeBaseObjLink(link);
+        link = next;
+    }
+
+    if (entity->m_type & CMapBaseObj::Type_Entity) {
+        entity->m_groundType = -1;
+    }
+
+    if (!(entity->m_flags7c & 0x2000)) {
+        ResolveEntityGround(entity);
+        return;
+    }
+
+    ResolveObjectGround(entity);
+}

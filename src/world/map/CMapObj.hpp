@@ -391,6 +391,16 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // One group's MOGI record, or null when the root's chunks have not been parsed yet.
         // ref: FUN_007aeb10
         SMOGroupInfo* GroupInfo(uint32_t groupIndex);
+        // Is a point (in this building's space) inside its MOHD bounds? False until the root
+        // is parsed. ref: FUN_007ae810
+        bool PointInBounds(const C3Vector& point);
+        // Does a box (in this building's space) meet a group's MOGI box? With requireLoaded the
+        // group itself has to be in. ref: FUN_007ae8d0
+        bool GroupBoxIntersects(const CAaBox& box, uint32_t groupIndex, int32_t requireLoaded);
+        // The liquid under a point (in this building's space): the first loaded group whose MOGI
+        // box holds it, skipping groups with any of `excludeFlags`, that has liquid there.
+        // ref: FUN_007aeb90
+        bool GetLiquidAt(uint32_t excludeFlags, const C3Vector& point, uint32_t* liquidType, float* height);
 
         // Does the segment touch the whole object's MOHD bounds? False until the root is parsed,
         // because the bounds are not known before that. ref: FUN_007ae840

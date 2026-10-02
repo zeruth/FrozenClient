@@ -58,6 +58,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         virtual float GetRawFacing() const;
         // TODO
         virtual WOWGUID GetTransportGUID() const;
+        // ref: FUN_007370d0
+        virtual void UpdateWorldObject(int32_t noRelink);
         // TODO
         virtual int32_t GetModelFileName(const char*& name) const;
         // TODO

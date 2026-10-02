@@ -1,4 +1,5 @@
 #include "object/client/CGUnit_C.hpp"
+#include "world/CWorld.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
 #include "model/Model2.hpp"
@@ -4073,4 +4074,54 @@ void CGUnit_C::OnSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID,
     }
 
     unit->OnAnimationFinished(model, boneId, static_cast<int32_t>(animID), interrupted);
+}
+
+// ref: FUN_007370d0
+// The unit's world object follows its model: the model's own placement (position, facing and the
+// ground tilt SetWorldTransform applied, with the scale in it), the model's box and sphere --
+// combined with what is attached to it once the attachments are in -- and a collision centre half
+// the unit's height up.
+//
+// TWO THINGS ARE NOT THE REFERENCE'S YET. The height is the unit's +0x854, which nothing writes
+// through a plain float store anywhere in the binary (it arrives in a block copy not yet traced),
+// so it is taken from CreatureModelData's collision height here, scaled the way the model is. And
+// the vehicle arms -- a seat's matrix from AnimateAndGetWorldMatrix, the seat's reach added to the
+// sphere, and the passengers updated after -- wait on the vehicle module, which frozen does not
+// create.
+void CGUnit_C::UpdateWorldObject(int32_t noRelink) {
+    if (!this->m_worldObject) {
+        return;
+    }
+
+    CM2Model* model = this->GetObjectModel();
+
+    C44Matrix matrix;
+
+    if (model) {
+        matrix = model->matrixB4;
+    } else {
+        matrix.Identity();
+        matrix.Translate(this->GetPosition());
+        matrix.RotateAroundZ(this->GetFacing());
+        matrix.Scale(this->GetScale());
+    }
+
+    CAaBox box = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+    CAaSphere sphere = { { 0.0f, 0.0f, 0.0f }, 0.0f };
+
+    auto modelData = this->GetModelData();
+    float height = modelData ? modelData->m_collisionHeight * this->GetModelScale() : 0.0f;
+    C3Vector collisionCenter = { 0.0f, 0.0f, height * 0.5f };
+
+    if (model && model->IsLoaded(0, 0)) {
+        if (!model->IsLoaded(0, 1)) {
+            model->GetBoundingBox(box);
+            model->GetBoundingSphere(sphere);
+        } else {
+            model->GetCombinedBounds(box);
+            model->GetCombinedSphere(sphere);
+        }
+    }
+
+    CWorld::UpdateObject(this->m_worldObject, matrix, box, sphere, collisionCenter, noRelink, 0);
 }

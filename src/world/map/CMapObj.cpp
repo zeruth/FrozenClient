@@ -1451,3 +1451,44 @@ void SetDefaultDirectionalLight() {
 
     g_theGxDevicePtr->RsSet(GxRs_Lighting, 1);
 }
+
+// ref: FUN_007ae810
+bool CMapObj::PointInBounds(const C3Vector& point) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    return this->m_bounds.IsPointInside(point) != 0;
+}
+
+// ref: FUN_007ae8d0
+bool CMapObj::GroupBoxIntersects(const CAaBox& box, uint32_t groupIndex, int32_t requireLoaded) {
+    if (requireLoaded) {
+        if (!this->m_rootLoaded || !this->m_groups[groupIndex] || !(this->m_groups[groupIndex]->m_state & 0x1)) {
+            return false;
+        }
+    }
+
+    return this->m_mogi[groupIndex].bounds.Intersects(box);
+}
+
+// ref: FUN_007aeb90
+bool CMapObj::GetLiquidAt(uint32_t excludeFlags, const C3Vector& point, uint32_t* liquidType, float* height) {
+    for (uint32_t i = 0; i < this->m_groupCount; i++) {
+        if (!this->m_rootLoaded || !this->m_mogi || (this->m_mogi[i].flags & excludeFlags)) {
+            continue;
+        }
+
+        if (!this->m_mogi[i].bounds.IsPointInside(point)) {
+            continue;
+        }
+
+        CMapObjGroup* group = this->m_groups[i];
+
+        if (group && (group->m_state & 0x1) && group->GetLiquidAt(point, liquidType, height)) {
+            return true;
+        }
+    }
+
+    return false;
+}

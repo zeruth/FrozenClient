@@ -299,6 +299,22 @@ class CMap {
         static CMapBaseObjLink* AllocBaseObjLink(CMapBaseObj* owner);
         static void FreeBaseObjLink(CMapBaseObjLink* link);
         static void LinkToMapObjDefGroup(CMapBaseObj* owner, CMapObjDefGroup* group);
+        // An entity that moved: relinked where it now stands, its liquid and the liquid's kind,
+        // and the light it should ease toward. ref: FUN_007a1bc0
+        static void UpdateEntity(CMapEntity* entity);
+        // The liquid at a point: a building's first, the terrain's otherwise. ref: FUN_007a0b00
+        static bool GetLiquidAt(const C3Vector& point, uint32_t* liquidType, float* height, int32_t* unused, int32_t flag);
+        // The liquid inside the buildings at a point. ref: FUN_007a09d0
+        static bool GetMapObjLiquid(const C3Vector& point, uint32_t* liquidType, float* height);
+        // The liquid of the building group an entity is linked into. ref: FUN_007a1a30
+        static void UpdateEntityGroupLiquid(CMapEntity* entity);
+        // The building group an entity is linked into. ref: FUN_007a13e0
+        static bool GetEntityMapObjGroup(CMapStaticEntity* entity, CMapObjDef** def, CMapObj** mapObj,
+                                         CMapObjDefGroup** defGroup, CMapObjGroup** group, int32_t skipFlagged);
+        // The MCNK area id of the chunk under a point, zero when none is loaded. ref: FUN_007a0490
+        static uint32_t GetChunkAreaID(const C3Vector& point);
+        // Whether the terrain's baked shadow (MCSH) covers a point. ref: FUN_007a06a0
+        static bool IsTerrainShadowed(const C3Vector& point);
 
         // Tiles and chunks
         static CMapArea* CreateArea(int32_t x, int32_t y);
