@@ -1763,9 +1763,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
 
     MapOcclusion::ClearVolumes();
 
-    // TODO FUN_007cc810() feeds the fixed horizon occluders (MapHorizonTable.hpp has the five of
-    // them) through FUN_007927e0, CWorldScene's occluder segment add, which is not ported. The
-    // occlusion VOLUMES are not built here -- they belong at the top of CWorldScene::Traverse.
+    CWorldScene::AddFixedOccluders();
 
     if (!CWorldScene::s_cameraDef) {
         CWorldScene::s_frameStamp++;

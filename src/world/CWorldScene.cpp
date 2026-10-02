@@ -1,3 +1,5 @@
+#include <new>
+#include "world/map/MapHorizonTable.hpp"
 #include "gx/Draw.hpp"
 #include "gx/Buffer.hpp"
 #include "world/CWorldScene.hpp"
@@ -75,6 +77,8 @@ float CWorldScene::s_viewProjW[4];
 C44Matrix CWorldScene::s_occlusionMatrix;
 float CWorldScene::s_horizonBuffer[CWorldScene::HORIZON_COLUMNS];
 uint8_t CWorldScene::s_horizonColumnFlags[CWorldScene::HORIZON_COLUMNS];
+STORM_EXPLICIT_LIST(CWorldScene::Occluder, m_link) CWorldScene::s_freeOccluders;
+STORM_EXPLICIT_LIST(CWorldScene::Occluder, m_link) CWorldScene::s_debugOccluders;
 uint32_t CWorldScene::s_rowStats[0x60];
 float CWorldScene::s_farChunkDistance;
 float CWorldScene::s_nearChunkDistance;
@@ -2092,8 +2096,15 @@ void CWorldScene::ShadeHorizon(const float (*table)[3], const float* heights,
 // hide.
 void CWorldScene::TraverseRowOccluders(Row* row) {
     if (!(CWorld::s_enables & 0x20)) {
-        // Occlusion off: the list still has to be emptied, or next frame's chunks pile onto it.
+        // Occlusion off: the lists still have to be emptied, or next frame's entries pile onto
+        // them.
         row->occluderChunks.UnlinkAll();
+
+        for (auto occluder = row->occluders.Head(); occluder; ) {
+            auto next = row->occluders.Next(occluder);
+            CWorldScene::FreeOccluder(occluder);
+            occluder = next;
+        }
 
         return;
     }
@@ -2123,8 +2134,21 @@ void CWorldScene::TraverseRowOccluders(Row* row) {
         chunk = next;
     }
 
-    // TODO the row's second occluder list (+0x3c), which holds the map objects that shade the
-    // horizon. Nothing links into it yet.
+    // The edges: each shades the horizon, marking its columns, then goes back to the free list --
+    // or, with the debug enable 0x2000, onto the list that draws them.
+    for (auto occluder = row->occluders.Head(); occluder; ) {
+        auto next = row->occluders.Next(occluder);
+
+        CWorldScene::ShadeHorizonPolyline(&occluder->a, 2, 1);
+
+        if (!(CWorld::s_enables & 0x2000)) {
+            CWorldScene::FreeOccluder(occluder);
+        } else {
+            CWorldScene::s_debugOccluders.LinkToTail(occluder);
+        }
+
+        occluder = next;
+    }
 }
 
 // ref: FUN_007946d0
@@ -2789,4 +2813,251 @@ void CWorldScene::UpdateWorldView() {
     // 0xFF. Only the flag survives, which is all Weather asks for.
 
     CWorldScene::s_viewUpdated = true;
+}
+
+// ref: FUN_0078f900
+void CWorldScene::ShadeHorizonPolyline(const C3Vector* points, int32_t count, int32_t mark) {
+    if (!(CWorld::s_enables & 0x20)) {
+        return;
+    }
+
+    if (CWorldScene::s_viewDir.z < -0.8999999761581421f || 0.8999999761581421f < CWorldScene::s_viewDir.z) {
+        return;
+    }
+
+    // DAT_00cd8fd8: the projected points, a scratch the reference keeps as a global.
+    static C3Vector s_projected[16];
+
+    if (count > 16) {
+        count = 16;
+    }
+
+    for (int32_t i = 0; i < count; i++) {
+        C3Vector p = points[i] * CWorldScene::s_occlusionMatrix;
+        s_projected[i] = p;
+
+        float inv = 1.0f / s_projected[i].z;
+
+        if (0.0f < inv) {
+            s_projected[i].x = s_projected[i].x * inv;
+            s_projected[i].y = inv * s_projected[i].y;
+        }
+    }
+
+    for (int32_t i = 0; i < count - 1; i++) {
+        const C3Vector& p0 = s_projected[i];
+        const C3Vector& p1 = s_projected[i + 1];
+
+        if (!(0.02777777798473835f <= p0.z) || !(0.02777777798473835f <= p1.z)) {
+            continue;
+        }
+
+        float height = p1.y <= p0.y ? p1.y : p0.y;
+
+        int32_t first = static_cast<int32_t>(std::nearbyint(p0.x * 64.0f - 0.5f)) + 0xc0;
+        int32_t last = static_cast<int32_t>(std::nearbyint(p1.x * 64.0f - 0.5f)) + 0xc0;
+
+        if (last < first) {
+            int32_t swap = first;
+            first = last;
+            last = swap;
+        }
+
+        if (first < 0) {
+            first = 0;
+        }
+
+        if (0x17f < last) {
+            last = 0x17f;
+        }
+
+        if (mark && first <= last) {
+            memset(&CWorldScene::s_horizonColumnFlags[first], 1, static_cast<size_t>(last - first + 1));
+        }
+
+        for (int32_t c = first; c <= last; c++) {
+            if (CWorldScene::s_horizonBuffer[c] < height) {
+                CWorldScene::s_horizonBuffer[c] = height;
+            }
+        }
+    }
+}
+
+// ref: FUN_007cc9a0
+CWorldScene::Occluder* CWorldScene::AllocOccluder() {
+    Occluder* occluder = CWorldScene::s_freeOccluders.Head();
+
+    if (!occluder) {
+        void* memory = SMemAlloc(sizeof(Occluder), ".?AVCWorldOccluder@@", -2, 0x8);
+        occluder = memory ? new (memory) Occluder() : nullptr;
+
+        if (!occluder) {
+            return nullptr;
+        }
+    }
+
+    occluder->m_link.Unlink();
+
+    return occluder;
+}
+
+// ref: FUN_007cca90
+void CWorldScene::FreeOccluder(Occluder* occluder) {
+    occluder->m_link.Unlink();
+    CWorldScene::s_freeOccluders.LinkToTail(occluder);
+}
+
+// ref: FUN_007927e0
+void CWorldScene::AddOccluder(const C3Vector& a, const C3Vector& b) {
+    if (CWorldScene::s_viewDir.z < -0.8999999761581421f || 0.8999999761581421f < CWorldScene::s_viewDir.z) {
+        return;
+    }
+
+    const C4Plane& view = CWorldScene::s_viewPlane2d;
+    float distA = a.y * view.n.y + a.z * view.n.z + a.x * view.n.x + view.d;
+    float distB = b.y * view.n.y + b.z * view.n.z + b.x * view.n.x + view.d;
+
+    if (distA < 0.10000000149011612f && distB < 0.10000000149011612f) {
+        return;
+    }
+
+    int32_t bandA = static_cast<int32_t>(std::nearbyint(distA * 0.029999999329447746f - 0.5f));
+    int32_t bandB = static_cast<int32_t>(std::nearbyint(distB * 0.029999999329447746f - 0.5f));
+
+    if (0x40 <= bandA && 0x40 <= bandB) {
+        return;
+    }
+
+    Occluder* occluder = CWorldScene::AllocOccluder();
+
+    if (!occluder) {
+        return;
+    }
+
+    occluder->a = a;
+    occluder->b = b;
+
+    int32_t band = bandA;
+
+    if (bandA != bandB) {
+        // Near end first: the edge is cut at each row boundary from the near band outwards, and
+        // every piece but the last goes to the row it lies in.
+        C3Vector nearPoint;
+        C3Vector farPoint;
+        int32_t nearBand;
+        int32_t farBand;
+
+        if (bandB < bandA) {
+            nearPoint = b;
+            farPoint = occluder->a;
+            nearBand = bandB;
+            farBand = bandA;
+        } else {
+            nearPoint = occluder->a;
+            farPoint = b;
+            nearBand = bandA;
+            farBand = bandB;
+        }
+
+        if (nearBand < 0) {
+            nearBand = 0;
+        }
+
+        if (0x3f < farBand) {
+            farBand = 0x3f;
+        }
+
+        band = nearBand;
+
+        for (int32_t row = nearBand; row < farBand; row++) {
+            const C4Plane& boundary = CWorldScene::s_rowPlanes[row + 1];
+
+            float farDist = boundary.n.x * farPoint.x + boundary.n.z * farPoint.z + boundary.n.y * farPoint.y + boundary.d;
+            float span = farDist - (boundary.n.z * nearPoint.z + boundary.n.y * nearPoint.y + boundary.n.x * nearPoint.x + boundary.d);
+
+            C3Vector cut;
+
+            if (span <= 9.999999747378752e-06f) {
+                cut = farPoint;
+            } else {
+                float t = farDist / span;
+                cut.y = (nearPoint.y - farPoint.y) * t + farPoint.y;
+                cut.z = (nearPoint.z - farPoint.z) * t + farPoint.z;
+                cut.x = (nearPoint.x - farPoint.x) * t + farPoint.x;
+            }
+
+            Occluder* piece = CWorldScene::AllocOccluder();
+
+            if (piece) {
+                piece->a = nearPoint;
+                piece->b = cut;
+                CWorldScene::s_rows[row].occluders.LinkToTail(piece);
+            }
+
+            nearPoint = cut;
+        }
+
+        band = farBand;
+
+        occluder->a = nearPoint;
+        occluder->b = farPoint;
+    }
+
+    CWorldScene::s_rows[band].occluders.LinkToTail(occluder);
+}
+
+namespace {
+
+// The fixed occluders' boxes, built once from their vertices the way the reference's static
+// initialiser builds them (FUN_007cc890): the vertices' extent, with the bottom lowered by the
+// occluder's drop.
+struct FixedOccluderBoxes {
+    CAaBox boxes[5];
+
+    FixedOccluderBoxes() {
+        for (uint32_t i = 0; i < 5; i++) {
+            const MapHorizon::SOccluder& occluder = MapHorizon::OCCLUDERS[i];
+            CAaBox& box = boxes[i];
+
+            box.b = { 3.4028234663852886e+38f, 3.4028234663852886e+38f, 3.4028234663852886e+38f };
+            box.t = { -3.4028234663852886e+38f, -3.4028234663852886e+38f, -3.4028234663852886e+38f };
+
+            for (uint32_t v = 0; v < occluder.vertexCount; v++) {
+                const float* p = MapHorizon::VERTICES[occluder.firstVertex + v];
+
+                if (p[0] < box.b.x) { box.b.x = p[0]; }
+                if (p[1] < box.b.y) { box.b.y = p[1]; }
+                if (box.t.x < p[0]) { box.t.x = p[0]; }
+                if (box.t.y < p[1]) { box.t.y = p[1]; }
+                if (box.t.z < p[2]) { box.t.z = p[2]; }
+                if (p[2] + occluder.drop < box.b.z) { box.b.z = p[2] + occluder.drop; }
+            }
+        }
+    }
+};
+
+}
+
+// ref: FUN_007cc810
+void CWorldScene::AddFixedOccluders() {
+    static FixedOccluderBoxes s_boxes;
+
+    for (uint32_t i = 0; i < 5; i++) {
+        const MapHorizon::SOccluder& occluder = MapHorizon::OCCLUDERS[i];
+
+        if (occluder.mapId != CMap::s_mapID) {
+            continue;
+        }
+
+        if (CWorldScene::BoxOutsideFrustum(s_boxes.boxes[i])) {
+            continue;
+        }
+
+        for (uint32_t v = 0; v < occluder.vertexCount; v += 2) {
+            const float* p0 = MapHorizon::VERTICES[occluder.firstVertex + v];
+            const float* p1 = MapHorizon::VERTICES[occluder.firstVertex + v + 1];
+
+            CWorldScene::AddOccluder({ p0[0], p0[1], p0[2] }, { p1[0], p1[1], p1[2] });
+        }
+    }
 }

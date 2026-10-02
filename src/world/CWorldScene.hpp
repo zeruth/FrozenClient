@@ -80,6 +80,15 @@ class CWorldScene {
             void* next = nullptr;
         };
 
+        // One edge of something that hides what is behind it from the horizon test: two points,
+        // and the row list it sits on (reference CWorldOccluder, 0x20 bytes, named by its own
+        // allocation tag).
+        struct Occluder {
+            C3Vector a;                          // +0x00
+            C3Vector b;                          // +0x0c
+            TSLink<Occluder> m_link;             // +0x18
+        };
+
         // One 33-yard distance band along the camera's forward (reference 0x6c bytes at
         // DAT_00cd9048, 64 rows): every map object the frame can reach, bucketed by how far
         // along the view it starts, so the traversal walks near to far
@@ -89,7 +98,7 @@ class CWorldScene {
             STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) entities;      // +0x18
             STORM_EXPLICIT_LIST(CMapStaticEntity, m_rowLink) staticEntities; // +0x24
             STORM_EXPLICIT_LIST(CChunkLiquid, m_frameLink) liquids;         // +0x30
-            RowListStub list5;                                              // +0x3c
+            STORM_EXPLICIT_LIST(Occluder, m_link) occluders;                // +0x3c: edges that shade the horizon
             RowListStub list6;                                              // +0x48
             STORM_EXPLICIT_LIST(CMapChunk, m_frameLink) occluderChunks;     // +0x54: chunks that shade the horizon buffer
             RowListStub list8;                                              // +0x60
@@ -142,6 +151,10 @@ class CWorldScene {
         // Every chunk that scattered grass and is near enough to draw it this frame. A chunk
         // puts itself here from PrepareRender; the pass empties it.
         static STORM_EXPLICIT_LIST(DetailDoodad::CDetailDoodadData, m_frameLink) s_frameDetailDoodadList;
+        // Edges waiting for reuse (the reference's free list at 0x00aeef5c) and the edges kept
+        // for the debug draw while enable 0x2000 is set (DAT_00cdb0ac).
+        static STORM_EXPLICIT_LIST(Occluder, m_link) s_freeOccluders;
+        static STORM_EXPLICIT_LIST(Occluder, m_link) s_debugOccluders;
         static C4Plane s_rowPlanes[ROW_COUNT];              // DAT_00cdab48: the front plane of each row
         static C3Vector s_frustumCorners[8];                // DAT_00cdb108: the camera frustum in world space
         static CWFrustum s_frustums[FRUSTUM_DEPTH_MAX];       // DAT_00cdb168: per portal recursion depth
@@ -286,6 +299,19 @@ class CWorldScene {
                                  const C3Vector& position, int32_t holes);
 
         static int32_t BoxOutsideFrustum(const CAaBox& box);
+        // A polyline through the horizon buffer: each pair of points raises the columns it spans to
+        // the lower of its two heights, and with `mark` set the columns are flagged so a holed
+        // chunk will not reopen them. ref: FUN_0078f900
+        static void ShadeHorizonPolyline(const C3Vector* points, int32_t count, int32_t mark);
+        // An occluder edge into the distance rows, split at every row boundary it crosses so each
+        // piece shades the horizon when its row is reached. ref: FUN_007927e0
+        static void AddOccluder(const C3Vector& a, const C3Vector& b);
+        // A recycled edge, or a new one. ref: FUN_007cc9a0
+        static Occluder* AllocOccluder();
+        // Back on the free list. ref: FUN_007cca90
+        static void FreeOccluder(Occluder* occluder);
+        // The map's fixed horizon occluders that the frustum reaches. ref: FUN_007cc810
+        static void AddFixedOccluders();
         // File one liquid layer under the distance row its centre falls in, or drop it when
         // that is past the last row. ref: FUN_00792df0
         static void AddLiquid(CChunkLiquid* liquid, const C3Vector& center);
