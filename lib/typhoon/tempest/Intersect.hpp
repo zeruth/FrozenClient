@@ -3,6 +3,7 @@
 
 #include "tempest/Box.hpp"
 #include "tempest/Plane.hpp"
+#include "tempest/Sphere.hpp"
 #include "tempest/Ray.hpp"
 #include "tempest/Segment.hpp"
 #include "tempest/Vector.hpp"
@@ -71,6 +72,15 @@ void RayFromPoints(C3Ray& out, const C3Vector& origin, const C3Vector& target, b
 // hit at its own origin when it is within `epsilon` of the plane, and misses otherwise.
 // ref: FUN_00982fb0
 bool IntersectRayPlane(const C3Ray& ray, const C4Plane& plane, float* t, C3Vector* point, float epsilon);
+
+// Where a ray first enters an axis-aligned box: the distance along the ray and the point. A ray
+// starting inside hits at its origin. Either output may be null.
+bool IntersectRayAaBox(const C3Ray& ray, const CAaBox& box, float* t, C3Vector* point);
+
+// A sphere against a box, in X and Y only. Mode 3: they overlap. Mode 2: the sphere's edge crosses
+// the box (overlap, and the box is not wholly inside the sphere). Modes 0 and 1: the same, and the
+// sphere is not wholly inside the box either, judged by squared and by plain face distances.
+bool AaBoxSphereTest2D(const CAaBox& box, const CAaSphere& sphere, uint32_t mode);
 
 // Whether a point lies inside a planar polygon, judged after dropping the axis the polygon
 // faces most squarely along (pass DominantAxis of its normal). Crossing-number test.

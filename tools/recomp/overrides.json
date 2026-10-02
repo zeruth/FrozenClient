@@ -4222,5 +4222,17 @@
   "0097e8d0": {
     "status": "diverged",
     "note": "Ported 2026-10-02 as CM2ParticleEmitter::UpdateModelParticles. DIVERGED in the sorted (flag 0x20) arm: the reference computes each particle's depth from the PLAIN pool (+0x34, 0x20 stride), which a model-particle emitter never allocates, and passes that pointer on as a model particle; frozen reads the model pool."
+  },
+  "009844e0": {
+    "status": "excluded",
+    "note": "CRT memset internal: fill dwords 16 bytes at a time, then the tail. Identified 2026-10-02."
+  },
+  "00984540": {
+    "status": "excluded",
+    "note": "CRT memset internal: align the destination, fill the middle through FUN_009844e0, then the tail bytes. Identified 2026-10-02."
+  },
+  "009845d0": {
+    "status": "excluded",
+    "note": "CRT memset entry: a fall-through switch for fewer than 16 bytes, else FUN_00984540. Identified 2026-10-02."
   }
 }

@@ -570,3 +570,224 @@ float DistancePointPolygonInPlane(const C3Vector& point, const C3Vector* vertice
 
     return DistancePointPolygon(point, vertices, count);
 }
+
+// ref: FUN_00982a40
+// Woo's ray-box test: the candidate face per axis the origin lies outside, the axis whose face is
+// reached last, and a check that the hit on it lies within the other two slabs.
+static bool IntersectRayAaBox(const float* origin, const float* dir, const float* min, const float* max, float* t, float* point) {
+    uint8_t quadrant[3];
+    float candidate[3];
+    bool inside = true;
+
+    for (int32_t i = 0; i < 3; i++) {
+        if (origin[i] < min[i]) {
+            quadrant[i] = 1;
+            candidate[i] = min[i];
+            inside = false;
+        } else if (max[i] < origin[i]) {
+            quadrant[i] = 0;
+            candidate[i] = max[i];
+            inside = false;
+        } else {
+            quadrant[i] = 2;
+        }
+    }
+
+    if (inside) {
+        *t = 0.0f;
+        point[0] = origin[0];
+        point[1] = origin[1];
+        point[2] = origin[2];
+
+        return true;
+    }
+
+    float maxT[3];
+
+    for (int32_t i = 0; i < 3; i++) {
+        maxT[i] = -1.0f;
+
+        if (quadrant[i] != 2 && dir[i] != 0.0f) {
+            maxT[i] = (candidate[i] - origin[i]) / dir[i];
+        }
+    }
+
+    uint32_t plane = maxT[0] < maxT[1] ? 1 : 0;
+
+    if (maxT[plane] < maxT[2]) {
+        plane = 2;
+    }
+
+    if (maxT[plane] < 0.0f) {
+        return false;
+    }
+
+    *t = maxT[plane];
+
+    for (uint32_t i = 0; i < 3; i++) {
+        if (plane == i) {
+            point[i] = candidate[i];
+        } else {
+            point[i] = dir[i] * maxT[plane] + origin[i];
+
+            if (point[i] < min[i] || max[i] < point[i]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_00982f30
+bool IntersectRayAaBox(const C3Ray& ray, const CAaBox& box, float* t, C3Vector* point) {
+    float tScratch;
+    C3Vector pointScratch = { 0.0f, 0.0f, 0.0f };
+
+    return IntersectRayAaBox(&ray.origin.x, &ray.dir.x, &box.b.x, &box.t.x,
+                             t ? t : &tScratch, point ? &point->x : &pointScratch.x);
+}
+
+// ref: FUN_00982c10
+static bool AaBoxSphereTest2D(const C3Vector& min, const C3Vector& max, const C3Vector& center, float radius, uint32_t mode) {
+    float radiusSquared = radius * radius;
+
+    switch (mode) {
+        case 0: {
+            bool reachesX = false;
+            float toMin = (center.x - min.x) * (center.x - min.x);
+            float toMax = (center.x - max.x) * (center.x - max.x);
+            float far = toMax < toMin ? toMin : toMax;
+            float near = toMin;
+
+            if (min.x <= center.x) {
+                if (center.x <= max.x) {
+                    float face = toMin < toMax ? toMin : toMax;
+                    near = 0.0f;
+
+                    if (!(face <= radiusSquared)) {
+                        goto y0;
+                    }
+
+                    toMax = 0.0f;
+                }
+
+                reachesX = true;
+                near = toMax;
+            } else {
+                reachesX = true;
+            }
+
+        y0:
+            float toMinY = (center.y - min.y) * (center.y - min.y);
+            float toMaxY = (center.y - max.y) * (center.y - max.y);
+            far += toMaxY < toMinY ? toMinY : toMaxY;
+
+            if (min.y <= center.y) {
+                if (center.y <= max.y) {
+                    float face = toMinY < toMaxY ? toMinY : toMaxY;
+
+                    if (!(face <= radiusSquared) && !reachesX) {
+                        return false;
+                    }
+                } else {
+                    near += toMaxY;
+                }
+            } else {
+                near += toMinY;
+            }
+
+            if (!(near <= radiusSquared)) {
+                return false;
+            }
+
+            return !(far < radiusSquared);
+        }
+
+        case 1: {
+            float near = 0.0f;
+            bool reachesX = false;
+
+            if (min.x <= center.x) {
+                if (max.x < center.x) {
+                    near = (center.x - max.x) * (center.x - max.x);
+                    reachesX = true;
+                } else if (center.x - min.x < radius || max.x - center.x < radius) {
+                    reachesX = true;
+                }
+            } else {
+                near = (center.x - min.x) * (center.x - min.x);
+                reachesX = true;
+            }
+
+            if (min.y <= center.y) {
+                if (center.y <= max.y) {
+                    if (!(center.y - min.y <= radius) && !(max.y - center.y <= radius) && !reachesX) {
+                        return false;
+                    }
+                } else {
+                    near += (center.y - max.y) * (center.y - max.y);
+                }
+            } else {
+                near += (center.y - min.y) * (center.y - min.y);
+            }
+
+            return !(radiusSquared < near);
+        }
+
+        case 2: {
+            float toMin = (center.x - min.x) * (center.x - min.x);
+            float toMax = (center.x - max.x) * (center.x - max.x);
+            float far = toMax < toMin ? toMin : toMax;
+            float near = toMin;
+
+            if (min.x <= center.x) {
+                near = center.x <= max.x ? 0.0f : toMax;
+            }
+
+            float toMinY = (center.y - min.y) * (center.y - min.y);
+            float toMaxY = (center.y - max.y) * (center.y - max.y);
+            far += toMaxY < toMinY ? toMinY : toMaxY;
+
+            if (min.y <= center.y) {
+                if (max.y < center.y) {
+                    near += toMaxY;
+                }
+            } else {
+                near += toMinY;
+            }
+
+            if (!(near <= radiusSquared)) {
+                return false;
+            }
+
+            return !(far < radiusSquared);
+        }
+
+        case 3: {
+            float near = 0.0f;
+
+            if (center.x < min.x) {
+                near = (center.x - min.x) * (center.x - min.x);
+            } else if (max.x < center.x) {
+                near = (center.x - max.x) * (center.x - max.x);
+            }
+
+            if (center.y < min.y) {
+                near += (center.y - min.y) * (center.y - min.y);
+            } else if (max.y < center.y) {
+                near += (center.y - max.y) * (center.y - max.y);
+            }
+
+            return near <= radiusSquared;
+        }
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_00982f80
+bool AaBoxSphereTest2D(const CAaBox& box, const CAaSphere& sphere, uint32_t mode) {
+    return AaBoxSphereTest2D(box.b, box.t, sphere.c, sphere.r, mode);
+}
