@@ -4601,10 +4601,6 @@
     "status": "excluded",
     "note": "TSHashTable<CTextureBlobTexture>::MonitorFullness; squall template"
   },
-  "004b57a0": {
-    "status": "diverged",
-    "note": "Counts a texture's file toward the streaming download statistics (called only by the M2 stats walk FUN_008245b0): appends .blp and asks FUN_004217e0 -> FUN_00461040 how much of the file is local to the archives. That query reads the streaming (BNet downloader) archive state inside Storm's MPQ layer, which frozen's StormLib-backed SFile does not have, and its one caller is not ported. Not ported, deliberately; recorded 2026-10-02."
-  },
   "0077f900": {
     "frozen": "CWorld::UpdateTextureCacheSize",
     "status": "diverged",

@@ -8852,13 +8852,23 @@ void CM2Model::IncreasePriority(int32_t textures) {
 }
 
 // ref: FUN_008245b0
-// The reference also adds each texture's share (FUN_004b57a0) once the model has loaded; that
-// half is Texture.cpp's and lands with that module's port.
 void CM2Model::GetLoadProgress(uint64_t* done, uint64_t* total) {
     SFile::GetStreamedBytes(this->m_shared->m_filePath, done, total);
     (*total)++;
 
-    if (this->m_loaded) {
-        (*done)++;
+    if (!this->m_loaded) {
+        return;
+    }
+
+    (*done)++;
+
+    if (!this->m_shared->m_m2DataLoaded) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < this->m_shared->m_data->textures.Count(); i++) {
+        if (this->m_textures[i]) {
+            TextureGetLoadProgress(TextureGetTexturePtr(this->m_textures[i]), done, total);
+        }
     }
 }

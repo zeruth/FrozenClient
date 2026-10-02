@@ -206,6 +206,9 @@ int32_t TextureGetDimensions(HTEXTURE, uint32_t*, uint32_t*, int32_t);
 
 void TextureIncreasePriority(CTexture*);
 
+// A streaming install's share of the texture's file, plus one for its read having landed.
+void TextureGetLoadProgress(CTexture* texture, uint64_t* done, uint64_t* total);
+
 void TextureInitialize(void);
 
 int32_t TextureIsSame(HTEXTURE textureHandle, const char* fileName);

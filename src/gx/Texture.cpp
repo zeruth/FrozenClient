@@ -3042,3 +3042,27 @@ int32_t TextureIsSame(HTEXTURE textureHandle, const char* fileName) {
 
     return SStrCmpI(buf, TextureGetTexturePtr(textureHandle)->filename, sizeof(buf)) == 0;
 }
+
+// ref: FUN_004b57a0
+// How much of a texture's file a streaming install has (its name with ".blp" put back on), plus one
+// for the texture's own read having landed.
+void TextureGetLoadProgress(CTexture* texture, uint64_t* done, uint64_t* total) {
+    char* name = texture->filename;
+    size_t length = SStrLen(name);
+    char* extension = name + length;
+
+    extension[0] = '.';
+    extension[1] = 'b';
+    extension[2] = 'l';
+    extension[3] = 'p';
+    extension[4] = '\0';
+
+    SFile::GetStreamedBytes(name, done, total);
+    (*total)++;
+
+    if (!texture->asyncObject) {
+        (*done)++;
+    }
+
+    *extension = '\0';
+}
