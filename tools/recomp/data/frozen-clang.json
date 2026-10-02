@@ -67140,6 +67140,34 @@
 "refs": [],
 "line": 10
 },
+"CGxPool::~CGxPool": {
+"files": [
+"src/gx/buffer/cgxpool.cpp"
+],
+"callseq": [],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 2,
+"refs": [],
+"line": 18
+},
+"CGxPool::BufRemove": {
+"files": [
+"src/gx/buffer/cgxpool.cpp"
+],
+"callseq": [
+"TSLinkedNode<CGxBuf>::Unlink"
+],
+"strings": [],
+"consts": [],
+"branches": 0,
+"stub": false,
+"lines": 4,
+"refs": [],
+"line": 23
+},
 "TManaged::TManaged<T>": {
 "files": [
 "lib/common/common/datamgr/tmanaged.hpp"
@@ -68750,6 +68778,7 @@
 "src/gx/cgxdevice.cpp"
 ],
 "callseq": [
+"CGxPool::BufRemove",
 "CGxBuf::~CGxBuf",
 "SMemFree"
 ],
@@ -68759,11 +68788,11 @@
 "consts": [
 "0x0"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 10,
+"lines": 12,
 "refs": [],
-"line": 1502
+"line": 1505
 },
 "CGxDevice::PoolDestroy": {
 "files": [
@@ -68787,7 +68816,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 1513
+"line": 1518
 },
 "CGxDevice::PoolCreate": {
 "files": [
@@ -68808,7 +68837,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1538
+"line": 1543
 },
 "CGxDevice::RenderTargetGet": {
 "files": [
@@ -68821,7 +68850,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1558
+"line": 1563
 },
 "CGxDevice::RenderTargetSet": {
 "files": [
@@ -68836,7 +68865,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1562
+"line": 1567
 },
 "CGxDevice::RenderTargetDump": {
 "files": [
@@ -68851,7 +68880,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1573
+"line": 1578
 },
 "CGxDevice::ScreenShot": {
 "files": [
@@ -68866,7 +68895,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1577
+"line": 1582
 },
 "CGxDevice::RsGet": {
 "files": [
@@ -68882,7 +68911,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1581
+"line": 1586
 },
 "CGxDevice::RsSet": {
 "files": [
@@ -68917,7 +68946,7 @@
 "stub": false,
 "lines": 50,
 "refs": [],
-"line": 1585
+"line": 1590
 },
 "CGxDevice::RsSetAlphaRef": {
 "files": [
@@ -68933,7 +68962,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1642
+"line": 1647
 },
 "CGxDevice::RsPop": {
 "files": [
@@ -68962,7 +68991,7 @@
 "stub": false,
 "lines": 26,
 "refs": [],
-"line": 1670
+"line": 1675
 },
 "CGxDevice::RsPush": {
 "files": [
@@ -68978,7 +69007,7 @@
 "stub": false,
 "lines": 4,
 "refs": [],
-"line": 1697
+"line": 1702
 },
 "CGxDevice::ScenePresent": {
 "files": [
@@ -68993,7 +69022,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1712
+"line": 1717
 },
 "CGxDevice::ShaderConstantsClear": {
 "files": [
@@ -69024,7 +69053,7 @@
 "stub": false,
 "lines": 23,
 "refs": [],
-"line": 1719
+"line": 1724
 },
 "CGxDevice::ShaderConstantsLock": {
 "files": [
@@ -69040,7 +69069,7 @@
 "stub": false,
 "lines": 5,
 "refs": [],
-"line": 1743
+"line": 1748
 },
 "CGxDevice::ShaderConstantsSet": {
 "files": [
@@ -69059,7 +69088,7 @@
 "stub": false,
 "lines": 53,
 "refs": [],
-"line": 1749
+"line": 1754
 },
 "CGxDevice::ShaderConstantsUnlock": {
 "files": [
@@ -69080,7 +69109,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 1803
+"line": 1808
 },
 "CGxDevice::ShaderDestroy": {
 "files": [
@@ -69097,7 +69126,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 1828
+"line": 1833
 },
 "CGxDevice::ShaderCreate": {
 "files": [
@@ -69126,7 +69155,7 @@
 "stub": false,
 "lines": 67,
 "refs": [],
-"line": 1839
+"line": 1844
 },
 "CGxDevice::TexCreate": {
 "files": [
@@ -69149,7 +69178,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 1908
+"line": 1913
 },
 "CGxDevice::TexDestroy": {
 "files": [
@@ -69164,7 +69193,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 1933
+"line": 1938
 },
 "CGxDevice::TexMarkForUpdate": {
 "files": [
@@ -69184,7 +69213,7 @@
 "stub": false,
 "lines": 19,
 "refs": [],
-"line": 1942
+"line": 1947
 },
 "CGxDevice::TexSetWrap": {
 "files": [
@@ -69201,7 +69230,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 1962
+"line": 1967
 },
 "CGxDevice::WindowVisibleFlag": {
 "files": [
@@ -69216,7 +69245,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 1978
+"line": 1983
 },
 "CGxDevice::ValidateDraw": {
 "files": [
@@ -69229,7 +69258,7 @@
 "stub": false,
 "lines": 2,
 "refs": [],
-"line": 1988
+"line": 1993
 },
 "CGxDevice::XformPop": {
 "files": [
@@ -69244,7 +69273,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1991
+"line": 1996
 },
 "CGxDevice::XformProjection": {
 "files": [
@@ -69259,7 +69288,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 1995
+"line": 2000
 },
 "CGxDevice::XformProjNative": {
 "files": [
@@ -69276,7 +69305,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 1999
+"line": 2004
 },
 "CGxDevice::XformPush": {
 "files": [
@@ -69294,7 +69323,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2011
+"line": 2016
 },
 "CGxDevice::XformSet": {
 "files": [
@@ -69310,7 +69339,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 2032
+"line": 2037
 },
 "CGxDevice::XformSetProjection": {
 "files": [
@@ -69325,7 +69354,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 2036
+"line": 2041
 },
 "CGxDevice::XformSetView": {
 "files": [
@@ -69346,7 +69375,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 2045
+"line": 2050
 },
 "CGxDevice::XformSetViewport": {
 "files": [
@@ -69361,7 +69390,7 @@
 "stub": false,
 "lines": 21,
 "refs": [],
-"line": 2055
+"line": 2060
 },
 "CGxDevice::XformView": {
 "files": [
@@ -69376,7 +69405,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 2077
+"line": 2082
 },
 "CGxDevice::XformWorld": {
 "files": [
@@ -69391,7 +69420,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 2084
+"line": 2089
 },
 "CGxDevice::XformViewport": {
 "files": [
@@ -69404,7 +69433,7 @@
 "stub": false,
 "lines": 8,
 "refs": [],
-"line": 2088
+"line": 2093
 },
 "GxExtensionListContains": {
 "files": [
@@ -69422,7 +69451,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 2098
+"line": 2103
 },
 "AdapterFormatSort": {
 "files": [
@@ -72086,6 +72115,27 @@
 "lines": 9,
 "refs": [],
 "line": 3968
+},
+"CGxDeviceD3d::PoolDestroy": {
+"files": [
+"src/gx/d3d/cgxdeviced3d.cpp"
+],
+"callseq": [
+"CGxDeviceD3d::IPoolRelease",
+"CGxPool::~CGxPool",
+"SMemFree"
+],
+"strings": [
+"c:\\users\\tyler\\runicworld-client\\src\\gx\\d3d\\cgxdeviced3d.cpp"
+],
+"consts": [
+"0x0"
+],
+"branches": 1,
+"stub": false,
+"lines": 7,
+"refs": [],
+"line": 3981
 },
 "GxDevCreate": {
 "files": [

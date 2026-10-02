@@ -345,8 +345,8 @@ class CGxDevice {
         // The other half of BufCreate and PoolCreate, which frozen has been missing entirely:
         // nothing could release a pool or a buffer, so anything that built geometry on demand
         // leaked it. Safe on null.
-        void BufDestroy(CGxBuf*);
-        void PoolDestroy(CGxPool*);
+        void BufDestroy(CGxBuf*& buf);
+        virtual void PoolDestroy(CGxPool*);
         CGxBuf* BufStream(EGxPoolTarget, uint32_t, uint32_t);
         void DeviceCreatePools(void);
         void DeviceCreateStreamBufs(void);

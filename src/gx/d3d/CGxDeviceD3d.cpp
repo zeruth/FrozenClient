@@ -3974,3 +3974,14 @@ void CGxDeviceD3d::DeviceOverride(int32_t which, uint32_t value) {
         this->m_caps.m_texNonPow2Conditional = value != 0;
     }
 }
+
+// ref: FUN_0068e720
+// Releases the D3D buffer and frees the pool. Its buffers are not freed here: they belong to
+// whoever made them, who destroys them through BufDestroy.
+void CGxDeviceD3d::PoolDestroy(CGxPool* pool) {
+    if (pool) {
+        this->IPoolRelease(pool);
+        pool->~CGxPool();
+        SMemFree(pool, __FILE__, __LINE__, 0x0);
+    }
+}

@@ -2387,6 +2387,7 @@ addr	how	frozen	evidence
 006859e0	override	CGxDevice::IRsForceUpdate	
 00685a70	override	CGxDevice::IRsForceUpdate	
 00685b50	override	CGxDevice::IRsSync	
+00685c00	annotated	CGxPool::BufRemove	tag in src/gx/buffer/CGxPool.cpp
 00685c60	annotated	CGxDevice::TexCreate	tag in src/gx/CGxDevice.cpp
 00685d40	callgraph	CGxDevice::TexSetWrap	only unmatched callee of 00681450=GxTexSetWrap
 00685dc0	annotated	CGxTex::~CGxTex	tag in src/gx/texture/CGxTex.cpp
@@ -2398,12 +2399,14 @@ addr	how	frozen	evidence
 00686120	annotated	CGxDevice::IRsInit	tag in src/gx/CGxDevice.cpp
 00687660	annotated	CGxDevice::BufCreate	tag in src/gx/CGxDevice.cpp
 006876d0	callgraph	CGxDevice::PoolCreate	only unmatched callee of 00687940=CGxDevice::DeviceCreatePools
+00687740	override	CGxPool::~CGxPool	
+00687820	override	CGxDevice::ShaderDestroy	
 00687900	annotated	CGxDevice::DeviceCreateStreamBufs	tag in src/gx/CGxDevice.cpp
 00687940	string	CGxDevice::DeviceCreatePools	unique "Stream_idx"
 00687980	annotated	CGxDevice::TexDestroy	tag in src/gx/CGxDevice.cpp
 00688230	annotated	CGxPool::Invalidate	tag in src/gx/buffer/CGxPool.cpp
 00688260	annotated	CGxPool::Discard	tag in src/gx/buffer/CGxPool.cpp
-00688290	callgraph	TSGrowableArray<CMapChunkBufBlock>::SetCount	only unmatched callee of 007ba3d0=CMap::FreeBufBlocks
+00688290	override	CGxDevice::BufDestroy	
 00689050	annotated	CGxDevice::XformSetView	tag in src/gx/CGxDevice.cpp
 006897c0	annotated	CGxDevice::ShaderCreate	tag in src/gx/CGxDevice.cpp
 00689a50	callgraph	CGxShader::Valid	only unmatched callee of 007bd8a0=CMap::LoadSettings
@@ -2413,6 +2416,7 @@ addr	how	frozen	evidence
 0068e1f0	annotated	CGxDeviceD3d::IPoolRelease	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e250	annotated	CGxDeviceD3d::ISetPresentParms	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068e4c0	annotated	CGxDeviceD3d::DeviceSetGamma	tag in src/gx/d3d/CGxDeviceD3d.cpp
+0068e720	annotated	CGxDeviceD3d::PoolDestroy	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068eb20	annotated	WindowClassCreate	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ebb0	annotated	CGxDeviceD3d::ICreateWindow	tag in src/gx/d3d/CGxDeviceD3d.cpp
 0068ed80	string	CGxDeviceD3d::ILoadD3dLib	unique "CGxDeviceD3d::ILoadD3dLib(): unable to GetProcAddress()"

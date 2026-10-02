@@ -38134,6 +38134,22 @@
   "refSize": 174,
   "status": "ported"
  },
+ "00685c00": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/buffer/CGxPool.cpp",
+   "src/gx/buffer/cgxpool.cpp"
+  ],
+  "frozen": "CGxPool::BufRemove",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 83,
+  "status": "ported"
+ },
  "00685c60": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -38307,6 +38323,38 @@
   "refSize": 111,
   "status": "ported"
  },
+ "00687740": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/buffer/CGxPool.cpp",
+   "src/gx/buffer/cgxpool.cpp"
+  ],
+  "frozen": "CGxPool::~CGxPool",
+  "frozenSize": 0,
+  "how": "override",
+  "module": "CGxDevice.cpp",
+  "refSize": 125,
+  "status": "ported"
+ },
+ "00687820": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::ShaderDestroy",
+  "frozenSize": 211,
+  "how": "override",
+  "module": "CGxDevice.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
  "00687900": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38388,14 +38436,17 @@
   "status": "ported"
  },
  "00688290": {
-  "branchRatio": -1.0,
+  "branchRatio": 0.222,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.0,
-  "files": [],
-  "frozen": "TSGrowableArray<CMapChunkBufBlock>::SetCount",
-  "frozenSize": 593,
-  "how": "callgraph",
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::BufDestroy",
+  "frozenSize": 85,
+  "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 172,
   "status": "ported"
@@ -38420,7 +38471,7 @@
   "branchRatio": 0.421,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.133,
+  "fidelity": 0.2,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
@@ -38542,6 +38593,22 @@
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 71,
+  "status": "ported"
+ },
+ "0068e720": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::PoolDestroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGxD3dDevice.cpp",
+  "refSize": 34,
   "status": "ported"
  },
  "0068eb20": {
@@ -39762,7 +39829,7 @@
   "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/d3d/CGxDeviceD3d.cpp",
    "src/gx/d3d/cgxdeviced3d.cpp"
@@ -50072,7 +50139,7 @@
   "branchRatio": 0.286,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.8,
   "files": [
    "src/world/map/CMapObj.cpp",
    "src/world/map/cmapobj.cpp"
@@ -51848,7 +51915,7 @@
   "branchRatio": 0.222,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 0.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
@@ -59987,8 +60054,8 @@
  "00825d70": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.667,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -61915,7 +61982,7 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"

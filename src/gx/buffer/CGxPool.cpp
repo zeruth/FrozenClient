@@ -12,3 +12,15 @@ void CGxPool::Invalidate() {
         buf->unk1C = 0;
     }
 }
+
+// ref: FUN_00687740
+// The buffer list and the pool's own link unlink themselves.
+CGxPool::~CGxPool() {
+}
+
+// ref: FUN_00685c00
+// Detaches a buffer from this pool: off the list, and no longer pointing back at it.
+void CGxPool::BufRemove(CGxBuf* buf) {
+    buf->Unlink();
+    buf->m_pool = nullptr;
+}

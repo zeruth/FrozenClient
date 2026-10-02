@@ -3574,20 +3574,22 @@
     "note": "the order matcher proposed `CGxDevice::RsPush` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this is a 4,268-byte routine that resets every render state to its default, calling IRsDirty for each one that changes; RsPush saves the state stack and calls nothing of the kind. Re-link any of these only from a call site or a body."
   },
   "00687740": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::ShaderConstantsClear` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this unlinks two list links (+0x24 and +0) after one call; frozen's fills both shadow constant banks with FLT_MAX. Re-link any of these only from a call site or a body."
+    "frozen": "CGxPool::~CGxPool",
+    "status": "ported",
+    "note": "Identified 2026-10-02: destroys the buffer list (FUN_005bd800) and unlinks the pool's list links; reached through the deleting destructor FUN_00688340 from the D3D PoolDestroy. Replaces the 2026-10-01 rejection of the order matcher's ShaderConstantsClear proposal."
   },
   "006877c0": {
     "status": "unlinked",
     "note": "the order matcher proposed `CGxDevice::ShaderConstantsLock` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this allocates a 0x10-byte node from CGxDevice.cpp line 0x99f, fills it and hands it out; nothing to do with locking constants. Re-link any of these only from a call site or a body."
   },
   "00687820": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::ShaderConstantsSet` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this drops a reference count at +0x1c and, at zero, unlinks the object and destroys it through a per-target table at +0x2668. That reads like a shader release (frozen's ShaderDestroy has the same refcount shape) but it is left unlinked until a call site confirms it. Re-link any of these only from a call site or a body."
+    "frozen": "CGxDevice::ShaderDestroy",
+    "status": "ported",
+    "note": "Identified 2026-10-02: drops a reference at +0x1c and at zero unlinks the shader and frees it through its target's hash table (+0x2668 + target * 0x28), then nulls the caller's pointer; the D3D override FUN_006aa190 calls it. Replaces the 2026-10-01 rejection of the order matcher's ShaderConstantsSet proposal, which flagged it as a likely shader release."
   },
   "00687870": {
-    "status": "unlinked",
-    "note": "the order matcher proposed `CGxDevice::ShaderConstantsUnlock` for this; that is not what it is. Rejected 2026-10-01. Tagging CGxDevice::TexCreate (00685c00) and TexDestroy (00687980) made the positional order matcher emit a run between and before them, aligning frozen's CGxDevice.cpp function list against the reference's address order. Every one of the six was read and none matches: this is a case-insensitive name lookup in a hash table (SStrHashHT, SStrCmpI). Re-link any of these only from a call site or a body."
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI>::Ptr -- the case-insensitive name lookup (SStrHashHT, SStrCmpI) ShaderCreate uses; squall template. Identified 2026-10-02; replaces the order matcher rejection of ShaderConstantsUnlock."
   },
   "006817b0": {
     "frozen": "GxGetBlitFormat",
@@ -3639,5 +3641,58 @@
   "004b9990": {
     "status": "unlinked",
     "note": "the call-graph matcher proposed `CallbackRemove` (a frozen-only helper since inlined) on 2026-10-02; it is a TSGrowableArray reallocation the callback removals share. Squall template."
+  },
+  "00688040": {
+    "status": "excluded",
+    "note": "TSExplicitList<CGxShader> slot-array reallocation (the shader hash table's buckets); squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "006881a0": {
+    "status": "excluded",
+    "note": "TSExplicitList<CGxShader> slot-array clear; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00688450": {
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI> bucket resize; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00688560": {
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI> clear; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00689460": {
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI> initial bucket setup; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "006894c0": {
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI> rehash into the grown bucket array; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "006896c0": {
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI> grow check on insert (chain length over 0xd); squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00689760": {
+    "status": "excluded",
+    "note": "TSHashTable<CGxShader, HASHKEY_STRI> insert; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "006851d0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<C3Vector>::New for the immediate-mode prim vertex list; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00685230": {
+    "status": "excluded",
+    "note": "TSHashTable node unlink (both links of a CGxShader) used by ShaderDestroy; squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00687fd0": {
+    "status": "excluded",
+    "note": "TSList<CGxBuf> delete-all (frees each node); squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00688340": {
+    "status": "excluded",
+    "note": "CGxPool scalar deleting destructor (compiler generated around FUN_00687740); squall template or compiler-generated code reached from the D3D9 backend. Identified 2026-10-02."
+  },
+  "00688290": {
+    "frozen": "CGxDevice::BufDestroy",
+    "status": "ported",
+    "note": "Identified 2026-10-02 from its callers (the device destructor on the stream buffers, CMap::FreeBufBlocks, CM2Shared::ReleaseGeometryBuffers): takes CGxBuf*&, detaches it from its pool (FUN_00685c00), unlinks, frees, nulls. The call-graph matcher had it as TSGrowableArray<CMapChunkBufBlock>::SetCount."
   }
 }

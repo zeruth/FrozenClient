@@ -45,7 +45,7 @@ CGxPool* GxPoolCreate(EGxPoolTarget, EGxPoolUsage, uint32_t, EGxPoolHintBits, ch
 
 void GxPoolDestroy(CGxPool*);
 
-void GxBufDestroy(CGxBuf*);
+void GxBufDestroy(CGxBuf*&);
 
 void GxPrimIndexPtr(CGxBuf*);
 

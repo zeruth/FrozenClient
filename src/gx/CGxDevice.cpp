@@ -1499,15 +1499,20 @@ void CGxDevice::PrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
     this->m_primVertexSize = Buffer::s_vertexBufDesc[format].size;
 }
 
-void CGxDevice::BufDestroy(CGxBuf* buf) {
-    if (!buf) {
-        return;
+// ref: FUN_00688290
+// Takes the caller's pointer and nulls it. The buffer owns nothing of its own -- it is a range
+// inside its pool's API buffer -- so this is bookkeeping: detach, unlink, free.
+void CGxDevice::BufDestroy(CGxBuf*& buf) {
+    if (buf) {
+        if (buf->m_pool) {
+            buf->m_pool->BufRemove(buf);
+        }
+
+        buf->~CGxBuf();
+        SMemFree(buf, __FILE__, __LINE__, 0x0);
     }
 
-    // A CGxBuf owns nothing of its own -- it is a sub-range record inside its pool's single API
-    // buffer -- so this is just bookkeeping. The destructor unlinks it from the pool's list.
-    buf->~CGxBuf();
-    SMemFree(buf, __FILE__, __LINE__, 0x0);
+    buf = nullptr;
 }
 
 void CGxDevice::PoolDestroy(CGxPool* pool) {

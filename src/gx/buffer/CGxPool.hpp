@@ -30,6 +30,8 @@ class CGxPool : public TSLinkedNode<CGxPool> {
             , m_hint(hint)
             , m_name(name)
             {};
+        ~CGxPool();
+        void BufRemove(CGxBuf* buf);
         void Discard();
         void Invalidate();
 };

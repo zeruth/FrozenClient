@@ -236,7 +236,7 @@ void GxPoolDestroy(CGxPool* pool) {
     g_theGxDevicePtr->PoolDestroy(pool);
 }
 
-void GxBufDestroy(CGxBuf* buf) {
+void GxBufDestroy(CGxBuf*& buf) {
     g_theGxDevicePtr->BufDestroy(buf);
 }
 
