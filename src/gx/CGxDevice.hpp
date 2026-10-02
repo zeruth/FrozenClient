@@ -32,6 +32,17 @@ struct CGxBufScratch {
     void Unlock();
 };
 
+// A device gamma ramp, three 256-entry channels of 16 bits: D3DGAMMARAMP's layout.
+struct CGxGammaRamp {
+    uint16_t red[256];
+    uint16_t green[256];
+    uint16_t blue[256];
+
+    void Build(float gamma);
+};
+
+typedef void (*GXDEVICECALLBACK)();
+
 struct CGxAppRenderState {
     CGxStateBom m_value;
     uint32_t m_stackDepth;
@@ -184,6 +195,17 @@ class CGxDevice {
         EGxApi m_api = GxApis_Last;
         CGxFormat m_format;
         CGxCaps m_caps;
+        // Reference +0x354: the ramp the device sends. +0x954: the desktop's, read when the device
+        // is created and restored when DesktopGamma is set.
+        CGxGammaRamp m_gammaRamp;
+        CGxGammaRamp m_desktopGammaRamp;
+        // Reference +0x184, +0x194, +0x1a4: callbacks the device runs after a reset restores it
+        // (ISceneBegin), after the textures a reset destroys are released (IReleaseD3dTextures),
+        // and a third set whose trigger is not identified yet. WowClientInit registers the
+        // portrait-button refresh in the first two.
+        TSGrowableArray<GXDEVICECALLBACK> m_restoredCallbacks;
+        TSGrowableArray<GXDEVICECALLBACK> m_texturesLostCallbacks;
+        TSGrowableArray<GXDEVICECALLBACK> m_callbacks2;
         TSHashTable<CGxShader, HASHKEY_STRI> m_shaderList[GxShTargets_Last];
         int32_t (*m_windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam) = nullptr;
         int32_t m_context = 0;
@@ -267,6 +289,8 @@ class CGxDevice {
         virtual void IRsSendToHw(EGxRenderState) = 0;
         virtual void ICursorCreate(const CGxFormat& format);
         virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat&);
+        virtual int32_t DeviceCreate(void* window, const CGxFormat& format);
+        virtual void DeviceDestroy();
         virtual int32_t DeviceSetFormat(const CGxFormat&);
         virtual void* DeviceWindow() = 0;
         virtual void DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2) = 0;
@@ -296,6 +320,20 @@ class CGxDevice {
         // material destructors reach it: they walk their permutation array and hand over each
         // slot's ADDRESS so it comes back cleared.
         virtual void ShaderDestroy(CGxShader** shader);
+        virtual void ShaderReload(CGxShader* shader, const char* path, const char* name) {};
+        virtual void DeviceSetGammaRamp(const CGxGammaRamp& ramp);
+        virtual void DeviceSetGamma(float gamma);
+        virtual void DeviceOverride(int32_t which, uint32_t value);
+        virtual void ICallbacksRestored();
+        virtual void ICallbacksTexturesLost();
+        virtual void ICallbacks2();
+        virtual void CallbackAddRestored(GXDEVICECALLBACK callback);
+        virtual void CallbackRemoveRestored(GXDEVICECALLBACK callback);
+        virtual void CallbackAddTexturesLost(GXDEVICECALLBACK callback);
+        virtual void CallbackRemoveTexturesLost(GXDEVICECALLBACK callback);
+        virtual void CallbackAdd2(GXDEVICECALLBACK callback);
+        virtual void CallbackRemove2(GXDEVICECALLBACK callback);
+        void DeviceDesktopGammaRamp(CGxGammaRamp& ramp);
         virtual void ShaderConstantsSet(EGxShTarget, uint32_t, const float*, uint32_t);
         virtual void IShaderCreate(CGxShader*) = 0;
         virtual int32_t StereoEnabled(void) = 0;

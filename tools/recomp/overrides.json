@@ -2046,8 +2046,9 @@
     "note": "Identified 2026-10-01: the no-argument C44Matrix::Inverse, `return Inverse(Determinant())` -- this-call, one hidden return pointer (the `retl $0x4`), calling 004c1930 (Determinant) and 004c2f90 (Inverse(float)). Emitted out of line next to its first user, the D3D texgen builder ISetTexGen. It replaces the 2026-09-23 rejection of the order matcher's IStateSyncIndexPtr proposal, which was right about what this is not."
   },
   "006a3a60": {
-    "status": "unlinked",
-    "note": "the order matcher proposed CGxDeviceD3d::IShaderBindPixel for this on 2026-09-23. It makes six virtual calls into the device, one of them through vtable offset 0x114 = index 69 = SetSamplerState, and then calls CGxDevice::IRsForceUpdate. That is a sampler or texture bind, not a pixel-shader bind. Part of the same rejected window as 006a43a0."
+    "frozen": "CGxDeviceD3d::IStateSetD3dDefaults",
+    "status": "ported",
+    "note": "Identified 2026-10-02 from the body: the D3D defaults (ZENABLE, LOCALVIEWER, ALPHAFUNC, FOGVERTEXMODE, FOGDENSITY, ADDRESSW per sampler), IRsForceUpdate and IRsSync, the stream caches reset, the default surfaces fetched, the lights invalidated, the frame query created, then ISceneBegin. The six virtual calls the 2026-09-23 rejection counted are the SetRenderState and SetSamplerState calls; that rejection was right that it is not IShaderBindPixel."
   },
   "0076e5d0": {
     "status": "unlinked",
@@ -3630,5 +3631,13 @@
   "00682fa0": {
     "status": "unlinked",
     "note": "the order matcher proposed `CGxDevice::CGxDevice` for this on 2026-10-02; it is not that. It is the immediate-mode texcoord setter (vtable slot 46): stores a C2Vector at device +0x50 + 8n and raises bit 2<<n of the prim dirty mask. Frozen has no immediate-mode prim API yet."
+  },
+  "006a3720": {
+    "status": "unlinked",
+    "note": "the order matcher proposed `CGxDeviceD3d::IStateSetD3dDefaults` for this on 2026-10-02; it is not that. It compares two vertex-element arrays (a count, then 8-byte D3DVERTEXELEMENT9 entries byte for byte) -- the comparator of a vertex-declaration cache frozen does not have yet."
+  },
+  "004b9990": {
+    "status": "unlinked",
+    "note": "the call-graph matcher proposed `CallbackRemove` (a frozen-only helper since inlined) on 2026-10-02; it is a TSGrowableArray reallocation the callback removals share. Squall template."
   }
 }

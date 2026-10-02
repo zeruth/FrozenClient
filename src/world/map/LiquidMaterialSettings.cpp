@@ -1406,11 +1406,15 @@ int32_t s_procWaterRefs = 0;
 // Hand every slot of a permutation array back to the device, which nulls each as it goes.
 void ReleasePair(CGxShader** vertex, int32_t vertexCount, CGxShader** pixel, int32_t pixelCount) {
     for (int32_t i = 0; i < vertexCount; i++) {
-        g_theGxDevicePtr->ShaderDestroy(&vertex[i]);
+        if (vertex[i]) {
+            g_theGxDevicePtr->ShaderDestroy(&vertex[i]);
+        }
     }
 
     for (int32_t i = 0; i < pixelCount; i++) {
-        g_theGxDevicePtr->ShaderDestroy(&pixel[i]);
+        if (pixel[i]) {
+            g_theGxDevicePtr->ShaderDestroy(&pixel[i]);
+        }
     }
 }
 

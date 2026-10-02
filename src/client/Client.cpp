@@ -86,13 +86,39 @@ static CVar* s_textureCacheSizeCvar;
 static CVar* s_textureFilteringModeCvar;
 static CVar* s_uiFasterCvar;
 
+// ref: FUN_00401a80
+// DesktopGamma on hands the device the desktop's own ramp; off, it goes back to the Gamma value.
 bool DesktopGammaCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    if (SStrToInt(value) == 0) {
+        float gamma = s_gammaCvar ? s_gammaCvar->m_floatValue : 1.0f;
+
+        if (gamma < 0.001f) {
+            gamma = 1.0f;
+        }
+
+        g_theGxDevicePtr->DeviceSetGamma(gamma);
+        return true;
+    }
+
+    CGxGammaRamp ramp;
+    g_theGxDevicePtr->DeviceDesktopGammaRamp(ramp);
+    g_theGxDevicePtr->DeviceSetGammaRamp(ramp);
     return true;
 }
 
+// ref: FUN_00401a30
+// Applied only while DesktopGamma is off.
 bool GammaCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
-    // TODO
+    float gamma = SStrToFloat(value);
+
+    if (gamma < 0.001f) {
+        gamma = 1.0f;
+    }
+
+    if (s_desktopGammaCvar && s_desktopGammaCvar->m_intValue == 0) {
+        g_theGxDevicePtr->DeviceSetGamma(gamma);
+    }
+
     return true;
 }
 

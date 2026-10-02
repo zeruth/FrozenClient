@@ -1,4 +1,5 @@
 #include "gx/CGxDevice.hpp"
+#include <cmath>
 #include <common/Time.hpp>
 #include "gx/CGxMonitorMode.hpp"
 #include "gx/Gx.hpp"
@@ -333,6 +334,7 @@ int32_t CGxDevice::MacAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monit
 #endif
 
 #if defined(WHOA_SYSTEM_WIN)
+// ref: FUN_00689ef0
 CGxDevice* CGxDevice::NewD3d() {
     auto m = SMemAlloc(sizeof(CGxDeviceD3d), __FILE__, __LINE__, 0x0);
     return new (m) CGxDeviceD3d();
@@ -522,6 +524,128 @@ CGxDevice::CGxDevice() {
     this->m_hwMasterEnables = 511;
 
     this->ShaderConstantsClear();
+
+    this->m_gammaRamp.Build(1.0f);
+    this->m_desktopGammaRamp.Build(1.0f);
+}
+
+// ref: FUN_00684070
+// Truncated, as the reference's fistp under a chop control word is.
+void CGxGammaRamp::Build(float gamma) {
+    for (uint32_t i = 0; i < 256; i++) {
+        auto value = static_cast<uint16_t>(static_cast<int32_t>(powf(static_cast<float>(i) * (1.0f / 255.0f), gamma) * 65535.0f));
+        this->red[i] = value;
+        this->green[i] = value;
+        this->blue[i] = value;
+    }
+}
+
+// ref: FUN_00684170
+void CGxDevice::DeviceSetGamma(float gamma) {
+    this->m_gammaRamp.Build(gamma);
+}
+
+// ref: FUN_00684190
+void CGxDevice::DeviceSetGammaRamp(const CGxGammaRamp& ramp) {
+    if (&this->m_gammaRamp != &ramp) {
+        this->m_gammaRamp = ramp;
+    }
+}
+
+// ref: FUN_006841b0
+void CGxDevice::DeviceDesktopGammaRamp(CGxGammaRamp& ramp) {
+    if (&ramp != &this->m_desktopGammaRamp) {
+        ramp = this->m_desktopGammaRamp;
+    }
+}
+
+// ref: FUN_00684fe0
+// Override 8 is the largest point size, which also decides whether point sprites and point
+// scaling are on.
+void CGxDevice::DeviceOverride(int32_t which, uint32_t value) {
+    CGxDevice::Log("CGxDevice::DeviceOverride(): %d set to %d", which, value);
+
+    if (which == 8) {
+        this->m_caps.m_pointSprites = value > 1;
+        this->m_caps.m_pointScale = value > 1;
+        this->m_caps.m_maxPointSize = static_cast<float>(value);
+    }
+}
+
+// ref: FUN_006843b0
+void CGxDevice::ICallbacksRestored() {
+    for (uint32_t i = 0; i < this->m_restoredCallbacks.Count(); i++) {
+        this->m_restoredCallbacks[i]();
+    }
+}
+
+// ref: FUN_006843e0
+void CGxDevice::ICallbacksTexturesLost() {
+    for (uint32_t i = 0; i < this->m_texturesLostCallbacks.Count(); i++) {
+        this->m_texturesLostCallbacks[i]();
+    }
+}
+
+// ref: FUN_00684410
+void CGxDevice::ICallbacks2() {
+    for (uint32_t i = 0; i < this->m_callbacks2.Count(); i++) {
+        this->m_callbacks2[i]();
+    }
+}
+
+
+// ref: FUN_006853b0
+void CGxDevice::CallbackAddRestored(GXDEVICECALLBACK callback) {
+    *this->m_restoredCallbacks.New() = callback;
+}
+
+// ref: FUN_006853d0
+void CGxDevice::CallbackRemoveRestored(GXDEVICECALLBACK callback) {
+    uint32_t count = this->m_restoredCallbacks.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (this->m_restoredCallbacks[i] == callback) {
+            this->m_restoredCallbacks[i] = this->m_restoredCallbacks[count - 1];
+            this->m_restoredCallbacks.SetCount(count - 1);
+            return;
+        }
+    }
+}
+
+// ref: FUN_00685460
+void CGxDevice::CallbackAddTexturesLost(GXDEVICECALLBACK callback) {
+    *this->m_texturesLostCallbacks.New() = callback;
+}
+
+// ref: FUN_00685480
+void CGxDevice::CallbackRemoveTexturesLost(GXDEVICECALLBACK callback) {
+    uint32_t count = this->m_texturesLostCallbacks.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (this->m_texturesLostCallbacks[i] == callback) {
+            this->m_texturesLostCallbacks[i] = this->m_texturesLostCallbacks[count - 1];
+            this->m_texturesLostCallbacks.SetCount(count - 1);
+            return;
+        }
+    }
+}
+
+// ref: FUN_00685510
+void CGxDevice::CallbackAdd2(GXDEVICECALLBACK callback) {
+    *this->m_callbacks2.New() = callback;
+}
+
+// ref: FUN_00685530
+void CGxDevice::CallbackRemove2(GXDEVICECALLBACK callback) {
+    uint32_t count = this->m_callbacks2.Count();
+
+    for (uint32_t i = 0; i < count; i++) {
+        if (this->m_callbacks2[i] == callback) {
+            this->m_callbacks2[i] = this->m_callbacks2[count - 1];
+            this->m_callbacks2.SetCount(count - 1);
+            return;
+        }
+    }
 }
 
 // ref: FUN_00687660
@@ -711,6 +835,19 @@ void CGxDevice::DeviceSetCurWindow(const CRect& rect) {
 void CGxDevice::DeviceSetDefWindow(CRect const& rect) {
     this->m_defWindowRect = rect;
     this->DeviceSetCurWindow(rect);
+}
+
+// ref: FUN_00682cd0
+// Creating into a window someone else owns: the device only records the format.
+int32_t CGxDevice::DeviceCreate(void* window, const CGxFormat& format) {
+    this->m_format = format;
+
+    return 1;
+}
+
+// ref: FUN_00682cf0
+void CGxDevice::DeviceDestroy() {
+    this->m_windowProc = nullptr;
 }
 
 // ref: FUN_00682d80
@@ -1685,28 +1822,20 @@ void CGxDevice::ShaderConstantsUnlock(EGxShTarget target, uint32_t index, uint32
 // made the shader or found it already in the list, so a matching drop has to reach zero before the
 // entry goes. The slot is cleared either way -- the caller has given up its reference, and leaving
 // a pointer behind that the next load would skip over is how a freed shader gets bound.
+// ref: FUN_00687820
+// Drops one reference; the last one unlinks the shader from its target's table and frees it.
+// Callers check for null, as the reference's do.
 void CGxDevice::ShaderDestroy(CGxShader** shader) {
-    if (!shader || !*shader) {
-        return;
-    }
+    auto s = *shader;
 
-    CGxShader* s = *shader;
-
-    *shader = nullptr;
-
-    if (s->refCount) {
-        s->refCount--;
-    }
-
-    if (s->refCount) {
-        return;
-    }
-
-    if (s->target >= 0 && s->target < GxShTargets_Last) {
+    if (--s->refCount == 0) {
         this->m_shaderList[s->target].Delete(s);
     }
+
+    *shader = nullptr;
 }
 
+// ref: FUN_006897c0
 void CGxDevice::ShaderCreate(CGxShader* shaders[], EGxShTarget target, const char* a4, const char* a5, int32_t permutations) {
     auto shaderList = &this->m_shaderList[target];
 
@@ -1855,8 +1984,8 @@ int32_t CGxDevice::WindowVisibleFlag(int32_t value) {
     return this->m_windowVisible;
 }
 
+// Empty in the release build: every caller reaches the shared three-byte return at 0x00653a10.
 void CGxDevice::ValidateDraw(CGxBatch* batch, int32_t count) {
-    // TODO
 }
 
 void CGxDevice::XformPop(EGxXform xf) {

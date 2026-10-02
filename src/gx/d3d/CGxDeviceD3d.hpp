@@ -311,6 +311,8 @@ class CGxDeviceD3d : public CGxDevice {
     virtual int32_t IScreenShot(const char* path);
     virtual void IRsSendToHw(EGxRenderState which);
     virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat& format);
+    virtual int32_t DeviceCreate(void* window, const CGxFormat& format);
+    virtual void DeviceDestroy();
     virtual int32_t DeviceSetFormat(const CGxFormat& format);
     virtual void* DeviceWindow();
     virtual void DeviceWM(EGxWM wm, uintptr_t param1, uintptr_t param2);
@@ -319,6 +321,12 @@ class CGxDeviceD3d : public CGxDevice {
     virtual void ScenePresent();
     virtual void SceneClear(uint32_t mask, CImVector color);
     virtual void XformSetProjection(const C44Matrix& matrix);
+    virtual void XformSetView(const C44Matrix& matrix);
+    virtual void ShaderDestroy(CGxShader** shader);
+    virtual void ShaderReload(CGxShader* shader, const char* path, const char* name);
+    virtual void DeviceSetGammaRamp(const CGxGammaRamp& ramp);
+    virtual void DeviceSetGamma(float gamma);
+    virtual void DeviceOverride(int32_t which, uint32_t value);
     virtual void Draw(CGxBatch* batch, int32_t indexed);
     virtual void PoolSizeSet(CGxPool* pool, uint32_t size);
     virtual char* BufLock(CGxBuf* buf);
@@ -341,7 +349,6 @@ class CGxDeviceD3d : public CGxDevice {
     LPDIRECT3DVERTEXDECLARATION9 ICreateD3dVertexDecl(D3DVERTEXELEMENT9 elements[], uint32_t count);
     bool ICreateWindow(CGxFormat& format);
     void ISetPresentParms(D3DPRESENT_PARAMETERS& d3dpp, const CGxFormat& format);
-    void IDestroyD3d();
     void IDestroyD3dDevice();
     void IReleaseD3dPools(int32_t a2);
     void IReleaseD3dTextures(int32_t all);
@@ -374,7 +381,6 @@ class CGxDeviceD3d : public CGxDevice {
     void ITexCreate(CGxTex* texId);
     void TexDestroy(CGxTex* texId) override;
     void ITexUpload(CGxTex* texId);
-    void IXformSetProjection(const C44Matrix& matrix);
     void IXformSetViewport();
 };
 

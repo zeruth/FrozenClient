@@ -1,4 +1,5 @@
 #include "gx/d3d/CGxDeviceD3d.hpp"
+#include <common/Os.hpp>
 #include <common/Time.hpp>
 #include <cstdio>
 #include "gx/Texture.hpp"
@@ -443,10 +444,12 @@ void CGxDeviceD3d::BufData(CGxBuf* buf, const void* data, size_t size, uintptr_t
     this->IBufUnlock(buf);
 }
 
+// ref: FUN_006a5a00
 void CGxDeviceD3d::CapsWindowSize(CRect& dst) {
     dst = this->DeviceCurWindow();
 }
 
+// ref: FUN_006a9920
 void CGxDeviceD3d::CapsWindowSizeInScreenCoords(CRect& dst) {
     if (this->IDevIsWindowed()) {
         auto windowRect = this->DeviceCurWindow();
@@ -479,27 +482,82 @@ int32_t CGxDeviceD3d::CreatePoolAPI(CGxPool* pool) {
     return 1;
 }
 
+// ref: FUN_00690750
+// The desktop's gamma ramp is read before anything else and becomes the starting ramp, so a
+// device that never sets gamma leaves the desktop as it was.
 int32_t CGxDeviceD3d::DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat& format) {
     this->m_ownhwnd = 1;
 
-    // TODO gamma ramp
+    HDC dc = GetDC(nullptr);
+
+    if (GetDeviceGammaRamp(dc, &this->m_desktopGammaRamp) && &this->m_gammaRamp != &this->m_desktopGammaRamp) {
+        this->m_gammaRamp = this->m_desktopGammaRamp;
+    }
+
+    ReleaseDC(nullptr, dc);
 
     this->m_hwndClass = WindowClassCreate();
 
     if (this->m_hwndClass) {
         if (this->ICreateD3d() && this->CGxDevice::DeviceCreate(windowProc, format)) {
             return 1;
-        } else {
-            // TODO
-            // this->DeviceDestroy();
-            return 0;
         }
+
+        this->DeviceDestroy();
+        return 0;
     }
 
-    // TODO CGxDevice::Log("CGxDeviceD3d::DeviceCreate(): WindowClassCreate() failed: %s", OsGetLastErrorStr());
-    // TODO this->DeviceDestroy();
+    auto error = OsGetLastErrorStr();
+    CGxDevice::Log("CGxDeviceD3d::DeviceCreate(): WindowClassCreate() failed: %s", error);
+    OsFreeLastErrorStr(error);
+
+    this->DeviceDestroy();
 
     return 0;
+}
+
+// ref: FUN_00690830
+// Creating into a window the caller owns: no window class, no window of our own.
+int32_t CGxDeviceD3d::DeviceCreate(void* window, const CGxFormat& format) {
+    this->m_ownhwnd = 0;
+
+    CGxDevice::DeviceCreate(window, format);
+    this->m_hwnd = static_cast<HWND>(window);
+
+    if (this->ICreateD3d() && this->ICreateD3dDevice(format) && CGxDevice::DeviceCreate(window, format)) {
+        return 1;
+    }
+
+    this->DeviceDestroy();
+
+    return 0;
+}
+
+// ref: FUN_006905f0
+void CGxDeviceD3d::DeviceDestroy() {
+    CGxDevice::DeviceDestroy();
+
+    if (this->m_hwnd && this->m_ownhwnd) {
+        DestroyWindow(this->m_hwnd);
+        this->m_hwnd = nullptr;
+    }
+
+    if (this->m_hwndClass) {
+        UnregisterClassA(reinterpret_cast<LPCSTR>(static_cast<uintptr_t>(this->m_hwndClass)), GetModuleHandleA(nullptr));
+        this->m_hwndClass = 0;
+    }
+
+    this->IDestroyD3dDevice();
+
+    if (this->m_d3d) {
+        this->m_d3d->Release();
+        this->m_d3d = nullptr;
+    }
+
+    if (this->m_d3dLib) {
+        FreeLibrary(this->m_d3dLib);
+        this->m_d3dLib = nullptr;
+    }
 }
 
 // ref: FUN_006904d0
@@ -686,13 +744,14 @@ int32_t g_d3dZFunc = -1;
 int32_t g_d3dZWrite = -1;
 int32_t g_d3dHasDepthSurface = -1;
 
+// ref: FUN_006a3620
 void CGxDeviceD3d::Draw(CGxBatch* batch, int32_t indexed) {
-
     if (!this->m_context || this->intF5C) {
         return;
     }
 
     this->IStateSync();
+    this->ValidateDraw(batch, indexed);
 
     int32_t baseIndex = 0;
     if (!this->m_caps.int10) {
@@ -965,7 +1024,17 @@ int32_t CGxDeviceD3d::ICreateD3d() {
         }
     }
 
-    this->IDestroyD3d();
+    this->IDestroyD3dDevice();
+
+    if (this->m_d3d) {
+        this->m_d3d->Release();
+        this->m_d3d = nullptr;
+    }
+
+    if (this->m_d3dLib) {
+        FreeLibrary(this->m_d3dLib);
+        this->m_d3dLib = nullptr;
+    }
 
     return 0;
 }
@@ -1252,10 +1321,6 @@ bool CGxDeviceD3d::ICreateWindow(CGxFormat& format) {
     return this->m_hwnd != nullptr;
 }
 
-void CGxDeviceD3d::IDestroyD3d() {
-    this->IDestroyD3dDevice();
-    CGxDeviceD3d::IUnloadD3dLib(this->m_d3dLib, this->m_d3d);
-}
 
 // ref: FUN_006903b0
 // Everything the device created is released before the device itself, so DeviceSetFormat can
@@ -1358,10 +1423,8 @@ void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
 // This replaces a tracker frozen kept of its own for the same purpose (the 2026-09 resize fix:
 // a render target that outlived the reset made Reset fail with D3DERR_INVALIDCALL).
 //
-// Two divergences, both recorded here. The reference stores the device field at +0x3b58 into the
-// texture where frozen stores null; frozen does not model that field, and the texture is
-// re-created before anything reads it either way. And it ends by running the device's callback
-// array (vtable slot 6, gated on +0x3968), which frozen does not have.
+// One divergence, recorded here: the reference stores the device field at +0x3b58 (the 8x8
+// placeholder texture) into the texture where frozen stores null until that texture exists.
 void CGxDeviceD3d::IReleaseD3dTextures(int32_t all) {
     static CiRect s_emptyRect = { 0, 0, 0, 0 };
 
@@ -1390,6 +1453,10 @@ void CGxDeviceD3d::IReleaseD3dTextures(int32_t all) {
             texId->m_userFunc(static_cast<EGxTexCommand>(3), texId->m_width, texId->m_height, 0, 0,
                 texId->m_userArg, texelStrideInBytes, texels);
         }
+    }
+
+    if (this->m_hwnd && this->m_d3dDevice) {
+        this->ICallbacksTexturesLost();
     }
 }
 
@@ -2077,6 +2144,7 @@ void CGxDeviceD3d::ISceneBegin() {
                 this->IWindowActiveSet(1);
                 this->m_context = 1;
                 this->intF5C = 0;
+                this->ICallbacksRestored();
             }
         }
 
@@ -2493,6 +2561,7 @@ void CGxDeviceD3d::IShaderConstantsFlush() {
     psConst->unk1 = 0;
 }
 
+// ref: FUN_006a5e10
 void CGxDeviceD3d::IShaderCreate(CGxShader* shader) {
     if (shader->target == GxSh_Vertex) {
         this->IShaderCreateVertex(shader);
@@ -2501,6 +2570,7 @@ void CGxDeviceD3d::IShaderCreate(CGxShader* shader) {
     }
 }
 
+// ref: FUN_006aa070
 void CGxDeviceD3d::IShaderCreatePixel(CGxShader* shader) {
     shader->valid = 0;
 
@@ -3636,41 +3706,6 @@ UNLOCK:
     }
 }
 
-void CGxDeviceD3d::IXformSetProjection(const C44Matrix& matrix) {
-    DirectX::XMMATRIX projNative;
-    memcpy(&projNative, &matrix, sizeof(projNative));
-
-    if (NotEqual(projNative._34, 1.0f, WHOA_EPSILON_1) && NotEqual(projNative._34, 0.0f, WHOA_EPSILON_1)) {
-        projNative /= projNative._34;
-    }
-
-    if (projNative._44 == 0.0f) {
-        auto v5 = -(projNative._43 / (projNative._33 + 1.0f));
-        auto v6 = -(projNative._43 / (projNative._33 - 1.0f));
-        projNative._33 = v6 / (v6 - v5);
-        projNative._43 = v6 * v5 / (v5 - v6);
-    } else {
-        auto v8 = 1.0f / projNative._33;
-        auto v9 = (-1.0f - projNative._43) * v8;
-        auto v10 = v8 * (1.0f - projNative._43);
-        projNative._33 = 1.0f / (v10 - v9);
-        projNative._43 = v9 / (v9 - v10);
-    }
-
-    if (!this->MasterEnable(GxMasterEnable_NormalProjection) && projNative._44 != 1.0f) {
-        DirectX::XMMATRIX shrink = {
-            0.2f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.2f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.2f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        };
-
-        projNative *= shrink;
-    }
-
-    this->m_xforms[GxXform_Projection].m_dirty = 1;
-    memcpy(&this->m_projNative, &projNative, sizeof(this->m_projNative));
-}
 
 // The last call IStateSync makes that was not linked, found by running --diff on it: every other
 // callee matched in order and this one showed as `- 006a99e0`.
@@ -3721,37 +3756,22 @@ void CGxDeviceD3d::IXformSetViewport() {
     this->intF6C = 0;
 }
 
+// ref: FUN_0069ff80
+// Releases the pool's buffer and builds one at the new size. Frozen had its own version with a
+// size guard and an inline release, written when the empty stub behind it caused the null-lock
+// crashes; the null case is the scratch fallback's job now (IBufLock).
 void CGxDeviceD3d::PoolSizeSet(CGxPool* pool, uint32_t size) {
-    // This was an empty stub, and that single omission is the root of every null-buffer crash in
-    // this client. BufStream calls it when a draw needs more room than the stream pool has; with
-    // the call doing nothing, the pool kept its old size, IBufLock then asked Direct3D to lock a
-    // range larger than the buffer actually is, the lock failed, and the null came back to callers
-    // that did not check it. It surfaced as writes to address 0 and to 0x20 in four different
-    // places -- the vertex submit, the buffer upload, the interface batch and the font batch --
-    // which all looked like separate bugs.
-    if (!pool || static_cast<int32_t>(size) <= pool->m_size) {
-        return;
-    }
-
-    // Release the old buffer and build one at the new size. Anything already written into it is
-    // discarded, which is correct for a stream pool: its contents only ever live for the draw
-    // being assembled, and the caller re-fills it immediately after this returns.
-    if (pool->m_apiSpecific) {
-        if (pool->m_target == GxPoolTarget_Vertex) {
-            static_cast<LPDIRECT3DVERTEXBUFFER9>(pool->m_apiSpecific)->Release();
-        } else if (pool->m_target == GxPoolTarget_Index) {
-            static_cast<LPDIRECT3DINDEXBUFFER9>(pool->m_apiSpecific)->Release();
-        }
-
-        pool->m_apiSpecific = nullptr;
-    }
-
+    this->IPoolRelease(pool);
     pool->m_size = size;
-    pool->unk1C = 0;
 
-    this->CreatePoolAPI(pool);
+    if (pool->m_target == GxPoolTarget_Vertex) {
+        pool->m_apiSpecific = this->ICreateD3dVB(pool->m_usage, size);
+    } else if (pool->m_target == GxPoolTarget_Index) {
+        pool->m_apiSpecific = this->ICreateD3dIB(pool->m_usage, size);
+    }
 }
 
+// ref: FUN_006a74b0
 void CGxDeviceD3d::SceneClear(uint32_t mask, CImVector color) {
     CGxDevice::SceneClear(mask, color);
 
@@ -3771,7 +3791,7 @@ void CGxDeviceD3d::SceneClear(uint32_t mask, CImVector color) {
         this->IXformSetViewport();
     }
 
-    D3DCOLOR d3dColor = color.b | (color.g | (color.r << 8) << 8);
+    D3DCOLOR d3dColor = ((color.a << 8 | color.r) << 8 | color.g) << 8 | color.b;
 
     this->m_d3dDevice->Clear(0, nullptr, flags, d3dColor, 1.0f, 0);
 }
@@ -3821,6 +3841,7 @@ void CGxDeviceD3d::ScenePresent() {
     this->ISceneBegin();
 }
 
+// ref: FUN_006aa130
 void CGxDeviceD3d::ShaderCreate(CGxShader* shaders[], EGxShTarget target, const char* a4, const char* a5, int32_t permutations) {
     CGxDevice::ShaderCreate(shaders, target, a4, a5, permutations);
 
@@ -3834,7 +3855,122 @@ int32_t CGxDeviceD3d::StereoEnabled() {
     return 0;
 }
 
+// ref: FUN_006a9b40
+// Stores the application projection, then derives the native one: normalized by _34, the depth
+// rows remapped from [-1, 1] to D3D's [0, 1], and scaled by 0.2 unless NormalProjection is on.
 void CGxDeviceD3d::XformSetProjection(const C44Matrix& matrix) {
-    CGxDevice::XformSetProjection(matrix);
-    this->IXformSetProjection(matrix);
+    this->m_projection = matrix;
+    DirectX::XMMATRIX projNative;
+    memcpy(&projNative, &matrix, sizeof(projNative));
+
+    if (NotEqual(projNative._34, 1.0f, WHOA_EPSILON_1) && NotEqual(projNative._34, 0.0f, WHOA_EPSILON_1)) {
+        projNative /= projNative._34;
+    }
+
+    if (projNative._44 == 0.0f) {
+        auto v5 = -(projNative._43 / (projNative._33 + 1.0f));
+        auto v6 = -(projNative._43 / (projNative._33 - 1.0f));
+        projNative._33 = v6 / (v6 - v5);
+        projNative._43 = v6 * v5 / (v5 - v6);
+    } else {
+        auto v8 = 1.0f / projNative._33;
+        auto v9 = (-1.0f - projNative._43) * v8;
+        auto v10 = v8 * (1.0f - projNative._43);
+        projNative._33 = 1.0f / (v10 - v9);
+        projNative._43 = v9 / (v9 - v10);
+    }
+
+    if (!this->MasterEnable(GxMasterEnable_NormalProjection) && projNative._44 != 1.0f) {
+        DirectX::XMMATRIX shrink = {
+            0.2f, 0.0f, 0.0f, 0.0f,
+            0.0f, 0.2f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.2f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+
+        projNative *= shrink;
+    }
+
+    this->m_xforms[GxXform_Projection].m_dirty = 1;
+    memcpy(&this->m_projNative, &projNative, sizeof(this->m_projNative));
+}
+
+// ref: FUN_006a9e00
+void CGxDeviceD3d::XformSetView(const C44Matrix& matrix) {
+    CGxDevice::XformSetView(matrix);
+}
+
+// ref: FUN_006aa190
+// The last reference to a shader releases its D3D object before the device frees the shader.
+// Frozen had no override, so every destroyed shader leaked its D3D object.
+void CGxDeviceD3d::ShaderDestroy(CGxShader** shader) {
+    auto s = *shader;
+
+    if ((s->target == GxSh_Vertex || s->target == GxSh_Pixel) && s->refCount == 1) {
+        if (s->apiSpecific) {
+            static_cast<IUnknown*>(s->apiSpecific)->Release();
+            s->apiSpecific = nullptr;
+        }
+
+        s->loaded = 0;
+    }
+
+    CGxDevice::ShaderDestroy(shader);
+}
+
+// ref: FUN_006a5d50
+// Reloads a vertex or pixel shader from its file and re-creates it: the last reference first drops
+// its D3D object.
+void CGxDeviceD3d::ShaderReload(CGxShader* shader, const char* path, const char* name) {
+    if (shader->target != GxSh_Vertex && shader->target != GxSh_Pixel) {
+        return;
+    }
+
+    if (shader->refCount == 1) {
+        if (shader->apiSpecific) {
+            static_cast<IUnknown*>(shader->apiSpecific)->Release();
+            shader->apiSpecific = nullptr;
+        }
+
+        shader->loaded = 0;
+    }
+
+    this->IShaderLoad(&shader, static_cast<EGxShTarget>(shader->target), path, name, 1);
+
+    if (shader->target == GxSh_Vertex) {
+        this->IShaderCreateVertex(shader);
+    } else {
+        this->IShaderCreatePixel(shader);
+    }
+}
+
+// ref: FUN_0069fe80
+// Fullscreen only: D3D9 applies a gamma ramp to a fullscreen swap chain and ignores it windowed.
+void CGxDeviceD3d::DeviceSetGammaRamp(const CGxGammaRamp& ramp) {
+    CGxDevice::DeviceSetGammaRamp(ramp);
+
+    if ((this->m_d3dCaps.Caps2 & D3DCAPS2_FULLSCREENGAMMA) && !this->IDevIsWindowed()) {
+        this->m_d3dDevice->SetGammaRamp(0, 0, reinterpret_cast<const D3DGAMMARAMP*>(&this->m_gammaRamp));
+    }
+}
+
+// ref: FUN_0068e4c0
+void CGxDeviceD3d::DeviceSetGamma(float gamma) {
+    CGxDevice::DeviceSetGamma(gamma);
+
+    if ((this->m_d3dCaps.Caps2 & D3DCAPS2_FULLSCREENGAMMA) && !this->IDevIsWindowed()) {
+        this->m_d3dDevice->SetGammaRamp(0, 0, reinterpret_cast<const D3DGAMMARAMP*>(&this->m_gammaRamp));
+    }
+}
+
+// ref: FUN_0069ff40
+// Override 0 caps the pixel shader target; override 7 sets the non-pow2 restriction.
+void CGxDeviceD3d::DeviceOverride(int32_t which, uint32_t value) {
+    CGxDevice::DeviceOverride(which, value);
+
+    if (which == 0) {
+        this->m_caps.m_shaderTargets[GxSh_Pixel] = value;
+    } else if (which == 7) {
+        this->m_caps.m_texNonPow2Conditional = value != 0;
+    }
 }
