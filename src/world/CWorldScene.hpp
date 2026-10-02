@@ -220,6 +220,10 @@ class CWorldScene {
         // would then take an indoor branch that has no traversal in it. See the note there.
         static CMapObjDef* s_cameraDef;
         static CMapObjDef* s_cameraDefFlagged;
+        // What UpdateCameraDef names the camera's whereabouts: the building's path or the map's
+        // name (DAT_00cd8628), and the group's name or the tile (DAT_00cd8730).
+        static char s_cameraAreaName[0x104];
+        static char s_cameraSubAreaName[0x40];
         // The group indices of each of those two, which is what the portal walks are handed
         // (0x00cdb0d4 and 0x00cdb0e4). Set membership, not sequences -- a group appears once
         // however many times the query reports it.

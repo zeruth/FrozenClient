@@ -85,6 +85,8 @@ int32_t CWorldScene::s_visibleCount8624;
 int32_t CWorldScene::s_frameStamp;
 CMapObjDef* CWorldScene::s_cameraDef;
 CMapObjDef* CWorldScene::s_cameraDefFlagged;
+char CWorldScene::s_cameraAreaName[0x104];
+char CWorldScene::s_cameraSubAreaName[0x40];
 TSGrowableArray<uint32_t> CWorldScene::s_cameraGroupIndices;
 TSGrowableArray<uint32_t> CWorldScene::s_cameraFlaggedGroupIndices;
 float CWorldScene::s_cameraGroundHeight;
@@ -2585,19 +2587,15 @@ void CWorldScene::FillViewWindows(TSGrowableArray<ViewWindow>& views, int32_t po
 // camera to 1760 units below it, which is more than the world is tall, so it always reaches ground
 // or a floor.
 //
-// NOT CALLED YET, and that is deliberate rather than an oversight. CMap::Render picks its traversal
-// on s_cameraDef being null, and the indoor side of that branch has no traversal in it -- so the
-// moment this starts returning a building, interiors would traverse nothing and go black. It lands
-// together with FUN_00794250 and FUN_00799f80, which are what the indoor branch needs.
+// Called from CWorld::Update every frame.
 void CWorldScene::UpdateCameraDef() {
     CWorldScene::s_cameraDef = nullptr;
     CWorldScene::s_cameraDefFlagged = nullptr;
     CWorldScene::s_cameraGroupIndices.SetCount(0);
     CWorldScene::s_cameraFlaggedGroupIndices.SetCount(0);
 
-    // TODO the reference also clears the two display strings it fills below, at 0x00cd8628 (0x104
-    // bytes, the area name) and 0x00cd8730 (0x40 bytes, the subarea). Frozen's UI does not read
-    // them, so neither is carried.
+    CWorldScene::s_cameraAreaName[0] = '\0';
+    CWorldScene::s_cameraSubAreaName[0] = '\0';
 
     if (!(CWorld::s_enables & CWorld::Enables::Enable_100)) {
         return;
@@ -2612,18 +2610,35 @@ void CWorldScene::UpdateCameraDef() {
     CMapObjDef* defs[2] = { nullptr, nullptr };
     uint32_t groups[4] = { 0xffff, 0xffff, 0xffff, 0xffff };
 
-    // TODO FUN_007a39f0 runs first, over the terrain, and its hit is what names the area when the
-    // segment lands outdoors. Not ported, so the outdoor case is silent rather than wrong.
+    // The terrain first: its hit caps how far down a building may be found, so a building under
+    // the ground cannot claim the camera, and it names the area when no building does.
+    float t = 1.0f;
+    CMapChunk* chunk = nullptr;
+    bool terrain = CMap::QuerySegmentTerrain(start, end, &t, 0x100, &chunk);
 
-    if (!QuerySegmentMapObjs(start, end, 1.0f, defs, groups)) {
+    if (!QuerySegmentMapObjs(start, end, t, defs, groups)) {
+        if (terrain) {
+            SStrCopy(CWorldScene::s_cameraAreaName, CMap::s_mapName, sizeof(CWorldScene::s_cameraAreaName));
+            SStrPrintf(CWorldScene::s_cameraSubAreaName, sizeof(CWorldScene::s_cameraSubAreaName), "%i, %i",
+                       chunk->m_indexY / 16, chunk->m_indexX / 16);
+        }
+
         return;
     }
 
     CWorldScene::s_cameraDef = defs[0];
 
     if (defs[0]) {
-        // TODO the reference copies the root's own name and the group's (CMapObj::GroupName, which
-        // is ported) into the two display strings here.
+        // The root's own path and the group's name, for the area display.
+        const char* groupName = defs[0]->m_mapObj ? defs[0]->m_mapObj->GroupName(groups[0]) : nullptr;
+
+        if (defs[0]->m_mapObj) {
+            SStrCopy(CWorldScene::s_cameraAreaName, defs[0]->m_mapObj->m_name, sizeof(CWorldScene::s_cameraAreaName));
+        }
+
+        if (groupName) {
+            SStrCopy(CWorldScene::s_cameraSubAreaName, groupName, sizeof(CWorldScene::s_cameraSubAreaName));
+        }
 
         CWorldScene::AddGroupIndexUnique(CWorldScene::s_cameraGroupIndices,
                                         groups[0]);
