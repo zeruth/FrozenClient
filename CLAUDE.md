@@ -205,8 +205,15 @@ loop.
 
 ### Reference binary (Ghidra)
 
-Project `RunicWorld` at `C:\Users\tyler\tools\ghidra-projects`, program **RunicWorldGame.exe**
-(Windows 3.3.5a 12340). **The Mac i386 build in that project has NO symbols** — do not plan around
+Project `RunicWorld` at `C:\Users\tyler\tools\ghidra-projects`, program **WoW.exe** -- the vanilla
+Windows 3.3.5a 12340 client imported from `.reference` (MD5 45892bdedd0ad70aed4ccd22d9fb5984).
+**Never use the `RunicWorldGame.exe` program in the same project as the reference.** It is a
+branded patch of the same binary: identical layout and addresses, but its strings say "RunicWorld"
+and four code sites are patched (0x4da7e5 and 0x52abd9 skip the GlueXML/FrameXML signature checks,
+0x4e0481 makes every character name pass validation, 0x7f5f9f forces a branch). Until 2026-10-02
+the tooling read that program, and a port of CCharacterCreation::CreateCharacter copied its
+name-check bypass. `recomp.GHIDRA_PROGRAM` names the program every exporter and helper uses.
+**The Mac i386 build in that project has NO symbols** — do not plan around
 it. Helpers in `C:\Users\tyler\tools`: `decomp.sh <out> <hexaddr>...`, `callers.sh`, `strrefs.sh`;
 scripts in `ghidra-scripts`: CallTree, CallerTree, DataRefs, FindStringRefs2, ListSymbols,
 VtableFromRtti. Each headless run takes 1-3 minutes, so batch addresses.

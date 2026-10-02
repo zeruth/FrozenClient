@@ -6,7 +6,7 @@
 > "Settled" in CLAUDE.md; the per-item task list does not. Do not plan from it: the open depth
 > work is tracked in `docs/rendering-roadmap.md` (phase 2, the terrain and liquid passes).
 
-Program: **RunicWorldGame.exe** (Win 3.3.5a build 12340, stripped, image base 0x400000) in the
+Program: **WoW.exe** (vanilla Win 3.3.5a build 12340, stripped, image base 0x400000) in the
 Ghidra project `C:\Users\tyler\tools\ghidra-projects\RunicWorld`. Raw dumps captured for this doc:
 `win-strrefs-depth.txt`, `win-decomp-depth1.txt`, `win-decomp-depth2.txt`, `win-decomp-depth3.txt`,
 `win-decomp-depthbias.txt`, `win-callers-rsdirty.txt`. Existing context reused rather than re-run:

@@ -59284,10 +59284,10 @@
 "src/glue/ccharactercreation.cpp"
 ],
 "callseq": [
+"ValidateName",
 "ClientServices::GetErrorToken",
 "FrameScript_GetText",
 "FrameScript_SignalEvent",
-"ValidateName",
 "CHARACTER_CREATE_INFO::CHARACTER_CREATE_INFO",
 "SStrCopy",
 "CGlueMgr::CreateCharacter"
@@ -59302,9 +59302,9 @@
 "3",
 "89"
 ],
-"branches": 1,
+"branches": 2,
 "stub": false,
-"lines": 31,
+"lines": 36,
 "refs": [],
 "line": 63
 },
@@ -59343,7 +59343,7 @@
 "stub": false,
 "lines": 57,
 "refs": [],
-"line": 95
+"line": 100
 },
 "CCharacterCreation::CycleCharCustomization": {
 "files": [
@@ -59374,7 +59374,7 @@
 "stub": false,
 "lines": 61,
 "refs": [],
-"line": 153
+"line": 158
 },
 "CCharacterCreation::Dress": {
 "files": [
@@ -59404,7 +59404,7 @@
 "stub": false,
 "lines": 90,
 "refs": [],
-"line": 215
+"line": 220
 },
 "CCharacterCreation::GetRandomClassID": {
 "files": [
@@ -59426,7 +59426,7 @@
 "stub": false,
 "lines": 24,
 "refs": [],
-"line": 306
+"line": 311
 },
 "CCharacterCreation::GetRandomRaceAndSex": {
 "files": [
@@ -59448,7 +59448,7 @@
 "stub": false,
 "lines": 14,
 "refs": [],
-"line": 331
+"line": 336
 },
 "CCharacterCreation::GetSelectedRaceID": {
 "files": [
@@ -59463,7 +59463,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 346
+"line": 351
 },
 "CCharacterCreation::Initialize": {
 "files": [
@@ -59496,7 +59496,7 @@
 "stub": false,
 "lines": 48,
 "refs": [],
-"line": 350
+"line": 355
 },
 "CCharacterCreation::IsClassValid": {
 "files": [
@@ -59514,7 +59514,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 399
+"line": 404
 },
 "CCharacterCreation::IsRaceClassValid": {
 "files": [
@@ -59532,7 +59532,7 @@
 "stub": false,
 "lines": 11,
 "refs": [],
-"line": 411
+"line": 416
 },
 "CCharacterCreation::RandomizeCharCustomization": {
 "files": [
@@ -59554,7 +59554,7 @@
 "stub": false,
 "lines": 15,
 "refs": [],
-"line": 423
+"line": 428
 },
 "CCharacterCreation::ResetCharCustomizeInfo": {
 "files": [
@@ -59582,7 +59582,7 @@
 "stub": false,
 "lines": 37,
 "refs": [],
-"line": 439
+"line": 444
 },
 "CCharacterCreation::SetCharCustomizeModel": {
 "files": [
@@ -59603,7 +59603,7 @@
 "stub": false,
 "lines": 29,
 "refs": [],
-"line": 477
+"line": 482
 },
 "CCharacterCreation::SetFacing": {
 "files": [
@@ -59622,7 +59622,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 507
+"line": 512
 },
 "CCharacterCreation::SavePreferences": {
 "files": [
@@ -59641,7 +59641,7 @@
 "stub": false,
 "lines": 13,
 "refs": [],
-"line": 518
+"line": 523
 },
 "CCharacterCreation::SetSelectedClass": {
 "files": [
@@ -59661,7 +59661,7 @@
 "stub": false,
 "lines": 25,
 "refs": [],
-"line": 532
+"line": 537
 },
 "CCharacterCreation::SetSelectedRace": {
 "files": [
@@ -59699,7 +59699,7 @@
 "stub": false,
 "lines": 74,
 "refs": [],
-"line": 558
+"line": 563
 },
 "CCharacterCreation::SetSelectedSex": {
 "files": [
@@ -59727,7 +59727,7 @@
 "stub": false,
 "lines": 62,
 "refs": [],
-"line": 633
+"line": 638
 },
 "CCharacterCreation::TrackVariations": {
 "files": [
@@ -59740,7 +59740,7 @@
 "stub": false,
 "lines": 9,
 "refs": [],
-"line": 696
+"line": 701
 },
 "Script_SetCharCustomizeFrame": {
 "files": [
@@ -122803,7 +122803,7 @@
 "stub": false,
 "lines": 111,
 "refs": [],
-"line": 237
+"line": 238
 },
 "CGGameUI::InitializeGame": {
 "files": [
@@ -122818,7 +122818,7 @@
 "stub": false,
 "lines": 7,
 "refs": [],
-"line": 349
+"line": 350
 },
 "CGGameUI::IsLoggingIn": {
 "files": [
@@ -122831,7 +122831,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 357
+"line": 358
 },
 "CGGameUI::IsInWorld": {
 "files": [
@@ -122844,7 +122844,7 @@
 "stub": false,
 "lines": 3,
 "refs": [],
-"line": 361
+"line": 362
 },
 "CGGameUI::IsRaidMember": {
 "files": [
@@ -122857,7 +122857,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 365
+"line": 366
 },
 "CGGameUI::IsRaidMemberOrPet": {
 "files": [
@@ -122870,7 +122870,7 @@
 "stub": true,
 "lines": 5,
 "refs": [],
-"line": 371
+"line": 372
 },
 "CGGameUI::RegisterFrameFactories": {
 "files": [
@@ -122901,7 +122901,7 @@
 "stub": false,
 "lines": 10,
 "refs": [],
-"line": 377
+"line": 378
 },
 "CGGameUI::RegisterGameCVars": {
 "files": [
@@ -123591,7 +123591,7 @@
 "stub": false,
 "lines": 260,
 "refs": [],
-"line": 388
+"line": 389
 },
 "CGGameUI::DisplayError": {
 "files": [
@@ -170346,7 +170346,7 @@
 "strings": [
 "0",
 "CinematicJoystick",
-"Enable Steelseries RunicWorld        Mouse",
+"Enable Steelseries World of Warcraft Mouse",
 "Joystick",
 "c:\\users\\tyler\\runicworld-client\\src\\ui\\inputcontrol.cpp",
 "enable cinematic joystick control",

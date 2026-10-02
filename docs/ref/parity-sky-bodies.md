@@ -1,6 +1,6 @@
 # Sun / moon discs and the cloud texture — the two sky blockers, solved
 
-Reference program: `RunicWorldGame.exe` (Ghidra project `RunicWorld`, image base 0x400000). This
+Reference program: `WoW.exe`, vanilla 12340 (Ghidra project `RunicWorld`, image base 0x400000). This
 closes the two items listed as **Known blockers** in `CLAUDE.md` and as *uncertain* in
 `docs/ref/parity-sky.md` sections 3 and 5.
 

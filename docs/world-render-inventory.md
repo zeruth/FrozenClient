@@ -53,7 +53,7 @@ the notes where they matter:
 
 ## Scope and sources
 
-Reference binary: **RunicWorldGame.exe** (Windows 3.3.5a build 12340, stripped) in the Ghidra
+Reference binary: **WoW.exe** (vanilla Windows 3.3.5a build 12340, stripped) in the Ghidra
 project `C:\Users\tyler\tools\ghidra-projects\RunicWorld`. All addresses below are from that
 program (image base 0x400000).
 
@@ -172,7 +172,7 @@ else        { barriers (FUN_0077f980); M2 pass 1; weather (FUN_0077f030); liquid
 
 ## Draw order (reference)
 
-Per frame, in call order (RunicWorldGame.exe):
+Per frame, in call order (WoW.exe):
 
 1. `CGWorldFrame::OnFrameRender` FUN_004fb080 -> batch callback FUN_004faf90.
 2. FUN_004fa5f0 -> `CWorld::Update` FUN_007831a0:

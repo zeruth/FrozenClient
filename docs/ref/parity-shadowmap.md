@@ -2,7 +2,7 @@
 
 Scope: the **map shadow map** — the quality tier *above* the blob shadows covered by
 `parity-shadows.md`. Modules: `MapShadow.cpp` (~0x7ba-0x7bd) and `CShadowCache` (~0x874-0x876).
-Program: `RunicWorldGame.exe` (Win 3.3.5a 12340).
+Program: `WoW.exe` (vanilla Win 3.3.5a 12340).
 
 Raw dumps captured for this doc: `win-dump-shadowmap1.txt` .. `win-dump-shadowmap4.txt`.
 Earlier context: `win-decomp-shadow-blob2.txt` (first pass on `CShadowCache`),

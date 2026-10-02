@@ -1,7 +1,7 @@
 # Key bindings parity: 3.3.5a reference vs frozen
 
 Scope: the key binding subsystem -- where the commands come from, where the keys come from, and
-what each Lua getter is shaped like. Program: `RunicWorldGame.exe` (Win 3.3.5a 12340).
+what each Lua getter is shaped like. Program: `WoW.exe` (vanilla Win 3.3.5a 12340).
 
 **Why this matters.** Until it exists no key does anything in game, and no action button shows a
 hotkey. `UIBindingsScript.cpp` had the whole table stubbed.

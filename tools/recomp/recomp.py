@@ -59,6 +59,10 @@ HISTORY = os.path.join(DATA, 'history.jsonl')
 REPORT = os.path.join(ROOT, 'docs', 'recomp', 'REPORT.md')
 
 GHIDRA_PROJECTS = r'C:\Users\tyler\tools\ghidra-projects'
+# The vanilla 3.3.5a (12340) client, imported from .reference. NOT RunicWorldGame.exe, which sits in
+# the same project: it is a branded patch of this binary (same layout, but its strings and four code
+# sites differ), and a reference read from it is not the reference.
+GHIDRA_PROGRAM = 'WoW.exe'
 GHIDRA_SCRIPTS = os.path.join(HERE, 'ghidra')  # the exporters live with the tool
 PDBUTIL = r'C:\Program Files\LLVM\bin\llvm-pdbutil.exe'
 PDB = os.path.join(ROOT, 'build', 'dist', 'bin', 'Frozen.pdb')
@@ -96,7 +100,7 @@ def export_reference():
         sys.exit('no Ghidra install under C:\\Users\\tyler\\tools')
     os.makedirs(DATA, exist_ok=True)
     cmd = [os.path.join(ghidra[0], 'support', 'analyzeHeadless.bat'), GHIDRA_PROJECTS, 'RunicWorld',
-           '-process', 'RunicWorldGame.exe', '-noanalysis', '-scriptPath', GHIDRA_SCRIPTS,
+           '-process', GHIDRA_PROGRAM, '-noanalysis', '-scriptPath', GHIDRA_SCRIPTS,
            '-postScript', 'ExportFunctions.java', REF_JSONL]
     print('exporting reference functions from Ghidra (2-3 minutes)...')
     out = subprocess.run(cmd, capture_output=True, text=True)

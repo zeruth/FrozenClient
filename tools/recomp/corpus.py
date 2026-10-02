@@ -57,7 +57,7 @@ def export(lo=None, hi=None):
     partial = lo is not None
     out = CORPUS + '.part' if partial else CORPUS + '.new'
     cmd = [os.path.join(ghidra[0], 'support', 'analyzeHeadless.bat'), recomp.GHIDRA_PROJECTS, 'RunicWorld',
-           '-process', 'RunicWorldGame.exe', '-noanalysis', '-scriptPath', recomp.GHIDRA_SCRIPTS,
+           '-process', recomp.GHIDRA_PROGRAM, '-noanalysis', '-scriptPath', recomp.GHIDRA_SCRIPTS,
            '-postScript', 'ExportDecompAll.java', out]
     if partial:
         cmd += [lo, hi]

@@ -354,7 +354,7 @@ addr	how	frozen	evidence
 00495710	callgraph	CSimpleFrame::OnLayerCursorExit	only unmatched callee of 00495900=CSimpleTop::UnregisterForEvent
 00495880	callgraph	CSimpleTop::RegisterForEvent	only unmatched callee of 0048ea40=CSimpleFrame::RegisterForEvents, 0048f6a0=CSimpleFrame::EnableEvent
 00495900	callgraph	CSimpleTop::UnregisterForEvent	only unmatched callee of 0048f6f0=CSimpleFrame::DisableEvent
-00495eb0	callorder	CSimpleTop::CSimpleTop	same slot between linked calls in 004da5f0=CGlueMgr::Resume
+00495eb0	callorder	CSimpleTop::CSimpleTop	same slot between linked calls in 004da5f0=CGlueMgr::Resume, 0052a980=CGGameUI::Initialize
 00496390	override	CSimpleFontStringAttributes::SetJustifyH	
 004963c0	override	CSimpleFontStringAttributes::SetJustifyV	
 00496f70	callgraph	CSimpleFont::GetFont	only unmatched callee of 0081b7b0=Script_CreateFont
@@ -821,7 +821,7 @@ addr	how	frozen	evidence
 004d98a0	callgraph	CCharacterSelection::GetCharacterDisplay	only unmatched callee of 004e3620=Script_GetSelectBackgroundModel
 004d98d0	string	CGlueMgr::StatusDialogClick	score 0.53 shared login; patchdownload
 004d9bd0	string	CGlueMgr::EnterWorld	unique "CHAR_RENAME_DESCRIPTION"
-004da5f0	string	CGlueMgr::Resume	unique "Interface\Cursor\Point.blp"
+004da5f0	string	CGlueMgr::Resume	unique "GlueXML has corrupt signature"
 004dab40	string	CGlueMgr::PollAccountLogin	unique "AUTH_DB_BUSY_URL"
 004db9f0	string	CGlueMgr::Initialize	unique "ModelFFX"
 004dbc70	string	GlueScriptEventsInitialize	unique "ACCOUNT_MESSAGES_AVAILABLE"
@@ -1331,7 +1331,7 @@ addr	how	frozen	evidence
 00526530	handler	ReceiveWeather	SetMessageHandler(SMSG_WEATHER) on both sides
 00527f00	table	Script_InteractUnit	binding "InteractUnit" in s_ScriptFunctions ~ table 00ac80b0
 00528920	table	Script_LoadAddOn	binding "LoadAddOn" in s_ScriptFunctions ~ table 00ac80b0
-0052a980	string	WowClientInit	unique "Whether or not script profiling is enabled"
+0052a980	annotated	CGGameUI::Initialize	tag in src/ui/game/CGGameUI.cpp
 0052b470	table	Script_RegisterForSave	binding "RegisterForSave" in s_ScriptFunctions ~ table 00ac80b0
 0052b4e0	table	Script_RegisterForSavePerCharacter	binding "RegisterForSavePerCharacter" in s_ScriptFunctions ~ table 00ac80b0
 0052bc50	annotated	CGPartyInfo::GetMemberGuid	tag in src/ui/game/CGPartyInfo.cpp
@@ -1997,7 +1997,6 @@ addr	how	frozen	evidence
 005f1390	annotated	CalendarEvent::SetUnk510	tag in src/ui/game/Calendar.cpp
 005f1a00	annotated	CalendarEvent::SelectInvite	tag in src/ui/game/Calendar.cpp
 005f1b30	annotated	CalendarEvent::HasUnk28OrActivePlayerGuid	tag in src/ui/game/Calendar.cpp
-005f4910	string	CGGameUI::Initialize	score 0.50 shared Interface\FrameXML\FrameXML.toc
 005f4ca0	annotated	AddOnVersionCheckEnabled	tag in src/ui/AddOn.cpp
 005f4cb0	annotated	AddOnSetVersionCheck	tag in src/ui/AddOn.cpp
 005f4ff0	annotated	AddOnGetNumAddOns	tag in src/ui/AddOn.cpp

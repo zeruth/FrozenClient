@@ -1,6 +1,6 @@
 # Recomp map: reference 3.3.5a (12340) vs frozen
 
-Generated 2026-10-01 23:39 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
+Generated 2026-10-02 06:00 by `tools/recomp/recomp.py`. Do not edit; put facts in `tools/recomp/overrides.json`
 or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 
 ## Totals
@@ -8,24 +8,24 @@ or `// ref: FUN_xxxxxxxx` tags above frozen definitions and re-run.
 | | functions | code bytes |
 |---|---:|---:|
 | reference (non-thunk) | 26921 | 5.35M |
-| mapped to a frozen function | 5035 (=) (18.7%) | 1.05M (19.7%) |
-| &nbsp;&nbsp;ported | 4360 (=) | 900.2k |
+| mapped to a frozen function | 5034 (-1) (18.7%) | 1.05M (19.7%) |
+| &nbsp;&nbsp;ported | 4359 (-1) | 900.0k |
 | &nbsp;&nbsp;stub (unimplemented body) | 567 (=) | 121.5k |
 | &nbsp;&nbsp;verified (override) | 33 (=) | 7.5k |
-| **faithful** (linked, not stub, call order >= 80%) | **2826 (+1) (10.5%)** | **416.2k (7.6%)** |
-| unmapped | 21886 | 4.30M |
+| **faithful** (linked, not stub, call order >= 80%) | **2826 (=) (10.5%)** | **416.2k (7.6%)** |
+| unmapped | 21887 | 4.30M |
 | world spine (reachable from OnFrameRender) | 5373, mapped 1700 (=) (31.6%) | |
 | &nbsp;&nbsp;render spine (world update + map + M2 scene) | 5640, mapped 1731 (=) (30.7%) | |
 | **render surface** (the modules that draw the world) | **5377, mapped 1575 (=) (29.3%)** | |
-| &nbsp;&nbsp;of which faithful / stub | 1054 (+1) (19.6%) / 33 (=) | |
+| &nbsp;&nbsp;of which faithful / stub | 1054 (=) (19.6%) / 33 (=) | |
 | of which the module is an anchor GUESS | 2630 (48.9%) | |
 | frozen functions (src/, from PDB + source) | 14219, stubs 1626 | |
 
-Match evidence: annotated 2725, callgraph 256, callorder 110, cvar 28, handler 29, order 142, override 392, sticky 32, string 302, table 1019. Module anchors: 1718 assert strings.
+Match evidence: annotated 2726, callgraph 256, callorder 110, cvar 28, handler 29, order 142, override 392, sticky 32, string 300, table 1019. Module anchors: 1718 assert strings.
 
 `order` and `sticky` are POSITIONAL: neither says anything about what the function does, only where it sits. `order` lays frozen's definitions onto the reference's addresses between two anchors whenever the two counts happen to be equal, so one unported function or one helper frozen invented shifts every pair in the run. It has been checked closely three times, each time because a fresh tag put a run next to something already read, and all three runs were wrong. Treat a link of either kind as a question. See tools/recomp/README.md under the order matcher.
 
-Previous run: 2026-10-01 23:38 -- mapped 5035, ported 4360, stub 567, spine mapped 1700.
+Previous run: 2026-10-01 23:39 -- mapped 5035, ported 4360, stub 567, spine mapped 1700.
 
 ## Lua API coverage (binding tables)
 
@@ -139,7 +139,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | ComSatSoundIOSoundEngine.cpp | 848 | 165.1k | 65 (7.7%) | 0.4% | 0 | 0 | 51 |
 | Player_C.cpp | 479 | 104.7k | 54 (11.3%) | 12.9% | 0 | 0 | 100 |
 | HealthBar.cpp | 446 | 102.6k | 17 (3.8%) | 4.5% | 0 | 0 | 66 |
-| GameUI.cpp | 487 | 95.7k | 231 (47.4%) | 47.7% | 77 | 0 | 70 |
+| GameUI.cpp | 487 | 95.8k | 231 (47.4%) | 47.7% | 77 | 0 | 70 |
 | ChatFrame.cpp | 399 | 87.5k | 101 (25.3%) | 18.0% | 34 | 2 | 38 |
 | Tooltip.cpp | 151 | 86.0k | 76 (50.3%) | 62.9% | 34 | 1 | 16 |
 | Spell_C.cpp | 352 | 85.6k | 42 (11.9%) | 8.1% | 0 | 0 | 118 |
@@ -181,7 +181,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | DetailDoodad.cpp | 134 | 29.7k | 82 (61.2%) | 66.4% | 1 | 3 | 61 |
 | WorldScene.cpp | 49 | 29.3k | 22 (44.9%) | 47.6% | 0 | 2 | 35 |
 | M2Scene.cpp | 69 | 28.9k | 50 (72.5%) | 84.8% | 3 | 0 | 53 |
-| CGlueMgr.cpp | 182 | 28.8k | 94 (51.6%) | 57.0% | 24 | 0 | 1 |
+| CGlueMgr.cpp | 182 | 28.8k | 94 (51.6%) | 57.1% | 24 | 0 | 1 |
 | LoadingScreen.cpp | 200 | 28.7k | 8 (4.0%) | 10.0% | 0 | 0 | 79 |
 | fmod_output_dsound_record.cpp | 125 | 28.6k | 0 (0.0%) | 0.0% | 0 | 0 | 4 |
 | XMLTree.cpp | 163 | 28.6k | 85 (52.1%) | 52.7% | 5 | 0 | 20 |
@@ -303,7 +303,7 @@ Module = the source file named by the reference's own assert strings near the fu
 | MapObjRead.cpp | 36 | 8.0k | 18 (50.0%) | 40.1% | 0 | 0 | 11 |
 | ObjectEffect.cpp | 41 | 8.0k | 10 (24.4%) | 8.6% | 0 | 0 | 20 |
 | fmod_codec_mpeg.cpp | 26 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 2 |
-| CalendarEvent.cpp | 40 | 7.9k | 1 (2.5%) | 3.4% | 0 | 0 | 0 |
+| CalendarEvent.cpp | 40 | 7.9k | 0 (0.0%) | 0.0% | 0 | 0 | 0 |
 | MapChunk.cpp | 16 | 7.7k | 12 (75.0%) | 83.7% | 0 | 0 | 13 |
 | CGxDeviceD3d9Ex.cpp | 30 | 7.6k | 2 (6.7%) | 2.5% | 0 | 0 | 0 |
 | PlayerName.cpp | 36 | 7.6k | 1 (2.8%) | 0.9% | 0 | 0 | 7 |
@@ -583,8 +583,8 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00562ed0 | `UIBindingsSetKey` | APOSTROPHE; BACKSLASH; COMMA; LEFTBRACKET |
 | 00515200 | `Script_GetCursorInfo` | CRITTER; MOUNT; UNKNOWN; companion |
 | 0049a060 | `CSimpleAnimGroup::LoadXML` | Alpha; Animation; Couldn't find inherited node: %s; Recursively inherited node: %s |
-| 004067f0 | `InitializeGlobal` | .PAD; Database compression; RunicWorld       ; Sets which core(s) WoW may execute on - changes re |
 | 0060a630 | `Script_GetGUIDFromString` | arena%d; arenapet%d; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa; party%d |
+| 004067f0 | `InitializeGlobal` | .PAD; Database compression; Sets which core(s) WoW may execute on - changes re; WTF/Account |
 | 00832ea0 | `CM2Model::InitializeLoaded` | "%s", %s = %g; "%s", %s = %g, %s = %g; shared->farClip; shared->fieldOfView |
 | 005a8f10 | `Script_GetActionInfo` | CRITTER; MOUNT; UNKNOWN; Usage: GetActionInfo(slot) |
 | 0051ba50 | `Script_GetZonePVPInfo` | arena; combat; contested; d:\BuildServer\WoW\1\work\WoW-code\branches\wow-pa |
@@ -598,7 +598,7 @@ A reference function that formats, asserts or looks up a string its port does no
 | 00535180 | `BattlenetUI::Script_BNGetFriendInviteInfo` | BNUI: Invite Info Account name: %s %s; BNUI: Invite Info ID: %u; BNUI: Invite Info message: %s; BNUI: Invite Info time: %d |
 | 005343f0 | `BattlenetUI::Script_BNGetInfo` | BNUI: GetInfo AFK is %d; BNUI: GetInfo DND is %d; BNUI: GetInfo account ID is %u; BNUI: GetInfo custom message is %s |
 | 0052e1b0 | `Script_SetPartyAssignment` | Invalid Party assignment; MAINASSIST; MAINTANK; SetPartyAssignment |
-| 0052a980 | `WowClientInit` | Cannot create WOWClient log file "%s"!; GameTooltip; Interface\FrameXML\Bindings.xml; Interface\FrameXML\FrameXML.toc |
+| 004a7e00 | `CSimpleAnimGroup_CreateAnimation` | %s:CreateAnimation(): Couldn't find inherited node; %s:CreateAnimation(): Recursively inherited node "; Alpha; Rotation |
 
 ## Largest frozen functions with no reference link
 
@@ -776,7 +776,6 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
 | 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
 | 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
-| 2026-10-01 23:26 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
 | 2026-10-01 23:27 | 5034 (18.7%) | 2799 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
 | 2026-10-01 23:28 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
 | 2026-10-01 23:28 | 5034 (18.7%) | 2807 (10.4%) | 568 | 1700/5373 | 2924/2964 | 1380 |
@@ -798,6 +797,7 @@ Links the trace contradicts -- a wrong link, or a real divergence; each needs a 
 | 2026-10-01 23:37 | 5034 (18.7%) | 2815 (10.5%) | 567 | 1700/5373 | 2924/2964 | 1378 |
 | 2026-10-01 23:38 | 5035 (18.7%) | 2825 (10.5%) | 567 | 1700/5373 | 2924/2964 | 1378 |
 | 2026-10-01 23:39 | 5035 (18.7%) | 2826 (10.5%) | 567 | 1700/5373 | 2924/2964 | 1378 |
+| 2026-10-02 06:00 | 5034 (18.7%) | 2826 (10.5%) | 567 | 1700/5373 | 2924/2964 | 1378 |
 
 ## How to move a row
 

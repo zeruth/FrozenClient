@@ -1,7 +1,7 @@
 # Shadow rendering parity: 3.3.5a reference vs frozen
 
 Scope: unit/doodad **blob shadows** (Shadow.cpp region, ~0x7e2-0x7e4) and the **map shadow map**
-(MapShadow.cpp ~0x7bb + CShadowCache ~0x874-0x875). Program: `RunicWorldGame.exe` (Win 3.3.5a 12340).
+(MapShadow.cpp ~0x7bb + CShadowCache ~0x874-0x875). Program: `WoW.exe` (vanilla Win 3.3.5a 12340).
 Raw decompiles captured for this doc: `win-decomp-shadow-blob.txt`, `-blob2.txt`, `-blob3.txt`,
 `-blob4.txt`. Earlier context: `win-decomp-cmap-render.txt`, `-cmap-render2.txt`, `win-decomp-leafdraws.txt`.
 

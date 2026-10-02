@@ -1,6 +1,6 @@
 # Sky / atmosphere (DayNight) parity
 
-Reference program: `RunicWorldGame.exe` (Ghidra project `RunicWorld`). Raw dumps produced for this
+Reference program: `WoW.exe`, vanilla 12340 (Ghidra project `RunicWorld`). Raw dumps produced for this
 pass: `win-decomp-sky-lightblock.txt`, `win-decomp-sky-dome.txt`, `win-decomp-dnbase-callers.txt`,
 `win-decomp-lighting-api.txt`, `win-datarefs-lightblock.txt`, `win-datarefs-lightdir.txt`,
 `win-datarefs-fog.txt`, `win-callers-daynightbase.txt` (plus the earlier `win-decomp-daynight-*.txt`
@@ -91,7 +91,7 @@ CWorld::s_outdoorDirection = ( -cos(phi)*sin(theta), -sin(phi)*sin(theta), -cos(
 
 frozen's current placeholder `{-0.402096, -0.301572, 0.864504}` is roughly 180 deg wrong in azimuth
 (it lights from -X/-Y instead of +X/+Y) and about 23 deg too high. Those bytes do **not** appear
-anywhere in `RunicWorldGame.exe` (the whole image was searched for all three floats), so the constant
+anywhere in `WoW.exe` (the whole image was searched for all three floats), so the constant
 was never taken from this reference.
 
 **So: the sun barely moves.** Only the elevation wobbles, twice a day, between 37 deg (t=0, t=0.5)

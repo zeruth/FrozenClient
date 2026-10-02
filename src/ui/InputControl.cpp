@@ -112,5 +112,5 @@ void InputControlInitialize() {
     auto m = SMemAlloc(sizeof(CInputControl), __FILE__, __LINE__, 0x0);
     s_inputControl = m ? new (m) CInputControl() : nullptr;
 
-    s_enableWowMouseCvar = CVar::Register("enableWowMouse", "Enable Steelseries RunicWorld        Mouse", 0x1, "0", &EnableWowMouseCallback, DEFAULT, false, nullptr, false);
+    s_enableWowMouseCvar = CVar::Register("enableWowMouse", "Enable Steelseries World of Warcraft Mouse", 0x1, "0", &EnableWowMouseCallback, DEFAULT, false, nullptr, false);
 }

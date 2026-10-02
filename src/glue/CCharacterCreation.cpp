@@ -64,16 +64,21 @@ void CCharacterCreation::CreateCharacter(const char* name) {
     // TODO when s_existingCharacterIndex is set this is a customization, race change, or faction
     // change of an existing character rather than a creation
 
-    if (!name) {
-        auto prompt = FrameScript_GetText(ClientServices::GetErrorToken(89), -1, GENDER_NOT_APPLICABLE);
+    // No name is error 89; otherwise anything but a valid name (CHAR_NAME_SUCCESS, 0x57) is shown as
+    // its own error and nothing is sent. An earlier version of this port skipped the check because it
+    // was read off RunicWorldGame.exe, which patches 0x004e0481 to `cmp eax, eax` so every name passes.
+    int32_t result = 89;
+
+    if (name) {
+        result = ValidateName(name);
+    }
+
+    if (!name || result != CHAR_NAME_SUCCESS) {
+        auto prompt = FrameScript_GetText(ClientServices::GetErrorToken(result), -1, GENDER_NOT_APPLICABLE);
         FrameScript_SignalEvent(3, "%s%s", "OKAY", prompt);
 
         return;
     }
-
-    // The original validates the name here as well but does not act on the result; the server
-    // performs the authoritative check
-    ValidateName(name);
 
     auto& data = CCharacterCreation::s_character->m_data;
 

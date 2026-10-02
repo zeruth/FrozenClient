@@ -13166,10 +13166,10 @@
   "status": "ported"
  },
  "004da5f0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.312,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.273,
+  "fidelity": 0.289,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
@@ -13178,7 +13178,7 @@
   "frozenSize": 762,
   "how": "string",
   "module": "CGlueMgr.cpp",
-  "refSize": 909,
+  "refSize": 961,
   "status": "ported"
  },
  "004dab40": {
@@ -14570,10 +14570,10 @@
   "status": "ported"
  },
  "004e0380": {
-  "branchRatio": 0.1,
-  "constOverlap": 0.042,
+  "branchRatio": 0.2,
+  "constOverlap": 0.04,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.455,
   "files": [
    "src/glue/CCharacterCreation.cpp",
    "src/glue/ccharactercreation.cpp"
@@ -21376,19 +21376,19 @@
   "status": "ported"
  },
  "0052a980": {
-  "branchRatio": 0.087,
-  "constOverlap": 0.0,
+  "branchRatio": 0.25,
+  "constOverlap": 0.049,
   "faithful": false,
-  "fidelity": 0.193,
+  "fidelity": 0.237,
   "files": [
-   "src/client/Client.cpp",
-   "src/client/client.cpp"
+   "src/ui/game/CGGameUI.cpp",
+   "src/ui/game/cggameui.cpp"
   ],
-  "frozen": "WowClientInit",
-  "frozenSize": 0,
-  "how": "string",
+  "frozen": "CGGameUI::Initialize",
+  "frozenSize": 927,
+  "how": "annotated",
   "module": "GameUI.cpp",
-  "refSize": 1267,
+  "refSize": 1329,
   "status": "ported"
  },
  "0052b470": {
@@ -31901,22 +31901,6 @@
   "how": "annotated",
   "module": "UIMacroOptions.cpp",
   "refSize": 89,
-  "status": "ported"
- },
- "005f4910": {
-  "branchRatio": 0.4,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.857,
-  "files": [
-   "src/ui/game/CGGameUI.cpp",
-   "src/ui/game/cggameui.cpp"
-  ],
-  "frozen": "CGGameUI::Initialize",
-  "frozenSize": 927,
-  "how": "string",
-  "module": "CalendarEvent.cpp",
-  "refSize": 274,
   "status": "ported"
  },
  "005f4ca0": {

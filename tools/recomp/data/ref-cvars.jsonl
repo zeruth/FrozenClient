@@ -296,10 +296,6 @@
 {"caller":"006b0bf0","site":"006b0d01","args":["str:portal","str:Name of Battle.net portal to use","0x0","0x9e14ff","0x0","0x6","0x0","0x0","0x0"]}
 {"caller":"006b0bf0","site":"006b0d36","args":["str:serverAlert","str:Get the glue-string tag for the URL","0x0","str:SERVER_ALERT_URL","0x0","0x6","0x0","0x0","0x0"]}
 {"caller":"006b0bf0","site":"006b0d6b","args":["str:realmList","str:Address of realm list server","0x0","str:us.logon.worldofwarcraft.com:3724","0x0","0x6","0x0","0x0","0x0"]}
-{"caller":"007ea260","site":"007ea29d","args":["str:ffxDeath","str:full screen death effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
-{"caller":"008bfe80","site":"008bfecf","args":["str:ffxGlow","str:full screen glow effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
-{"caller":"008c12f0","site":"008c1314","args":["0xa94238","str:full screen effects","0x1","0x9e1464","fn:008c02a0","0x1","?","?","?"]}
-{"caller":"008c12f0","site":"008c1339","args":["str:ffxRectangle","str:use rectangle texture for full screen effects","0x1","0x9e1464","fn:008c02a0","0x1","?","?","?"]}
 {"caller":"004067f0","site":"004068a7","args":["str:dbCompress","str:Database compression","?","0x9e11a8","?","0x5","?","?","?"]}
 {"caller":"004067f0","site":"004068c6","args":["str:locale","str:Set the game locale","?","0x9e1ac8","fn:00403320","0x5","?","?","?"]}
 {"caller":"004067f0","site":"0040690f","args":["str:useEnglishAudio","str:override the locale and use English audio","?","0x9e14a0","?","0x5","?","?","?"]}
@@ -386,8 +382,12 @@
 {"caller":"004d9bd0","site":"004d9de8","args":["str:showGameTips","?","?","0x9e1464","?","0x5","?","?","?"]}
 {"caller":"007e2250","site":"007e22a0","args":["str:forceEnglishNames","0x0","0x0","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
 {"caller":"006b9900","site":"006b991b","args":["str:synchronizeSettings","str:Whether client settings should be stored on the server","0x0","0x9e1464","0x0","0x5","0x0","0x0","0x0"]}
+{"caller":"007ea260","site":"007ea29d","args":["str:ffxDeath","str:full screen death effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
 {"caller":"007ea470","site":"007ea4a2","args":["str:ffxNetherWorld","str:full screen nether world effect (for invisibility)","0x1","0x9e1464","fn:008c02a0","0x1","0x0","0x0","0x0"]}
 {"caller":"007ea5f0","site":"007ea6f4","args":["str:ffxSpecial","str:full screen test effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"008bfe80","site":"008bfecf","args":["str:ffxGlow","str:full screen glow effect","0x1","?","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"008c12f0","site":"008c1314","args":["0xa94238","str:full screen effects","0x1","0x9e1464","fn:008c02a0","0x1","?","?","?"]}
+{"caller":"008c12f0","site":"008c1339","args":["str:ffxRectangle","str:use rectangle texture for full screen effects","0x1","0x9e1464","fn:008c02a0","0x1","?","?","?"]}
 {"caller":"0050fea0","site":"0050ff14","args":["?","0x0","?","?","0x0","0x4","0x1","0x0","0x1"]}
 {"caller":"007681f0","site":"00768323","args":["?","0x9e14ff","0x0","?","0x0","0x5","0x1","0x0","0x0"]}
 {"caller":"00787780","site":"007878a9","args":["str:weatherDensity","?","?","0x9e1384","fn:00784040","0x5","?","?","?"]}
@@ -412,7 +412,7 @@
 {"caller":"004d2a30","site":"004d2a87","args":["str:heapAllocTracking","str:Enables/disables allocation tracking & dumping in SMemMalloc","0x0","0x9e1464","fn:004d2780","0x4","0x0","0x0","0x0"]}
 {"caller":"005fd2c0","site":"005fd2de","args":["str:Joystick","str:enable joystick control","0x0","0x9e14a0","fn:005f9c80","0x5","0x0","0x0","0x0"]}
 {"caller":"005fd2c0","site":"005fd2fe","args":["str:CinematicJoystick","str:enable cinematic joystick control","0x0","0x9e14a0","0x0","0x5","0x0","0x0","0x0"]}
-{"caller":"005fd2c0","site":"005fd355","args":["str:enableWowMouse","str:Enable Steelseries RunicWorld        Mouse","0x1","0x9e14a0","fn:005fa9b0","0x5","0x0","0x0","0x0"]}
+{"caller":"005fd2c0","site":"005fd355","args":["str:enableWowMouse","str:Enable Steelseries World of Warcraft Mouse","0x1","0x9e14a0","fn:005fa9b0","0x5","0x0","0x0","0x0"]}
 {"caller":"0078e400","site":"0078e41e","args":["str:farClipOverride","str:Override old world graphic settings","0x1","0x9e14a0","fn:0078dc30","0x1","0x0","0x0","0x0"]}
 {"caller":"0078e400","site":"0078e446","args":["0xa3f78c","str:Video option: Toggle Lod","0x1","0x9e14a0","fn:0078d610","0x1","0x0","0x0","0x0"]}
 {"caller":"0078e400","site":"0078e471","args":["str:mapShadows","str:Video option: Toggle map shadows","0x1","0x9e1464","fn:0078d660","0x1","0x0","0x0","0x0"]}

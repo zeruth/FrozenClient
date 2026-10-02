@@ -1,7 +1,7 @@
 # Minimap parity: 3.3.5a reference vs frozen
 
 Scope: the minimap frame and everything it draws (MinimapFrame.cpp region, ~0x57b-0x582).
-Program: `RunicWorldGame.exe` (Win 3.3.5a 12340). Raw decompiles captured for this doc live in the
+Program: `WoW.exe` (vanilla Win 3.3.5a 12340). Raw decompiles captured for this doc live in the
 session scratchpad; the addresses below were each decompiled and read, and inferences are marked
 *(uncertain)*.
 

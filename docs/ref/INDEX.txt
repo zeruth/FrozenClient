@@ -1,7 +1,13 @@
+NOTE 2026-10-02: the dumps marked program=RunicWorldGame.exe were taken from a branded patch of the
+vanilla WoW.exe. The two are byte-identical in layout and code except four sites (0x4da7e5, 0x4e0481,
+0x52abd9, 0x7f5f9f) and their strings ("RunicWorld" for "World of Warcraft"), so addresses here are
+valid for WoW.exe; anything quoting a string or one of those sites must be re-read from WoW.exe.
+The helpers now target the vanilla program (recomp.GHIDRA_PROGRAM = WoW.exe).
+
 Raw Ghidra dumps used for docs/world-render-inventory.md (program RunicWorldGame.exe unless noted).
 Scripts: C:\Users\tyler\tools\ghidra-scripts (DecompileList, FindCallers, FindStringRefs, FindStringRefs2,
 ListSymbols, ListAllSymbols, CallTree, CallerTree, DataRefs, VtableFromRtti); wrapper C:\Users\tyler\tools\mac.sh
-runs a script against the Mac program (WoW-3.3.5a-mac-i386); decomp.sh/callers.sh/strrefs.sh target RunicWorldGame.exe.
+runs a script against the Mac program (WoW-3.3.5a-mac-i386); decomp.sh/callers.sh/strrefs.sh target the vanilla WoW.exe (RunicWorldGame.exe before 2026-10-02).
 
 mac-symbols-render.txt         ListSymbols on WoW-3.3.5a-mac-i386: proves the Mac build is stripped (17 matches, all imports)
 win-symbols-rtti.txt           RTTI type descriptors (CWFrustum, CPortalView, Liquid::*, CParticle*, CGWorldFrame ...)

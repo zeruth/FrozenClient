@@ -234,6 +234,7 @@ static void GameUILoadProgress(float progress, void* param) {
     LoadingScreenSetProgress(progress);
 }
 
+// ref: FUN_0052a980
 void CGGameUI::Initialize() {
     // TODO
 

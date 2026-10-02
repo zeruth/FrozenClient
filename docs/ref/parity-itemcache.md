@@ -1,7 +1,7 @@
 # Item cache parity: 3.3.5a reference vs frozen
 
 Scope: the client-side item record, how it arrives, and what blocks it in frozen.
-Program: `RunicWorldGame.exe` (Win 3.3.5a 12340). Every address below was decompiled and read;
+Program: `WoW.exe` (vanilla Win 3.3.5a 12340). Every address below was decompiled and read;
 inferences are marked *(uncertain)*.
 
 **Why this matters more than any single binding.** `GetItemInfo`, `GetItemIcon`, `GetItemCount`,
