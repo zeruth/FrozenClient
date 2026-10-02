@@ -1,3 +1,4 @@
+#include "model/CM2Shared.hpp"
 #include "world/map/CMapObj.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -739,16 +740,11 @@ HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerPara
     entity->m_param64 = param64;
     entity->m_param32 = param32;
 
-    // TODO
-
     entity->m_dirLightScale = 1.0f;
     entity->m_dirLightScaleTarget = 1.0f;
 
-    // TODO
-
     entity->m_type |= CMapBaseObj::Type_200;
-
-    // TODO
+    entity->m_handler = nullptr;
 
     // The entity's state word, rearranged out of the caller's flags. The reference writes it as
     // one expression over a preserved mask; spelled out, the bits move like this:
@@ -774,7 +770,37 @@ HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerPara
         entity->m_flags = 0x20000;
     }
 
-    // TODO
+    // It starts at the sun's ambient, until the floor under it says otherwise.
+    const C3Vector& amb = CMap::s_outdoorLight->m_light.m_ambColor;
+
+    auto channel = [](float v) {
+        if (!(0.0f < v)) {
+            return 0.0f;
+        }
+
+        return v < 1.0f ? v * 255.0f + 0.5f : 255.0f;
+    };
+
+    CImVector start;
+    start.b = static_cast<uint8_t>(static_cast<int32_t>(channel(amb.z)));
+    start.g = static_cast<uint8_t>(static_cast<int32_t>(channel(amb.y)));
+    start.r = static_cast<uint8_t>(static_cast<int32_t>(channel(amb.x)));
+    start.a = 0xFF;
+    entity->m_ambientTarget = start;
+    entity->m_ambient = start;
+
+    if (entity->m_model) {
+        if (!SStrCmpI("InvisibleStalker.m2", entity->m_model->m_shared->m_filePath, STORM_MAX_STR)) {
+            entity->m_flags7c |= 0x4000;
+        }
+
+        entity->m_model->m_lightingCallback = &CWorld::LightingCallback;
+        entity->m_model->m_lightingArg = entity;
+        entity->m_model->m_refCount++;
+    }
+
+    entity->m_handler = handler;
+    entity->m_handlerParam = handlerParam;
 
     return reinterpret_cast<HWORLDOBJECT>(entity);
 }
@@ -1199,80 +1225,36 @@ void CWorld::SetFarClip(float farClip) {
     CWorld::s_textureCacheDirty = 1;
 }
 
-// The reference's counterpart is FUN_004e3a20, identified 2026-09-23. CM2Model::SetupLighting
-// invokes the callback through +0x2ac at 0x00831b70, passing (model, lighting, arg); five sites in
-// the object code store 0x004e3a20 into that field, which is the same slot frozen fills from
-// CGObject_C.
-//
-// **This body is a stand-in and the tag is NOT applied**, because the two do materially different
-// things and claiming identity would say the port is worse than it is rather than that it is
-// absent. What the reference does, from reading it -- 485 bytes, 11 branches -- so a real port has
-// a starting point:
-//
-//   * indexes a global at 0x00ac436c into an array of 0x198-byte records at 0x00b6b240, bounds
-//     checked against the count at 0x00b6b23c, and requires bit 0x2000 of that record's +0x170.
-//   * gets a position from FUN_004e2790 on the model and calls CM2Lighting::Initialize with a
-//     sphere centred there and a radius of ZERO -- so it RE-initialises the lighting that
-//     SetupLighting already initialised and SelectLights already filled, down at least one of its
-//     paths. That re-memset is the part to understand before porting: taken literally it discards
-//     the scene lights the local-light chain now feeds in.
-//   * builds temporary CM2Lights -- constructor, SetLightType, SetDirection, SetVisible -- and
-//     hands them to CM2Lighting::AddLight twice.
-//
-// That last step is why this is worth recording now: every one of those is already ported and
-// tagged. The machinery this callback drives exists; the driver does not.
-//
-// Unidentified callees it still needs: FUN_004e2790, FUN_0065c290, FUN_007ebf30 (the DayNight
-// range), FUN_00982970, FUN_00834ab0, FUN_004e2730 and FUN_00834940.
-//
-// TODO the day/night cycle's light; until then every world model gets a fixed sun
-// PARTLY the reference's FUN_00780cd0 (World.cpp), which the map installs on every placed
-// model with the placement object as `arg`. With an object the reference fogs from the
-// day/night state, then calls the object's SelectLights (vtable slot 1) and SelectUnderwater
-// (slot 2), and marks the lighting interior (0x8) when the object is inside a building; with
-// none it uses the outdoor sun. Frozen's lighting below is a STAND-IN for that, and stays one:
-// no SelectLights override is ported yet, so routing an object through slot 1 would strip it
-// of light. What is ported is slot 2 -- the water side, which sets lighting bits 0x20 / 0x40
-// and the liquid plane that CM2Scene::Animate and CM2SceneRender::SetupLighting read.
+// ref: FUN_00780cd0
+// A model in the world takes the sun when nothing placed it; a placed one is fogged by the frame's
+// fog and asks its map object for its lights and its side of the water.
 void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg) {
-    if (arg) {
-        static_cast<CMapBaseObj*>(arg)->SelectUnderwater(lighting);
-    }
+    lighting->m_flags |= 0x10;
 
-    // Fog the model with the same data-driven distance fog the terrain and WMOs use. M2 materials
-    // fog in the shader from the model's own lighting (the scene render turns the fixed-function fog
-    // off), so it has to be set here or entities stay crisp against fogged terrain.
-    if (CWorld::s_fogEnd > 1.0f && CWorld::s_fogEnd > CWorld::s_fogStart && CWorld::s_fogStart < CWorld::s_farClip) {
-        lighting->SetFog(CWorld::s_fogColor, CWorld::s_fogStart, CWorld::s_fogEnd, CWorld::s_fogRate);
-    }
+    auto block = DayNightGetBlock();
+    const float k = 1.0f / 255.0f;
 
-    // A unit standing inside a WMO is lit by that building's interior lighting, not the outdoor sun,
-    // exactly as the reference switches a model's lighting by the volume it occupies. The model's
-    // world position is the translation column of its placement matrix.
-    if (model) {
-        C3Vector pos = { model->matrixB4.d0, model->matrixB4.d1, model->matrixB4.d2 };
-        CImVector diffuse;
-        CImVector ambient;
+    if (!arg) {
+        C3Vector ambient = { block->ambient.r * k, block->ambient.g * k, block->ambient.b * k };
+        lighting->AddAmbient(ambient);
 
-        // The reference's floor probe (CMapEntity::FloorLight): the MOCV under the model, split
-        // into a diffuse and an ambient. The reference function that turns those two colours into
-        // the model's lights has not been identified yet, so the diffuse is applied along the
-        // outdoor sun direction here; the ambient is exact.
-        if (CMapEntity::FloorLightAt(pos, &diffuse, &ambient)) {
-            C3Vector amb;
-            C3Vector dif;
-            UnpackColor(amb, ambient);
-            UnpackColor(dif, diffuse);
-            lighting->AddAmbient(amb);
-            lighting->AddDiffuse(dif, CWorld::s_outdoorDirection);
+        C3Vector diffuse = { block->diffuse.r * k, block->diffuse.g * k, block->diffuse.b * k };
+        lighting->AddDiffuse(diffuse, block->direction);
+    } else {
+        C3Vector fog = { block->fogColor.r * k, block->fogColor.g * k, block->fogColor.b * k };
+        lighting->SetFog(fog, block->fogStart, block->fogEnd, block->fogRate);
+
+        auto obj = static_cast<CMapBaseObj*>(arg);
+        obj->SelectLights(lighting);
+        obj->SelectUnderwater(lighting);
+
+        if (obj->m_flags & 0x2) {
+            lighting->m_flags |= 0x8;
             return;
         }
     }
 
-    // Outdoors: ambient and diffuse from Light.dbc (via ComputeOutdoorLight); the sun direction is
-    // still fixed until the time-of-day arc is ported.
-    lighting->AddAmbient(CWorld::s_outdoorAmbient);
-    lighting->AddDiffuse(CWorld::s_outdoorDiffuse, CWorld::s_outdoorDirection);
+    lighting->m_flags &= ~0x8u;
 }
 
 void CWorld::SetLoadProgressCallback(void (*callback)(float)) {

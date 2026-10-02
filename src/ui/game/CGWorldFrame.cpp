@@ -571,7 +571,6 @@ void CGWorldFrame::OnWorldUpdate() {
 
     // What the stand-in's per-frame update still did: refresh the outdoor light, and hand the
     // camera to the sky, which builds its geometry around it.
-    CWorld::UpdateOutdoorLight();
     SkySetCameraState(this->m_camera->Position());
     CWorldScene::s_worldCameraPos = this->m_camera->Position();
 

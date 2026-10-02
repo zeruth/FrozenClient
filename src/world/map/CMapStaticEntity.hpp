@@ -66,7 +66,13 @@ class CMapStaticEntity : public CMapBaseObj {
         // Apply the cached water side to a model's lighting: above only (0x20), below only
         // (0x40), or straddling the surface (both, and the plane z = m_liquidHeight).
         // ref: FUN_007c10c0
-        void ApplyWaterSide(CM2Lighting* lighting) const;
+        void SelectUnderwater(CM2Lighting* lighting) override;
+        // The light a placed model takes: the sun's, or the floor of the building it stands
+        // in, and the fog of the outside or of the building. ref: FUN_007c1730
+        void SelectLights(CM2Lighting* lighting) override;
+        // ref: FUN_007a0c10
+        ~CMapStaticEntity() override;
+        static const C3Vector s_interiorLightDir;
         // Its place in the distance row the traversal put it in, and the frame it was last
         // reached on, so a thing straddling two chunks is visited once.
         TSLink<CMapStaticEntity> m_rowLink;      // +0xa8

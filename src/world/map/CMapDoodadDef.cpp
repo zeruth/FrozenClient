@@ -1,3 +1,5 @@
+#include "world/map/CMapLight.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/map/CMapDoodadDef.hpp"
 #include "model/CM2Lighting.hpp"
 #include "world/map/CMap.hpp"
@@ -77,7 +79,7 @@ void CMapDoodadDef::FloorLight(CMapObjDef* def, uint32_t groupIndex, const uint1
 // it straddles it: both bits, and the lighting's liquid plane is the horizontal plane at the
 // surface, (0, 0, 1, -height), which is what CM2SceneRender::SetupLighting clips a straddling
 // model against. With liquid and the whole box under it: below only, 0x40 on, 0x20 off.
-void CMapStaticEntity::ApplyWaterSide(CM2Lighting* lighting) const {
+void CMapStaticEntity::SelectUnderwater(CM2Lighting* lighting) {
     if (!(this->m_flags7c & 0x20)) {
         lighting->m_flags = (lighting->m_flags & ~0x40u) | 0x20;
 
@@ -150,7 +152,7 @@ void CMapDoodadDef::SelectUnderwater(CM2Lighting* lighting) {
                     this->m_flags7c = (this->m_flags7c & ~0x40u) | 0x80;
                 }
 
-                this->ApplyWaterSide(lighting);
+                this->CMapStaticEntity::SelectUnderwater(lighting);
 
                 return;
             }
@@ -174,5 +176,48 @@ void CMapDoodadDef::SelectUnderwater(CM2Lighting* lighting) {
         }
     }
 
-    this->ApplyWaterSide(lighting);
+    this->CMapStaticEntity::SelectUnderwater(lighting);
+}
+
+// ref: FUN_007c1150
+// A doodad outside takes the sun at its own opacity; one inside a building takes the floor light
+// it was placed with, from straight above, and marks the lighting as interior.
+void CMapDoodadDef::SelectLights(CM2Lighting* lighting) {
+    const float k = 1.0f / 255.0f;
+
+    if (!(this->m_flags & 0x2)) {
+        const CM2Light& sun = CMap::s_outdoorLight->m_light;
+        lighting->AddAmbient(sun.m_ambColor);
+
+        C3Vector diffuse = {
+            sun.m_dirColor.x * this->m_opacity,
+            sun.m_dirColor.y * this->m_opacity,
+            this->m_opacity * sun.m_dirColor.z
+        };
+
+        lighting->AddDiffuse(diffuse, sun.m_dir);
+    } else {
+        C3Vector ambient = { this->m_ambient.r * k, this->m_ambient.g * k, this->m_ambient.b * k };
+        lighting->AddAmbient(ambient);
+
+        C3Vector diffuse = { this->m_interiorDirColor.r * k, this->m_interiorDirColor.g * k, this->m_interiorDirColor.b * k };
+        lighting->AddDiffuse(diffuse, CMapStaticEntity::s_interiorLightDir);
+    }
+
+    auto block = DayNightGetBlock();
+
+    if (!(this->m_flags & 0x8000)) {
+        C3Vector color = { block->fogColor.r * k, block->fogColor.g * k, block->fogColor.b * k };
+        lighting->SetFog(color, block->fogStart, block->fogEnd, block->fogRate);
+    } else {
+        C3Vector color = { block->finalFogColor.r * k, block->finalFogColor.g * k, block->finalFogColor.b * k };
+        lighting->SetFog(color, block->finalFogStart, block->finalFogEnd, block->finalFogRate);
+    }
+
+    if (this->m_flags & 0x2) {
+        lighting->m_flags |= 0x8;
+        return;
+    }
+
+    lighting->m_flags &= ~0x8u;
 }

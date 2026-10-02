@@ -1,3 +1,7 @@
+#include "model/CM2Lighting.hpp"
+#include "world/map/CMapLight.hpp"
+#include "world/CWorld.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/map/CMapStaticEntity.hpp"
 #include "world/map/CMapObj.hpp"
 #include "world/map/CMapObjDef.hpp"
@@ -788,3 +792,95 @@ void RelinkEntity(CMapStaticEntity* entity) {
 
     ResolveObjectGround(entity);
 }
+
+// ref: FUN_007a0c10
+CMapStaticEntity::~CMapStaticEntity() {
+    if (this->m_model) {
+        this->m_model->m_lightingCallback = nullptr;
+        this->m_model->m_lightingArg = nullptr;
+        this->m_model->Release();
+    }
+}
+
+// ref: FUN_007c1730
+void CMapStaticEntity::SelectLights(CM2Lighting* lighting) {
+    const float k = 1.0f / 255.0f;
+
+    if (this->m_sortDistance < CWorld::s_frameFogEnd) {
+        if (this->m_flags & 0x1) {
+            this->m_flags &= ~0x1u;
+        }
+
+        C3Vector diffuse = { 0.0f, 0.0f, 0.0f };
+        C3Vector ambient = { 0.0f, 0.0f, 0.0f };
+        C3Vector dir = { 0.0f, 0.0f, 0.0f };
+
+        if (this->m_flags & 0x4) {
+            // Lit by the sun, with the entity's own ambient.
+            const CM2Light& sun = CMap::s_outdoorLight->m_light;
+            diffuse = {
+                sun.m_dirColor.x * this->m_opacity,
+                sun.m_dirColor.y * this->m_opacity,
+                sun.m_dirColor.z * this->m_opacity
+            };
+            dir = sun.m_dir;
+            ambient = { this->m_ambient.r * k, this->m_ambient.g * k, this->m_ambient.b * k };
+        } else {
+            // Lit by the floor: its colour from straight above, turned toward the sun by
+            // however much of the outside reaches it.
+            diffuse = {
+                this->m_interiorDirColor.r * k * this->m_opacity,
+                this->m_interiorDirColor.g * k * this->m_opacity,
+                this->m_interiorDirColor.b * k * this->m_opacity
+            };
+            ambient = { this->m_ambient.r * k, this->m_ambient.g * k, this->m_ambient.b * k };
+            dir = CMapStaticEntity::s_interiorLightDir;
+
+            if (this->m_flags7c & 0x1000) {
+                const C3Vector& sunDir = DayNightGetBlock()->direction;
+                float w = this->m_interiorDirColor.a * k;
+                dir = {
+                    (sunDir.x - dir.x) * w + dir.x,
+                    dir.y + (sunDir.y - dir.y) * w,
+                    w * (sunDir.z - dir.z) + dir.z
+                };
+                dir.NormalizeUnchecked();
+            }
+        }
+
+        if (this->m_flags7c & 0x8000) {
+            float scale = CWorld::s_characterAmbient;
+            ambient.x = ambient.x * scale;
+            ambient.y = scale * ambient.y;
+            ambient.z = scale * ambient.z;
+
+            if (1.0f <= ambient.x) {
+                ambient.x = 1.0f;
+            }
+
+            if (1.0f <= ambient.y) {
+                ambient.y = 1.0f;
+            }
+
+            if (1.0f <= ambient.z) {
+                ambient.z = 1.0f;
+            }
+        }
+
+        lighting->AddAmbient(ambient);
+        lighting->AddDiffuse(diffuse, dir);
+    }
+
+    auto block = DayNightGetBlock();
+
+    if (this->m_flags & 0x8000) {
+        C3Vector color = { block->finalFogColor.r * k, block->finalFogColor.g * k, block->finalFogColor.b * k };
+        lighting->SetFog(color, block->finalFogStart, block->finalFogEnd, block->finalFogRate);
+    } else {
+        C3Vector color = { block->fogColor.r * k, block->fogColor.g * k, block->fogColor.b * k };
+        lighting->SetFog(color, block->fogStart, block->fogEnd, block->fogRate);
+    }
+}
+
+// The light from straight above that an interior floor gives (0x00aeedf0).
+const C3Vector CMapStaticEntity::s_interiorLightDir = { -0.30822f, -0.30822f, -0.9f };
