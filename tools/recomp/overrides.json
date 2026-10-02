@@ -4322,5 +4322,109 @@
   "007bea70": {
     "status": "excluded",
     "note": "TSHashTable<CMapDoodadDef>::Insert(obj, hash, key). Template internal; frozen calls Insert. Identified 2026-10-02."
+  },
+  "008a17d0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CMaterialSettings*>::Reserve, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "008a1860": {
+    "status": "excluded",
+    "note": "TSGrowableArray<IMaterial*>::Reserve, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "008a18f0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CInstance*>::Reserve, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "008a1b30": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CMaterialSettings*>::GrowToFit, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "008a1bb0": {
+    "status": "excluded",
+    "note": "TSGrowableArray<IMaterial*>::GrowToFit, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "008a1c30": {
+    "status": "excluded",
+    "note": "TSGrowableArray<CInstance*>::New-and-store, out of line. Storm template internal. Identified 2026-10-02."
+  },
+  "008a32c0": {
+    "status": "excluded",
+    "note": "A scalar deleting destructor (vtable 0x00a59498). Compiler-generated. Identified 2026-10-02."
+  },
+  "008a3de0": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData (virtual destructor, then return the block). Compiler-generated, one per allocator-backed liquid class. Identified 2026-10-02."
+  },
+  "008a3f30": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a3f50": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a4050": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a4150": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a4170": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a4260": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a4280": {
+    "status": "excluded",
+    "note": "The liquid module's dynamic initializer: registers one CDataAllocator per material class. Compiler-generated; frozen allocates the materials with new. Identified 2026-10-02."
+  },
+  "008a4740": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of CMaterialProcWater. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a47c0": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of CMaterialWater. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a4820": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of CMaterialWaterNoSpec. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a48a0": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of CMaterialMagma. Compiler-generated. Identified 2026-10-02."
+  },
+  "008a1410": {
+    "status": "excluded",
+    "note": "An empty function (two callers in the device range). A nullsub. Identified 2026-10-02."
+  },
+  "007d48c0": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of Liquid::CChunkGeomFactory: returns its buffer pair to the pool and frees the layer array. Compiler-generated; frozen does the same work in CChunkGeomFactory::Release. Identified 2026-10-02."
+  },
+  "007d4980": {
+    "status": "excluded",
+    "note": "Scalar deleting destructor of Liquid::CMeshGeomFactory. Compiler-generated. Identified 2026-10-02."
+  },
+  "007d4f20": {
+    "status": "excluded",
+    "note": "A deleting destructor through CDataAllocator::PutData (CClientEnvironment). Compiler-generated. Identified 2026-10-02."
+  },
+  "007d47d0": {
+    "status": "excluded",
+    "note": "Dynamic initializer: registers the CDataAllocators for the two geometry factories. Compiler-generated; frozen allocates with SMemAlloc. Identified 2026-10-02."
+  },
+  "007d5100": {
+    "status": "excluded",
+    "note": "Dynamic initializer: registers the CClientEnvironment CDataAllocator. Compiler-generated. Identified 2026-10-02."
+  },
+  "007d6670": {
+    "status": "excluded",
+    "note": "Dynamic initializer: registers the CWaveManager CDataAllocator. Compiler-generated. Identified 2026-10-02."
   }
 }

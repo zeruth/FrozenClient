@@ -78,14 +78,12 @@ class CMaterialSettings {
 
         // One of the four ints at +0x308. The draw uses these as the animation period in
         // milliseconds for the slots that do not take the default. ref: FUN_008a16c0
-        int32_t GetInt(uint32_t index) const { return this->m_int[index]; }
+        int32_t GetInt(uint32_t index) const;
 
         // One of the eighteen stage floats at +0x318, by FLAT index -- which is how the draw asks
         // for them, walking 0..10 across the two stages rather than a stage at a time.
         // ref: FUN_008a16e0
-        float GetStageFloat(uint32_t index) const {
-            return this->m_stage[index / STAGE_FLOATS][index % STAGE_FLOATS];
-        }
+        float GetStageFloat(uint32_t index) const;
 };
 
 // What actually draws a surface. There is one implementation a liquid material -- water, magma
@@ -197,6 +195,20 @@ void Initialize(int32_t a1, float textureScale, int32_t a3, const char* procWate
 void Shutdown();
 
 void ReleaseMaterials();
+
+// Whether the bank may hand out the shader materials (the map load sets it from the world's
+// vertex and pixel shader enables). ref: FUN_008a1720
+void SetShaderMaterials(int32_t enable);
+
+// Whether water takes the specular material. ref: FUN_008a1730
+void SetSpecular(int32_t enable);
+
+// Initialize's first argument: the placement is made camera-relative before the transforms are
+// built. ref: FUN_008a1740
+int32_t GetCameraRelative();
+
+// Clear the once-per-texture upload latches UpdateProceduralTextures sets. ref: FUN_008a2aa0
+void ResetProceduralTextureLatches();
 
 // Push each procedural texture's generated pixels to the device, once. Called once a frame from
 // CMap::Render, where each of the three latches after its first upload. ref: FUN_008a2f00

@@ -42,28 +42,247 @@ void IGeomFactory::AddRef() {
     this->m_refCount++;
 }
 
+// --- the chunk buffer pool ----------------------------------------------------------------------
+//
+// Buckets of free pairs keyed by exact byte sizes, reference 0x1c bytes each, on a list at
+// 0x00af0a0c. A factory takes a pair when it first builds and hands it back when it is released.
+
+namespace {
+
+struct ChunkBufBucket {
+    uint32_t m_vertexBytes = 0;
+    uint32_t m_indexBytes = 0;
+    STORM_EXPLICIT_LIST(ChunkBufPair, m_link) m_pairs;
+    TSLink<ChunkBufBucket> m_link;
+};
+
+STORM_EXPLICIT_LIST(ChunkBufBucket, m_link) s_chunkBufBuckets;
+
+}
+
+// ref: FUN_007cefd0
+// A new pair: a dynamic pool and buffer for each, the vertex one sized vertices x stride.
+static ChunkBufPair* ChunkBufCreate(uint32_t vertices, uint32_t indices, uint32_t flags, uint32_t stride) {
+    auto pair = static_cast<ChunkBufPair*>(SMemAlloc(sizeof(ChunkBufPair), __FILE__, __LINE__, 0));
+
+    if (!pair) {
+        return nullptr;
+    }
+
+    new (pair) ChunkBufPair();
+
+    CGxPool* vertexPool = GxPoolCreate(GxPoolTarget_Vertex, GxPoolUsage_Dynamic, vertices * stride, GxPoolHintBit_Unk3,
+                                       const_cast<char*>("CChunkBuf_Vertex"));
+    CGxPool* indexPool = GxPoolCreate(GxPoolTarget_Index, GxPoolUsage_Dynamic, indices * 2, GxPoolHintBit_Unk3,
+                                      const_cast<char*>("CChunkBuf_Index"));
+    CGxBuf* vertexBuf = GxBufCreate(vertexPool, stride, vertices, 0);
+    CGxBuf* indexBuf = GxBufCreate(indexPool, 2, indices, 0);
+
+    pair->m_age = 0.0f;
+    pair->m_indexBytes = indices * 2;
+    pair->m_flags = flags;
+    pair->m_vertexPool = vertexPool;
+    pair->m_vertexBytes = vertices * stride;
+    pair->m_indexBuf = indexBuf;
+    pair->m_indexPool = indexPool;
+    pair->m_vertexBuf = vertexBuf;
+
+    return pair;
+}
+
+// ref: FUN_007ced30
+// A pair's teardown: both buffers (unless one is the device stream, which is not the pair's), both
+// pools, and off whatever list it is on.
+static void ChunkBufPairDestroy(ChunkBufPair* pair) {
+    if (pair->m_vertexBuf) {
+        CGxBuf* buffer = pair->m_vertexBuf;
+
+        if (buffer != GxBufStream(buffer->m_pool->m_target, 0, 0)) {
+            GxBufDestroy(buffer);
+        }
+    }
+
+    if (pair->m_indexBuf) {
+        CGxBuf* buffer = pair->m_indexBuf;
+
+        if (buffer != GxBufStream(buffer->m_pool->m_target, 0, 0)) {
+            GxBufDestroy(buffer);
+        }
+    }
+
+    if (pair->m_vertexPool) {
+        GxPoolDestroy(pair->m_vertexPool);
+    }
+
+    if (pair->m_indexPool) {
+        GxPoolDestroy(pair->m_indexPool);
+    }
+
+    pair->m_link.Unlink();
+}
+
+// ref: FUN_007cf0c0
+// A bucket's teardown: off the bucket list, its pair list emptied.
+static void ChunkBufBucketDestroy(ChunkBufBucket* bucket) {
+    bucket->m_link.Unlink();
+    bucket->m_pairs.UnlinkAll();
+}
+
+// ref: FUN_007cdf50
+int32_t ChunkBufIsValid(const ChunkBufPair* pair) {
+    return pair->m_vertexBuf && pair->m_vertexBuf->unk1C && pair->m_vertexBuf->unk1D
+        && pair->m_indexBuf && pair->m_indexBuf->unk1C && pair->m_indexBuf->unk1D;
+}
+
+// ref: FUN_007cf140
+// A pair of these exact sizes from the pool, both buffers marked for refilling; a new one when the
+// pool has none.
+ChunkBufPair* ChunkBufAcquire(uint32_t vertices, uint32_t indices, uint32_t flags, EGxVertexBufferFormat format) {
+    uint32_t stride = GxVertexBufferFormatSize(format);
+
+    for (auto bucket = s_chunkBufBuckets.Head(); bucket; bucket = s_chunkBufBuckets.Next(bucket)) {
+        if (bucket->m_vertexBytes != stride * vertices || bucket->m_indexBytes != indices * 2) {
+            continue;
+        }
+
+        auto pair = bucket->m_pairs.Head();
+
+        if (!pair) {
+            continue;
+        }
+
+        pair->m_link.Unlink();
+
+        pair->m_vertexBuf->unk1C = 0;
+        pair->m_indexBuf->unk1C = 0;
+
+        return pair;
+    }
+
+    return ChunkBufCreate(vertices, indices, flags, stride);
+}
+
+// ref: FUN_007cf790
+// Back into its bucket, making the bucket when it is the first of its sizes.
+void ChunkBufRelease(ChunkBufPair* pair) {
+    ChunkBufBucket* bucket = nullptr;
+
+    for (auto it = s_chunkBufBuckets.Head(); it; it = s_chunkBufBuckets.Next(it)) {
+        if (it->m_vertexBytes == pair->m_vertexBytes && it->m_indexBytes == pair->m_indexBytes) {
+            bucket = it;
+            break;
+        }
+    }
+
+    if (!bucket) {
+        bucket = static_cast<ChunkBufBucket*>(SMemAlloc(sizeof(ChunkBufBucket), __FILE__, __LINE__, 0));
+        new (bucket) ChunkBufBucket();
+
+        bucket->m_vertexBytes = pair->m_vertexBytes;
+        bucket->m_indexBytes = pair->m_indexBytes;
+
+        s_chunkBufBuckets.LinkToTail(bucket);
+    }
+
+    bucket->m_pairs.LinkToTail(pair);
+}
+
+// ref: FUN_007cf840
+void ChunkBufAge(float seconds) {
+    auto bucket = s_chunkBufBuckets.Head();
+
+    while (bucket) {
+        auto nextBucket = s_chunkBufBuckets.Next(bucket);
+
+        auto pair = bucket->m_pairs.Head();
+
+        while (pair) {
+            auto next = bucket->m_pairs.Next(pair);
+
+            if (!(pair->m_flags & 0x1)) {
+                pair->m_age += seconds;
+
+                if (pair->m_age > 5.0f) {
+                    pair->m_link.Unlink();
+                    ChunkBufPairDestroy(pair);
+                    pair->~ChunkBufPair();
+                    SMemFree(pair, __FILE__, __LINE__, 0);
+                }
+            }
+
+            pair = next;
+        }
+
+        if (!bucket->m_pairs.Head()) {
+            ChunkBufBucketDestroy(bucket);
+            bucket->~ChunkBufBucket();
+            SMemFree(bucket, __FILE__, __LINE__, 0);
+        }
+
+        bucket = nextBucket;
+    }
+}
+
+// ref: FUN_007cf9e0
+void ChunkBufDestroyAll() {
+    auto bucket = s_chunkBufBuckets.Head();
+
+    while (bucket) {
+        auto nextBucket = s_chunkBufBuckets.Next(bucket);
+
+        auto pair = bucket->m_pairs.Head();
+
+        while (pair) {
+            auto next = bucket->m_pairs.Next(pair);
+
+            pair->m_link.Unlink();
+            ChunkBufPairDestroy(pair);
+            pair->~ChunkBufPair();
+            SMemFree(pair, __FILE__, __LINE__, 0);
+
+            pair = next;
+        }
+
+        ChunkBufBucketDestroy(bucket);
+        bucket->~ChunkBufBucket();
+        SMemFree(bucket, __FILE__, __LINE__, 0);
+
+        bucket = nextBucket;
+    }
+}
+
+CChunkGeomFactory::CChunkGeomFactory() {
+}
+
 void CChunkGeomFactory::Release() {
     if (--this->m_refCount) {
         return;
     }
 
-    // The blocks go back to the map's lists. Leaking them would hold a pool per surface for the
-    // life of the process, and every chunk that has ever carried water makes one.
-    if (this->m_vertexBlock) {
-        VBBList::s_vertexList.Free(this->m_vertexBlock);
-
-        this->m_vertexBlock = nullptr;
-    }
-
-    if (this->m_indexBlock) {
-        VBBList::s_indexList.Free(this->m_indexBlock);
-
-        this->m_indexBlock = nullptr;
-    }
+    // The scalar-deleting destructor's work (FUN_007d48c0): the pair goes back to the pool.
+    this->ReleaseBuffers();
 
     this->~CChunkGeomFactory();
 
     SMemFree(this, __FILE__, __LINE__, 0);
+}
+
+void CChunkGeomFactory::ReleaseBuffers() {
+    if (this->m_buffers) {
+        ChunkBufRelease(this->m_buffers);
+        this->m_buffers = nullptr;
+    }
+}
+
+int32_t CChunkGeomFactory::SetPlacement(const C44Matrix& placement) {
+    if (this->m_placement == placement) {
+        return 1;
+    }
+
+    this->m_placement = placement;
+    this->m_dirty = 1;
+
+    return 1;
 }
 
 void CClientEnvironment::AddRef() {
@@ -436,17 +655,9 @@ static void WriteLayerIndices(CChunkLiquid* layer, uint16_t* out, uint16_t base,
 // the format has not changed.
 int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf,
                                  CGxBuf** indexBuf, CGxBatch* batch) {
-    CGxBuf* heldVertexBuf = this->m_vertexBlock ? this->m_vertexBlock->buf : nullptr;
-    CGxBuf* heldIndexBuf = this->m_indexBlock ? this->m_indexBlock->buf : nullptr;
-
-    bool cached = heldVertexBuf && heldIndexBuf
-               && heldVertexBuf->unk1C && heldVertexBuf->unk1D
-               && heldIndexBuf->unk1C && heldIndexBuf->unk1D
-               && !this->m_dirty && this->m_builtFormat == static_cast<uint32_t>(format);
-
-    if (cached) {
-        *vertexBuf = heldVertexBuf;
-        *indexBuf = heldIndexBuf;
+    if (this->m_buffers && ChunkBufIsValid(this->m_buffers) && !this->m_dirty) {
+        *vertexBuf = this->m_buffers->m_vertexBuf;
+        *indexBuf = this->m_buffers->m_indexBuf;
         *batch = this->m_batch;
 
         return 1;
@@ -481,59 +692,24 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
 
     uint32_t stride = GxVertexBufferFormatSize(format);
 
-    // DIVERGED, but no longer in a way that changes behaviour: the reference takes its buffer pair
-    // from a pool of its own keyed on the exact byte sizes (FUN_007cf140 walks a free list for
-    // stride*vertices and indices*2, FUN_007cefd0 makes one when nothing fits). Frozen takes a block
-    // from VBBList, which is the map's own allocator and gives each surface a pool and a buffer to
-    // itself, exactly as CMapObjGroup::AcquireLiquidBuffers does for the map objects' water.
-    //
-    // What this MUST NOT do is call BufStream, which is what it used to do. That returns the
-    // device's single shared stream buffer, so every surface got the same one and the last writer
-    // won -- which is what put green shrapnel across the scene the first frame liquid ever drew.
-    //
-    // The size is re-checked rather than allocated once, because the layer set behind a factory can
-    // grow: a block sized for two chunks and then written for five overruns its buffer.
-    if (this->m_vertexBlock && (this->m_blockVertices < totalVertices
-                                || this->m_builtFormat != static_cast<uint32_t>(format))) {
-        VBBList::s_vertexList.Free(this->m_vertexBlock);
-
-        this->m_vertexBlock = nullptr;
+    // DIVERGED in one guard: the reference keeps a held pair however the layer set behind the
+    // factory has grown since it was sized, and writing five chunks into a pair sized for two
+    // overruns it. A pair too small for this build goes back to the pool for one that fits.
+    if (this->m_buffers && (this->m_buffers->m_vertexBytes < stride * (totalVertices & 0xffff)
+                            || this->m_buffers->m_indexBytes < (maxIndices & 0xffff) * 2)) {
+        this->ReleaseBuffers();
     }
 
-    if (this->m_indexBlock && this->m_blockIndices < maxIndices) {
-        VBBList::s_indexList.Free(this->m_indexBlock);
-
-        this->m_indexBlock = nullptr;
+    if (!this->m_buffers) {
+        this->m_buffers = ChunkBufAcquire(totalVertices & 0xffff, maxIndices & 0xffff, 0, format);
     }
 
-    if (!this->m_vertexBlock) {
-        VBBList::s_vertexList.Alloc(&this->m_vertexBlock, stride, totalVertices);
-
-        this->m_blockVertices = totalVertices;
-
-        if (this->m_vertexBlock && this->m_vertexBlock->buf) {
-            this->m_vertexBlock->buf->unk1C = 0;
-        }
-    }
-
-    if (!this->m_indexBlock) {
-        VBBList::s_indexList.Alloc(&this->m_indexBlock, 2, maxIndices);
-
-        this->m_blockIndices = maxIndices;
-
-        if (this->m_indexBlock && this->m_indexBlock->buf) {
-            this->m_indexBlock->buf->unk1C = 0;
-        }
-    }
-
-    if (!this->m_vertexBlock || !this->m_vertexBlock->buf
-            || !this->m_indexBlock || !this->m_indexBlock->buf) {
+    if (!this->m_buffers || !this->m_buffers->m_vertexBuf || !this->m_buffers->m_indexBuf) {
         return 0;
     }
 
-    heldVertexBuf = this->m_vertexBlock->buf;
-    heldIndexBuf = this->m_indexBlock->buf;
-
+    CGxBuf* heldVertexBuf = this->m_buffers->m_vertexBuf;
+    CGxBuf* heldIndexBuf = this->m_buffers->m_indexBuf;
     *vertexBuf = heldVertexBuf;
     *indexBuf = heldIndexBuf;
 
@@ -627,7 +803,6 @@ int32_t CChunkGeomFactory::Build(EGxVertexBufferFormat format, CGxBuf** vertexBu
         *batch = this->m_batch;
     }
 
-    this->m_builtFormat = static_cast<uint32_t>(format);
     this->m_dirty = 0;
 
     return 1;
@@ -663,6 +838,7 @@ uint32_t Queued(uint32_t bucket) {
 // in the direction of that key, so as the reference builds instances the two buckets sort
 // identically. Reproduced as it is rather than repaired, because a distance sort would be an
 // invention -- but if a transparent bucket ever needs back-to-front, this is where it goes.
+// ref: FUN_008a1980
 static int SortAscending(const void* a, const void* b) {
     auto left = *static_cast<CInstance* const*>(a);
     auto right = *static_cast<CInstance* const*>(b);
@@ -686,6 +862,7 @@ static int SortAscending(const void* a, const void* b) {
     return 0;
 }
 
+// ref: FUN_008a19e0
 static int SortDescending(const void* a, const void* b) {
     auto left = *static_cast<CInstance* const*>(a);
     auto right = *static_cast<CInstance* const*>(b);
@@ -999,6 +1176,21 @@ CWaveManager* GetWaveManager() {
 // Reopened: everything in this file lives in the Liquid namespace, the same as the reference's own
 // ".?AVCMeshGeomFactory@Liquid@@".
 namespace Liquid {
+// ref: FUN_007d4920
+// The allocation half: the block and every field the constructor fills.
+static CMeshGeomFactory* AllocMeshGeomFactory() {
+    auto factory = static_cast<CMeshGeomFactory*>(
+        SMemAlloc(sizeof(CMeshGeomFactory), __FILE__, __LINE__, 0));
+
+    if (!factory) {
+        return nullptr;
+    }
+
+    new (factory) CMeshGeomFactory();
+
+    return factory;
+}
+
 // ref: FUN_007d49b0
 // Make a factory for one map-object group. The reference splits this in two -- FUN_007d4920 does the
 // allocation and the field fill, and this sets the two pointers afterwards -- because the allocator
@@ -1009,14 +1201,11 @@ namespace Liquid {
 // ".?AVCMeshGeomFactory@Liquid@@" and gives it back with PutData. frozen has no CDataAllocator and
 // its sibling CChunkGeomFactory already uses SMemAlloc/SMemFree, so this matches the sibling.
 CMeshGeomFactory* CMeshGeomFactory::Create(CMapObj* mapObj, CMapObjGroup* group) {
-    auto factory = static_cast<CMeshGeomFactory*>(
-        SMemAlloc(sizeof(CMeshGeomFactory), __FILE__, __LINE__, 0));
+    auto factory = AllocMeshGeomFactory();
 
     if (!factory) {
         return nullptr;
     }
-
-    new (factory) CMeshGeomFactory();
 
     factory->m_mapObj = mapObj;
     factory->m_group = group;

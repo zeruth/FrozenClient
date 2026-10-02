@@ -2,6 +2,7 @@
 #define WORLD_MAP_LIQUID_SURFACE_HPP
 
 #include <storm/Array.hpp>
+#include <storm/List.hpp>
 #include <tempest/Matrix.hpp>
 #include "gx/CGxBatch.hpp"
 #include "gx/buffer/Types.hpp"
@@ -141,7 +142,47 @@ class IGeomFactory {
         // what was built last time.
         virtual int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
                               CGxBatch* batch) = 0;
+
+        // Slot 3: give back whatever buffers the factory holds.
+        virtual void ReleaseBuffers() {}
+
+        // Slot 4: take a placement, marking the geometry dirty when it changed. The mesh factory's
+        // slot is a shared function that answers 0 (FUN_008813a0).
+        virtual int32_t SetPlacement(const C44Matrix& placement) { return 0; }
 };
+
+// One vertex and index buffer pair out of the chunk buffer pool, reference 0x28 bytes. The pool
+// keeps pairs by their exact byte sizes; a pair handed back ages by frame time and is destroyed
+// after five seconds unused (ChunkBufAge).
+struct ChunkBufPair {
+    uint32_t m_flags = 0;              // +0x00, bit 0 keeps it from ageing
+    float m_age = 0.0f;                // +0x04
+    uint32_t m_vertexBytes = 0;        // +0x08
+    uint32_t m_indexBytes = 0;         // +0x0c
+    CGxBuf* m_vertexBuf = nullptr;     // +0x10
+    CGxBuf* m_indexBuf = nullptr;      // +0x14
+    CGxPool* m_vertexPool = nullptr;   // +0x18
+    CGxPool* m_indexPool = nullptr;    // +0x1c
+    TSLink<ChunkBufPair> m_link;       // +0x20
+};
+
+// ref: FUN_007cdf50
+// Both buffers present and filled.
+int32_t ChunkBufIsValid(const ChunkBufPair* pair);
+
+// ref: FUN_007cf140
+ChunkBufPair* ChunkBufAcquire(uint32_t vertices, uint32_t indices, uint32_t flags, EGxVertexBufferFormat format);
+
+// ref: FUN_007cf790
+void ChunkBufRelease(ChunkBufPair* pair);
+
+// ref: FUN_007cf840
+// Age the pooled pairs by `seconds`, destroying those unused for more than five. CMap::Update's.
+void ChunkBufAge(float seconds);
+
+// ref: FUN_007cf9e0
+// Destroy every pooled pair. The map's teardown's.
+void ChunkBufDestroyAll();
 
 // What the outline's values are folded through. Both ends and the result are POINTERS to a vertex's
 // attribute bytes -- the two folds below interpolate between two attribute blocks into a scratch
@@ -410,34 +451,31 @@ class CMeshGeomFactory : public IGeomFactory {
 
 class CChunkGeomFactory : public IGeomFactory {
     public:
-        // TODO +0x08 the dirty flag, +0x0c
+        // +0x08 the dirty flag
+        int32_t m_dirty = 1;
         TSGrowableArray<CChunkLiquid*> m_layers;   // +0x10 .. +0x1c
-        // TODO +0x1c the cached buffer holder, +0x20 .. +0x2c the cached batch,
-        // +0x34 the 4x4 every layer's own matrix is derived from
+        // +0x1c: the buffer pair, out of the chunk buffer pool
+        ChunkBufPair* m_buffers = nullptr;
+        // +0x20 .. +0x2c: the batch the last build wrote
+        CGxBatch m_batch;
+        // +0x34: the matrix every layer's own placement is derived from
+        C44Matrix m_placement;
 
+        // ref: FUN_007d4850
+        CChunkGeomFactory();
+
+        // ref: FUN_007d4760 (the vtable's slot 1)
         void Release() override;
 
         // ref: FUN_007d4ab0 (the vtable's slot 2)
         int32_t Build(EGxVertexBufferFormat format, CGxBuf** vertexBuf, CGxBuf** indexBuf,
                       CGxBatch* batch) override;
 
-        // The buffer pair built last time, and what it was built for.
-        //
-        // THESE ARE VBBList BLOCKS, not device stream buffers, and the difference is the whole
-        // reason terrain water drew garbage the first time it drew at all. CGxDevice::BufStream
-        // hands back m_streamBufs[target] -- ONE buffer for the entire device, shared by every
-        // caller in the renderer -- so every liquid surface was handed the same CGxBuf, each
-        // overwrote the last, and whatever streamed next overwrote them all. The note that used to
-        // sit on the allocation called the divergence "an allocation strategy rather than
-        // behaviour"; it is behaviour, because the geometry has to survive until the draw.
-        VBBList::Block* m_vertexBlock = nullptr;
-        VBBList::Block* m_indexBlock = nullptr;
-        uint32_t m_blockVertices = 0;
-        uint32_t m_blockIndices = 0;
-        CGxBatch m_batch;
-        uint32_t m_builtFormat = 0xffffffff;
-        int32_t m_dirty = 1;
-        C44Matrix m_placement;
+        // ref: FUN_007d4390 (slot 3)
+        void ReleaseBuffers() override;
+
+        // ref: FUN_007d4790 (slot 4)
+        int32_t SetPlacement(const C44Matrix& placement) override;
 };
 
 // What the material reads the frame's environment through. Holds nothing yet: the reference

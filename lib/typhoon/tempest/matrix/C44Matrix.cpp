@@ -460,6 +460,14 @@ C44Matrix operator*(const C44Matrix& l, float a) {
 }
 
 // ref: FUN_004c1f00
+// ref: FUN_004c1730
+bool operator==(const C44Matrix& l, const C44Matrix& r) {
+    return r.a0 == l.a0 && r.a1 == l.a1 && r.a2 == l.a2 && r.a3 == l.a3
+        && r.b0 == l.b0 && r.b1 == l.b1 && r.b2 == l.b2 && r.b3 == l.b3
+        && r.c0 == l.c0 && r.c1 == l.c1 && r.c2 == l.c2 && r.c3 == l.c3
+        && r.d0 == l.d0 && r.d1 == l.d1 && r.d2 == l.d2 && r.d3 == l.d3;
+}
+
 C44Matrix operator*(const C44Matrix& l, const C44Matrix& r) {
     float a0 = l.a0 * r.a0 + l.a1 * r.b0 + l.a2 * r.c0 + l.a3 * r.d0;
     float a1 = l.a0 * r.a1 + l.a1 * r.b1 + l.a2 * r.c1 + l.a3 * r.d1;
