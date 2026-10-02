@@ -1812,11 +1812,34 @@ int32_t CM2Scene::DrawShadowCasters(const C44Matrix& lightView) {
             casterLists[0].Count(), casterLists[1].Count(), this->array54[M2PASS_0].Count());
     }
 
+    // This pass draws casters one batch at a time. A doodad-batch element (type 2) only means
+    // something inside the scene's doodad list, where the group head carries the instance count;
+    // here it would send DrawBatchDoodad an uninitialised count over the wrong index list. Before
+    // the doodad grouping went live no element was type 2, so they are drawn as plain batches for
+    // the length of the pass and restored after. The reference casts through its own instanced
+    // path (CM2Model::DrawShadowCasterLists, FUN_0082da40) instead of this one.
+    TSGrowableArray<uint32_t> doodadElements;
+
+    for (uint32_t list = 0; list < 2; list++) {
+        for (uint32_t i = 0; i < casterLists[list].Count(); i++) {
+            M2Element& element = this->m_elements[casterLists[list][i]];
+
+            if (element.type == 2) {
+                element.type = 0;
+                *doodadElements.New() = casterLists[list][i];
+            }
+        }
+    }
+
     CShaderEffect::SetAlphaRef(0.0f);
     render.Draw(M2PASS_0, this->m_elements.m_data, casterLists[0].m_data, casterLists[0].Count());
 
     CShaderEffect::SetAlphaRef(CASTER_ALPHA_REF);
     render.Draw(M2PASS_0, this->m_elements.m_data, casterLists[1].m_data, casterLists[1].Count());
+
+    for (uint32_t i = 0; i < doodadElements.Count(); i++) {
+        this->m_elements[doodadElements[i]].type = 2;
+    }
 
     // How many of the submitted batches actually reached a draw call. A caster pass that
     // submits thousands and draws none looks identical, from the log, to one that works.
