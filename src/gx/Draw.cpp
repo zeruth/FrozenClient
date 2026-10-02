@@ -3,6 +3,7 @@
 #include "gx/Device.hpp"
 #include <bc/Debug.hpp>
 
+// ref: FUN_00482a40
 void GxDraw(CGxBatch* batch, int32_t indexed) {
     g_theGxDevicePtr->Draw(batch, indexed);
 }

@@ -310,16 +310,32 @@ class CGxDevice {
         // TODO
         // Reference +0x350: the mip level textures start at, which ITexWHDStartEnd skips to.
         uint32_t m_baseMipLevel = 0;
+        // The cursor, reference +0x2950..+0x3964: shown; drawn by the hardware rather than as a
+        // quad (gxCursor and the caps both allow it); the hotspot; the 32x32 ARGB image the
+        // client writes through CursorLock; the texture the software path draws it from; and the
+        // depth that path draws at under stereo.
+        int32_t m_cursorVisible = 1;
+        int32_t m_hwCursor = 0;
+        uint32_t m_cursorHotspotX = 0;
+        uint32_t m_cursorHotspotY = 0;
+        uint32_t m_cursorBits[32 * 32] = {};
+        CGxTex* m_cursorTexture = nullptr;
+        float m_cursorDepth = 1.0f;
+
+        // Static variables
+        // The UI shaders the stereo cursor draws with (reference 0x00c5dfd8 and 0x00c5fffc), loaded
+        // by the D3D device on create and destroyed with it.
+        static CGxShader* s_uiVertexShader[2];
+        static CGxShader* s_uiPixelShader;
 
         // Virtual member functions
         virtual void ITexMarkAsUpdated(CGxTex*) = 0;
-        // Bind the slot's texture as the device's colour/depth target; null restores the default.
-
-        // Debug only: read a render target back and write it to a file. There is no equivalent in
-        // the reference, which had a debugger attached instead; frozen needs it because a shadow map
-        // that is never sampled correctly is indistinguishable from one that was never drawn.
         virtual void IRsSendToHw(EGxRenderState) = 0;
         virtual void ICursorCreate(const CGxFormat& format);
+        virtual void ICursorDestroy();
+        virtual void ICursorDraw();
+        virtual void CursorSetVisible(int32_t visible);
+        virtual void CursorUnlock(uint32_t hotspotX, uint32_t hotspotY);
         virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat&);
         virtual int32_t DeviceCreate(void* window, const CGxFormat& format);
         virtual void DeviceDestroy();
@@ -393,6 +409,7 @@ class CGxDevice {
         // Member functions
         CGxDevice();
         const CGxCaps& Caps() const;
+        uint32_t* CursorLock();
         CGxBuf* BufCreate(CGxPool*, uint32_t, uint32_t, uint32_t);
         // The other half of BufCreate and PoolCreate, which frozen has been missing entirely:
         // nothing could release a pool or a buffer, so anything that built geometry on demand

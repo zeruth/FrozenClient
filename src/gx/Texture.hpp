@@ -49,6 +49,9 @@ int32_t GxTexCreate(CGxTexParms const&, CGxTex*&);
 
 int32_t GxTexCreate(EGxTexTarget, uint32_t, uint32_t, uint32_t, EGxTexFormat, EGxTexFormat, CGxTexFlags, void*, void (*)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), const char*, CGxTex*&);
 
+// A square-or-not power-of-two 2D texture with the same format in memory and on the device.
+int32_t GxTexCreate(uint32_t width, uint32_t height, EGxTexFormat format, CGxTexFlags flags, void* userArg, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), CGxTex*& texId);
+
 void GxTexDestroy(CGxTex* texId);
 
 void GxTexParameters(const CGxTex* texId, CGxTexParms& parms);

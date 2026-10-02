@@ -1055,6 +1055,21 @@ int32_t CGxDeviceD3d::ICreateD3d() {
     return 0;
 }
 
+// ref: FUN_0068f370
+// Fills the placeholder texture with the colour passed as its user argument.
+static void PlaceholderTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t face, uint32_t level, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
+    static uint32_t s_texels[64] = {};
+
+    if (cmd == GxTex_Lock) {
+        for (uint32_t i = 0; i < 64; i++) {
+            s_texels[i] = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(userArg));
+        }
+    } else if (cmd == GxTex_Latch) {
+        texelStrideInBytes = width * 4;
+        texels = s_texels;
+    }
+}
+
 // ref: FUN_0068f3d0
 // PARTIAL. Ported: hardware T&L selection, present parameters, CreateDevice with the reference's
 // behaviour flags, the adapter format, ISetCaps, the D3D defaults. Not yet, all recorded in the
@@ -1134,11 +1149,21 @@ int32_t CGxDeviceD3d::ICreateD3dDevice(const CGxFormat& format) {
         CGxDevice::Log("\tNVAPI: %d", this->m_nvapiInitialized);
         CGxDevice::Log("\tstereoHandle: %x", this->m_stereoHandle);
 
-        // TODO logs
-
         this->IStateSetD3dDefaults();
 
-        // TODO
+        this->DeviceSetGammaRamp(this->m_gammaRamp);
+        this->ICursorCreate(format);
+
+        static uint32_t s_placeholderColor = 0xFF00FF00;
+        GxTexCreate(8, 8, GxTex_Argb8888, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1),
+            reinterpret_cast<void*>(static_cast<uintptr_t>(s_placeholderColor)), PlaceholderTexCallback, this->m_placeholderTexture);
+
+        if (this->m_placeholderTexture) {
+            GxTexUpdate(this->m_placeholderTexture, 0, 0, 0, 0, 1);
+        }
+
+        this->ShaderCreate(CGxDevice::s_uiVertexShader, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
+        this->ShaderCreate(&CGxDevice::s_uiPixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);
 
         return 1;
     }
@@ -1398,16 +1423,32 @@ bool CGxDeviceD3d::ICreateWindow(CGxFormat& format) {
 // build a new one. This was an empty TODO: a format change created a second device beside the
 // first and kept drawing with the first one's textures, buffers and shaders.
 //
-// Not ported, recorded: the reference first destroys the two default shader sets ICreateD3dDevice
-// loads (Shaders\Vertex, Shaders\Pixel), calls the cursor teardown (vtable slot 3,
-// FUN_006a00c0), destroys the 8x8 placeholder texture at +0x3b58 and releases the NVAPI stereo
-// handle. Frozen creates none of those yet.
 void CGxDeviceD3d::IDestroyD3dDevice() {
+    for (uint32_t i = 0; i < 2; i++) {
+        if (CGxDevice::s_uiVertexShader[i]) {
+            this->ShaderDestroy(&CGxDevice::s_uiVertexShader[i]);
+        }
+    }
+
+    if (CGxDevice::s_uiPixelShader) {
+        this->ShaderDestroy(&CGxDevice::s_uiPixelShader);
+    }
+
+    this->ICursorDestroy();
+
     this->IReleaseD3dResources(1);
 
     this->IReleaseD3dVertexDecls();
 
-    this->m_d3dCurrentVertexDecl = nullptr;
+    if (this->m_d3dFrameQuery) {
+        this->m_d3dFrameQuery->Release();
+        this->m_d3dFrameQuery = nullptr;
+    }
+
+    if (this->m_placeholderTexture) {
+        GxTexDestroy(this->m_placeholderTexture);
+        this->m_placeholderTexture = nullptr;
+    }
 
     if (this->m_stereoHandle) {
         NvAPI_Stereo_DestroyHandle(this->m_stereoHandle);
@@ -1505,8 +1546,8 @@ void CGxDeviceD3d::IReleaseD3dPools(int32_t a2) {
 // This replaces a tracker frozen kept of its own for the same purpose (the 2026-09 resize fix:
 // a render target that outlived the reset made Reset fail with D3DERR_INVALIDCALL).
 //
-// One divergence, recorded here: the reference stores the device field at +0x3b58 (the 8x8
-// placeholder texture) into the texture where frozen stores null until that texture exists.
+// What the reference leaves in the released texture is the placeholder texture's pointer, not
+// null; m_needsCreation keeps anything from reading it as a D3D object.
 void CGxDeviceD3d::IReleaseD3dTextures(int32_t all) {
     static CiRect s_emptyRect = { 0, 0, 0, 0 };
 
@@ -1523,7 +1564,7 @@ void CGxDeviceD3d::IReleaseD3dTextures(int32_t all) {
             static_cast<IUnknown*>(texId->m_apiSpecificData)->Release();
         }
 
-        texId->m_apiSpecificData = nullptr;
+        texId->m_apiSpecificData = this->m_placeholderTexture;
         texId->m_needsCreation = 1;
 
         this->TexMarkForUpdate(texId, s_emptyRect, 0);
@@ -3631,6 +3672,7 @@ void CGxDeviceD3d::ScenePresent() {
 
         CGxDevice::ScenePresent();
         this->ISceneEnd();
+        this->ICursorDraw();
 
         if (this->m_format.fixLag) {
             if (!this->m_d3dFrameQuery) {
@@ -4444,4 +4486,94 @@ float CGxDeviceD3d::StereoGetConvergence() {
 // ref: FUN_006a0120
 float CGxDeviceD3d::StereoGetSeparation() {
     return this->m_stereoSeparation;
+}
+
+// ref: FUN_0068e900
+// The hardware cursor gets a 32x32 managed texture whose top surface SetCursorProperties takes;
+// the image is pushed to it straight away.
+void CGxDeviceD3d::ICursorCreate(const CGxFormat& format) {
+    CGxDevice::ICursorCreate(format);
+
+    if (this->m_hwCursor && !this->m_d3dCursorTexture) {
+        this->m_d3dDevice->CreateTexture(32, 32, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &this->m_d3dCursorTexture, nullptr);
+
+        if (this->m_d3dCursorTexture) {
+            this->m_d3dCursorTexture->GetSurfaceLevel(0, &this->m_d3dCursorSurface);
+        }
+
+        this->m_cursorDirty = 1;
+        this->ICursorDraw();
+    }
+}
+
+// ref: FUN_006a00c0
+void CGxDeviceD3d::ICursorDestroy() {
+    CGxDevice::ICursorDestroy();
+
+    if (this->m_d3dCursorSurface) {
+        this->m_d3dCursorSurface->Release();
+        this->m_d3dCursorSurface = nullptr;
+    }
+
+    if (this->m_d3dCursorTexture) {
+        this->m_d3dCursorTexture->Release();
+        this->m_d3dCursorTexture = nullptr;
+    }
+}
+
+// ref: FUN_0068e810
+// The software cursor draws in a scene of its own after the frame's; the hardware one only
+// re-sends its image when it changed.
+void CGxDeviceD3d::ICursorDraw() {
+    if (!this->m_hwCursor) {
+        this->ISceneBegin();
+    }
+
+    CGxDevice::ICursorDraw();
+
+    if (!this->m_hwCursor) {
+        this->ISceneEnd();
+        return;
+    }
+
+    if (this->m_cursorDirty && this->m_d3dCursorSurface && this->m_context) {
+        D3DLOCKED_RECT lockedRect;
+
+        if (SUCCEEDED(this->m_d3dCursorSurface->LockRect(&lockedRect, nullptr, 0))) {
+            for (uint32_t row = 0; row < 32; row++) {
+                memcpy(static_cast<uint8_t*>(lockedRect.pBits) + lockedRect.Pitch * row, &this->m_cursorBits[row * 32], 32 * sizeof(uint32_t));
+            }
+
+            this->m_d3dCursorSurface->UnlockRect();
+            this->m_d3dDevice->SetCursorProperties(this->m_cursorHotspotX, this->m_cursorHotspotY, this->m_d3dCursorSurface);
+        }
+
+        this->m_cursorDirty = 0;
+    }
+}
+
+// ref: FUN_0068e750
+// The hardware cursor is shown or hidden at once, but only while the mouse is over the window.
+void CGxDeviceD3d::CursorSetVisible(int32_t visible) {
+    CGxDevice::CursorSetVisible(visible);
+
+    if (this->m_hwCursor && this->m_context) {
+        POINT mousePos;
+        GetCursorPos(&mousePos);
+        ScreenToClient(this->m_hwnd, &mousePos);
+
+        RECT clientRect;
+        GetClientRect(this->m_hwnd, &clientRect);
+
+        if (mousePos.x >= clientRect.left && mousePos.x < clientRect.right
+            && mousePos.y >= clientRect.top && mousePos.y < clientRect.bottom) {
+            this->m_d3dDevice->ShowCursor(this->m_cursorVisible);
+        }
+    }
+}
+
+// ref: FUN_0068e7e0
+void CGxDeviceD3d::CursorUnlock(uint32_t hotspotX, uint32_t hotspotY) {
+    CGxDevice::CursorUnlock(hotspotX, hotspotY);
+    this->m_cursorDirty = 1;
 }

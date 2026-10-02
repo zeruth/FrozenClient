@@ -15,8 +15,14 @@ void RestoreMouse() {
     // TODO
 }
 
+// Where the mouse was last seen in normal mode (reference 0x00d413f8, 0x00d413fc, 0x00d413f4),
+// so leaving relative mode can put it back.
+static POINT s_savedMousePos;
+static HWND s_savedMouseWindow;
+
 void SaveMouse(POINT mousePos, HWND hwnd) {
-    // TODO
+    s_savedMousePos = mousePos;
+    s_savedMouseWindow = hwnd;
 }
 
 int32_t ConvertButton(uint32_t message, uintptr_t wparam, MOUSEBUTTON* button) {
@@ -406,6 +412,28 @@ int32_t OsInputGet(OSINPUT* id, int32_t* param0, int32_t* param1, int32_t* param
 
     OsQueueGet(id, param0, param1, param2, param3);
     return 1;
+}
+
+// ref: FUN_0086a0d0
+// The mouse in the game window's client coordinates; outside relative mode it is also saved.
+void OsInputGetMousePosition(int32_t* x, int32_t* y) {
+    auto hwnd = static_cast<HWND>(OsGuiGetWindow(0));
+
+    POINT mousePos;
+    GetCursorPos(&mousePos);
+    ScreenToClient(hwnd, &mousePos);
+
+    if (Input::s_osMouseMode != OS_MOUSE_MODE_RELATIVE) {
+        SaveMouse(mousePos, hwnd);
+    }
+
+    if (x) {
+        *x = mousePos.x;
+    }
+
+    if (y) {
+        *y = mousePos.y;
+    }
 }
 
 void OsInputSetMouseMode(OS_MOUSE_MODE mode) {

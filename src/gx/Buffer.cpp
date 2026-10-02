@@ -219,10 +219,17 @@ void GxBufData(CGxBuf* buf, const void* data, uint32_t size, uint32_t offset) {
     buf->unk1C = 1;
 }
 
+// ref: FUN_004829d0
 char* GxBufLock(CGxBuf* buf) {
     return g_theGxDevicePtr->BufLock(buf);
 }
 
+// ref: FUN_00482a20
+CGxBuf* GxBufStream(EGxPoolTarget target, uint32_t itemSize, uint32_t itemCount) {
+    return g_theGxDevicePtr->BufStream(target, itemSize, itemCount);
+}
+
+// ref: FUN_004829f0
 void GxBufUnlock(CGxBuf* buf, uint32_t size) {
     g_theGxDevicePtr->BufUnlock(buf, size);
     buf->unk1C = 1;

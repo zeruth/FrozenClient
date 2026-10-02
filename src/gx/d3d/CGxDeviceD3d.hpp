@@ -253,9 +253,15 @@ class CGxDeviceD3d : public CGxDevice {
     LPDIRECT3DSURFACE9 m_defColorSurface = nullptr;
     LPDIRECT3DSURFACE9 m_defDepthSurface = nullptr;
     LPDIRECT3DVERTEXDECLARATION9 m_d3dCurrentVertexDecl;
-    // Reference +0x3b4c: the hardware cursor image needs re-uploading. DeviceSetFormat and the
-    // cursor setter raise it; the per-frame cursor upload (FUN_0068e810, not ported) clears it.
+    // Reference +0x3b4c: the hardware cursor image needs re-uploading. DeviceSetFormat and
+    // CursorUnlock raise it; ICursorDraw clears it once the image is on the cursor surface.
     int32_t m_cursorDirty = 0;
+    // Reference +0x3b50, +0x3b54: the hardware cursor's 32x32 texture and its top surface.
+    LPDIRECT3DTEXTURE9 m_d3dCursorTexture = nullptr;
+    LPDIRECT3DSURFACE9 m_d3dCursorSurface = nullptr;
+    // Reference +0x3b58: an 8x8 texture filled with one colour, made on device create. A texture
+    // the device loses is left pointing at it until it is re-created.
+    CGxTex* m_placeholderTexture = nullptr;
     // NVIDIA stereo (reference +0x3ab4..+0x3acc): NVAPI came up; stereo is running on this
     // device; the driver had it on before we touched it (restored on destroy); the stereo handle;
     // convergence and separation, re-sent at the next present when dirty.
@@ -345,6 +351,11 @@ class CGxDeviceD3d : public CGxDevice {
     void IEnsureTargetDepth(uint32_t width, uint32_t height);
     int32_t ICheckDepthFormat(D3DFORMAT format);
     virtual void IRsSendToHw(EGxRenderState which);
+    virtual void ICursorCreate(const CGxFormat& format);
+    virtual void ICursorDestroy();
+    virtual void ICursorDraw();
+    virtual void CursorSetVisible(int32_t visible);
+    virtual void CursorUnlock(uint32_t hotspotX, uint32_t hotspotY);
     virtual int32_t DeviceCreate(int32_t (*windowProc)(void* window, uint32_t message, uintptr_t wparam, intptr_t lparam), const CGxFormat& format);
     virtual int32_t DeviceCreate(void* window, const CGxFormat& format);
     virtual void DeviceDestroy();

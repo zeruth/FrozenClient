@@ -9,8 +9,11 @@ char* GxShaderConstantsLock(EGxShTarget target) {
     return g_theGxDevicePtr->ShaderConstantsLock(target);
 }
 
+// ref: FUN_00408210
 void GxShaderConstantsSet(EGxShTarget target, uint32_t index, const float* constants, uint32_t count) {
-    g_theGxDevicePtr->ShaderConstantsSet(target, index, constants, count);
+    if (constants) {
+        g_theGxDevicePtr->ShaderConstantsSet(target, index, constants, count);
+    }
 }
 
 // Widens the dirty range for one target rather than doing any unlocking: it lowers the range

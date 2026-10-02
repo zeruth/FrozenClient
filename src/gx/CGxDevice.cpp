@@ -4,6 +4,13 @@
 #include "util/Filesystem.hpp"
 #include <storm/Log.hpp>
 #include "gx/Buffer.hpp"
+#include "gx/CGxBatch.hpp"
+#include "gx/Draw.hpp"
+#include "gx/RenderState.hpp"
+#include "gx/Texture.hpp"
+#include "gx/Transform.hpp"
+#include "event/Input.hpp"
+#include <tempest/Matrix.hpp>
 #include <cmath>
 #include <common/Time.hpp>
 #include "gx/CGxMonitorMode.hpp"
@@ -983,6 +990,8 @@ const CRect& CGxDevice::DeviceCurWindow() {
 }
 
 float CGxDevice::s_aspectRatio = 0.0f;
+CGxShader* CGxDevice::s_uiVertexShader[2];
+CGxShader* CGxDevice::s_uiPixelShader;
 uint32_t CGxDevice::s_nextFrameTime = 0;
 
 // ref: FUN_006836d0
@@ -1073,8 +1082,210 @@ const CRect& CGxDevice::DeviceDefWindow() {
     return this->m_defWindowRect;
 }
 
+// ref: FUN_00683610
+// The cursor texture reads straight out of the device's image, one 32-pixel row per 0x80 bytes.
+static void CursorTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t face, uint32_t level, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
+    if (cmd == GxTex_Latch) {
+        texelStrideInBytes = 0x80;
+        texels = static_cast<CGxDevice*>(userArg)->m_cursorBits;
+    }
+}
+
+// ref: FUN_00684ad0
+// The hardware cursor is used when gxCursor asks for it and the device can draw one; otherwise
+// the image goes into a texture the software path draws as a quad.
 void CGxDevice::ICursorCreate(const CGxFormat& format) {
-    // TODO
+    this->m_hwCursor = format.cursor && this->m_caps.m_hardwareCursor ? 1 : 0;
+
+    if (!this->m_hwCursor && !this->m_cursorTexture) {
+        GxTexCreate(32, 32, GxTex_Argb8888, CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1), this, CursorTexCallback, this->m_cursorTexture);
+    }
+}
+
+// ref: FUN_006835e0
+void CGxDevice::ICursorDestroy() {
+    if (this->m_cursorTexture) {
+        GxTexDestroy(this->m_cursorTexture);
+        this->m_cursorTexture = nullptr;
+    }
+}
+
+// ref: FUN_00683640
+void CGxDevice::CursorSetVisible(int32_t visible) {
+    this->m_cursorVisible = visible;
+}
+
+// ref: FUN_00683650
+uint32_t* CGxDevice::CursorLock() {
+    return this->m_cursorBits;
+}
+
+// ref: FUN_00684b50
+void CGxDevice::CursorUnlock(uint32_t hotspotX, uint32_t hotspotY) {
+    this->m_cursorHotspotY = hotspotY;
+    this->m_cursorHotspotX = hotspotX;
+
+    if (this->m_cursorTexture) {
+        CiRect rect = { 0, 0, 32, 32 };
+        GxTexUpdate(this->m_cursorTexture, rect, 0);
+    }
+}
+
+// ref: FUN_00687a90
+// The software cursor: a 32x32 quad at the mouse, less the hotspot, in the 0..1 space the UI
+// draws in. Under stereo it is drawn through the UI shaders with an orthographic projection
+// built from the viewport, at m_cursorDepth.
+//
+// A reference defect, kept: when the stream buffer cannot be locked it returns with the render
+// states and the world transform still pushed.
+void CGxDevice::ICursorDraw() {
+    int32_t x;
+    int32_t y;
+
+    if (!this->m_cursorVisible || this->m_hwCursor) {
+        return;
+    }
+
+    OsInputGetMousePosition(&x, &y);
+
+    if (x < 0 || y < 0
+        || static_cast<float>(x) >= this->m_curWindowRect.maxX
+        || static_cast<float>(y) >= this->m_curWindowRect.maxY) {
+        return;
+    }
+
+    GxRsPush();
+    GxRsSet(GxRs_PolygonOffset, 0);
+    GxRsSet(GxRs_NormalizeNormals, 0);
+    GxRsSet(GxRs_BlendingMode, 1);
+    GxRsSetAlphaRef();
+    GxRsSet(GxRs_Lighting, 0);
+    GxRsSet(GxRs_Fog, 0);
+    GxRsSet(GxRs_DepthTest, 0);
+    GxRsSet(GxRs_DepthWrite, 0);
+    GxRsSet(GxRs_ColorWrite, 0xF);
+    GxRsSet(GxRs_Culling, 0);
+    GxRsSet(GxRs_ClipPlaneMask, 0);
+    GxRsSet(GxRs_Texture0, this->m_cursorTexture);
+    GxRsSet(GxRs_Texture1, static_cast<CGxTex*>(nullptr));
+    GxRsSet(GxRs_ColorOp0, 0);
+    GxRsSet(GxRs_AlphaOp0, 0);
+    GxRsSet(GxRs_TexGen0, 0);
+    GxRsSet(GxRs_Unk61, 0);
+
+    C44Matrix identity;
+    this->XformPush(GxXform_World, identity);
+
+    float depth = 1.0f;
+    C44Matrix savedProjection;
+
+    if (this->StereoEnabled()
+        && CGxDevice::s_uiVertexShader[1] && CGxDevice::s_uiVertexShader[1]->Valid()
+        && CGxDevice::s_uiPixelShader && CGxDevice::s_uiPixelShader->Valid()) {
+        depth = this->m_cursorDepth;
+
+        float minX, maxX, minY, maxY, minZ, maxZ;
+        GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
+        GxXformProjection(savedProjection);
+
+        C44Matrix projection;
+        projection.a0 = 2.0f / (maxX - minX);
+        projection.a1 = 0.0f;
+        projection.a2 = 0.0f;
+        projection.a3 = 0.0f;
+        projection.b0 = 0.0f;
+        projection.b1 = 2.0f / (maxY - minY);
+        projection.b2 = 0.0f;
+        projection.b3 = 0.0f;
+        projection.c0 = 0.0f;
+        projection.c1 = 0.0f;
+        projection.c2 = 1.00008f;
+        projection.c3 = 1.0f;
+        projection.d0 = -((minX + maxX) / (maxX - minX));
+        projection.d1 = -((minY + maxY) / (maxY - minY));
+        projection.d2 = -0.400016f;
+        projection.d3 = 0.0f;
+        GxXformSetProjection(projection);
+
+        GxRsSet(GxRs_VertexShader, CGxDevice::s_uiVertexShader[1]);
+        GxRsSet(GxRs_PixelShader, CGxDevice::s_uiPixelShader);
+
+        C44Matrix viewProj;
+        GxXformViewProjNativeTranspose(viewProj);
+        GxShaderConstantsSet(GxSh_Vertex, 0, reinterpret_cast<const float*>(&viewProj), 4);
+    } else {
+        GxRsSet(GxRs_VertexShader, static_cast<CGxShader*>(nullptr));
+        GxRsSet(GxRs_PixelShader, static_cast<CGxShader*>(nullptr));
+    }
+
+    auto buf = GxBufStream(GxPoolTarget_Vertex, 0x18, 4);
+    auto vertices = reinterpret_cast<float*>(GxBufLock(buf));
+
+    if (!vertices) {
+        return;
+    }
+
+    float invWidth = 0.0f;
+    if (this->m_curWindowRect.maxX > 0.0f) {
+        invWidth = 1.0f / this->m_curWindowRect.maxX;
+    }
+
+    float invHeight = 0.0f;
+    if (this->m_curWindowRect.maxY > 0.0f) {
+        invHeight = 1.0f / this->m_curWindowRect.maxY;
+    }
+
+    // Both corners convert as unsigned, so a hotspot past the mouse wraps.
+    uint32_t left = static_cast<uint32_t>(x) - this->m_cursorHotspotX;
+    uint32_t top = static_cast<uint32_t>(y) - this->m_cursorHotspotY;
+
+    float x0 = static_cast<float>(left) * invWidth;
+    float x1 = static_cast<float>(left + 32) * invWidth;
+    float y0 = 1.0f - static_cast<float>(top) * invHeight;
+    float y1 = 1.0f - static_cast<float>(top + 32) * invHeight;
+
+    if (this->m_api == GxApi_D3d9 || this->m_api == GxApi_D3d9Ex) {
+        x0 -= invWidth * 0.5f;
+        x1 -= invWidth * 0.5f;
+        y0 += invHeight * 0.5f;
+        y1 += invHeight * 0.5f;
+    }
+
+    const float corners[4][4] = {
+        { x0, y0, 0.0f, 0.0f },
+        { x0, y1, 0.0f, 1.0f },
+        { x1, y0, 1.0f, 0.0f },
+        { x1, y1, 1.0f, 1.0f },
+    };
+
+    for (uint32_t i = 0; i < 4; i++) {
+        auto vertex = vertices + i * 6;
+        vertex[0] = corners[i][0];
+        vertex[1] = corners[i][1];
+        vertex[2] = depth;
+        *reinterpret_cast<uint32_t*>(&vertex[3]) = 0xFFFFFFFF;
+        vertex[4] = corners[i][2];
+        vertex[5] = corners[i][3];
+    }
+
+    GxBufUnlock(buf, 0);
+    GxPrimVertexPtr(buf, GxVBF_PCT);
+
+    CGxBatch batch;
+    batch.m_primType = GxPrim_TriangleStrip;
+    batch.m_start = 0;
+    batch.m_count = 4;
+    batch.m_minIndex = 0;
+    batch.m_maxIndex = 3;
+    GxDraw(&batch, 0);
+
+    GxXformPop(GxXform_World);
+
+    if (this->StereoEnabled()) {
+        GxXformSetProjection(savedProjection);
+    }
+
+    GxRsPop();
 }
 
 // ref: FUN_00682d40

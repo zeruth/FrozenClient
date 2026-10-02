@@ -467,6 +467,26 @@ int32_t GxTexCreate(const CGxTexParms& parms, CGxTex*& texId) {
     );
 }
 
+// ref: FUN_00681cb0
+// Checked rather than asserted: an out-of-range request sets ERROR_INVALID_PARAMETER and fails.
+int32_t GxTexCreate(uint32_t width, uint32_t height, EGxTexFormat format, CGxTexFlags flags, void* userArg, TEXTURE_CALLBACK* userFunc, CGxTex*& texId) {
+    texId = nullptr;
+
+    if (width <= GxCaps().m_texMaxSize[GxTex_2d]
+        && height <= GxCaps().m_texMaxSize[GxTex_2d]
+        && (width & (width - 1)) == 0
+        && (height & (height - 1)) == 0
+        && format <= GxTexFormats_Last
+        && (!flags.m_generateMipMaps || (GxCaps().m_generateMipMaps && !(format >= GxTex_Dxt1 && format <= GxTex_Dxt5)))
+        && (flags.m_filter != GxTex_Anisotropic || GxCaps().m_texFilterAnisotropic)
+        && userFunc && width >= 8 && height >= 8) {
+        return g_theGxDevicePtr->TexCreate(GxTex_2d, width, height, 0, format, format, flags, userArg, userFunc, "Unknown", texId);
+    }
+
+    SErrSetLastError(0x57);
+    return 0;
+}
+
 int32_t GxTexCreate(EGxTexTarget target, uint32_t width, uint32_t height, uint32_t depth, EGxTexFormat format, EGxTexFormat dataFormat, CGxTexFlags flags, void* userArg, TEXTURE_CALLBACK* userFunc, const char* name, CGxTex*& texId) {
     texId = nullptr;
 

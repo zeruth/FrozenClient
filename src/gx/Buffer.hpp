@@ -39,6 +39,8 @@ void GxBufData(CGxBuf* buf, const void* data, uint32_t size, uint32_t offset);
 
 char* GxBufLock(CGxBuf* buf);
 
+CGxBuf* GxBufStream(EGxPoolTarget target, uint32_t itemSize, uint32_t itemCount);
+
 void GxBufUnlock(CGxBuf*, uint32_t);
 
 CGxPool* GxPoolCreate(EGxPoolTarget, EGxPoolUsage, uint32_t, EGxPoolHintBits, char*);
