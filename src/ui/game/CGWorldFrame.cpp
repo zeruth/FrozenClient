@@ -483,10 +483,10 @@ void CGWorldFrame::OnWorldRender() {
 
         // Transparent block (FUN_004f8ea0): above liquid it is pass 2, liquid, weather, barriers,
         // pass 1; under liquid the reference reverses it so the water surface is composited last:
-        // barriers, pass 1, weather, liquid, pass 2. Weather and barriers are not ported yet.
+        // barriers, pass 1, weather, liquid, pass 2. Barriers are not ported yet.
         if (CWorld::IsCameraUnderLiquid()) {
             if (scene) { scene->Draw(M2PASS_1); }
-            WeatherRender();
+            CWorld::RenderWeather();
             LiquidRender(1);
             if (scene) { scene->Draw(M2PASS_2); }
             ParticleFxRender();
@@ -496,7 +496,7 @@ void CGWorldFrame::OnWorldRender() {
             ParticleFxRender();
             OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
             LiquidRender(1); // transparent water/ocean, sorted farthest first (liquid bucket 1)
-            WeatherRender();
+            CWorld::RenderWeather();
             if (scene) { scene->Draw(M2PASS_1); }
         }
 

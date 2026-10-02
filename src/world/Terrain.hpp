@@ -30,10 +30,6 @@ void BlobShadowsEnd();
 // Liquid surfaces: bucket 0 = opaque (magma, slime), drawn inside TerrainRender; bucket 1 = the
 // transparent water/ocean, drawn from the world frame's transparent block after M2 pass 2.
 void LiquidRender(int32_t bucket);
-// Weather: state from SMSG_WEATHER (effectType 1 rain, 2 snow, 3 sand/mist, else clear); the
-// particle field is simulated and drawn around the camera in the transparent block.
-void TerrainSetWeather(int32_t effectType, float intensity, const float* color, const char* texture, bool abrupt);
-void WeatherRender();
 // Detail (ground effect) doodads: the grass/pebble batches of the chunks near the camera, drawn
 // after the opaque models (reference: FUN_007984a0 after M2 pass 0).
 void DetailDoodadRender();

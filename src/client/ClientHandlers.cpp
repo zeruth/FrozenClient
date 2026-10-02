@@ -7,6 +7,7 @@
 #include "ui/game/CGGameUI.hpp"
 #include "util/Time.hpp"
 #include "util/Unimplemented.hpp"
+#include "world/MapWeather.hpp"
 #include "world/World.hpp"
 #include <common/DataStore.hpp>
 #include <cstdint>
@@ -18,6 +19,14 @@ static uint32_t s_newZoneID;
 static const char* s_newMapname;
 
 void LoadNewWorld(const void* eventData, void* param) {
+    // TODO
+
+    if (CWorld::s_weather) {
+        CWorld::s_weather->Clear();
+    }
+
+    WeatherSetAmbience(-1);
+
     // TODO
 
     ClntObjMgrInitializeStd(s_newZoneID);

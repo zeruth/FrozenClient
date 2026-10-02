@@ -1,4 +1,4 @@
-#include "world/Weather.hpp"
+#include "world/MapWeather.hpp"
 #include "ui/game/RaidTarget.hpp"
 #include "ui/game/CGActionBar.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
@@ -179,6 +179,14 @@ static int32_t ClientPlayerModelReady() {
 }
 
 void ClientInitializeGame(uint32_t mapId, C3Vector position) {
+    // TODO
+
+    if (CWorld::s_weather) {
+        CWorld::s_weather->Clear();
+    }
+
+    WeatherSetAmbience(-1);
+
     // TODO
 
     ClntObjMgrInitializeShared();

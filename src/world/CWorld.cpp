@@ -11,7 +11,7 @@
 #include "model/Model2.hpp"
 #include "world/CWorldParam.hpp"
 #include "world/Map.hpp"
-#include "world/Weather.hpp"
+#include "world/MapWeather.hpp"
 #include "world/map/CMap.hpp"
 #include "gx/LoadingScreen.hpp"
 #include "util/SFile.hpp"
@@ -1133,8 +1133,17 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
     }
 
     // TODO FUN_00795d40, the day/night update FUN_007816f0, the fog-end read into
-    // DAT_00cd7668, the underwater update FUN_0079bf40, the weather update FUN_0078d170, and the
-    // zone light blend at the end
+    // DAT_00cd7668 and the underwater update FUN_0079bf40
+
+    CWorld::s_weather->Update();
+
+    // TODO the zone light blend at the end
+}
+
+// ref: FUN_0077f030
+// The weather's draw, which CGWorldFrame::OnWorldRender calls on each side of the liquid pass
+void CWorld::RenderWeather() {
+    CWorld::s_weather->Render();
 }
 
 float CWorld::GetCloudDensity() {

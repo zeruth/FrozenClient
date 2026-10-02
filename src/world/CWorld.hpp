@@ -157,6 +157,7 @@ class CWorld {
         static void LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg);
         static void SetUpdateTime(float tickTimeSec, uint32_t curTimeMs);
         static void Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos);
+        static void RenderWeather();
 
     private:
         // Private static variables
