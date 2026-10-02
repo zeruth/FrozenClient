@@ -295,7 +295,7 @@ class CMap {
         static void FreeChunk(CMapChunk* chunk);
         // Every doodad the map has placed, by its MDDF uniqueId, so two tiles sharing an edge
         // place the one that straddles it once (DAT_00d1ba90).
-        static TSHashTable<CMapDoodadDef, HASHKEY_NONE> s_doodadUniqueIds;
+        static TSHashTable<CMapDoodadDef, HASHKEY_DOODADDEF> s_doodadUniqueIds;
 
         // ref: FUN_007becd0
         static CMapDoodadDef* CreateDoodadDef(const char* name, const SMDDF* mddf, const C3Vector& origin);
@@ -330,9 +330,10 @@ class CMap {
 
         // The buildings' own props: built with the def when its root lands, and walked for the
         // frame's particle emitters.
-        static void CreateMapObjDoodads(CMapObjDef* def, CMapObj* mapObj);
+        static void CreateMapObjDoodads(CMapObj* mapObj, CMapObjGroup* group, CMapObjDef* def, CMapObjDefGroup* defGroup);
+        static CMapDoodadDef* CreateMapObjDoodad(uint32_t index, const uint8_t* modd, const char* name, uint32_t defKey, const C44Matrix& defPlacement, uint16_t doodadSetIndex);
+        static void UnlinkEntitiesInBox(const CAaBox& box);
         static void ForEachMapObjDoodad(void (*fn)(CM2Model* model, void* arg), void* arg);
-        static void CullMapObjDoodads();
         static void FreeEntity(CMapEntity* entity);
         static CMapLight* AllocLight();
         static void FreeLight(CMapLight* light);

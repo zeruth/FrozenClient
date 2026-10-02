@@ -476,6 +476,9 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         CMapObjGroup* GetGroup(uint32_t index, int32_t allowUnloaded);
         // Whether the group's file read is still in flight. ref: FUN_007ae4f0
         bool GroupReadPending(uint32_t index);
+        // The doodad set a MODD index belongs to, or 0xFFFFFFFF when none (or the root is not
+        // in). ref: FUN_007aec30
+        uint32_t DoodadSetOf(uint32_t index);
 
         // ref: FUN_007a6d70
         // The material one group's liquid draws with, or null when the group is not loaded.

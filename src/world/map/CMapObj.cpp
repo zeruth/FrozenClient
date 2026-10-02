@@ -1626,3 +1626,22 @@ bool CMapObj::GroupReadPending(uint32_t index) {
 
     return group && group->m_asyncObject != nullptr;
 }
+
+// ref: FUN_007aec30
+uint32_t CMapObj::DoodadSetOf(uint32_t index) {
+    if (!this->m_rootLoaded || index >= this->m_doodadDefCount || !this->m_mods) {
+        return 0xffffffff;
+    }
+
+    for (uint32_t set = 0; set < this->m_doodadSetCount; set++) {
+        const uint8_t* entry = this->m_mods + set * 0x20;
+        uint32_t first = *reinterpret_cast<const uint32_t*>(entry + 0x14);
+        uint32_t count = *reinterpret_cast<const uint32_t*>(entry + 0x18);
+
+        if (count && first <= index && index <= count - 1 + first) {
+            return set;
+        }
+    }
+
+    return 0xffffffff;
+}

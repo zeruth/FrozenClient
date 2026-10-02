@@ -24,7 +24,19 @@ static_assert(sizeof(SMDDF) == 0x24, "SMDDF is 36 bytes");
 // Two tiles that share an edge both list the doodads that straddle it, so a placement is looked
 // up by its uniqueId before a second copy is made; the table's own fields are the two links the
 // class already carried at +0x94 and +0x9c, which is what they were for.
-class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef, HASHKEY_NONE> {
+// The second half of a placed doodad's hash key (reference +0xa4 beside the hash value at +0x90):
+// 0 for a tile's doodad, filed under its MDDF uniqueId, and the building's uniqueId plus one for a
+// building's, filed under its MODD index -- so two buildings sharing a doodad index stay apart.
+class HASHKEY_DOODADDEF {
+    public:
+        uint32_t m_key = 0;
+
+        bool operator==(const HASHKEY_DOODADDEF& other) const {
+            return this->m_key == other.m_key;
+        }
+};
+
+class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef, HASHKEY_DOODADDEF> {
     public:
         // Member variables
         // TODO +0x28..+0x90, +0xa8..+0xd8
@@ -42,6 +54,9 @@ class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef
         // TODO +0x158 onwards beyond the sound kit
         // The doodad's own sound emitter, stopped by CMap::FreeDoodadDef before the def is released.
         SOUNDKITOBJECT m_soundKit;        // +0x158
+        // The building doodad set this doodad belongs to when it came from one of the def's extra
+        // sets; 0 for the default set and for tile doodads (+0x16c).
+        uint16_t m_doodadSetIndex = 0;
 
         // Member functions
         // ref: FUN_007c21e0
