@@ -63,6 +63,9 @@ C3Vector CWorldScene::s_frustumCorners[8];
 CWFrustum CWorldScene::s_frustums[CWorldScene::FRUSTUM_DEPTH_MAX];
 CWFrustum CWorldScene::s_clipFrustum;
 int32_t CWorldScene::s_frustumDepth;
+CWorldScene::Barriers CWorldScene::s_barriers;
+HTEXTURE CWorldScene::s_barrierTexture;
+HTEXTURE CWorldScene::s_barrierMask;
 TSGrowableArray<CWorldScene::DebugVertex> CWorldScene::s_debugVertices;
 TSGrowableArray<uint16_t> CWorldScene::s_debugIndices;
 C3Vector CWorldScene::s_cameraPos;
@@ -168,11 +171,13 @@ static CImVector FogColorImVector() {
 }
 
 // ref: FUN_007997d0
-// The scene's own state at world start. The chunk sort record (FUN_00799730), the scene sound
-// registration (FUN_008a1770) and the two 16-byte records at DAT_00cd8610 are not ported yet.
+// The scene's own state at world start. The scene sound registration (FUN_008a1770) and the two
+// 16-byte records at DAT_00cd8610 are not ported yet.
 void CWorldScene::Initialize() {
-    // TODO FUN_00799730(), the DAT_00cd877c / DAT_00cd87b0 / DAT_00cd87a8 / s_cameraLiquidType
-    // resets, the two records at DAT_00cd8610
+    CWorldScene::CreateBarrierTextures();
+
+    // TODO the DAT_00cd877c / DAT_00cd87b0 / DAT_00cd87a8 / s_cameraLiquidType resets, the two
+    // records at DAT_00cd8610
 
     // The liquid module's configuration, with the arguments the reference's own call site passes
     // at 0x0079980e: a 1, a texture scale of 1.0, a 0, and an EMPTY procedural shader suffix --
@@ -1703,12 +1708,15 @@ void CWorldScene::TraverseChunkDoodads(STORM_EXPLICIT_LIST(CMapBaseObjLink, refL
         }
 
         if (!entity->m_model || !(entity->m_flags & 0x80)) {
-            // Not drawing, but its box still feeds the horizon buffer.
-            // TODO CWorldScene::SubmitOccluderBox(box, 0.0f) with the model's bounds brought
-            // out to world space. What that sink is for is still open; see the note there.
+            // Not drawable yet: walled off while it loads, within ten yards (0x00799b26).
             //
             // The reference reads the model's bounds here without checking it has one; frozen
             // checks.
+            if (entity->m_model && entity->m_model->m_shared) {
+                CAaBox box = TransformBox(entity->m_model->m_shared->aaBox154, static_cast<CMapDoodadDef*>(entity)->m_placement);
+                CWorldScene::SubmitBarrierBox(box, 10.0f);
+            }
+
             continue;
         }
 
@@ -2170,34 +2178,13 @@ void CWorldScene::TraverseRowOccluders(Row* row) {
 // because nothing is ever seen from under one.
 //
 // The box is let out by a twentieth of a yard first, so a surface lying exactly on it is
-// treated as inside rather than falling on the boundary.
-//
-// The faces ARE a rasterised primitive and NOT the plane list SphereOccludedByVolumes reads, so
-// despite the name the reference gives this neighbourhood, do not wire them to that test. That
-// much of the older note here was right; what it said about the consumer was not, and the whole
-// system was walked out on 2026-09-26:
-//
-// The sink is the object at 0x00adf4a0, whose field 0 is a MODE (the `cmpl $0x0, (%esi)` this
-// function opens with; the tile walk below also tests it against 2). This function is __thiscall
-// on it -- frozen makes it static and keeps the sink in globals instead.
-//
-//   feeders   this (five quads per box) and FUN_007944c0 (513 bytes, 4 callers), both appending
-//             through FUN_00792360 (1135 bytes), which builds a pyramid from the camera through
-//             the quad with MatrixLookAt / PlaneFromPoints / IntersectRayPlane and appends
-//             32-byte records to two growable arrays on the object.
-//   fed from   the per-chunk links FUN_00799980, the doodad row visit FUN_007987a0,
-//              CMap::UpdateMapObjDefs FUN_007b6110, and FUN_007b4bc0, which walks the tile
-//              window and submits a face for every tile whose area is NOT loaded -- a wall at
-//              the edge of the streamed world.
-//   consumer   FUN_00794b50 (2200 bytes), a DRAW: BufStream, PrimIndexPtr, GxPrimVertexPtr,
-//              TextureGetGxTex and an M2 through CM2Model::WaitForLoad. Reached by
-//              FUN_0077f980(cameraPos) and called TWICE from CGWorldFrame::OnWorldRender
-//              (FUN_004f8ea0) at 0x004f9184 and 0x004f919a.
-//
-// So this is the BARRIER pass -- geometry drawn to close off the edge of the loaded world -- not
-// a culling input, and it is item 11's missing call rather than item 7's. CMap::UpdateAreas does
-// not read it at all.
-void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
+// treated as inside rather than falling on the boundary. The reach is measured from the active
+// mover, not the camera.
+void CWorldScene::SubmitBarrierBox(const CAaBox& box, float reach) {
+    if (!CWorldScene::s_barriers.mode) {
+        return;
+    }
+
     if (box.b.x >= box.t.x || box.b.y >= box.t.y || box.b.z >= box.t.z) {
         return;
     }
@@ -2210,8 +2197,7 @@ void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
     grown.t.y = box.t.y + 0.05f;
     grown.t.z = box.t.z + 0.05f;
 
-    // Too far away to be worth hiding anything with.
-    if (DistancePointBox(grown, CWorldScene::s_cameraPos) > maxDistance) {
+    if (DistancePointBox(grown, CWorldScene::s_barriers.moverPos) > reach) {
         return;
     }
 
@@ -2234,8 +2220,364 @@ void CWorldScene::SubmitOccluderBox(const CAaBox& box, float maxDistance) {
     };
 
     for (int32_t i = 0; i < 5; i++) {
-        // TODO FUN_00792360(quad, 4, maxDistance, 0, 0, 0).
-        (void)faces[i];
+        CWorldScene::SubmitBarrierPolygon(faces[i], 4, reach, nullptr, 0, 0);
+    }
+}
+
+// ref: FUN_00792360
+void CWorldScene::SubmitBarrierPolygon(const C3Vector* vertices, uint32_t count, float reach, const C44Matrix* transform, int32_t flip, int32_t frontOnly) {
+    auto& barriers = CWorldScene::s_barriers;
+
+    if (!barriers.mode || barriers.vertices.Count() > 1000) {
+        return;
+    }
+
+    // The fan the wall is built in (DAT_00cdd618) and the corners brought out by `transform`
+    // (DAT_00cdd588), both twelve long.
+    static CWorldScene::BarrierVertex s_fan[12];
+    static C3Vector s_placed[12];
+
+    // Only the first three are placed before the plane test; the rest wait until it passes.
+    const C3Vector* corners = vertices;
+
+    if (transform) {
+        for (int32_t i = 0; i < 3; i++) {
+            s_placed[i] = vertices[i] * *transform;
+        }
+
+        corners = s_placed;
+    }
+
+    C4Plane plane;
+    plane.n = { 0.0f, 0.0f, 1.0f };
+    plane.d = 0.0f;
+    PlaneFromPoints(&plane, corners[0], corners[1], corners[2]);
+
+    // The wall's up: world up, unless the wall is nearly flat, when it is +y.
+    C3Vector up = { 0.0f, 0.0f, 1.0f };
+
+    if (plane.n.z > 0.99 || plane.n.z < -0.99) {
+        up = { 0.0f, 1.0f, 0.0f };
+    }
+
+    const C3Vector& mover = barriers.moverPos;
+    float side = plane.n.x * mover.x + plane.n.y * mover.y + plane.n.z * mover.z + plane.d;
+
+    if (flip) {
+        side *= -1.0f;
+    }
+
+    if (frontOnly && side < 0.0f) {
+        return;
+    }
+
+    if (side > reach) {
+        return;
+    }
+
+    if (transform && count > 3) {
+        for (uint32_t i = 3; i < count; i++) {
+            s_placed[i] = vertices[i] * *transform;
+        }
+    }
+
+    float distance = DistancePointPolygonInPlane(mover, corners, count, plane);
+
+    if (reach < distance) {
+        return;
+    }
+
+    float width = (reach - distance) + (reach - distance);
+
+    if (width < 0.5f) {
+        return;
+    }
+
+    float fade = distance / reach;
+    float clamped = fade < 0.0f ? 0.0f : (fade < 1.0f ? fade : 1.0f);
+
+    CWorldScene::BarrierWall wall;
+    wall.point = { 0.0f, 0.0f, 0.0f };
+    wall.alpha = 1.0f - clamped;
+    wall.plane = plane;
+
+    // Where the mover would meet the wall walking straight at it.
+    C3Ray ray;
+    ray.origin = mover;
+    ray.dir = { -plane.n.x, -plane.n.y, -plane.n.z };
+
+    if (!IntersectRayPlane(ray, plane, nullptr, &wall.point, 0.01f)) {
+        return;
+    }
+
+    barriers.walls.Add(1, &wall);
+
+    // The pattern turns with the wall and sits still in it; the mask is centred on the mover
+    // and spans the width the wall has at its distance.
+    C44Matrix facing;
+    C3Vector origin = { 0.0f, 0.0f, 0.0f };
+    MatrixLookAt(facing, origin, plane.n, up);
+
+    C44Matrix pattern = facing;
+    C3Vector back = { -mover.x, -mover.y, -mover.z };
+    facing.Translate(back);
+
+    if (reach < 12.0f) {
+        pattern.Scale(4.0f);
+    }
+
+    float inverseWidth = 1.0f / width;
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto& v = s_fan[i];
+        v.position = corners[i];
+        v.color.value = 0;
+        v.color.a = static_cast<uint8_t>(static_cast<int32_t>((1.0f - clamped) * 255.0f));
+
+        C3Vector across = corners[i] * facing;
+        v.uv0 = { across.x * inverseWidth + 0.5f, 0.5f - inverseWidth * across.y };
+
+        C3Vector inPlane = corners[i] * pattern;
+        v.uv1 = { inPlane.x, inPlane.y };
+    }
+
+    for (uint32_t i = 0; i + 2 < count; i++) {
+        barriers.vertices.Add(1, &s_fan[0]);
+        barriers.vertices.Add(2, &s_fan[i + 1]);
+    }
+}
+
+// ref: FUN_007944c0
+void CWorldScene::SubmitBarrierEdge(const float* a, const float* b, float reach) {
+    auto& barriers = CWorldScene::s_barriers;
+
+    if (!barriers.mode) {
+        return;
+    }
+
+    float z = barriers.moverPos.z;
+
+    C3Segment segment;
+    segment.start = { a[0], a[1], z };
+    segment.end = { b[0], b[1], z };
+
+    float t = 3.4028235e+38f;
+    float distance = std::sqrt(DistancePointSegmentSq(segment, barriers.moverPos, &t));
+
+    if (distance > 0.999f * reach) {
+        return;
+    }
+
+    C3Vector span = {
+        segment.end.x - segment.start.x,
+        segment.end.y - segment.start.y,
+        segment.end.z - segment.start.z
+    };
+
+    float half = reach - distance;
+    float step = half / std::sqrt(span.z * span.z + span.y * span.y + span.x * span.x);
+
+    float t0 = t - step;
+    t0 = t0 < 0.0f ? 0.0f : (t0 >= 1.0f ? 1.0f : t0);
+
+    float t1 = step + t;
+    t1 = t1 < 0.0f ? 0.0f : (t1 >= 1.0f ? 1.0f : t1);
+
+    C3Vector p0 = { span.x * t0 + segment.start.x, span.y * t0 + segment.start.y, span.z * t0 + segment.start.z };
+    C3Vector p1 = { span.x * t1 + segment.start.x, span.y * t1 + segment.start.y, t1 * span.z + segment.start.z };
+
+    const C3Vector quad[4] = {
+        { p0.x, p0.y, half + p0.z },
+        { p0.x, p0.y, p0.z - half },
+        { p1.x, p1.y, p1.z - half },
+        { p1.x, p1.y, p1.z + half },
+    };
+
+    CWorldScene::SubmitBarrierPolygon(quad, 4, reach, nullptr, 0, 0);
+}
+
+// ref: FUN_00794ad0
+void CWorldScene::SubmitBarrierGroup(CMapObjDefGroup* defGroup, float reach) {
+    auto& barriers = CWorldScene::s_barriers;
+
+    if (!barriers.mode) {
+        return;
+    }
+
+    if (DistancePointBox(defGroup->m_bounds, barriers.moverPos) > reach) {
+        return;
+    }
+
+    for (uint32_t i = 0; i < barriers.groups.Count(); i++) {
+        if (barriers.groups[i] == defGroup) {
+            return;
+        }
+    }
+
+    CWorldScene::SubmitBarrierBox(defGroup->m_bounds, reach);
+    barriers.groups.Add(1, &defGroup);
+}
+
+// ref: FUN_00794b50
+// Every wall twice, as two layers through the same mask: blue with the pattern at a tenth, and
+// cyan at a twentieth and offset by half, both scrolling up with a clock kept here.
+//
+// The reference first places up to four models on the first four walls (DAT_00cd85f8). Nothing
+// in the binary ever creates them -- the slots are only read here and released at teardown -- so
+// that loop is always skipped and is not ported.
+void CWorldScene::RenderBarriers(const C3Vector& cameraPos, float dt) {
+    auto& barriers = CWorldScene::s_barriers;
+
+    if (!barriers.mode || !barriers.vertices.Count()) {
+        return;
+    }
+
+    C44Matrix toCamera;
+    C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
+    toCamera.Translate(back);
+    g_theGxDevicePtr->XformPush(GxXform_World, toCamera);
+
+    GxRsPush();
+    GxRsSet(GxRs_DepthWrite, 0);
+    GxRsSet(GxRs_DepthTest, 1);
+    GxRsSet(GxRs_BlendingMode, GxBlend_Add);
+    GxRsSet(GxRs_Culling, 0);
+    GxRsSet(GxRs_Lighting, 0);
+    GxRsSet(GxRs_Fog, 0);
+
+    auto mask = TextureGetGxTex(CWorldScene::s_barrierMask, 1, nullptr);
+    auto pattern = mask ? TextureGetGxTex(CWorldScene::s_barrierTexture, 1, nullptr) : nullptr;
+
+    if (mask && pattern) {
+        GxRsSet(GxRs_Texture0, mask);
+        GxRsSet(GxRs_Unk69, 0);
+        GxRsSet(GxRs_Texture1, pattern);
+        GxRsSet(GxRs_Unk70, 1);
+
+        C44Matrix identity;
+        g_theGxDevicePtr->XformPush(GxXform_Tex0, identity);
+        g_theGxDevicePtr->XformPush(GxXform_Tex1, identity);
+
+        GxRsSet(GxRs_Unk61, 1);
+        GxRsSet(GxRs_Unk62, 1);
+        GxRsSet(GxRs_ColorOp1, 0);
+        GxRsSet(GxRs_AlphaOp1, 1);
+
+        uint32_t vertexCount = barriers.vertices.Count() * 2;
+        uint32_t triangles = barriers.vertices.Count() / 3;
+        uint32_t indexCount = triangles * 6;
+
+        auto vertexBuf = GxBufStream(GxPoolTarget_Vertex, sizeof(BarrierVertex), vertexCount);
+        auto indexBuf = GxBufStream(GxPoolTarget_Index, 2, indexCount);
+        auto out = reinterpret_cast<BarrierVertex*>(GxBufLock(vertexBuf));
+        auto indices = reinterpret_cast<uint16_t*>(GxBufLock(indexBuf));
+
+        static float s_scroll;                          // DAT_00cdd79c
+        s_scroll = dt * 0.1f + s_scroll;
+
+        if (s_scroll > 3.1415927f) {
+            s_scroll = s_scroll - 3.1415927f;
+        }
+
+        // The reference takes the sine and cosine of the clock here and never reads them.
+
+        bool swapRedBlue = g_theGxDevicePtr->Caps().m_colorFormat == GxCF_rgba;
+        float drift = static_cast<float>(std::fmod(static_cast<double>(s_scroll), 3.1415927410125732)) * 1.5915494f;
+
+        if (out && indices) {
+            for (uint32_t i = 0; i < triangles * 2; i++) {
+                indices[0] = static_cast<uint16_t>(i * 3);
+                indices[2] = static_cast<uint16_t>(i * 3 + 2);
+                indices[1] = static_cast<uint16_t>(i * 3 + 1);
+                indices += 3;
+
+                uint32_t layer = i & 1;
+                const BarrierVertex* src = &barriers.vertices[(i / 2) * 3];
+
+                for (int32_t k = 0; k < 3; k++, src++, out++) {
+                    out->position = src->position;
+                    out->uv0 = src->uv0;
+                    out->uv1 = src->uv1;
+
+                    CImVector color;
+                    color.b = 0xff;
+                    color.g = layer ? 0xff : 0x00;
+                    color.r = 0x00;
+                    color.a = src->color.a;
+
+                    if (swapRedBlue) {
+                        color.r = 0xff;
+                        color.b = 0x00;
+                    }
+
+                    out->color = color;
+
+                    if (layer) {
+                        out->uv1 = { src->uv1.x * 0.05f + 0.5f, 0.05f * src->uv1.y - drift };
+                    } else {
+                        out->uv1 = { src->uv1.x * 0.1f, 0.1f * src->uv1.y - drift };
+                    }
+                }
+            }
+        }
+
+        GxBufUnlock(vertexBuf, 0);
+        GxBufUnlock(indexBuf, 0);
+        GxPrimVertexPtr(vertexBuf, GxVBF_PCT2);
+        g_theGxDevicePtr->PrimIndexPtr(indexBuf);
+
+        CGxBatch batch;
+        batch.m_primType = GxPrim_Triangles;
+        batch.m_start = 0;
+        batch.m_count = indexCount;
+        batch.m_minIndex = 0;
+        batch.m_maxIndex = static_cast<uint16_t>(vertexCount - 1);
+        GxDraw(&batch, 1);
+
+        GxXformPop(GxXform_Tex0);
+        GxXformPop(GxXform_Tex1);
+        GxRsPop();
+        GxXformPop(GxXform_World);
+
+        barriers.vertices.SetCount(0);
+        barriers.walls.SetCount(0);
+        barriers.unused24.SetCount(0);
+        barriers.groups.SetCount(0);
+        return;
+    }
+
+    // Without both textures the reference leaves the render state pushed and the lists full;
+    // frozen pops what it pushed and keeps the lists, which the next frame then appends to.
+    GxRsPop();
+    GxXformPop(GxXform_World);
+}
+
+// ref: FUN_00799730
+void CWorldScene::CreateBarrierTextures() {
+    CStatus status;
+
+    CGxTexFlags maskFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
+    maskFlags.m_filter = 1;
+    maskFlags.m_wrapU = 0;
+    maskFlags.m_wrapV = 0;
+    CWorldScene::s_barrierMask = TextureCreate("XTextures\\FX\\LBTBarrierMask", maskFlags, &status, 0);
+
+    CGxTexFlags patternFlags = maskFlags;
+    patternFlags.m_wrapU = 1;
+    patternFlags.m_wrapV = 1;
+    CWorldScene::s_barrierTexture = TextureCreate("XTextures\\FX\\LBTBarrier", patternFlags, &status, 0);
+}
+
+// ref: FUN_0078f510
+void CWorldScene::ReleaseBarrierTextures() {
+    if (CWorldScene::s_barrierMask) {
+        HandleClose(CWorldScene::s_barrierMask);
+        CWorldScene::s_barrierMask = nullptr;
+    }
+
+    if (CWorldScene::s_barrierTexture) {
+        HandleClose(CWorldScene::s_barrierTexture);
+        CWorldScene::s_barrierTexture = nullptr;
     }
 }
 
@@ -3141,7 +3483,7 @@ void CWorldScene::VisitGroupDoodads(CMapBaseObjRefList* doodads, CWFrustum* frus
             // Not drawable yet: what its box would hide is still hidden.
             if (entity->m_model && entity->m_model->m_shared) {
                 CAaBox box = TransformBox(entity->m_model->m_shared->aaBox154, static_cast<CMapDoodadDef*>(entity)->m_placement);
-                CWorldScene::SubmitOccluderBox(box, 10.0f);
+                CWorldScene::SubmitBarrierBox(box, 10.0f);
             }
 
             continue;

@@ -173,6 +173,32 @@ class CWorldScene {
             C3Vector position;
             CImVector color;
         };
+        // The load barriers (the object at 0x00adf4a0): a shimmering wall drawn on whatever the
+        // active mover is close to but cannot yet stand on -- the edge of a streamed tile whose
+        // neighbour has not arrived, or the box of a building or doodad still loading. Each wall
+        // fades in as the mover approaches, alpha = 1 - distance / reach.
+        struct BarrierVertex {                              // 0x20
+            C3Vector position;
+            CImVector color;                                // only the alpha byte is set
+            C2Vector uv0;                                   // the mask, across the wall
+            C2Vector uv1;                                   // the pattern, in the wall's plane
+        };
+        struct BarrierWall {                                // 0x20
+            C3Vector point;                                 // where the mover's ray meets it
+            float alpha;
+            C4Plane plane;
+        };
+        struct Barriers {
+            int32_t mode = 1;                               // +0x00: 0 off, 2 every tile edge
+            TSGrowableArray<BarrierVertex> vertices;        // +0x04: a triangle list
+            TSGrowableArray<BarrierWall> walls;             // +0x14
+            TSGrowableArray<void*> unused24;                // +0x24: emptied each frame, never filled
+            TSGrowableArray<CMapObjDefGroup*> groups;       // +0x34: groups already walled this frame
+            C3Vector moverPos;                              // +0x44
+        };
+        static Barriers s_barriers;
+        static HTEXTURE s_barrierTexture;                   // DAT_00cd8608, XTextures\FX\LBTBarrier
+        static HTEXTURE s_barrierMask;                      // DAT_00cd860c, XTextures\FX\LBTBarrierMask
         static TSGrowableArray<DebugVertex> s_debugVertices;
         static TSGrowableArray<uint16_t> s_debugIndices;
         static C3Vector s_cameraPos;                        // DAT_00cd8f5c
@@ -393,8 +419,25 @@ class CWorldScene {
         static int32_t SphereOutsideFrustum(const C3Vector& center, float radius);
         // ref: FUN_00791cb0
         static void VisitStaticEntity(CMapStaticEntity* entity);
-        // Hand one solid box to the occluder sink as five faces. ref: FUN_007946d0
-        static void SubmitOccluderBox(const CAaBox& box, float maxDistance);
+        // Wall off one solid box, as five faces, when the mover is within `reach` of it.
+        // ref: FUN_007946d0
+        static void SubmitBarrierBox(const CAaBox& box, float reach);
+        // Wall off a convex polygon of up to twelve corners, brought out by `transform` when
+        // given: when the mover is within `reach` of it (and, with `frontOnly`, in front of it --
+        // `flip` turns which side that is), its wall goes into the frame's barrier list.
+        // ref: FUN_00792360
+        static void SubmitBarrierPolygon(const C3Vector* vertices, uint32_t count, float reach, const C44Matrix* transform, int32_t flip, int32_t frontOnly);
+        // Wall off the stretch of a vertical line from `a` to `b` (x and y only, at the mover's
+        // height) nearest the mover, as a square reach high and wide. ref: FUN_007944c0
+        static void SubmitBarrierEdge(const float* a, const float* b, float reach);
+        // Wall off a building group still loading, once a frame. ref: FUN_00794ad0
+        static void SubmitBarrierGroup(CMapObjDefGroup* defGroup, float reach);
+        // Draw the frame's walls and empty the lists. ref: FUN_00794b50
+        static void RenderBarriers(const C3Vector& cameraPos, float dt);
+        // The two barrier textures. ref: FUN_00799730
+        static void CreateBarrierTextures();
+        // ref: FUN_0078f510
+        static void ReleaseBarrierTextures();
 
         // The occluders of one distance row: solid chunks raise the horizon, chunks you can
         // see through reopen it, and the reopening has to come second. ref: FUN_00793760

@@ -522,8 +522,8 @@ void CMap::UpdateMapObjDefs(int32_t update) {
             // and the group reaches what the frustum covers
             if (update && (def->m_flags & 0x80)) {
                 if (!group || !(group->m_state & 0x1)) {
-                    // TODO FUN_00794ad0(defGroup, FLT_MAX): the group leaves the collision grid
-                    // while its file is still coming
+                    // Still loading: walled off within fifty yards (0x007b647f).
+                    CWorldScene::SubmitBarrierGroup(defGroup, 50.0f);
                 } else if (!(def->m_flags & 0x20)) {
 
                     if (CWorldScene::s_frustumBounds.Intersects(defGroup->m_bounds)) {
@@ -532,13 +532,8 @@ void CMap::UpdateMapObjDefs(int32_t update) {
 
                     // TODO the group's portals, walked from here into the neighbours they open
 
-                    // TODO two more occlusion feeds the reference runs per visible group, both
-                    // needing a list frozen's CMapObjGroup does not carry:
-                    //
-                    //   FUN_00794ad0(defGroup, 50.0f) submits the GROUP's own box as an occluder,
-                    //   through SubmitOccluderBox again plus FUN_00791eb0.
-                    //
-                    //   Then it walks the group's occluder-EDGE list at +0x1b0 -- each record holds
+                    // TODO the occlusion feed the reference runs per visible group, needing a
+                    // list frozen's CMapObjGroup does not carry: it walks the group's occluder-EDGE list at +0x1b0 -- each record holds
                     //   two points at +0x04 and +0x10 and links on at +0x20 -- brings both points
                     //   out by the def's placement matrix, and hands each edge to the horizon
                     //   clipper FUN_007927e0. That clipper cuts an edge at the 33.33-yard distance
@@ -551,17 +546,11 @@ void CMap::UpdateMapObjDefs(int32_t update) {
             }
         }
 
-        // Every building near enough becomes an occluder, whether or not it is inside the far box
-        // above -- the reference makes this call outside that test. FUN_007946d0 is
-        // CWorldScene::SubmitOccluderBox, which this TODO named correctly and then described
-        // wrongly as a collision grid; and the distance is the 50.0 at 0x009f22ec, not FLT_MAX, so
-        // only buildings within fifty yards are offered.
-        //
-        // It costs almost nothing today because SubmitOccluderBox builds its five faces and then
-        // stops at its own TODO, the volume submission FUN_00792360. Wiring it now is what makes
-        // that TODO the only thing between here and buildings occluding.
+        // A building not set up yet is walled off within fifty yards (the 50.0 at 0x009f22ec),
+        // whether or not it is inside the far box above -- the reference makes this call outside
+        // that test.
         if (!(def->m_flags & 0x80)) {
-            CWorldScene::SubmitOccluderBox(def->m_bounds, 50.0f);
+            CWorldScene::SubmitBarrierBox(def->m_bounds, 50.0f);
         }
     }
 }

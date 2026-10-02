@@ -1813,6 +1813,16 @@ void CWorld::RenderParticulates() {
     }
 }
 
+// ref: FUN_0077f9a0
+void CWorld::SetBarrierPoint(const C3Vector& position) {
+    CWorldScene::s_barriers.moverPos = position;
+}
+
+// ref: FUN_0077f980
+void CWorld::RenderBarriers(float dt) {
+    CWorldScene::RenderBarriers(CWorldScene::s_cameraPos, dt);
+}
+
 // ref: FUN_0077f400
 void CWorld::AddRipple(const C3Vector& position, float angle, float radius, float alphaPeak, float life, float radiusRate, int32_t kind, int32_t reserved) {
     WaterRipples::Add(position, angle, radius, alphaPeak, life, radiusRate, kind, reserved);

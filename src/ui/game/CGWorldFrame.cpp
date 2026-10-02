@@ -275,9 +275,9 @@ void CGWorldFrame::OnWorldRender() {
     //   above water:  Draw(2), liquid bucket 1, weather, FUN_00794b50, Draw(1)
     //   under water:  FUN_00794b50, Draw(1), weather, liquid bucket 1, Draw(2)
     //
-    // frozen's version of that block below is already in this order. The one thing absent from both
-    // arms is FUN_00794b50 -- 2200 bytes, streamed quads over a model, reached through the wrapper
-    // at 0x0077f980 with the float at frame+0xb14 -- which the comment there calls "barriers".
+    // frozen's version of that block below is in this order. FUN_00794b50 is the load barriers
+    // (CWorldScene::RenderBarriers), reached through the wrapper at 0x0077f980 with the float at
+    // frame+0xb14.
     //
     // So OnWorldRender's low fidelity is NOT an ordering defect: what is missing is the content of
     // the passes, and they are tracked with their own items.
@@ -491,9 +491,6 @@ void CGWorldFrame::OnWorldRender() {
         // disassembly -- see the table at the top of this function, including that the two arms
         // share their final draw.
         //
-        // The barrier pass is FUN_00794b50, reached through the wrapper FUN_0077f980 with the float
-        // at frame+0xb14; 2200 bytes of streamed quads over a model. Not ported, and it is the only
-        // thing missing from this block's order.
         // Liquid bucket 1 IS drawn here, and this comment used to say the opposite of the code it sits
         // above -- it claimed CMap::Render drains bucket 1 and that calling DrawLiquidPass here would
         // draw every surface twice, while the call below has been there all along. CMap.cpp's comment
@@ -502,6 +499,7 @@ void CGWorldFrame::OnWorldRender() {
         // nothing is drawn twice. Corrected rather than deleted because a note that inverts the truth
         // invites someone to remove a call the renderer needs.
         if (CWorld::IsCameraUnderLiquid()) {
+            CWorld::RenderBarriers(CWorld::GetTickTimeSec());
             if (scene) { scene->Draw(M2PASS_1); }
             CWorld::RenderWeather();
             CWorldScene::DrawLiquidPass();
@@ -514,6 +512,7 @@ void CGWorldFrame::OnWorldRender() {
             OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
             CWorldScene::DrawLiquidPass();
             CWorld::RenderWeather();
+            CWorld::RenderBarriers(CWorld::GetTickTimeSec());
             if (scene) { scene->Draw(M2PASS_1); }
         }
 
@@ -543,6 +542,15 @@ void CGWorldFrame::OnWorldUpdate() {
     }
 
     auto target = ClntObjMgrObjectPtr(this->m_camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
+
+    // The load barriers measure from the unit this client moves (0x004fa65c).
+    if (CGUnit_C::s_activeMover) {
+        auto mover = ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, __FILE__, __LINE__);
+
+        if (mover) {
+            CWorld::SetBarrierPoint(mover->GetPosition());
+        }
+    }
 
     // TODO
 

@@ -262,6 +262,9 @@ class CMap {
         static void Update(int32_t update);
         static void Render(const C3Vector& cameraPos, float dt);
         static void UpdateAreas(int32_t update);
+        // Wall off every edge where a loaded tile meets one that is missing or still loading
+        // (every edge in barrier mode 2). ref: FUN_007b4bc0
+        static void SubmitTileEdgeBarriers();
         static void UpdateAreaChunks(int32_t update, CMapArea* area, const int32_t* rect, int32_t depth);
         static void UnloadAll();
         static void ClearFrameChunkList();

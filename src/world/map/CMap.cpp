@@ -2305,7 +2305,7 @@ static const float AREA_PRIORITY_FAR_SQ = 71111.109375f;
 // unloaded one starts its read, tiles covering the inner rectangle are waited for when nothing
 // else is loading, and every loaded tile's chunks are refreshed against the window through the
 // quadtree walk. The streaming-mode prioritisation (FUN_004b9950 / FUN_004ba3d0 / FUN_004b9970)
-// and the tile-edge pass (FUN_007b4bc0) are not ported yet.
+// is not ported yet.
 void CMap::UpdateAreas(int32_t update) {
     int32_t maxRow = CMap::s_chunkWindowMaxY >> 4;
     int32_t minCol = CMap::s_chunkWindowMinX >> 4;
@@ -2425,7 +2425,68 @@ void CMap::UpdateAreas(int32_t update) {
     }
 
     if (update) {
-        // TODO FUN_007b4bc0(): the tile-edge pass
+        CMap::SubmitTileEdgeBarriers();
+    }
+}
+
+// ref: FUN_007b4bc0
+// The reference indexes the neighbours with no bounds check, so a tile on the grid's own edge
+// reads whatever lies beside the grid in memory; frozen counts a neighbour off the grid as
+// missing.
+void CMap::SubmitTileEdgeBarriers() {
+    int32_t minCol = CMap::s_chunkWindowMinX >> 4;
+    int32_t maxCol = CMap::s_chunkWindowMaxX >> 4;
+    int32_t maxRow = CMap::s_chunkWindowMaxY >> 4;
+    int32_t mode = CWorldScene::s_barriers.mode;
+
+    if (!mode) {
+        return;
+    }
+
+    auto open = [mode](int32_t col, int32_t row) {
+        if (col < 0 || col >= 64 || row < 0 || row >= 64) {
+            return true;
+        }
+
+        auto neighbour = CMap::s_areaGrid[row * 64 + col];
+        return !neighbour || neighbour->m_asyncObject || mode == 2;
+    };
+
+    for (int32_t row = CMap::s_chunkWindowMinY >> 4; row <= maxRow; row++) {
+        for (int32_t col = minCol; col <= maxCol; col++) {
+            int32_t index = row * 64 + col;
+            auto area = CMap::s_areaGrid[index];
+
+            if (!(CMap::s_areaInfo[index][0] & 0x1) || !area || area->m_asyncObject) {
+                continue;
+            }
+
+            const CAaBox& b = area->m_bounds;
+
+            if (open(col - 1, row)) {
+                float from[2] = { b.b.x, b.t.y };
+                float to[2] = { b.t.x, b.t.y };
+                CWorldScene::SubmitBarrierEdge(from, to, 40.0f);
+            }
+
+            if (open(col, row - 1)) {
+                float from[2] = { b.t.x, b.t.y };
+                float to[2] = { b.t.x, b.b.y };
+                CWorldScene::SubmitBarrierEdge(from, to, 40.0f);
+            }
+
+            if (open(col + 1, row)) {
+                float from[2] = { b.t.x, b.b.y };
+                float to[2] = { b.b.x, b.b.y };
+                CWorldScene::SubmitBarrierEdge(from, to, 40.0f);
+            }
+
+            if (open(col, row + 1)) {
+                float from[2] = { b.b.x, b.b.y };
+                float to[2] = { b.b.x, b.t.y };
+                CWorldScene::SubmitBarrierEdge(from, to, 40.0f);
+            }
+        }
     }
 }
 
