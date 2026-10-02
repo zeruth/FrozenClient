@@ -29,8 +29,36 @@
 uint32_t CM2Scene::s_optFlags = 0xFFFFFFFF;
 bool CM2Scene::s_rayBlend4x4 = false;
 
+// ref: FUN_0081ce70
+// The animate thread's half of the interleave: entries 1, 3, 5, ... of the animate list, the
+// caller taking 0, 2, 4, .... Unreached until CM2Cache::BeginThread is ported (see there).
 void CM2Scene::AnimateThread(void* arg) {
-    // TODO
+    auto scene = static_cast<CM2Scene*>(arg);
+
+    for (auto model = scene->m_animateList; model && (model = model->m_animateNext); model = model->m_animateNext) {
+        if (model->m_attachParent) {
+            continue;
+        }
+
+        if (!model->m_flag1000) {
+            C3Vector scale = { 1.0f, 1.0f, 1.0f };
+            C3Vector translation = { 0.0f, 0.0f, 0.0f };
+
+            model->AnimateMT(&scene->m_view, scale, translation, 1.0f, 1.0f);
+        } else {
+            C3Vector scale = { 1.0f, 1.0f, 1.0f };
+            C3Vector translation = { 0.0f, 0.0f, 0.0f };
+
+            model->AnimateMTSimple(&scene->m_view, scale, translation, 1.0f, 1.0f);
+        }
+    }
+}
+
+// The sign of `(a - b) >> 2` over two handles, which is how the reference orders textures
+// (FUN_0047bf20); a 64-bit pointer difference does not fit its 32-bit result, so only the sign
+// it would give is reproduced.
+static int32_t M2CompareHandles(const void* a, const void* b) {
+    return a < b ? -1 : a > b ? 1 : 0;
 }
 
 // ref: FUN_0081f1d0
@@ -246,14 +274,84 @@ int32_t CM2Scene::SortOpaqueGeoBatches(M2Element* elementA, M2Element* elementB)
     return batchA > batchB;
 }
 
+// ref: FUN_0081edf0
+// By blend, then by the material class its flags give, then by texture.
 int32_t CM2Scene::SortOpaqueParticles(M2Element* elementA, M2Element* elementB) {
-    // TODO
-    return 0;
+    auto emitterA = elementA->emitter;
+    auto emitterB = elementB->emitter;
+
+    if (static_cast<int32_t>(emitterA->m_blendMode) < static_cast<int32_t>(emitterB->m_blendMode)) {
+        return -1;
+    }
+
+    if (static_cast<int32_t>(emitterA->m_blendMode) > static_cast<int32_t>(emitterB->m_blendMode)) {
+        return 1;
+    }
+
+    auto materialClass = [](uint32_t flags) {
+        uint32_t value = (flags & 1) ? 4 : 5;
+
+        if (!(flags & 2)) {
+            value |= 2;
+        }
+
+        if (!(flags & 4)) {
+            value |= 0x10;
+        }
+
+        return value;
+    };
+
+    uint32_t classA = materialClass(emitterA->m_materialFlags);
+    uint32_t classB = materialClass(emitterB->m_materialFlags);
+
+    if (classA < classB) {
+        return -1;
+    }
+
+    if (classA > classB) {
+        return 1;
+    }
+
+    return M2CompareHandles(emitterA->m_texture, emitterB->m_texture);
 }
 
+// ref: FUN_0081ed10
+// By the textures the two ribbons draw with, slot by slot; then by how many they have; then by
+// ribbon index.
 int32_t CM2Scene::SortOpaqueRibbons(M2Element* elementA, M2Element* elementB) {
-    // TODO
-    return 0;
+    auto& ribbonA = elementA->model->m_shared->m_data->ribbons[elementA->index];
+    auto& ribbonB = elementB->model->m_shared->m_data->ribbons[elementB->index];
+
+    uint32_t countA = ribbonA.textureIndices.Count();
+    uint32_t countB = ribbonB.textureIndices.Count();
+    uint32_t shared = countB <= countA ? countB : countA;
+
+    for (uint32_t i = 0; i < shared; i++) {
+        int32_t order = M2CompareHandles(
+            elementA->model->m_textures[ribbonA.textureIndices[i]],
+            elementB->model->m_textures[ribbonB.textureIndices[i]]);
+
+        if (order < 0) {
+            return -1;
+        }
+
+        if (order > 0) {
+            return 1;
+        }
+    }
+
+    if (countB <= countA) {
+        if (countA != countB) {
+            return 1;
+        }
+
+        if (static_cast<uint32_t>(elementB->index) <= static_cast<uint32_t>(elementA->index)) {
+            return static_cast<uint32_t>(elementB->index) < static_cast<uint32_t>(elementA->index);
+        }
+    }
+
+    return -1;
 }
 
 // The blend each M2 blend index draws with, in a TRANSPARENT list. DAT_00a453cc.

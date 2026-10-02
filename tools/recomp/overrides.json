@@ -4048,5 +4048,18 @@
     "frozen": "CM2Shared::CM2Shared",
     "status": "ported",
     "note": "The constructor: refcount 1, the cache, the flags cleared, the callback list empty, every field from +0x140 to +0x1a4 zeroed. Frozen defines it inline in CM2Shared.hpp with member initialisers, so it is linked here rather than by a tag. Identified 2026-10-02."
+  },
+  "008216c0": {
+    "frozen": "CM2Scene::CM2Scene",
+    "status": "ported",
+    "note": "The scene constructor: refcount 1, the cache, every list and counter zeroed, the two 4x4 matrices at +0x84 and +0xc4 set to identity, +0x144 = -1. Frozen defines it inline with member initialisers, so it is linked here. Identified 2026-10-02."
+  },
+  "00821670": {
+    "status": "excluded",
+    "note": "TSGrowableArray<M2Element>::New, out of line for the scene element list (0x44-byte elements, granularity FUN_007f7980). Storm template internal; frozen calls m_elements.New(). Identified 2026-10-02."
+  },
+  "0081cd50": {
+    "status": "excluded",
+    "note": "An indexed accessor into a 0x30-byte element array at +0x4 (TSFixedArray::operator[]), out of line. Template internal. Identified 2026-10-02."
   }
 }
