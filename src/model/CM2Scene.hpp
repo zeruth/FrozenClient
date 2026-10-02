@@ -52,6 +52,8 @@ class CM2Scene {
         static int32_t SortTransparentGrouped(uint32_t a, uint32_t b, const void* userArg);
 
         // Member variables
+        // +0x0: references held by the scene's owners; Release destroys it at zero.
+        uint32_t m_refCount = 1;
         CM2Cache* m_cache;
         CM2Model* m_modelList = nullptr;
         uint32_t m_time = 0;
@@ -196,6 +198,8 @@ class CM2Scene {
             : m_cache(cache)
             {};
         void AdvanceTime(uint32_t a2);
+        uint32_t Release();
+        ~CM2Scene();
         void SetTime(uint32_t time);
         void CollectSharedGarbage();
         void Animate(const C3Vector& cameraPos);

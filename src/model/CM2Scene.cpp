@@ -689,6 +689,41 @@ int32_t CM2Scene::SortTransparent(uint32_t a, uint32_t b, const void* userArg) {
     return CM2Scene::SortOpaque(a, b, userArg);
 }
 
+// ref: FUN_00821850
+// Every model still in the scene is released until it lets go (a model unlinks itself from the
+// list on its last release), then the ray-query arrays go; the growable arrays free themselves.
+CM2Scene::~CM2Scene() {
+    while (auto model = this->m_modelList) {
+        while (model->Release()) {
+        }
+    }
+
+    if (this->m_rayCandidates) {
+        SMemFree(this->m_rayCandidates, __FILE__, __LINE__, 0);
+    }
+
+    if (this->m_rayCandidateOrder) {
+        SMemFree(this->m_rayCandidateOrder, __FILE__, __LINE__, 0);
+    }
+
+    if (this->m_rayProjected) {
+        SMemFree(this->m_rayProjected, __FILE__, __LINE__, 0);
+    }
+}
+
+// ref: FUN_00823040
+uint32_t CM2Scene::Release() {
+    this->m_refCount--;
+
+    if (this->m_refCount == 0) {
+        this->~CM2Scene();
+        SMemFree(this, __FILE__, __LINE__, 0);
+        return 0;
+    }
+
+    return this->m_refCount;
+}
+
 // ref: FUN_0081c990
 // The scene clock set outright rather than advanced; the cache gets the same per-frame upkeep.
 void CM2Scene::SetTime(uint32_t time) {
