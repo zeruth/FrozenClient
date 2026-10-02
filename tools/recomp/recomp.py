@@ -276,6 +276,13 @@ MODULE_RANGES = [
     # gap worth the name down there (the largest is 36 bytes) and no evidence either way, so it
     # keeps the attribution it has rather than taking a guessed one.
     (0x004c5d60, 0x004ce250, 'SoundInterface2.cpp'),
+    # PCRE, the regular-expression library, linked in whole and counted as M2Shared.cpp (the
+    # nearest anchor below it) until 2026-10-02. The range is its strings' own: 0x0083dec0
+    # carries "\ at end of pattern", 0x0083e4a0 "PCRE does not support \L, \l, \N, \U, or \u",
+    # 0x0083f190 compile_branch, 0x008418f0 the compiler, 0x00842da0 the recursive match(),
+    # 0x00847610 pcre_exec; 0x00847c20 is Minigame_C.cpp's first function. Vendored, so its
+    # functions are excluded in overrides.json like the CRT's.
+    (0x0083dec0, 0x00847c20, 'pcre.c'),
 ]
 
 # The next candidate, left out deliberately rather than forgotten: 0x008a65d0..0x008bfe80 is the DBC

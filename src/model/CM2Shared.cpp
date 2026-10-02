@@ -1,3 +1,4 @@
+#include "gx/Gx.hpp"
 #include <common/Time.hpp>
 #include "model/CM2Shared.hpp"
 #include "async/AsyncFile.hpp"
@@ -38,28 +39,50 @@ void CM2Shared::LoadFailedCallback(void* arg) {
     shared->asyncObject = nullptr;
 }
 
+// ref: FUN_0083d340
 void CM2Shared::LoadSucceededCallback(void* arg) {
     CM2Shared* shared = static_cast<CM2Shared*>(arg);
 
     AsyncFileReadDestroyObject(shared->asyncObject);
     shared->asyncObject = nullptr;
 
-    uint8_t* base = reinterpret_cast<uint8_t*>(shared->m_data);
-    uint32_t size = shared->m_dataSize;
-    M2Data& data = *shared->m_data;
+    shared->FinishLoading();
+}
 
-    if (!M2Init(base, size, data)) {
-        return;
+// ref: FUN_0083cf00
+// The model file has arrived: check its header (at least 0x138 bytes, MD20, version 0x108), patch
+// every array, initialise, and make room for the sequences whose keys live in .anim files.
+int32_t CM2Shared::FinishLoading() {
+    if (this->m_m2DataLoaded) {
+        return 1;
     }
 
-    if (!shared->Initialize()) {
-        return;
+    auto base = reinterpret_cast<uint8_t*>(this->m_data);
+    auto header = reinterpret_cast<const uint32_t*>(base);
+
+    if (this->m_dataSize < 0x138 || header[0] != 0x3032444D || header[1] <= 0x107 || header[1] >= 0x109
+        || !M2Init(base, this->m_dataSize, *this->m_data)) {
+        // The reference logs "Corrupt model data: %s" to a function that does nothing.
+        return 0;
     }
 
-    // TODO
-    // - allocate space for low priority sequence pointers
+    if (!this->Initialize()) {
+        return 0;
+    }
 
-    shared->m_m2DataLoaded = 1;
+    uint32_t external = 0;
+
+    for (uint32_t i = 0; i < this->m_data->sequences.Count(); i++) {
+        if (!(this->m_data->sequences[i].flags & 0x20)) {
+            external++;
+        }
+    }
+
+    this->m_sequenceBuffers = static_cast<void**>(SMemAlloc(external * sizeof(void*), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
+    this->m_sequenceBufferCount = 0;
+    this->m_m2DataLoaded = 1;
+
+    return 1;
 }
 
 namespace {
@@ -283,6 +306,8 @@ CM2SequenceLoad* CM2Shared::LoadSequence(uint16_t sequenceIndex) {
     }
 
     if (!this->m_sequenceBuffers) {
+        // FinishLoading allocates this; a shared that never finished loading has no sequences
+        // to stream.
         this->m_sequenceBuffers = static_cast<void**>(SMemAlloc(sizeof(void*) * data->sequences.Count(), __FILE__, __LINE__, SMEM_FLAG_ZEROMEMORY));
     }
 
@@ -443,6 +468,7 @@ void CM2Shared::SequenceLoadFailedCallback(void* param) {
     load->shared->DestroySequenceLoad(load);
 }
 
+// ref: FUN_0083cb10
 void CM2Shared::SkinProfileLoadedCallback(void* arg) {
     CM2Shared* shared = static_cast<CM2Shared*>(arg);
 
@@ -758,6 +784,7 @@ CShaderEffect* CM2Shared::CreateSimpleEffect(uint32_t textureCount, uint16_t sha
     return effect;
 }
 
+// ref: FUN_00838490
 int32_t CM2Shared::FinishLoadingSkinProfile(uint32_t size) {
     if (this->m_skinProfileLoaded) {
         return 1;
@@ -884,13 +911,41 @@ CShaderEffect* CM2Shared::GetEffect(M2Batch* batch) {
     return effect;
 }
 
+// ref: FUN_0083cc80
+// Picks the skin profile, loads it, and creates the textures. The profile is the first whose bone
+// count fits: 256 bones without shaders, otherwise half of a third of the vertex constants left
+// after the fixed ones (0x20, or 0x40 above 192). The thresholds are the reference's, aligned so
+// the last profile always gets 0x15.
 int32_t CM2Shared::Initialize() {
+    static const uint32_t s_profileBones[4] = { 0x100, 0x40, 0x35, 0x15 };
+
+    uint32_t budget = 0x100;
+
+    if (this->m_cache->m_flags & 0x8) {
+        uint32_t constants = static_cast<uint32_t>(GxCaps().m_shaderConsts[GxSh_Vertex]);
+        uint32_t available = constants < 0xc1 ? constants - 0x20 : constants - 0x40;
+        uint32_t thirds = static_cast<uint32_t>((static_cast<uint64_t>(available) * 0xaaaaaaabULL) >> 32);
+
+        if ((thirds >> 1) < 0x100) {
+            budget = thirds >> 1;
+        }
+    }
+
     this->skinProfile = nullptr;
 
-    // TODO
-    // implement logic to select skin profile
+    uint32_t profileCount = this->m_data->numSkinProfiles;
+    uint32_t profile = 0;
 
-    uint32_t profile = this->m_data->numSkinProfiles - 1;
+    for (; profile < profileCount; profile++) {
+        if (s_profileBones[4 - profileCount + profile] <= budget) {
+            break;
+        }
+    }
+
+    if (profile >= profileCount) {
+        // "Failed to choose skin profile: %s"
+        return 0;
+    }
 
     if (!this->LoadSkinProfile(profile)) {
         return 0;
@@ -918,7 +973,9 @@ int32_t CM2Shared::Initialize() {
         M2Texture& texture = this->m_data->textures[i];
 
         if (texture.filename.count > 1) {
-            CGxTexFlags texFlags = CGxTexFlags(GxTex_Linear, 0, 0, 0, 0, 0, 1);
+            // Trilinear, wrapping on both axes: the reference builds the default flags and then
+            // rewrites the low bits to 0x1c.
+            CGxTexFlags texFlags = CGxTexFlags(GxTex_LinearMipLinear, 1, 1, 0, 0, 0, 1);
 
             int32_t createFlags = 0;
 
@@ -942,8 +999,10 @@ int32_t CM2Shared::Initialize() {
     for (int32_t i = 0; i < this->m_data->bones.count; i++) {
         M2CompBone& bone = this->m_data->bones[i];
 
+        // Billboarded and otherwise view-dependent bones (0x2f8) are counted into uint198, which
+        // keeps CM2Model::AnimateAlphasOnly from skipping the full animate.
         if (bone.flags & (0x200 | 0x80 | 0x40 | 0x20 | 0x10 | 0x8)) {
-            // TODO
+            this->uint198++;
         }
     }
 
@@ -1074,6 +1133,7 @@ int32_t CM2Shared::Load(SFile* file, int32_t a3, CAaBox* a4) {
     return 1;
 }
 
+// ref: FUN_0083cb40
 int32_t CM2Shared::LoadSkinProfile(uint32_t profile) {
     char skinFilePath[STORM_MAX_PATH];
 

@@ -90,15 +90,9 @@ class CM2Shared {
         uint32_t m_sequenceBufferCount = 0;
 
         // Member variables
-        // +0x198, a uint16 the reference zeroes in its constructor along with the whole run
-        // from +0x16c to +0x1a4. Nothing frozen has corresponds to it and nothing here writes
-        // it, so it stays zero -- which is what the reference's own default is.
-        //
-        // It is carried rather than dropped because CM2Model::AnimateAlphasOnly TESTS it: a
-        // non-zero value there forces the full Animate instead of the alpha-only path. Leaving
-        // the field out would have meant writing that condition with half its terms. What sets
-        // it is not identified -- the only 16-bit write to the offset anywhere in the binary is
-        // the constructor clearing it.
+        // +0x198: how many bones carry a view-dependent flag (0x2f8: billboarding and its kin),
+        // counted by Initialize (FUN_0083cc80). CM2Model::AnimateAlphasOnly tests it: a model with
+        // such bones always takes the full Animate.
         uint16_t uint198 = 0;
         uint32_t m_refCount = 1;
         CM2Cache* m_cache;
@@ -160,6 +154,7 @@ class CM2Shared {
         CShaderEffect* GetEffect(M2Batch* batch);
         int32_t FinishLoadingSkinProfile(uint32_t size);
         int32_t Initialize();
+        int32_t FinishLoading();
         int32_t InitializeSkinProfile();
         int32_t Load(SFile* file, int32_t a3, CAaBox* a4);
         int32_t LoadSkinProfile(uint32_t profile);

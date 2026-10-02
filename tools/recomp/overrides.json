@@ -3919,5 +3919,134 @@
   "004bb9d0": {
     "status": "excluded",
     "note": "Storm template internal for CModelBlob::CHashEntry: TSHashTable::MonitorFullness. Frozen gets it from TSHashTable<CModelBlob::CHashEntry, HASHKEY_STRI>; identified 2026-10-02."
+  },
+  "0083dec0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083df20": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083dfa0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e140": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e270": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e2c0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e420": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e4a0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e750": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e870": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e900": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083e9a0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083ea90": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083ecd0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083ed90": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083ee40": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083efd0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083f010": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083f060": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083f0a0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083f0f0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083f190": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "00841290": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "008414b0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "00841580": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "008416c0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "008417d0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "008418f0": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "00842b00": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "00842b90": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "00847610": {
+    "status": "excluded",
+    "note": "PCRE (vendored regular-expression library, 0x0083dec0..0x00847c20), not client code; it had been counted as M2Shared.cpp. Identified 2026-10-02 from its error strings."
+  },
+  "0083c5f0": {
+    "frozen": "CM2Shared::CM2Shared",
+    "status": "ported",
+    "note": "The constructor: refcount 1, the cache, the flags cleared, the callback list empty, every field from +0x140 to +0x1a4 zeroed. Frozen defines it inline in CM2Shared.hpp with member initialisers, so it is linked here rather than by a tag. Identified 2026-10-02."
   }
 }
