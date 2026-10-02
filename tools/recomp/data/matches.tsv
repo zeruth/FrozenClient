@@ -143,12 +143,14 @@ addr	how	frozen	evidence
 0047c070	override	NDCToDDCWidth	
 0047c080	annotated	NDCToDDCHeight	tag in src/gx/Coordinate.cpp
 0047c360	sticky	CStatus::Add	held from the previous run, where it was sticky
+0047cbf0	callgraph	PropSelectContext	only unmatched callee of 0081bfe0=CM2Cache::ThreadProc
 0047cc90	override	operator delete	
 0047cf80	override	RCString::Copy	
 0047d1d0	callgraph	ConvertButtonNumberToMOUSEBUTTON	only unmatched callee of 005148b0=Script_IsMouseButtonDown
 0047d230	callgraph	EventIsKeyDown	only unmatched callee of 00514430=Script_IsModifierKeyDown, 005144c0=Script_IsLeftShiftKeyDown, 00514520=Script_IsRightShiftKeyDown
 0047d3c0	callgraph	EventRegisterEx	only unmatched callee of 00407b00=RegisterEvents
 0047d790	callorder	EventUnregister	same slot between linked calls in 009860e0=SI2::StopGlueMusic
+0047e910	callorder	InitializeSchedulerThread	same slot between linked calls in 0047f230=SchedulerThreadProc
 0047f230	string	SchedulerThreadProc	unique "Engine %x"
 0047f2f0	string	IEvtSchedulerInitialize	unique "EvtSched#%d"
 00480de0	annotated	CMouseEvent::operator=	tag in src/event/CEvent.cpp
@@ -221,7 +223,7 @@ addr	how	frozen	evidence
 00488f10	annotated	CLayoutFrame::GetFirstPointY	tag in src/ui/CLayoutFrame.cpp
 00489190	annotated	CLayoutFrame::Sub489190	tag in src/ui/CLayoutFrame.cpp
 004891d0	callorder	CLayoutFrame::IsResizeDependency	same slot between linked calls in 0049db10=CScriptRegion_SetPoint
-00489230	callorder	CLayoutFrame::GetRect	same slot between linked calls in 0049ce50=CScriptRegion_GetRect, 0049cf90=CScriptRegion_GetCenter, 0049d0b0=CScriptRegion_GetLeft
+00489230	sticky	CLayoutFrame::GetRect	held from the previous run, where it was sticky
 00489690	annotated	CSimpleFrame::SetProtected	tag in src/ui/simple/CSimpleFrame.cpp
 004896c0	callgraph	CLayoutFrame::SetProtectFlag	only unmatched callee of 00489190=CLayoutFrame::Sub489190, 00489a00=CLayoutFrame::OnProtectedAttach, 00489a40=CLayoutFrame::OnProtectedDetach
 00489710	callorder	CLayoutFrame::AddToResizeList	same slot between linked calls in 00489de0=CLayoutFrame::Resize
@@ -233,7 +235,7 @@ addr	how	frozen	evidence
 0048a260	annotated	CLayoutFrame::SetPoint	tag in src/ui/CLayoutFrame.cpp
 0048a3e0	callorder	CLayoutFrame::SetAllPoints	same slot between linked calls in 0048b2d0=CLayoutFrame::LoadXML, 0049de40=CScriptRegion_SetAllPoints
 0048a510	override	CLayoutFrame::ClearAllPoints	
-0048a520	callorder	CLayoutFrame::SetDeferredResize	same slot between linked calls in 0049c830=CFramePoint::GetRelativeRect
+0048a520	sticky	CLayoutFrame::SetDeferredResize	held from the previous run, where it was sticky
 0048b2d0	string	CLayoutFrame::LoadXML	unique "Anchors"
 0048b540	string	CScriptObject::CreateName	unique "$parent"
 0048b5f0	callgraph	CScriptObject::GetScriptObjectByName	only unmatched callee of 004e05b0=Script_SetCharCustomizeFrame, 004e2f60=Script_SetCharSelectModelFrame
@@ -339,6 +341,7 @@ addr	how	frozen	evidence
 00490f60	annotated	CSimpleFrame::SetBeingScrolled	tag in src/ui/simple/CSimpleFrame.cpp
 00491020	override	CSimpleFrame::SetFrameStrata	
 004910a0	override	CSimpleFrame::SetFrameLevel	
+004918f0	callgraph	CSimpleFrame::OnLayerShow	only unmatched callee of 00597870=CGCharacterModelBase::OnLayerShow
 004926f0	string	FrameXML_RegisterDefault	score 0.50 shared Frame
 00492be0	callorder	CSimpleFrame::GetAttribute	same slot between linked calls in 0049f2d0=CSimpleFrame_GetAttribute, 0049f610=CSimpleFrame_SetAttribute
 00492e70	override	CSimpleFrame::IsA	
@@ -512,7 +515,7 @@ addr	how	frozen	evidence
 004a25f0	callgraph	CBackdropGenerator::SetVertexColor	only unmatched callee of 004a1a80=CSimpleFrame_SetBackdropColor
 004a2630	callgraph	CBackdropGenerator::SetBorderVertexColor	only unmatched callee of 004a1bd0=CSimpleFrame_SetBackdropBorderColor
 004a2780	string	CBackdropGenerator::LoadXML	unique "BackgroundInsets"
-004a29d0	callorder	CBackdropGenerator::Generate	same slot between linked calls in 004a15a0=CSimpleFrame_SetBackdrop
+004a29d0	sticky	CBackdropGenerator::Generate	held from the previous run, where it was sticky
 004a2d40	override	CBackdropGenerator::CBackdropGenerator	
 004a3790	annotated	FontString_SetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
 004a38f0	annotated	FontString_GetFontObject	tag in src/ui/simple/CSimpleFontStringScript.cpp
@@ -697,6 +700,13 @@ addr	how	frozen	evidence
 004bab50	override	AsyncFileReadObject	
 004bac20	annotated	AsyncReadBumpPriority	tag in src/component/Texture.cpp
 004bad80	annotated	AsyncFileReadIsBusy	tag in src/async/AsyncFileRead.cpp
+004baf60	annotated	CModelBlob::~CModelBlob	tag in src/model/Model2.cpp
+004bb1c0	annotated	ModelBlobDestroy	tag in src/model/Model2.cpp
+004bb370	annotated	CModelBlob::Query	tag in src/model/Model2.cpp
+004bb3e0	annotated	ModelBlobQuery	tag in src/model/Model2.cpp
+004bba70	annotated	CModelBlob::AddEntry	tag in src/model/Model2.cpp
+004bbb20	annotated	CModelBlob::Load	tag in src/model/Model2.cpp
+004bbc20	annotated	ModelBlobLoad	tag in src/model/Model2.cpp
 004bc410	callgraph	TSHashTable<FrameScript_EventObject,HASHKEY_STRI>::Ptr	only unmatched callee of 0081b510=FrameScript_GetEventListeners
 004bd870	annotated	ConvertStringFlags	tag in src/gx/font/TextBlock.cpp
 004bd900	order	TextBlockAddShadow	definition order between ConvertStringFlags and TextBlockGetFontPtr in src/gx/font/TextBlock.cpp
@@ -715,7 +725,7 @@ addr	how	frozen	evidence
 004c1220	callgraph	DataMgrGetCoord	only unmatched callee of 004c12b0=DataMgrSetCoord
 004c12b0	annotated	DataMgrSetCoord	tag in lib/common/common/DataMgr.cpp
 004c1360	annotated	DataMgrSetFloat	tag in lib/common/common/DataMgr.cpp
-004c1510	callgraph	CRndSeed::CRndSeed	only unmatched callee of 0097a130=CM2ParticleEmitter::SampleSpin, 0097e150=CM2ParticleEmitter::CM2ParticleEmitter
+004c1510	callgraph	CRndSeed::CRndSeed	only unmatched callee of 0097a130=CM2ParticleEmitter::SampleSpin, 0097e150=CM2ParticleEmitter::CM2ParticleEmitter, 0097eec0=CM2ParticleEmitter::CM2ParticleEmitter
 004c1590	annotated	M2ParticleRand01	tag in src/model/CM2ParticleEmitter.cpp
 004c15c0	annotated	M2ParticleRandSigned	tag in src/model/CM2ParticleEmitter.cpp
 004c1680	annotated	M2ParticleRandomUnitVector	tag in src/model/CM2ParticleEmitter.cpp
@@ -790,7 +800,7 @@ addr	how	frozen	evidence
 004d1600	string	SI2::RegisterUserCVars	unique "1048576"
 004d3100	override	ObjectFree	
 004d3330	override	ObjectAlloc	
-004d3650	callgraph	ObjectAllocAddHeap	only unmatched callee of 007afee0=CMapObj::Initialize
+004d3650	callgraph	ObjectAllocAddHeap	only unmatched callee of 007afee0=CMapObj::Initialize, 0081c6e0=M2Initialize
 004d3730	annotated	ClntObjMgrGetCurrent	tag in src/object/client/ObjMgr.cpp
 004d3790	override	ClntObjMgrGetActivePlayer	
 004d37c0	annotated	ClntObjMgrGetPlayerType	tag in src/object/client/ObjMgr.cpp
@@ -978,6 +988,7 @@ addr	how	frozen	evidence
 004ed900	annotated	CCharacterComponent::GeosRenderPrep	tag in src/component/CCharacterComponent.cpp
 004eff10	string	CCharacterComponent::CreateBaseTexture	unique "CharacterBaseSkin"
 004f1a20	annotated	CCharacterComponent::Initialize	tag in src/component/CCharacterComponent.cpp
+004f20c0	annotated	CCharacterComponent::ReplaceMonsterSkin	tag in src/component/CCharacterComponent.cpp
 004f2be0	override	CACHEENTRY::LoadTexture	
 004f2d80	annotated	TextureCacheHasMips	tag in src/component/Texture.cpp
 004f2e50	annotated	TextureCacheGetInfo	tag in src/component/Texture.cpp
@@ -1000,6 +1011,7 @@ addr	how	frozen	evidence
 004f54d0	annotated	UnitResistanceBreakdown	tag in src/ui/game/ScriptEvents.cpp
 004f5720	callgraph	MirrorInitialize	only unmatched callee of 004d4ac0=ClntObjMgrInitializeShared
 004f5960	annotated	CGWorldFrame::GetActiveCamera	tag in src/ui/game/CGWorldFrame.cpp
+004f5d90	annotated	CRect::operator!=	tag in lib/typhoon/tempest/rect/CRect.cpp
 004f5de0	annotated	CAaBox::GetCenter	tag in lib/typhoon/tempest/box/CAaBox.cpp
 004f5e20	annotated	CM2Model::GetBoundingBox	tag in src/model/CM2Model.cpp
 004f5e80	annotated	CM2Model::GetBoundingSphere	tag in src/model/CM2Model.cpp
@@ -1619,6 +1631,7 @@ addr	how	frozen	evidence
 0057bf50	annotated	CGMinimapFrame_GetZoomLevels	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bf90	annotated	CGMinimapFrame_GetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
 0057bfd0	annotated	CGMinimapFrame_SetZoom	tag in src/ui/game/CGMinimapFrameScript.cpp
+0057c0e0	callgraph	TSGrowableArray<C3Vector>::New	only unmatched callee of 00685640=CGxDevice::PrimVertex
 0057c2a0	override	C44Matrix::Identity	
 0057c2e0	annotated	TransformDirection	tag in lib/typhoon/tempest/vector/C3Vector.cpp
 0057c340	annotated	CGxMatrixStack::SetIdentity	tag in src/gx/CGxMatrixStack.cpp
@@ -1705,12 +1718,23 @@ addr	how	frozen	evidence
 005946c0	annotated	CGPlayer_C::GetSkillLineID	tag in src/object/client/CGPlayer_C.cpp
 00595ec0	order	Script_Stub_SetTrainerServiceTypeFilter	binding table name Script_Stub_SetTrainerServiceTypeFilter, in definition order in src/ui/game/miscscriptstubs.cpp
 00596010	order	Script_Stub_SetTrainerSkillLineFilter	binding table name Script_Stub_SetTrainerSkillLineFilter, in definition order in src/ui/game/miscscriptstubs.cpp
-005978e0	table	Script_SetUnit	binding "SetUnit" in CGCharacterModelBaseMethods ~ table 00acf514
-00597960	table	Script_SetCreature	binding "SetCreature" in CGCharacterModelBaseMethods ~ table 00acf514
+005971b0	annotated	CGCharacterModelBase::OnLayerUpdate	tag in src/ui/game/CGCharacterModelBase.cpp
+00597230	annotated	CGCharacterModelBase::RegisterScriptMethods	tag in src/ui/game/CGCharacterModelBase.cpp
+005972d0	annotated	CGCharacterModelBase::IsA	tag in src/ui/game/CGCharacterModelBase.cpp
+00597370	annotated	CGCharacterModelBase::CGCharacterModelBase	tag in src/ui/game/CGCharacterModelBase.cpp
+005975b0	annotated	CGCharacterModelBase::CreateModelFromUnit	tag in src/ui/game/CGCharacterModelBase.cpp
+005975e0	override	CGCharacterModelBase::SetUnitModel	
+00597700	annotated	CGCharacterModelBase::SetCreatureModel	tag in src/ui/game/CGCharacterModelBase.cpp
+005977e0	annotated	CGCharacterModelBase::SetUnit	tag in src/ui/game/CGCharacterModelBase.cpp
+00597840	annotated	CGCharacterModelBase::SetCreature	tag in src/ui/game/CGCharacterModelBase.cpp
+00597870	annotated	CGCharacterModelBase::OnLayerShow	tag in src/ui/game/CGCharacterModelBase.cpp
+005978e0	annotated	Script_SetUnit	tag in src/ui/game/CGCharacterModelBaseScript.cpp
+00597960	annotated	Script_SetCreature	tag in src/ui/game/CGCharacterModelBaseScript.cpp
 00597a10	annotated	Script_SetRotation	tag in src/ui/game/CGCharacterModelBaseScript.cpp
-00597b00	table	Script_RefreshUnit	binding "RefreshUnit" in CGCharacterModelBaseMethods ~ table 00acf514
+00597a80	override	CGCharacterModelBase::CreateScriptMetaTable	
+00597b00	annotated	Script_RefreshUnit	tag in src/ui/game/CGCharacterModelBaseScript.cpp
 00597e90	table	Script_Undress	binding "Undress" in CGDressUpModelFrameMethods ~ table 00acf550
-00597ed0	table	Script_Dress	binding "Dress" in CGDressUpModelFrameMethods ~ table 00acf550
+00597ed0	annotated	Script_Dress	tag in src/ui/game/CGDressUpModelFrameScript.cpp
 00598830	table	Script_TryOn	binding "TryOn" in CGDressUpModelFrameMethods ~ table 00acf550
 00598e10	string	Script_Stub_CloseTabardCreation	score 0.50 shared CloseTabardCreation
 00598fa0	table	CGTabardModelFrame_CanSaveTabardNow	binding "CanSaveTabardNow" in CGTabardModelFrameMethods ~ table 00acf588
@@ -2233,6 +2257,7 @@ addr	how	frozen	evidence
 00616af0	annotated	GxMasterEnable	tag in src/gx/Device.cpp
 00616b10	annotated	CGUnit_C::GetDisplayID	tag in src/object/client/CGUnit_C.cpp
 00616ca0	callgraph	TSGrowableArray<unsigned int>::SetCount	only unmatched callee of 0068fed0=CGxDeviceD3d::ICaptureRead
+00617a60	callgraph	CSimpleModel::SetModel	only unmatched callee of 005975e0=CGCharacterModelBase::SetUnitModel
 0061a280	string	CGTooltip::GetScriptByName	unique "OnTooltipAddMoney"
 0061a4f0	annotated	ThreatStatusColor	tag in src/ui/game/GameScript.cpp
 0061a9e0	annotated	FormatTimeInterval	tag in src/ui/game/CGTooltip.cpp
@@ -2440,6 +2465,7 @@ addr	how	frozen	evidence
 00684d70	annotated	GxWindowFitToWorkArea	tag in src/gx/d3d/CGxDeviceD3d.cpp
 00684fe0	annotated	CGxDevice::DeviceOverride	tag in src/gx/CGxDevice.cpp
 00685130	override	TSGrowableArray<enum EGxRenderState>::New	
+00685180	override	TSGrowableArray<enum EGxRenderState>::SetCount	
 006852c0	annotated	CGxTex::CGxTex	tag in src/gx/texture/CGxTex.cpp
 006853b0	annotated	CGxDevice::CallbackAddRestored	tag in src/gx/CGxDevice.cpp
 006853d0	annotated	CGxDevice::CallbackRemoveRestored	tag in src/gx/CGxDevice.cpp
@@ -3063,8 +3089,10 @@ addr	how	frozen	evidence
 0076f770	annotated	SStrStrI	tag in lib/squall/storm/String.cpp
 0076f9e0	override	SStrDupA	
 0076fb80	override	SStrToFloat	
+0076fdb0	callorder	SGetCurrentThreadId	same slot between linked calls in 0047f230=SchedulerThreadProc
 00770260	callgraph	SCreateThread	only unmatched callee of 00774740=SThread::Create
 007714e0	string	GetExceptionNameWin32	unique "ACCESS_VIOLATION"
+007717e0	callgraph	SErrGetLastError	only unmatched callee of 004bbb20=CModelBlob::Load
 00771800	override	SErrPrepareAppFatal	
 00771870	override	SErrSetLastError	
 007729b0	sticky	printf	held from the previous run, where it was sticky
@@ -3074,6 +3102,8 @@ addr	how	frozen	evidence
 00774630	order	SCritSect::~SCritSect	definition order between SCritSect::SCritSect and SCritSect::Enter in lib/squall/storm/thread/SCritSect.cpp
 00774640	override	SCritSect::Enter	
 00774650	callgraph	SCritSect::Leave	only unmatched callee of 004b9970=AsyncFileReadUnlockQueue, 004b9ea0=AsyncFileReadCancel, 004bad80=AsyncFileReadIsBusy
+00774690	callgraph	SSyncObject::Wait	only unmatched callee of 0081bfd0=CM2Cache::WaitThread
+00774720	callgraph	SEvent::Set	only unmatched callee of 0081bfa0=CM2Cache::BeginThread
 00774740	callgraph	SThread::Create	only unmatched callee of 00469320=WowConnectionNet::Start
 007750d0	annotated	PathRootLength	tag in lib/squall/storm/Log.cpp
 00775140	annotated	FlushLog	tag in lib/squall/storm/Log.cpp
@@ -3744,6 +3774,7 @@ addr	how	frozen	evidence
 00815eb0	string	LoadXML_AnimOrigin	unique "Invalid origin point %s in element %s"
 00815f40	override	LoadXML_Texture	
 00815fa0	override	LoadXML_String	
+00816790	callgraph	FrameScript_Object::CreateScriptMetaTable	only unmatched callee of 00597a80=CGCharacterModelBase::CreateScriptMetaTable
 00816830	string	FrameScript_Object::GetScriptByName	unique "OnEvent"
 008168d0	annotated	setglobal	tag in src/ui/LuaExtraFuncs.cpp
 00816910	annotated	getglobal	tag in src/ui/LuaExtraFuncs.cpp
@@ -3795,24 +3826,35 @@ addr	how	frozen	evidence
 0081bab0	annotated	Script_GetNumFrames	tag in src/ui/simple/ScriptMethods.cpp
 0081bb20	table	Script_CreateFrame	binding "CreateFrame" in s_ScriptFunctions ~ table 00af5848
 0081be70	override	Script_GetFramesRegisteredForEvent	
+0081bf50	annotated	CM2Cache::ClearBuckets	tag in src/model/CM2Cache.cpp
 0081bfa0	annotated	CM2Cache::BeginThread	tag in src/model/CM2Cache.cpp
-0081bfd0	callorder	CM2Cache::WaitThread	same slot between linked calls in 00821a20=CM2Scene::Animate
+0081bfd0	annotated	CM2Cache::WaitThread	tag in src/model/CM2Cache.cpp
+0081bfe0	annotated	CM2Cache::ThreadProc	tag in src/model/CM2Cache.cpp
 0081c060	annotated	M2SetGlobalOptFlags	tag in src/model/Model2.cpp
+0081c080	annotated	M2CreateScene	tag in src/model/Model2.cpp
 0081c0b0	annotated	M2GetCacheFlags	tag in src/model/Model2.cpp
 0081c0c0	annotated	M2SetCacheFlags	tag in src/model/Model2.cpp
-0081c0d0	callgraph	CM2Cache::Initialize	only unmatched callee of 0081c6e0=M2Initialize
+0081c0d0	string	CM2Cache::Initialize	unique "Model2"
+0081c290	annotated	CM2Cache::GarbageCollect	tag in src/model/CM2Cache.cpp
+0081c300	annotated	CM2Cache::Destroy	tag in src/model/CM2Cache.cpp
 0081c390	annotated	CM2Cache::CreateShared	tag in src/model/CM2Cache.cpp
-0081c6e0	string	M2Initialize	unique "CM2Model"
+0081c6e0	annotated	M2Initialize	tag in src/model/Model2.cpp
+0081c750	annotated	M2Destroy	tag in src/model/Model2.cpp
+0081c790	annotated	CM2Cache::UpdateShared	tag in src/model/CM2Cache.cpp
+0081c840	annotated	CM2Cache::TouchGeometry	tag in src/model/CM2Cache.cpp
+0081c990	annotated	CM2Scene::SetTime	tag in src/model/CM2Scene.cpp
 0081c9c0	override	CM2Scene::AdvanceTime	
 0081ca20	annotated	M2BlendIndexFromGx	tag in src/model/CM2ParticleEmitter.cpp
 0081ca80	annotated	M2ParticleMaterialClass	tag in src/model/CM2Scene.cpp
-0081cab0	order	CM2Scene::DrawShadowCasters	definition order between M2ParticleMaterialClass and CM2Scene::BeginRayQuery in src/model/CM2Scene.cpp
+0081cab0	annotated	CM2Scene::CollectSharedGarbage	tag in src/model/CM2Scene.cpp
 0081cac0	annotated	CM2Scene::BeginRayQuery	tag in src/model/CM2Scene.cpp
 0081cad0	annotated	CM2Scene::ReserveRayCandidates	tag in src/model/CM2Scene.cpp
 0081cbc0	annotated	CM2Scene::SortRayCandidates	tag in src/model/CM2Scene.cpp
 0081cc30	annotated	CM2Scene::SetProjectionCallback	tag in src/model/CM2Scene.cpp
+0081cc50	annotated	M2DoodadBatchHash	tag in src/model/CM2Scene.cpp
 0081cd70	annotated	CM2Model::AllocModel	tag in src/model/CM2Model.cpp
-0081cdc0	callorder	TSGrowableArray<M2Element>::New	same slot between linked calls in 00821a20=CM2Scene::Animate
+0081cdc0	sticky	TSGrowableArray<M2Element>::New	held from the previous run, where it was sticky
+0081ce70	annotated	CM2Scene::AnimateThread	tag in src/model/CM2Scene.cpp
 0081cf20	annotated	CM2Scene::RaySetup	tag in src/model/CM2Scene.cpp
 0081cff0	annotated	CM2Scene::CollectRayCandidates	tag in src/model/CM2Scene.cpp
 0081d2c0	annotated	CM2Scene::BlendBoneMatrices	tag in src/model/CM2Scene.cpp
@@ -3826,7 +3868,12 @@ addr	how	frozen	evidence
 0081df10	override	CM2Scene::RayQuery	
 0081e110	annotated	CM2Scene::RayQueryCollision	tag in src/model/CM2Scene.cpp
 0081e400	annotated	CM2Scene::SelectLights	tag in src/model/CM2Scene.cpp
+0081e590	annotated	CM2Scene::SetParticleQueryCallback	tag in src/model/CM2Scene.cpp
+0081e5c0	annotated	M2DoodadBatchCompare	tag in src/model/CM2Scene.cpp
+0081ea90	annotated	CM2Scene::SortDoodadGroups	tag in src/model/CM2Scene.cpp
 0081ead0	override	CM2Scene::SortOpaqueGeoBatches	
+0081ed10	annotated	CM2Scene::SortOpaqueRibbons	tag in src/model/CM2Scene.cpp
+0081edf0	annotated	CM2Scene::SortOpaqueParticles	tag in src/model/CM2Scene.cpp
 0081eea0	override	CM2Scene::SortOpaque	
 0081ef30	override	CM2Scene::SortTransparent	
 0081f0e0	annotated	CM2Scene::SortTransparentGrouped	tag in src/model/CM2Scene.cpp
@@ -3835,6 +3882,7 @@ addr	how	frozen	evidence
 0081f450	override	CM2SceneRender::SetupTextures	
 0081f620	annotated	CM2SceneRender::SetupParticleTransform	tag in src/model/CM2SceneRender.cpp
 0081f700	annotated	CM2SceneRender::SetBatchVertices	tag in src/model/CM2SceneRender.cpp
+0081f800	annotated	M2LightingNearlyEqual	tag in src/model/CM2SceneRender.cpp
 0081f8c0	annotated	DestroyModel	tag in src/model/CM2Scene.cpp
 0081f8f0	annotated	CM2Scene::CreateModel	tag in src/model/CM2Scene.cpp
 0081f970	annotated	CM2Scene::CreateModelFrom	tag in src/model/CM2Scene.cpp
@@ -3845,9 +3893,14 @@ addr	how	frozen	evidence
 00820720	override	CM2SceneRender::DrawBatchProj	
 00820ae0	override	CM2SceneRender::DrawBatchDoodad	
 00820f40	annotated	CM2SceneRender::DrawRibbon	tag in src/model/CM2SceneRender.cpp
+00821040	annotated	CM2SceneRender::SubmitParticleBatch	tag in src/model/CM2SceneRender.cpp
+00821100	annotated	CM2SceneRender::DrawParticleBatch	tag in src/model/CM2SceneRender.cpp
 008214e0	override	CM2SceneRender::DrawParticle	
+00821850	annotated	CM2Scene::~CM2Scene	tag in src/model/CM2Scene.cpp
 00821930	annotated	CM2Scene::AddParticleElement	tag in src/model/CM2Scene.cpp
 00821a20	override	CM2Scene::Animate	
+00823040	annotated	CM2Scene::Release	tag in src/model/CM2Scene.cpp
+00823070	annotated	CM2SceneRender::BeginCallbackDraw	tag in src/model/CM2SceneRender.cpp
 008230d0	override	CM2SceneRender::DrawCallback	
 00823130	override	CM2SceneRender::Draw	
 00823cb0	override	CM2Scene::Draw	
@@ -3860,13 +3913,19 @@ addr	how	frozen	evidence
 00824060	annotated	CM2Model::SetAnimEventCallback	tag in src/model/CM2Model.cpp
 008240f0	annotated	CM2Model::SetLightEnabled	tag in src/model/CM2Model.cpp
 00824170	annotated	CM2Model::GetCameraByIndex	tag in src/model/CM2Model.cpp
+008241d0	annotated	CM2Model::HasLiveRibbons	tag in src/model/CM2Model.cpp
 00824230	annotated	CM2Model::SetRibbonFlag8	tag in src/model/CM2Model.cpp
+008242c0	annotated	CM2Model::HasLiveParticles	tag in src/model/CM2Model.cpp
 00824320	annotated	CM2Model::GetSharedUint194	tag in src/model/CM2Model.cpp
+00824380	annotated	CM2Model::GetLightCount	tag in src/model/CM2Model.cpp
 008243e0	annotated	CM2Model::TransformEmitters	tag in src/model/CM2Model.cpp
 00824460	annotated	CM2Model::SetParticleRelative	tag in src/model/CM2Model.cpp
 008244f0	annotated	CM2Model::LinkToCallbackListTail	tag in src/model/CM2Model.cpp
+00824510	callgraph	CM2Model::UnlinkFromCallbackList	only unmatched callee of 00838490=CM2Shared::FinishLoadingSkinProfile
 00824550	annotated	CM2Model::IsBatchDoodadCompatible	tag in src/model/CM2Model.cpp
+008248c0	annotated	CM2Lighting::CM2Lighting	tag in src/model/CM2Lighting.cpp
 00824980	annotated	M2ModelLight::M2ModelLight	tag in src/model/M2Internal.cpp
+00824a00	annotated	M2ModelParticle::M2ModelParticle	tag in src/model/M2Internal.cpp
 00824a80	annotated	M2BuildBasisFromAxis	tag in src/model/CM2Model.cpp
 00824b70	annotated	M2MergeEntryLess	tag in src/model/CM2Model.cpp
 00824c60	annotated	M2MergeEntriesGroup	tag in src/model/CM2Model.cpp
@@ -3879,7 +3938,10 @@ addr	how	frozen	evidence
 008251d0	callgraph	TSBaseArray<CharacterSelectionDisplay>::operator[]	only unmatched callee of 004e2e70=CCharacterSelection::SetFacing
 00825260	annotated	CM2Model::ReplaceTexture	tag in src/model/CM2Model.cpp
 00825410	annotated	CM2Model::SetParticleColors	tag in src/model/CM2Model.cpp
+008254f0	annotated	CM2Model::GetCombinedBounds	tag in src/model/CM2Model.cpp
+00825660	annotated	CM2Model::GetCombinedSphere	tag in src/model/CM2Model.cpp
 00825750	override	CM2Model::GetWorldBounds	
+00825a60	annotated	CM2Model::GetAnimatedBounds	tag in src/model/CM2Model.cpp
 00825d70	annotated	CM2Model::UnoptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 00825e00	annotated	CM2Model::Sub825E00	tag in src/model/CM2Model.cpp
 00825ee0	annotated	CM2Model::HasSequence	tag in src/model/CM2Model.cpp
@@ -3890,6 +3952,7 @@ addr	how	frozen	evidence
 008262f0	annotated	CM2Model::GetSequenceVariationCount	tag in src/model/CM2Model.cpp
 00826350	annotated	CM2Model::Sub826350	tag in src/model/CM2Model.cpp
 008264b0	annotated	CM2Model::HasBone	tag in src/model/CM2Model.cpp
+00826530	annotated	CM2Model::GetBonePivot	tag in src/model/CM2Model.cpp
 008265e0	annotated	CM2Model::SetBoneFlags	tag in src/model/CM2Model.cpp
 008266b0	annotated	CM2Model::GetBoneSequenceState	tag in src/model/CM2Model.cpp
 008267e0	annotated	CM2Model::GetBoneUint90	tag in src/model/CM2Model.cpp
@@ -3916,11 +3979,19 @@ addr	how	frozen	evidence
 008278e0	annotated	CM2Model::HasCamera	tag in src/model/CM2Model.cpp
 00827960	annotated	CM2Model::GetCameraById	tag in src/model/CM2Model.cpp
 008279f0	override	CM2Model::SetParticleEmission	
+00827a90	annotated	CM2Model::CountVisibleBatches	tag in src/model/CM2Model.cpp
+00827e30	annotated	CM2Model::CountBatchableBatches	tag in src/model/CM2Model.cpp
+00827f70	annotated	CM2Model::CountTriangles	tag in src/model/CM2Model.cpp
 008284d0	annotated	CM2Model::FindKey	tag in src/model/CM2Model.cpp
 00828680	override	M2AnimateTrack<M2CompQuat,C4Quaternion>	
 00828a00	annotated	CM2Model::AnimateST	tag in src/model/CM2Model.cpp
 00828f90	annotated	CM2Model::SetIndices	tag in src/model/CM2Model.cpp
+00829160	annotated	CM2Model::PackBatchVertices	tag in src/model/CM2Model.cpp
+008292a0	annotated	CM2Model::ComputeProjection	tag in src/model/CM2Model.cpp
 00829aa0	annotated	CM2Model::DrawReceiverGeometry	tag in src/model/CM2Model.cpp
+00829ba0	annotated	CM2Model::DrawShadowCasterBatch	tag in src/model/CM2Model.cpp
+00829e40	annotated	CM2Model::DrawShadowCasterList	tag in src/model/CM2Model.cpp
+00829f40	annotated	M2PackBatchVerticesTwoCoords	tag in src/model/CM2Model.cpp
 0082a210	annotated	M2PackBatchVerticesBlended	tag in src/model/CM2Model.cpp
 0082a4e0	annotated	M2PackBatchVerticesSingleBone	tag in src/model/CM2Model.cpp
 0082ad50	callgraph	C3Vector::operator-	only unmatched callee of 0082d6f0=CM2Model::AnimateTextureTransformsMT
@@ -3934,21 +4005,31 @@ addr	how	frozen	evidence
 0082bd60	annotated	M2ModelBone::M2ModelBone	tag in src/model/M2Internal.cpp
 0082be60	annotated	CM2Model::CM2Model	tag in src/model/CM2Model.cpp
 0082c1c0	override	CM2Model::FreeInternalResources	
+0082c2c0	annotated	CM2Model::GetDrawBoundingSphere	tag in src/model/CM2Model.cpp
 0082c7c0	annotated	CM2Model::SetGeometryVisible	tag in src/model/CM2Model.cpp
 0082c8a0	annotated	CM2Model::SetGeometryVisibleByIndex	tag in src/model/CM2Model.cpp
 0082c970	annotated	CM2Model::OptimizeVisibleGeometry	tag in src/model/CM2Model.cpp
 0082ced0	annotated	CM2Model::GetSequenceInfo	tag in src/model/CM2Model.cpp
+0082d1a0	annotated	CM2Model::CountDrawCalls	tag in src/model/CM2Model.cpp
 0082d2f0	override	CM2Model::AnimateParticleTracks	
 0082d6f0	annotated	CM2Model::AnimateTextureTransformsMT	tag in src/model/CM2Model.cpp
+0082d910	annotated	CM2Model::PackBatchVerticesTwoCoords	tag in src/model/CM2Model.cpp
+0082da40	annotated	CM2Model::DrawShadowCasterLists	tag in src/model/CM2Model.cpp
 0082dd80	annotated	CM2Model::SetWorldTransform	tag in src/model/CM2Model.cpp
+0082e0c0	annotated	CM2Model::HasDeferredSequence	tag in src/model/CM2Model.cpp
 0082e140	annotated	CM2Model::AnimateMTSimple	tag in src/model/CM2Model.cpp
 0082e550	annotated	CM2Model::AnimateAttachmentsMT	tag in src/model/CM2Model.cpp
+0082e720	annotated	M2QueueSequenceCallback	tag in src/model/CM2Model.cpp
+0082e790	annotated	CM2Model::QueueSequenceFinished	tag in src/model/CM2Model.cpp
+0082ec30	annotated	CM2Model::GetCollisionTriangles	tag in src/model/CM2Model.cpp
 0082f0f0	annotated	CM2Model::AnimateMT	tag in src/model/CM2Model.cpp
 008309c0	annotated	CM2Model::AnimateParticleEmitter	tag in src/model/CM2Model.cpp
 00830dc0	annotated	CM2Model::Animate	tag in src/model/CM2Model.cpp
 00830f90	annotated	CM2Model::ForceAnimate	tag in src/model/CM2Model.cpp
+00830fb0	annotated	CM2Model::QueueAnimEvents	tag in src/model/CM2Model.cpp
 00831330	annotated	CM2Model::GetAttachmentWorldPosition	tag in src/model/CM2Model.cpp
 00831410	annotated	CM2Model::GetAttachmentWorldTransform	tag in src/model/CM2Model.cpp
+00831550	annotated	CM2Model::GetAttachmentScale	tag in src/model/CM2Model.cpp
 00831630	annotated	CM2Model::AttachToParent	tag in src/model/CM2Model.cpp
 008317e0	annotated	CM2Model::GetEventWorldPosition	tag in src/model/CM2Model.cpp
 008318a0	annotated	CM2Model::GetEventWorldTransform	tag in src/model/CM2Model.cpp
@@ -3958,11 +4039,16 @@ addr	how	frozen	evidence
 00831e20	override	CM2Model::CancelAllDeferredSequences	
 00831ec0	override	CM2Model::CancelDeferredSequences	
 00831fc0	override	CM2Model::SequenceFinished	
+008321e0	annotated	CM2Model::FlushCallbacks	tag in src/model/CM2Model.cpp
+00832260	annotated	CM2Model::ProcessCallbacks	tag in src/model/CM2Model.cpp
+00832450	callgraph	CM2Model::ProcessCallbacksRecursive	only unmatched callee of 0081c9c0=CM2Scene::AdvanceTime
 00832640	override	CM2Model::~CM2Model	
 00832840	override	CM2Model::UnsetBoneSequence	
 00832ab0	override	CM2Model::SetBoneSequence	
+00832dd0	annotated	M2ShadowCasterList::MergeRuns	tag in src/model/CM2Model.cpp
 00832ea0	annotated	CM2Model::InitializeLoaded	tag in src/model/CM2Model.cpp
 00834540	annotated	CM2Model::AttachToScene	tag in src/model/CM2Model.cpp
+00834630	annotated	CM2Model::AttachToSceneRecursive	tag in src/model/CM2Model.cpp
 00834660	override	CM2Model::CollectShadowCasters	
 00834810	override	CM2Model::Initialize	
 008348d0	annotated	CM2Light::Initialize	tag in src/model/CM2Light.cpp
@@ -3973,6 +4059,7 @@ addr	how	frozen	evidence
 00834a40	annotated	CM2Light::CM2Light	tag in src/model/CM2Light.cpp
 00834ab0	annotated	CM2Light::Unlink	tag in src/model/CM2Light.cpp
 00834ae0	annotated	CM2Light::SetDirection	tag in src/model/CM2Light.cpp
+00834b50	annotated	CM2Light::SetupGxLight	tag in src/model/CM2Light.cpp
 00834c70	annotated	CM2Light::Link	tag in src/model/CM2Light.cpp
 00834d90	annotated	CM2Lighting::AddAmbient	tag in src/model/CM2Lighting.cpp
 00834dc0	annotated	CM2Lighting::AddDiffuse	tag in src/model/CM2Lighting.cpp
@@ -3985,8 +4072,10 @@ addr	how	frozen	evidence
 00835690	annotated	CM2Light::SetPosition	tag in src/model/CM2Light.cpp
 008356f0	callgraph	CM2Light::SetVisible	only unmatched callee of 0081e400=CM2Scene::SelectLights, 00824d30=CM2Model::FreeExternalResources
 00835750	annotated	CM2Lighting::SetupGxFog	tag in src/model/CM2Lighting.cpp
+00835950	override	CM2Shared::LoadCanceledCallback	
 00835970	annotated	CM2Shared::AddRef	tag in src/model/CM2Shared.cpp
 008359c0	annotated	CM2Shared::CallbackWhenLoaded	tag in src/model/CM2Shared.cpp
+00835a00	annotated	CM2Shared::LoadFailedCallback	tag in src/model/CM2Shared.cpp
 00835a20	annotated	M2AnimFileName	tag in src/model/CM2Shared.cpp
 00835a80	annotated	M2SkinFileName	tag in src/model/CM2Shared.cpp
 00835ae0	override	M2Init	
@@ -4021,6 +4110,7 @@ addr	how	frozen	evidence
 00837a40	override	CM2Shared::InitializeSkinProfile	
 00837ee0	override	M2Init	
 008382a0	override	M2Init	
+00838490	annotated	CM2Shared::FinishLoadingSkinProfile	tag in src/model/CM2Shared.cpp
 008385a0	override	M2Init	
 00838b10	override	M2Init	
 00839080	override	M2Init	
@@ -4028,9 +4118,15 @@ addr	how	frozen	evidence
 00839ef0	override	M2Init	
 0083a460	override	M2Init	
 0083af90	override	M2Init	
+0083c5f0	callgraph	M2ConvertModelFileName	only unmatched callee of 0081c390=CM2Cache::CreateShared
 0083c6e0	override	M2Init	
 0083ca90	annotated	CM2Shared::InitSequence	tag in src/model/CM2Shared.cpp
+0083cb10	annotated	CM2Shared::SkinProfileLoadedCallback	tag in src/model/CM2Shared.cpp
+0083cb40	annotated	CM2Shared::LoadSkinProfile	tag in src/model/CM2Shared.cpp
+0083cc80	annotated	CM2Shared::Initialize	tag in src/model/CM2Shared.cpp
+0083cf00	annotated	CM2Shared::FinishLoading	tag in src/model/CM2Shared.cpp
 0083d2d0	callgraph	CM2Shared::DestroySequenceLoad	only unmatched callee of 0083d370=CM2Shared::CancelSequenceLoads
+0083d340	annotated	CM2Shared::LoadSucceededCallback	tag in src/model/CM2Shared.cpp
 0083d370	annotated	CM2Shared::CancelSequenceLoads	tag in src/model/CM2Shared.cpp
 0083d410	override	CM2Shared::Load	
 0083d510	override	CM2Shared::CancelSequenceLoads	
@@ -4087,7 +4183,7 @@ addr	how	frozen	evidence
 0084e590	callgraph	lua_getfield	only unmatched callee of 00816910=getglobal
 0084e600	callgraph	lua_rawget	only unmatched callee of 00818010=FrameScript_GetVariable
 0084e670	override	lua_rawgeti	
-0084e6e0	callorder	lua_createtable	same slot between linked calls in 004a12d0=CSimpleFrame_GetBackdrop, 00819bb0=FrameScript_Initialize
+0084e6e0	callgraph	lua_createtable	only unmatched callee of 00816790=FrameScript_Object::CreateScriptMetaTable
 0084e730	callorder	lua_getmetatable	same slot between linked calls in 0084f2f0=luaL_getmetafield
 0084e7a0	order	lua_getfenv	definition order between lua_getmetatable and lua_settable in vendor/lua-5.1.3/src/lapi.c
 0084e8d0	callgraph	lua_settable	only unmatched callee of 0060a510=Script_FillLocalizedClassList
@@ -4344,6 +4440,7 @@ addr	how	frozen	evidence
 0086c6a0	annotated	OsGuiGetWindow	tag in src/client/gui/android/OsGui.cpp
 0086cf90	callgraph	CSimpleEditBox::RunOnEditFocusGainedScript	only unmatched callee of 00965120=CSimpleEditBox::SetKeyboardFocus
 0086d6d0	annotated	OsTlsGetValue	tag in lib/common/common/thread/OsTls.cpp
+0086d6e0	callgraph	OsTlsSetValue	only unmatched callee of 0047cbf0=PropSelectContext
 008714e0	annotated	OsGetLastErrorStr	tag in lib/common/common/Os.cpp
 00871510	annotated	OsFreeLastErrorStr	tag in lib/common/common/Os.cpp
 008728c0	annotated	CShaderEffect::SetFixedFunc	tag in src/gx/shader/CShaderEffect.cpp
@@ -4363,6 +4460,7 @@ addr	how	frozen	evidence
 00873480	override	CShaderEffect::SetTexMtx_Identity	
 00873550	annotated	CShaderEffect::SetTexMtx_SphereMap	tag in src/gx/shader/CShaderEffect.cpp
 00873620	annotated	CShaderEffect::SetTexMtx	tag in src/gx/shader/CShaderEffect.cpp
+00873730	annotated	CShaderEffect::SetTexMtx_EyeSpace	tag in src/gx/shader/CShaderEffect.cpp
 00873900	annotated	CShaderEffect::SetDiffuse	tag in src/gx/shader/CShaderEffect.cpp
 00873a50	annotated	CShaderEffect::SetEmissive	tag in src/gx/shader/CShaderEffect.cpp
 00873ba0	annotated	CShaderEffect::SetAlphaRef	tag in src/gx/shader/CShaderEffect.cpp
@@ -4594,8 +4692,10 @@ addr	how	frozen	evidence
 0095f5c0	annotated	CSimpleModel::SetLight	tag in src/ui/simple/CSimpleModel.cpp
 0095f5e0	callgraph	CSimpleModel::SetSequence	only unmatched callee of 009607e0=CSimpleModel_SetSequence
 0095f610	callgraph	CSimpleModel::SetSequenceTime	only unmatched callee of 009608b0=CSimpleModel_SetSequenceTime
+0095f650	callgraph	CSimpleModel::GetScene	only unmatched callee of 005975b0=CGCharacterModelBase::CreateModelFromUnit
 0095f800	string	CSimpleModel::LoadXML	unique "FogColor"
 0095f9f0	callgraph	CSimpleModel::SetCameraByIndex	only unmatched callee of 00960970=CSimpleModel_SetCamera
+0095fba0	callgraph	CSimpleModel::OnLayerUpdate	only unmatched callee of 005971b0=CGCharacterModelBase::OnLayerUpdate
 00960420	callgraph	FrameScript_GetColor	only unmatched callee of 004a3d40=FontString_SetShadowColor, 009611a0=CSimpleModel_SetFogColor
 00960530	table	CSimpleModel_SetModel	binding "SetModel" in SimpleModelMethods ~ table 00b2cb10
 009605d0	annotated	CSimpleModel_GetModel	tag in src/ui/simple/CSimpleModelScript.cpp
@@ -4877,6 +4977,7 @@ addr	how	frozen	evidence
 009783b0	annotated	CSimpleButton_SetMotionScriptsWhileDisabled	tag in src/ui/simple/CSimpleButtonScript.cpp
 00978610	string	CSimpleScrollingMessageFrame::GetScriptByName	unique "OnHyperlinkClick"
 00978ad0	annotated	M2ParticleToFixed16	tag in src/model/CM2ParticleEmitter.cpp
+00978b30	annotated	CM2ParticleEmitter::SetGeometryModel	tag in src/model/CM2ParticleEmitter.cpp
 00978b70	annotated	M2ParticleFlushDenormals	tag in src/model/CM2ParticleEmitter.cpp
 00978be0	annotated	CM2ParticleEmitter::GetBounds	tag in src/model/CM2ParticleEmitter.cpp
 00978bf0	annotated	CM2ParticleEmitter::SetMaterial	tag in src/model/CM2ParticleEmitter.cpp
@@ -4886,7 +4987,12 @@ addr	how	frozen	evidence
 00978da0	annotated	CM2ParticleEmitter::SetZSource	tag in src/model/CM2ParticleEmitter.cpp
 00978dd0	annotated	CM2ParticleEmitter::SetFollow	tag in src/model/CM2ParticleEmitter.cpp
 00978e30	annotated	CM2ParticleEmitter::SetTextureAnimated	tag in src/model/CM2ParticleEmitter.cpp
+00978e70	annotated	CM2ParticleEmitter::AddRef	tag in src/model/CM2ParticleEmitter.cpp
+00978e80	annotated	CM2ParticleEmitter::Release	tag in src/model/CM2ParticleEmitter.cpp
+00978e90	annotated	CRect::CRect	tag in lib/typhoon/tempest/rect/CRect.cpp
+00979110	annotated	C4Quaternion::Normalize	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
 00979170	annotated	M2ParticleIndexBufferCreate	tag in src/model/CM2ParticleEmitter.cpp
+009791e0	annotated	M2ParticleIndexBufferRelease	tag in src/model/CM2ParticleEmitter.cpp
 00979250	override	CM2ParticleEmitter::CM2ParticleEmitter	
 009792d0	annotated	CM2ParticleEmitter::RandomSpeed	tag in src/model/CM2ParticleEmitter.cpp
 00979330	annotated	M2PartTrackFindKey	tag in src/model/CM2ParticleEmitter.cpp
@@ -4896,40 +5002,56 @@ addr	how	frozen	evidence
 00979560	annotated	M2PartTrackEvalCell	tag in src/model/CM2ParticleEmitter.cpp
 009795d0	annotated	CM2ParticleEmitter::SampleColor	tag in src/model/CM2ParticleEmitter.cpp
 00979740	annotated	CM2ParticleEmitter::GroundSnapParticle	tag in src/model/CM2ParticleEmitter.cpp
+009797f0	annotated	M2CopyModelParticle	tag in src/model/CM2ParticleEmitter.cpp
 00979870	override	CM2ParticleEmitter::CreateParticle	
+009799c0	annotated	CM2ParticleEmitter::CreateModelParticle	tag in src/model/CM2ParticleEmitter.cpp
 00979bb0	annotated	CM2ParticleEmitter::IntegrateParticle	tag in src/model/CM2ParticleEmitter.cpp
+00979d60	annotated	CM2ParticleEmitter::SampleRamp	tag in src/model/CM2ParticleEmitter.cpp
 00979e90	annotated	CM2ParticleEmitter::SampleAppearance	tag in src/model/CM2ParticleEmitter.cpp
 0097a130	annotated	CM2ParticleEmitter::SampleSpin	tag in src/model/CM2ParticleEmitter.cpp
 0097a260	annotated	M2ParticleIndexBufferFill	tag in src/model/CM2ParticleEmitter.cpp
 0097a2e0	annotated	CM2ParticleEmitter::SetupVertexCursor	tag in src/model/CM2ParticleEmitter.cpp
 0097a390	annotated	CM2ParticleEmitter::SetupDrawBasis	tag in src/model/CM2ParticleEmitter.cpp
 0097a580	annotated	CM2ParticleEmitter::SubmitDraw	tag in src/model/CM2ParticleEmitter.cpp
+0097a670	annotated	CM2ParticleEmitter::UpdateModelParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097a990	annotated	CM2ParticleEmitter::SetColors	tag in src/model/CM2ParticleEmitter.cpp
 0097ab10	annotated	CM2ParticleEmitter::GetColors	tag in src/model/CM2ParticleEmitter.cpp
 0097ac00	annotated	CM2ParticleEmitter::SetTwinkleScale	tag in src/model/CM2ParticleEmitter.cpp
 0097ac20	annotated	CM2ParticleEmitter::Place	tag in src/model/CM2ParticleEmitter.cpp
 0097acb0	annotated	CM2ParticleEmitter::Substep	tag in src/model/CM2ParticleEmitter.cpp
+0097ae00	annotated	CM2ParticleEmitter::RecursionModelLoaded	tag in src/model/CM2ParticleEmitter.cpp
+0097aeb0	annotated	CM2ParticleEmitter::SetRecursionModel	tag in src/model/CM2ParticleEmitter.cpp
 0097aef0	annotated	CM2ParticleEmitter::Transform	tag in src/model/CM2ParticleEmitter.cpp
+0097aff0	annotated	CM2ParticleEmitter::PrecompileRampColor	tag in src/model/CM2ParticleEmitter.cpp
+0097b440	annotated	CM2ParticleEmitter::PrecompileRampAlpha	tag in src/model/CM2ParticleEmitter.cpp
+0097b5f0	annotated	CM2ParticleEmitter::PrecompileRampScale	tag in src/model/CM2ParticleEmitter.cpp
+0097b6c0	annotated	CM2ParticleEmitter::PrecompileRampHeadCell	tag in src/model/CM2ParticleEmitter.cpp
+0097b840	annotated	CM2ParticleEmitter::PrecompileRampTailCell	tag in src/model/CM2ParticleEmitter.cpp
 0097b9e0	annotated	CM2ParticleEmitter::HasLiveParticles	tag in src/model/CM2ParticleEmitter.cpp
 0097ba30	annotated	CM2ParticleEmitter::CountSpawnedModels	tag in src/model/CM2ParticleEmitter.cpp
 0097ba70	annotated	CM2ParticleEmitter::FindSpawnedModel	tag in src/model/CM2ParticleEmitter.cpp
 0097bae0	annotated	CM2ParticleEmitter::CountBatchedEmitters	tag in src/model/CM2ParticleEmitter.cpp
 0097bb30	annotated	CM2ParticleEmitter::CountTriangles	tag in src/model/CM2ParticleEmitter.cpp
+0097bcc0	annotated	CM2ParticleEmitter::~CM2ParticleEmitter	tag in src/model/CM2ParticleEmitter.cpp
 0097bd80	annotated	CM2ParticleEmitter::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp
 0097bdb0	annotated	CM2ParticleEmitter::IntegrateModelParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097be80	annotated	CM2ParticleEmitter::WriteParticleVertices	tag in src/model/CM2ParticleEmitter.cpp
+0097d370	annotated	CM2ParticleEmitter::PrecompileRamp	tag in src/model/CM2ParticleEmitter.cpp
 0097d820	annotated	CM2ParticleEmitter::SpawnParticle	tag in src/model/CM2ParticleEmitter.cpp
 0097d8c0	annotated	CM2ParticleEmitter::Emit	tag in src/model/CM2ParticleEmitter.cpp
 0097db80	annotated	CM2ParticleEmitter::IntegrateAndSpawnChildren	tag in src/model/CM2ParticleEmitter.cpp
 0097dd20	annotated	CM2ParticleEmitter::Step	tag in src/model/CM2ParticleEmitter.cpp
+0097e080	annotated	M2ParticleDepthQueuePop	tag in src/model/CM2ParticleEmitter.cpp
 0097e150	annotated	CM2ParticleEmitter::CM2ParticleEmitter	tag in src/model/CM2ParticleEmitter.cpp
 0097e3f0	annotated	CM2ParticleEmitter::Reserve	tag in src/model/CM2ParticleEmitter.cpp
 0097e480	annotated	CM2ParticleEmitter::SetParticleCount	tag in src/model/CM2ParticleEmitter.cpp
 0097e580	annotated	CM2ParticleEmitter::WriteLiveParticles	tag in src/model/CM2ParticleEmitter.cpp
 0097e730	annotated	CM2ParticleEmitter::FillDrawBuffer	tag in src/model/CM2ParticleEmitter.cpp
+0097e8d0	annotated	CM2ParticleEmitter::UpdateModelParticles	tag in src/model/CM2ParticleEmitter.cpp
 0097ea60	annotated	CM2ParticleEmitter::Draw	tag in src/model/CM2ParticleEmitter.cpp
 0097eb10	annotated	CM2ParticleEmitter::Update	tag in src/model/CM2ParticleEmitter.cpp
 0097edf0	annotated	CM2ParticleEmitter::PrepareStep	tag in src/model/CM2ParticleEmitter.cpp
+0097eec0	annotated	CM2ParticleEmitter::CM2ParticleEmitter	tag in src/model/CM2ParticleEmitter.cpp
 0097f510	annotated	CM2Ribbon::UpdateCellRect	tag in src/model/CM2Ribbon.cpp
 0097f570	annotated	CM2Ribbon::SetAbove	tag in src/model/CM2Ribbon.cpp
 0097f5b0	annotated	CM2Ribbon::SetFlag8	tag in src/model/CM2Ribbon.cpp
@@ -4949,33 +5071,58 @@ addr	how	frozen	evidence
 0097fe50	annotated	CM2Ribbon::CountVertices	tag in src/model/CM2Ribbon.cpp
 0097fef0	annotated	CM2Ribbon::EmitSegment	tag in src/model/CM2Ribbon.cpp
 00980090	annotated	CM2Ribbon::Update	tag in src/model/CM2Ribbon.cpp
+00980510	annotated	M2RibbonCopyTextures	tag in src/model/CM2Ribbon.cpp
 00980590	annotated	CM2Ribbon::~CM2Ribbon	tag in src/model/CM2Ribbon.cpp
 00980630	annotated	CM2Ribbon::CM2Ribbon	tag in src/model/CM2Ribbon.cpp
 009808a0	annotated	CM2Ribbon::Initialize	tag in src/model/CM2Ribbon.cpp
 00980b70	annotated	CM2Ribbon::Draw	tag in src/model/CM2Ribbon.cpp
 00980ed0	annotated	ParticleFxGetDensity	tag in src/world/ParticleFx.cpp
 00980f70	annotated	ParticleFxRender	tag in src/world/ParticleFx.cpp
+00981000	annotated	M2ParticleEmitterPool::Clear	tag in src/model/CM2ParticleEmitter.cpp
+00981090	annotated	M2ParticleEmitterPool::Add	tag in src/model/CM2ParticleEmitter.cpp
+00981130	annotated	M2ParticleEmitterPoolGet	tag in src/model/CM2ParticleEmitter.cpp
+00981200	annotated	M2ParticleEmitterPool::~M2ParticleEmitterPool	tag in src/model/CM2ParticleEmitter.cpp
+00981270	annotated	M2ParticleEmitterPoolDestroy	tag in src/model/CM2ParticleEmitter.cpp
 00981310	annotated	CM2ParticleEmitterPlane::CM2ParticleEmitterPlane	tag in src/model/CM2ParticleEmitter.cpp
+00981350	annotated	CM2ParticleEmitterPlane::CM2ParticleEmitterPlane	tag in src/model/CM2ParticleEmitter.cpp
 009813b0	annotated	CM2ParticleEmitterPlane::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
 009813c0	annotated	CM2ParticleEmitterPlane::SetLength	tag in src/model/CM2ParticleEmitter.cpp
 009813d0	annotated	CM2ParticleEmitterPlane::SetLatitude	tag in src/model/CM2ParticleEmitter.cpp
 009813e0	annotated	CM2ParticleEmitterPlane::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
 009813f0	annotated	CM2ParticleEmitterSphere::CM2ParticleEmitterSphere	tag in src/model/CM2ParticleEmitter.cpp
+00981430	annotated	CM2ParticleEmitterSphere::CM2ParticleEmitterSphere	tag in src/model/CM2ParticleEmitter.cpp
 00981490	annotated	CM2ParticleEmitterSphere::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
 009814b0	annotated	CM2ParticleEmitterSphere::SetLength	tag in src/model/CM2ParticleEmitter.cpp
 009814d0	annotated	CM2ParticleEmitterSphere::SetLongitude	tag in src/model/CM2ParticleEmitter.cpp
 009814e0	annotated	CM2ParticleEmitterSpline::SetEmissionRate	tag in src/model/CM2ParticleEmitter.cpp
 00981500	annotated	CM2ParticleEmitterSpline::SetSplinePoints	tag in src/model/CM2ParticleEmitter.cpp
+00981510	annotated	CM2ParticleEmitterPlane::Clone	tag in src/model/CM2ParticleEmitter.cpp
+00981550	annotated	CM2ParticleEmitterSphere::Clone	tag in src/model/CM2ParticleEmitter.cpp
 009815c0	annotated	CM2ParticleEmitterPlane::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00981950	annotated	CM2ParticleEmitterSphere::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 00981c90	annotated	CM2ParticleEmitterSpline::SetWidth	tag in src/model/CM2ParticleEmitter.cpp
 00981cd0	annotated	CM2ParticleEmitterSpline::SetLength	tag in src/model/CM2ParticleEmitter.cpp
 00981d40	annotated	CM2ParticleEmitterSpline::CreateParticle	tag in src/model/CM2ParticleEmitter.cpp
 009820f0	annotated	CM2ParticleEmitterSpline::CM2ParticleEmitterSpline	tag in src/model/CM2ParticleEmitter.cpp
+009821c0	annotated	CM2ParticleEmitterSpline::CM2ParticleEmitterSpline	tag in src/model/CM2ParticleEmitter.cpp
+00982240	annotated	CM2ParticleEmitterSpline::Clone	tag in src/model/CM2ParticleEmitter.cpp
+00982310	annotated	CRandom::uniform	tag in lib/typhoon/tempest/random/CRandom.cpp
+00982340	annotated	C4Quaternion::C4Quaternion	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+00982400	annotated	C4Quaternion::C4Quaternion	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
 00982460	annotated	C4Quaternion::Slerp	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+00982570	annotated	C4Quaternion::NormalizeFast	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+00982630	annotated	C4Quaternion::Nlerp	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+009826a0	annotated	C4QuaternionFromRotation	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+009827b0	annotated	QuaternionFromRotation	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+009828b0	annotated	C4Quaternion::C4Quaternion	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
+00982910	annotated	C4Quaternion::C4Quaternion	tag in lib/typhoon/tempest/quaternion/C4Quaternion.cpp
 00982970	annotated	UnpackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 009829b0	annotated	DominantAxis	tag in lib/typhoon/tempest/Intersect.cpp
 009829f0	annotated	MinAxis	tag in lib/typhoon/tempest/ColorConvert.cpp
+00982a40	annotated	IntersectRayAaBox	tag in lib/typhoon/tempest/Intersect.cpp
+00982c10	annotated	AaBoxSphereTest2D	tag in lib/typhoon/tempest/Intersect.cpp
+00982f30	annotated	IntersectRayAaBox	tag in lib/typhoon/tempest/Intersect.cpp
+00982f80	annotated	AaBoxSphereTest2D	tag in lib/typhoon/tempest/Intersect.cpp
 00982fb0	annotated	IntersectRayPlane	tag in lib/typhoon/tempest/Intersect.cpp
 009830d0	annotated	PointInPolygon	tag in lib/typhoon/tempest/Intersect.cpp
 00983490	annotated	IntersectRayTriangle	tag in lib/typhoon/tempest/Intersect.cpp
@@ -4988,6 +5135,8 @@ addr	how	frozen	evidence
 00983f40	annotated	CWFrustum::Transform	tag in src/world/CWFrustum.cpp
 00983fe0	annotated	CWFrustum::CWFrustum	tag in src/world/CWFrustum.cpp
 00984240	annotated	CWFrustum::SetCorners	tag in src/world/CWorldScene.cpp
+00984310	annotated	operator*	tag in lib/typhoon/tempest/matrix/C33Matrix.cpp
+00984450	annotated	C34Matrix::RotateAroundZ	tag in lib/typhoon/tempest/matrix/C34Matrix.cpp
 00984860	annotated	TransformBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
 00984930	annotated	BoundsFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
 00984c90	annotated	ImVectorToFloats	tag in src/world/CWorldScene.cpp
@@ -4998,6 +5147,8 @@ addr	how	frozen	evidence
 00985030	annotated	HsvToRgb	tag in lib/typhoon/tempest/ColorConvert.cpp
 009851a0	annotated	PackColor	tag in lib/typhoon/tempest/ColorConvert.cpp
 00985200	annotated	RayFromPoints	tag in lib/typhoon/tempest/Intersect.cpp
+009855f0	annotated	SpheresToBox	tag in lib/typhoon/tempest/box/CAaBox.cpp
+00985750	annotated	SphereBoundSpheres	tag in lib/typhoon/tempest/box/CAaBox.cpp
 009858b0	table	Script_PlaySound	binding "PlaySound" in SI2::s_ScriptFunctions ~ table 00b2d928
 00985950	table	Script_PlayMusic	binding "PlayMusic" in SI2::s_ScriptFunctions ~ table 00b2d928
 009859b0	table	Script_PlaySoundFile	binding "PlaySoundFile" in SI2::s_ScriptFunctions ~ table 00b2d928

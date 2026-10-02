@@ -254,7 +254,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "GammaCallback",
-  "frozenSize": 3,
+  "frozenSize": 77,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 73,
@@ -270,7 +270,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "DesktopGammaCallback",
-  "frozenSize": 3,
+  "frozenSize": 157,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 128,
@@ -510,7 +510,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "TimingMethodCallback",
-  "frozenSize": 0,
+  "frozenSize": 186,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 148,
@@ -526,7 +526,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "TimingInfoCommand",
-  "frozenSize": 0,
+  "frozenSize": 135,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 95,
@@ -725,7 +725,7 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.224,
+  "fidelity": 0.245,
   "files": [
    "src/client/Client.cpp",
    "src/client/client.cpp"
@@ -763,7 +763,7 @@
    "src/client/client.cpp"
   ],
   "frozen": "InitializeGlobal",
-  "frozenSize": 0,
+  "frozenSize": 757,
   "how": "string",
   "module": "Client.cpp",
   "refSize": 887,
@@ -909,7 +909,7 @@
    "src/gx/transform.cpp"
   ],
   "frozen": "GxXformSetProjection",
-  "frozenSize": 17,
+  "frozenSize": 20,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 25,
@@ -925,7 +925,7 @@
    "src/gx/transform.cpp"
   ],
   "frozen": "GxXformSetView",
-  "frozenSize": 17,
+  "frozenSize": 20,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 25,
@@ -973,7 +973,7 @@
    "src/gx/shader.cpp"
   ],
   "frozen": "GxShaderConstantsSet",
-  "frozenSize": 42,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "Client.cpp",
   "refSize": 43,
@@ -1133,7 +1133,7 @@
    "src/gx/loadingscreen.cpp"
   ],
   "frozen": "LoadBackgroundTexture",
-  "frozenSize": 696,
+  "frozenSize": 728,
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 646,
@@ -1181,7 +1181,7 @@
    "src/gx/loadingscreen.cpp"
   ],
   "frozen": "Begin",
-  "frozenSize": 650,
+  "frozenSize": 681,
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 386,
@@ -1306,7 +1306,7 @@
    "src/util/sfile.cpp"
   ],
   "frozen": "SFile::SetFilePointer",
-  "frozenSize": 0,
+  "frozenSize": 96,
   "how": "annotated",
   "module": "OggDecompress.cpp",
   "refSize": 207,
@@ -2300,6 +2300,22 @@
   "refSize": 264,
   "status": "ported"
  },
+ "0047cbf0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/Prop.cpp",
+   "lib/common/common/prop.cpp"
+  ],
+  "frozen": "PropSelectContext",
+  "frozenSize": 14,
+  "how": "callgraph",
+  "module": "FileCache.cpp",
+  "refSize": 24,
+  "status": "ported"
+ },
  "0047cc90": {
   "branchRatio": 0.5,
   "constOverlap": -1.0,
@@ -2395,11 +2411,27 @@
   "refSize": 25,
   "status": "ported"
  },
+ "0047e910": {
+  "branchRatio": 0.364,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/event/Scheduler.cpp",
+   "src/event/scheduler.cpp"
+  ],
+  "frozen": "InitializeSchedulerThread",
+  "frozenSize": 442,
+  "how": "callorder",
+  "module": "EvtSched.cpp",
+  "refSize": 345,
+  "status": "ported"
+ },
  "0047f230": {
   "branchRatio": 0.667,
   "constOverlap": 0.333,
   "faithful": false,
-  "fidelity": 0.111,
+  "fidelity": 0.556,
   "files": [
    "src/event/Scheduler.cpp",
    "src/event/scheduler.cpp"
@@ -2415,7 +2447,7 @@
   "branchRatio": 0.143,
   "constOverlap": 0.111,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.5,
   "files": [
    "src/event/Scheduler.cpp",
    "src/event/scheduler.cpp"
@@ -2757,7 +2789,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxBufStream",
-  "frozenSize": 0,
+  "frozenSize": 20,
   "how": "annotated",
   "module": "CSimpleRender.cpp",
   "refSize": 28,
@@ -2980,7 +3012,7 @@
    "src/ui/simple/csimpletexture.cpp"
   ],
   "frozen": "CSimpleTexture::SetTexture",
-  "frozenSize": 429,
+  "frozenSize": 453,
   "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 270,
@@ -2996,7 +3028,7 @@
    "src/ui/simple/csimpletexture.cpp"
   ],
   "frozen": "CSimpleTexture::LoadXML",
-  "frozenSize": 2644,
+  "frozenSize": 2623,
   "how": "override",
   "module": "CSimpleRender.cpp",
   "refSize": 3017,
@@ -3557,7 +3589,7 @@
   ],
   "frozen": "CLayoutFrame::GetRect",
   "frozenSize": 53,
-  "how": "callorder",
+  "how": "sticky",
   "module": "CScriptRegion.cpp",
   "refSize": 53,
   "status": "ported"
@@ -3749,7 +3781,7 @@
   ],
   "frozen": "CLayoutFrame::SetDeferredResize",
   "frozenSize": 113,
-  "how": "callorder",
+  "how": "sticky",
   "module": "CScriptRegion.cpp",
   "refSize": 208,
   "status": "ported"
@@ -5434,6 +5466,22 @@
   "refSize": 179,
   "status": "ported"
  },
+ "004918f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleFrame.cpp",
+   "src/ui/simple/csimpleframe.cpp"
+  ],
+  "frozen": "CSimpleFrame::OnLayerShow",
+  "frozenSize": 124,
+  "how": "callgraph",
+  "module": "CSimpleFrame.cpp",
+  "refSize": 244,
+  "status": "ported"
+ },
  "004926f0": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -5540,7 +5588,7 @@
    "src/gx/gx.cpp"
   ],
   "frozen": "GxCapsWindowSizeInScreenCoords",
-  "frozenSize": 0,
+  "frozenSize": 17,
   "how": "annotated",
   "module": "CSimpleFrame.cpp",
   "refSize": 25,
@@ -5556,7 +5604,7 @@
    "src/ui/game/cursor.cpp"
   ],
   "frozen": "CursorSetImage",
-  "frozenSize": 0,
+  "frozenSize": 102,
   "how": "annotated",
   "module": "CSimpleFrame.cpp",
   "refSize": 87,
@@ -8208,7 +8256,7 @@
   ],
   "frozen": "CBackdropGenerator::Generate",
   "frozenSize": 636,
-  "how": "callorder",
+  "how": "sticky",
   "module": "CSimpleFrameScript.cpp",
   "refSize": 868,
   "status": "ported"
@@ -10449,7 +10497,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureFreeMem",
-  "frozenSize": 0,
+  "frozenSize": 27,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 30,
@@ -10545,7 +10593,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureLoadTgaMips",
-  "frozenSize": 0,
+  "frozenSize": 501,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 418,
@@ -10609,7 +10657,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureAllocGxTex",
-  "frozenSize": 417,
+  "frozenSize": 447,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 448,
@@ -10625,7 +10673,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "FillInSolidTexture",
-  "frozenSize": 288,
+  "frozenSize": 312,
   "how": "string",
   "module": "Texture.cpp",
   "refSize": 183,
@@ -10673,7 +10721,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCacheGetProcedural",
-  "frozenSize": 216,
+  "frozenSize": 231,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 99,
@@ -10721,7 +10769,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureAllocMippedImg",
-  "frozenSize": 314,
+  "frozenSize": 295,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 212,
@@ -10737,7 +10785,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureFreeMippedImg",
-  "frozenSize": 0,
+  "frozenSize": 535,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 217,
@@ -10753,7 +10801,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureLoadTga",
-  "frozenSize": 0,
+  "frozenSize": 1005,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 506,
@@ -10769,7 +10817,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "PumpBlpTextureAsync",
-  "frozenSize": 1336,
+  "frozenSize": 1540,
   "how": "string",
   "module": "Texture.cpp",
   "refSize": 684,
@@ -10801,7 +10849,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureLoadImage",
-  "frozenSize": 0,
+  "frozenSize": 751,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 437,
@@ -10817,7 +10865,7 @@
    "src/gx/texture/ctexture.cpp"
   ],
   "frozen": "CTexture::CTexture",
-  "frozenSize": 244,
+  "frozenSize": 271,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 175,
@@ -10881,7 +10929,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 2037,
+  "frozenSize": 2065,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 234,
@@ -10945,7 +10993,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreateSolid",
-  "frozenSize": 376,
+  "frozenSize": 403,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 96,
@@ -10977,7 +11025,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "TextureCreate",
-  "frozenSize": 2037,
+  "frozenSize": 2065,
   "how": "override",
   "module": "Texture.cpp",
   "refSize": 416,
@@ -11159,6 +11207,118 @@
   "refSize": 137,
   "status": "ported"
  },
+ "004baf60": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "CModelBlob::~CModelBlob",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 104,
+  "status": "ported"
+ },
+ "004bb1c0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "ModelBlobDestroy",
+  "frozenSize": 356,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
+ "004bb370": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "CModelBlob::Query",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 102,
+  "status": "ported"
+ },
+ "004bb3e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "ModelBlobQuery",
+  "frozenSize": 248,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "004bba70": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "CModelBlob::AddEntry",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 176,
+  "status": "ported"
+ },
+ "004bbb20": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "CModelBlob::Load",
+  "frozenSize": 535,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 246,
+  "status": "ported"
+ },
+ "004bbc20": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "ModelBlobLoad",
+  "frozenSize": 192,
+  "how": "annotated",
+  "module": "ModelBlob.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
  "004bc410": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
@@ -11323,8 +11483,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -11634,8 +11796,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -11656,8 +11820,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -11678,8 +11844,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -11703,7 +11871,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "TransformVector4",
-  "frozenSize": 0,
+  "frozenSize": 239,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 140,
@@ -11735,7 +11903,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::operator*=",
-  "frozenSize": 64,
+  "frozenSize": 117,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 43,
@@ -11751,7 +11919,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::operator*=",
-  "frozenSize": 64,
+  "frozenSize": 117,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 46,
@@ -11799,7 +11967,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::Inverse",
-  "frozenSize": 96,
+  "frozenSize": 787,
   "how": "annotated",
   "module": "TextureBlob.cpp",
   "refSize": 45,
@@ -12164,8 +12332,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -13175,7 +13345,7 @@
    "src/glue/cgluemgr.cpp"
   ],
   "frozen": "CGlueMgr::Resume",
-  "frozenSize": 762,
+  "frozenSize": 846,
   "how": "string",
   "module": "CGlueMgr.cpp",
   "refSize": 961,
@@ -14579,7 +14749,7 @@
    "src/glue/ccharactercreation.cpp"
   ],
   "frozen": "CCharacterCreation::CreateCharacter",
-  "frozenSize": 249,
+  "frozenSize": 264,
   "how": "annotated",
   "module": "RealmList.cpp",
   "refSize": 382,
@@ -15229,7 +15399,7 @@
   "branchRatio": 0.102,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.353,
+  "fidelity": 0.382,
   "files": [
    "src/glue/CCharacterSelection.cpp",
    "src/glue/ccharacterselection.cpp"
@@ -15411,7 +15581,7 @@
    "src/component/ccharactercomponent.cpp"
   ],
   "frozen": "CCharacterComponent::ComponentCloseFingers",
-  "frozenSize": 0,
+  "frozenSize": 156,
   "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 75,
@@ -15603,7 +15773,7 @@
    "src/component/ccharactercomponent.cpp"
   ],
   "frozen": "CCharacterComponent::AddLink",
-  "frozenSize": 407,
+  "frozenSize": 426,
   "how": "callgraph",
   "module": "ScanDLLGlue.cpp",
   "refSize": 221,
@@ -15635,7 +15805,7 @@
    "src/component/ccharactercomponent.cpp"
   ],
   "frozen": "ComponentRemoveAttachments",
-  "frozenSize": 0,
+  "frozenSize": 275,
   "how": "annotated",
   "module": "ScanDLLGlue.cpp",
   "refSize": 241,
@@ -15687,6 +15857,22 @@
   "how": "annotated",
   "module": "CharacterComponent.cpp",
   "refSize": 1189,
+  "status": "ported"
+ },
+ "004f20c0": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/component/CCharacterComponent.cpp",
+   "src/component/ccharactercomponent.cpp"
+  ],
+  "frozen": "CCharacterComponent::ReplaceMonsterSkin",
+  "frozenSize": 581,
+  "how": "annotated",
+  "module": "CharacterComponent.cpp",
+  "refSize": 287,
   "status": "ported"
  },
  "004f2be0": {
@@ -15952,8 +16138,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -16045,6 +16233,22 @@
   "how": "annotated",
   "module": "Passenger.cpp",
   "refSize": 19,
+  "status": "ported"
+ },
+ "004f5d90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/rect/CRect.cpp",
+   "lib/typhoon/tempest/rect/crect.cpp"
+  ],
+  "frozen": "CRect::operator!=",
+  "frozenSize": 56,
+  "how": "annotated",
+  "module": "Passenger.cpp",
+  "refSize": 70,
   "status": "ported"
  },
  "004f5de0": {
@@ -17253,7 +17457,7 @@
    "src/ui/game/gamescript.cpp"
   ],
   "frozen": "Script_SetCursor",
-  "frozenSize": 75,
+  "frozenSize": 1392,
   "how": "annotated",
   "module": "ChatFrame.cpp",
   "refSize": 1143,
@@ -20633,7 +20837,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::RegisterGameCVars",
-  "frozenSize": 13149,
+  "frozenSize": 13033,
   "how": "string",
   "module": "GameUI.cpp",
   "refSize": 6776,
@@ -21385,7 +21589,7 @@
    "src/ui/game/cggameui.cpp"
   ],
   "frozen": "CGGameUI::Initialize",
-  "frozenSize": 927,
+  "frozenSize": 931,
   "how": "annotated",
   "module": "GameUI.cpp",
   "refSize": 1329,
@@ -25965,6 +26169,19 @@
   "refSize": 97,
   "status": "ported"
  },
+ "0057c0e0": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "TSGrowableArray<C3Vector>::New",
+  "frozenSize": 153,
+  "how": "callgraph",
+  "module": "QuestTextParser.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
  "0057c2a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -26007,7 +26224,7 @@
    "src/gx/cgxmatrixstack.cpp"
   ],
   "frozen": "CGxMatrixStack::SetIdentity",
-  "frozenSize": 0,
+  "frozenSize": 95,
   "how": "annotated",
   "module": "QuestTextParser.cpp",
   "refSize": 87,
@@ -26135,7 +26352,7 @@
    "src/gx/rendertarget.cpp"
   ],
   "frozen": "GxRenderTargetSet",
-  "frozenSize": 20,
+  "frozenSize": 29,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 77,
@@ -26311,7 +26528,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetMaskTexture",
-  "frozenSize": 340,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
@@ -26327,7 +26544,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetPOIArrowTexture",
-  "frozenSize": 340,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
@@ -26343,7 +26560,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetStaticPOIArrowTexture",
-  "frozenSize": 340,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
@@ -26359,7 +26576,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetCorpsePOIArrowTexture",
-  "frozenSize": 340,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
@@ -26375,7 +26592,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetIconTexture",
-  "frozenSize": 340,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
@@ -26391,7 +26608,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetBlipTexture",
-  "frozenSize": 326,
+  "frozenSize": 353,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 338,
@@ -26407,7 +26624,7 @@
    "src/ui/game/cgminimapframescript.cpp"
   ],
   "frozen": "CGMinimapFrame_SetClassBlipTexture",
-  "frozenSize": 340,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "MinimapFrame.cpp",
   "refSize": 287,
@@ -27336,37 +27553,197 @@
   "refSize": 307,
   "status": "stub"
  },
- "005978e0": {
+ "005971b0": {
   "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::OnLayerUpdate",
+  "frozenSize": 157,
+  "how": "annotated",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
+ "00597230": {
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::RegisterScriptMethods",
+  "frozenSize": 40,
+  "how": "annotated",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 32,
+  "status": "ported"
+ },
+ "005972d0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::IsA",
+  "frozenSize": 59,
+  "how": "annotated",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
+ "00597370": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::CGCharacterModelBase",
+  "frozenSize": 222,
+  "how": "annotated",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 239,
+  "status": "ported"
+ },
+ "005975b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::CreateModelFromUnit",
+  "frozenSize": 53,
+  "how": "annotated",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 41,
+  "status": "ported"
+ },
+ "005975e0": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::SetUnitModel",
+  "frozenSize": 264,
+  "how": "override",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 279,
+  "status": "diverged"
+ },
+ "00597700": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::SetCreatureModel",
+  "frozenSize": 288,
+  "how": "annotated",
+  "module": "ClassTrainerFrame.cpp",
+  "refSize": 191,
+  "status": "ported"
+ },
+ "005977e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::SetUnit",
+  "frozenSize": 92,
+  "how": "annotated",
+  "module": "CharacterModelBase.cpp",
+  "refSize": 82,
+  "status": "ported"
+ },
+ "00597840": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::SetCreature",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CharacterModelBase.cpp",
+  "refSize": 48,
+  "status": "ported"
+ },
+ "00597870": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::OnLayerShow",
+  "frozenSize": 115,
+  "how": "annotated",
+  "module": "CharacterModelBase.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "005978e0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/CGCharacterModelBaseScript.cpp",
    "src/ui/game/cgcharactermodelbasescript.cpp"
   ],
   "frozen": "Script_SetUnit",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 143,
+  "how": "annotated",
   "module": "CharacterModelBase.cpp",
   "refSize": 118,
-  "status": "stub"
+  "status": "ported"
  },
  "00597960": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.75,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/ui/game/CGCharacterModelBaseScript.cpp",
    "src/ui/game/cgcharactermodelbasescript.cpp"
   ],
   "frozen": "Script_SetCreature",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 147,
+  "how": "annotated",
   "module": "CharacterModelBase.cpp",
   "refSize": 169,
-  "status": "stub"
+  "status": "ported"
  },
  "00597a10": {
   "branchRatio": 0.5,
@@ -27384,21 +27761,37 @@
   "refSize": 106,
   "status": "ported"
  },
+ "00597a80": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGCharacterModelBase.cpp",
+   "src/ui/game/cgcharactermodelbase.cpp"
+  ],
+  "frozen": "CGCharacterModelBase::CreateScriptMetaTable",
+  "frozenSize": 35,
+  "how": "override",
+  "module": "CharacterModelBase.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
  "00597b00": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGCharacterModelBaseScript.cpp",
    "src/ui/game/cgcharactermodelbasescript.cpp"
   ],
   "frozen": "Script_RefreshUnit",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 47,
+  "how": "annotated",
   "module": "CharacterModelBase.cpp",
   "refSize": 69,
-  "status": "stub"
+  "status": "ported"
  },
  "00597e90": {
   "branchRatio": 0.5,
@@ -27417,20 +27810,20 @@
   "status": "stub"
  },
  "00597ed0": {
-  "branchRatio": 0.5,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGDressUpModelFrameScript.cpp",
    "src/ui/game/cgdressupmodelframescript.cpp"
   ],
   "frozen": "Script_Dress",
-  "frozenSize": 75,
-  "how": "table",
+  "frozenSize": 47,
+  "how": "annotated",
   "module": "CharacterModelBase.cpp",
   "refSize": 69,
-  "status": "stub"
+  "status": "ported"
  },
  "00598830": {
   "branchRatio": 0.182,
@@ -32512,8 +32905,10 @@
   "fidelity": 1.0,
   "files": [
    "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
    "lib/typhoon/tempest/matrix/C44Matrix.cpp",
    "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
    "lib/typhoon/tempest/matrix/c44matrix.cpp",
    "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
    "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
@@ -35497,7 +35892,7 @@
    "src/ui/game/cursor.cpp"
   ],
   "frozen": "CursorUpdate",
-  "frozenSize": 0,
+  "frozenSize": 261,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 237,
@@ -35513,7 +35908,7 @@
    "src/ui/game/cursor.cpp"
   ],
   "frozen": "CursorInitialize",
-  "frozenSize": 0,
+  "frozenSize": 695,
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 245,
@@ -35577,7 +35972,7 @@
    "src/ui/game/cursor.cpp"
   ],
   "frozen": "CursorSet",
-  "frozenSize": 0,
+  "frozenSize": 49,
   "how": "annotated",
   "module": "Cursor.cpp",
   "refSize": 46,
@@ -35593,7 +35988,7 @@
    "src/ui/game/cursor.cpp"
   ],
   "frozen": "CursorSetCustom",
-  "frozenSize": 0,
+  "frozenSize": 639,
   "how": "annotated",
   "module": "Cursor.cpp",
   "refSize": 233,
@@ -35609,7 +36004,7 @@
    "src/ui/game/cursor.cpp"
   ],
   "frozen": "CursorReset",
-  "frozenSize": 0,
+  "frozenSize": 55,
   "how": "annotated",
   "module": "Cursor.cpp",
   "refSize": 44,
@@ -35674,6 +36069,22 @@
   "how": "callgraph",
   "module": "Cursor.cpp",
   "refSize": 103,
+  "status": "ported"
+ },
+ "00617a60": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/simple/CSimpleModel.cpp",
+   "src/ui/simple/csimplemodel.cpp"
+  ],
+  "frozen": "CSimpleModel::SetModel",
+  "frozenSize": 331,
+  "how": "callgraph",
+  "module": "PortraitButton.cpp",
+  "refSize": 59,
   "status": "ported"
  },
  "0061a280": {
@@ -37251,7 +37662,7 @@
    "src/gx/draw.cpp"
   ],
   "frozen": "GxSceneClear",
-  "frozenSize": 23,
+  "frozenSize": 26,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 29,
@@ -37331,7 +37742,7 @@
    "src/gx/gx.cpp"
   ],
   "frozen": "GxMaxFps",
-  "frozenSize": 0,
+  "frozenSize": 7,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 6,
@@ -37363,7 +37774,7 @@
    "src/gx/gx.cpp"
   ],
   "frozen": "GxMaxFpsBk",
-  "frozenSize": 0,
+  "frozenSize": 7,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 6,
@@ -37395,7 +37806,7 @@
    "src/gx/device.cpp"
   ],
   "frozen": "GxLogOpen",
-  "frozenSize": 0,
+  "frozenSize": 5,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 5,
@@ -37411,7 +37822,7 @@
    "src/gx/device.cpp"
   ],
   "frozen": "GxLogClose",
-  "frozenSize": 0,
+  "frozenSize": 5,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 5,
@@ -37443,7 +37854,7 @@
    "src/gx/cgxformat.cpp"
   ],
   "frozen": "CGxFormat::CGxFormat",
-  "frozenSize": 0,
+  "frozenSize": 56,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 60,
@@ -37475,7 +37886,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxPrimDrawLockedElements",
-  "frozenSize": 0,
+  "frozenSize": 117,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 75,
@@ -37523,7 +37934,7 @@
    "src/gx/texture/cgxtex.hpp"
   ],
   "frozen": "CGxTexFlags::CGxTexFlags",
-  "frozenSize": 154,
+  "frozenSize": 224,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 203,
@@ -37539,7 +37950,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "GxTexCreate",
-  "frozenSize": 135,
+  "frozenSize": 422,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 215,
@@ -37571,7 +37982,7 @@
    "src/gx/transform.cpp"
   ],
   "frozen": "GxXformSetViewport",
-  "frozenSize": 134,
+  "frozenSize": 178,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 452,
@@ -37619,7 +38030,7 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxPrimLockIndexPtr",
-  "frozenSize": 0,
+  "frozenSize": 124,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 88,
@@ -37683,7 +38094,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxBufScratch::Unlock",
-  "frozenSize": 0,
+  "frozenSize": 5,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 5,
@@ -37699,7 +38110,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ILightsInvalidate",
-  "frozenSize": 0,
+  "frozenSize": 52,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 88,
@@ -37715,7 +38126,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceCreate",
-  "frozenSize": 17,
+  "frozenSize": 94,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 27,
@@ -37731,7 +38142,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceCreate",
-  "frozenSize": 17,
+  "frozenSize": 94,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 32,
@@ -37747,7 +38158,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceDestroy",
-  "frozenSize": 0,
+  "frozenSize": 12,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 11,
@@ -37763,7 +38174,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceSetBaseMipLevel",
-  "frozenSize": 0,
+  "frozenSize": 7,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 16,
@@ -37811,7 +38222,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::RenderTargetGet",
-  "frozenSize": 19,
+  "frozenSize": 21,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 25,
@@ -37827,7 +38238,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceCurWindow",
-  "frozenSize": 5,
+  "frozenSize": 8,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 7,
@@ -37843,7 +38254,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceDefWindow",
-  "frozenSize": 5,
+  "frozenSize": 8,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 7,
@@ -37987,7 +38398,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::PrimNormal",
-  "frozenSize": 0,
+  "frozenSize": 26,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 46,
@@ -38003,7 +38414,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::PrimTexCoord",
-  "frozenSize": 0,
+  "frozenSize": 33,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 43,
@@ -38147,7 +38558,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ShaderConstantsSet",
-  "frozenSize": 908,
+  "frozenSize": 1695,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 372,
@@ -38195,7 +38606,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICursorDestroy",
-  "frozenSize": 0,
+  "frozenSize": 43,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 34,
@@ -38211,7 +38622,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CursorTexCallback",
-  "frozenSize": 0,
+  "frozenSize": 37,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 34,
@@ -38227,7 +38638,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CursorSetVisible",
-  "frozenSize": 0,
+  "frozenSize": 7,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 16,
@@ -38243,7 +38654,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::LogOpen",
-  "frozenSize": 0,
+  "frozenSize": 63,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 52,
@@ -38259,7 +38670,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::LogClose",
-  "frozenSize": 0,
+  "frozenSize": 34,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 26,
@@ -38275,7 +38686,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ILimitFrameRate",
-  "frozenSize": 0,
+  "frozenSize": 171,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 132,
@@ -38352,7 +38763,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::IClipToWindow",
-  "frozenSize": 0,
+  "frozenSize": 81,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 114,
@@ -38496,7 +38907,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxGammaRamp::Build",
-  "frozenSize": 0,
+  "frozenSize": 139,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 125,
@@ -38512,7 +38923,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceSetFormat",
-  "frozenSize": 71,
+  "frozenSize": 177,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 124,
@@ -38528,7 +38939,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceSetGamma",
-  "frozenSize": 0,
+  "frozenSize": 12,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 25,
@@ -38544,7 +38955,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceSetGammaRamp",
-  "frozenSize": 0,
+  "frozenSize": 24,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 31,
@@ -38560,7 +38971,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceDesktopGammaRamp",
-  "frozenSize": 0,
+  "frozenSize": 30,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 31,
@@ -38576,7 +38987,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICapture",
-  "frozenSize": 0,
+  "frozenSize": 103,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 132,
@@ -38592,7 +39003,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CaptureGet",
-  "frozenSize": 0,
+  "frozenSize": 45,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 62,
@@ -38608,7 +39019,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::RenderTargetSet",
-  "frozenSize": 44,
+  "frozenSize": 117,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 189,
@@ -38624,7 +39035,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceSetDefWindow",
-  "frozenSize": 15,
+  "frozenSize": 21,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 80,
@@ -38640,7 +39051,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICallbacksRestored",
-  "frozenSize": 0,
+  "frozenSize": 187,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 41,
@@ -38656,7 +39067,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICallbacksTexturesLost",
-  "frozenSize": 0,
+  "frozenSize": 187,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 41,
@@ -38672,7 +39083,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICallbacks2",
-  "frozenSize": 0,
+  "frozenSize": 187,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 41,
@@ -38688,7 +39099,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ClipPlaneSet",
-  "frozenSize": 0,
+  "frozenSize": 130,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 121,
@@ -38720,7 +39131,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::PrimColor",
-  "frozenSize": 0,
+  "frozenSize": 16,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 28,
@@ -38736,7 +39147,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::PrimEnd",
-  "frozenSize": 0,
+  "frozenSize": 164,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 109,
@@ -38848,7 +39259,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICursorCreate",
-  "frozenSize": 3,
+  "frozenSize": 172,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 122,
@@ -38864,7 +39275,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CursorUnlock",
-  "frozenSize": 0,
+  "frozenSize": 89,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 73,
@@ -38896,7 +39307,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::Log",
-  "frozenSize": 19,
+  "frozenSize": 520,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 30,
@@ -38912,7 +39323,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::Log",
-  "frozenSize": 19,
+  "frozenSize": 520,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 199,
@@ -38928,7 +39339,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::Log",
-  "frozenSize": 19,
+  "frozenSize": 520,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 92,
@@ -38944,7 +39355,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "GxWindowFitToWorkArea",
-  "frozenSize": 0,
+  "frozenSize": 816,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 618,
@@ -38960,7 +39371,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::DeviceOverride",
-  "frozenSize": 0,
+  "frozenSize": 92,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 86,
@@ -38979,6 +39390,19 @@
   "refSize": 73,
   "status": "ported"
  },
+ "00685180": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [],
+  "frozen": "TSGrowableArray<enum EGxRenderState>::SetCount",
+  "frozenSize": 176,
+  "how": "override",
+  "module": "DBCache.cpp",
+  "refSize": 73,
+  "status": "excluded"
+ },
  "006852c0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -38989,7 +39413,7 @@
    "src/gx/texture/cgxtex.cpp"
   ],
   "frozen": "CGxTex::CGxTex",
-  "frozenSize": 188,
+  "frozenSize": 209,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 163,
@@ -39005,7 +39429,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CallbackAddRestored",
-  "frozenSize": 0,
+  "frozenSize": 30,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 22,
@@ -39021,7 +39445,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CallbackRemoveRestored",
-  "frozenSize": 0,
+  "frozenSize": 133,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 140,
@@ -39037,7 +39461,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CallbackAddTexturesLost",
-  "frozenSize": 0,
+  "frozenSize": 30,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 22,
@@ -39053,7 +39477,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CallbackRemoveTexturesLost",
-  "frozenSize": 0,
+  "frozenSize": 133,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 140,
@@ -39069,7 +39493,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CallbackAdd2",
-  "frozenSize": 0,
+  "frozenSize": 30,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 22,
@@ -39085,7 +39509,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CallbackRemove2",
-  "frozenSize": 0,
+  "frozenSize": 133,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 140,
@@ -39101,7 +39525,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::PrimBegin",
-  "frozenSize": 0,
+  "frozenSize": 87,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 120,
@@ -39111,13 +39535,13 @@
   "branchRatio": 0.094,
   "constOverlap": 0.034,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::PrimVertex",
-  "frozenSize": 0,
+  "frozenSize": 894,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 798,
@@ -39133,7 +39557,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::IRsDirty",
-  "frozenSize": 250,
+  "frozenSize": 283,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 107,
@@ -39149,7 +39573,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::IRsForceUpdate",
-  "frozenSize": 261,
+  "frozenSize": 329,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 133,
@@ -39165,7 +39589,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::IRsForceUpdate",
-  "frozenSize": 261,
+  "frozenSize": 329,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 217,
@@ -39181,7 +39605,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::IRsSync",
-  "frozenSize": 268,
+  "frozenSize": 306,
   "how": "override",
   "module": "DBCache.cpp",
   "refSize": 174,
@@ -39197,7 +39621,7 @@
    "src/gx/buffer/cgxpool.cpp"
   ],
   "frozen": "CGxPool::BufRemove",
-  "frozenSize": 0,
+  "frozenSize": 64,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 83,
@@ -39213,7 +39637,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::TexCreate",
-  "frozenSize": 180,
+  "frozenSize": 323,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 107,
@@ -39229,7 +39653,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::TexSetWrap",
-  "frozenSize": 241,
+  "frozenSize": 264,
   "how": "callgraph",
   "module": "CGxDevice.cpp",
   "refSize": 127,
@@ -39245,7 +39669,7 @@
    "src/gx/texture/cgxtex.cpp"
   ],
   "frozen": "CGxTex::~CGxTex",
-  "frozenSize": 0,
+  "frozenSize": 235,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 118,
@@ -39274,7 +39698,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxBufScratch::Lock",
-  "frozenSize": 0,
+  "frozenSize": 47,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 32,
@@ -39322,7 +39746,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::RsPop",
-  "frozenSize": 559,
+  "frozenSize": 631,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 358,
@@ -39386,7 +39810,7 @@
    "src/gx/buffer/cgxpool.cpp"
   ],
   "frozen": "CGxPool::~CGxPool",
-  "frozenSize": 0,
+  "frozenSize": 191,
   "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 125,
@@ -39402,7 +39826,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::QueryCreate",
-  "frozenSize": 0,
+  "frozenSize": 206,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 81,
@@ -39418,7 +39842,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ShaderDestroy",
-  "frozenSize": 211,
+  "frozenSize": 209,
   "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 66,
@@ -39466,7 +39890,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::TexDestroy",
-  "frozenSize": 22,
+  "frozenSize": 116,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 97,
@@ -39482,7 +39906,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::QueryDestroy",
-  "frozenSize": 0,
+  "frozenSize": 178,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 158,
@@ -39498,7 +39922,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::ICursorDraw",
-  "frozenSize": 0,
+  "frozenSize": 1495,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 1338,
@@ -39546,7 +39970,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::BufDestroy",
-  "frozenSize": 85,
+  "frozenSize": 132,
   "how": "override",
   "module": "CGxDevice.cpp",
   "refSize": 172,
@@ -39562,7 +39986,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CGxDevice",
-  "frozenSize": 1257,
+  "frozenSize": 2081,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 2469,
@@ -39594,7 +40018,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::~CGxDevice",
-  "frozenSize": 1363,
+  "frozenSize": 424,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 919,
@@ -39674,7 +40098,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICreateD3dIB",
-  "frozenSize": 0,
+  "frozenSize": 142,
   "how": "annotated",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 104,
@@ -39690,7 +40114,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IPoolRelease",
-  "frozenSize": 58,
+  "frozenSize": 71,
   "how": "annotated",
   "module": "CGxDeviceD3d9Ex.cpp",
   "refSize": 87,
@@ -39706,7 +40130,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISetPresentParms",
-  "frozenSize": 362,
+  "frozenSize": 481,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 488,
@@ -39722,7 +40146,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceSetBaseMipLevel",
-  "frozenSize": 0,
+  "frozenSize": 45,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 29,
@@ -39738,7 +40162,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceSetGamma",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 71,
@@ -39754,7 +40178,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceAdapterInfo",
-  "frozenSize": 0,
+  "frozenSize": 543,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 425,
@@ -39770,7 +40194,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::PoolDestroy",
-  "frozenSize": 0,
+  "frozenSize": 60,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 34,
@@ -39786,7 +40210,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::CursorSetVisible",
-  "frozenSize": 0,
+  "frozenSize": 165,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 134,
@@ -39802,7 +40226,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::CursorUnlock",
-  "frozenSize": 0,
+  "frozenSize": 30,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 36,
@@ -39818,7 +40242,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICursorDraw",
-  "frozenSize": 0,
+  "frozenSize": 3562,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 226,
@@ -39834,7 +40258,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICursorCreate",
-  "frozenSize": 0,
+  "frozenSize": 163,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 117,
@@ -39850,7 +40274,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::StereoSetConvergence",
-  "frozenSize": 0,
+  "frozenSize": 19,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 26,
@@ -39866,7 +40290,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::StereoSetSeparation",
-  "frozenSize": 0,
+  "frozenSize": 19,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 26,
@@ -39882,7 +40306,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::QueryCreate",
-  "frozenSize": 0,
+  "frozenSize": 91,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 74,
@@ -39898,7 +40322,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::QueryBegin",
-  "frozenSize": 0,
+  "frozenSize": 121,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 113,
@@ -39914,7 +40338,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::QueryGetParam",
-  "frozenSize": 0,
+  "frozenSize": 174,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 141,
@@ -39946,7 +40370,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICreateWindow",
-  "frozenSize": 0,
+  "frozenSize": 595,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 456,
@@ -39978,7 +40402,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISetCaps",
-  "frozenSize": 594,
+  "frozenSize": 1575,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 1357,
@@ -39994,7 +40418,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "PlaceholderTexCallback",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 94,
@@ -40010,7 +40434,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICreateD3dDevice",
-  "frozenSize": 0,
+  "frozenSize": 836,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 706,
@@ -40042,7 +40466,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::RenderTargetSet",
-  "frozenSize": 0,
+  "frozenSize": 791,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 386,
@@ -40058,7 +40482,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DepthStencilSet",
-  "frozenSize": 0,
+  "frozenSize": 86,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 74,
@@ -40074,7 +40498,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::TexCopy",
-  "frozenSize": 0,
+  "frozenSize": 361,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 270,
@@ -40090,7 +40514,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IBufUnlock",
-  "frozenSize": 59,
+  "frozenSize": 132,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 124,
@@ -40106,7 +40530,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::BufUnlock",
-  "frozenSize": 74,
+  "frozenSize": 48,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 39,
@@ -40122,7 +40546,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IBufLock",
-  "frozenSize": 281,
+  "frozenSize": 382,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 433,
@@ -40154,7 +40578,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::BufData",
-  "frozenSize": 132,
+  "frozenSize": 88,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 73,
@@ -40170,7 +40594,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::CGxDeviceD3d",
-  "frozenSize": 267,
+  "frozenSize": 430,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 304,
@@ -40202,7 +40626,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICaptureRead",
-  "frozenSize": 0,
+  "frozenSize": 888,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 605,
@@ -40218,7 +40642,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IReleaseD3dResources",
-  "frozenSize": 903,
+  "frozenSize": 541,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 211,
@@ -40234,7 +40658,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceWM",
-  "frozenSize": 504,
+  "frozenSize": 446,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 349,
@@ -40250,7 +40674,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IDestroyD3dDevice",
-  "frozenSize": 0,
+  "frozenSize": 557,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 276,
@@ -40266,7 +40690,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceSetFormat",
-  "frozenSize": 955,
+  "frozenSize": 551,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 280,
@@ -40282,7 +40706,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceDestroy",
-  "frozenSize": 0,
+  "frozenSize": 179,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 137,
@@ -40298,7 +40722,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICreateD3d",
-  "frozenSize": 0,
+  "frozenSize": 394,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 194,
@@ -40314,7 +40738,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceCreate",
-  "frozenSize": 631,
+  "frozenSize": 552,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 209,
@@ -40330,7 +40754,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceCreate",
-  "frozenSize": 631,
+  "frozenSize": 552,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 103,
@@ -40408,7 +40832,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICreateD3dVB",
-  "frozenSize": 0,
+  "frozenSize": 139,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 104,
@@ -40424,7 +40848,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::CreatePoolAPI",
-  "frozenSize": 276,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 72,
@@ -40456,7 +40880,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceSetGammaRamp",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 68,
@@ -40472,7 +40896,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DeviceOverride",
-  "frozenSize": 0,
+  "frozenSize": 88,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 63,
@@ -40488,7 +40912,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::PoolSizeSet",
-  "frozenSize": 107,
+  "frozenSize": 98,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 77,
@@ -40504,7 +40928,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICursorDestroy",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 66,
@@ -40520,7 +40944,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::QueryDestroy",
-  "frozenSize": 0,
+  "frozenSize": 64,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 48,
@@ -40536,7 +40960,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::QueryEnd",
-  "frozenSize": 0,
+  "frozenSize": 64,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 50,
@@ -40552,7 +40976,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::QueryGetData",
-  "frozenSize": 0,
+  "frozenSize": 105,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 79,
@@ -40568,7 +40992,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::WindowProcD3d",
-  "frozenSize": 624,
+  "frozenSize": 2192,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 1031,
@@ -40616,7 +41040,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IReleaseD3dTextures",
-  "frozenSize": 0,
+  "frozenSize": 249,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 259,
@@ -40632,7 +41056,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::TexDestroy",
-  "frozenSize": 0,
+  "frozenSize": 72,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 65,
@@ -40648,7 +41072,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ITexCreate",
-  "frozenSize": 679,
+  "frozenSize": 504,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 382,
@@ -40664,7 +41088,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ITexUpload",
-  "frozenSize": 798,
+  "frozenSize": 932,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 738,
@@ -40696,7 +41120,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::TexCopyFromTarget",
-  "frozenSize": 0,
+  "frozenSize": 369,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 262,
@@ -40712,7 +41136,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::TexCopyFromTargetRect",
-  "frozenSize": 0,
+  "frozenSize": 460,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 361,
@@ -40728,7 +41152,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISceneBegin",
-  "frozenSize": 0,
+  "frozenSize": 287,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 199,
@@ -40760,7 +41184,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ScenePresent",
-  "frozenSize": 276,
+  "frozenSize": 532,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 449,
@@ -40776,7 +41200,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::Draw",
-  "frozenSize": 267,
+  "frozenSize": 283,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 246,
@@ -40872,7 +41296,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSetD3dDefaults",
-  "frozenSize": 546,
+  "frozenSize": 548,
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 461,
@@ -40888,7 +41312,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::DsSet",
-  "frozenSize": 582,
+  "frozenSize": 1230,
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 873,
@@ -40904,7 +41328,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISetTexCoordIndex",
-  "frozenSize": 0,
+  "frozenSize": 124,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 113,
@@ -40920,7 +41344,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISetColorOp",
-  "frozenSize": 0,
+  "frozenSize": 130,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 92,
@@ -40936,7 +41360,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISetAlphaOp",
-  "frozenSize": 0,
+  "frozenSize": 130,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 92,
@@ -40968,7 +41392,7 @@
    "lib/typhoon/tempest/matrix/c44matrix.cpp"
   ],
   "frozen": "C44Matrix::Inverse",
-  "frozenSize": 96,
+  "frozenSize": 787,
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 35,
@@ -41016,7 +41440,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSyncXforms",
-  "frozenSize": 0,
+  "frozenSize": 732,
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 174,
@@ -41032,7 +41456,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ISetTexture",
-  "frozenSize": 0,
+  "frozenSize": 536,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 435,
@@ -41080,7 +41504,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IRsSendToHw",
-  "frozenSize": 1851,
+  "frozenSize": 4513,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 1944,
@@ -41096,7 +41520,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ICreateD3dVertexDecl",
-  "frozenSize": 0,
+  "frozenSize": 489,
   "how": "callgraph",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 81,
@@ -41128,7 +41552,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSyncVertexPtrs",
-  "frozenSize": 950,
+  "frozenSize": 924,
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 557,
@@ -41144,7 +41568,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IStateSync",
-  "frozenSize": 1331,
+  "frozenSize": 1361,
   "how": "override",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 181,
@@ -41224,7 +41648,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ShaderReload",
-  "frozenSize": 0,
+  "frozenSize": 271,
   "how": "annotated",
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 183,
@@ -41288,7 +41712,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::SceneClear",
-  "frozenSize": 152,
+  "frozenSize": 165,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 136,
@@ -41352,7 +41776,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::XformSetProjection",
-  "frozenSize": 42,
+  "frozenSize": 522,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 578,
@@ -41368,7 +41792,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::XformSetView",
-  "frozenSize": 0,
+  "frozenSize": 5,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 9,
@@ -41448,7 +41872,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::ShaderDestroy",
-  "frozenSize": 0,
+  "frozenSize": 95,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 119,
@@ -41496,7 +41920,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::ColorMapBytes",
-  "frozenSize": 0,
+  "frozenSize": 56,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 48,
@@ -41512,7 +41936,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::ValidateColorDepth",
-  "frozenSize": 0,
+  "frozenSize": 63,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 48,
@@ -41544,7 +41968,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::AddAlphaChannel",
-  "frozenSize": 0,
+  "frozenSize": 235,
   "how": "annotated",
   "module": "CGxD3d9ExTexture.cpp",
   "refSize": 247,
@@ -41560,7 +41984,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::ReadUncompressed",
-  "frozenSize": 0,
+  "frozenSize": 275,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 271,
@@ -41592,7 +42016,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::SetTopDown",
-  "frozenSize": 0,
+  "frozenSize": 321,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 285,
@@ -41624,7 +42048,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::GetImage32",
-  "frozenSize": 0,
+  "frozenSize": 53,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 39,
@@ -41656,7 +42080,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::Close",
-  "frozenSize": 0,
+  "frozenSize": 148,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 101,
@@ -41672,7 +42096,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::Open",
-  "frozenSize": 0,
+  "frozenSize": 544,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 292,
@@ -41688,7 +42112,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::ExpandColorMap",
-  "frozenSize": 0,
+  "frozenSize": 493,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 306,
@@ -41704,7 +42128,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::ReadRle",
-  "frozenSize": 0,
+  "frozenSize": 662,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 353,
@@ -41720,7 +42144,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::AddAlpha",
-  "frozenSize": 0,
+  "frozenSize": 349,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 183,
@@ -41752,7 +42176,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::ReadImage",
-  "frozenSize": 0,
+  "frozenSize": 428,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 228,
@@ -41784,7 +42208,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "PixelFormatLevelSize",
-  "frozenSize": 0,
+  "frozenSize": 252,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 153,
@@ -41832,7 +42256,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "AllocMipChain",
-  "frozenSize": 0,
+  "frozenSize": 240,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 127,
@@ -41848,7 +42272,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "BuildMipLevelPointers",
-  "frozenSize": 0,
+  "frozenSize": 161,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 78,
@@ -41864,7 +42288,7 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaDownsample",
-  "frozenSize": 0,
+  "frozenSize": 673,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 591,
@@ -42456,7 +42880,7 @@
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::Open",
-  "frozenSize": 0,
+  "frozenSize": 464,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 191,
@@ -42472,7 +42896,7 @@
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::LockChain2",
-  "frozenSize": 423,
+  "frozenSize": 352,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 350,
@@ -43047,7 +43471,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "FrustumCorners",
-  "frozenSize": 1238,
+  "frozenSize": 938,
   "how": "annotated",
   "module": "CheckExecutableSignature.cpp",
   "refSize": 1168,
@@ -44833,7 +45257,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "C3Vector::Min",
-  "frozenSize": 0,
+  "frozenSize": 52,
   "how": "annotated",
   "module": "GameObject_C.cpp",
   "refSize": 92,
@@ -44849,7 +45273,7 @@
    "lib/typhoon/tempest/vector/c3vector.cpp"
   ],
   "frozen": "C3Vector::Max",
-  "frozenSize": 0,
+  "frozenSize": 52,
   "how": "annotated",
   "module": "GameObject_C.cpp",
   "refSize": 92,
@@ -44929,7 +45353,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "CAaBox::GrowToInclude",
-  "frozenSize": 0,
+  "frozenSize": 150,
   "how": "override",
   "module": "GameObject_C.cpp",
   "refSize": 106,
@@ -47313,7 +47737,7 @@
    "src/console/console.cpp"
   ],
   "frozen": "ConsolePrintf",
-  "frozenSize": 0,
+  "frozenSize": 141,
   "how": "annotated",
   "module": "ConsoleClient.cpp",
   "refSize": 80,
@@ -47425,7 +47849,7 @@
    "src/console/cvar.cpp"
   ],
   "frozen": "CVar::SetReadOnly",
-  "frozenSize": 0,
+  "frozenSize": 25,
   "how": "annotated",
   "module": "ConsoleVar.cpp",
   "refSize": 25,
@@ -48963,6 +49387,22 @@
   "refSize": 553,
   "status": "ported"
  },
+ "0076fdb0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Thread.cpp",
+   "lib/squall/storm/thread.cpp"
+  ],
+  "frozen": "SGetCurrentThreadId",
+  "frozenSize": 17,
+  "how": "callorder",
+  "module": "ConsoleDetect.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "00770260": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -48994,6 +49434,24 @@
   "how": "string",
   "module": "SSignature.cpp",
   "refSize": 422,
+  "status": "ported"
+ },
+ "007717e0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/Error.cpp",
+   "lib/squall/storm/error.cpp",
+   "lib/squall/test/stormdll/stormstubs.cpp",
+   "lib/squall/vendor/stormlib-9.31/src/SMemUtf8.cpp"
+  ],
+  "frozen": "SErrGetLastError",
+  "frozenSize": 7,
+  "how": "callgraph",
+  "module": "SSignature.cpp",
+  "refSize": 6,
   "status": "ported"
  },
  "00771800": {
@@ -49141,6 +49599,38 @@
   "refSize": 8,
   "status": "ported"
  },
+ "00774690": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/thread/SSyncObject.cpp",
+   "lib/squall/storm/thread/ssyncobject.cpp"
+  ],
+  "frozen": "SSyncObject::Wait",
+  "frozenSize": 10,
+  "how": "callgraph",
+  "module": "SCmd.cpp",
+  "refSize": 20,
+  "status": "ported"
+ },
+ "00774720": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/squall/storm/thread/SEvent.cpp",
+   "lib/squall/storm/thread/sevent.cpp"
+  ],
+  "frozen": "SEvent::Set",
+  "frozenSize": 10,
+  "how": "callgraph",
+  "module": "SCmd.cpp",
+  "refSize": 10,
+  "status": "ported"
+ },
  "00774740": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -49167,7 +49657,7 @@
    "lib/squall/storm/log.cpp"
   ],
   "frozen": "PathRootLength",
-  "frozenSize": 0,
+  "frozenSize": 171,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 104,
@@ -49183,7 +49673,7 @@
    "lib/squall/storm/log.cpp"
   ],
   "frozen": "FlushLog",
-  "frozenSize": 0,
+  "frozenSize": 85,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 78,
@@ -49280,7 +49770,7 @@
    "src/util/Log.cpp"
   ],
   "frozen": "SLogClose",
-  "frozenSize": 13,
+  "frozenSize": 267,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 82,
@@ -49297,7 +49787,7 @@
    "src/util/Log.cpp"
   ],
   "frozen": "SLogFlush",
-  "frozenSize": 13,
+  "frozenSize": 146,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 68,
@@ -49331,7 +49821,7 @@
    "src/util/Log.cpp"
   ],
   "frozen": "SLogInitialize",
-  "frozenSize": 0,
+  "frozenSize": 93,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 64,
@@ -49363,7 +49853,7 @@
    "lib/squall/storm/log.cpp"
   ],
   "frozen": "OpenLogFile",
-  "frozenSize": 0,
+  "frozenSize": 710,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 151,
@@ -49380,7 +49870,7 @@
    "src/util/Log.cpp"
   ],
   "frozen": "SLogCreate",
-  "frozenSize": 159,
+  "frozenSize": 457,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 246,
@@ -49397,7 +49887,7 @@
    "src/util/Log.cpp"
   ],
   "frozen": "SLogVWrite",
-  "frozenSize": 0,
+  "frozenSize": 653,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 275,
@@ -49414,7 +49904,7 @@
    "src/util/Log.cpp"
   ],
   "frozen": "SLogWrite",
-  "frozenSize": 101,
+  "frozenSize": 34,
   "how": "annotated",
   "module": "SLock.cpp",
   "refSize": 22,
@@ -49745,7 +50235,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.452,
+  "fidelity": 0.484,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
@@ -50488,7 +50978,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOccluded",
-  "frozenSize": 702,
+  "frozenSize": 497,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 369,
@@ -50504,7 +50994,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::BoxOccluded",
-  "frozenSize": 1644,
+  "frozenSize": 541,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 469,
@@ -50981,7 +51471,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderMapObjs",
-  "frozenSize": 1012,
+  "frozenSize": 980,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 1058,
@@ -51013,7 +51503,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderDetailDoodads",
-  "frozenSize": 696,
+  "frozenSize": 647,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 756,
@@ -51413,7 +51903,7 @@
    "src/world/map/cmapentity.cpp"
   ],
   "frozen": "CMapEntity::CMapEntity",
-  "frozenSize": 262,
+  "frozenSize": 257,
   "how": "callgraph",
   "module": "Map.cpp",
   "refSize": 184,
@@ -51989,7 +52479,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLighting",
-  "frozenSize": 1033,
+  "frozenSize": 1006,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 895,
@@ -52629,7 +53119,7 @@
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::Initialize",
-  "frozenSize": 677,
+  "frozenSize": 693,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 586,
@@ -53333,7 +53823,7 @@
    "src/world/map/cmaprenderchunk.cpp"
   ],
   "frozen": "CreateBlendTexture",
-  "frozenSize": 215,
+  "frozenSize": 230,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 122,
@@ -53973,7 +54463,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowRender",
-  "frozenSize": 1256,
+  "frozenSize": 937,
   "how": "annotated",
   "module": "MapShadow.cpp",
   "refSize": 248,
@@ -54693,7 +55183,7 @@
    "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapStaticEntity::ApplyWaterSide",
-  "frozenSize": 0,
+  "frozenSize": 91,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 129,
@@ -54821,7 +55311,7 @@
    "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapDoodadDef::CMapDoodadDef",
-  "frozenSize": 256,
+  "frozenSize": 257,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 362,
@@ -54837,7 +55327,7 @@
    "src/world/map/cmapdoodaddef.cpp"
   ],
   "frozen": "CMapDoodadDef::SelectUnderwater",
-  "frozenSize": 0,
+  "frozenSize": 674,
   "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 469,
@@ -56399,7 +56889,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SetupTerrainConstants",
-  "frozenSize": 1054,
+  "frozenSize": 1016,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1130,
@@ -56415,7 +56905,7 @@
    "src/world/map/cmaprenderchunk.cpp"
   ],
   "frozen": "CMapRenderChunk::SetupVertexShader",
-  "frozenSize": 935,
+  "frozenSize": 857,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 612,
@@ -56463,7 +56953,7 @@
    "src/world/map/cmaprenderchunk.cpp"
   ],
   "frozen": "CMapRenderChunk::Bind",
-  "frozenSize": 583,
+  "frozenSize": 517,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 326,
@@ -57549,7 +58039,7 @@
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::LoadTexture",
-  "frozenSize": 139,
+  "frozenSize": 157,
   "how": "override",
   "module": "MapObjRead.cpp",
   "refSize": 140,
@@ -58251,7 +58741,7 @@
    "src/world/shadow.cpp"
   ],
   "frozen": "ShadowInit",
-  "frozenSize": 400,
+  "frozenSize": 430,
   "how": "override",
   "module": "DeclinedWords.cpp",
   "refSize": 298,
@@ -58475,7 +58965,7 @@
    "src/world/daynight.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3704,
+  "frozenSize": 3720,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 823,
@@ -58485,13 +58975,13 @@
   "branchRatio": 0.581,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.286,
+  "fidelity": 0.381,
   "files": [
    "src/world/DayNight.cpp",
    "src/world/daynight.cpp"
   ],
   "frozen": "SkyRender",
-  "frozenSize": 3704,
+  "frozenSize": 3720,
   "how": "override",
   "module": "FFXEffects.cpp",
   "refSize": 781,
@@ -58664,7 +59154,7 @@
    "lib/typhoon/tempest/box/caabox.cpp"
   ],
   "frozen": "SphereToBox",
-  "frozenSize": 0,
+  "frozenSize": 88,
   "how": "annotated",
   "module": "PetNameCache.cpp",
   "refSize": 102,
@@ -59854,6 +60344,22 @@
   "refSize": 94,
   "status": "ported"
  },
+ "00816790": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/FrameScript_Object.cpp",
+   "src/ui/framescript_object.cpp"
+  ],
+  "frozen": "FrameScript_Object::CreateScriptMetaTable",
+  "frozenSize": 95,
+  "how": "callgraph",
+  "module": "XMLTree.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
  "00816830": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -60670,37 +61176,69 @@
   "refSize": 221,
   "status": "diverged"
  },
+ "0081bf50": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::ClearBuckets",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 61,
+  "status": "ported"
+ },
  "0081bfa0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Cache.cpp",
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::BeginThread",
-  "frozenSize": 3,
+  "frozenSize": 26,
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 36,
-  "status": "stub"
+  "status": "ported"
  },
  "0081bfd0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Cache.cpp",
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::WaitThread",
-  "frozenSize": 3,
-  "how": "callorder",
+  "frozenSize": 17,
+  "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 14,
-  "status": "stub"
+  "status": "ported"
+ },
+ "0081bfe0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::ThreadProc",
+  "frozenSize": 140,
+  "how": "annotated",
+  "module": "XMLTree.cpp",
+  "refSize": 123,
+  "status": "ported"
  },
  "0081c060": {
   "branchRatio": 1.0,
@@ -60716,6 +61254,22 @@
   "how": "annotated",
   "module": "XMLTree.cpp",
   "refSize": 19,
+  "status": "ported"
+ },
+ "0081c080": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "M2CreateScene",
+  "frozenSize": 376,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 42,
   "status": "ported"
  },
  "0081c0b0": {
@@ -60751,32 +61305,64 @@
   "status": "ported"
  },
  "0081c0d0": {
-  "branchRatio": 0.385,
-  "constOverlap": 0.062,
+  "branchRatio": 0.615,
+  "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.312,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Cache.cpp",
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::Initialize",
-  "frozenSize": 116,
-  "how": "callgraph",
+  "frozenSize": 268,
+  "how": "string",
   "module": "M2Cache.cpp",
   "refSize": 441,
   "status": "ported"
  },
- "0081c390": {
-  "branchRatio": 0.135,
+ "0081c290": {
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.429,
+  "fidelity": 0.333,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::GarbageCollect",
+  "frozenSize": 174,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 112,
+  "status": "ported"
+ },
+ "0081c300": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.167,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::Destroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 137,
+  "status": "ported"
+ },
+ "0081c390": {
+  "branchRatio": 0.568,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Cache.cpp",
    "src/model/cm2cache.cpp"
   ],
   "frozen": "CM2Cache::CreateShared",
-  "frozenSize": 535,
+  "frozenSize": 930,
   "how": "annotated",
   "module": "M2Cache.cpp",
   "refSize": 830,
@@ -60793,16 +61379,80 @@
   ],
   "frozen": "M2Initialize",
   "frozenSize": 106,
-  "how": "string",
+  "how": "annotated",
   "module": "M2Cache.cpp",
   "refSize": 103,
+  "status": "ported"
+ },
+ "0081c750": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "M2Destroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 55,
+  "status": "ported"
+ },
+ "0081c790": {
+  "branchRatio": 0.125,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::UpdateShared",
+  "frozenSize": 223,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 162,
+  "status": "ported"
+ },
+ "0081c840": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Cache.cpp",
+   "src/model/cm2cache.cpp"
+  ],
+  "frozen": "CM2Cache::TouchGeometry",
+  "frozenSize": 107,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
+ "0081c990": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SetTime",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Cache.cpp",
+  "refSize": 35,
   "status": "ported"
  },
  "0081c9c0": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -60847,17 +61497,17 @@
   "status": "ported"
  },
  "0081cab0": {
-  "branchRatio": 0.059,
+  "branchRatio": 1.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
-  "frozen": "CM2Scene::DrawShadowCasters",
-  "frozenSize": 812,
-  "how": "order",
+  "frozen": "CM2Scene::CollectSharedGarbage",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "M2Cache.cpp",
   "refSize": 15,
   "status": "ported"
@@ -60926,6 +61576,22 @@
   "refSize": 25,
   "status": "ported"
  },
+ "0081cc50": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.036,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "M2DoodadBatchHash",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 243,
+  "status": "ported"
+ },
  "0081cd70": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -60949,10 +61615,26 @@
   "fidelity": 0.0,
   "files": [],
   "frozen": "TSGrowableArray<M2Element>::New",
-  "frozenSize": 174,
-  "how": "callorder",
+  "frozenSize": 176,
+  "how": "sticky",
   "module": "M2Scene.cpp",
   "refSize": 151,
+  "status": "ported"
+ },
+ "0081ce70": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::AnimateThread",
+  "frozenSize": 280,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 164,
   "status": "ported"
  },
  "0081cf20": {
@@ -60997,7 +61679,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::BlendBoneMatrices",
-  "frozenSize": 0,
+  "frozenSize": 665,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 264,
@@ -61013,7 +61695,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::BlendBoneMatrices3x4",
-  "frozenSize": 0,
+  "frozenSize": 212,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 317,
@@ -61157,10 +61839,58 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SelectLights",
-  "frozenSize": 279,
+  "frozenSize": 387,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 399,
+  "status": "ported"
+ },
+ "0081e590": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SetParticleQueryCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 36,
+  "status": "ported"
+ },
+ "0081e5c0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "M2DoodadBatchCompare",
+  "frozenSize": 604,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 1228,
+  "status": "ported"
+ },
+ "0081ea90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortDoodadGroups",
+  "frozenSize": 109,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 58,
   "status": "ported"
  },
  "0081ead0": {
@@ -61179,17 +61909,49 @@
   "refSize": 563,
   "status": "ported"
  },
+ "0081ed10": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortOpaqueRibbons",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 219,
+  "status": "ported"
+ },
+ "0081edf0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::SortOpaqueParticles",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
  "0081eea0": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortOpaque",
-  "frozenSize": 77,
+  "frozenSize": 622,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 117,
@@ -61205,7 +61967,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortTransparent",
-  "frozenSize": 418,
+  "frozenSize": 451,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 423,
@@ -61221,7 +61983,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::SortTransparentGrouped",
-  "frozenSize": 351,
+  "frozenSize": 343,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 227,
@@ -61237,7 +61999,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::ComputeElementShaders",
-  "frozenSize": 0,
+  "frozenSize": 148,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 343,
@@ -61252,7 +62014,7 @@
    "src/model/cm2scenerender.hpp"
   ],
   "frozen": "CM2SceneRender::CM2SceneRender",
-  "frozenSize": 287,
+  "frozenSize": 288,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 281,
@@ -61268,7 +62030,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::SetupTextures",
-  "frozenSize": 697,
+  "frozenSize": 534,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 452,
@@ -61291,10 +62053,10 @@
   "status": "ported"
  },
  "0081f700": {
-  "branchRatio": 0.143,
-  "constOverlap": 0.0,
+  "branchRatio": 0.429,
+  "constOverlap": 0.154,
   "faithful": false,
-  "fidelity": 0.25,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -61304,6 +62066,22 @@
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 252,
+  "status": "ported"
+ },
+ "0081f800": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "M2LightingNearlyEqual",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 178,
   "status": "ported"
  },
  "0081f8c0": {
@@ -61332,7 +62110,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::CreateModel",
-  "frozenSize": 195,
+  "frozenSize": 197,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 127,
@@ -61348,7 +62126,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::CreateModelFrom",
-  "frozenSize": 0,
+  "frozenSize": 152,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 103,
@@ -61364,7 +62142,7 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::KeyAndSortElementList",
-  "frozenSize": 384,
+  "frozenSize": 396,
   "how": "annotated",
   "module": "M2Scene.cpp",
   "refSize": 275,
@@ -61380,7 +62158,7 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::SetupLighting",
-  "frozenSize": 541,
+  "frozenSize": 799,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 874,
@@ -61412,43 +62190,43 @@
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawBatch",
-  "frozenSize": 1003,
+  "frozenSize": 1243,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 869,
   "status": "ported"
  },
  "00820720": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.154,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawBatchProj",
-  "frozenSize": 0,
+  "frozenSize": 952,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 957,
-  "status": "stub"
+  "status": "ported"
  },
  "00820ae0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": 0.579,
+  "constOverlap": 0.044,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.769,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawBatchDoodad",
-  "frozenSize": 0,
+  "frozenSize": 1153,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 1109,
-  "status": "stub"
+  "status": "ported"
  },
  "00820f40": {
   "branchRatio": 0.0,
@@ -61466,27 +62244,75 @@
   "refSize": 251,
   "status": "ported"
  },
+ "00821040": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::SubmitParticleBatch",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 184,
+  "status": "ported"
+ },
+ "00821100": {
+  "branchRatio": 0.364,
+  "constOverlap": 0.042,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::DrawParticleBatch",
+  "frozenSize": 1318,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 981,
+  "status": "ported"
+ },
  "008214e0": {
   "branchRatio": 0.8,
   "constOverlap": 0.038,
   "faithful": true,
-  "fidelity": 0.909,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::DrawParticle",
-  "frozenSize": 696,
+  "frozenSize": 574,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 391,
   "status": "ported"
  },
+ "00821850": {
+  "branchRatio": 0.455,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::~CM2Scene",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 222,
+  "status": "ported"
+ },
  "00821930": {
   "branchRatio": 0.667,
   "constOverlap": 0.095,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
@@ -61499,26 +62325,58 @@
   "status": "ported"
  },
  "00821a20": {
-  "branchRatio": 0.288,
+  "branchRatio": 0.37,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.949,
   "files": [
    "src/model/CM2Scene.cpp",
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Animate",
-  "frozenSize": 5291,
+  "frozenSize": 7356,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 5621,
+  "status": "ported"
+ },
+ "00823040": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Scene.cpp",
+   "src/model/cm2scene.cpp"
+  ],
+  "frozen": "CM2Scene::Release",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 34,
+  "status": "ported"
+ },
+ "00823070": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2SceneRender.cpp",
+   "src/model/cm2scenerender.cpp"
+  ],
+  "frozen": "CM2SceneRender::BeginCallbackDraw",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Scene.cpp",
+  "refSize": 82,
   "status": "ported"
  },
  "008230d0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
@@ -61528,26 +62386,26 @@
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 90,
-  "status": "stub"
+  "status": "ported"
  },
  "00823130": {
   "branchRatio": 0.308,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.857,
+  "fidelity": 0.905,
   "files": [
    "src/model/CM2SceneRender.cpp",
    "src/model/cm2scenerender.cpp"
   ],
   "frozen": "CM2SceneRender::Draw",
-  "frozenSize": 1108,
+  "frozenSize": 1416,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 2909,
   "status": "ported"
  },
  "00823cb0": {
-  "branchRatio": 0.667,
+  "branchRatio": 1.0,
   "constOverlap": 0.111,
   "faithful": true,
   "fidelity": 1.0,
@@ -61556,11 +62414,11 @@
    "src/model/cm2scene.cpp"
   ],
   "frozen": "CM2Scene::Draw",
-  "frozenSize": 166,
+  "frozenSize": 178,
   "how": "override",
   "module": "M2Scene.cpp",
   "refSize": 157,
-  "status": "diverged"
+  "status": "ported"
  },
  "00823d50": {
   "branchRatio": 1.0,
@@ -61706,6 +62564,22 @@
   "refSize": 90,
   "status": "ported"
  },
+ "008241d0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::HasLiveRibbons",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
  "00824230": {
   "branchRatio": 0.75,
   "constOverlap": 0.091,
@@ -61722,6 +62596,22 @@
   "refSize": 140,
   "status": "faithful"
  },
+ "008242c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::HasLiveParticles",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 78,
+  "status": "ported"
+ },
  "00824320": {
   "branchRatio": 0.25,
   "constOverlap": 0.0,
@@ -61736,6 +62626,22 @@
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 93,
+  "status": "ported"
+ },
+ "00824380": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetLightCount",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 82,
   "status": "ported"
  },
  "008243e0": {
@@ -61786,21 +62692,53 @@
   "refSize": 30,
   "status": "ported"
  },
+ "00824510": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::UnlinkFromCallbackList",
+  "frozenSize": 63,
+  "how": "callgraph",
+  "module": "M2Model.cpp",
+  "refSize": 50,
+  "status": "ported"
+ },
  "00824550": {
   "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "constOverlap": 0.429,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::IsBatchDoodadCompatible",
-  "frozenSize": 3,
+  "frozenSize": 108,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 84,
-  "status": "stub"
+  "status": "ported"
+ },
+ "008248c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Lighting.cpp",
+   "src/model/cm2lighting.cpp"
+  ],
+  "frozen": "CM2Lighting::CM2Lighting",
+  "frozenSize": 104,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 190,
+  "status": "ported"
  },
  "00824980": {
   "branchRatio": 1.0,
@@ -61817,6 +62755,22 @@
   "module": "M2Model.cpp",
   "refSize": 118,
   "status": "ported"
+ },
+ "00824a00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/M2Internal.cpp",
+   "src/model/m2internal.cpp"
+  ],
+  "frozen": "M2ModelParticle::M2ModelParticle",
+  "frozenSize": 70,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 126,
+  "status": "excluded"
  },
  "00824a80": {
   "branchRatio": 1.0,
@@ -61924,7 +62878,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::IsDrawable",
-  "frozenSize": 204,
+  "frozenSize": 277,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 234,
@@ -61985,7 +62939,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::ReplaceTexture",
-  "frozenSize": 313,
+  "frozenSize": 493,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 413,
@@ -62007,6 +62961,38 @@
   "refSize": 205,
   "status": "ported"
  },
+ "008254f0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetCombinedBounds",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 361,
+  "status": "ported"
+ },
+ "00825660": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetCombinedSphere",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 238,
+  "status": "ported"
+ },
  "00825750": {
   "branchRatio": 0.824,
   "constOverlap": 0.022,
@@ -62023,6 +63009,22 @@
   "refSize": 767,
   "status": "ported"
  },
+ "00825a60": {
+  "branchRatio": 0.471,
+  "constOverlap": 0.024,
+  "faithful": false,
+  "fidelity": 0.636,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetAnimatedBounds",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 780,
+  "status": "ported"
+ },
  "00825d70": {
   "branchRatio": 0.8,
   "constOverlap": 0.0,
@@ -62033,7 +63035,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::UnoptimizeVisibleGeometry",
-  "frozenSize": 142,
+  "frozenSize": 141,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 144,
@@ -62065,7 +63067,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::HasSequence",
-  "frozenSize": 0,
+  "frozenSize": 99,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 89,
@@ -62183,6 +63185,22 @@
   "refSize": 120,
   "status": "ported"
  },
+ "00826530": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.091,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetBonePivot",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 164,
+  "status": "ported"
+ },
  "008265e0": {
   "branchRatio": 0.8,
   "constOverlap": 0.071,
@@ -62225,7 +63243,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::GetBoneUint90",
-  "frozenSize": 0,
+  "frozenSize": 171,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 142,
@@ -62599,6 +63617,54 @@
   "refSize": 152,
   "status": "diverged"
  },
+ "00827a90": {
+  "branchRatio": 0.154,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::CountVisibleBatches",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 927,
+  "status": "ported"
+ },
+ "00827e30": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::CountBatchableBatches",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 312,
+  "status": "ported"
+ },
+ "00827f70": {
+  "branchRatio": 0.239,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::CountTriangles",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 1362,
+  "status": "ported"
+ },
  "008284d0": {
   "branchRatio": 0.72,
   "constOverlap": 0.143,
@@ -62629,7 +63695,7 @@
   "status": "faithful"
  },
  "00828a00": {
-  "branchRatio": 0.625,
+  "branchRatio": 0.675,
   "constOverlap": 0.0,
   "faithful": true,
   "fidelity": 1.0,
@@ -62638,7 +63704,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateST",
-  "frozenSize": 1828,
+  "frozenSize": 1892,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 1415,
@@ -62660,6 +63726,38 @@
   "refSize": 464,
   "status": "ported"
  },
+ "00829160": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::PackBatchVertices",
+  "frozenSize": 421,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 307,
+  "status": "ported"
+ },
+ "008292a0": {
+  "branchRatio": 0.441,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ComputeProjection",
+  "frozenSize": 1361,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 2048,
+  "status": "ported"
+ },
  "00829aa0": {
   "branchRatio": 0.5,
   "constOverlap": 0.062,
@@ -62674,6 +63772,54 @@
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 244,
+  "status": "ported"
+ },
+ "00829ba0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.03,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DrawShadowCasterBatch",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 658,
+  "status": "ported"
+ },
+ "00829e40": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DrawShadowCasterList",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 247,
+  "status": "ported"
+ },
+ "00829f40": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2PackBatchVerticesTwoCoords",
+  "frozenSize": 1700,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 720,
   "status": "ported"
  },
  "0082a210": {
@@ -62840,7 +63986,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::CM2Model",
-  "frozenSize": 697,
+  "frozenSize": 612,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 855,
@@ -62860,6 +64006,22 @@
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 256,
+  "status": "ported"
+ },
+ "0082c2c0": {
+  "branchRatio": 0.783,
+  "constOverlap": 0.021,
+  "faithful": true,
+  "fidelity": 0.889,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetDrawBoundingSphere",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 1262,
   "status": "ported"
  },
  "0082c7c0": {
@@ -62904,7 +64066,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::OptimizeVisibleGeometry",
-  "frozenSize": 1500,
+  "frozenSize": 1522,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 1353,
@@ -62924,6 +64086,22 @@
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 706,
+  "status": "ported"
+ },
+ "0082d1a0": {
+  "branchRatio": 0.615,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::CountDrawCalls",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 314,
   "status": "ported"
  },
  "0082d2f0": {
@@ -62958,6 +64136,38 @@
   "refSize": 531,
   "status": "ported"
  },
+ "0082d910": {
+  "branchRatio": 0.8,
+  "constOverlap": 0.077,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::PackBatchVerticesTwoCoords",
+  "frozenSize": 289,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 283,
+  "status": "ported"
+ },
+ "0082da40": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::DrawShadowCasterLists",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 119,
+  "status": "ported"
+ },
  "0082dd80": {
   "branchRatio": 0.938,
   "constOverlap": 0.021,
@@ -62974,6 +64184,22 @@
   "refSize": 819,
   "status": "ported"
  },
+ "0082e0c0": {
+  "branchRatio": 0.273,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::HasDeferredSequence",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 125,
+  "status": "ported"
+ },
  "0082e140": {
   "branchRatio": 0.667,
   "constOverlap": 0.0,
@@ -62984,7 +64210,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AnimateMTSimple",
-  "frozenSize": 898,
+  "frozenSize": 1202,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 1032,
@@ -63004,6 +64230,54 @@
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 458,
+  "status": "ported"
+ },
+ "0082e720": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2QueueSequenceCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 110,
+  "status": "ported"
+ },
+ "0082e790": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::QueueSequenceFinished",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 172,
+  "status": "ported"
+ },
+ "0082ec30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.057,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetCollisionTriangles",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 1206,
   "status": "ported"
  },
  "0082f0f0": {
@@ -63070,6 +64344,22 @@
   "refSize": 24,
   "status": "ported"
  },
+ "00830fb0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.043,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::QueueAnimEvents",
+  "frozenSize": 1088,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 744,
+  "status": "ported"
+ },
  "00831330": {
   "branchRatio": 0.5,
   "constOverlap": 0.071,
@@ -63100,6 +64390,22 @@
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 306,
+  "status": "ported"
+ },
+ "00831550": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.067,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::GetAttachmentScale",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 219,
   "status": "ported"
  },
  "00831630": {
@@ -63202,7 +64508,7 @@
   "branchRatio": 0.263,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -63218,7 +64524,7 @@
   "branchRatio": 0.217,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
@@ -63231,32 +64537,80 @@
   "status": "ported"
  },
  "00831fc0": {
-  "branchRatio": 0.882,
+  "branchRatio": 0.706,
   "constOverlap": 0.074,
-  "faithful": false,
-  "fidelity": 0.714,
+  "faithful": true,
+  "fidelity": 0.857,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::SequenceFinished",
-  "frozenSize": 851,
+  "frozenSize": 938,
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 529,
   "status": "ported"
  },
- "00832640": {
-  "branchRatio": 0.333,
+ "008321e0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::FlushCallbacks",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 115,
+  "status": "ported"
+ },
+ "00832260": {
+  "branchRatio": 0.706,
+  "constOverlap": 0.04,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ProcessCallbacks",
+  "frozenSize": 1143,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 479,
+  "status": "ported"
+ },
+ "00832450": {
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::ProcessCallbacksRecursive",
+  "frozenSize": 66,
+  "how": "callgraph",
+  "module": "M2Model.cpp",
+  "refSize": 165,
+  "status": "ported"
+ },
+ "00832640": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::~CM2Model",
-  "frozenSize": 949,
+  "frozenSize": 1125,
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 498,
@@ -63294,17 +64648,33 @@
   "refSize": 797,
   "status": "ported"
  },
+ "00832dd0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "M2ShadowCasterList::MergeRuns",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 187,
+  "status": "ported"
+ },
  "00832ea0": {
-  "branchRatio": 0.659,
+  "branchRatio": 0.671,
   "constOverlap": 0.083,
-  "faithful": false,
-  "fidelity": 0.788,
+  "faithful": true,
+  "fidelity": 0.848,
   "files": [
    "src/model/CM2Model.cpp",
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::InitializeLoaded",
-  "frozenSize": 9140,
+  "frozenSize": 9300,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 5663,
@@ -63320,10 +64690,26 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::AttachToScene",
-  "frozenSize": 0,
+  "frozenSize": 345,
   "how": "annotated",
   "module": "M2Model.cpp",
   "refSize": 232,
+  "status": "ported"
+ },
+ "00834630": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Model.cpp",
+   "src/model/cm2model.cpp"
+  ],
+  "frozen": "CM2Model::AttachToSceneRecursive",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 44,
   "status": "ported"
  },
  "00834660": {
@@ -63352,7 +64738,7 @@
    "src/model/cm2model.cpp"
   ],
   "frozen": "CM2Model::Initialize",
-  "frozenSize": 418,
+  "frozenSize": 107,
   "how": "override",
   "module": "M2Model.cpp",
   "refSize": 186,
@@ -63486,6 +64872,22 @@
   "refSize": 99,
   "status": "ported"
  },
+ "00834b50": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Light.cpp",
+   "src/model/cm2light.cpp"
+  ],
+  "frozen": "CM2Light::SetupGxLight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Model.cpp",
+  "refSize": 276,
+  "status": "ported"
+ },
  "00834c70": {
   "branchRatio": 0.714,
   "constOverlap": 0.0,
@@ -63560,7 +64962,7 @@
    "src/model/cm2lighting.cpp"
   ],
   "frozen": "CM2Lighting::CameraSpace",
-  "frozenSize": 121,
+  "frozenSize": 552,
   "how": "override",
   "module": "M2Light.cpp",
   "refSize": 469,
@@ -63663,20 +65065,36 @@
   "status": "ported"
  },
  "00835750": {
-  "branchRatio": 0.071,
+  "branchRatio": 0.143,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.5,
   "files": [
    "src/model/CM2Lighting.cpp",
    "src/model/cm2lighting.cpp"
   ],
   "frozen": "CM2Lighting::SetupGxFog",
-  "frozenSize": 322,
+  "frozenSize": 333,
   "how": "annotated",
   "module": "M2Light.cpp",
   "refSize": 510,
   "status": "ported"
+ },
+ "00835950": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::LoadCanceledCallback",
+  "frozenSize": 5,
+  "how": "override",
+  "module": "M2Light.cpp",
+  "refSize": 28,
+  "status": "diverged"
  },
  "00835970": {
   "branchRatio": 0.75,
@@ -63708,6 +65126,22 @@
   "how": "annotated",
   "module": "M2Light.cpp",
   "refSize": 53,
+  "status": "ported"
+ },
+ "00835a00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::LoadFailedCallback",
+  "frozenSize": 32,
+  "how": "annotated",
+  "module": "M2Light.cpp",
+  "refSize": 29,
   "status": "ported"
  },
  "00835a20": {
@@ -63912,7 +65346,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::SetIndices",
-  "frozenSize": 635,
+  "frozenSize": 623,
   "how": "annotated",
   "module": "M2Light.cpp",
   "refSize": 525,
@@ -63960,7 +65394,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::ReleaseGeometryBuffers",
-  "frozenSize": 0,
+  "frozenSize": 140,
   "how": "annotated",
   "module": "M2Light.cpp",
   "refSize": 200,
@@ -64056,7 +65490,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::ReserveInstances",
-  "frozenSize": 0,
+  "frozenSize": 66,
   "how": "annotated",
   "module": "M2Light.cpp",
   "refSize": 69,
@@ -64254,6 +65688,22 @@
   "refSize": 485,
   "status": "ported"
  },
+ "00838490": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::FinishLoadingSkinProfile",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 256,
+  "status": "ported"
+ },
  "008385a0": {
   "branchRatio": 0.485,
   "constOverlap": 0.056,
@@ -64366,6 +65816,22 @@
   "refSize": 5614,
   "status": "ported"
  },
+ "0083c5f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/Model2.cpp",
+   "src/model/model2.cpp"
+  ],
+  "frozen": "M2ConvertModelFileName",
+  "frozenSize": 263,
+  "how": "callgraph",
+  "module": "M2Shared.cpp",
+  "refSize": 236,
+  "status": "ported"
+ },
  "0083c6e0": {
   "branchRatio": 0.285,
   "constOverlap": 0.081,
@@ -64398,6 +65864,70 @@
   "refSize": 128,
   "status": "ported"
  },
+ "0083cb10": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::SkinProfileLoadedCallback",
+  "frozenSize": 133,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "0083cb40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.083,
+  "faithful": false,
+  "fidelity": 0.778,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::LoadSkinProfile",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 311,
+  "status": "ported"
+ },
+ "0083cc80": {
+  "branchRatio": 0.762,
+  "constOverlap": 0.16,
+  "faithful": false,
+  "fidelity": 0.714,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::Initialize",
+  "frozenSize": 960,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 618,
+  "status": "ported"
+ },
+ "0083cf00": {
+  "branchRatio": 0.122,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.094,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::FinishLoading",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 962,
+  "status": "ported"
+ },
  "0083d2d0": {
   "branchRatio": 0.4,
   "constOverlap": -1.0,
@@ -64412,6 +65942,22 @@
   "how": "callgraph",
   "module": "M2Shared.cpp",
   "refSize": 98,
+  "status": "ported"
+ },
+ "0083d340": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Shared.cpp",
+   "src/model/cm2shared.cpp"
+  ],
+  "frozen": "CM2Shared::LoadSucceededCallback",
+  "frozenSize": 223,
+  "how": "annotated",
+  "module": "M2Shared.cpp",
+  "refSize": 35,
   "status": "ported"
  },
  "0083d370": {
@@ -64463,7 +66009,7 @@
   "status": "ported"
  },
  "0083d5b0": {
-  "branchRatio": 0.323,
+  "branchRatio": 0.419,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.5,
@@ -64472,7 +66018,7 @@
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::~CM2Shared",
-  "frozenSize": 740,
+  "frozenSize": 860,
   "how": "override",
   "module": "M2Shared.cpp",
   "refSize": 643,
@@ -64482,7 +66028,7 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.667,
+  "fidelity": 0.75,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -64513,8 +66059,8 @@
  "0083da10": {
   "branchRatio": 0.583,
   "constOverlap": 0.143,
-  "faithful": false,
-  "fidelity": 0.769,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
@@ -64527,16 +66073,16 @@
   "status": "ported"
  },
  "0083dc90": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/model/CM2Shared.cpp",
    "src/model/cm2shared.cpp"
   ],
   "frozen": "CM2Shared::Release",
-  "frozenSize": 50,
+  "frozenSize": 122,
   "how": "override",
   "module": "M2Shared.cpp",
   "refSize": 88,
@@ -65277,7 +66823,7 @@
   ],
   "frozen": "lua_createtable",
   "frozenSize": 77,
-  "how": "callorder",
+  "how": "callgraph",
   "module": "Minigame_C.cpp",
   "refSize": 74,
   "status": "ported"
@@ -68730,7 +70276,7 @@
    "lib/common/common/time.cpp"
   ],
   "frozen": "OsTimeManager::Calibrate",
-  "frozenSize": 0,
+  "frozenSize": 618,
   "how": "annotated",
   "module": "lmemPool.cpp",
   "refSize": 535,
@@ -68746,7 +70292,7 @@
    "lib/common/common/time.cpp"
   ],
   "frozen": "OsTimeGetTestError",
-  "frozenSize": 0,
+  "frozenSize": 11,
   "how": "annotated",
   "module": "lmemPool.cpp",
   "refSize": 9,
@@ -68762,7 +70308,7 @@
    "lib/common/common/time.cpp"
   ],
   "frozen": "OsTimeGetTimingMethod",
-  "frozenSize": 0,
+  "frozenSize": 11,
   "how": "annotated",
   "module": "lmemPool.cpp",
   "refSize": 9,
@@ -68778,7 +70324,7 @@
    "lib/common/common/time.cpp"
   ],
   "frozen": "OsTimeGetTimingMethodName",
-  "frozenSize": 0,
+  "frozenSize": 60,
   "how": "annotated",
   "module": "lmemPool.cpp",
   "refSize": 56,
@@ -68810,7 +70356,7 @@
    "lib/common/common/time.cpp"
   ],
   "frozen": "OsGetAsyncTimeMs",
-  "frozenSize": 17,
+  "frozenSize": 73,
   "how": "override",
   "module": "lmemPool.cpp",
   "refSize": 11,
@@ -68844,7 +70390,7 @@
    "src/ui/framescript.cpp"
   ],
   "frozen": "OsGetAsyncClocksPerSecond",
-  "frozenSize": 0,
+  "frozenSize": 24,
   "how": "annotated",
   "module": "lmemPool.cpp",
   "refSize": 36,
@@ -68876,7 +70422,7 @@
    "lib/common/common/time.cpp"
   ],
   "frozen": "OsTimeStartup",
-  "frozenSize": 0,
+  "frozenSize": 193,
   "how": "annotated",
   "module": "TimeManager.cpp",
   "refSize": 56,
@@ -68924,7 +70470,7 @@
    "src/util/win/ossystem.cpp"
   ],
   "frozen": "OsEnableCpuLog",
-  "frozenSize": 0,
+  "frozenSize": 11,
   "how": "annotated",
   "module": "TimeManager.cpp",
   "refSize": 11,
@@ -68956,7 +70502,7 @@
    "src/util/win/ossystem.cpp"
   ],
   "frozen": "OsGetProcessorCount",
-  "frozenSize": 0,
+  "frozenSize": 52,
   "how": "annotated",
   "module": "TimeManager.cpp",
   "refSize": 61,
@@ -69084,7 +70630,7 @@
    "src/util/win/ossystem.cpp"
   ],
   "frozen": "OsGetCpuInfo",
-  "frozenSize": 0,
+  "frozenSize": 1558,
   "how": "annotated",
   "module": "TimeManager.cpp",
   "refSize": 475,
@@ -69100,7 +70646,7 @@
    "src/util/win/ossystem.cpp"
   ],
   "frozen": "OsGetCpuFeatures",
-  "frozenSize": 0,
+  "frozenSize": 19,
   "how": "annotated",
   "module": "TimeManager.cpp",
   "refSize": 20,
@@ -69173,6 +70719,22 @@
   "refSize": 15,
   "status": "ported"
  },
+ "0086d6e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/common/common/thread/OsTls.cpp",
+   "lib/common/common/thread/ostls.cpp"
+  ],
+  "frozen": "OsTlsSetValue",
+  "frozenSize": 7,
+  "how": "callgraph",
+  "module": "OsSecureRandom.cpp",
+  "refSize": 19,
+  "status": "ported"
+ },
  "008714e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -69183,7 +70745,7 @@
    "lib/common/common/os.cpp"
   ],
   "frozen": "OsGetLastErrorStr",
-  "frozenSize": 0,
+  "frozenSize": 78,
   "how": "annotated",
   "module": "OsURLDownload.cpp",
   "refSize": 44,
@@ -69199,7 +70761,7 @@
    "lib/common/common/os.cpp"
   ],
   "frozen": "OsFreeLastErrorStr",
-  "frozenSize": 0,
+  "frozenSize": 7,
   "how": "annotated",
   "module": "OsURLDownload.cpp",
   "refSize": 15,
@@ -69475,6 +71037,22 @@
   "how": "annotated",
   "module": "ShaderEffect.cpp",
   "refSize": 257,
+  "status": "ported"
+ },
+ "00873730": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/gx/shader/CShaderEffect.cpp",
+   "src/gx/shader/cshadereffect.cpp"
+  ],
+  "frozen": "CShaderEffect::SetTexMtx_EyeSpace",
+  "frozenSize": 375,
+  "how": "annotated",
+  "module": "ShaderEffect.cpp",
+  "refSize": 451,
   "status": "ported"
  },
  "00873900": {
@@ -69791,7 +71369,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "EnsureTargets",
-  "frozenSize": 417,
+  "frozenSize": 429,
   "how": "string",
   "module": "ShadowMap.cpp",
   "refSize": 591,
@@ -69998,7 +71576,7 @@
    "src/sound/sesound.cpp"
   ],
   "frozen": "SESound::Log_Write",
-  "frozenSize": 308,
+  "frozenSize": 305,
   "how": "callorder",
   "module": "SoundEngine.cpp",
   "refSize": 501,
@@ -70587,7 +72165,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Initialize",
-  "frozenSize": 0,
+  "frozenSize": 309,
   "how": "override",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 154,
@@ -70603,7 +72181,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_GetErrorMessage",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70619,7 +72197,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_CreateConfigurationProfileRegistryKey",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70635,7 +72213,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_Enable",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70651,7 +72229,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_Disable",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70667,7 +72245,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_IsEnabled",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70683,7 +72261,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_CreateHandleFromIUnknown",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70699,7 +72277,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_DestroyHandle",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70715,7 +72293,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_SetSeparation",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -70731,7 +72309,7 @@
    "src/gx/d3d/nvapi.cpp"
   ],
   "frozen": "NvAPI_Stereo_SetConvergence",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "ComSatSoundIOSoundEngine.cpp",
   "refSize": 6,
@@ -71035,7 +72613,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialSettings::LoadTextures",
-  "frozenSize": 751,
+  "frozenSize": 773,
   "how": "string",
   "module": "Liquid.cpp",
   "refSize": 809,
@@ -71163,7 +72741,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::ProceduralLiquidTexture",
-  "frozenSize": 558,
+  "frozenSize": 594,
   "how": "string",
   "module": "Liquid.cpp",
   "refSize": 213,
@@ -71547,7 +73125,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::DrawWaterMaterial",
-  "frozenSize": 949,
+  "frozenSize": 871,
   "how": "sticky",
   "module": "Liquid.cpp",
   "refSize": 55,
@@ -71691,7 +73269,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::DrawProcWaterMaterial",
-  "frozenSize": 2011,
+  "frozenSize": 1909,
   "how": "override",
   "module": "Liquid.cpp",
   "refSize": 2173,
@@ -71739,7 +73317,7 @@
    "src/world/map/liquidmaterialsettings.cpp"
   ],
   "frozen": "Liquid::CMaterialMagma::Draw",
-  "frozenSize": 921,
+  "frozenSize": 852,
   "how": "annotated",
   "module": "Liquid.cpp",
   "refSize": 695,
@@ -73064,7 +74642,7 @@
    "src/ui/simple/csimplemovieframe.cpp"
   ],
   "frozen": "CSimpleMovieFrame::StartMovie",
-  "frozenSize": 1205,
+  "frozenSize": 1217,
   "how": "callgraph",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 103,
@@ -73166,6 +74744,22 @@
   "refSize": 49,
   "status": "ported"
  },
+ "0095f650": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleModel.cpp",
+   "src/ui/simple/csimplemodel.cpp"
+  ],
+  "frozen": "CSimpleModel::GetScene",
+  "frozenSize": 39,
+  "how": "callgraph",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 31,
+  "status": "ported"
+ },
  "0095f800": {
   "branchRatio": 0.588,
   "constOverlap": 0.0,
@@ -73196,6 +74790,22 @@
   "how": "callgraph",
   "module": "CSimpleMovieFrame.cpp",
   "refSize": 164,
+  "status": "ported"
+ },
+ "0095fba0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.333,
+  "files": [
+   "src/ui/simple/CSimpleModel.cpp",
+   "src/ui/simple/csimplemodel.cpp"
+  ],
+  "frozen": "CSimpleModel::OnLayerUpdate",
+  "frozenSize": 200,
+  "how": "callgraph",
+  "module": "CSimpleMovieFrame.cpp",
+  "refSize": 129,
   "status": "ported"
  },
  "00960420": {
@@ -77697,6 +79307,22 @@
   "refSize": 92,
   "status": "ported"
  },
+ "00978b30": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetGeometryModel",
+  "frozenSize": 73,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
  "00978b70": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -77755,7 +79381,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::ReplaceTexture",
-  "frozenSize": 0,
+  "frozenSize": 86,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 48,
@@ -77819,7 +79445,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetFollow",
-  "frozenSize": 0,
+  "frozenSize": 88,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 84,
@@ -77841,6 +79467,70 @@
   "refSize": 55,
   "status": "ported"
  },
+ "00978e70": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::AddRef",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 7,
+  "status": "ported"
+ },
+ "00978e80": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::Release",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 16,
+  "status": "ported"
+ },
+ "00978e90": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/rect/CRect.cpp",
+   "lib/typhoon/tempest/rect/crect.hpp"
+  ],
+  "frozen": "CRect::CRect",
+  "frozenSize": 25,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 33,
+  "status": "ported"
+ },
+ "00979110": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "C4Quaternion::Normalize",
+  "frozenSize": 121,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 84,
+  "status": "ported"
+ },
  "00979170": {
   "branchRatio": 0.5,
   "constOverlap": 1.0,
@@ -77857,9 +79547,25 @@
   "refSize": 112,
   "status": "ported"
  },
- "00979250": {
+ "009791e0": {
   "branchRatio": 1.0,
-  "constOverlap": 0.032,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleIndexBufferRelease",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 97,
+  "status": "ported"
+ },
+ "00979250": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.065,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
@@ -77867,7 +79573,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 655,
+  "frozenSize": 3601,
   "how": "override",
   "module": "ParticleSystem2.cpp",
   "refSize": 123,
@@ -77947,7 +79653,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "M2PartTrackEvalAlpha",
-  "frozenSize": 0,
+  "frozenSize": 166,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 107,
@@ -77979,7 +79685,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SampleColor",
-  "frozenSize": 0,
+  "frozenSize": 304,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 357,
@@ -78001,6 +79707,22 @@
   "refSize": 162,
   "status": "ported"
  },
+ "009797f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2CopyModelParticle",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 123,
+  "status": "ported"
+ },
  "00979870": {
   "branchRatio": 0.75,
   "constOverlap": 0.2,
@@ -78016,6 +79738,22 @@
   "module": "ParticleSystem2.cpp",
   "refSize": 328,
   "status": "diverged"
+ },
+ "009799c0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.094,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CreateModelParticle",
+  "frozenSize": 679,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 483,
+  "status": "ported"
  },
  "00979bb0": {
   "branchRatio": 0.875,
@@ -78033,6 +79771,22 @@
   "refSize": 425,
   "status": "ported"
  },
+ "00979d60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SampleRamp",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 295,
+  "status": "ported"
+ },
  "00979e90": {
   "branchRatio": 0.636,
   "constOverlap": 0.087,
@@ -78043,7 +79797,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SampleAppearance",
-  "frozenSize": 1086,
+  "frozenSize": 636,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 666,
@@ -78123,14 +79877,30 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SubmitDraw",
-  "frozenSize": 0,
+  "frozenSize": 354,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 233,
   "status": "ported"
  },
+ "0097a670": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.062,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::UpdateModelParticle",
+  "frozenSize": 917,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 798,
+  "status": "ported"
+ },
  "0097a990": {
-  "branchRatio": 0.0,
+  "branchRatio": 1.0,
   "constOverlap": 0.059,
   "faithful": true,
   "fidelity": 1.0,
@@ -78139,7 +79909,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetColors",
-  "frozenSize": 182,
+  "frozenSize": 211,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 369,
@@ -78203,10 +79973,42 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Substep",
-  "frozenSize": 1122,
+  "frozenSize": 980,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 322,
+  "status": "ported"
+ },
+ "0097ae00": {
+  "branchRatio": 0.875,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::RecursionModelLoaded",
+  "frozenSize": 206,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
+ "0097aeb0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::SetRecursionModel",
+  "frozenSize": 66,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 52,
   "status": "ported"
  },
  "0097aef0": {
@@ -78225,6 +80027,86 @@
   "refSize": 256,
   "status": "ported"
  },
+ "0097aff0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.036,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrecompileRampColor",
+  "frozenSize": 829,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 1098,
+  "status": "ported"
+ },
+ "0097b440": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrecompileRampAlpha",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 417,
+  "status": "ported"
+ },
+ "0097b5f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrecompileRampScale",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
+ "0097b6c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrecompileRampHeadCell",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 342,
+  "status": "ported"
+ },
+ "0097b840": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrecompileRampTailCell",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 342,
+  "status": "ported"
+ },
  "0097b9e0": {
   "branchRatio": 0.333,
   "constOverlap": 0.0,
@@ -78235,7 +80117,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::HasLiveParticles",
-  "frozenSize": 88,
+  "frozenSize": 85,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 12,
@@ -78251,7 +80133,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CountSpawnedModels",
-  "frozenSize": 94,
+  "frozenSize": 91,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 52,
@@ -78267,7 +80149,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::FindSpawnedModel",
-  "frozenSize": 164,
+  "frozenSize": 177,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 98,
@@ -78303,6 +80185,22 @@
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 76,
+  "status": "ported"
+ },
+ "0097bcc0": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.571,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::~CM2ParticleEmitter",
+  "frozenSize": 273,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 189,
   "status": "ported"
  },
  "0097bd80": {
@@ -78341,29 +80239,45 @@
   "branchRatio": 0.215,
   "constOverlap": 0.062,
   "faithful": false,
-  "fidelity": 0.9,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::WriteParticleVertices",
-  "frozenSize": 6523,
+  "frozenSize": 6899,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 5350,
   "status": "ported"
  },
+ "0097d370": {
+  "branchRatio": 0.676,
+  "constOverlap": 0.04,
+  "faithful": true,
+  "fidelity": 0.889,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::PrecompileRamp",
+  "frozenSize": 1446,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 645,
+  "status": "ported"
+ },
  "0097d820": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SpawnParticle",
-  "frozenSize": 296,
+  "frozenSize": 375,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 109,
@@ -78388,14 +80302,14 @@
  "0097db80": {
   "branchRatio": 0.714,
   "constOverlap": 0.071,
-  "faithful": false,
-  "fidelity": 0.6,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::IntegrateAndSpawnChildren",
-  "frozenSize": 571,
+  "frozenSize": 568,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 396,
@@ -78404,30 +80318,46 @@
  "0097dd20": {
   "branchRatio": 0.591,
   "constOverlap": 0.059,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Step",
-  "frozenSize": 745,
+  "frozenSize": 625,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 604,
   "status": "ported"
  },
- "0097e150": {
-  "branchRatio": 1.0,
-  "constOverlap": 0.021,
+ "0097e080": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.6,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleDepthQueuePop",
+  "frozenSize": 1237,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 199,
+  "status": "ported"
+ },
+ "0097e150": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.042,
+  "faithful": true,
+  "fidelity": 0.8,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
-  "frozenSize": 655,
+  "frozenSize": 3601,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 662,
@@ -78437,13 +80367,13 @@
   "branchRatio": 0.444,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Reserve",
-  "frozenSize": 170,
+  "frozenSize": 179,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 143,
@@ -78459,7 +80389,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::SetParticleCount",
-  "frozenSize": 657,
+  "frozenSize": 673,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 241,
@@ -78475,7 +80405,7 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::WriteLiveParticles",
-  "frozenSize": 1734,
+  "frozenSize": 1756,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 414,
@@ -78497,6 +80427,22 @@
   "refSize": 410,
   "status": "ported"
  },
+ "0097e8d0": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.057,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::UpdateModelParticles",
+  "frozenSize": 522,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 391,
+  "status": "diverged"
+ },
  "0097ea60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -78507,23 +80453,23 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Draw",
-  "frozenSize": 127,
+  "frozenSize": 130,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 162,
   "status": "ported"
  },
  "0097eb10": {
-  "branchRatio": 0.917,
+  "branchRatio": 0.833,
   "constOverlap": 0.121,
-  "faithful": false,
-  "fidelity": 0.75,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/model/CM2ParticleEmitter.cpp",
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::Update",
-  "frozenSize": 789,
+  "frozenSize": 775,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 736,
@@ -78539,11 +80485,27 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitter::PrepareStep",
-  "frozenSize": 0,
+  "frozenSize": 213,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 199,
   "status": "ported"
+ },
+ "0097eec0": {
+  "branchRatio": 0.256,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitter::CM2ParticleEmitter",
+  "frozenSize": 3601,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 1600,
+  "status": "diverged"
  },
  "0097f510": {
   "branchRatio": 0.5,
@@ -78731,7 +80693,7 @@
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::ReplaceTexture",
-  "frozenSize": 0,
+  "frozenSize": 267,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 132,
@@ -78849,6 +80811,22 @@
   "refSize": 1149,
   "status": "ported"
  },
+ "00980510": {
+  "branchRatio": 0.167,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2Ribbon.cpp",
+   "src/model/cm2ribbon.cpp"
+  ],
+  "frozen": "M2RibbonCopyTextures",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 126,
+  "status": "ported"
+ },
  "00980590": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -78882,16 +80860,16 @@
   "status": "ported"
  },
  "009808a0": {
-  "branchRatio": 0.294,
+  "branchRatio": 0.235,
   "constOverlap": 0.024,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.333,
   "files": [
    "src/model/CM2Ribbon.cpp",
    "src/model/cm2ribbon.cpp"
   ],
   "frozen": "CM2Ribbon::Initialize",
-  "frozenSize": 954,
+  "frozenSize": 967,
   "how": "annotated",
   "module": "ParticleSystem2.cpp",
   "refSize": 682,
@@ -78945,6 +80923,86 @@
   "refSize": 50,
   "status": "ported"
  },
+ "00981000": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleEmitterPool::Clear",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 138,
+  "status": "ported"
+ },
+ "00981090": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleEmitterPool::Add",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ParticleSystem2.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
+ "00981130": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleEmitterPoolGet",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 200,
+  "status": "ported"
+ },
+ "00981200": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleEmitterPool::~M2ParticleEmitterPool",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 98,
+  "status": "ported"
+ },
+ "00981270": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "M2ParticleEmitterPoolDestroy",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
  "00981310": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -78959,6 +81017,22 @@
   "how": "annotated",
   "module": "GfxSingletonManager.cpp",
   "refSize": 51,
+  "status": "ported"
+ },
+ "00981350": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::CM2ParticleEmitterPlane",
+  "frozenSize": 56,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 82,
   "status": "ported"
  },
  "009813b0": {
@@ -79041,6 +81115,22 @@
   "refSize": 51,
   "status": "ported"
  },
+ "00981430": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::CM2ParticleEmitterSphere",
+  "frozenSize": 62,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 94,
+  "status": "ported"
+ },
  "00981490": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -79119,6 +81209,38 @@
   "how": "annotated",
   "module": "GfxSingletonManager.cpp",
   "refSize": 15,
+  "status": "ported"
+ },
+ "00981510": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterPlane::Clone",
+  "frozenSize": 177,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "00981550": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSphere::Clone",
+  "frozenSize": 195,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 56,
   "status": "ported"
  },
  "009815c0": {
@@ -79202,7 +81324,7 @@
   "status": "ported"
  },
  "009820f0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -79211,10 +81333,90 @@
    "src/model/cm2particleemitter.cpp"
   ],
   "frozen": "CM2ParticleEmitterSpline::CM2ParticleEmitterSpline",
-  "frozenSize": 355,
+  "frozenSize": 75,
   "how": "annotated",
   "module": "GfxSingletonManager.cpp",
   "refSize": 88,
+  "status": "ported"
+ },
+ "009821c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::CM2ParticleEmitterSpline",
+  "frozenSize": 75,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 126,
+  "status": "ported"
+ },
+ "00982240": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/model/CM2ParticleEmitter.cpp",
+   "src/model/cm2particleemitter.cpp"
+  ],
+  "frozen": "CM2ParticleEmitterSpline::Clone",
+  "frozenSize": 358,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "00982310": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/random/CRandom.cpp",
+   "lib/typhoon/tempest/random/crandom.cpp"
+  ],
+  "frozen": "CRandom::uniform",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 44,
+  "status": "ported"
+ },
+ "00982340": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.hpp"
+  ],
+  "frozen": "C4Quaternion::C4Quaternion",
+  "frozenSize": 674,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 187,
+  "status": "ported"
+ },
+ "00982400": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.hpp"
+  ],
+  "frozen": "C4Quaternion::C4Quaternion",
+  "frozenSize": 674,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 85,
   "status": "ported"
  },
  "00982460": {
@@ -79231,6 +81433,102 @@
   "how": "annotated",
   "module": "GfxSingletonManager.cpp",
   "refSize": 268,
+  "status": "ported"
+ },
+ "00982570": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "C4Quaternion::NormalizeFast",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 191,
+  "status": "ported"
+ },
+ "00982630": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "C4Quaternion::Nlerp",
+  "frozenSize": 257,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 111,
+  "status": "ported"
+ },
+ "009826a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "C4QuaternionFromRotation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 272,
+  "status": "ported"
+ },
+ "009827b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp"
+  ],
+  "frozen": "QuaternionFromRotation",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 248,
+  "status": "ported"
+ },
+ "009828b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.hpp"
+  ],
+  "frozen": "C4Quaternion::C4Quaternion",
+  "frozenSize": 674,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 88,
+  "status": "ported"
+ },
+ "00982910": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.hpp"
+  ],
+  "frozen": "C4Quaternion::C4Quaternion",
+  "frozenSize": 674,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 51,
   "status": "ported"
  },
  "00982970": {
@@ -79279,6 +81577,70 @@
   "how": "annotated",
   "module": "GfxSingletonManager.cpp",
   "refSize": 67,
+  "status": "ported"
+ },
+ "00982a40": {
+  "branchRatio": 0.824,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "IntersectRayAaBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 455,
+  "status": "ported"
+ },
+ "00982c10": {
+  "branchRatio": 0.865,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "AaBoxSphereTest2D",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 784,
+  "status": "ported"
+ },
+ "00982f30": {
+  "branchRatio": 0.143,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "IntersectRayAaBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 67,
+  "status": "ported"
+ },
+ "00982f80": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/Intersect.cpp",
+   "lib/typhoon/tempest/intersect.cpp"
+  ],
+  "frozen": "AaBoxSphereTest2D",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 36,
   "status": "ported"
  },
  "00982fb0": {
@@ -79475,6 +81837,46 @@
   "refSize": 208,
   "status": "ported"
  },
+ "00984310": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C33Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
+   "lib/typhoon/tempest/matrix/C44Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c33matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp",
+   "lib/typhoon/tempest/matrix/c44matrix.cpp",
+   "lib/typhoon/tempest/quaternion/C4Quaternion.cpp",
+   "lib/typhoon/tempest/quaternion/c4quaternion.cpp",
+   "lib/typhoon/tempest/vector/C3Vector.cpp",
+   "lib/typhoon/tempest/vector/c3vector.cpp"
+  ],
+  "frozen": "operator*",
+  "frozenSize": 1660,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 315,
+  "status": "ported"
+ },
+ "00984450": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/matrix/C34Matrix.cpp",
+   "lib/typhoon/tempest/matrix/c34matrix.cpp"
+  ],
+  "frozen": "C34Matrix::RotateAroundZ",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GfxSingletonManager.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
  "00984860": {
   "branchRatio": 0.75,
   "constOverlap": 0.0,
@@ -79635,6 +82037,38 @@
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 152,
+  "status": "ported"
+ },
+ "009855f0": {
+  "branchRatio": 0.889,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "SpheresToBox",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 342,
+  "status": "ported"
+ },
+ "00985750": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "lib/typhoon/tempest/box/CAaBox.cpp",
+   "lib/typhoon/tempest/box/caabox.cpp"
+  ],
+  "frozen": "SphereBoundSpheres",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 339,
   "status": "ported"
  },
  "009858b0": {

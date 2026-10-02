@@ -31,28 +31,30 @@ trace or scene compare, with the scene-compare suite at 99% or better.
 
 ## Where it stands
 
-| | 2026-10-01 start | now (2026-10-02) | at completion |
+| | 2026-10-01 start | now (2026-10-02, after phase 1) | at completion |
 |---|---:|---:|---:|
-| render surface linked | 1,267 / 4,838 (26%) | 1,575 / 5,377 (29%) | 5,377 |
-| render surface faithful | not measured | 1,054 (20%) | 5,377 |
-| render surface stubs | 20 | 33 | 0 |
-| empty functions with live render call sites | 37 | 35 | 0 |
+| render surface linked | 1,267 / 4,838 (26%) | 1,699 / 5,293 (32%) | 5,293 |
+| render surface faithful | not measured | 1,149 (22%) | 5,293 |
+| render surface stubs | 20 | 25 | 0 |
+| empty functions with live render call sites | 37 | 35 (not re-counted) | 0 |
 | D3D9 device census (vtable 0x00a2e718, 228 functions) | 199 linked, 154 faithful | 227 linked, 223 faithful | 228 / 228 |
 | render surface attributed by anchor guess | 63% | 49% | low |
 
-By area (2026-10-02; functions are the report's module counts, grouped):
+By area (2026-10-02; functions are the report's module counts, grouped). The models row and the
+totals are from the run after phase 1; the other rows are from the morning's run and have not
+moved since, apart from the denominator shrinking as template internals were excluded:
 
 | area | functions | linked | faithful | unlinked | share of unlinked |
 |---|---:|---:|---:|---:|---:|
 | entities (`Unit_C`, `Player_C`, `GameObject_C`, `Movement`, `Passenger`, effects, missiles, spell visuals) | 2,055 | 209 | 131 | 1,846 | 49% |
 | world layer and map streaming (`Map`, `MapMem`, `MapChunkLiquid`, `DetailDoodad`, `World*`, `Camera`, `MapWeather`, `WorldText`) | 1,042 | 366 | 217 | 676 | 18% |
 | textures and full-screen effects (`Texture*`, `blp`, `tga`, `FFXEffects`, glow, `Lightning`) | 793 | 235 | 156 | 558 | 15% |
-| models and particles (`M2*`, `ParticleSystem2`, `CharacterModelBase`, `ModelBlob`, `GfxSingletonManager`) | 602 | 362 | 220 | 240 | 6% |
+| models and particles (`M2*`, `ParticleSystem2`, `CharacterModelBase`, `ModelBlob`, `GfxSingletonManager`) | 506 | 477 | 316 | 29 | 1% |
 | map geometry (`MapChunk`, `MapLoad`, `MapArea`, `MapObj*`, `AaBsp`, `MapLowDetail`) | 327 | 148 | 106 | 179 | 5% |
 | D3D9Ex and OpenGL devices (not used on Windows) | 202 | 72 | 54 | 130 | 3% |
 | liquid, shadows, shader effects (`Liquid`, `ShadowMap`, `MapShadow`, `ShaderEffect`) | 192 | 108 | 64 | 84 | 2% |
 | D3D9 device by module name (see the census instead) | 164 | 75 | 54 | 89 | 2% |
-| **total** | **5,377** | **1,575** | **1,002** | **3,802** | |
+| **total** | **5,293** | **1,699** | **1,149** | **3,594** | |
 
 Read the chart with two caveats. Half the surface is still placed in its module by the nearest
 path string rather than a known boundary, so rows can be mis-sized (`MODULE_RANGES` is the fix per
@@ -104,35 +106,66 @@ The loop in CLAUDE.md, minus the run: `recomp.py`, `--next`, port, build, `clang
 
 ## Open phases
 
-### Phase 1: models (240 unlinked)
+### Phase 1: models (29 unlinked, was 240)
 
-Smallest area with the least faithful large roots. Closing it stabilises the matchers for
-everything hanging off `CM2Model`.
+Worked through on 2026-10-02 in one pass (21 commits, three of them by parallel agents in their
+own worktrees). Per module, linked: `ParticleSystem2` 104/104, `M2Shared` 34/34, `M2Light` 44/44,
+`M2Model` 148/151, `M2Scene` 63/67, `M2Cache` 17/20, `GfxSingletonManager` 57/62,
+`CharacterModelBase` 10/24, `ModelBlob` complete (its functions now count under their callers'
+modules).
 
-- **Unfaithful roots** (call order, branch ratio): `CM2Model::InitializeLoaded` [79%, 0.66; left:
-  the ribbon setup's static tables and `FUN_0082dac0`, the emitter constructor order, the spawned
-  models `FUN_00978b30` / `FUN_0097aeb0`, the ramp `FUN_0097d370`], `CM2Scene::Animate` [67%,
-  0.29; the doodad-grouping tail, decoded in the note at `IsBatchDoodadCompatible`, waits on model
-  field +0x1b8], `CM2SceneRender::Draw` [86%, 0.31], `SetupLighting` [78%, 0.71; the rest is the
-  device +0x1b4 getter, mis-linked as `GxCaps`], `CM2Lighting::SetupGxFog` [33%, 0.07],
-  `OptimizeVisibleGeometry` [89%, 0.41].
-- **Stubs with live callers:** `DrawBatchDoodad`; `DrawBatchProj` (`FUN_00829aa0`, plus the
-  projection callback `FUN_0077f500` from world init); `SubstituteSpecializedShaders`
-  (`FUN_00837680`); the second geometry builder `FUN_0082be60`.
-- **Particles** (`parity-particles.md`): the shader permutation selector `FUN_00873160` /
-  `FUN_00872de0`, the ramp fast path `FUN_00979d60`, the type-3 emitter `0x009820f0`, the
-  spawned-model pass `FUN_0097e8d0`. Retire `ParticleFx.cpp` once only the ported sim runs.
-- **Ribbons** (`parity-ribbons.md`, nothing ported): `CRibbonEmitter` `FUN_009808a0` /
-  `FUN_00980b70`, `DrawRibbon` `FUN_00820f40`, the model's ribbon array and its walk.
-- **Instanced caster draw:** `FUN_0082da40 -> FUN_00829e40 -> FUN_00829ba0`.
-- **Model cache** (`parity-model-cache.md`): hash `FUN_0081c390`, pending release
-  `FUN_0083dc90`, `GarbageCollect` `FUN_0081c290`, `UpdateShared` `FUN_0081c790`.
-- **Unlinked bodies ranked highest:** `FUN_0082ec30`, `FUN_008292a0`, `FUN_0083dfa0` /
-  `FUN_0083e140` in `M2Shared` (65, 27 linked); `ModelBlob` (28, none linked);
-  `CharacterModelBase` (24, 6 linked).
+**Seen running** (one run, 2026-10-02, desktop D3D9): the world loads and draws with doodad
+instancing on. That run is what found the two bugs below; it is a look, not a scene compare, and
+nothing here is `verified` in the report's sense.
 
-Exit: `M2Scene`, `M2Shared`, `CharacterModelBase`, `ModelBlob` at 100% linked, no stubs, roots
-faithful.
+What landed:
+
+- **Model cache:** hashed shared models with the pending-release queue, `GarbageCollect`,
+  `UpdateShared` / `TouchGeometry`, the model blob, `CM2Shared`'s load chain and skin-profile
+  choice, `Destroy` / `M2Destroy`, and the **animate thread** (`M2UseThreads`: the cache thread
+  animates the odd entries of the animate list).
+- **`CM2Scene::Animate`** rewritten from the decompilation: draw list, the separate particle draw
+  list that `AnimateST` joins, draw-callback elements, sort distances along the sort radius, and
+  the **doodad grouping** tail (hash, compare, group sort). `IsBatchDoodadCompatible` and
+  `DrawBatchDoodad` are live, so `M2BatchDoodads` instances repeated doodads.
+- **`CM2Scene::Draw`** gates on the pass mask again: the old "divergence" was wrong, because the
+  constructor sets the mask to every pass.
+- **Draw paths:** batched particles (`M2BatchParticles`), `DrawCallback`, projected decals
+  (`DrawBatchProj` and its texture-matrix solver; reached once the world installs the projection
+  callback), the instanced shadow-caster draw (`DrawShadowCasterLists` and below), and the
+  non-shader `SetBatchVertices` arm with both CPU skinning packers.
+- **Particles:** emitter clone path and pool, model particles (`SetGeometryModel` /
+  `SetRecursionModel`), the precompiled colour ramp, all wired from `InitializeLoaded`.
+- **CM2Model:** the callback queue (authored animation events now fire), queries and counts,
+  combined and animated bounds, draw sphere, collision triangles, the merge pass.
+- **CharacterModelBase:** `SetUnit`, `SetCreature`, `RefreshUnit` and the rotation path.
+
+Two bugs the first run found, both fixed:
+
+- **The world froze on its first frame.** Frozen's stand-in shadow caster pass fed the new
+  doodad elements to the instanced draw with an uninitialised instance count.
+- **Instanced doodads exploded (trees especially).** `CM2Shared::SetIndices` added each instance's
+  vertex offset to the read position instead of the index value; invisible while capacity was 1.
+
+Left (29), each with its reason recorded at the code or in `overrides.json`:
+
+- `FUN_008245b0` / `FUN_004b57a0`: model and texture byte accounting through Storm's archive
+  internals, which frozen does not have.
+- `CharacterModelBase` cameras (`0x5974a0`, `0x5977c0`, need `CSimpleModel::SetCameraByID`), the
+  "model ready" check (`0x597aa0`, `0x597290`) and the DressUp frame (`0x597b50..0x5980b0`, needs a
+  frame-owned `CCharacterComponent`).
+- Tempest helpers owned by `src/world` / `src/model`: `0x9838d0`, `0x983940` (collision triangle),
+  `0x983990`, `0x983ae0`, `0x983fb0` (`CWFrustum`).
+- `M2Cache` `0x81ca10` (scene +0x18 setter, with the `OnWorldRender` port).
+
+Roots, call order / branch ratio: `InitializeLoaded` 85% (faithful), `Animate` 95% but branch
+ratio 0.37, `CM2SceneRender::Draw` 91% / 0.31, `SetupLighting` 78% (the clip-plane tail: dead until
+lighting flag 0x40 is set, and it reads device +0x1b4, which frozen has not mapped; the "`GxCaps`"
+link at `0x00682d20` is that getter, not caps), `SetupGxFog` 50%, `OptimizeVisibleGeometry` 89%.
+The branch ratios are the next thing to read with `--diff`.
+
+**Owed a run:** the animate thread under load, animation events on units, the instanced shadow
+casters (reached only from the unported map shadow pass `0x7bbc50`), and projected decals.
 
 ### Phase 2: the environment (676 world-layer + 179 geometry + 84 liquid/shadow unlinked)
 
@@ -270,3 +303,4 @@ functions. The commit log has the detail.
 | 2026-10-01 | 1,571 / 5,377 | 1,023 | 33 | n/m | phase 3a closed: cursor, window procedure, time manager, `TextureLoadImage` |
 | 2026-10-01 | 1,575 / 5,377 | 1,054 | 33 | n/m | hand verdicts for ~45 census functions; NVAPI thunks tagged |
 | 2026-10-02 | 1,575 / 5,377 | 1,054 | 33 | 35 | reference switched to the vanilla `WoW.exe`; two patch leaks fixed |
+| 2026-10-02 | 1,699 / 5,293 | 1,149 | 25 | n/m | phase 1: models 240 -> 29 unlinked; doodad instancing live, two bugs found by the first run |
