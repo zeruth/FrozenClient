@@ -1318,7 +1318,7 @@ int32_t CM2Shared::SetIndices() {
 
             for (int32_t j = 0; j < this->uint190; j++) {
                 for (int32_t k = 0; k < skinSection.indexCount; k++) {
-                    indexBuf[k] = this->skinProfile->indices[indexStart + k + v25];
+                    indexBuf[k] = static_cast<uint16_t>(this->skinProfile->indices[indexStart + k] + v25);
                 }
 
                 indexBuf += skinSection.indexCount;
