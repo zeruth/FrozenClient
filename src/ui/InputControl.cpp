@@ -583,8 +583,6 @@ int32_t CInputControl::SetControlBit(uint32_t bit, uint32_t time) {
 }
 
 // ref: FUN_005fa450
-// PARTIAL: the click a short press makes (FUN_004f7880, the world frame's select-or-interact) is
-// the world-frame port's.
 int32_t CInputControl::UnsetControlBit(uint32_t bit, uint32_t time, int32_t a3) {
     if (!(this->m_unk04 & bit)) {
         return 0;
@@ -633,6 +631,15 @@ int32_t CInputControl::UnsetControlBit(uint32_t bit, uint32_t time, int32_t a3) 
 
     if (!(old & 0x3) || (this->m_unk04 & 0x3)) {
         return 1;
+    }
+
+    // A short press is a click on what was picked when it went down: left 1, right 4.
+    if (!this->IsDrag(time) && CGWorldFrame::s_currentWorldFrame) {
+        if (this->m_unk18 == 1) {
+            CGWorldFrame::s_currentWorldFrame->OnWorldClick(1);
+        } else if (this->m_unk18 == 2) {
+            CGWorldFrame::s_currentWorldFrame->OnWorldClick(4);
+        }
     }
 
     this->m_unk18 = 0;
@@ -987,6 +994,10 @@ int32_t InputStartButton(uint32_t bit, uint32_t click) {
 
     if (!(input->m_unk04 & 0x3)) {
         input->m_unk18 = click;
+
+        if (CGWorldFrame::s_currentWorldFrame) {
+            CGWorldFrame::s_currentWorldFrame->UpdateCursorPick();
+        }
     }
 
     if (input->SetControlBit(bit, time)) {

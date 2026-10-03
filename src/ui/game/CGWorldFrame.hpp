@@ -25,6 +25,16 @@ namespace FFX {
     class Effect;
 }
 
+// +0x2e0: what the cursor's pick found -- the object (0 for none), the point, its distance, and the
+// ray it was cast along.
+struct CURSORHIT {
+    WOWGUID guid = 0;
+    C3Vector position = {};
+    float distance = 0.0f;
+    C3Vector start = {};
+    C3Vector end = {};
+};
+
 class CGWorldFrame : public CSimpleFrame {
     public:
         // Static variables
@@ -94,6 +104,21 @@ class CGWorldFrame : public CSimpleFrame {
         void ReleaseModelRecords(STORM_EXPLICIT_LIST(CModelRecord, m_link)& list);
         // ref: FUN_004fa5d0
         void ReleaseAllModelRecords();
+        int32_t GetCursorRay(float x, float y, C3Vector* start, C3Vector* end);
+        WOWGUID FindClosestModel(const C3Vector& start, const C3Vector& end, uint32_t mask, float* distance);
+        int32_t IntersectWorld(const C3Vector& start, const C3Vector& end, uint32_t mask, CURSORHIT* hit);
+        int32_t Intersect(float x, float y, uint32_t unused, CURSORHIT* hit);
+        void UpdateCursorPick();
+        int32_t OnWorldClick(int32_t button);
+
+        // +0x2d0: the object whose model the cursor is over; +0x2d8 what kind of thing the last
+        // pick found (0 nothing, 1 terrain, 2 a model, 3 a map object), +0x2e0 the hit itself,
+        // +0x310 the cursor in DDC when it was taken.
+        WOWGUID m_cursorModelObject = 0;
+        int32_t m_cursorHitType = 0;
+        CURSORHIT m_cursorHit;
+        float m_cursorX = 0.0f;
+        float m_cursorY = 0.0f;
 
         // +0x380 and +0x388: the locked target and the pet, when the frame drew them this frame
         // (CGObject_C::UpdateForFrame); the selection circles are drawn under them.
@@ -108,9 +133,8 @@ class CGWorldFrame : public CSimpleFrame {
         STORM_EXPLICIT_LIST(CModelRecord, m_link) m_modelRecords2;
         STORM_EXPLICIT_LIST(CModelRecord, m_link) m_freeModelRecords;
 
-    private:
-        // Private member variables
-        // TODO
+    public:
+        // +0x320: the frame's rect in DDC, which the cursor's ray is taken across.
         CRect m_screenRect;
         CRect m_viewport;
 

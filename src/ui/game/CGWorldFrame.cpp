@@ -33,6 +33,12 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "object/client/GameObjectTypes.hpp"
+#include "ui/simple/CSimpleTop.hpp"
+#include "object/client/CGCorpse_C.hpp"
+#include "world/CWFrustum.hpp"
+#include "ui/InputControl.hpp"
+#include "ui/game/CGGameUI.hpp"
 #include "ui/game/UIBindings.hpp"
 #include "event/CEvent.hpp"
 #include "object/client/SpellVisuals.hpp"
@@ -1082,4 +1088,540 @@ void CGWorldFrame::UpdateDayNight(float elapsedSec) {
 
     auto weather = CWorld::s_weather;
     block->stormInput = weather ? weather->m_density * weather->m_fog : 0.0f;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The cursor's pick: what the world frame finds under the mouse when a button goes down, and what
+// a short click on it does (WorldFrame.cpp 0x004f6270 .. 0x004fa570).
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// ref: FUN_007fd620
+// Whether a spell is waiting for the player to pick its target (Spell_C's DAT_00d3f4e4). The spell
+// cast port keeps that pending spell; until it does none ever waits, so the pick never takes the
+// spell-targeting branches below.
+bool SpellIsTargeting() {
+    return false;
+}
+
+// ref: FUN_00721f50
+// Click-to-move applies: the unit is the alive active mover and autoInteract is on.
+bool ClickToMoveEnabled(CGUnit_C* unit) {
+    static CVar* autoInteract = CVar::Lookup("autoInteract");
+
+    return 0 < unit->Unit()->health && unit->GetGUID() == CGUnit_C::s_activeMover && autoInteract
+        && autoInteract->GetInt() != 0;
+}
+
+// ref: FUN_00717b60
+// A dead unit that may be looted once its death animation has played out.
+bool UnitIsLootable(CGUnit_C* unit, uint32_t time) {
+    return unit->Unit()->health < 1 && (unit->m_deathTime == 0 || static_cast<int32_t>(time - unit->m_deathTime) >= 0)
+        && (unit->Unit()->dynamicFlags & 0x1);
+}
+
+// ref: FUN_004f7650
+// What the cursor may pick: terrain for click-to-move (1, or 3 while flying above water), and,
+// with a player in the world, units (0x8), players (0x10), game objects (0x4) and corpses
+// (0x40).
+//
+// PARTIAL: the spell-targeting masks (FUN_007fd650 .. FUN_00801960, the friendly, hostile, dead,
+// party and creature-type filters) are the spell cast port's, along with the item- and
+// trade-target ones (FUN_007fd710 / FUN_007fd720).
+uint32_t CursorPickMask() {
+    if (SpellIsTargeting()) {
+        return 0;
+    }
+
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+    uint32_t mask = 0;
+    auto mover = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, ".\\WorldFrame.cpp", 0x375));
+
+    if (mover && ClickToMoveEnabled(mover) && CGGameUI::GetCursorKind() == 0) {
+        uint32_t moveFlags = mover->m_localMove.m_moveFlags;
+        mask = 1;
+
+        if ((moveFlags & 0x10000000) && !(moveFlags & 0x200000)) {
+            mask = 3;
+        }
+    }
+
+    if (player) {
+        mask |= 0x5c;
+    }
+
+    return mask;
+}
+
+// ref: FUN_004f7350
+// A unit the cursor may pick: not the player itself or a unit it controls (unless the mask
+// allows it, 0x20).
+//
+// PARTIAL: the spell-target filters (mask bits 0xf0000, 0x300000, 0x400000 and the cast's own
+// attribute checks) come only from a spell waiting for its target; see SpellIsTargeting.
+bool UnitIsPickable(CGUnit_C* unit, uint32_t mask) {
+    if (!(mask & 0x20)) {
+        if (unit->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            return false;
+        }
+
+        if (unit->IsControlledBy(ClntObjMgrGetActivePlayer())) {
+            return false;
+        }
+    }
+
+    if ((mask & 0x300000) != 0) {
+        uint32_t allowed = unit->Unit()->health < 1 ? (mask & 0x200000) : (mask & 0x100000);
+
+        if (!allowed) {
+            return false;
+        }
+    }
+
+    if ((mask & 0x400000) && unit->GetCreatureType() == 0xC) {
+        return true;
+    }
+
+    return true;
+}
+
+// ref: FUN_004f7530
+bool ObjectIsPickable(CGObject_C* object, uint32_t mask) {
+    switch (object->GetType()) {
+        case HIER_TYPE_UNIT:
+            return (mask & 0x8) && UnitIsPickable(static_cast<CGUnit_C*>(object), mask);
+
+        case HIER_TYPE_PLAYER:
+            return (mask & 0x10) && UnitIsPickable(static_cast<CGUnit_C*>(object), mask);
+
+        case HIER_TYPE_GAMEOBJECT:
+            // A game object only for a spell that targets one (FUN_007fff20) while one waits.
+            return (mask & 0x4) && !SpellIsTargeting();
+
+        case HIER_TYPE_CORPSE:
+            // FUN_004f58e0: any corpse, or one the waiting spell accepts (FUN_007ffea0).
+            return (mask & 0x40) != 0;
+
+        default:
+            return false;
+    }
+}
+
+// ref: FUN_004f6270
+// The highlight a picked object's model takes: a living unit 3, a lootable one 2, a usable game
+// object 1, a lootable corpse 2.
+uint32_t ObjectHighlightKind(CGObject_C* object) {
+    if (!object) {
+        return 0;
+    }
+
+    switch (object->GetType()) {
+        case HIER_TYPE_UNIT:
+        case HIER_TYPE_PLAYER: {
+            auto unit = static_cast<CGUnit_C*>(object);
+
+            if (0 < unit->Unit()->health) {
+                return 3;
+            }
+
+            return UnitIsLootable(unit, static_cast<uint32_t>(OsGetAsyncTimeMs())) ? 2 : 0;
+        }
+
+        case HIER_TYPE_GAMEOBJECT: {
+            // FUN_0070ba00: the type behaviour's own say (slot 0x18).
+            auto type = static_cast<CGGameObject_C*>(object)->m_type;
+            return type && type->CanUse() ? 1 : 0;
+        }
+
+        case HIER_TYPE_CORPSE:
+            // FUN_007058f0
+            return (static_cast<CGCorpse_C*>(object)->Corpse()->dynamicFlags & 0x1) ? 2 : 0;
+
+        default:
+            return 0;
+    }
+}
+
+// ref: FUN_007207e0
+// A dead unit the cursor tries only after everything else: one with nothing left to give (not
+// lootable, not skinnable).
+//
+// PARTIAL: whether the player may loot it (FUN_006d5a60, Player_C's loot rights) and whether it
+// can skin it (FUN_0053bce0, the skinning professions) are those ports'; a lootable corpse
+// counts as lootable, and skinning is not checked.
+bool UnitIsPickedLast(CGUnit_C* unit, uint32_t time) {
+    if (unit->Unit()->flags & 0x2000000) {
+        return true;
+    }
+
+    if (!unit->IsA(TYPE_UNIT) || unit->IsA(TYPE_PLAYER) || 0 < unit->Unit()->health) {
+        return false;
+    }
+
+    if (UnitIsLootable(unit, time)) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_004f6370
+// A model (and every model attached under it) takes part in the scene's ray query, with the
+// highlight it would get, the record it answers for, and the query kind.
+void AddModelToRayQuery(CM2Model* model, uint32_t highlight, void* owner, uint32_t kind) {
+    if (model->m_loaded) {
+        if (!model->m_rayPrev && model->m_scene) {
+            auto& head = model->m_scene->m_rayModelList;
+
+            model->m_rayPrev = &head;
+            model->m_rayNext = head;
+            head = model;
+
+            if (model->m_rayNext) {
+                model->m_rayNext->m_rayPrev = &model->m_rayNext;
+            }
+        }
+
+        model->m_rayQueryType = kind;
+        model->m_rayKey = highlight;
+        model->m_rayOwner = owner;
+    }
+
+    for (auto child = model->m_attachList; child; child = child->m_attachNext) {
+        if (!child->m_rayPrev) {
+            AddModelToRayQuery(child, highlight, reinterpret_cast<void*>(static_cast<uintptr_t>(0xFFFFFFFF)), kind);
+        }
+    }
+}
+
+// ref: FUN_004bf0f0
+// The ray through a point of the view (u, v in 0..1 across and up the frustum) from the near
+// face to the far one, in the camera's space.
+bool FrustumRay(float u, float v, C3Vector* start, C3Vector* end) {
+    if (!start || !end || u < 0.0f || 1.0f < u || v < 0.0f || 1.0f < v) {
+        return false;
+    }
+
+    C44Matrix view;
+    C44Matrix proj;
+    GxXformView(view);
+    GxXformProjection(proj);
+
+    C3Vector c[8];
+    FrustumCorners(view, proj, c);
+
+    C3Vector nearA = c[0] + (c[1] - c[0]) * v;
+    C3Vector nearB = c[3] + (c[2] - c[3]) * v;
+    C3Vector farA = c[4] + (c[5] - c[4]) * v;
+    C3Vector farB = c[7] + (c[6] - c[7]) * v;
+
+    *start = nearA + (nearB - nearA) * u;
+    *end = farA + (farB - farA) * u;
+
+    return true;
+}
+
+} // namespace
+
+// ref: FUN_004f6450
+// The cursor's ray in the world: the point's place across the frame's rect, through the frustum,
+// moved out to the camera.
+int32_t CGWorldFrame::GetCursorRay(float x, float y, C3Vector* start, C3Vector* end) {
+    float u = (x - this->m_screenRect.minX) / (this->m_screenRect.maxX - this->m_screenRect.minX);
+    float v = (y - this->m_screenRect.minY) / (this->m_screenRect.maxY - this->m_screenRect.minY);
+
+    if (u < 0.0f || v < 0.0f || 1.0f < u || 1.0f < v) {
+        return 0;
+    }
+
+    if (!FrustumRay(u, v, start, end)) {
+        return 0;
+    }
+
+    const C3Vector& eye = this->m_camera->Position();
+    *start = *start + eye;
+    *end = *end + eye;
+
+    return 1;
+}
+
+// ref: FUN_004f9550
+// The nearest picked model along the ray: every model the frame drew this frame whose object
+// may be picked joins the scene's ray query (a corpse with nothing to give only on a second
+// pass, when nothing else was hit), and the hit's object and distance come back.
+WOWGUID CGWorldFrame::FindClosestModel(const C3Vector& start, const C3Vector& end, uint32_t mask, float* distance) {
+    C44Matrix view;
+    GxXformView(view);
+
+    const C3Vector& eye = this->m_camera->Position();
+    C3Vector viewStart = (start - eye) * view;
+    C3Vector viewEnd = (end - eye) * view;
+
+    STORM_EXPLICIT_LIST(CModelRecord, m_link) later;
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    auto scene = CWorld::GetM2Scene();
+
+    scene->BeginRayQuery();
+
+    // FUN_00801b10: a waiting spell that may target anything (attribute 0x1000000) picks
+    // un-highlightable objects too; none waits (SpellIsTargeting).
+    bool anyObject = false;
+
+    for (auto record = this->m_modelRecords.Head(); record;) {
+        auto next = this->m_modelRecords.Next(record);
+        auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(record->m_guid, TYPE_OBJECT, ".\\WorldFrame.cpp", 0x276));
+
+        if (object && ObjectIsPickable(object, mask) && (object->CanHighlight() || anyObject)) {
+            record->m_object = object;
+
+            if (object->IsA(TYPE_UNIT) && UnitIsPickedLast(static_cast<CGUnit_C*>(object), now)) {
+                record->m_link.Unlink();
+                later.LinkToTail(record);
+            } else if (record->m_model) {
+                // FUN_004f6400
+                uint32_t highlight = record->m_guid == this->m_cursorModelObject ? 0xFFFFFFFF : ObjectHighlightKind(object);
+                record->m_object = nullptr;
+                AddModelToRayQuery(record->m_model, highlight, record, (mask >> 25) & 4);
+            }
+        }
+
+        record = next;
+    }
+
+    float fraction = 1.0f;
+    auto hit = static_cast<CModelRecord*>(scene->RayQuery(viewStart, viewEnd, &fraction, 1));
+
+    if (!hit) {
+        scene->BeginRayQuery();
+
+        for (auto record = later.Head(); record; record = later.Next(record)) {
+            uint32_t highlight = record->m_guid == this->m_cursorModelObject ? 0xFFFFFFFF : ObjectHighlightKind(record->m_object);
+            record->m_object = nullptr;
+
+            if (record->m_model) {
+                AddModelToRayQuery(record->m_model, highlight, record, (mask >> 25) & 4);
+            }
+        }
+
+        fraction = 1.0f;
+        hit = static_cast<CModelRecord*>(scene->RayQuery(viewStart, viewEnd, &fraction, 1));
+    }
+
+    while (auto record = later.Head()) {
+        record->m_link.Unlink();
+        this->m_modelRecords.LinkToTail(record);
+    }
+
+    if (!hit || hit == reinterpret_cast<CModelRecord*>(static_cast<uintptr_t>(0xFFFFFFFF))) {
+        return 0;
+    }
+
+    C3Vector d = viewEnd - viewStart;
+    float length = std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z) * fraction;
+
+    hit->m_distance = length;
+    *distance = length;
+
+    return hit->m_guid;
+}
+
+// ref: FUN_004f9930
+// What the ray meets first: the terrain and buildings (and the water while flying), the nearest
+// picked model, or a transport's surface. 2 is a model, 3 a map object with an owner (its point
+// in the owner's space when it moves), 1 bare terrain while click-to-move wants it, 0 nothing.
+int32_t CGWorldFrame::IntersectWorld(const C3Vector& start, const C3Vector& end, uint32_t mask, CURSORHIT* hit) {
+    C3Vector point = {};
+    float t = 1.0f;
+    float objectDistance = 0.0f;
+    WOWGUID entity = 0;
+
+    C3Vector stop = end;
+    C3Vector dir = end - start;
+    float length = dir.x * dir.x + dir.y * dir.y + dir.z * dir.z;
+
+    if (2.38419e-07f <= std::fabs(length)) {
+        length = std::sqrt(length);
+        dir = dir * (1.0f / length);
+    }
+
+    float hitDistance = 0.0f;
+    bool hitWorld = WorldQuerySegment(start, stop, &point, &t, (mask & 2) ? 0x1020124 : 0x1000124, nullptr) != 0;
+
+    if (hitWorld) {
+        length = length * t;
+        entity = CMap::s_segmentHitGUID;
+        stop = start + dir * length;
+        hitDistance = length;
+    }
+
+    WOWGUID model = 0;
+
+    if (mask & 0x7C) {
+        model = this->FindClosestModel(start, stop, mask, &objectDistance);
+
+        if (model) {
+            length = objectDistance;
+            stop = start + dir * objectDistance;
+        }
+    }
+
+    if (mask & 0x3) {
+        float t2 = 1.0f;
+
+        if (WorldQuerySegment(start, stop, &point, &t2, 0x100151, nullptr)) {
+            hitDistance = length * t2;
+            entity = CMap::s_segmentHitGUID;
+            hitWorld = true;
+            stop = start + dir * hitDistance;
+        }
+    }
+
+    // FUN_004f6d20 projects the point back to the screen and, when it is on it, hands it to
+    // FUN_00683660 (an object the decompilation does not name); nothing in frozen reads it.
+
+    if (model) {
+        hit->distance = objectDistance;
+        hit->position = stop;
+        hit->guid = model;
+        return 2;
+    }
+
+    if (!hitWorld) {
+        return 0;
+    }
+
+    hit->position = stop;
+    hit->distance = hitDistance;
+
+    if (entity == 0) {
+        hit->guid = 0;
+        return (mask & 0x3) != 0 ? 1 : 0;
+    }
+
+    auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(entity, TYPE_OBJECT, ".\\WorldFrame.cpp", 800));
+
+    if (!object) {
+        hit->guid = 0;
+        return 3;
+    }
+
+    hit->guid = entity;
+
+    if (object->Virtual0EC()) {
+        C44Matrix world;
+        object->GetWorldMatrix(world);
+        hit->position = stop * world.AffineInverse();
+    }
+
+    return 3;
+}
+
+// ref: FUN_004f9da0
+// The pick at a point of the frame: the world projection set up, the mask asked, the ray built
+// and intersected; the model the cursor is over remembered (+0x2d0) for its highlight.
+int32_t CGWorldFrame::Intersect(float x, float y, uint32_t unused, CURSORHIT* hit) {
+    (void)unused;
+
+    auto input = InputControlGetActive();
+
+    if (!input || !(input->m_unk58 & 0x1) || !this->m_camera) {
+        return 0;
+    }
+
+    GxXformPush(GxXform_View);
+    GxXformPush(GxXform_Projection);
+
+    this->m_camera->SetupWorldProjection(this->m_screenRect);
+
+    int32_t type = 0;
+    uint32_t mask = CursorPickMask();
+
+    if (mask) {
+        C3Vector start = {};
+        C3Vector end = {};
+
+        if (this->GetCursorRay(x, y, &start, &end)) {
+            hit->start = start;
+            hit->end = end;
+
+            type = this->IntersectWorld(start, end, mask, hit);
+
+            if (type < 2) {
+                this->ReleaseModelRecords(this->m_modelRecords2);
+                this->m_cursorModelObject = 0;
+            } else {
+                this->m_cursorModelObject = hit->guid;
+            }
+        }
+    }
+
+    GxXformPop(GxXform_Projection);
+    GxXformPop(GxXform_View);
+
+    return type;
+}
+
+// ref: FUN_004fa570
+// The pick under the mouse, as a button goes down.
+void CGWorldFrame::UpdateCursorPick() {
+    if (!this->m_top) {
+        return;
+    }
+
+    NDCToDDC(this->m_top->m_mousePosition.x, this->m_top->m_mousePosition.y, &this->m_cursorX, &this->m_cursorY);
+
+    this->m_cursorHitType = this->Intersect(this->m_cursorX, this->m_cursorY, 0, &this->m_cursorHit);
+}
+
+// ref: FUN_004f7880
+// A short click (1 the left button, 4 the right) on what was picked when it went down: nothing
+// (deselect, click-to-move along the ray), a model (select it, or interact with it), a surface.
+// A charmed player only clicks through to nothing.
+int32_t CGWorldFrame::OnWorldClick(int32_t button) {
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+
+    WORLDCLICK click = {};
+    click.button = button;
+
+    if (!player || player->Unit()->charmedBy != 0) {
+        return GameUIClickNothing(click);
+    }
+
+    // FUN_00715c30: a name plate under the cursor (DAT_00ca1204) takes the click instead, for its
+    // unit (the left button selects it, the right one interacts); name plates are PlayerName's
+    // port, and none is ever under the cursor yet.
+    {
+        switch (this->m_cursorHitType) {
+            case 0:
+                click.start = this->m_cursorHit.start;
+                click.end = this->m_cursorHit.end;
+                return GameUIClickNothing(click);
+
+            case 1:
+            case 3: {
+                WOWGUID owner = this->m_cursorHit.guid;
+                uint32_t high = static_cast<uint32_t>(owner >> 32);
+
+                // Only a transport's (high 0x1fc...) surface keeps its owner.
+                if ((high & 0xF0000000) != 0x10000000 || (high & 0x0FF00000) != 0x0FC00000) {
+                    owner = 0;
+                }
+
+                WORLDCLICK surface = {};
+                surface.guid = owner;
+                surface.position = this->m_cursorHit.position;
+                surface.button = button;
+
+                return GameUIClickSurface(surface);
+            }
+
+            case 2:
+                return GameUIClickObject(this->m_cursorHit.guid, button);
+
+            default:
+                return 0;
+        }
+    }
+
 }
