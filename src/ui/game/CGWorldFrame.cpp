@@ -11,7 +11,6 @@
 #include "object/client/AuraCache.hpp"
 #include "ffx/EffectGlow.hpp"
 #include "ffx/FFXEffects.hpp"
-#include "world/DayNightLight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
 #include "world/OverheadIcons.hpp"
@@ -525,15 +524,9 @@ void CGWorldFrame::OnWorldRender() {
     // one. Frozen guards each scene draw instead; the world scene exists for the whole session.
     auto scene = CWorld::GetM2Scene();
 
-    // FROZEN-ONLY: fog the models with the same data-driven fog the terrain and WMOs use; the
-    // guard keeps clear zones unfogged.
-    auto dnBlock = DayNightGetBlock();
-    float dnFogStart = dnBlock->fogStart < 0.0f ? 0.0f : dnBlock->fogStart;
-    bool useFog = dnBlock->fogEnd > 1.0f && dnFogStart < CWorld::GetFarClip();
-
-    if (useFog) {
-        GxRsSet(GxRs_Fog, 1);
-    }
+    // No fog switch here. The reference turns GxRs_Fog on in exactly one place,
+    // CShaderEffect::SetFogEnabled (0x008733ed): every pass that fogs asks for it -- the M2 scene
+    // per batch from its lighting -- and nothing turns it on for the frame.
 
     if (scene) {
         // FUN_0081ca10(-DAT_00cd7758) stores a float at the scene's +0x18 here; DAT_00cd7758 has
@@ -595,10 +588,6 @@ void CGWorldFrame::OnWorldRender() {
 
     // The underwater motes last in the world (FUN_0077f9d0 -> FUN_0079ca70).
     CWorld::RenderParticulates();
-
-    if (useFog) {
-        GxRsSet(GxRs_Fog, 0);
-    }
 
     // The second deferred device list, back to front, then drawn.
     GxuSortDrawList(GxuCat_1, 0, CWorldScene::s_cameraPos);

@@ -366,11 +366,8 @@ uint8_t CM2Lighting::FogColorByte(float c) {
 // `a2` and SetupGxFog straight after.
 //
 // So the terrain, not the model path, is what drives these two in the reference, and it does it
-// per chunk. frozen cannot port FUN_007d04a0 as such: its terrain is a stand-in built on
-// TerrainChunk in src/world/Terrain.cpp rather than a port of the reference's chunk class, and it
-// already sets GxRs_FogColor/Start/End itself from CWorld::s_fog*. Wiring SetupGxFog in there
-// would be a behaviour change to a path that currently works, so it wants its own change with a
-// run rather than being folded in here.
+// per chunk, in the fixed-function arm: FUN_007d04a0 is still unported, and in shader mode the
+// terrain fogs through CShaderEffect::SetFogParams like everything else.
 //
 // FUN_007b7bd0 is small and portable on its own terms and is the natural next piece: it is
 // `AddLight(outdoorLight)` where the light is the CM2Light at the map light block 0x00ce04a8+0x58,
