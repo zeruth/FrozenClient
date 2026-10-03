@@ -167,55 +167,47 @@ Lessons from these, kept because they change how the next one is done:
   `FUN_009a81f0`) is never added to anywhere in the binary, and the barrier draw's four models
   (DAT_00cd85f8) are never created. Both are noted at their call sites.
 
-## Phase 2: what is left (current)
+## Phase 2: closed out (2026-10-02 evening)
 
-From the 2026-10-02 18:36 run. "Left" is reference functions with no frozen link.
+The environment systems are all ported and drawing. The evening's run of fixes, each seen on screen
+unless marked:
 
-| module | ref | linked | left | next |
-|---|---:|---:|---:|---|
-| `WorldMap.cpp` | 120 | 25 | 95 | read the bodies first: much of this may be the world map UI rather than rendering |
-| DayNight (unanchored, 0x7ea000..0x7f4000) | 159 | 81 | 78 | give it a `MODULE_RANGES` entry, then `--next --module` it; `DNUpdateLight` is 71% faithful |
-| `World.cpp` | 137 | 64 | 73 | `CWorld::Destroy` `FUN_007837f0`; `FUN_0077ec30`, `FUN_0077fa00` |
-| `Map.cpp` | 150 | 82 | 68 | the unload `FUN_007c3830`; the footprint module (blocked, below) |
-| `WorldFrame.cpp` | 69 | 10 | 59 | `OnWorldUpdate` 18% and `OnWorldRender` 28%: the glow pre-pass `FUN_004f8770` / `FUN_008c1770`, the object enumeration `FUN_004f6a40`, the post calls (`FUN_007fca30` mount transitions, `FUN_004f6f90`, `FUN_0056c7a0`, `FUN_008c1010`, `FUN_00747ae0`) |
-| `DetailDoodad.cpp` | 134 | 90 | 44 | `CreateInstance` 8% |
-| `MapObj.cpp` | 79 | 40 | 39 | `WalkPortals` 44% |
-| `WorldText.cpp` | 35 | 4 | 31 | floating combat and name text |
-| `Camera.cpp` | 128 | 105 | 23 | the boundaries in `CameraDeps.cpp` (phase 4) |
-| `Liquid.cpp` | 89 | 69 | 20 | |
-| `MapWeather.cpp` | 88 | 69 | 19 | five stubs |
-| `AaBsp.cpp`, `WorldParam.cpp`, `MapObjGroup.cpp` | 186 | 136 | 50 | `MapObjGroup` lacks the occluder-edge list at +0x1b0 the visible-group feed walks |
-| `ShaderEffectManager.cpp`, `MapChunkLiquid.cpp`, `MapObjRead.cpp` | 129 | 89 | 40 | |
-| `WorldScene.cpp`, `MapLowDetail.cpp`, `MapMem.cpp` | 171 | 140 | 31 | the scene teardown `FUN_00798310` (it would also give `ReleaseBarrierTextures` and the liquid release chain their caller) |
-| `MapLoad`, `ShadowMap`, `MapChunk`, `ShaderEffect`, `MapArea`, `MapShadow` | 133 | 114 | 19 | the shadow map's device-restore hook needs a registry frozen does not have |
+| commit | what |
+|---|---|
+| d0d4b29f | characters lit (`s_characterAmbient` started at 0; the per-zone ease ported), grass light (`CMapChunk::SelectLights`), the unit light fade, the world depth range `[0, 0.94]`, vertical mouse look |
+| 7bef8e80 | terrain: the outdoor light whole (the stand-in direction was inverted), the block's fog, the real fog caps |
+| a931bc01 | buildings, water and grass on the reference shaders and light; black grass; the garbage triangles (a grass batch kept the device stream buffers); interiors through doorways (the portal overlap test crossed its axes) |
+| 29ba6ec5 | grass darkened in the chunk's baked shadow (built, not run) |
+| 77c93791 | `FROZEN_SHADOW_DUMP`, the shadow-map dump, rebuilt for the cascaded maps |
+| 736262ae | the M2 scene animates inside `CMap::Render`; the frame's own visibility loops are gone (built, not run: watch for a unit not drawing) |
 
-Work that spans modules:
+What the per-module tables still list is, read function by function, mostly not phase 2:
 
-- **Unfaithful roots** (call-order fidelity): `DetailDoodad::CreateInstance` 8%,
-  `CGWorldFrame::OnWorldUpdate` 18%, `CMap::MapMemInitialize` 26%, `OnWorldRender` 28%,
-  `CWorldScene::SubmitBarrierBox` 33%, `CMapObj::WalkPortals` 44%, `CMap::Update` 49%,
-  `CWorldScene::UpdateCamera` 50%, `CMapRenderChunk::DrawLocal` 67%, `CWorld::Update` 69%,
-  `CMap::UpdateMapObjDefs` 71%, `CMap::Render` 74%.
-- **M2 animate placement.** The reference runs `CM2Scene::AdvanceTime` / `Animate` and
-  `MapShadowRender` inside `CMap::Render`; frozen still does them in `OnWorldRender`, because it
-  culls and queues unit models after `CMap::Render` with its own frustum test. They move
-  together with the unit queueing (the reference queues units in the traversal, through
-  `CMapEntity`), not separately.
-- **Terrain through the original's constant setup** (`parity-map-memory.md`):
-  `CWorldScene::SetupTerrainConstants` `FUN_007cfbe0` is at 44%, plus the permutation
-  selection. This also retires table fog in `IStateSetD3dDefaults`, the device's last frozen-only
-  state.
-- **Footprints, blocked on phase 4.** The module is 0x79f820..0x7a03c0 (`CMapFootprintTexture`,
-  576 records of 0x34 bytes at 0x00cf4960, draw `FUN_0079fcc0` behind `showfootprints`, adder
-  `FUN_0079fa70` through the thunk `FUN_0077f040`, textures `FUN_007a03c0`). Its only producer is
-  the unit footstep event `FUN_00723a50`, and the adder also needs the box facet query
-  `FUN_007a5f20`. Port it with the footstep event, top down.
-- **Blob shadows** (`parity-shadows.md`): the oriented-rectangle footprint;
-  `CGUnit_C::GetShadowBox` `FUN_0071ed80` is at 50%.
-- **The collision debug overlay's second feeder**, `FUN_007d8840` (map-object read side), is
-  unported; the first, `CMapObjGroup::RecordHits`, feeds it.
+- **Misattributed by the anchor guess.** "WorldText" 0x7e8000..0x7ea400 is `FFXEffects` (fog
+  propagate, death, nether blur) -- phase 3. The `WorldFrame` remainder is spell and unit work: the
+  spell-target ground decal `FUN_004f8a40` (cursor mode `DAT_00ac79a4`, texture `DAT_00b74350`) and
+  the per-unit visitor `FUN_004f6a40` -> `FUN_0072b350` -- phase 4. Give these modules
+  `MODULE_RANGES` entries rather than trusting the counts.
+- **Blocked on the client's leave-world path.** The scene teardown `FUN_00798310` and
+  `CWorld::Destroy` `FUN_007837f0` are only reached from `FUN_00406510` (logout to the glue
+  screens), which tears down thirty mostly non-render subsystems. Port the chain from there.
+- **Blocked on phase 4.** Footprints (the footstep event `FUN_00723a50`), missile trajectories
+  `FUN_006fda20`, the blob-shadow unit box `FUN_0071ed80`.
 
-Exit: every map, liquid, shadow, sky and world-layer module at 100% linked and faithful.
+Carried forward, in order:
+
+1. **Shadows.** No silhouettes reach the ground, from anything. The binds match the reference.
+   Next: one noon run with the dump --
+   `FROZEN_FORCE_TIME=12 FROZEN_SHADOW_DUMP=<dir> Frozen.exe 2> shadow.log` -- which writes the
+   main, lit and cascade maps and logs the light rows and per-pass caster counts. Empty maps point
+   at the caster walks; full maps point at the light matrices or the sampling.
+2. **Fidelity of the roots** (call order): `DetailDoodad::CreateInstance` 8%,
+   `OnWorldUpdate` 18%, `MapMemInitialize` 26%, `OnWorldRender` 28%, `WalkPortals` 44%,
+   `CMap::Update` 49%, `UpdateCamera` 50%, `DrawLocal` 67%, `CWorld::Update` 69%. Note that the
+   two building caster walks scored 9% and 29% while being complete: their calls sit inside
+   lambdas the parser does not see into, so read before trusting a low score.
+3. **The collision debug overlay's second feeder**, `FUN_007d8840`.
+
 
 ## Phase 3: textures and effects (~300 unlinked)
 
