@@ -256,38 +256,27 @@ void Blit_Argb4444_Abgr8888(const C2iVector& size, const void* in, uint32_t inSt
     }
 }
 
-// THE SEVEN DXT-TO-UNCOMPRESSED BLITTERS BELOW ARE ALL STUBS, and they are the only reason
-// CBLPFile::Lock2 cannot convert a compressed mip -- see the long note at its COLOR_DXT case.
-// Their reference addresses were recovered from InitBlit (FUN_006ae6e0) by decoding the slot each
-// assignment writes: the table index is `alpha + (srcFmt * 13 + dstFmt) * 4` and each entry is 4
-// bytes, so the byte offset from the table base at 0x00c60930 is `16 * (src * 13 + dst) + 4 *
-// alpha`. Every one of InitBlit's twenty-five assignments decodes to a slot frozen also fills,
-// which is what makes the seven below trustworthy rather than guessed.
+// The seven DXT-to-uncompressed blitters. Their addresses were recovered from InitBlit
+// (FUN_006ae6e0) by decoding the slot each assignment writes: the table index is
+// `alpha + (srcFmt * 13 + dstFmt) * 4` and each entry is 4 bytes, so the byte offset from the table
+// base at 0x00c60930 is `16 * (src * 13 + dst) + 4 * alpha`.
 //
-// Each is a six-line WRAPPER of identical shape -- verified on three of them -- choosing between
-// two decoders by whether the image is whole 4x4 blocks:
+// Each is a wrapper choosing between two walkers by whether the image is whole 4x4 blocks
+// (DxtIsAligned), aligned then general:
 //
-//     if (size.x > 3 && size.y > 3 && (size.x & 3) == 0 && (size.y & 3) == 0)
-//         fast(...);   // every block complete
-//     else
-//         general(...);   // partial blocks at the right or bottom edge
+//     Blit_Dxt1_Rgb565    FUN_006ae440   ->  006ad5b0 / 006ad440
+//     Blit_Dxt1_Argb1555  FUN_006ae4a0   ->  006ad7d0 / 006ad660
+//     Blit_Dxt1_Argb8888  FUN_006ae500   ->  006ada10 / 006ad880
+//     Blit_Dxt3_Argb4444  FUN_006ae560   ->  006adc60 / 006adae0
+//     Blit_Dxt3_Argb8888  FUN_006ae5c0   ->  006adeb0 / 006add20
+//     Blit_Dxt5_Argb4444  FUN_006ae620   ->  006ae110 / 006adf90
+//     Blit_Dxt5_Argb8888  FUN_006ae680   ->  006ae360 / 006ae1d0
 //
-// so the work is in the fourteen decoders, not the wrappers. Those addresses, general then fast:
-//
-//     Blit_Dxt1_Rgb565    FUN_006ae440   ->  006ad440 / 006ad5b0
-//     Blit_Dxt1_Argb1555  FUN_006ae4a0   ->  006ad660 / (its own pair)
-//     Blit_Dxt1_Argb8888  FUN_006ae500   ->  006ad880 / 006ada10
-//     Blit_Dxt3_Argb4444  FUN_006ae560   ->  006adae0 / (its own pair)
-//     Blit_Dxt3_Argb8888  FUN_006ae5c0   ->  006add20 / (its own pair)
-//     Blit_Dxt5_Argb4444  FUN_006ae620   ->  006adf90 / (its own pair)
-//     Blit_Dxt5_Argb8888  FUN_006ae680   ->  006ae1d0 / 006ae360
-//
-// Implementing Dxt1 to Argb8888 first is worth the most: DXT1 is the commonest encoding in the
-// archives, and Argb8888 is what GetTextureFormats falls back to when the device cannot sample
-// compressed textures -- which is the case the GLES backend cares about.
+// Argb8888 is what GetTextureFormats falls back to when the device cannot sample compressed
+// textures, which is the case the GLES backend cares about.
 // ------------------------------------------------------------------------------------------------
-// DXT1 decoding. The colour maths below is transcribed from the reference; the loop that walks the
-// blocks is not, and the difference is called out where it happens.
+// DXT decoding, transcribed from the reference: colour expanders, block writers that take four row
+// pointers and a clip rectangle, and per format pair an aligned and a general block walker.
 // ------------------------------------------------------------------------------------------------
 
 // ref: FUN_006ae820
@@ -310,6 +299,125 @@ static void BuildDxtWeights() {
     }
 
     s_dxtWeightsBuilt = 1;
+}
+
+#if defined(_MSC_VER)
+#define BLIT_NOINLINE __declspec(noinline)
+#else
+#define BLIT_NOINLINE __attribute__((noinline))
+#endif
+
+// The part of a 4x4 block a block writer fills: columns left..right and rows top..bottom,
+// inclusive, and how many texels wide that is. The reference passes it with an array of four row
+// pointers, one per texel row of the block, and the writer moves each pointer it wrote along by
+// `width` texels -- so a walker sets the pointers once per row of blocks and then calls along it.
+struct DXTRECT {
+    uint32_t left;
+    uint32_t top;
+    uint32_t right;
+    uint32_t bottom;
+    uint32_t width;
+    uint32_t height;
+};
+
+// How a DXT3 or DXT5 block writer turns a stored alpha into the target's alpha width.
+typedef uint32_t (*DXTALPHAFUNC)(uint32_t);
+
+// ref: FUN_006abab0
+// Four bits to eight by a plain shift, so a full nibble stops at 0xF0.
+static uint32_t DxtAlpha4To8(uint32_t alpha) {
+    return alpha << 4;
+}
+
+// ref: FUN_006abc00
+static uint32_t DxtAlpha8To4(uint32_t alpha) {
+    return alpha >> 4;
+}
+
+// ref: FUN_006abc10
+// DXT3 into four-bit alpha, and DXT5 into eight-bit alpha, need no conversion.
+static uint32_t DxtAlphaSame(uint32_t alpha) {
+    return static_cast<uint8_t>(alpha);
+}
+
+// The walker for an image made of whole blocks: every block written in full, four destination
+// rows at a time.
+template <uint32_t BlockBytes, class Decode>
+static inline void DxtWalkAligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride,
+                                  Decode decode) {
+    auto src = static_cast<const unsigned char*>(in);
+    auto dst = static_cast<unsigned char*>(out);
+
+    for (int32_t y = 0; y < size.y; y += 4) {
+        unsigned char* rows[4] = { dst, dst + outStride, dst + outStride * 2, dst + outStride * 3 };
+        auto block = src;
+
+        for (int32_t x = 0; x < size.x; x += 4) {
+            DXTRECT rect = { 0, 0, 3, 3, 4, 4 };
+            decode(block, rows, rect);
+
+            block += BlockBytes;
+        }
+
+        src += inStride;
+        dst += outStride * 4;
+    }
+}
+
+// The walker for anything else: the last block of each row and column clipped to the image, and
+// an image six times as wide as it is high walked as six cube faces side by side.
+//
+// DIVERGED twice, both where the reference reads or writes the wrong place:
+//   - its destination row pointers are set from the face's first row for EVERY row of blocks, so
+//     an image more than one block high (a 2x8 mip, say) has each row of blocks written over the
+//     first and the rows below left as they were. Frozen moves down four rows per row of blocks.
+//   - it moves the source on by face width times block size per face, which is four times the
+//     face's row of blocks once a face is a block wide, and reads past the image for the later
+//     faces. Frozen moves on by the face's own blocks.
+// Neither arises for whole-block images, which take the aligned walker.
+template <uint32_t BlockBytes, uint32_t TexelBytes, class Decode>
+static inline void DxtWalkGeneral(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride,
+                                  Decode decode) {
+    int32_t height = size.y;
+    int32_t faceWidth = size.x;
+    int32_t faces = 1;
+
+    if (size.x == size.y * 6) {
+        faces = 6;
+        faceWidth = size.x / 6;
+    }
+
+    auto faceSrc = static_cast<const unsigned char*>(in);
+    auto faceDst = static_cast<unsigned char*>(out);
+
+    for (; faces > 0; faces--) {
+        int32_t rowsLeft = height - 1;
+
+        for (int32_t y = 0; y < height; y += 4, rowsLeft -= 4) {
+            auto block = faceSrc + (y >> 2) * inStride;
+            auto dst = faceDst + y * outStride;
+            unsigned char* rows[4] = { dst, dst + outStride, dst + outStride * 2, dst + outStride * 3 };
+            int32_t colsLeft = faceWidth - 1;
+
+            for (int32_t x = 0; x < faceWidth; x += 4, colsLeft -= 4) {
+                uint32_t right = colsLeft < 3 ? colsLeft : 3;
+                uint32_t bottom = rowsLeft < 3 ? rowsLeft : 3;
+                DXTRECT rect = { 0, 0, right, bottom, right + 1, bottom + 1 };
+                decode(block, rows, rect);
+
+                block += BlockBytes;
+            }
+        }
+
+        faceSrc += ((faceWidth + 3) / 4) * BlockBytes;
+        faceDst += faceWidth * TexelBytes;
+    }
+}
+
+// The reference's dispatch, the same in all seven DXT blitters: the aligned walker when both sides
+// are whole blocks, the general one otherwise.
+static inline int32_t DxtIsAligned(const C2iVector& size) {
+    return size.x > 3 && size.y > 3 && (size.x & 3) == 0 && (size.y & 3) == 0;
 }
 
 // A 5/6/5 colour as ARGB8888, opaque. The reference does this with one expression per endpoint --
@@ -363,73 +471,48 @@ static void Dxt1ExpandColors(const unsigned char* block, uint32_t colors[4]) {
 }
 
 // ref: FUN_006ad380
-// One 4x4 block into ARGB8888, clipped to `cols` by `rows` for a block that hangs off the right or
-// bottom edge. Bytes 0..3 of a DXT1 block are the two endpoints and bytes 4..7 are one byte of
-// 2-bit indices per row, low bits leftmost.
-//
-// DIVERGENCE, and it is bookkeeping rather than behaviour: the reference passes an array of four
-// row pointers and a six-field rectangle, and the block decoder ADVANCES those pointers as it
-// goes, so its callers reset them per block row. This takes a destination and a stride and
-// addresses each texel directly. Same bytes written; Ghidra's rendering of the reference's
-// pointer arithmetic is where its two loop variants become hard to read, and there is nothing to
-// be gained by reproducing that.
-static void Dxt1DecodeBlock(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
-                            uint32_t cols, uint32_t rows) {
+// One DXT1 block into ARGB8888, over `rect`. Bytes 0..3 are the two endpoints and bytes 4..7 one
+// byte of 2-bit indices per row, low bits leftmost.
+static void Dxt1DecodeBlock(const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
     uint32_t colors[4];
 
     Dxt1ExpandColors(block, colors);
 
-    for (uint32_t y = 0; y < rows; y++) {
-        uint32_t bits = block[4 + y];
-        auto out = reinterpret_cast<uint32_t*>(dst + y * dstStride);
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t bits = block[4 + y] >> (rect.left * 2);
+        auto out = reinterpret_cast<uint32_t*>(rows[y]);
 
-        for (uint32_t x = 0; x < cols; x++) {
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
             out[x] = colors[bits & 3];
             bits >>= 2;
         }
+
+        rows[y] += rect.width * 4;
     }
 }
+
+// ref: FUN_006ad880
+BLIT_NOINLINE void BlitDxt1Argb8888General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<8, 4>(size, in, inStride, out, outStride, Dxt1DecodeBlock);
+}
+
+// ref: FUN_006ada10
+BLIT_NOINLINE void BlitDxt1Argb8888Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<8>(size, in, inStride, out, outStride, Dxt1DecodeBlock);
+}
+
 // ref: FUN_006ae500
-// The reference splits this in two -- FUN_006ada10 when the image is whole 4x4 blocks and
-// FUN_006ad880 when it is not -- and the wrapper picks between them on
-// `w > 3 && h > 3 && (w & 3) == 0 && (h & 3) == 0`. frozen keeps one loop, because the aligned
-// case is the general one with the clamps never binding, and a second copy of it would be a
-// second place for an edge bug to hide.
-//
-// The reference's general arm also walks a cube map as six faces, dividing the width by six and
-// advancing per face. That is not reproduced and does not need to be: a cube map arrives here as
-// six faces side by side, its blocks tile the full width row by row, and decoding it as one wide
-// image writes the same bytes to the same places.
+// The weight tables are a static initialiser in the reference (FUN_006ae820 has no callers);
+// frozen builds them on the first DXT blit instead.
 void Blit_Dxt1_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-
-            Dxt1DecodeBlock(block, dst + x * 4, outStride, cols, rows);
-
-            block += 8;
-        }
-
-        // One row of BLOCKS in the source, four rows of texels in the destination.
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt1Argb8888Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt1Argb8888General(size, in, inStride, out, outStride);
     }
 }
 
@@ -514,94 +597,89 @@ static void Dxt1ExpandColorsArgb1555(const unsigned char* block, uint16_t colors
     }
 }
 
-// ref: FUN_006ad220 (RGB565) and FUN_006ad2d0 (ARGB1555)
-// One DXT1 block into a 16-bit target. Identical to the ARGB8888 block writer except that the
-// colour table and the destination are uint16, so the reference has two of these where frozen has
-// one taking the table it should use.
-static void Dxt1DecodeBlock16(const unsigned char* block, const uint16_t colors[4],
-                              unsigned char* dst, uint32_t dstStride,
-                              uint32_t cols, uint32_t rows) {
-    for (uint32_t y = 0; y < rows; y++) {
-        uint32_t indices = block[4 + y];
-        auto out = reinterpret_cast<uint16_t*>(dst + y * dstStride);
+// ref: FUN_006ad220
+// One DXT1 block into RGB565, over `rect`.
+static void Dxt1DecodeBlockRgb565(const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+    uint16_t colors[4];
 
-        for (uint32_t x = 0; x < cols; x++) {
-            out[x] = colors[indices & 3];
-            indices >>= 2;
+    Dxt1ExpandColorsRgb565(block, colors);
+
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t bits = block[4 + y] >> (rect.left * 2);
+        auto out = reinterpret_cast<uint16_t*>(rows[y]);
+
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
+            out[x] = colors[bits & 3];
+            bits >>= 2;
         }
+
+        rows[y] += rect.width * 2;
     }
 }
+
+// ref: FUN_006ad2d0
+// One DXT1 block into ARGB1555, over `rect`.
+static void Dxt1DecodeBlockArgb1555(const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+    uint16_t colors[4];
+
+    Dxt1ExpandColorsArgb1555(block, colors);
+
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t bits = block[4 + y] >> (rect.left * 2);
+        auto out = reinterpret_cast<uint16_t*>(rows[y]);
+
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
+            out[x] = colors[bits & 3];
+            bits >>= 2;
+        }
+
+        rows[y] += rect.width * 2;
+    }
+}
+
+// ref: FUN_006ad440
+BLIT_NOINLINE void BlitDxt1Rgb565General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<8, 2>(size, in, inStride, out, outStride, Dxt1DecodeBlockRgb565);
+}
+
+// ref: FUN_006ad5b0
+BLIT_NOINLINE void BlitDxt1Rgb565Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<8>(size, in, inStride, out, outStride, Dxt1DecodeBlockRgb565);
+}
+
+// ref: FUN_006ad660
+BLIT_NOINLINE void BlitDxt1Argb1555General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<8, 2>(size, in, inStride, out, outStride, Dxt1DecodeBlockArgb1555);
+}
+
+// ref: FUN_006ad7d0
+BLIT_NOINLINE void BlitDxt1Argb1555Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<8>(size, in, inStride, out, outStride, Dxt1DecodeBlockArgb1555);
+}
+
 // ref: FUN_006ae4a0
-// One loop for both of the reference's arms and no cube-map case, as with the ARGB8888
-// blitters. Two bytes per texel here, so the destination advances by half as much.
 void Blit_Dxt1_Argb1555(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-            uint16_t colors[4];
-
-            Dxt1ExpandColorsArgb1555(block, colors);
-            Dxt1DecodeBlock16(block, colors, dst + x * 2, outStride, cols, rows);
-
-            block += 8;
-        }
-
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt1Argb1555Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt1Argb1555General(size, in, inStride, out, outStride);
     }
 }
 
 // ref: FUN_006ae440
-// One loop for both of the reference's arms and no cube-map case, as with the ARGB8888
-// blitters. Two bytes per texel here, so the destination advances by half as much.
 void Blit_Dxt1_Rgb565(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-            uint16_t colors[4];
-
-            Dxt1ExpandColorsRgb565(block, colors);
-            Dxt1DecodeBlock16(block, colors, dst + x * 2, outStride, cols, rows);
-
-            block += 8;
-        }
-
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt1Rgb565Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt1Rgb565General(size, in, inStride, out, outStride);
     }
 }
 
@@ -662,69 +740,63 @@ static void DxtExpandColorsNoAlphaMode(const unsigned char* block, uint32_t colo
 }
 
 // ref: FUN_006acd80
-// One DXT3 block into ARGB8888, clipped like the DXT1 one. A DXT3 block is 16 bytes: eight of
-// alpha, four bits per texel and one uint16 per row, then an eight-byte colour block identical
-// to DXT1's -- which is why the colour indices are at +0x0c rather than +0x04.
+// One DXT3 block into ARGB8888, over `rect`. A DXT3 block is 16 bytes: eight of alpha, four bits
+// per texel and one uint16 per row, then an eight-byte colour block identical to DXT1's -- which
+// is why the colour indices are at +0x0c rather than +0x04.
 //
-// The alpha expansion is the reference's own and it is LOSSY in a way worth not tidying: it is
-// FUN_006abab0, `v << 4`, so a fully opaque texel comes out 0xF0 rather than 0xFF. Expanding by
-// `v * 0x11` would be the usual way and would reach 0xFF, and it is not what the reference does.
-static void Dxt3DecodeBlock(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
-                            uint32_t cols, uint32_t rows) {
+// The alpha goes through `alphaFunc`, which for this target is DxtAlpha4To8, `v << 4`: a fully
+// opaque texel comes out 0xF0 rather than 0xFF. That is the reference's and is not tidied.
+static void Dxt3DecodeBlock(const unsigned char* block, unsigned char** rows, const DXTRECT& rect, DXTALPHAFUNC alphaFunc) {
     uint32_t colors[4];
 
     DxtExpandColorsNoAlphaMode(block + 8, colors);
 
-    for (uint32_t y = 0; y < rows; y++) {
-        uint32_t indices = block[0x0C + y];
-        uint32_t alpha = static_cast<uint32_t>(block[y * 2])
-                       | (static_cast<uint32_t>(block[y * 2 + 1]) << 8);
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t indices = block[0x0C + y] >> (rect.left * 2);
+        uint32_t alpha = (static_cast<uint32_t>(block[y * 2])
+                       | (static_cast<uint32_t>(block[y * 2 + 1]) << 8)) >> (rect.left * 4);
 
-        auto out = reinterpret_cast<uint32_t*>(dst + y * dstStride);
+        auto out = reinterpret_cast<uint32_t*>(rows[y]);
 
-        for (uint32_t x = 0; x < cols; x++) {
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
             uint32_t color = colors[indices & 3];
 
-            out[x] = (color & 0x00FFFFFF) | ((alpha & 0xF) << 4 << 24);
+            out[x] = (color & 0x00FFFFFF) | (alphaFunc(alpha & 0xF) << 24);
 
             indices >>= 2;
             alpha >>= 4;
         }
+
+        rows[y] += rect.width * 4;
     }
 }
+
+// ref: FUN_006add20
+BLIT_NOINLINE void BlitDxt3Argb8888General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<16, 4>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt3DecodeBlock(block, rows, rect, DxtAlpha4To8);
+        });
+}
+
+// ref: FUN_006adeb0
+BLIT_NOINLINE void BlitDxt3Argb8888Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<16>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt3DecodeBlock(block, rows, rect, DxtAlpha4To8);
+        });
+}
+
 // ref: FUN_006ae5c0
-// One loop for both of the reference's arms, and no cube-map special case, for the reasons given
-// at Blit_Dxt1_Argb8888. The only difference from that function is the block size -- 16 bytes
-// here rather than 8, because of the alpha block in front.
 void Blit_Dxt3_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-
-            Dxt3DecodeBlock(block, dst + x * 4, outStride, cols, rows);
-
-            block += 16;
-        }
-
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt3Argb8888Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt3Argb8888General(size, in, inStride, out, outStride);
     }
 }
 
@@ -767,39 +839,38 @@ static void DxtExpandColorsArgb4444(const unsigned char* block, uint16_t colors[
 }
 
 // ref: FUN_006acea0
-// One DXT3 block into ARGB4444. The colour comes from the table with its alpha nibble masked off
-// and the block's own four-bit alpha put in its place -- which for this target needs no conversion
-// at all, four bits to four bits (the reference passes the identity function here, where its
-// ARGB8888 counterpart passes `v << 4`).
-static void Dxt3DecodeBlock4444(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
-                                uint32_t cols, uint32_t rows) {
+// One DXT3 block into ARGB4444, over `rect`. The colour comes from the table with its alpha
+// nibble masked off and the block's own alpha, through `alphaFunc` (DxtAlphaSame here), in its
+// place.
+static void Dxt3DecodeBlock4444(const unsigned char* block, unsigned char** rows, const DXTRECT& rect, DXTALPHAFUNC alphaFunc) {
     uint16_t colors[4];
 
     DxtExpandColorsArgb4444(block + 8, colors);
 
-    for (uint32_t y = 0; y < rows; y++) {
-        uint32_t indices = block[0x0C + y];
-        uint32_t alpha = static_cast<uint32_t>(block[y * 2])
-                       | (static_cast<uint32_t>(block[y * 2 + 1]) << 8);
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t indices = block[0x0C + y] >> (rect.left * 2);
+        uint32_t alpha = (static_cast<uint32_t>(block[y * 2])
+                       | (static_cast<uint32_t>(block[y * 2 + 1]) << 8)) >> (rect.left * 4);
 
-        auto out = reinterpret_cast<uint16_t*>(dst + y * dstStride);
+        auto out = reinterpret_cast<uint16_t*>(rows[y]);
 
-        for (uint32_t x = 0; x < cols; x++) {
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
             out[x] = static_cast<uint16_t>((colors[indices & 3] & 0x0FFF)
-                                        | ((alpha & 0xF) << 12));
+                                        | (alphaFunc(alpha & 0xF) << 12));
 
             indices >>= 2;
             alpha >>= 4;
         }
+
+        rows[y] += rect.width * 2;
     }
 }
 
 // ref: FUN_006ad0e0
-// One DXT5 block into ARGB4444. The alpha index read is the same straddling three-bit read as the
-// ARGB8888 version, and the table it indexes is the same eight eight-bit values -- what differs is
-// that the result is truncated to four bits on the way out (the reference's FUN_006abc00, `v >> 4`).
-static void Dxt5DecodeBlock4444(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
-                                uint32_t cols, uint32_t rows) {
+// One DXT5 block into ARGB4444, over `rect`. The alpha index read is the same straddling
+// three-bit read as the ARGB8888 version, and the table it indexes the same eight eight-bit
+// values; `alphaFunc` (DxtAlpha8To4 here) narrows the result on the way out.
+static void Dxt5DecodeBlock4444(const unsigned char* block, unsigned char** rows, const DXTRECT& rect, DXTALPHAFUNC alphaFunc) {
     uint16_t colors[4];
 
     DxtExpandColorsArgb4444(block + 8, colors);
@@ -811,11 +882,11 @@ static void Dxt5DecodeBlock4444(const unsigned char* block, unsigned char* dst, 
 
     Dxt5ExpandAlpha(alpha);
 
-    for (uint32_t y = 0; y < rows; y++) {
-        uint32_t indices = block[0x0C + y];
-        auto out = reinterpret_cast<uint16_t*>(dst + y * dstStride);
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t indices = block[0x0C + y] >> (rect.left * 2);
+        auto out = reinterpret_cast<uint16_t*>(rows[y]);
 
-        for (uint32_t x = 0; x < cols; x++) {
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
             uint32_t bitPos = (y * 4 + x) * 3;
             uint32_t byteIdx = bitPos >> 3;
             uint32_t shift = bitPos & 7;
@@ -824,44 +895,41 @@ static void Dxt5DecodeBlock4444(const unsigned char* block, unsigned char* dst, 
                         | (static_cast<uint32_t>(block[byteIdx + 3]) << (8 - shift))) & 7;
 
             out[x] = static_cast<uint16_t>((colors[indices & 3] & 0x0FFF)
-                                        | ((static_cast<uint32_t>(alpha[ai]) >> 4) << 12));
+                                        | (alphaFunc(alpha[ai]) << 12));
 
             indices >>= 2;
         }
+
+        rows[y] += rect.width * 2;
     }
 }
+
+// ref: FUN_006adae0
+BLIT_NOINLINE void BlitDxt3Argb4444General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<16, 2>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt3DecodeBlock4444(block, rows, rect, DxtAlphaSame);
+        });
+}
+
+// ref: FUN_006adc60
+BLIT_NOINLINE void BlitDxt3Argb4444Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<16>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt3DecodeBlock4444(block, rows, rect, DxtAlphaSame);
+        });
+}
+
 // ref: FUN_006ae560
-// Sixteen-byte blocks, two bytes per texel. One loop for both of the reference's arms and no
-// cube-map case, as with every blitter above.
 void Blit_Dxt3_Argb4444(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-
-            Dxt3DecodeBlock4444(block, dst + x * 2, outStride, cols, rows);
-
-            block += 16;
-        }
-
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt3Argb4444Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt3Argb4444General(size, in, inStride, out, outStride);
     }
 }
 
@@ -914,9 +982,9 @@ static void Dxt5ExpandAlpha(unsigned char table[8]) {
 }
 
 // ref: FUN_006acf90
-// One DXT5 block into ARGB8888. Sixteen bytes again, but the alpha half is arranged differently
-// from DXT3's: two endpoint BYTES, then sixteen THREE-bit indices packed across the six bytes
-// that follow, then the same eight-byte colour block.
+// One DXT5 block into ARGB8888, over `rect`. Sixteen bytes again, but the alpha half is arranged
+// differently from DXT3's: two endpoint BYTES, then sixteen THREE-bit indices packed across the six
+// bytes that follow, then the same eight-byte colour block.
 //
 // Three bits do not divide a byte, so an index can straddle two of them, and the read below is the
 // reference's own way of handling that -- take the low part from one byte and the high part from
@@ -924,10 +992,8 @@ static void Dxt5ExpandAlpha(unsigned char table[8]) {
 // nothing, and for the last index the byte it reaches for is the first byte of the colour block,
 // which the mask discards. Still in bounds, and deliberate.
 //
-// The alpha needs no expansion for this target: the table is already eight bits (the reference
-// passes the identity function FUN_006abc10 here, where the DXT3 path passes `v << 4`).
-static void Dxt5DecodeBlock(const unsigned char* block, unsigned char* dst, uint32_t dstStride,
-                            uint32_t cols, uint32_t rows) {
+// `alphaFunc` is DxtAlphaSame for this target: the table is already eight bits.
+static void Dxt5DecodeBlock(const unsigned char* block, unsigned char** rows, const DXTRECT& rect, DXTALPHAFUNC alphaFunc) {
     uint32_t colors[4];
 
     DxtExpandColorsNoAlphaMode(block + 8, colors);
@@ -939,11 +1005,11 @@ static void Dxt5DecodeBlock(const unsigned char* block, unsigned char* dst, uint
 
     Dxt5ExpandAlpha(alpha);
 
-    for (uint32_t y = 0; y < rows; y++) {
-        uint32_t indices = block[0x0C + y];
-        auto out = reinterpret_cast<uint32_t*>(dst + y * dstStride);
+    for (uint32_t y = rect.top; y <= rect.bottom; y++) {
+        uint32_t indices = block[0x0C + y] >> (rect.left * 2);
+        auto out = reinterpret_cast<uint32_t*>(rows[y]);
 
-        for (uint32_t x = 0; x < cols; x++) {
+        for (uint32_t x = rect.left; x <= rect.right; x++) {
             uint32_t bitPos = (y * 4 + x) * 3;
             uint32_t byteIdx = bitPos >> 3;
             uint32_t shift = bitPos & 7;
@@ -953,79 +1019,70 @@ static void Dxt5DecodeBlock(const unsigned char* block, unsigned char* dst, uint
 
             uint32_t color = colors[indices & 3];
 
-            out[x] = (color & 0x00FFFFFF) | (static_cast<uint32_t>(alpha[ai]) << 24);
+            out[x] = (color & 0x00FFFFFF) | (alphaFunc(alpha[ai]) << 24);
 
             indices >>= 2;
         }
+
+        rows[y] += rect.width * 4;
     }
 }
+
+// ref: FUN_006ae1d0
+BLIT_NOINLINE void BlitDxt5Argb8888General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<16, 4>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt5DecodeBlock(block, rows, rect, DxtAlphaSame);
+        });
+}
+
+// ref: FUN_006ae360
+BLIT_NOINLINE void BlitDxt5Argb8888Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<16>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt5DecodeBlock(block, rows, rect, DxtAlphaSame);
+        });
+}
+
+// ref: FUN_006adf90
+BLIT_NOINLINE void BlitDxt5Argb4444General(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkGeneral<16, 2>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt5DecodeBlock4444(block, rows, rect, DxtAlpha8To4);
+        });
+}
+
+// ref: FUN_006ae110
+BLIT_NOINLINE void BlitDxt5Argb4444Aligned(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
+    DxtWalkAligned<16>(size, in, inStride, out, outStride,
+        [](const unsigned char* block, unsigned char** rows, const DXTRECT& rect) {
+            Dxt5DecodeBlock4444(block, rows, rect, DxtAlpha8To4);
+        });
+}
+
 // ref: FUN_006ae680
-// Same loop as the DXT1 and DXT3 blitters, sixteen-byte blocks. See Blit_Dxt1_Argb8888 for why
-// there is one loop here where the reference has two, and no cube-map arm.
 void Blit_Dxt5_Argb8888(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-
-            Dxt5DecodeBlock(block, dst + x * 4, outStride, cols, rows);
-
-            block += 16;
-        }
-
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt5Argb8888Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt5Argb8888General(size, in, inStride, out, outStride);
     }
 }
 
 // ref: FUN_006ae620
-// Sixteen-byte blocks, two bytes per texel. One loop for both of the reference's arms and no
-// cube-map case, as with every blitter above.
 void Blit_Dxt5_Argb4444(const C2iVector& size, const void* in, uint32_t inStride, void* out, uint32_t outStride) {
     if (!s_dxtWeightsBuilt) {
         BuildDxtWeights();
     }
 
-    if (size.x <= 0 || size.y <= 0) {
-        return;
-    }
-
-    auto width = static_cast<uint32_t>(size.x);
-    auto height = static_cast<uint32_t>(size.y);
-
-    auto src = static_cast<const unsigned char*>(in);
-    auto dst = static_cast<unsigned char*>(out);
-
-    for (uint32_t y = 0; y < height; y += 4) {
-        const unsigned char* block = src;
-        uint32_t rows = height - y < 4 ? height - y : 4;
-
-        for (uint32_t x = 0; x < width; x += 4) {
-            uint32_t cols = width - x < 4 ? width - x : 4;
-
-            Dxt5DecodeBlock4444(block, dst + x * 2, outStride, cols, rows);
-
-            block += 16;
-        }
-
-        src += inStride;
-        dst += outStride * 4;
+    if (DxtIsAligned(size)) {
+        BlitDxt5Argb4444Aligned(size, in, inStride, out, outStride);
+    } else {
+        BlitDxt5Argb4444General(size, in, inStride, out, outStride);
     }
 }
 
