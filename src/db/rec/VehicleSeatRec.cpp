@@ -1,5 +1,6 @@
 #include "db/rec/VehicleSeatRec.hpp"
 #include "util/SFile.hpp"
+#include <cstring>
 
 const char* VehicleSeatRec::GetFilename() {
     return "DBFilesClient\\VehicleSeat.dbc";
@@ -61,6 +62,7 @@ bool VehicleSeatRec::Read(SFile* f, const char* stringBuffer) {
     this->m_exitAnimStart = static_cast<int32_t>(columns[26]);
     this->m_exitAnimLoop = static_cast<int32_t>(columns[27]);
     this->m_exitAnimEnd = static_cast<int32_t>(columns[28]);
+    std::memcpy(&this->m_passengerYaw, &columns[29], sizeof(uint32_t) * (VehicleSeatRec::COLUMN_COUNT - 29));
 
     return true;
 }

@@ -1,4 +1,5 @@
 #include "object/client/GameObjectTypes.hpp"
+#include "object/client/CVehicle_C.hpp"
 #include <cstring>
 #include <algorithm>
 #include "util/Log.hpp"
@@ -802,8 +803,6 @@ float CGGameObjectTransportBase::StepTo(uint32_t elapsed, const C3Vector& to, C3
 // Everyone riding it follows: the building is placed, each passenger's world entry re-placed in
 // the transport's space, and the active player's movement takes the path time when it rides.
 // `cameraRides` reports whether the camera's target is aboard.
-//
-// PHASE4(Vehicle_C): a vehicle riding it carries its own passengers along (FUN_00757be0).
 void CGGameObjectTransportBase::MovePassengers(int32_t* cameraRides) {
     *cameraRides = 0;
 
@@ -830,6 +829,14 @@ void CGGameObjectTransportBase::MovePassengers(int32_t* cameraRides) {
         }
 
         auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(passenger->m_guid, TYPE_OBJECT, ".\\GameObject_C.cpp", 0x68d));
+
+        if (object->IsA(TYPE_UNIT)) {
+            auto unit = static_cast<CGUnit_C*>(object);
+
+            if (unit->m_vehicle && unit->m_vehicle->m_rec) {
+                unit->m_vehicle->UpdateMatrix(world);
+            }
+        }
 
         object->UpdateWorldObject((object == player || !isMapObj) ? 0 : 1);
         object->SetParticleRelative(world);

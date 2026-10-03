@@ -1,4 +1,5 @@
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/UnitVehicle_C.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include <new>
 #include <storm/Memory.hpp>
@@ -259,6 +260,16 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 }
 
 CGUnit_C::~CGUnit_C() {
+    // FUN_00734b50: the vehicle this unit is goes (its passengers kept where they are), and its
+    // own ride with it.
+    this->m_stateFlags &= 0xfeffffff;
+    UnitDestroyVehicle(this, 0);
+
+    if (this->m_vehiclePassenger) {
+        this->m_vehiclePassenger->Free();
+        this->m_vehiclePassenger = nullptr;
+    }
+
     if (this->m_mountSound) {
         SI2::StopOrFadeOut(this->m_mountSound, 1, 0.0f, 1);
         this->m_mountSound->~SOUNDKITOBJECT();
@@ -287,6 +298,18 @@ int32_t CGUnit_C::CanHighlight() {
 
 int32_t CGUnit_C::CanBeTargetted() {
     return this->CanHighlight();
+}
+
+// ref: FUN_0074b810
+// A passenger aboard this unit joins its vehicle's passengers.
+int32_t CGUnit_C::Virtual0F4(CPassenger* passenger, int32_t mode) {
+    (void)mode;
+
+    if (!this->m_vehicle) {
+        return 0;
+    }
+
+    return this->m_vehicle->AddPassenger(passenger);
 }
 
 // ref: FUN_004d43c0
@@ -480,9 +503,13 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
 // A movement block from the server: the create's, or SMSG_MOVE_UPDATE's for a unit someone else
 // moves. The active mover keeps its own prediction and takes nothing from it.
 // NOT PORTED: FUN_0098e560 (the block's guid at +0x2b8 copied into a target the decompiler lost),
-// the vehicle start for update flag 0x80 (FUN_0074c750, UnitVehicle_C), and the active player's
-// position copied into DAT_00cd7544 +0x17c for update flag 1.
+// and the active player's position copied into DAT_00cd7544 +0x17c for update flag 1.
 void CGUnit_C::PostMovementUpdate(const CClientObjCreate& init, int32_t activeMover) {
+    // Update flag 0x80: the unit is a vehicle.
+    if (init.flags & 0x80) {
+        UnitCreateVehicle(this, &init, static_cast<int32_t>(init.uint2C4));
+    }
+
     if (activeMover) {
         return;
     }
@@ -5229,10 +5256,26 @@ void CGUnit_C::PlayWoundAnimation(int32_t critical) {
     this->UpdateObjectEffects();
 }
 
+// The riders of this vehicle whose animation it drives, while `model` is the vehicle's own: the walk
+// the passenger variants below repeat their change over.
+template <class F>
+static void ForEachAnimatedRider(CGUnit_C* unit, CM2Model* model, int32_t line, F f) {
+    auto vehicle = unit->m_vehicle;
+
+    if (!vehicle || !vehicle->m_rec || !vehicle->HasStateBits() || model != unit->GetObjectModel()) {
+        return;
+    }
+
+    for (auto passenger = vehicle->m_passengers.Head(); passenger; passenger = vehicle->m_passengers.Next(passenger)) {
+        auto rider = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(passenger->m_guid, TYPE_UNIT, ".\\Unit_C.cpp", line));
+
+        if (rider && rider->m_vehiclePassenger && rider->m_vehiclePassenger->IsRidingLiveVehicle()) {
+            f(rider);
+        }
+    }
+}
+
 // ref: FUN_00735bb0
-// PHASE4(Vehicle_C): the reference repeats the change on every passenger in the vehicle's seat
-// list (+0x170/+0x178), which CVehicle_C does not carry yet; nothing creates a vehicle, so the walk
-// has nothing to reach.
 void CGUnit_C::SetBoneSequenceTimeOnPassengers(CM2Model* model, uint32_t boneId, int32_t time, int32_t fromPassenger) {
     if (!model) {
         return;
@@ -5243,10 +5286,13 @@ void CGUnit_C::SetBoneSequenceTimeOnPassengers(CM2Model* model, uint32_t boneId,
     }
 
     model->SetBoneSequenceTime(boneId, time);
+
+    ForEachAnimatedRider(this, model, 0x1a25, [&](CGUnit_C* rider) {
+        rider->SetBoneSequenceTimeOnPassengers(rider->GetObjectModel(), boneId, time, 1);
+    });
 }
 
 // ref: FUN_00735dd0
-// PHASE4(Vehicle_C): the passenger walk, as in SetBoneSequenceTimeOnPassengers.
 void CGUnit_C::SetAnimationHoldOnPassengers(CM2Model* model, int32_t hold, int32_t fromPassenger) {
     if (!model) {
         return;
@@ -5262,6 +5308,10 @@ void CGUnit_C::SetAnimationHoldOnPassengers(CM2Model* model, int32_t hold, int32
     } else {
         model->m_animationHeldTime = 0;
     }
+
+    ForEachAnimatedRider(this, model, 0x1a6e, [&](CGUnit_C* rider) {
+        rider->SetAnimationHoldOnPassengers(rider->GetObjectModel(), hold, 1);
+    });
 }
 
 // ref: FUN_007202c0
@@ -5460,11 +5510,15 @@ const CreatureSoundDataRec* CGUnit_C::GetSoundData() const {
 }
 
 // ref: FUN_00740450
-// PHASE4(Vehicle_C): a vehicle with passengers keeps its mount (m_stateFlags 0x10000000) while
-// its seat list is not empty; CVehicle_C carries no seat list yet, so that test reads empty.
+// A vehicle with riders keeps its mount (m_stateFlags 0x10000000) until they are off.
 // PHASE4(ObjectEffect): the reference ends with FUN_00725df0, the unit's ObjectEffect package.
 void CGUnit_C::SetMountDisplay(int32_t displayID) {
     if (displayID == this->m_mountDisplayID) {
+        return;
+    }
+
+    if (displayID == 0 && this->m_vehicle && this->m_vehicle->m_passengers.Head()) {
+        this->m_stateFlags |= 0x10000000;
         return;
     }
 
@@ -5790,7 +5844,6 @@ void CGUnit_C::PlayDismountSound() {
 }
 
 // ref: FUN_007412e0
-// PHASE4(Vehicle_C): the seat-list test, as in SetMountDisplay.
 // PHASE4(ObjectEffect): FUN_00725df0 at the end, as in SetMountDisplay.
 void CGUnit_C::RequestDismount() {
     if (this->GetGUID() != ClntObjMgrGetActivePlayer() || (this->m_unit->flags >> 20) & 1) {
@@ -5802,7 +5855,9 @@ void CGUnit_C::RequestDismount() {
     msg.Finalize();
     ClientServices::Send(&msg);
 
-    if (this->m_mountDisplayID) {
+    if (this->m_mountDisplayID && this->m_vehicle && this->m_vehicle->m_passengers.Head()) {
+        this->m_stateFlags |= 0x10000000;
+    } else if (this->m_mountDisplayID) {
         this->m_stateFlags &= ~0x10000000u;
         this->Dismount(1);
         this->m_mountDisplayID = 0;
@@ -5835,12 +5890,17 @@ float CGUnit_C::GetScale() const {
 }
 
 // ref: FUN_0071fd80
-// PHASE4(Vehicle_C): a passenger is placed by its seat (FUN_0074a7f0).
 // PHASE4(Unit_C): a swimming or flying unit pitches with its movement (FUN_00719b80 for the active
 // mover, FUN_00719a90 for the rest), a unit leading a mount transition is placed along it
 // (FUN_007193f0), and the transition's model follows the unit (FUN_0071fbf0). Those land with the
 // movement smoothing they read; until then every unit takes the ground placement below.
 int32_t CGUnit_C::PlaceModel(float elapsed) {
+    // A rider is placed by its seat.
+    if (this->m_vehiclePassenger) {
+        this->m_vehiclePassenger->PlaceModel();
+        return 1;
+    }
+
     // FUN_007197d0: the lean eases toward the movement's up vector while that is not too steep.
     C3Vector up = this->m_localMove.GetWorldUp();
 
@@ -7858,8 +7918,8 @@ void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport,
 namespace {
 
 // ref: FUN_0073f590
-// SMSG_MONSTER_MOVE and SMSG_MONSTER_MOVE_TRANSPORT (with the transport and the seat). PARTIAL: a
-// passenger's seat (FUN_0074c040) decides a vehicle move first, the vehicle port's.
+// SMSG_MONSTER_MOVE and SMSG_MONSTER_MOVE_TRANSPORT (with the transport and the seat). A move onto
+// or off a seat that waits on the vehicle's animation is queued on the ride instead.
 int32_t UnitMonsterMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
@@ -7886,7 +7946,37 @@ int32_t UnitMonsterMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDa
     msg->Get(carried);
     unit->m_localMove.SetMoveFlags2Bit40(carried);
 
-    unit->OnMonsterMove(msg, msgId, transport, seat, 1);
+    if (!UnitQueueVehicleMove(unit, msg, transport, seat)) {
+        unit->OnMonsterMove(msg, msgId, transport, seat, 1);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716db0
+// SMSG_SET_VEHICLE_REC_ID: the unit becomes the vehicle the row names, or stops being one (its
+// passengers put off).
+int32_t UnitSetVehicleRecHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    (void)param;
+    (void)msgId;
+    (void)time;
+
+    SmartGUID guid;
+    *msg >> guid;
+
+    uint32_t recID = 0;
+    msg->Get(recID);
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\Unit_C.cpp", 0x729));
+
+    if (unit) {
+        if (recID != 0) {
+            UnitCreateVehicle(unit, nullptr, static_cast<int32_t>(recID));
+            return 1;
+        }
+
+        UnitDestroyVehicle(unit, 1);
+    }
 
     return 1;
 }
@@ -8311,6 +8401,7 @@ void RegisterUnitMiscHandlers() {
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x29c), &UnitCancelAutoRepeatHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x29d), &UnitStandStateHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x3ac), &UnitDismountHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x4a7), &UnitSetVehicleRecHandler, nullptr);
 }
 
 } // namespace
@@ -9016,7 +9107,6 @@ int32_t CGUnit_C::MoveHandItem(int32_t hand, int32_t toSheath) {
 }
 
 // ref: FUN_00736d30
-// PHASE4(Vehicle_C): an animated draw repeats its bone release on every live passenger.
 void CGUnit_C::SetSheathState(int32_t state, int32_t animate, int32_t fromServer) {
     if (this->IsFightingUnarmed()) {
         state = AdjustSheathState(state, reinterpret_cast<const uint8_t*>(this->GetWeaponInfo(0, 0)),
@@ -9045,12 +9135,14 @@ void CGUnit_C::SetSheathState(int32_t state, int32_t animate, int32_t fromServer
 
     if (animate) {
         if (!this->m_vehiclePassenger || !this->m_vehiclePassenger->IsRidingLiveVehicle()) {
-            if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(3)) {
-                this->m_model->UnsetBoneSequence(3, 1, 1);
-            }
+            for (uint32_t bone : { 3u, 2u }) {
+                if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(bone)) {
+                    this->m_model->UnsetBoneSequence(bone, 1, 1);
+                }
 
-            if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(2)) {
-                this->m_model->UnsetBoneSequence(2, 1, 1);
+                ForEachAnimatedRider(this, this->m_model, 0x19fd, [&](CGUnit_C* rider) {
+                    rider->UnsetBoneSequence(rider->GetObjectModel(), bone, 1, 1, 1);
+                });
             }
         }
     }
@@ -9407,7 +9499,6 @@ float CGUnit_C::GetDisplayScale(int32_t displayID) {
 }
 
 // ref: FUN_0072cbb0
-// PHASE4(Vehicle_C): a vehicle re-seats its passengers at the new scale (FUN_00757d10).
 void CGUnit_C::UpdateDisplayScale(int32_t keepScale) {
     float previous = this->m_displayScale;
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
@@ -9417,6 +9508,10 @@ void CGUnit_C::UpdateDisplayScale(int32_t keepScale) {
     this->SetScaleEase(scale);
     this->UpdateShadowRadius();
     this->UpdateEffectAttachments();
+
+    if (this->m_vehicle && this->m_vehicle->m_rec) {
+        this->m_vehicle->UpdatePassengerRadius();
+    }
 }
 
 // ref: FUN_00728e70
@@ -9649,14 +9744,13 @@ void CGUnit_C::AddFacingOffset(float delta) {
 }
 
 // ref: FUN_0071c4d0
-// PHASE4(Vehicle_C): a passenger's vehicle (FUN_007599d0) through its seat at +0xf64.
+// PARTIAL: a unit with a vehicle camera follows the camera's vehicle (FUN_007599d0), the vehicle
+// camera port's.
 WOWGUID CGUnit_C::GetCameraTransportGUID() {
     return this->GetTransportGUID();
 }
 
 // ref: FUN_0073e840
-// PHASE4(Vehicle_C): a vehicle's or a passenger's seat follows the loaded model (FUN_00757d10,
-// FUN_00757e70, FUN_00748620).
 void CGUnit_C::OnModelLoaded(CM2Model* model) {
     this->CGObject_C::OnModelLoaded(model);
 
@@ -9705,6 +9799,19 @@ void CGUnit_C::OnModelLoaded(CM2Model* model) {
         this->UpdateBoneMask();
     }
 
+    // A rider's model in: its vehicle's reach grows, and the vehicle re-places it.
+    if (this->m_vehiclePassenger && this->m_vehiclePassenger->m_state == 3) {
+        auto vehicle = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(this->GetTransportGUID(), TYPE_UNIT, ".\\Unit_C.cpp", 0x40fa));
+
+        if (vehicle) {
+            if (vehicle->m_vehicle && vehicle->m_vehicle->m_rec) {
+                vehicle->m_vehicle->UpdatePassengerRadius();
+            }
+
+            vehicle->UpdateWorldObject(0);
+        }
+    }
+
     if (this->m_pendingStateKitSpell) {
         bool still = false;
 
@@ -9733,6 +9840,16 @@ void CGUnit_C::OnModelLoaded(CM2Model* model) {
         }
 
         this->m_pendingStateKitSpell = 0;
+    }
+
+    if (model == this->GetObjectModel()) {
+        if (this->m_vehicle && this->m_vehicle->m_rec && this->m_vehicle->HasStateBits()) {
+            this->m_vehicle->ResyncPassengerAnimations();
+        }
+
+        if (this->m_vehiclePassenger && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+            this->m_vehiclePassenger->SyncToVehicle();
+        }
     }
 }
 
@@ -9891,7 +10008,6 @@ int32_t CGUnit_C::BuildComponent() {
 }
 
 // ref: FUN_00730f30
-// PHASE4(VehiclePassenger_C): a passenger whose seat hides it stays hidden (+0xf60).
 void CGUnit_C::GetHidden(uint32_t flags, int32_t* hidden, int32_t* hiddenOther) {
     this->CGObject_C::GetHidden(flags, hidden, hiddenOther);
 
@@ -9915,6 +10031,13 @@ void CGUnit_C::GetHidden(uint32_t flags, int32_t* hidden, int32_t* hiddenOther) 
             if (!drawable) {
                 *hiddenOther = 1;
             }
+        }
+
+        // A rider whose seat keeps the camera (0x400) is not drawn.
+        auto ride = this->m_vehiclePassenger;
+
+        if (*hiddenOther == 0 && ride && ride->m_state != 0 && (ride->m_flags & 0x400)) {
+            *hiddenOther = 1;
         }
     } else if (this->m_characterComponent) {
         // FUN_004efed0: the geosets keep up while the unit is hidden.

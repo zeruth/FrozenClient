@@ -33,6 +33,7 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/GameObjectTypes.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "object/client/CGCorpse_C.hpp"
@@ -989,7 +990,7 @@ void CGWorldFrame::OnWorldUpdate() {
         ? reinterpret_cast<CMapStaticEntity*>(target->m_worldObject)
         : nullptr;
 
-    // TODO FUN_0074b130(time): the vehicle passenger update.
+    CVehiclePassenger_C::UpdateAll(CWorld::GetCurTimeMs());
 
     CGCamera::UpdateCallback(nullptr, this->m_camera);
 

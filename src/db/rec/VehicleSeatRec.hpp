@@ -10,9 +10,7 @@ class SFile;
 // leaving) and a second pair for the upper body while aboard. CVehiclePassenger_C picks from them.
 //
 // 58 columns, counted from the reference's own VehicleSeatRec::Read (0x008bad60 makes 58 field
-// reads, the last landing at +0xe4). Columns 29 and up -- passenger orientation, the vehicle's own
-// animations, the enter/exit sounds and the camera block -- are not named here; nothing ported
-// reads them.
+// reads, the last landing at +0xe4).
 class VehicleSeatRec {
     public:
         static const int32_t COLUMN_COUNT = 58;
@@ -47,6 +45,33 @@ class VehicleSeatRec {
         int32_t m_exitAnimStart;
         int32_t m_exitAnimLoop;
         int32_t m_exitAnimEnd;
+        float m_passengerYaw;                   // +0x74
+        float m_passengerPitch;                 // +0x78
+        float m_passengerRoll;                  // +0x7c
+        int32_t m_passengerAttachmentID;        // +0x80
+        int32_t m_vehicleEnterAnim;             // +0x84
+        int32_t m_vehicleExitAnim;              // +0x88
+        int32_t m_vehicleRideAnimLoop;          // +0x8c
+        int32_t m_vehicleEnterAnimBone;         // +0x90
+        int32_t m_vehicleExitAnimBone;          // +0x94
+        int32_t m_vehicleRideAnimLoopBone;      // +0x98
+        float m_vehicleEnterAnimDelay;          // +0x9c
+        float m_vehicleExitAnimDelay;           // +0xa0
+        int32_t m_vehicleAbilityDisplay;        // +0xa4
+        int32_t m_enterUISoundID;               // +0xa8
+        int32_t m_exitUISoundID;                // +0xac
+        int32_t m_uiSkin;                       // +0xb0
+        int32_t m_flagsB;                       // +0xb4
+        float m_cameraEnteringDelay;            // +0xb8
+        float m_cameraEnteringDuration;         // +0xbc
+        float m_cameraExitingDelay;             // +0xc0
+        float m_cameraExitingDuration;          // +0xc4
+        float m_cameraOffset[3];                // +0xc8
+        float m_cameraPosChaseRate;             // +0xd4
+        float m_cameraFacingChaseRate;          // +0xd8
+        float m_cameraEnteringZoom;             // +0xdc
+        float m_cameraSeatZoomMin;              // +0xe0
+        float m_cameraSeatZoomMax;              // +0xe4
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

@@ -61,6 +61,7 @@ WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
 WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
 WowClientDB<MapDifficultyRec> g_mapDifficultyDB;
 WowClientDB<DestructibleModelDataRec> g_destructibleModelDataDB;
+WowClientDB<VehicleRec> g_vehicleDB;
 WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 WowClientDB<FactionGroupRec> g_factionGroupDB;
@@ -149,6 +150,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_transportPhysicsDB, __FILE__, __LINE__);
     loadFn(&g_mapDifficultyDB, __FILE__, __LINE__);
     loadFn(&g_destructibleModelDataDB, __FILE__, __LINE__);
+    loadFn(&g_vehicleDB, __FILE__, __LINE__);
     loadFn(&g_currencyTypesDB, __FILE__, __LINE__);
     loadFn(&g_spellShapeshiftFormDB, __FILE__, __LINE__);
     loadFn(&g_factionGroupDB, __FILE__, __LINE__);

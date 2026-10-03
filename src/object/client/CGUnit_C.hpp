@@ -170,6 +170,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         virtual int32_t GetSpellCastTime(const SpellRec* spell);                        // 0x148
         // ref: FUN_006e6fc0
         virtual float GetMovementPitch() const;                                         // 0x14c
+        int32_t Virtual0F4(CPassenger* passenger, int32_t mode) override;              // 0x0f4
         // ref: FUN_0071c0e0
         // The display's scale times the object's, and the mount's while the unit rides.
         virtual float GetScale() const;

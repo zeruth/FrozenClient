@@ -196,6 +196,11 @@ class CMovementData_C : public CMovementShared {
         void QueueForcedKnockback(int32_t time, uint32_t counter, const C2Vector& direction, float horizontalSpeed,
                                   float verticalSpeed);
         void QueueTeleport(int32_t time, uint8_t send, uint32_t counter, const CMovementStatus& status);
+        // ref: FUN_006ef5a0
+        // ref: FUN_006ecae0
+        // The active player asks to change seat (event 0x37): to `seat` on `vehicle`, or 0xff/1 for
+        // the previous/next seat with no vehicle.
+        void QueueSeatChange(int32_t time, WOWGUID vehicle, uint8_t seat);
         int32_t TeleportTo(WOWGUID transport, const C3Vector& position, float facing, int32_t clearSpline,
                            int32_t fromServer, uint8_t seat);
         void RunServerEvent(CPlayerMoveEvent* event, int32_t clearSpline);

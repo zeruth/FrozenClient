@@ -53,6 +53,10 @@ bool MovementTransportIsValid(WOWGUID transport);
 // Whether `position` (in the transport's space) is over the transport (its slot 0xf0).
 int32_t MovementTransportContains(WOWGUID transport, const C3Vector& position);
 
+// ref: FUN_0074b670
+// A unit transport recounts its free seats once a passenger has left it.
+void MovementVehicleRecountSeats(WOWGUID transport);
+
 // ref: FUN_0074b380
 // The camera that follows `guid` follows it onto `transport` (a unit's guid is a vehicle's, which
 // the vehicle camera handles instead).
