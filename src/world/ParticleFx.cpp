@@ -1,4 +1,7 @@
 #include "world/ParticleFx.hpp"
+#include "world/map/CMap.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGObject_C.hpp"
 #include <cstdio>
 #include "world/CWorldScene.hpp"
 #include "world/CWorld.hpp"
@@ -191,6 +194,44 @@ float ParticleFxCullExtent(CM2Model* model, float scale) {
     }
 
     return reach;
+}
+
+static std::vector<CM2Model*> s_emitterModels;
+
+void ParticleFxCaptureEmitters() {
+    s_emitterModels.clear();
+
+    auto objMgr = ClntObjMgrGetCurrent();
+
+    for (auto object = objMgr ? objMgr->m_visibleObjects.Head() : nullptr; object; object = objMgr->m_visibleObjects.Next(object)) {
+        if (object->m_model && object->m_model->m_flag8) {
+            s_emitterModels.push_back(object->m_model);
+        }
+    }
+
+    CMap::ForEachMapObjDoodad([](CM2Model* model, void* arg) {
+        if (model->m_flag8) {
+            static_cast<std::vector<CM2Model*>*>(arg)->push_back(model);
+        }
+    }, &s_emitterModels);
+
+    CMap::ForEachDoodadModel([](CM2Model* model, void* arg) {
+        if (model->m_flag8) {
+            static_cast<std::vector<CM2Model*>*>(arg)->push_back(model);
+        }
+    }, &s_emitterModels);
+}
+
+void ParticleFxStepEmitters() {
+    float dt = static_cast<float>(CWorld::GetTickTimeMs()) * 0.001f;
+
+    if (dt > 0.1f) {
+        dt = 0.1f;
+    }
+
+    for (auto model : s_emitterModels) {
+        ParticleFxUpdateModel(model, dt);
+    }
 }
 
 void ParticleFxUpdateModel(CM2Model* model, float dt) {

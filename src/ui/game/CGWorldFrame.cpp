@@ -309,72 +309,12 @@ void CGWorldFrame::OnWorldRender() {
 
     CWorldScene::s_viewUpdated = false;
 
-    // Frustum-cull entities: UpdateWorldView has refreshed the frustum, so only in-view objects
-    // animate and draw, matching the reference (the scene itself does no view culling). Server
-    // positions are always valid, so there is no visibility/animation deadlock.
+    // Which models draw is the map traversal's answer (CWorldScene::VisitStaticEntity and the
+    // unseen-entity pass), made inside CMap::Render before the scene animates. Frozen used to
+    // cull every visible object against the frustum here as well, after the fact.
     auto objMgr = ClntObjMgrGetCurrent();
 
     if (objMgr) {
-        WOWGUID activePlayer = ClntObjMgrGetActivePlayer();
-
-        for (auto object = objMgr->m_visibleObjects.Head(); object; object = objMgr->m_visibleObjects.Next(object)) {
-            if (object->m_model) {
-                // The local player is always drawn; a camera angle should never cull your own model.
-                if (object->GetGUID() == activePlayer) {
-                    object->m_model->SetVisible(1);
-                    object->m_model->SetAnimating(1);
-
-                    continue;
-                }
-
-                // Cull against the model's own bounding sphere (model radius x world scale) so large
-                // creatures never pop at screen edges, like the reference. The bounding radius is
-                // static model data, so this stays valid even while the object is culled.
-                float radius = 30.0f;
-                C3Vector center = object->GetPosition();
-
-                if (object->m_model->m_shared && object->m_model->m_shared->m_m2DataLoaded && object->m_model->m_shared->m_data) {
-                    float scale = object->GetScale();
-
-                    if (object->IsA(TYPE_UNIT)) {
-                        scale *= static_cast<CGUnit_C*>(object)->GetModelScale();
-                    }
-
-                    const M2Bounds& b = object->m_model->m_shared->m_data->bounds;
-                    radius = b.radius * scale;
-
-                    if (radius < 2.0f) {
-                        radius = 2.0f;
-                    }
-
-                    // Emitters reach past the mesh (a fire's sphere is its base, not its flames), and
-                    // they are only stepped for models that pass this test.
-                    radius += ParticleFxCullExtent(object->m_model, scale);
-
-                    // The bounding sphere is centred on the mesh (usually mid-height), not the feet
-                    // where the object sits, so offset the cull centre by the model-space box centre
-                    // rotated by the facing and scaled. Without this a tall model pops out when its
-                    // feet leave the screen even though its body is still in view.
-                    C3Vector local = {
-                        (b.extent.b.x + b.extent.t.x) * 0.5f,
-                        (b.extent.b.y + b.extent.t.y) * 0.5f,
-                        (b.extent.b.z + b.extent.t.z) * 0.5f
-                    };
-                    float f = object->GetFacing();
-                    float cf = cosf(f);
-                    float sf = sinf(f);
-                    center.x += (local.x * cf - local.y * sf) * scale;
-                    center.y += (local.x * sf + local.y * cf) * scale;
-                    center.z += local.z * scale;
-                }
-
-                bool vis = !CWorldScene::SphereOutsideFrustum(center, radius);
-
-                object->m_model->SetVisible(vis ? 1 : 0);
-                object->m_model->SetAnimating(vis ? 1 : 0);
-            }
-        }
-
         // The blob decal pass is gone, and with it the whole stand-in that backed it. It could no
         // longer put a decal on anything, for the same reason the WMO half could not (cf7768ff):
         // the decal re-draws the receiver's own triangles and selects with a depth-EQUAL test, so it
@@ -417,64 +357,8 @@ void CGWorldFrame::OnWorldRender() {
             GxRsSet(GxRs_Fog, 1);
         }
 
-        // Which models are drawing this frame, captured BEFORE Animate.
-        //
-        // m_flag8 is the "queued for drawing" flag, and CM2Scene::Animate CLEARS it on every model
-        // as it walks the draw list. The particle update below used to test it afterwards, so it was
-        // always 0 and no emitter was ever stepped -- no fires, no braziers, no torches. Same trap
-        // that stopped the skybox drawing. The update still runs after Animate, so the bone sequence
-        // state it samples is current; only the visibility answer is taken from before.
-        static std::vector<CM2Model*> s_emitterModels;
-        s_emitterModels.clear();
-
-        for (auto object = objMgr ? objMgr->m_visibleObjects.Head() : nullptr; object; object = objMgr->m_visibleObjects.Next(object)) {
-            if (object->m_model && object->m_model->m_flag8) {
-                s_emitterModels.push_back(object->m_model);
-            }
-        }
-
-        // The buildings' own props, now built on the reference defs by CMap::CreateMapObjDoodads.
-        CMap::ForEachMapObjDoodad([](CM2Model* model, void* arg) {
-            if (model->m_flag8) {
-                static_cast<std::vector<CM2Model*>*>(arg)->push_back(model);
-            }
-        }, &s_emitterModels);
-
-        CMap::ForEachDoodadModel([](CM2Model* model, void* arg) {
-            if (model->m_flag8) {
-                static_cast<std::vector<CM2Model*>*>(arg)->push_back(model);
-            }
-        }, &s_emitterModels);
-
-        if (scene) {
-            scene->AdvanceTime(CWorld::GetTickTimeMs());
-            scene->Animate(this->m_camera->Position());
-
-            // The map shadow map, which is MapShadow.cpp's own driver in the reference
-            // (FUN_007bb570). It is called from CMap::Render there, at 0x0079ac21, right after the
-            // plane setup; frozen calls it HERE instead, because its caster draw needs the bone
-            // matrices CM2Scene::Animate has just built, and Animate in turn needs the visibility
-            // the terrain pass establishes. So terrain samples a map that is one frame old.
-            // Closing that gap means hoisting the visibility work above CMap::Render, not moving
-            // this call on its own.
-            //
-            // The whole thing is inert while the quality is 0, which nothing yet raises.
-            MapShadowRender();
-        }
-
-        // Particle emitters of the visible models (units and doodads) step after Animate so their
-        // bone sequence state is current; the quads draw in the transparent block below.
-        {
-            float dt = static_cast<float>(CWorld::GetTickTimeMs()) * 0.001f;
-
-            if (dt > 0.1f) {
-                dt = 0.1f;
-            }
-
-            for (auto model : s_emitterModels) {
-                ParticleFxUpdateModel(model, dt);
-            }
-        }
+        // The scene's AdvanceTime and Animate, the map shadow render and the particle step all
+        // happen inside CMap::Render now, at the reference's position (0x0079ac0f).
 
         // Reference (CGWorldFrame::OnWorldRender FUN_004f8ea0): opaque pass 0 after the map, then
         // the transparent block draws pass 2 before pass 1 with the camera above liquid (the order
@@ -548,6 +432,11 @@ void CGWorldFrame::OnWorldUpdate() {
     }
 
     auto target = ClntObjMgrObjectPtr(this->m_camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
+
+    // What the camera follows, as the world knows it (FUN_00780500 at 0x004fa7a0).
+    CWorld::s_focusEntity = target && target->m_worldObject
+        ? reinterpret_cast<CMapStaticEntity*>(target->m_worldObject)
+        : nullptr;
 
     // The load barriers measure from the unit this client moves (0x004fa65c).
     if (CGUnit_C::s_activeMover) {
@@ -626,17 +515,6 @@ void CGWorldFrame::OnWorldUpdate() {
                     CWorld::UpdateObjectLighting(object->m_worldObject);
                 }
 
-                // A world model is drawn when it is animating, visible, and flagged for draw,
-                // the same set the character preview uses; the animate list is drained each frame
-                // so this runs every update
-                object->m_model->SetAnimating(1);
-                object->m_model->SetVisible(1);
-
-                if (object->m_model->m_attachParent) {
-                    object->m_model->m_flag20000 = 1;
-                } else {
-                    object->m_model->m_flag10000 = 1;
-                }
             }
         }
     }

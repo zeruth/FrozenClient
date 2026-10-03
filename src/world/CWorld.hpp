@@ -146,6 +146,10 @@ class CWorld {
         static void RemoveObject(HWORLDOBJECT object);
         // ref: FUN_0077f2e0
         static void UpdateObjectLighting(HWORLDOBJECT object);
+        // The map entity of what the camera follows (DAT_00cd87a8), set each world update; the
+        // map object shadow plane is built through it. Part of FUN_00780500, whose transport
+        // half is not ported.
+        static CMapStaticEntity* s_focusEntity;
         // The day/night step of the frame: the light, the sky's inputs, the fog, the sun's light.
         static void UpdateDayNight(int32_t force, const C3Vector* cameraPos);
         static void PublishDayNight();

@@ -808,6 +808,13 @@ HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerPara
 void CWorld::RemoveObject(HWORLDOBJECT object) {
     auto entity = reinterpret_cast<CMapEntity*>(object);
 
+    // FROZEN-ONLY guard: the reference rewrites the focus every update before anything reads it,
+    // but frozen's world update can run without a camera target, and the plane must not read a
+    // freed entity.
+    if (CWorld::s_focusEntity == reinterpret_cast<CMapStaticEntity*>(entity)) {
+        CWorld::s_focusEntity = nullptr;
+    }
+
     for (auto link = entity->m_parentLinkList.Head(); link; ) {
         auto next = entity->m_parentLinkList.Next(link);
         CMap::FreeBaseObjLink(link);
@@ -926,6 +933,7 @@ uint32_t CWorld::s_detailDoodadAlpha = 0x80;
 // DAT_00adeebc, 1.0 in the image: characters take the plain ambient until a zone or the console
 // says otherwise. Left at zero it blacked out every character.
 float CWorld::s_characterAmbient = 1.0f;
+CMapStaticEntity* CWorld::s_focusEntity = nullptr;
 uint32_t CWorld::s_characterAmbientActive;
 uint32_t CWorld::s_showSimpleDoodads;
 

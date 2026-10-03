@@ -1894,22 +1894,41 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // element's slot 0x10. Nothing in the binary ever adds to that list -- its only references are
     // this, the two time ticks in CWorldScene::UpdateCamera, the teardown and its static ctor --
     // so the walk is always empty and is not ported.
-    // TODO FUN_007bb670(&cameraPos): the map shadow; the M2 scene's AdvanceTime
-    // and Animate (CGWorldFrame::OnWorldRender still does them); FUN_006fda20(); FUN_007bb570()
+    // The map object shadow plane (0x0079abda), through the camera target's entity half a yard
+    // up, or through the camera when there is none.
+    C3Vector planePoint = cameraPos;
+
+    if (CWorld::s_focusEntity) {
+        const C3Vector& p = CWorld::s_focusEntity->m_position;
+        planePoint = { p.x, p.y, p.z + 0.5f };
+    }
+
+    MapShadowSetupPlane(planePoint);
+
+    // The models move, here and not later: the traversal above has just told every model whether
+    // it is seen, which is what Animate walks, and the shadow map below needs the bone matrices
+    // Animate builds. The reference also raises a flag on the scene around the two calls
+    // (scene +0x1c, bit 1), which frozen's CM2Scene layout does not place yet.
+    //
+    // Frozen's particle stand-in rides along: it reads which emitters are drawing before Animate
+    // (Animate clears the flag it reads) and steps them after.
+    auto scene = CWorld::GetM2Scene();
+
+    ParticleFxCaptureEmitters();
+
+    if (scene) {
+        scene->AdvanceTime(static_cast<uint32_t>(lrintf(dt * 1000.0f)));
+        scene->Animate(cameraPos);
+    }
+
+    ParticleFxStepEmitters();
+
+    // FUN_006fda20, the missile trajectories, is Unit_C work (phase 4).
+
+    MapShadowRender();
 
     CShaderEffect::UpdateProjMatrix();
     CWorld::SetupFogRenderStates();
-
-    // The map object shadow plane, where the reference builds it -- FUN_007bb670 is called from
-    // CMap::Render at 0x0079abda, after the traversal and before the draws. Gated on the shadow
-    // quality like every other part of that path, so it is inert until the quality is wired.
-    if (ShadowMapGetQuality() > 0) {
-        auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__);
-
-        if (player) {
-            MapShadowSetupPlane(player->GetPosition());
-        }
-    }
 
     CWorldScene::RenderTerrain();
 
@@ -1990,7 +2009,7 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
         CWorldScene::s_debugIndices.SetCount(0);
     }
 
-    (void)dt;
+
 }
 
 // ref: FUN_007b5500

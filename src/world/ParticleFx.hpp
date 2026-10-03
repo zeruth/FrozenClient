@@ -16,6 +16,12 @@ class CM2Model;
 // camera position the scene subtracts from model transforms, so particles live in world space.
 void ParticleFxUpdateModel(CM2Model* model, float dt);
 
+// FROZEN-ONLY, around the M2 scene's Animate in CMap::Render: note every drawing model that may
+// carry emitters (Animate clears the flag that says so), then step their emitters once the bones
+// are current.
+void ParticleFxCaptureEmitters();
+void ParticleFxStepEmitters();
+
 // Drop the simulation of a model that is going away
 void ParticleFxForgetModel(CM2Model* model);
 
