@@ -16,6 +16,13 @@ struct VERT {
     C2Vector tc;
 };
 
+// Where one glyph corner's colour lives: which page's text line, and which entry of its colours.
+// A gradient walks these to fade the string character by character.
+struct GLYPHVERTEXREF {
+    uint8_t page;
+    uint32_t index;
+};
+
 class TEXTLINETEXTURE : public TSLinkedNode<TEXTLINETEXTURE> {
     public:
         // Static variables
@@ -64,6 +71,7 @@ class CGxString : public TSLinkedNode<CGxString> {
         C3Vector m_viewTranslation;
         float m_scale = 1.0f;
         int32_t m_intB0 = 0;
+        TSGrowableArray<GLYPHVERTEXREF> m_glyphVertices;   // +0xa0, filled while a gradient is on
         TEXTLINETEXTURE* m_textLines[8] = {};
         int32_t m_intD4 = 0;
 
@@ -82,6 +90,10 @@ class CGxString : public TSLinkedNode<CGxString> {
         void SetColor(const CImVector& color);
         int32_t SetGradient(int32_t startCharacter, int32_t length);
         void NoteTextureEvicted(uint32_t textureNumber);
+        // ref: FUN_006c6110
+        void SetVertexAlpha(const GLYPHVERTEXREF& ref, uint8_t alpha);
+        // ref: FUN_006c6150
+        uint8_t GetVertexAlpha(const GLYPHVERTEXREF& ref);
         void SetStringPosition(const C3Vector& position);
         void Tick();
         void WriteGeometry(CGxVertexPCT* buffer, int32_t lineIndex, int32_t vertexOffset, int32_t vertexCount);

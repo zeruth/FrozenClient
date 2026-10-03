@@ -210,7 +210,7 @@ void CGxString::ClearInstanceData() {
     // TODO this->m_hyperlinkInfo->SetCount(0);
     // TODO this->m_textureInfo->SetCount(0);
 
-    // TODO this->dwordA4 = 0;
+    this->m_glyphVertices.SetCount(0);
     this->m_lastGradientStart = -1;
     this->m_lastGradientLength = -1;
     this->m_intB0 = 0;
@@ -518,8 +518,14 @@ void CGxString::InitializeTextLine(const char* currentText, uint32_t numBytes, C
                 if (!(this->m_flags & EGxStringFlags_FixedColor)) {
                     uint32_t index = line->m_colors.Add(4, 0, &color);
 
+                    // A gradient needs to find each corner's colour again (0x006c7236).
                     if (this->m_flags & EGxStringFlags_Flag20) {
-                        // TODO
+                        auto page = static_cast<uint8_t>(glyph->textureNumber);
+                        GLYPHVERTEXREF refs[4] = {
+                            { page, index }, { page, index + 1 }, { page, index + 2 }, { page, index + 3 }
+                        };
+
+                        this->m_glyphVertices.Add(4, refs);
                     }
                 }
 
@@ -655,9 +661,85 @@ void CGxString::NoteTextureEvicted(uint32_t textureNumber) {
     }
 }
 
+void CGxString::SetVertexAlpha(const GLYPHVERTEXREF& ref, uint8_t alpha) {
+    if (ref.page >= 8 || !this->m_textLines[ref.page]) {
+        return;
+    }
+
+    auto line = this->m_textLines[ref.page];
+
+    if (ref.index < line->m_colors.Count()) {
+        line->m_colors[ref.index].a = alpha;
+    }
+}
+
+uint8_t CGxString::GetVertexAlpha(const GLYPHVERTEXREF& ref) {
+    if (ref.page >= 8 || !this->m_textLines[ref.page]) {
+        return 0;
+    }
+
+    auto line = this->m_textLines[ref.page];
+
+    return ref.index < line->m_colors.Count() ? line->m_colors[ref.index].a : 0;
+}
+
+// ref: FUN_006c78f0
+// Fade the string in from `startCharacter`: the characters before it at the font colour's alpha,
+// then `length` characters stepping down to nothing, a step every other corner, and the rest
+// clear. Returns 0 when the fade ends within the string, 1 when it runs past the end, 2 when it
+// starts past the end (or is asked for with a negative), and -1 when there is no text.
 int32_t CGxString::SetGradient(int32_t startCharacter, int32_t length) {
-    // TODO
-    return 0;
+    if (startCharacter < 0 || length < 0) {
+        return 2;
+    }
+
+    if (startCharacter == this->m_lastGradientStart && length == this->m_lastGradientLength) {
+        return 0;
+    }
+
+    this->m_lastGradientLength = length;
+    this->m_lastGradientStart = startCharacter;
+    this->m_flags = (this->m_flags & ~EGxStringFlags_FixedColor) | EGxStringFlags_Flag20;
+
+    if (this->m_glyphVertices.Count() == 0) {
+        this->ClearInstanceData();
+        this->CheckGeometry();
+    }
+
+    if (!this->m_intB0) {
+        return -1;
+    }
+
+    uint8_t alpha = this->m_fontColor.a;
+    int32_t count = static_cast<int32_t>(this->m_glyphVertices.Count());
+    int32_t startVertex = startCharacter * 4;
+    auto step = static_cast<uint8_t>(lrintf(static_cast<float>(alpha) / static_cast<float>(length)));
+
+    for (int32_t i = 0; i < count; i++) {
+        const auto& ref = this->m_glyphVertices[i];
+
+        if (i < startVertex) {
+            this->SetVertexAlpha(ref, alpha);
+        } else if (alpha == 0 || startVertex + length * 4 <= i) {
+            if (!this->GetVertexAlpha(ref)) {
+                break;
+            }
+
+            this->SetVertexAlpha(ref, alpha);
+        } else {
+            this->SetVertexAlpha(ref, alpha);
+
+            if (i & 1) {
+                alpha = step < alpha ? alpha - step : 0;
+            }
+        }
+    }
+
+    if (startVertex < count) {
+        return count < startVertex + length * 4 ? 1 : 0;
+    }
+
+    return 2;
 }
 
 void CGxString::SetStringPosition(const C3Vector& position) {
