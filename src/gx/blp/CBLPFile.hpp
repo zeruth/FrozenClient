@@ -22,9 +22,18 @@ class CBLPFile {
         MipMapAlgorithm m_mipMapAlgorithm = MMA_BOX;
         char* m_lockDecompMem;
 
+        // Static functions
+        // Whether a block of memory starts with a BLP2 header this code reads. ref: FUN_006ae8e0
+        static int32_t HeaderValid(const BLPHeader* header);
+
         // Member functions
         CBLPFile();
         void Close();
+        // A level's width and height, never below one. ref: FUN_006af660, FUN_006af680
+        uint32_t GetMipWidth(uint32_t mipLevel);
+        uint32_t GetMipHeight(uint32_t mipLevel);
+        // Palette to ARGB8888 with a 0, 1 or 4-bit alpha plane. ref: FUN_006ae9e0
+        void DecompPalARGB8888(uint32_t* out, const unsigned char* in, uint32_t count);
         void DecompPalARGB8888Alpha8(uint32_t* out, const unsigned char* in, uint32_t count);
         void DecompPalARGB1555DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);
         void DecompPalARGB4444DitherFS(uint16_t* out, const unsigned char* in, uint32_t width, uint32_t height);

@@ -292,6 +292,14 @@ MODULE_RANGES = [
     # FFXNetherCombine shaders by name. The lower boundary is that vtable function; below it
     # are the coin-format helpers (CoinTextureFormat and the symbol formatters).
     (0x007e7ff0, 0x007e8e40, 'FFXEffects.cpp'),
+    # CLIENT SERVICES above the BLP code. blp.cpp's assert anchor is the last one below a long run
+    # of login and realm-list code, so its bucket ran to 94 functions of which 20 are BLP: from
+    # 0x006b02c0 (the AUTH_* result strings) up, every named function is ClientServices or
+    # ClientConnection -- Connection, LoginConnection, Send, SetMessageHandler, the realm list,
+    # the COP_* character operations. The three functions between the last BLP one (LockChain2,
+    # ending 0x006b012e) and 0x006b02c0 stay where they are: one of them names Dataase.MPQ and
+    # none is identified.
+    (0x006b02c0, 0x006b2200, 'ClientServices.cpp'),
 ]
 
 # The next candidate, left out deliberately rather than forgotten: 0x008a65d0..0x008bfe80 is the DBC
