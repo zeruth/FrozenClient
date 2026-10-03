@@ -635,6 +635,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_0073c140
         // The handler a unit registers on its model: the sequence on one of its bones has ended.
         // Static, because the model calls it with the owner's GUID rather than a pointer.
+        static void OnModelSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t interrupted,
+                                        int32_t overshoot, WOWGUID owner);
         static void OnSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t a4,
                                    int32_t interrupted, WOWGUID owner);
 
@@ -751,6 +753,9 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_0071afb0
         // IsAttacking, or the unit's pet is in combat (UNIT_FIELD_FLAGS 0x800).
         bool IsAttackingOrPetInCombat() const;
+        void PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t animID);
+        void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
+        int32_t GetCastVisualAnimation() const;
 
         // ref: FUN_0071afe0
         // Clears bit 0x4000 on every effect playing on the unit.
@@ -1014,6 +1019,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // flag, alongside m_animFlags 0x400, when deciding whether a vehicle's owner is driving the
         // pose. Nothing ported writes it, so it stays -1 and the term reads false.
         int32_t m_intFA4 = -1;
+        // +0xac0: when the unit's death animation first finished (the world clock), 0 before.
+        uint32_t m_deathTime = 0;
         // The unit's second state word (reference +0xa30). Only one of its bits is read by the code
         // ported so far: 0x80000, which has to be set for a sequence to keep the blend flag its
         // caller asked for. The rest are written from a dozen places in Unit_C.cpp and are not

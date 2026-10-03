@@ -4098,10 +4098,7 @@ void CGUnit_C::OnAnimationFinished(CM2Model* model, uint32_t boneId, int32_t ani
         // and once the choice is made all three of 0x10/0x20/0x40 come back.
         this->m_animFlags = (this->m_animFlags & ~0x60) | 0x10;
 
-        // The reference then calls FUN_0073b510 here (1392 bytes), which picks the animation that
-        // follows the one that just ended. It is not ported, so the follow-up is whatever the next
-        // UpdateAnimation chooses; the flag handling around it, which is what unblocks the chooser,
-        // is here.
+        this->PlayFollowUpAnimation(model, boneId, animID);
 
         this->m_animFlags |= 0x70;
     } else if (animID == 0x27 || animID == 0xBB) {
@@ -4110,9 +4107,423 @@ void CGUnit_C::OnAnimationFinished(CM2Model* model, uint32_t boneId, int32_t ani
     }
 }
 
+// ref: FUN_0073b510
+// An animation ran to its end: what follows it, by the finished animation's behaviour
+// (AnimationData +0x18). A jump start goes on into the jump loop, a fall keeps falling, a landing
+// re-chooses, sitting down settles into the seated loop, dying lies dead; anything else
+// re-chooses with only the mount-change permission (0x10).
+//
+// PARTIAL: a vehicle seat's ride animations (the top of the reference, CVehiclePassenger_C seat
+// +0x3c .. +0x48) are the vehicle port's, and so is nothing here while nothing creates a
+// passenger; the fishing bobber the channel cast spawns (FUN_007221d0, behaviour 0x85) is the
+// game-object effect port's.
+void CGUnit_C::PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t animID) {
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    // The seated, sleeping and kneeling holds follow the stand state the unit is in now.
+    auto standState = [this]() {
+        return static_cast<int32_t>(this->GetStandStateByte());
+    };
+
+    // Lie dead in the pose `next`, from where the bone's sequence got to.
+    auto lieDead = [&](uint32_t next) {
+        M2BoneSequenceState state = {};
+        model->GetBoneSequenceState(boneId, &state);
+        this->SetBoneSequence(model, 0xFFFFFFFF, next, state.uint94, 0, 1.0f, 1, 1, 0);
+        this->UpdateObjectEffects();
+    };
+
+    int32_t next = 0x1FA;
+
+    if (rec && behavior <= 0x1CC) {
+        if (0x1C9 < behavior) {
+            this->SetAnimation(0x1D0, 0x10);
+            return;
+        }
+
+        switch (behavior) {
+            case 1:
+                if (this->IsDeadOrFeigning()) {
+                    lieDead(6);
+                    return;
+                }
+
+                break;
+
+            case 6:
+                if (this->IsDeadOrFeigning()) {
+                    this->UpdateObjectEffects();
+                    return;
+                }
+
+                break;
+
+            case 0x25:
+            case 0x26:
+                if (!(this->m_move->m_moveFlags & 0x2000000)) {
+                    this->SetAnimation(0x26, 0x10);
+                    return;
+                }
+
+                break;
+
+            case 0x27:
+                this->m_animFlags &= 0xfffffffb;
+                this->UpdateAnimation(0x10, 0xffffffff);
+                return;
+
+            case 0x28:
+                this->SetAnimation(0x28, 0x10);
+                return;
+
+            case 0x32:
+                this->SetAnimation(0xBC, 0x10);
+                return;
+
+            case 0x45:
+                if (!this->IsAttackingOrPetInCombat() && this->m_attackTarget == 0) {
+                    this->SetAnimation(0x45, 0x10);
+                    return;
+                }
+
+                break;
+
+            case 0x60:
+            case 0x61:
+                next = (standState() != 1) + 0x61;
+                break;
+
+            case 99:
+            case 100:
+                next = (standState() != 3) + 100;
+                break;
+
+            case 0x66:
+                if (standState() == 4) {
+                    next = 0x66;
+                }
+
+                break;
+
+            case 0x67:
+                if (standState() == 5) {
+                    this->SetAnimation(0x67, 0x10);
+                    return;
+                }
+
+                break;
+
+            case 0x68:
+                if (standState() == 6) {
+                    this->SetAnimation(0x68, 0x10);
+                    return;
+                }
+
+                break;
+
+            case 0x69:
+                this->SetAnimation(0x6D, 0x10);
+                return;
+
+            case 0x6A:
+                this->SetAnimation(0x6E, 0x10);
+                return;
+
+            case 0x6D:
+                // A ranged shot: hold the aim while channelling or still shooting (0x600), else
+                // the arrow leaves the hand.
+                if (this->m_rangedModel) {
+                    if (this->m_unit->channelSpell != 0 || (this->m_animFlags & 0x600)) {
+                        this->SetAnimation(0x6D, 0x10);
+                        return;
+                    }
+
+                    if (this->m_rangedAmmoModel && this->m_rangedAmmoModel->m_attachParent) {
+                        this->m_rangedAmmoModel->DetachFromParent();
+                        this->m_animFlags &= 0xffffbfff;
+                        this->m_rangedModel->SetBoneSequence(0xFFFFFFFF, 0, 0xFFFFFFFF, 0, 1.0f, 1, 1);
+                        this->UpdateAnimation(0x10, 0xffffffff);
+                        return;
+                    }
+                }
+
+                break;
+
+            case 0x6E:
+                if (this->m_rangedModel && (this->m_unit->channelSpell != 0 || (this->m_animFlags & 0x400))) {
+                    this->SetAnimation(0x6E, 0x10);
+                    return;
+                }
+
+                break;
+
+            case 0x6F:
+            case 0x70:
+                if (this->m_rangedModel && (this->m_unit->channelSpell != 0 || (this->m_animFlags & 0x400))) {
+                    this->SetAnimation(0x6F, 0x10);
+                    return;
+                }
+
+                break;
+
+            case 0x72:
+            case 0x73:
+                next = (standState() != 8) + 0x73;
+                break;
+
+            case 0x7F:
+                this->m_animFlags &= 0xfffffff7;
+                this->UpdateAnimation(0x10, 0xffffffff);
+                return;
+
+            case 0x83:
+                if (this->IsDeadOrFeigning()) {
+                    lieDead(0x84);
+                    return;
+                }
+
+                break;
+
+            case 0x84:
+                if (this->IsDeadOrFeigning()) {
+                    return;
+                }
+
+                break;
+
+            case 0x85:
+                // FUN_007221d0: the fishing bobber's splash, see above.
+                this->SetAnimation(0x86, 0x10);
+                return;
+
+            case 0xC9:
+                this->m_animFlags &= 0xffbfffff;
+                this->SetAnimation(0xCA, 0x10);
+                return;
+
+            default:
+                break;
+        }
+
+        if (next != 0x1FA) {
+            this->SetAnimation(static_cast<uint32_t>(next), 0x10);
+            return;
+        }
+
+        this->UpdateAnimation(0x10, 0xffffffff);
+        return;
+    }
+
+    // No record, or a behaviour past the table: the death and posture holds.
+    switch (behavior) {
+        case 0x1D0: {
+            uint32_t posture = 0x1FA;
+            this->GetPostureAnimation(&posture, 1);
+
+            if (posture != 0x1FA) {
+                this->SetAnimation(posture, 0x10);
+                return;
+            }
+
+            break;
+        }
+
+        case 0x1D2:
+        case 0x1D3:
+            if (this->IsDeadOrFeigning()) {
+                this->SetAnimation(0x1D4 - ((this->m_animFlags & 0x4000000) != 0), 0x10);
+                return;
+            }
+
+            break;
+
+        case 0x1D4:
+            if (this->IsDeadOrFeigning()) {
+                lieDead(this->ResolveAnimation(0x1D8, nullptr));
+                return;
+            }
+
+            break;
+
+        case 0x1D8:
+            if (this->IsDeadOrFeigning()) {
+                this->UpdateObjectEffects();
+                return;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+
+    this->UpdateAnimation(0x10, 0xffffffff);
+}
+
+// ref: FUN_0073c090
+// The unit's own model reports a sequence done. A unit gone from the object manager still has its
+// non-root bones let go of a sequence that ran out.
+void CGUnit_C::OnModelSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t interrupted,
+                                   int32_t overshoot, WOWGUID owner) {
+    (void)overshoot;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(owner, TYPE_UNIT, __FILE__, __LINE__));
+
+    if (!unit) {
+        if (boneId != 0xFFFFFFFF && boneId != 0x1A && interrupted == 0 && model) {
+            model->UnsetBoneSequence(boneId, 1, 1);
+        }
+
+        return;
+    }
+
+    // The vehicle that animates through this bone handles it (FUN_00757280, the vehicle port's;
+    // it cannot arise while nothing creates a CVehicle_C).
+    if (!unit->m_mountModel && unit->m_vehicle && unit->m_vehicle->m_rec && unit->m_vehicle->TestFlag(boneId)) {
+        return;
+    }
+
+    unit->OnModelAnimationFinished(model, boneId, static_cast<int32_t>(animID), interrupted);
+}
+
+// ref: FUN_0073bbd0
+// One of the unit model's sequences is over. The bookkeeping first -- the deferred and held
+// animations, the death time, the "playing X" bits -- then, for the root or the body bone and a
+// sequence that ran out, the follow-up (FUN_0073b510) with the permission bits handed back.
+//
+// PARTIAL, each the subsystem's own port: the passenger's sequence hook (FUN_007484e0), the death
+// effect (FUN_00717ba0, the CEffect list), the other bones' follow-up (FUN_00737bd0, the
+// upper-body split), the swing trail a replaced attack drops (FUN_00732500, behaviours 0x59/0x5a),
+// and the player's queued emote steps (FUN_006e2e10, Player_C +0x1944, which frozen does not keep).
+void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted) {
+    if (this->m_deferredAnimID == animID) {
+        this->m_deferredAnimID = -1;
+    }
+
+    auto rec = g_animationDataDB.GetRecord(animID);
+    int32_t behavior = rec ? rec->m_behaviorID : 0x1FA;
+
+    if (behavior == 1 || behavior == 0x83 || behavior == 0x1D4) {
+        if (this->m_deathTime == 0) {
+            this->m_deathTime = CWorld::GetCurTimeMs();
+        }
+    }
+
+    if (animID == this->GetCastVisualAnimation()) {
+        this->m_animFlags &= 0xfffeffff;
+    }
+
+    if (this->m_intFA4 != -1 && this->m_model && this->m_model->IsLoaded(0, 0)) {
+        int32_t held = this->m_intFA4;
+        bool upper = this->m_upperBodyBoneId != 0xFFFFFFFF
+            && static_cast<int32_t>(this->m_model->GetBoneUint90(this->m_upperBodyBoneId)) == held;
+        int32_t body = static_cast<int32_t>(this->m_model->GetBoneUint90(0xFFFFFFFF));
+
+        if ((animID == held && (!upper || body != held)) || (!upper && body != held)) {
+            this->m_intFA4 = -1;
+        }
+    }
+
+    if (IsCombatAnimation(animID) && !IsCombatAnimation(this->m_heldAnimID)) {
+        this->m_heldAnimID = -1;
+    }
+
+    if (behavior == 0xC0 || behavior == 200) {
+        this->m_animFlags &= 0xfffbffff;
+    }
+
+    if (behavior == 0x79) {
+        this->m_animFlags &= 0xfff7ffff;
+    }
+
+    if ((this->m_animFlags & 0x20000) && (IsCombatAnimation(behavior) || IsSpellCastAnimation(behavior))) {
+        this->m_animFlags &= 0xffffdfff;
+    }
+
+    if (behavior == 0x25) {
+        this->m_animFlags &= 0xff7fffff;
+    }
+
+    if (rec && 0x1C9 < rec->m_behaviorID && rec->m_behaviorID < 0x1CD) {
+        this->m_animFlags &= 0xfdffffff;
+    }
+
+    if (interrupted != 0) {
+        switch (behavior) {
+            case 0x27:
+                this->m_animFlags &= 0xfffffffb;
+                break;
+
+            case 0x7F:
+                this->m_animFlags &= 0xfffffff7;
+                break;
+
+            case 0xC9:
+                this->m_animFlags &= 0xffbfffff;
+                break;
+
+            default:
+                // 0x59 / 0x5a: the swing trail, see above.
+                break;
+        }
+
+        return;
+    }
+
+    if (boneId != 0xFFFFFFFF && boneId != 0x1A) {
+        // FUN_00737bd0: another bone's follow-up, see above.
+        return;
+    }
+
+    if (this->m_animFlags & 0x8000) {
+        this->SetSheathState(this->m_previousSheathState, 1, 0);
+        this->m_animFlags &= 0xffff7fff;
+    }
+
+    if (this->m_mountTransition && this->m_mountTransition->IsDone()) {
+        return;
+    }
+
+    this->m_animFlags = (this->m_animFlags & 0xffffffcf) | 0x40;
+
+    this->PlayFollowUpAnimation(model, boneId, animID);
+
+    this->m_animFlags |= 0x70;
+}
+
+// ref: FUN_007228b0
+// The animation the spell being cast shows, from its visual's kit (the kit's +4), or -1.
+int32_t CGUnit_C::GetCastVisualAnimation() const {
+    if (!this->m_castSpellID) {
+        return -1;
+    }
+
+    auto spell = g_spellDB.GetRecord(this->m_castSpellID);
+
+    if (!spell) {
+        return -1;
+    }
+
+    auto visual = const_cast<CGUnit_C*>(this)->GetSpellVisualRec(spell);
+
+    if (!visual) {
+        return -1;
+    }
+
+    auto kit = g_spellVisualKitDB.GetRecord(visual->m_precastKit);
+
+    return kit ? kit->m_startAnimID : -1;
+}
+
 // ref: FUN_0073c140
-void CGUnit_C::OnSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t a4,
-                              int32_t interrupted, WOWGUID owner) {
+// The fourth argument is the "replaced" flag (1 from NotifySequenceDone, 0 for a sequence that
+// ran out), the fifth the time past its end. This passed the fifth on as the flag, which made a
+// run-out with any overshoot look replaced and a replaced one look finished.
+void CGUnit_C::OnSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animID, int32_t interrupted,
+                              int32_t overshoot, WOWGUID owner) {
+    (void)overshoot;
+
     auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(owner, TYPE_UNIT, __FILE__, __LINE__));
 
     if (!unit) {
@@ -7052,7 +7463,7 @@ void CGUnit_C::UpdateModel(int32_t force) {
 
     uint32_t current = this->GetCurrentAnimationId();
 
-    model->SetSequenceDoneCallback(&CGUnit_C::OnSequenceDone, this->GetGUID());
+    model->SetSequenceDoneCallback(&CGUnit_C::OnModelSequenceDone, this->GetGUID());
 
     this->SetUnitModel(model);
     model->Release();
@@ -8275,6 +8686,9 @@ void CGUnit_C::OnMovementPacketSent(int32_t opcode) {
         case MSG_MOVE_STOP_ASCEND:
         case 0x3ad:
         case CMSG_MOVE_GRAVITY_DISABLE_ACK:
+        case CMSG_MOVE_GRAVITY_ENABLE_ACK:
+        case 0x4d3:
+        case 0x4d4:
             this->UpdateAnimation(0, 0xffffffff);
             return;
 
@@ -8332,23 +8746,24 @@ void CGUnit_C::UpdateFallAnimation() {
 }
 
 // ref: FUN_0073d2b0
-// PARTIAL: a vehicle seat's own landing (FUN_007571c0) and the passenger states 4 and 5 are the
-// vehicle port's.
+// The landing pose: JumpEnd (0x27) standing still, JumpLandRun (0xbb) landing at a run, and a
+// fresh choice otherwise (backward, walking, swimming, flying). A fall that was neither a jump nor
+// a long fall re-chooses only when the move flags changed while it lasted. PARTIAL: a vehicle that
+// poses its passenger, and the passenger states 4 and 5, are the vehicle port's.
 void CGUnit_C::PlayLandingAnimation(uint32_t oldFlags, uint32_t jumping) {
-    uint32_t heldPose = this->m_animFlags & 0x1000000;
-    this->m_animFlags &= 0xfeffffff;
+    uint32_t animFlags = this->m_animFlags;
+    this->m_animFlags = animFlags & 0xfeffffff;
 
     if (this->m_animFlags & 0x4000000) {
         this->SetAnimation(0x1d4, 0);
         return;
     }
 
-    if (jumping || (oldFlags & 0x2000) || heldPose) {
-        if (this->m_localMove.m_moveFlags & 0x2200000) {
-            this->UpdateAnimation(0, 0xffffffff);
+    if (!jumping && !(oldFlags & 0x2000) && !(animFlags & 0x1000000)) {
+        if (!((this->m_move->m_moveFlags ^ oldFlags) & 0x40f)) {
             return;
         }
-
+    } else if (!(this->m_move->m_moveFlags & 0x2200000)) {
         uint32_t moveFlags = this->m_localMove.m_moveFlags;
 
         if (!(moveFlags & 0xf)) {
@@ -8357,25 +8772,38 @@ void CGUnit_C::PlayLandingAnimation(uint32_t oldFlags, uint32_t jumping) {
             return;
         }
 
-        if ((moveFlags & 0x2) || (moveFlags & 0x100)) {
-            this->UpdateAnimation(0, 0xffffffff);
+        if (!(moveFlags & 0x2) && !(moveFlags & 0x100) && !this->IsMovingAtWalkPace()) {
+            this->PlayUnitSound(0xc, 1);
+            this->SetAnimation(0xbb, 0);
             return;
         }
-
-        this->UpdateAnimation(0, 0xffffffff);
-        return;
     }
 
-    if ((this->m_localMove.m_moveFlags ^ oldFlags) & 0x40f) {
-        this->UpdateAnimation(0, 0xffffffff);
-    }
+    this->UpdateAnimation(0, 0xffffffff);
 }
 
 // ref: FUN_0073d3d0
-// PARTIAL: the long-fall landing sound and camera shake (FUN_00755270 kind 2) come after the
-// pose in the reference; the camera-shake port carries them.
+// The pose, then for a player-controlled unit that landed from far enough (70 yards always, 13
+// unless it died of it) and was not swimming or slow-falling, the hard-landing sound (0xd) -- not
+// for a player in state 0x4000 or one already dead. PARTIAL: the camera shake that goes with it
+// (FUN_00755270 kind 2) is the camera-shake port's.
 void CGUnit_C::OnLanded(uint32_t oldFlags, uint32_t jumping) {
     this->PlayLandingAnimation(oldFlags, jumping);
+
+    if (!this->IsPlayerControlled() || this->m_localMove.IsUnsupportedSwimmingOrSlowFalling()) {
+        return;
+    }
+
+    float height = this->m_localMove.GetLandingFallHeight();
+
+    if (!(70.0f < height || (13.0f < height && !this->IsDead()))) {
+        return;
+    }
+
+    if (!this->IsA(TYPE_PLAYER)
+        || (!(static_cast<CGPlayer_C*>(this)->Player()->flags & 0x4000) && 0 < this->m_unit->health)) {
+        this->PlayUnitSound(0xd, 1);
+    }
 }
 
 // ref: FUN_0073d4a0
