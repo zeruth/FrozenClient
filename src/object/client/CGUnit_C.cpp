@@ -1,4 +1,6 @@
 #include "object/client/CGUnit_C.hpp"
+#include "util/Zlib.hpp"
+#include "ui/game/ScriptEvents.hpp"
 #include <storm/String.hpp>
 #include "ui/game/PortraitButton.hpp"
 #include "component/ComponentData.hpp"
@@ -7245,6 +7247,404 @@ void RegisterUnitMovementHandlers() {
 
 } // namespace
 
+
+// ------------------------------------------------------------------------------------------------
+// The rest of FUN_00742220's unit messages
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_0073f060
+// The active player's stand state from the server: kept for the input (FUN_006e2b30), the weapon
+// sheathed when sitting down, and the posture's animation -- a jump back up from sleep (9), the
+// fall from a stun (7), a re-choice otherwise. PARTIAL: Player_C's own half of FUN_006e2b30
+// (looting closed, attacking stopped, the stand-state UI refresh) is the Player_C port's; the
+// stun's fall pose FUN_0071ee70 / FUN_0073af80 is the combat port's.
+void CGUnit_C::OnStandStateUpdate(uint8_t standState) {
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        auto player = static_cast<CGPlayer_C*>(this);
+
+        if (player->m_requestedStandState != standState) {
+            player->m_requestedStandState = standState;
+
+            if (standState == 0) {
+                if (auto input = InputControlGetActive()) {
+                    input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+                }
+            }
+        }
+    }
+
+    int32_t current = this->GetStandStateByte();
+
+    if (this->m_sheathState != 0 && current != 0 && current != 2) {
+        this->SetSheathState(0, 1, 0);
+    }
+
+    if (current != this->m_lastStandState) {
+        if (current == 0) {
+            if (this->m_lastStandState == 9) {
+                if ((!this->m_vehicle || !this->m_vehicle->m_rec || !this->m_vehicle->ControlsPassengerAnimation())
+                    && this->GetObjectModel() && this->GetObjectModel()->IsLoaded(0, 0)) {
+                    this->SetAnimation(this->GetObjectModel()->HasSequence(0x7f) ? 0x7f : 0xe0, 0);
+                }
+            } else {
+                this->m_animFlags |= 0x40;
+                this->UpdateAnimation(0, 0xffffffff);
+            }
+        } else if (current == 9) {
+            if (!this->m_vehicle || !this->m_vehicle->m_rec || !this->m_vehicle->ControlsPassengerAnimation()) {
+                this->SetAnimation(0xc9, 0);
+            }
+        } else if (current != 7) {
+            this->m_animFlags |= 0x40;
+            this->UpdateAnimation(0, 0xffffffff);
+        }
+
+        this->m_lastStandState = this->GetStandStateByte();
+    }
+}
+
+namespace {
+
+// ref: FUN_00714ad0
+// SMSG_MULTIPLE_PACKETS: whole messages one after another, each dispatched as if it had arrived
+// alone.
+int32_t UnitMultiplePacketsHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    while (!msg->IsRead() && msg->Tell() <= msg->Size()) {
+        ClientServices::Connection()->ProcessMessage(time, msg, 1);
+    }
+
+    return 1;
+}
+
+// ref: FUN_007169a0
+// Movement messages packed together, each behind its length byte; SMSG_COMPRESSED_MOVES deflates
+// them first (the uncompressed size ahead of the data, FUN_00778180).
+int32_t UnitPackedMoves(CDataStore* msg, uint32_t time, int32_t compressed) {
+    uint32_t size = 0;
+    msg->Get(size);
+
+    TSGrowableArray<uint8_t> buffer;
+    uint32_t remaining = msg->Size() - msg->Tell();
+
+    if (!compressed) {
+        size = remaining;
+        buffer.SetCount(size);
+
+        if (size) {
+            msg->GetArray(buffer.m_data, size);
+        }
+    } else {
+        TSGrowableArray<uint8_t> packed;
+        packed.SetCount(remaining);
+
+        if (remaining) {
+            msg->GetArray(packed.m_data, remaining);
+        }
+
+        buffer.SetCount(size);
+
+        uint32_t inflated = size;
+
+        if (ZlibDecompress(buffer.m_data, &inflated, packed.m_data, remaining) != 0) {
+            return 1;
+        }
+
+        size = inflated;
+    }
+
+    CDataStore moves(buffer.m_data, size);
+
+    while (moves.Tell() != size) {
+        uint8_t length = 0;
+        moves.Get(length);
+
+        if (!moves.IsValid() || size < moves.Tell() + length) {
+            break;
+        }
+
+        TSGrowableArray<uint8_t> one;
+        one.SetCount(length);
+
+        if (length) {
+            moves.GetArray(one.m_data, length);
+        }
+
+        CDataStore single(one.m_data, length);
+        ClientServices::Connection()->ProcessMessage(time, &single, 1);
+    }
+
+    return 1;
+}
+
+int32_t UnitCompressedMovesHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    return UnitPackedMoves(msg, time, 1);
+}
+
+int32_t UnitMultipleMovesHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    return UnitPackedMoves(msg, time, 0);
+}
+
+// ref: FUN_00716940
+// SMSG_FLIGHT_SPLINE_SYNC: how far along its flight path the unit should be.
+int32_t UnitFlightSplineSyncHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    float progress;
+    msg->Get(progress);
+
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x543))) {
+        unit->m_localMove.SyncSplineProgress(progress);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0071cab0
+// MSG_MOVE_TIME_SKIPPED: another unit's client skipped time; its clock moves on with it.
+int32_t UnitTimeSkippedHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x4ff));
+
+    if (!unit) {
+        msg->Seek(msg->Size());
+        return 0;
+    }
+
+    uint32_t skipped = 0;
+    msg->Get(skipped);
+    unit->m_localMove.m_remoteTimeBase += skipped;
+
+    return 1;
+}
+
+// ref: FUN_00716cd0
+// SMSG_FORCE_DISPLAY_UPDATE: rebuild the unit's model.
+int32_t UnitForceDisplayUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x694))) {
+        unit->UpdateModel(1);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716d20
+// SMSG_HEALTH_UPDATE: the health the server reports ahead of the field update.
+int32_t UnitHealthUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    uint32_t health;
+    msg->Get(health);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6c2))) {
+        unit->m_reportedHealth = health;
+    }
+
+    return 1;
+}
+
+// ref: FUN_007236c0
+// SMSG_POWER_UPDATE: likewise for a power.
+int32_t UnitPowerUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    uint8_t powerType;
+    uint32_t value;
+    msg->Get(powerType);
+    msg->Get(value);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6d8))) {
+        unit->SetReportedPower(static_cast<int8_t>(powerType), static_cast<int32_t>(value));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072d130
+// SMSG_CANCEL_AUTO_REPEAT: the unit stops shooting. PARTIAL: the active player's auto-repeat
+// spell stop (FUN_00807560) is Spell_C's.
+int32_t UnitCancelAutoRepeatHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6a4))) {
+        unit->m_animFlags &= 0xfffffdff;
+        unit->ReleaseRangedWeapon();
+    }
+
+    return 1;
+}
+
+// ref: FUN_00718a20
+// The unit is more than half its height above the floor under it.
+int32_t UnitIsHighAboveFloor(CGUnit_C* unit) {
+    float floor = 0.0f;
+    float above = 0.0f;
+
+    if (unit->GetFloorHeight(&floor)) {
+        above = floor - unit->GetPosition().z;
+    }
+
+    return unit->GetModelHeight() * 0.5f < above ? 1 : 0;
+}
+
+// ref: FUN_0071cb30
+// SMSG_MOUNT_SPECIAL_ANIM: another unit's mount rears. PARTIAL: CGUnit_C's slot 0x98 is not
+// ported, so the base's empty one runs.
+int32_t UnitMountSpecialAnimHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    msg->Get(guid);
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x614));
+
+    if (unit && !UnitIsHighAboveFloor(unit) && ClntObjMgrGetActivePlayer() != guid) {
+        unit->Virtual098();
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f540
+// SMSG_STAND_STATE_UPDATE.
+int32_t UnitStandStateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    uint8_t standState;
+    msg->Get(standState);
+
+    if (auto player = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__))) {
+        player->OnStandStateUpdate(standState);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00741a40
+// SMSG_DISMOUNT. A unit carrying passengers waits (state 0x10000000) until they are off.
+// PARTIAL: the name plate refresh (PlayerNameInvalidate) and the ObjectEffect update
+// (FUN_00725df0) are the PlayerName and ObjectEffect ports'.
+int32_t UnitDismountHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x4bc));
+
+    if (!unit || !unit->m_mountDisplayID) {
+        return 1;
+    }
+
+    // A vehicle with passengers aboard (its list at +0x178) holds the dismount; frozen creates no
+    // vehicle, so none holds it.
+
+    unit->m_stateFlags &= 0xefffffff;
+    unit->Dismount(1);
+    unit->m_mountDisplayID = 0;
+    unit->UpdateMountSound();
+    unit->AttachQuestMarker();
+
+    return 1;
+}
+
+// ref: FUN_0071ca50
+// SMSG_LOOT_LIST: the unit's master looter and the next looter in turn.
+int32_t UnitLootListHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    msg->Get(guid);
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x4d1));
+
+    if (!unit) {
+        msg->Seek(msg->Size());
+        return 1;
+    }
+
+    SmartGUID master;
+    SmartGUID roundRobin;
+    *msg >> master;
+    *msg >> roundRobin;
+    unit->m_masterLooter = master;
+    unit->m_roundRobinLooter = roundRobin;
+
+    return 1;
+}
+
+// ref: FUN_00716b10
+// SMSG_AI_REACTION: a creature noticing the player plays its aggro sound. PARTIAL: reaction 2,
+// the pet's (FUN_007474b0), is the unit sound port's.
+int32_t UnitAIReactionHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    uint32_t reaction;
+    msg->Get(guid);
+    msg->Get(reaction);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x625))) {
+        if (reaction == 0) {
+            unit->PlayUnitSound(8, 0);
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00714b20
+// SMSG 0x4d8: a guid and a string the client reads and drops.
+int32_t UnitIgnoredStringHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    msg->Get(guid);
+
+    char text[512];
+    msg->GetString(text, sizeof(text));
+
+    return 1;
+}
+
+void RegisterUnitMiscHandlers() {
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x4cd), &UnitMultiplePacketsHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x4d8), &UnitIgnoredStringHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x388), &UnitFlightSplineSyncHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x2fb), &UnitCompressedMovesHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x51e), &UnitMultipleMovesHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x13c), &UnitAIReactionHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x403), &UnitForceDisplayUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x47f), &UnitHealthUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x3f9), &UnitLootListHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x319), &UnitTimeSkippedHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x172), &UnitMountSpecialAnimHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x480), &UnitPowerUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x29c), &UnitCancelAutoRepeatHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x29d), &UnitStandStateHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x3ac), &UnitDismountHandler, nullptr);
+}
+
+} // namespace
+
+// ref: FUN_00722c50
+// A power the server reports, capped at its maximum; reaching the maximum signals the unit's
+// power-full event. PARTIAL: the unit frames' refresh for the player and its pet (FUN_0053d1b0)
+// is the UI port's.
+void CGUnit_C::SetReportedPower(int32_t powerType, int32_t value) {
+    int32_t maximum = powerType == -2 ? this->m_unit->maxHealth : this->m_unit->maxPower[powerType];
+
+    if (maximum < value) {
+        value = maximum;
+    }
+
+    if (powerType < 0 || 7 <= powerType || value == this->m_reportedPower[powerType]) {
+        return;
+    }
+
+    this->m_reportedPower[powerType] = value;
+
+    if (value == maximum) {
+        ScriptEventsSignalUnitEvent(this->GetGUID(), powerType + 0x13);
+    }
+}
+
 // ref: FUN_00742220
 // The reference undoes this at the end of a game (FUN_00742bb0, from FUN_00406510); frozen has no
 // end of game yet, so a second game in the same session registers nothing twice.
@@ -7254,6 +7654,7 @@ void UnitInitialize() {
     if (!registered) {
         RegisterUnitFieldHandlers();
         RegisterUnitMovementHandlers();
+        RegisterUnitMiscHandlers();
         registered = true;
     }
 

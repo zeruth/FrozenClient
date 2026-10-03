@@ -11,6 +11,10 @@ class CreatureModelDataRec;
 class CCharacterComponent;
 
 class CGPlayer_C : public CGUnit_C, public CGPlayer {
+    public:
+        // +0x1920: the stand state the server last set for the active player (FUN_006e2b30).
+        uint32_t m_requestedStandState = 0;
+
     // The object the player has open for looting (reference +0x18e0), zero when nothing is open.
     // CGUnit_C::IsLooting and CanShowLootAnimation read it through this class exactly as the
     // reference does, after checking the unit IS the active player. Nothing sets it yet.

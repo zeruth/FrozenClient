@@ -882,6 +882,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         int32_t RemoteTeleport(int32_t time, const CMovementStatus& status);
         void ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg);
         void ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* msg);
+        void OnStandStateUpdate(uint8_t standState);
+        void SetReportedPower(int32_t powerType, int32_t value);
         static C3Vector* FitSplineToPosition(WOWGUID transport, const C3Vector& position, C3Vector* points,
                                              uint32_t* count);
         void FaceSplineTarget(WOWGUID target, int32_t flush);
@@ -1040,6 +1042,12 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         int32_t m_intFA4 = -1;
         // +0xac0: when the unit's death animation first finished (the world clock), 0 before.
         uint32_t m_deathTime = 0;
+        // +0xc40 / +0xc48: the unit's master looter and the looter whose turn it is (SMSG_LOOT_LIST).
+        WOWGUID m_masterLooter = 0;
+        WOWGUID m_roundRobinLooter = 0;
+        // +0xfb0: the health SMSG_HEALTH_UPDATE reports; +0xfb4 the powers SMSG_POWER_UPDATE does.
+        uint32_t m_reportedHealth = 0;
+        int32_t m_reportedPower[7] = {};
         // The unit's second state word (reference +0xa30). Only one of its bits is read by the code
         // ported so far: 0x80000, which has to be set for a sequence to keep the blend flag its
         // caller asked for. The rest are written from a dozen places in Unit_C.cpp and are not

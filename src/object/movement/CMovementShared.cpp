@@ -2088,3 +2088,39 @@ uint32_t CMovementShared::EvaluateSpline(int32_t time, C3Vector* position) {
 
     return 1;
 }
+
+// ref: FUN_0098b5d0
+// A flight told how far along it should be: the next lap is stretched or squeezed (between half
+// and twice its time) to catch up, the difference wrapped to within half a lap.
+void CMovementShared::SyncSplineProgress(float progress) {
+    auto spline = this->m_spline;
+
+    if (!spline) {
+        return;
+    }
+
+    if (spline->uint2C != 0) {
+        float duration = static_cast<float>(spline->uint2C);
+
+        if (0.01f <= duration * spline->float204) {
+            float behind = progress - static_cast<float>(spline->uint28) / (duration * spline->float204);
+
+            if (0.5f < behind) {
+                behind -= 1.0f;
+            }
+
+            if (behind < -0.5f) {
+                behind += 1.0f;
+            }
+
+            int32_t ahead = static_cast<int32_t>(std::nearbyint(duration * behind));
+            float stretch = static_cast<float>(static_cast<int32_t>(spline->uint2C) - ahead) / duration;
+
+            spline->float208 = std::min(std::max(stretch, 0.5f), 2.0f);
+
+            return;
+        }
+    }
+
+    spline->float208 = 1.0f;
+}

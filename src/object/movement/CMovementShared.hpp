@@ -82,6 +82,7 @@ class CMovementShared : public CPassenger {
         float GetSplineHeight(uint32_t elapsed, float z) const;
         void RestartSplineLoop(int32_t time);
         uint32_t EvaluateSpline(int32_t time, C3Vector* position);
+        void SyncSplineProgress(float progress);
 
         // ref: FUN_006e9640
         void SetSplineFacingSpot(const C3Vector& spot);
