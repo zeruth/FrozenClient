@@ -234,7 +234,7 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
         this->m_weaponInfo[hand] = info;
     }
 
-    this->m_targetChangeTime = CWorld::GetTickTimeMs() - 1000;
+    this->m_targetChangeTime = CWorld::GetCurTimeMs() - 1000;
 
     // TODO
 
@@ -5858,7 +5858,7 @@ void CGUnit_C::PlayUnitSound(int32_t kind, int32_t force) {
     }
 
     if (kind == 5) {
-        uint32_t now = CWorld::GetTickTimeMs();
+        uint32_t now = CWorld::GetCurTimeMs();
 
         if (static_cast<int32_t>(now - s_lastStandSound - 10000) < 0) {
             return;

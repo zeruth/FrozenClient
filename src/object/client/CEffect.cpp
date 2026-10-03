@@ -111,7 +111,7 @@ void SetModelDrawn(CM2Model* model, uint32_t drawn) {
 }
 
 bool TimeReached(uint32_t time) {
-    uint32_t now = CWorld::GetTickTimeMs();
+    uint32_t now = CWorld::GetCurTimeMs();
 
     return now != time && static_cast<int32_t>(now - time) > -1;
 }

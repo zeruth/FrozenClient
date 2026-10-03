@@ -174,7 +174,7 @@ void CGObject_C::Disable() {
     this->m_highlight = 0;
     this->m_disabled = 1;
 
-    this->m_disableTimeMs = CWorld::GetTickTimeMs();
+    this->m_disableTimeMs = CWorld::GetCurTimeMs();
 }
 
 // ref: FUN_00744db0
@@ -455,7 +455,7 @@ void CGObject_C::UpdateForFrame(CGWorldFrame* frame) {
         frame->m_selectionPet = this->GetGUID();
     }
 
-    uint32_t now = CWorld::GetTickTimeMs();
+    uint32_t now = CWorld::GetCurTimeMs();
 
     this->UpdateFade(now);
 
@@ -992,7 +992,7 @@ void CGObject_C::SetAlpha(float alpha, uint32_t duration) {
         return;
     }
 
-    this->m_fadeStart = CWorld::GetTickTimeMs();
+    this->m_fadeStart = CWorld::GetCurTimeMs();
     this->m_fadeDuration = duration;
     this->m_alphaFrom = this->m_alpha;
     this->m_alphaTo = target;
@@ -1004,7 +1004,7 @@ void CGObject_C::SetAlpha(float alpha, uint32_t duration) {
 
 // ref: FUN_007441d0
 void CGObject_C::SetScaleEase(float scale) {
-    this->m_scaleEaseStart = CWorld::GetTickTimeMs();
+    this->m_scaleEaseStart = CWorld::GetCurTimeMs();
     this->m_scaleEaseFrom = scale;
     this->m_scale = scale;
 

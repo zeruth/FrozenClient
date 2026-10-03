@@ -488,7 +488,7 @@ void BlizzardObject::UpdateShards(uint32_t visible) {
     for (auto shard = this->m_shards.Head(); shard; ) {
         auto next = this->m_shards.Next(shard);
 
-        if (shard->m_startTime <= CWorld::GetTickTimeMs()) {
+        if (shard->m_startTime <= CWorld::GetCurTimeMs()) {
             if (!shard->m_started) {
                 shard->m_started = true;
                 shard->m_model->SetBoneSequence(0xFFFFFFFF, 0, 0xFFFFFFFF, 0, 1.0f, 1, 1);
@@ -622,7 +622,7 @@ bool BlizzardObject::Update() {
         }
 
         float r = RandomUnit(s_shardSeed) * 255.0f;
-        uint32_t start = CWorld::GetTickTimeMs() + (static_cast<uint32_t>(lrintf(r)) & 0xFF) * 2;
+        uint32_t start = CWorld::GetCurTimeMs() + (static_cast<uint32_t>(lrintf(r)) & 0xFF) * 2;
         shard->m_startTime = start ? start : 1;
 
         this->m_accumulator -= 1.0f;

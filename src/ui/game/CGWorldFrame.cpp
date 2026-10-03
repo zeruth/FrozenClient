@@ -744,7 +744,7 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
     }
 
     if (object->IsA(TYPE_GAMEOBJECT)) {
-        static_cast<CGGameObject_C*>(object)->UpdateForFrame(CWorld::GetTickTimeMs());
+        static_cast<CGGameObject_C*>(object)->UpdateForFrame(CWorld::GetCurTimeMs());
 
         return 1;
     }

@@ -718,7 +718,7 @@ int32_t CGGameObjectAnimated::PlaceModel(float elapsed) {
 
         if (model->IsLoaded(0, 0) && !model->m_animatePrev
             && (model->m_animationHeldTime != 0
-                || (this->m_animEndTime != -1 && static_cast<int32_t>(CWorld::GetTickTimeMs() - this->m_animEndTime) >= 0))) {
+                || (this->m_animEndTime != -1 && static_cast<int32_t>(CWorld::GetCurTimeMs() - this->m_animEndTime) >= 0))) {
             return this->OnSequenceInterrupted();
         }
     }
@@ -1012,7 +1012,7 @@ int32_t CGGameObjectAnimated::PlayAnimState(CM2Model* model) {
 
     this->m_playingState = this->m_animState;
 
-    uint32_t now = CWorld::GetTickTimeMs();
+    uint32_t now = CWorld::GetCurTimeMs();
 
     if (speed <= 0.0f) {
         this->m_animEndTime = static_cast<int32_t>(now);

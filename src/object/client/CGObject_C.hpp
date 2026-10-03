@@ -59,7 +59,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
 
         // Public member variables
         TSLink<CGObject_C> m_link;
-        // +0x40: when the object was last disabled (the world tick, DAT_00cd76ac).
+        // +0x40: when the object was last disabled (the world clock, DAT_00cd76ac -- CWorld::GetCurTimeMs, not the tick).
         uint32_t m_disableTimeMs = 0;
         // +0x8c: the quest-giver marker model attached over the object, and the status (+0x90)
         // and override (+0x94) it was picked from.
