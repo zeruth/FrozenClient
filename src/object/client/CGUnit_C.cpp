@@ -4624,8 +4624,7 @@ void CGUnit_C::OnModelSequenceDone(CM2Model* model, uint32_t boneId, uint32_t an
 // sequence that ran out, the follow-up (FUN_0073b510) with the permission bits handed back.
 //
 // PARTIAL, each the subsystem's own port: the passenger's sequence hook (FUN_007484e0), the death
-// effect (FUN_00717ba0, the CEffect list), the other bones' follow-up (FUN_00737bd0, the
-// upper-body split), the swing trail a replaced attack drops (FUN_00732500, behaviours 0x59/0x5a),
+// effect (FUN_00717ba0, the CEffect list), the swing trail a replaced attack drops (FUN_00732500, behaviours 0x59/0x5a),
 // and the player's queued emote steps (FUN_006e2e10, Player_C +0x1944, which frozen does not keep).
 void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted) {
     if (this->m_deferredAnimID == animID) {
@@ -4703,7 +4702,7 @@ void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_
     }
 
     if (boneId != 0xFFFFFFFF && boneId != 0x1A) {
-        // FUN_00737bd0: another bone's follow-up, see above.
+        this->PlayBoneFollowUpAnimation(model, boneId, behavior);
         return;
     }
 
@@ -4721,6 +4720,100 @@ void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_
     this->PlayFollowUpAnimation(model, boneId, animID);
 
     this->m_animFlags |= 0x70;
+}
+
+// ref: FUN_00737bd0
+// A sequence ran out on a bone other than the root or the body (the upper body, a hand): a weapon
+// swing's end sheathes that hand's weapon, and otherwise the bone takes what the chooser would
+// play now -- unless that is the body's own action, or no action at all, in which case the bone is
+// let go so it follows its parent again. A spell visual may replace what the bone takes, and a
+// seat that animates its rider's upper body keeps it.
+//
+// PARTIAL, the vehicle port's: a vehicle letting go of the bone lets it go on each rider the seat
+// animates too (the passenger list at CVehicle_C +0x170/+0x178, which frozen does not keep).
+void CGUnit_C::PlayBoneFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t behavior) {
+    if (behavior == 0xF) {
+        return;
+    }
+
+    if (0x58 < behavior && behavior < 0x5B) {
+        if (boneId == 2) {
+            if (!(this->m_animFlags & 0x200000) && this->PlayOffHandSheath()) {
+                return;
+            }
+        } else if (boneId == 3) {
+            if (!(this->m_animFlags & 0x100000) && this->PlayMainHandSheath()) {
+                return;
+            }
+        }
+    }
+
+    int32_t animID = -1;
+    M2BoneSequenceState state = {};
+    state.uint90 = 0xFFFFFFFF;
+    state.uint94 = 0xFFFFFFFF;
+    state.speed = 1.0f;
+    bool release = false;
+
+    bool seatHolds = false;
+
+    if (this->m_model && this->m_model->IsLoaded(0, 0)) {
+        uint32_t decided = 0;
+        uint8_t kitFlags = 0;
+        int32_t chosen = this->ChooseAnimation(0xFFFFFFFF, &decided, &kitFlags);
+
+        animID = static_cast<int32_t>(this->ResolveAnimation(static_cast<uint32_t>(chosen), nullptr));
+        state.uint90 = static_cast<uint32_t>(animID);
+
+        auto passenger = this->m_vehiclePassenger;
+        const VehicleSeatRec* seat = passenger ? passenger->m_seat : nullptr;
+        bool seatAnimates = passenger && passenger->m_state == 3 && passenger->GetSeatAnimation(seat) != 0x1FA;
+
+        if (boneId == this->m_upperBodyBoneId) {
+            if (kitFlags == 0 && chosen == 0x1FA && seatAnimates) {
+                this->UpdateObjectEffects();
+                return;
+            }
+
+            if (seatAnimates && passenger->GetSeatUpperAnimation(seat) != 0x1FA) {
+                seatHolds = true;
+            }
+        }
+
+        if (!seatHolds) {
+            int32_t body = static_cast<int32_t>(this->m_model->GetBoneUint90(0xFFFFFFFF));
+
+            if (!IsActionAnimation(animID) || !this->CanPlayActionAnimation(animID, body) || animID == body) {
+                release = true;
+            }
+        }
+    }
+
+    M2BoneSequenceState out = {};
+
+    if (!this->ApplyEffectAnimation(nullptr, nullptr, &state, 1, nullptr, nullptr, &out, nullptr, nullptr)) {
+        if (release) {
+            if (model && (!this->m_vehiclePassenger || !this->m_vehiclePassenger->IsRidingLiveVehicle())) {
+                if (model->IsLoaded(0, 0) && model->BoneHasParent(boneId)) {
+                    model->UnsetBoneSequence(boneId, 1, 1);
+                }
+
+                // The vehicle's riders, see above.
+            }
+
+            this->UpdateObjectEffects();
+            return;
+        }
+
+        out.uint90 = static_cast<uint32_t>(animID);
+        out.uint94 = 0xFFFFFFFF;
+        out.currentTime = 0;
+        out.speed = 1.0f;
+    }
+
+    this->SetBoneSequence(model, boneId, out.uint90, out.uint94, static_cast<uint32_t>(out.currentTime), out.speed,
+                          1, 1, 0);
+    this->UpdateObjectEffects();
 }
 
 // ref: FUN_007228b0

@@ -755,6 +755,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         bool IsAttackingOrPetInCombat() const;
         void PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t animID);
         void UpdateSmoothFacing(const float* seatOffset);
+        void PlayBoneFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t behavior);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
