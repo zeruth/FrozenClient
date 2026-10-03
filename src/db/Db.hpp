@@ -52,6 +52,7 @@
 #include "db/rec/CreatureSoundDataRec.hpp"
 #include "db/rec/CreatureFamilyRec.hpp"
 #include "db/rec/CreatureTypeRec.hpp"
+#include "db/rec/CreatureMovementInfoRec.hpp"
 #include "db/rec/CurrencyTypesRec.hpp"
 #include "db/rec/SpellShapeshiftFormRec.hpp"
 #include "db/rec/FactionGroupRec.hpp"
@@ -125,6 +126,7 @@ extern WowClientDB<LightFloatBandRec> g_lightFloatBandDB;
 extern WowClientDB<CreatureSoundDataRec> g_creatureSoundDataDB;
 extern WowClientDB<CreatureFamilyRec> g_creatureFamilyDB;
 extern WowClientDB<CreatureTypeRec> g_creatureTypeDB;
+extern WowClientDB<CreatureMovementInfoRec> g_creatureMovementInfoDB;
 extern WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 extern WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;

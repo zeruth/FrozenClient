@@ -755,6 +755,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         bool IsAttackingOrPetInCombat() const;
         void PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t animID);
         void UpdateSmoothFacing(const float* seatOffset);
+        bool FacesTarget() const;
+        WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
         int32_t GetCastVisualAnimation() const;
 
@@ -1063,6 +1065,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         float m_smoothFacing;
         // +0xaa4: the smoothing step the turn is taking (0 when it is not smoothing).
         float m_smoothFacingStep = 0.0f;
+        // +0xaa8: the last four turns the facing average took, newest first; [0] == 0 starts over.
+        float m_smoothFacingHistory[4] = {};
+        // +0xab8: the facing a unit with state flag 0x1 holds while standing. Nothing writes it yet.
+        float m_heldFacing = 0.0f;
         // +0xabc: when the active player last stood still with nothing steering it.
         uint32_t m_turnStillTime = 0;
         // TODO

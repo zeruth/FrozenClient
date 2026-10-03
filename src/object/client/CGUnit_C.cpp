@@ -1,4 +1,5 @@
 #include "object/client/CGUnit_C.hpp"
+#include "ui/game/CGGameUI.hpp"
 #include "util/Zlib.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include <storm/String.hpp>
@@ -4363,22 +4364,211 @@ void CGUnit_C::PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t a
     this->UpdateAnimation(0x10, 0xffffffff);
 }
 
+float NormalizeAngle(float angle);
+
+// ref: FUN_004f5130
+// The heading from one point to another in the ground plane, with the axis-aligned cases settled
+// without atan2: straight up or down the y axis is a half or one and a half pi.
+float FacingBetween(const C3Vector& from, const C3Vector& to) {
+    float dx = to.x - from.x;
+    float dy = to.y - from.y;
+
+    if (std::fabs(dx) < 2.38419e-07f) {
+        return dy < 0.0f ? 1.5f * CMath::PI : 0.5f * CMath::PI;
+    }
+
+    if (2.38419e-07f <= std::fabs(dy)) {
+        return std::atan2(dy, dx);
+    }
+
+    return to.x < from.x ? CMath::PI : 0.0f;
+}
+
+// ref: FUN_007160b0
+// A critically damped spring: (value, velocity) pulled toward the target at `rate` for `dt`
+// seconds, with the exponential's Pade-style approximation the reference uses.
+void SpringToward(float* state, const float* target, float rate, float dt) {
+    float x = rate * dt;
+    float decay = 1.0f / (x * x * 0.48f + x * x * x * 0.235f + x + 1.0f);
+    float pull = ((state[0] - *target) * rate + state[1]) * dt;
+
+    state[0] = ((state[0] - *target) + pull) * decay + *target;
+    state[1] = decay * (state[1] - pull * rate);
+}
+
+// ref: FUN_00722640
+// Whether the unit turns to face its target: not while casting a spell with attribute 0x80000.
+bool CGUnit_C::FacesTarget() const {
+    if (this->m_castSpellID == 0) {
+        return true;
+    }
+
+    auto spell = g_spellDB.GetRecord(this->m_castSpellID);
+
+    return !(spell && (spell->m_attributes & 0x80000));
+}
+
+// ref: FUN_0071b700
+// The object the active player has open for looting; nothing for anyone else.
+WOWGUID CGUnit_C::GetActiveLootTarget() const {
+    if (ClntObjMgrGetActivePlayer() != this->GetGUID()) {
+        return 0;
+    }
+
+    return static_cast<const CGPlayer_C*>(this)->m_lootTarget;
+}
+
 // ref: FUN_00735f60
 // The facing the camera and the model follow. The active player's is its movement facing as it
 // stands, with two bits on the animation flags saying whether it is turning or being steered by
 // the mouse (0x1) and turning or being dragged (0x2), and the time it last stood still.
 //
-// PARTIAL: every other unit's is smoothed toward where it is going in the reference -- facing its
-// target or its charmer when standing, a four-sample average of the turn otherwise, a stand
-// state's own turn rate -- and none of that is ported yet, so theirs is set to the raw facing as
-// it stands. A vehicle seat's facing (FUN_00735ef0) is the vehicle port's.
+// Every other unit's chases a target facing: its movement facing, or -- standing, not emoting,
+// not stunned or otherwise held -- the facing toward its target (its channel object while it
+// channels for its summoner, or the player while they talk to it). The chase is the creature's
+// own CreatureMovementInfo spring when it has one, a four-sample average of the turn for most
+// units, and a 20 (30 in combat) spring for creatures with unit flag 0x8.
+//
+// PARTIAL, the vehicle port's: the vehicle's own aim target (CVehicle_C +0x160), the seat that
+// keeps its rider's facing (seat flag 0x400 through FUN_005d3340), and pushing the facing on to
+// the vehicle's passengers (FUN_00735ef0). Nothing creates a CVehicle_C yet, so none arises.
 void CGUnit_C::UpdateSmoothFacing(const float* seatOffset) {
-    (void)seatOffset;
-
     float facing = this->m_localMove.m_facing;
 
     if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
-        this->m_smoothFacing = CMath::normalizeangle0to2pi(facing);
+        auto unitData = this->m_unit;
+        bool emoting = false;
+
+        if (unitData->emoteState != 0) {
+            auto emote = g_emotesDB.GetRecord(static_cast<int32_t>(unitData->emoteState));
+            emoting = emote && !(emote->m_flags & 0x2000);
+        }
+
+        if (!(this->m_move->m_moveFlags & 0xf) && this->GetStandStateByte() == 0 && !emoting
+            && !(unitData->flags & 0x40000) && !(unitData->flags2 & 0x8000)) {
+            if (this->m_stateFlags & 0x1) {
+                facing = this->m_heldFacing;
+            } else if (!(unitData->flags & 0x1000000) && !this->IsA(TYPE_PLAYER) && this->FacesTarget()) {
+                WOWGUID target = 0;
+
+                if (unitData->channelSpell == 0 || !(this->m_stateFlags & 0x8000) || this->IsPlayerControlled()) {
+                    target = unitData->target;
+                } else {
+                    target = unitData->channelObject;
+                }
+
+                if (target == 0) {
+                    target = this->GetActiveLootTarget();
+                }
+
+                if (target == 0 && CGGameUI::GetInteractTarget() == this->GetGUID()) {
+                    target = ClntObjMgrGetActivePlayer();
+                }
+
+                auto object = target ? static_cast<CGObject_C*>(ClntObjMgrObjectPtr(target, TYPE_OBJECT, __FILE__, __LINE__))
+                                     : nullptr;
+
+                if (object) {
+                    float toward = FacingBetween(this->GetPosition(), object->GetPosition());
+
+                    if (seatOffset) {
+                        facing = NormalizeAngle(toward - *seatOffset);
+                    } else if (this->IsTransportUnit()) {
+                        auto transport = static_cast<CGUnit_C*>(
+                            ClntObjMgrObjectPtr(this->GetTransportGUID(), TYPE_UNIT, __FILE__, __LINE__));
+
+                        facing = transport ? NormalizeAngle(toward - transport->GetWorldSmoothFacing())
+                                           : NormalizeAngle(facing);
+                    } else if (this->GetTransportGUID() != 0) {
+                        facing = NormalizeAngle(toward - MovementGetTransportFacing(this->GetTransportGUID()));
+                    } else {
+                        facing = NormalizeAngle(toward);
+                    }
+                }
+            }
+        }
+
+        int32_t movementID = this->m_creatureStats ? this->m_creatureStats->m_movementID : 0;
+        auto movement = g_creatureMovementInfoDB.GetRecord(movementID);
+        float dt = CGWorldFrame::s_currentWorldFrame ? CGWorldFrame::s_currentWorldFrame->m_elapsed : 0.0f;
+
+        if (movement && 1e-05f < movement->m_smoothFacingChaseRate) {
+            float target = facing;
+
+            if (facing + CMath::PI < this->m_smoothFacing) {
+                target = facing + CMath::TWO_PI;
+            } else if (this->m_smoothFacing < facing - CMath::PI) {
+                target = facing - CMath::TWO_PI;
+            }
+
+            SpringToward(&this->m_smoothFacing, &target, movement->m_smoothFacingChaseRate, dt);
+            facing = NormalizeAngle(this->m_smoothFacing);
+        } else if (!(unitData->flags & 0x8) || this->IsA(TYPE_PLAYER)) {
+            float delta = facing - this->m_smoothFacing;
+
+            if (CMath::PI < delta) {
+                delta -= CMath::TWO_PI;
+            } else if (delta < -CMath::PI) {
+                delta += CMath::TWO_PI;
+            }
+
+            if (std::fabs(delta) < 0.01f) {
+                this->m_smoothFacingHistory[0] = 0.0f;
+                this->m_smoothFacing = facing;
+
+                return;
+            }
+
+            auto history = this->m_smoothFacingHistory;
+            float turn = delta;
+
+            // A turn the other way starts the average over.
+            if (0.0f <= delta) {
+                if (history[0] < 0.0f) {
+                    history[0] = 0.0f;
+                }
+            } else if (0.0f < history[0]) {
+                history[0] = 0.0f;
+            }
+
+            if (history[0] == 0.0f) {
+                history[0] = delta;
+                history[1] = delta;
+                history[2] = delta;
+                history[3] = delta;
+            } else {
+                history[3] = history[2];
+                history[2] = history[1];
+                history[1] = history[0];
+                history[0] = delta;
+                turn = (history[0] + history[1] + history[2] + history[3]) * 0.25f;
+
+                // Never more than the turn left.
+                if (delta <= 0.0f) {
+                    if (turn < delta) {
+                        turn = delta;
+                    }
+                } else if (delta < turn) {
+                    turn = delta;
+                }
+            }
+
+            facing = NormalizeAngle(turn * 0.5f + this->m_smoothFacing);
+        } else {
+            float target = facing;
+
+            if (facing + CMath::PI < this->m_smoothFacing) {
+                target = facing + CMath::TWO_PI;
+            } else if (this->m_smoothFacing < facing - CMath::PI) {
+                target = facing - CMath::TWO_PI;
+            }
+
+            SpringToward(&this->m_smoothFacing, &target, this->IsAttackingOrPetInCombat() ? 30.0f : 20.0f, dt);
+            facing = NormalizeAngle(this->m_smoothFacing);
+        }
+
+        this->m_smoothFacing = facing;
+
         return;
     }
 

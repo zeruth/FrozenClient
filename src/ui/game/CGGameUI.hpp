@@ -59,6 +59,7 @@ class CGGameUI {
         static WOWGUID& GetCurrentObjectTrack();
         static uint32_t GetCursorMoney();
         static WOWGUID& GetLockedTarget();
+        static WOWGUID GetInteractTarget();
         // ref: FUN_005124d0
         // Whether an opening or in-game cinematic is playing.
         static int32_t InCinematic();
@@ -87,6 +88,10 @@ class CGGameUI {
         static uint32_t s_cursorMacro;
         static bool s_inWorld;
         static WOWGUID s_lockedTarget;
+        // ref: DAT_00bd07a8. The NPC or object the player has a gossip, vendor, trainer or other
+        // interaction window open with; FUN_00512e60 closes whichever window it was. Nothing
+        // opens one yet, so it stays zero.
+        static WOWGUID s_interactTarget;
         // Set while a cinematic plays (DAT_00bd07fc): FUN_00528af0 raises it, FUN_00528c30 drops it.
         static int32_t s_inCinematic;
         static bool s_loggingIn;

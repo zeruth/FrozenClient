@@ -68,6 +68,7 @@ uint32_t CGGameUI::s_cursorMacro;
 CScriptObject* CGGameUI::s_gameTooltip;
 bool CGGameUI::s_inWorld;
 WOWGUID CGGameUI::s_lockedTarget;
+WOWGUID CGGameUI::s_interactTarget;
 int32_t CGGameUI::s_inCinematic;
 bool CGGameUI::s_loggingIn;
 CSimpleTop* CGGameUI::s_simpleTop;
@@ -238,6 +239,10 @@ int32_t CGGameUI::InCinematic() {
 
 WOWGUID& CGGameUI::GetLockedTarget() {
     return CGGameUI::s_lockedTarget;
+}
+
+WOWGUID CGGameUI::GetInteractTarget() {
+    return CGGameUI::s_interactTarget;
 }
 
 static void GameUILoadProgress(float progress, void* param) {
