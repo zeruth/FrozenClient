@@ -888,6 +888,14 @@ static int32_t MapShadowCollect(ShadowView& view, int32_t frame) {
 static int32_t MapShadowRenderView(ShadowView& view, int32_t index, CGxTex* color, CGxTex* depth, const C3Vector& up) {
     auto& casters = s_casters[index];
 
+    // FROZEN-ONLY: what each pass drew, on the shadow dump's frame (see ShadowMap.cpp).
+    if (g_shadowDumpFrame) {
+        fprintf(stderr, "[shadow dump] render view %d mask 0x%x: %u map object groups, %u + %u model batches, center (%.1f, %.1f, %.1f) light (%.3f, %.3f, %.3f)\n",
+                index, view.mask[index], casters.mapObjCount, casters.models[0].count, casters.models[1].count,
+                view.center[index].x, view.center[index].y, view.center[index].z,
+                g_shadowMapLightDir.x, g_shadowMapLightDir.y, g_shadowMapLightDir.z);
+    }
+
     if (casters.mapObjCount == 0 && casters.models[0].count == 0 && casters.models[1].count == 0) {
         MapShadowClearTarget(color, depth, view.viewport[index]);
         return 1;

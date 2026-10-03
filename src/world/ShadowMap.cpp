@@ -15,6 +15,7 @@
 #include "gx/Texture.hpp"
 #include "gx/shader/CShaderEffect.hpp"
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 int32_t g_shadowMapQuality = 0;
@@ -767,6 +768,94 @@ static void ShadowMapRenderCascades(ShadowView& view) {
     }
 }
 
+// FROZEN-ONLY debug: FROZEN_SHADOW_DUMP=<directory> writes every map this module draws to
+// <directory>/shadow_<name>.pgm once, a few hundred frames in so the world has streamed, and logs
+// the light-matrix rows and each pass's caster counts (MapShadow.cpp reads g_shadowDumpFrame).
+// Run it with hwPCF 0 -- registration defaults the CVar to 0 while this is set -- because the
+// hardware-PCF maps are depth textures D3D9 cannot read back.
+int32_t g_shadowDumpFrame = 0;
+static int32_t s_dumpCountdown = 400;
+
+static void ShadowDumpTexture(const char* name, HTEXTURE texture) {
+    const char* dir = getenv("FROZEN_SHADOW_DUMP");
+    CGxTex* tex = ShadowGxTex(texture);
+
+    TSGrowableArray<float> texels;
+    uint32_t width = 0;
+    uint32_t height = 0;
+
+    if (!tex || !g_theGxDevicePtr->IDebugReadTexture(tex, texels, width, height)) {
+        fprintf(stderr, "[shadow dump] %s: not readable (%p)\n", name, static_cast<void*>(tex));
+        return;
+    }
+
+    // Stretch whatever was drawn (anything below the cleared 1.0) across the grey range so the
+    // casters show; cleared texels stay white.
+    float lo = 1.0f;
+    float hi = 0.0f;
+    uint32_t drawn = 0;
+
+    for (uint32_t i = 0; i < texels.Count(); i++) {
+        float v = texels[i];
+
+        if (v < 0.9999f) {
+            lo = v < lo ? v : lo;
+            hi = v > hi ? v : hi;
+            drawn++;
+        }
+    }
+
+    char path[512];
+    snprintf(path, sizeof(path), "%s/shadow_%s.pgm", dir, name);
+
+    FILE* file = fopen(path, "wb");
+
+    if (file) {
+        fprintf(file, "P5\n%u %u\n255\n", width, height);
+
+        float span = hi > lo ? hi - lo : 1.0f;
+
+        for (uint32_t i = 0; i < texels.Count(); i++) {
+            float v = texels[i];
+            uint8_t grey = v < 0.9999f ? static_cast<uint8_t>(((v - lo) / span) * 200.0f) : 255;
+            fputc(grey, file);
+        }
+
+        fclose(file);
+    }
+
+    fprintf(stderr, "[shadow dump] %s: %ux%u, %u texels drawn, depth %.5f..%.5f -> %s\n",
+            name, width, height, drawn, lo, hi, path);
+}
+
+static void ShadowDumpMaps() {
+    fprintf(stderr, "[shadow dump] quality %d, pcf %d, shader level %d, size %d\n",
+            g_shadowMapQuality, CShaderEffect::s_usePcfFiltering, ShadowMapGetShaderLevel(),
+            static_cast<int32_t>(g_shadowMapSize));
+
+    ShadowDumpTexture("main", s_mainMap);
+    ShadowDumpTexture("lit", s_litColor);
+
+    for (int32_t i = 0; i < 3; i++) {
+        char name[32];
+        snprintf(name, sizeof(name), "cascade%d", i);
+        ShadowDumpTexture(name, g_shadowCascades[i].textures[g_shadowCascades[i].visible]);
+
+        fprintf(stderr, "[shadow dump] cascade%d center (%.1f, %.1f, %.1f) extent %.1f\n", i,
+                g_shadowCascades[i].center.x, g_shadowCascades[i].center.y,
+                g_shadowCascades[i].center.z, g_shadowCascades[i].extent);
+    }
+
+    for (int32_t row = 0; row < 12; row++) {
+        fprintf(stderr, "[shadow dump] light row %2d: %10.5f %10.5f %10.5f %10.5f\n", row,
+                s_lightMatrices[row][0], s_lightMatrices[row][1], s_lightMatrices[row][2],
+                s_lightMatrices[row][3]);
+    }
+
+    fprintf(stderr, "[shadow dump] main center (%.1f, %.1f, %.1f) extent %.1f\n",
+            g_shadowMainCenter.x, g_shadowMainCenter.y, g_shadowMainCenter.z, g_shadowMainExtent);
+}
+
 // ref: FUN_00875f80
 // The frame's maps: the main map around the focus (snapped to the texel grid), with only the
 // player's surroundings in it; the lit pass over the same area when asked for; then the cascades.
@@ -785,6 +874,10 @@ int32_t ShadowMapRender(const C3Vector& focus, int32_t lit) {
 
     if (g_shadowMapRealloc || quality <= 0) {
         return 1;
+    }
+
+    if (s_dumpCountdown > 0 && getenv("FROZEN_SHADOW_DUMP") && --s_dumpCountdown == 0) {
+        g_shadowDumpFrame = 1;
     }
 
     ShadowView view;
@@ -879,6 +972,11 @@ int32_t ShadowMapRender(const C3Vector& focus, int32_t lit) {
     if (pcf) {
         GxRsSet(GxRs_ColorWrite, 0xF);
         GxRenderTargetSet(GxBuffers_Depth, savedDepth, 0);
+    }
+
+    if (g_shadowDumpFrame) {
+        ShadowDumpMaps();
+        g_shadowDumpFrame = 0;
     }
 
     return 1;

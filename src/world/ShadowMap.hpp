@@ -80,6 +80,8 @@ typedef int32_t (*ShadowRenderCallback)(ShadowView& view, int32_t index, CGxTex*
 extern int32_t g_shadowMapQuality;
 // A reallocation is pending, which masks the quality to 0 for the frame (DAT_00b1d51c)
 extern int32_t g_shadowMapRealloc;
+// FROZEN-ONLY: set for the one frame FROZEN_SHADOW_DUMP captures (ShadowMap.cpp).
+extern int32_t g_shadowDumpFrame;
 // The fog scale the terrain fog constant is multiplied by (DAT_00d4300c)
 extern float g_shadowMapFogScale;
 // The map edge in texels (DAT_00d43150), from the quality.

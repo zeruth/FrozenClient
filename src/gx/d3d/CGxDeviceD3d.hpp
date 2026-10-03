@@ -345,6 +345,7 @@ class CGxDeviceD3d : public CGxDevice {
     virtual int32_t TexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane);
     virtual int32_t TexCopyFromTargetRect(CGxTex* dst, const CiRect* dstRect, const CiRect* srcRect, uint32_t level, uint32_t plane);
     virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits);
+    virtual int32_t IDebugReadTexture(CGxTex* tex, TSGrowableArray<float>& texels, uint32_t& width, uint32_t& height);
     void IEnsureCaptureTarget();
     void IEnsureTargetDepth(uint32_t width, uint32_t height);
     int32_t ICheckDepthFormat(D3DFORMAT format);

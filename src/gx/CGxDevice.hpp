@@ -396,6 +396,10 @@ class CGxDevice {
         virtual void DeviceAdapterInfo(char* buffer, uint32_t size) {};
         virtual void CaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits);
         virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {};
+        // FROZEN-ONLY debug: copy a render-target texture back to memory as one float per texel
+        // (the red channel of a colour target, the value of an R32F one). Returns 0 where the
+        // backend cannot, which is every backend but D3D9 and every depth-format texture.
+        virtual int32_t IDebugReadTexture(CGxTex* tex, TSGrowableArray<float>& texels, uint32_t& width, uint32_t& height) { return 0; };
         void ICapture();
         void IClipToWindow(CiRect& rect);
         virtual void QueryCreate(CGxQuery*& query, uint32_t type);
