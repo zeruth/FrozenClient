@@ -791,6 +791,19 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void StopSwimming(int32_t time, int32_t fromSpline);
         void UpdateSwimming(int32_t time, int32_t fromSpline);
         void UpdateFlying(int32_t time);
+        bool IsWading(const C3Vector* position);
+        int32_t GetFootstepSize() const;
+        void PlayFootstepEventSound(const C3Vector* position);
+        void GetFootprint(int32_t* texture, C2Vector* size);
+        void OnFootstep(const C3Vector* position, int32_t left);
+        void UpdateBreathState(uint32_t time);
+        void PlayFidgetSound(uint32_t index);
+        void OnFidgetEvent(uint32_t eventId);
+        void PlayEmoteStateSound(const C3Vector* position);
+        void SetMissileLaunchPoint(const C3Vector& point);
+        void OnAnimEvent(CM2Model* model, uint32_t eventId, uint32_t eventData, const C3Vector* position);
+        static void AnimEventCallback(CM2Model* model, uint32_t boneId, uint32_t eventId, uint32_t eventData,
+                                      const C3Vector* position, uint32_t a6, WOWGUID owner);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
@@ -1027,6 +1040,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0x784: how deep the water was at the last step (the splash test), +0x8f0 the race's
         // splash sound, +0xa40 the terrain type under the unit (-1 for none).
         float m_lastLiquidDepth = 0.0f;
+        // +0x9bc: when the breath state is next checked (UpdateBreathState).
+        uint32_t m_breathCheckTime = 0;
+        // +0xaf0: where the unit's next missile flies from (SetMissileLaunchPoint).
+        C3Vector m_missileLaunchPoint = {};
         int32_t m_splashSoundID = 0;
         int32_t m_terrainType = -1;
         // +0xa58: when the next ripple may spread (UpdateRipples), 0 for at once.

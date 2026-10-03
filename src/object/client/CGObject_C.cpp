@@ -758,8 +758,8 @@ void CGObject_C::SetModelFinish(CM2Model* model) {
         return;
     }
 
-    // PHASE4(Unit_C): the unit's anim-event handler (FUN_00734a40 -> FUN_00732650) is not ported.
     model->SetSequenceDoneCallback(CGUnit_C::OnSequenceDone, this->GetGUID());
+    model->SetAnimEventCallback(&CGUnit_C::AnimEventCallback, this->GetGUID());
 }
 
 void CGObject_C::SetObjectLocked(int32_t locked) {

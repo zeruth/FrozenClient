@@ -5498,8 +5498,6 @@ void CGUnit_C::SetMountDisplay(int32_t displayID) {
 }
 
 // ref: FUN_0073d5d0
-// PHASE4(Unit_C): the reference gives the mount the unit's anim-event handler (FUN_00734a40,
-// which forwards to FUN_00732650); frozen has no unit anim-event handler yet.
 void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
     this->m_boneMask = 0;
 
@@ -5525,6 +5523,7 @@ void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
         }
 
         mount->SetSequenceDoneCallback(&CGUnit_C::OnSequenceDone, this->GetGUID());
+        mount->SetAnimEventCallback(&CGUnit_C::AnimEventCallback, this->GetGUID());
 
         C44Matrix placement = this->m_model->matrixB4;
         mount->m_flag8000 = 1;
@@ -11873,13 +11872,18 @@ void CGUnit_C::UpdateWheels() {
 // at most and the head the rest), the turn-in-place shuffle, the wheels, and the regeneration
 // lock's model flag.
 //
-// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the floor check
-// every ten seconds (FUN_0071fa90), the target's name plate blink (FUN_00729740) and the name
+// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the target's name plate blink (FUN_00729740) and the name
 // plate step (FUN_007e6390), the scripted alpha timer (+0xb28), the missiles in flight
 // (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), a vehicle
 // seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
 // kits (FUN_00728140, +0xf4c).
 void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
+    uint32_t now = CWorld::GetCurTimeMs();
+
+    if (static_cast<int32_t>(now - this->m_breathCheckTime) >= 0) {
+        this->UpdateBreathState(now);
+    }
+
     this->UpdateModelColor();
 
     this->CGObject_C::UpdateForFrame(frame);
@@ -12402,4 +12406,484 @@ int32_t WorldObjectTerrainType(HWORLDOBJECT object, int32_t* terrainType) {
     }
 
     return 0;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The unit's animation events: footsteps, breath, sounds and the weapon swaps the model's tracks
+// call for (Unit_C.cpp FUN_00734a40 / FUN_00732650, UnitSound_C.cpp).
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// The event ids are four characters, '$' first, read as a little-endian dword ("$FL0" is
+// 0x304c4624). The footstep family is "$" + one of B F R S W + L or R + a digit 0..3.
+bool IsFootstepEvent(uint32_t eventId, int32_t* left) {
+    if ((eventId & 0xFF) != '$') {
+        return false;
+    }
+
+    char kind = static_cast<char>((eventId >> 8) & 0xFF);
+    char side = static_cast<char>((eventId >> 16) & 0xFF);
+    char digit = static_cast<char>((eventId >> 24) & 0xFF);
+
+    if (kind != 'B' && kind != 'F' && kind != 'R' && kind != 'S' && kind != 'W') {
+        return false;
+    }
+
+    if ((side != 'L' && side != 'R') || digit < '0' || '3' < digit) {
+        return false;
+    }
+
+    *left = side == 'L' ? 1 : 0;
+
+    return true;
+}
+
+uint32_t EventId(const char* tag) {
+    return static_cast<uint32_t>(static_cast<uint8_t>(tag[0])) | (static_cast<uint32_t>(static_cast<uint8_t>(tag[1])) << 8)
+        | (static_cast<uint32_t>(static_cast<uint8_t>(tag[2])) << 16) | (static_cast<uint32_t>(static_cast<uint8_t>(tag[3])) << 24);
+}
+
+} // namespace
+
+// ref: FUN_004cf100
+// The footstep sound a creature footstep set makes on a terrain type, dry or in water.
+//
+// DIVERGED: the reference indexes a hash of FootstepTerrainLookup rows built once by FUN_004cf990
+// (keyed by the creature footstep id, an array per terrain sound); frozen reads the rows
+// directly, which answers the same question.
+int32_t FootstepSoundFor(int32_t footstepID, int32_t terrainType, int32_t wet) {
+    auto terrain = g_terrainTypeDB.GetRecord(terrainType);
+
+    if (!terrain) {
+        return 0;
+    }
+
+    for (int32_t i = 0; i < g_footstepTerrainLookupDB.GetNumRecords(); i++) {
+        auto row = g_footstepTerrainLookupDB.GetRecordByIndex(i);
+
+        if (row && row->m_creatureFootstepID == footstepID && row->m_terrainSoundID == terrain->m_soundID) {
+            return wet ? row->m_soundIDSplash : row->m_soundID;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_004cf170
+// A footstep's sound: the terrain's (or the default terrain's) for the creature's footstep set.
+// The active player's own play as the listener's when the listener is at the character.
+void PlayFootstepSound(int32_t footstepID, const C3Vector* position, int32_t terrainType, int32_t wet, int32_t large,
+                       CGUnit_C* unit) {
+    if (!unit) {
+        return;
+    }
+
+    static CVar* listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+
+    if (!listenerAtCharacter) {
+        return;
+    }
+
+    int32_t soundID = FootstepSoundFor(footstepID, terrainType, wet);
+
+    if (!soundID) {
+        soundID = FootstepSoundFor(footstepID, 0, wet);
+    }
+
+    if (!soundID) {
+        return;
+    }
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    bool activePlayer = unit->IsA(TYPE_PLAYER) && unit->GetGUID() == ClntObjMgrGetActivePlayer();
+
+    if (activePlayer && listenerAtCharacter->GetInt() != 0) {
+        properties.float2c = large ? 50.0f : 20.0f;
+        properties.m_fadeOutTime = 0.6499999761581421f;
+        properties.m_type = 0x11;
+        properties.int20 = 0x73;
+        SI2::PlaySoundKit(soundID, nullptr, nullptr, &properties, 0, nullptr, 1, 0);
+        return;
+    }
+
+    if (activePlayer) {
+        properties.m_type = 0x11;
+        properties.int20 = 0x73;
+        SI2::PlaySoundKit(soundID, position, nullptr, &properties, 0, nullptr, 1, 0);
+        return;
+    }
+
+    properties.m_type = 0xD;
+    properties.int30 = 0;
+    SI2::PlaySoundKit(soundID, position, nullptr, &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_0071a030
+// Whether a footstep at `position` falls in shallow liquid the unit wades in (not swims).
+bool CGUnit_C::IsWading(const C3Vector* position) {
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+
+    if (!CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        return false;
+    }
+
+    uint32_t bit8 = 0;
+    uint32_t bit9 = 0;
+    CWorld::GetObjectLiquidFlags(this->m_worldObject, &bit8, &bit9);
+
+    return bit9 && position->z < surface + 0.01f && !(this->m_move->m_moveFlags & 0x200000);
+}
+
+// ref: FUN_00754f40
+// The unit's footstep size class: the display's, or its model's when the display does not say.
+int32_t CGUnit_C::GetFootstepSize() const {
+    int32_t size = this->m_displayInfo ? this->m_displayInfo->m_sizeClass : -1;
+
+    if (size == -1 && this->m_modelData) {
+        size = this->m_modelData->m_sizeClass;
+    }
+
+    return size;
+}
+
+// ref: FUN_00747240
+// "$FSD": a footstep's sound, and the armour's foley, for a visible unit on its feet.
+void CGUnit_C::PlayFootstepEventSound(const C3Vector* position) {
+    if ((static_cast<uint8_t>(this->m_unit->bytes1 >> 16) & 0x2) || (this->m_move->m_moveFlags & 0x40000000)) {
+        return;
+    }
+
+    if (this->m_vehiclePassenger && this->m_vehiclePassenger->m_state != 0) {
+        return;
+    }
+
+    if (this->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(this)->Player()->flags & 0x10)) {
+        return;
+    }
+
+    this->PlayArmorFoley();
+
+    static CVar* footstepSounds = CVar::Lookup("FootstepSounds");
+    auto soundData = this->GetSoundData();
+
+    if (!soundData || !soundData->m_soundFootstepID || !footstepSounds || footstepSounds->GetInt() == 0) {
+        return;
+    }
+
+    int32_t large = 2 < this->GetFootstepSize() ? 1 : 0;
+
+    PlayFootstepSound(soundData->m_soundFootstepID, position, this->m_terrainType, this->IsWading(position) ? 1 : 0,
+                      large, this);
+}
+
+// ref: FUN_0071fb60
+// The footprint a step leaves: the mount's while mounted, the unit's own otherwise, scaled.
+void CGUnit_C::GetFootprint(int32_t* texture, C2Vector* size) {
+    float scale = this->GetScale();
+
+    if (this->m_unit->mountDisplayID < 1 || (this->m_stateFlags & 0x10000000) || !this->m_mountModel) {
+        *texture = this->m_footprintTexture;
+        size->x = this->m_footprintLength * scale;
+        size->y = scale * this->m_footprintWidth;
+        return;
+    }
+
+    *texture = this->m_mountFootprintTexture;
+    size->x = this->m_mountFootprintLength * scale;
+    size->y = scale * this->m_mountFootprintWidth;
+}
+
+// ref: FUN_00723a50
+// One footfall, within fifty yards of the camera, of a visible unit on its own feet (no pet
+// number, not stealthed, not on a transport, not a ghost): the footprint, the model's footstep
+// shake, and within twenty-five yards, walking or running forward, the terrain's spray -- or a
+// splash in water shallower than half the unit's height.
+//
+// PARTIAL: the footprint itself (FUN_0077f040 -> FUN_0079fa70, the map's decal list) is phase 2's
+// footprint port; with it unported nothing is laid down.
+void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
+    if (this->m_unit->petNumber != 0 || (this->m_move->m_moveFlags & 0x40000000)
+        || (static_cast<uint8_t>(this->m_unit->bytes1 >> 16) & 0x2) || this->GetTransportGUID() != 0) {
+        return;
+    }
+
+    if (this->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(this)->Player()->flags & 0x10)) {
+        return;
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (!camera) {
+        return;
+    }
+
+    const C3Vector& eye = camera->Position();
+    float dx = position->x - eye.x;
+    float dy = position->y - eye.y;
+    float dz = position->z - eye.z;
+    float distance = dz * dz + dy * dy + dx * dx;
+
+    if (2500.0f < distance) {
+        return;
+    }
+
+    (void)left;
+
+    auto modelData = this->m_modelData;
+
+    if (modelData && modelData->m_footstepShakeSize != 0) {
+        camera->AddShakeByID(modelData->m_footstepShakeSize, *position);
+    }
+
+    static CVar* footprintParticles = CVar::Lookup("showfootprintparticles");
+
+    if (625.0f < distance || (this->m_move->m_moveFlags & 0x2) || (modelData && (modelData->m_flags & 0x1))
+        || !footprintParticles || footprintParticles->GetInt() == 0) {
+        return;
+    }
+
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+
+    if (!CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        auto terrain = g_terrainTypeDB.GetRecord(this->m_terrainType);
+
+        if (!terrain) {
+            return;
+        }
+
+        auto spray = g_spellVisualEffectNameDB.GetRecord(this->IsMovingAtWalkPace() ? terrain->m_footstepSprayWalk
+                                                                                    : terrain->m_footstepSprayRun);
+
+        if (!spray) {
+            return;
+        }
+
+        C3Vector at = *position;
+
+        if (this->GetTransportGUID() != 0) {
+            C44Matrix transport;
+            MovementGetTransportMatrixChecked(this->GetTransportGUID(), transport, this->GetGUID(), ".\\Unit_C.cpp", 0xcce);
+            at = at * transport.AffineInverse();
+        }
+
+        void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+        auto effect = mem ? new (mem) CEffect() : nullptr;
+
+        if (effect) {
+            effect->InitializeAtPoint(at, static_cast<uint32_t>(OsGetAsyncTimeMs()), 0, nullptr, spray, this->GetGUID(),
+                                      0x220, &CGObject_C::KitEffectOneShot, 0, nullptr, this->GetTransportGUID());
+            effect->Release();
+        }
+
+        return;
+    }
+
+    uint32_t bit8 = 0;
+    uint32_t bit9 = 0;
+    CWorld::GetObjectLiquidFlags(this->m_worldObject, &bit8, &bit9);
+
+    if (!bit9) {
+        return;
+    }
+
+    float depth = surface - this->GetPosition().z;
+
+    if (!(depth < this->m_localMove.m_collisionHeight * 0.5f)) {
+        return;
+    }
+
+    C3Vector at = { position->x, position->y, depth + position->z };
+    void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+    auto effect = mem ? new (mem) CEffect() : nullptr;
+
+    if (effect) {
+        effect->InitializeHardcodedAt(this->IsMovingAtWalkPace() ? 0 : 1, at, this->GetGUID(), 0x220,
+                                      &CGObject_C::KitEffectOneShot);
+        effect->Release();
+    }
+}
+
+// ref: FUN_0071fa90
+// Every ten seconds: a unit deep under water (more than five yards past its own height) breathes
+// bubbles (state 0x20).
+//
+// PARTIAL: the cold-air breath (state 0x40, FUN_0078f1f0 over the area's WorldParam) is the
+// world parameters port's.
+void CGUnit_C::UpdateBreathState(uint32_t time) {
+    this->m_stateFlags &= 0xFFFFFF9F;
+
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+
+    if (CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        float height = this->m_height * this->m_scale;
+
+        if (height + 5.0f < surface - this->GetPosition().z) {
+            this->m_stateFlags |= 0x20;
+        }
+    }
+
+    this->m_breathCheckTime = time + 10000;
+}
+
+// ref: FUN_007462e0
+// One of the creature's fidget sounds, two yards above it.
+void CGUnit_C::PlayFidgetSound(uint32_t index) {
+    auto soundData = this->GetSoundData();
+
+    if (!soundData || 5 <= index || !soundData->m_soundFidget[index]) {
+        return;
+    }
+
+    C3Vector at = this->GetPosition();
+    at.z += 2.0f;
+
+    SI2::PlaySoundKit(soundData->m_soundFidget[index], &at, nullptr, nullptr, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_007471a0
+// "$FD1".."$FD5" the fidget sounds; "$FDX" another unit's fidget voice (unit sound 5).
+void CGUnit_C::OnFidgetEvent(uint32_t eventId) {
+    for (uint32_t i = 0; i < 5; i++) {
+        if (eventId == (EventId("$FD1") + (i << 24))) {
+            this->PlayFidgetSound(i);
+            return;
+        }
+    }
+
+    if (eventId == EventId("$FDX") && this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        this->PlayUnitSound(5, 0);
+    }
+}
+
+// ref: FUN_00746ad0
+// "$ESD": the sound of the emote state the unit holds, when that emote is a sound emote (2).
+void CGUnit_C::PlayEmoteStateSound(const C3Vector* position) {
+    auto emote = g_emotesDB.GetRecord(static_cast<int32_t>(this->m_unit->emoteState));
+
+    if (emote && emote->m_specProc == 2) {
+        SI2::PlaySoundKit(emote->m_soundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+    }
+}
+
+// ref: FUN_00715a50
+// Where the unit's next missile flies from (state 0x80000000 until the frame takes it).
+void CGUnit_C::SetMissileLaunchPoint(const C3Vector& point) {
+    this->m_stateFlags |= 0x80000000;
+    this->m_missileLaunchPoint = point;
+}
+
+// ref: FUN_00732650
+// The animation event dispatch.
+//
+// PARTIAL, each the subsystem's own port: the missile a bow or gun releases ("$BWR", "$CSL",
+// "$CSR", "$CST" with a held missile at +0x9ec), the combat events ("$AH#", "$CAH", "$DTH",
+// "$BWP", "$CPP", "$CSS", FUN_00756240, UnitCombat_C), the spell cast sound ("$CSD",
+// FUN_00746d60), the trade-skill event ("$TRD", FUN_00763570), and the vehicle's ("$VG#",
+// FUN_00757060; "$VT#", FUN_007570f0).
+void CGUnit_C::OnAnimEvent(CM2Model* model, uint32_t eventId, uint32_t eventData, const C3Vector* position) {
+    (void)model;
+    (void)eventData;
+
+    int32_t left = 0;
+
+    if (IsFootstepEvent(eventId, &left)) {
+        this->OnFootstep(position, left);
+        return;
+    }
+
+    if ((eventId & 0x00FFFFFF) == (EventId("$FD0") & 0x00FFFFFF) || eventId == EventId("$FDX")) {
+        this->OnFidgetEvent(eventId);
+        return;
+    }
+
+    if (eventId == EventId("$SHL")) {
+        this->ReturnSwingWeapon(position, 1, 0x200000);
+    } else if (eventId == EventId("$SHR")) {
+        this->ReturnSwingWeapon(position, 0, 0x100000);
+    } else if (eventId == EventId("$WGG")) {
+        this->PlayUnitSound(10, 0);
+    } else if (eventId == EventId("$WNG")) {
+        this->PlayUnitSound(7, 0);
+    } else if (eventId == EventId("$ESD")) {
+        this->PlayEmoteStateSound(position);
+    } else if (eventId == EventId("$FSD")) {
+        this->PlayFootstepEventSound(position);
+    } else if (eventId == EventId("$SMD")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_submergedSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$SMG")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_submergeSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$BRT")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_birthSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$SCD")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_spellCastDirectedSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$BTH")) {
+        // The breath: bubbles deep under water (hard-coded effect 2), fog in cold air (3), and a
+        // drunk player's (7, Player_C's drunkenness, not ported).
+        if (ClntObjMgrGetPlayerType() == PLAYER_BOT || !this->m_modelData || (this->m_modelData->m_flags & 0x2)) {
+            return;
+        }
+
+        int32_t index;
+
+        if (this->m_stateFlags & 0x20) {
+            index = 2;
+        } else if (this->m_stateFlags & 0x40) {
+            index = 3;
+        } else {
+            return;
+        }
+
+        void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+        auto effect = mem ? new (mem) CEffect() : nullptr;
+
+        if (effect) {
+            effect->InitializeHardcoded(index, this->GetGUID(), &CGObject_C::KitEffectOneShot);
+            effect->m_flags |= CEffect::EFFECT_NO_EXPIRE;
+            effect->Release();
+        }
+    } else if (eventId == EventId("$BWR")) {
+        if (this->GetGUID() == ClntObjMgrGetActivePlayer() && s_clickToMoveState == 0) {
+            this->CancelClickToMove(0, 1);
+        }
+
+        this->m_animFlags &= 0xFFFFBFFF;
+
+        if (this->m_rangedAmmoModel && this->m_rangedAmmoModel->m_attachParent) {
+            this->m_rangedAmmoModel->DetachFromParent();
+        }
+    }
+}
+
+// ref: FUN_00734a40
+// The unit model's anim-event hook: the owner by guid, then its dispatch. A position with a NaN
+// is reported (to the error log the reference keeps) and dispatched anyway.
+void CGUnit_C::AnimEventCallback(CM2Model* model, uint32_t boneId, uint32_t eventId, uint32_t eventData,
+                                 const C3Vector* position, uint32_t a6, WOWGUID owner) {
+    (void)boneId;
+    (void)a6;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(owner, TYPE_UNIT, ".\\Unit_C.cpp", 0x21b));
+
+    if (!unit || !position) {
+        return;
+    }
+
+    unit->OnAnimEvent(model, eventId, eventData, position);
 }
