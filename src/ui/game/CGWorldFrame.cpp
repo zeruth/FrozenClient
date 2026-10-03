@@ -141,8 +141,7 @@ CGWorldFrame::CGWorldFrame(CSimpleFrame* parent) : CSimpleFrame(parent) {
     CGWorldFrame::s_deathEffect = STORM_NEW(EffectDeath);
     CGWorldFrame::s_netherEffect = STORM_NEW(EffectNether);
 
-    // TODO EffectSpecial (FUN_007ea5f0).
-    CGWorldFrame::s_specialEffect = nullptr;
+    CGWorldFrame::s_specialEffect = STORM_NEW(EffectSpecial);
 
     CGWorldFrame::UpdateScreenEffect();
 

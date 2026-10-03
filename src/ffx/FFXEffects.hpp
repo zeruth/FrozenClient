@@ -82,6 +82,88 @@ class PassNetherCombine : public FFX::Pass {
         PassNetherCombine(FFX::Target* const* inputs, uint32_t inputCount, FFX::Target* target, uint32_t blend, bool flip);
 };
 
+class CGxBuf;
+class CGxPool;
+
+// The special effect's source: one row of its noise texture drawn across the bottom of the fog
+// field each frame, tinted by the screen effect's colour, the row advancing frame by frame.
+class PassFogSource : public FFX::Pass {
+    public:
+        // Member variables
+        uint32_t m_row = 0;                 // +0x30
+        CImVector m_color = { 0, 0, 0, 0 }; // +0x34
+
+        // Virtual member functions
+        ~PassFogSource() override;
+        bool IsValid() override;
+        void Render() override;
+
+        // Member functions
+        PassFogSource(FFX::Target* const* inputs, uint32_t inputCount, FFX::Target* target, uint32_t blend, bool flip);
+};
+
+// The fog field drawn into itself one row up through four taps below each texel, so what the
+// source lays down rises and spreads (FFXPropagateFog).
+class PassPropagateFog : public FFX::Pass {
+    public:
+        // Member variables
+        uint32_t m_shaderIndex = 0;         // +0x30
+        CGxShader* m_shaders[2] = {};       // +0x34
+        float m_offsets[8] = {};            // +0x3c, the four taps in texels
+        float m_strength = 0.0f;            // +0x5c
+
+        // Virtual member functions
+        ~PassPropagateFog() override;
+        bool IsValid() override;
+        void Render() override;
+
+        // Member functions
+        PassPropagateFog(FFX::Target* const* inputs, uint32_t inputCount, FFX::Target* target, const float* offsets, uint32_t blend, bool flip);
+};
+
+// The fog field wrapped around the screen's centre on a 33 by 33 grid and laid over the scene
+// (FFXFogCombine).
+class PassFogCombine : public FFX::Pass {
+    public:
+        // Member variables
+        uint32_t m_shaderIndex = 0;         // +0x30
+        CGxShader* m_shaders[2] = {};       // +0x34
+        CGxPool* m_vertexPool = nullptr;    // +0x3c
+        CGxBuf* m_vertexBuf = nullptr;      // +0x40
+        CGxPool* m_indexPool = nullptr;     // +0x44
+        CGxBuf* m_indexBuf = nullptr;       // +0x48
+        int32_t m_builtWidth = 0;           // +0x4c
+        int32_t m_builtHeight = 0;          // +0x50
+        float m_strength = 0.0f;            // +0x54
+        float m_fadeIn = 0.0f;              // +0x58, seconds left of the fade
+
+        // Virtual member functions
+        ~PassFogCombine() override;
+        bool IsValid() override;
+        void Render() override;
+
+        // Member functions
+        PassFogCombine(FFX::Target* const* inputs, uint32_t inputCount, FFX::Target* target, uint32_t blend, bool flip);
+        // The grid's points, wrapped around the centre of the field. Rebuilt when the target's size
+        // changes or the device dropped the buffer.
+        void BuildVertices(const int32_t* targetSize, FFX::Target* field, FFX::Target* scene);
+        void BuildIndices();
+};
+
+class EffectSpecial : public FFX::Effect {
+    public:
+        // Member variables
+        FFX::Target m_field;                // +0x1c, 256 by 128, rendered into
+        FFX::Target m_noise;                // +0x38, 256 by 256 of value noise
+
+        // Virtual member functions
+        ~EffectSpecial() override;
+        void SetParams(uint32_t count, const uint32_t* params) override;
+
+        // Member functions
+        EffectSpecial();
+};
+
 class EffectDeath : public FFX::Effect {
     public:
         // Virtual member functions

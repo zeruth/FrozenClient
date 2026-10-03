@@ -724,25 +724,6 @@ void CGlueMgr::InitializeFFX() {
 
     CGlueMgr::m_deathEffect = STORM_NEW(EffectDeath);
     CGlueMgr::m_glowEffect = STORM_NEW(EffectGlow);
-
-    // Registered here because this is where the reference registers it too -- in the function that
-    // brings the full-screen effects up, not inside an effect class. Frozen has no EffectSpecial
-    // for it to belong to, which is the same reason the reference keeps it loose.
-    //
-    // DIVERGENCE in the default. The reference picks "1" or "0" from a device capability byte
-    // tested at registration time; frozen takes the ungated "0". This is the full-screen TEST
-    // effect, so off is both the safer default and what an uncapable device would have got.
-    CVar::Register(
-        "ffxSpecial",
-        "full screen test effect",
-        0x1,
-        "0",
-        &FFXSpecialCallback,
-        GRAPHICS,
-        false,
-        nullptr,
-        false
-    );
 }
 
 void CGlueMgr::LoginServerLogin(const char* accountName, const char* password) {
