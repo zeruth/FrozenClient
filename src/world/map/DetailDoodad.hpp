@@ -299,6 +299,12 @@ void Draw(CDetailDoodadData* instance);
 // ref: FUN_007b2d30
 int32_t SetupState();
 
+// The shader path's vertex program and the per-chunk constants: the chunk's placement (less the
+// camera) times the view in c0..c3, and the 23 registers the frame setup filled sent whole.
+// `variant` picks one of the two vertex shader triples (the reference only ever passes 0).
+// ref: FUN_007b10e0
+void SetupChunkShader(const C44Matrix& placement, int32_t variant);
+
 // Take an instance for a chunk and scatter it. Null when the chunk scatters nothing.
 CDetailDoodadData* CreateInstance(CMapChunk* chunk);
 

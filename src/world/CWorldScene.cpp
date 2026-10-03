@@ -2648,8 +2648,7 @@ void CWorldScene::RenderDetailDoodads() {
 
             GxXformSet(GxXform_World, placement);
         } else {
-            // TODO ref: FUN_007b10e0 hands the matrix and 23 constants to the module's vertex
-            // shader. Unreachable while the module's shaders are not loaded.
+            DetailDoodad::SetupChunkShader(placement, 0);
         }
 
         DetailDoodad::Draw(instance);

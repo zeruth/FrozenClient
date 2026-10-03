@@ -9,6 +9,8 @@
 #include "world/CWFrustum.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/CMap.hpp"
+#include "world/map/CMapLight.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 
 #include "gx/CGxBatch.hpp"
@@ -123,18 +125,9 @@ bool CMapObjGroup::BatchOutsideFrustum(const SMOBatch* batch) {
 }
 
 // ref: FUN_007a8440
-// Bit 1 of `state` picks which of the light's two fog sets to use and bit 2 forces the fog
-// colour black; zero turns fog off. Only changes are pushed.
-//
-// Diverged: the reference reads two distinct fog sets out of the light block (+0x8c and
-// +0xa0). frozen's CWorld carries one, so both selections read the same start, end, rate
-// and colour.
-//
-// What the second set is, established rather than guessed: the block holds three, and the sky
-// interpolates between the ones at +0x8c and +0xb0 to produce +0xa0 every frame. So +0xa0 is
-// the blended fog the world is actually under and +0x8c an endpoint of that blend -- the
-// selection is between the current fog and one end of the transition, not between an ordinary
-// and an underwater set as a note here previously supposed.
+// Bit 1 of `state` picks the DayNight block's outdoor fog set (+0x8c) over the final, blended
+// one the world is under (+0xa0), and bit 2 forces the fog colour black; zero turns fog off.
+// Only changes are pushed.
 void CMapObj::SetupFog(uint32_t state) {
     if (CMapObj::s_fogState == state) {
         return;
@@ -148,23 +141,19 @@ void CMapObj::SetupFog(uint32_t state) {
         return;
     }
 
-    const C3Vector& fog = CWorld::GetFogColor();
+    auto block = DayNightGetBlock();
+    bool outdoor = (state & 0x2) != 0;
 
-    CImVector color;
+    CImVector color = outdoor ? block->fogColor : block->finalFogColor;
+    float start = outdoor ? block->fogStart : block->finalFogStart;
+    float end = outdoor ? block->fogEnd : block->finalFogEnd;
+    float rate = outdoor ? block->fogRate : block->finalFogRate;
 
     if (state & 0x4) {
-        color.b = 0;
-        color.g = 0;
-        color.r = 0;
-        color.a = 0xff;
-    } else {
-        color.b = static_cast<uint8_t>(fog.z * 255.0f);
-        color.g = static_cast<uint8_t>(fog.y * 255.0f);
-        color.r = static_cast<uint8_t>(fog.x * 255.0f);
-        color.a = 0xff;
+        color.value = 0xff000000;
     }
 
-    CShaderEffect::SetFogParams(CWorld::GetFogStart(), CWorld::GetFogEnd(), CWorld::GetFogRate(), color);
+    CShaderEffect::SetFogParams(start, end, rate, color);
     CShaderEffect::SetFogEnabled(1);
 }
 
@@ -173,9 +162,9 @@ void CMapObj::SetupFog(uint32_t state) {
 // interior one, mode 3 the building's own declared ambient with no diffuse at all, and
 // mode 0 no lighting. Only changes are pushed.
 //
-// Diverged: modes 1 and 2 take their ambient and diffuse from two LightParams columns the
-// reference resolves per zone and frozen has not ported; both read the outdoor ambient and
-// the sun colour here instead. Mode 3 is faithful -- that colour is the MOHD's own.
+// Modes 1 and 2 are the DayNight block's packed colours: the sun's diffuse and ambient
+// (+0x1a8 / +0x1ac), or the same two blended half and half (+0x1b0 / +0x1b4), which is what
+// interiors take. Mode 3 is the MOHD's own ambient with no diffuse.
 void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
     if (CMapObj::s_lightingMode == mode) {
         return;
@@ -186,49 +175,18 @@ void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
     C3Vector ambient = { 0.0f, 0.0f, 0.0f };
     C3Vector diffuse = { 0.0f, 0.0f, 0.0f };
 
-    if (mode == 1 || mode == 2) {
-        // Diverged, and here is exactly what from, so closing it is not a hunt:
-        //
-        // The reference does NOT read LightParams columns here. It reads four already-resolved
-        // PACKED colours out of the DayNight block, one pair per mode, each byte scaled by
-        // DAT_00a45564 and taken blue-green-red:
-        //
-        //     mode 1   ambient at DayNight +0x1a8, diffuse at +0x1ac
-        //     mode 2   ambient at +0x1b0,          diffuse at +0x1b4
-        //
-        // Those four are copied into place by the function at 0x007ee750, and reading it
-        // settles what the two modes actually are:
-        //
-        //     mode 1 ambient = DayNight +0xd8        mode 1 diffuse = +0xd4
-        //     mode 2 ambient = midpoint(+0xd8, +0xd4)
-        //     mode 2 diffuse = the same midpoint taken the other way round, then put through
-        //                      a per-channel bit trick that is not yet read out
-        //
-        // So MODE 2 IS NOT A SECOND LIGHT SOURCE. It is mode 1's own two colours blended half
-        // and half -- which means frozen treating modes 1 and 2 identically is wrong in a
-        // specific way, and the fix does not depend on knowing which band feeds mode 1.
-        //
-        // What is still missing is that band number. +0xd4 and +0xd8 are never written by a
-        // direct store; the DayNight update takes their address at 0x007f332c and fills them
-        // through it, so finding the band means following that, not grepping for the address.
-        //
-        // Until then, take the sun the same way the terrain pass does, including its fallback --
-        // without that fallback the world's own ambient and diffuse are both zero and every
-        // building draws black, which is exactly what happened the first time this ran.
-        C3Vector sunDir = { 0.0f, 0.0f, 0.0f };
-        CM2Lighting lighting;
-        CAaSphere origin = { sunDir, 0.0f };
-        lighting.Initialize(nullptr, origin);
+    auto block = DayNightGetBlock();
+    const float k = 1.0f / 255.0f;
+    auto rgb = [k](const CImVector& c) {
+        return C3Vector { c.r * k, c.g * k, c.b * k };
+    };
 
-        lighting.AddAmbient(CWorld::GetOutdoorAmbient());
-        lighting.AddDiffuse(CWorld::GetOutdoorDiffuse(), CWorld::GetOutdoorDirection());
-
-        C3Vector specular = { 0.0f, 0.0f, 0.0f };
-
-        if (!lighting.GetSunlight(&sunDir, &ambient, &diffuse, &specular)) {
-            ambient = { 1.0f, 1.0f, 1.0f };
-            diffuse = { 0.0f, 0.0f, 0.0f };
-        }
+    if (mode == 1) {
+        diffuse = rgb(block->diffuse);
+        ambient = rgb(block->ambient);
+    } else if (mode == 2) {
+        diffuse = rgb(block->diffuseHalf);
+        ambient = rgb(block->ambientHalf);
     } else if (mode == 3) {
         const CImVector& color = group->m_mapObj->m_mohd->ambColor;
 
@@ -259,20 +217,18 @@ void CMapObj::SetupLighting(CMapObjGroup* group, int32_t mode) {
     float ambientConst[4] = { ambient.x, ambient.y, ambient.z, 0.0f };
 
     // The sun arrives in view space, so the vertex program can dot it against a view-space
-    // normal without a matrix of its own. Negated and rotated exactly as the terrain pass does
-    // it, from the same world-level direction.
+    // normal without a matrix of its own: the outdoor light's own direction, rotated by the view
+    // and not negated (TransformDirection at 0x007a8d4f). The fourth float the reference sends
+    // is whatever follows its three on the stack; the program reads only xyz.
     C44Matrix view;
     GxXformView(view);
 
-    const C3Vector& sun = CWorld::GetOutdoorDirection();
-    float x = -sun.x;
-    float y = -sun.y;
-    float z = -sun.z;
+    const C3Vector& sun = CMap::s_outdoorLight->m_light.m_dir;
 
     float dirConst[4] = {
-        view.a0 * x + view.b0 * y + view.c0 * z,
-        view.a1 * x + view.b1 * y + view.c1 * z,
-        view.a2 * x + view.b2 * y + view.c2 * z,
+        view.a0 * sun.x + view.b0 * sun.y + view.c0 * sun.z,
+        view.a1 * sun.x + view.b1 * sun.y + view.c1 * sun.z,
+        view.a2 * sun.x + view.b2 * sun.y + view.c2 * sun.z,
         1.0f
     };
 
@@ -938,22 +894,9 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
             if (CMapObj::s_fogState != 2) {
                 CMapObj::s_fogState = 2;
 
-                // Diverged with CMapObj::SetupFog: frozen carries one fog set, so this reads
-                // the same start, end, rate and colour that set does.
-                const C3Vector& fog = CWorld::GetFogColor();
-
-                CImVector color;
-                color.b = static_cast<uint8_t>(fog.z * 255.0f);
-                color.g = static_cast<uint8_t>(fog.y * 255.0f);
-                color.r = static_cast<uint8_t>(fog.x * 255.0f);
-                color.a = 0xff;
-
-                CShaderEffect::SetFogParams(
-                    CWorld::GetFogStart(),
-                    CWorld::GetFogEnd(),
-                    CWorld::GetFogRate(),
-                    color
-                );
+                // State 2 is SetupFog's outdoor set: the DayNight block's +0x8c group.
+                auto block = DayNightGetBlock();
+                CShaderEffect::SetFogParams(block->fogStart, block->fogEnd, block->fogRate, block->fogColor);
                 CShaderEffect::SetFogEnabled(1);
             }
         }
@@ -1415,8 +1358,14 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
             continue;
         }
 
-        if (rect->minY > window[3] || window[1] > rect->maxY
-            || rect->minX > window[2] || window[0] > rect->maxX) {
+        // Overlap with the window, both ordered vertical-first ({minY, minX, maxY, maxX}): the
+        // reference tests +8 against window[3], window[1] against +0x10, +4 against window[2]
+        // and window[0] against +0xc (0x007ac2f0). This used to compare each rect edge with the
+        // window edge of the OTHER axis, so a doorway was dropped whenever its vertical span
+        // missed the window's horizontal one -- which rooms showed through a door depended on
+        // the view angle.
+        if (rect->minX > window[3] || window[1] > rect->maxX
+            || rect->minY > window[2] || window[0] > rect->maxY) {
             continue;
         }
 

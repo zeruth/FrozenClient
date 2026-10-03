@@ -1,4 +1,10 @@
 #include "world/map/DetailDoodad.hpp"
+#include "world/ShadowMap.hpp"
+#include "world/DayNightLight.hpp"
+#include "world/map/CMapLight.hpp"
+#include "model/CM2Lighting.hpp"
+#include "gx/shader/CGxShader.hpp"
+#include "gx/Gx.hpp"
 #include "world/CWorldParam.hpp"
 #include "world/map/CMapChunk.hpp"
 #include "world/map/CMap.hpp"
@@ -49,6 +55,19 @@ HTEXTURE s_fadeTexture = nullptr;
 // DAT_00cd766c: the grass alpha cutoff, 0x80 unless a CVar frozen does not register moves it.
 // Set after the blending mode, which would otherwise have just put the device default there.
 static uint32_t s_alphaRef = 0x80;
+
+// The module's own shaders, loaded by Initialize when the world has both shader kinds: the
+// vertex programs in two triples by shadow level (DAT_00d1c4a8) and the pixel programs by shadow
+// level and hardware PCF (DAT_00d1c488).
+static CGxShader* s_vertexShaders[6];
+static CGxShader* s_pixelShaders[8];
+
+// The 23 vertex registers the frame setup fills and every chunk sends (DAT_00d1c518):
+//   c0-c3 placement x view (per chunk)   c4-c7 projection       c8  fog ramp
+//   c9    distance fade                  c10   view-space sun   c11 ambient
+//   c12   diffuse                        c13   specular         c14-c22 three point lights
+// Read off the shipped vs_3_0 DetailDoodad.bls, which consumes c0-c12 exactly so.
+static float s_shaderConstants[23][4];
 
 static void FadeTextureCallback(EGxTexCommand, uint32_t, uint32_t, uint32_t,
                                 uint32_t, void*, uint32_t&, const void*&);
@@ -203,6 +222,150 @@ void Initialize() {
         entry->m_rec = rec;
         s_models[rec->m_ID] = entry;
     }
+
+    // The module's shaders (0x007b28c0 on): on when the world has pixel shaders, off without
+    // vertex shaders, and loaded only when on. With them the vertex colour keeps its alpha and
+    // the program applies the brightness ramp (ShadeVertexColor stops baking it in).
+    for (auto& shader : s_vertexShaders) {
+        shader = nullptr;
+    }
+
+    for (auto& shader : s_pixelShaders) {
+        shader = nullptr;
+    }
+
+    s_useShaders = (CWorld::s_enables & CWorld::Enables::Enable_PixelShader) != 0;
+
+    if (!(CWorld::s_enables2 & CWorld::Enables2::Enable_VertexShader)) {
+        s_useShaders = 0;
+        return;
+    }
+
+    if (s_useShaders) {
+        g_theGxDevicePtr->ShaderCreate(s_vertexShaders, GxSh_Vertex, "Shaders\\Vertex", "DetailDoodad", 6);
+        g_theGxDevicePtr->ShaderCreate(s_pixelShaders, GxSh_Pixel, "Shaders\\Pixel", "DetailDoodad", 8);
+    }
+}
+
+// ref: FUN_007b15d0
+// The frame's share of the module's vertex constants, the same shape as the terrain's
+// (CWorldScene::SetupTerrainConstants): the projection, the outdoor light in view space, the
+// fog ramp, the distance fade, and the fog colour to the pixel program. Ghidra names this
+// GxXformSet; it is not.
+static void SetupShaderConstants() {
+    memset(s_shaderConstants, 0, sizeof(s_shaderConstants));
+
+    const C44Matrix& view = g_theGxDevicePtr->m_xforms[GxXform_View].Top();
+
+    // c0-c3 start as the identity; every chunk writes its own placement over them.
+    s_shaderConstants[0][0] = 1.0f;
+    s_shaderConstants[1][1] = 1.0f;
+    s_shaderConstants[2][2] = 1.0f;
+    s_shaderConstants[3][3] = 1.0f;
+
+    // c4-c7, the native projection. The reference negates its third row unless the API is
+    // D3D; frozen keeps it as the terrain pass does (see SetupTerrainConstants).
+    memcpy(&s_shaderConstants[4][0], &g_theGxDevicePtr->m_projNative, sizeof(C44Matrix));
+
+    C3Vector sunDir = { 0.0f, 0.0f, 0.0f };
+    CM2Lighting lighting;
+    CAaSphere origin = { sunDir, 0.0f };
+    lighting.Initialize(nullptr, origin);
+    lighting.AddLight(&CMap::s_outdoorLight->m_light);
+
+    auto ambient = reinterpret_cast<C3Vector*>(s_shaderConstants[11]);
+    auto diffuse = reinterpret_cast<C3Vector*>(s_shaderConstants[12]);
+    auto specular = reinterpret_cast<C3Vector*>(s_shaderConstants[13]);
+
+    if (!lighting.GetSunlight(&sunDir, ambient, diffuse, specular)) {
+        s_shaderConstants[10][0] = 0.0f;
+        s_shaderConstants[10][1] = 0.0f;
+        s_shaderConstants[10][2] = 0.0f;
+        s_shaderConstants[10][3] = 1.0f;
+
+        for (int32_t i = 0; i < 4; i++) {
+            s_shaderConstants[11][i] = 1.0f;
+            s_shaderConstants[12][i] = 0.0f;
+            s_shaderConstants[13][i] = 0.0f;
+        }
+    } else {
+        float x = -sunDir.x;
+        float y = -sunDir.y;
+        float z = -sunDir.z;
+        s_shaderConstants[10][0] = view.a0 * x + view.b0 * y + view.c0 * z;
+        s_shaderConstants[10][1] = view.a1 * x + view.b1 * y + view.c1 * z;
+        s_shaderConstants[10][2] = view.c2 * z + view.b2 * y + view.a2 * x;
+        s_shaderConstants[10][3] = 1.0f;
+        s_shaderConstants[13][3] = 0.0f;
+    }
+
+    // Three point lights, each three registers with a 1 at the start of the third.
+    for (int32_t light = 0; light < 3; light++) {
+        float* reg = s_shaderConstants[14 + light * 3];
+        memset(reg, 0, sizeof(float) * 12);
+        reg[8] = 1.0f;
+    }
+
+    if (!GxMasterEnable(GxMasterEnable_Fog)) {
+        s_shaderConstants[8][0] = 0.0f;
+        s_shaderConstants[8][1] = 1.0f;
+        s_shaderConstants[8][2] = 1.0f;
+        s_shaderConstants[8][3] = 0.0f;
+
+        if (GxCaps().m_notPs30b) {
+            GxRsSet(GxRs_Fog, 0);
+        }
+    } else {
+        auto block = DayNightGetBlock();
+        float inv = 1.0f / (block->fogEnd - block->fogStart);
+        s_shaderConstants[8][0] = -(g_shadowMapFogScale * inv);
+        s_shaderConstants[8][1] = inv * block->fogEnd;
+        s_shaderConstants[8][2] = block->fogRate;
+        s_shaderConstants[8][3] = 0.0f;
+
+        if (!GxCaps().m_notPs30a) {
+            // The fog colour, with the alpha cutoff in the fourth float. The reference scales
+            // the cutoff by 255.0 (0x009e30c0), not by 1/255; kept as it is.
+            const CImVector& fog = block->fogColor;
+            float color[4] = {
+                fog.r / 255.0f,
+                fog.g / 255.0f,
+                fog.b / 255.0f,
+                static_cast<float>(s_alphaRef) * 255.0f
+            };
+            GxShaderConstantsSet(GxSh_Pixel, 2, color, 1);
+        } else {
+            GxRsSet(GxRs_FogColor, block->fogColor.value);
+        }
+
+        if (GxCaps().m_notPs30b) {
+            GxRsSet(GxRs_Fog, 1);
+        }
+    }
+
+    // c9, the distance fade: solid to 85% of the fade distance, gone at 100%.
+    float fade = 1.0f / (s_fadeDistance - s_fadeDistance * 0.85f);
+    s_shaderConstants[9][0] = -1.0f * fade;
+    s_shaderConstants[9][1] = fade * s_fadeDistance;
+    s_shaderConstants[9][2] = 0.0f;
+    s_shaderConstants[9][3] = 0.0f;
+}
+
+// ref: FUN_007b10e0
+void SetupChunkShader(const C44Matrix& placement, int32_t variant) {
+    int32_t level = ShadowMapGetShaderLevel();
+
+    if (level > 2) {
+        level = 2;
+    }
+
+    GxRsSet(GxRs_VertexShader, s_vertexShaders[variant * 3 + level]);
+
+    const C44Matrix& view = g_theGxDevicePtr->m_xforms[GxXform_View].Top();
+    C44Matrix placed = placement * view;
+    memcpy(&s_shaderConstants[0][0], &placed, sizeof(C44Matrix));
+
+    GxShaderConstantsSet(GxSh_Vertex, 0, &s_shaderConstants[0][0], 23);
 }
 
 // ref: FUN_007b3050
@@ -543,10 +706,25 @@ uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance) {
             float rotation = (SignedUnit(CRandom::uint32(seed)) + 1.0f) * TAU_HALF;
             float scale = SignedUnit(CRandom::uint32(seed)) * SCALE_JITTER + 1.0f;
 
-            uint32_t color = 0xff000000u
-                           | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
-                           | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
-                           | static_cast<uint32_t>(c[0] + ROUND_BIAS);
+            // White when the chunk carries no MCCV or the kind asks to ignore it (flag 0x2):
+            // the reference's 0xffffff at 0x007d3c2b. Frozen used the zeroed cell colour, which
+            // the fixed-function path never showed (its material diffuse was white) but the
+            // module's shader multiplies by -- every chunk without MCCV drew its grass black.
+            //
+            // TODO the baked-shadow step that follows in the reference (chunk +0x128, MCSH): a
+            // placement whose shadow bit is set keeps alpha 0, which the shader's 0.3a + 0.7
+            // ramp turns into 70% brightness. Indexed by (position + cell origin) * 1.92 at
+            // 0x007d3c5c; the origin comes from locals the triangle loop leaves behind and
+            // has not been pinned, so every placement is unshadowed (alpha 0xff) for now.
+            auto entry = s_models[kind];
+            bool plain = !chunk->m_vertexColors || (entry && entry->m_rec && (entry->m_rec->m_flags & 0x2));
+
+            uint32_t color = plain
+                ? 0xffffffffu
+                : 0xff000000u
+                    | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
+                    | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
+                    | static_cast<uint32_t>(c[0] + ROUND_BIAS);
 
             AddPlacement(instance, kind, position, rotation, scale, plane.n,
                          static_cast<uint16_t>(col + row * 8), color);
@@ -878,8 +1056,13 @@ void DrawBatch(SBatch* batch) {
         return;
     }
 
-    // No pair yet, or the one held belongs to a pool that has been reset under it.
-    if (!batch->vertexBuf || batch->vertexBuf->m_pool->unk1C == 2) {
+    // No pair yet, or the pair held is the device's STREAM buffers (pool +0xc, the usage, is 2):
+    // the ring was empty when this batch took them, and whatever it streamed last frame has been
+    // overwritten by every pass since, so it takes a pair again and refills. This used to test
+    // the pool's stream cursor (unk1C) instead of its usage, so a batch that once fell back to
+    // the stream kept drawing from it, unfilled -- garbage triangles in random colours whenever
+    // enough grass was in view to run the ring dry.
+    if (!batch->vertexBuf || batch->vertexBuf->m_pool->m_usage == GxPoolUsage_Stream) {
         AcquireBuffers(batch->vertexTotal, &batch->vertexBuf, batch->indexTotal,
                        &batch->indexBuf);
     }
@@ -973,9 +1156,13 @@ int32_t SetupState() {
     GxRsSet(GxRs_DepthWrite, 1);
 
     if (s_useShaders) {
-        // TODO ref: the pixel shader table (DAT_00d1c488) indexed by the shadow map's shader
-        // level, then FUN_007b15d0 and FUN_00874760. Unreachable while s_useShaders is 0,
-        // which it is because frozen never loads the module's shaders.
+        // The pixel program by shadow level, and the PCF set when the shadow map has it.
+        int32_t pcf = (CWorld::s_enables2 >> 1) & 0x1;
+        GxRsSet(GxRs_PixelShader, s_pixelShaders[ShadowMapGetShaderLevel() + pcf * 4]);
+
+        SetupShaderConstants();
+        ShadowMapBindDetailDoodads();
+
         return 1;
     }
 
