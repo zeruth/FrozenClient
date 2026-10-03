@@ -33,6 +33,7 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
         "console/*.cpp"
         "gx/*.cpp"
         "gx/font/*.cpp"
+        "lua/*.cpp"
         "util/*.cpp"
     )
 
@@ -43,6 +44,7 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
             client
             event
             gx
+            lua-5.1
             util
             stormlib-9.31
     )
