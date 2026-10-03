@@ -1172,7 +1172,7 @@
   "status": "ported"
  },
  "0040a990": {
-  "branchRatio": 0.8,
+  "branchRatio": 0.6,
   "constOverlap": 0.077,
   "faithful": false,
   "fidelity": 0.625,
@@ -1181,7 +1181,7 @@
    "src/gx/loadingscreen.cpp"
   ],
   "frozen": "Begin",
-  "frozenSize": 681,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 386,
@@ -1197,7 +1197,7 @@
    "src/gx/loadingscreen.cpp"
   ],
   "frozen": "LoadingScreenStart",
-  "frozenSize": 137,
+  "frozenSize": 697,
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 480,
@@ -1219,6 +1219,22 @@
   "refSize": 73,
   "status": "ported"
  },
+ "0040af40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/LoadingScreen.cpp",
+   "src/gx/loadingscreen.cpp"
+  ],
+  "frozen": "LoadingScreenSetProgress3",
+  "frozenSize": 50,
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
  "0040af90": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -1233,6 +1249,22 @@
   "how": "annotated",
   "module": "LoadingScreen.cpp",
   "refSize": 73,
+  "status": "ported"
+ },
+ "0040b2b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/LoadingScreen.cpp",
+   "src/gx/loadingscreen.cpp"
+  ],
+  "frozen": "LoadingScreenInitialize",
+  "frozenSize": 114,
+  "how": "annotated",
+  "module": "LoadingScreen.cpp",
+  "refSize": 99,
   "status": "ported"
  },
  "004217e0": {
@@ -1262,6 +1294,22 @@
   "how": "sticky",
   "module": "OggDecompress.cpp",
   "refSize": 30,
+  "status": "ported"
+ },
+ "00421850": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/util/SFile.cpp",
+   "src/util/sfile.cpp"
+  ],
+  "frozen": "SFile::GetFileName",
+  "frozenSize": 42,
+  "how": "annotated",
+  "module": "OggDecompress.cpp",
+  "refSize": 42,
   "status": "ported"
  },
  "00421880": {
@@ -3080,6 +3128,22 @@
   "how": "callorder",
   "module": "CSimpleRender.cpp",
   "refSize": 69,
+  "status": "ported"
+ },
+ "004858e0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ui/CRenderBatch.cpp",
+   "src/ui/crenderbatch.cpp"
+  ],
+  "frozen": "CRenderBatch::QueueCallback",
+  "frozenSize": 210,
+  "how": "annotated",
+  "module": "CSimpleRender.cpp",
+  "refSize": 143,
   "status": "ported"
  },
  "004859e0": {
@@ -5496,6 +5560,22 @@
   "how": "callgraph",
   "module": "CSimpleFrame.cpp",
   "refSize": 27,
+  "status": "ported"
+ },
+ "00490840": {
+  "branchRatio": 0.455,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/simple/CSimpleFrame.cpp",
+   "src/ui/simple/csimpleframe.cpp"
+  ],
+  "frozen": "CSimpleFrame::OnFrameRender",
+  "frozenSize": 764,
+  "how": "annotated",
+  "module": "CSimpleFrame.cpp",
+  "refSize": 96,
   "status": "ported"
  },
  "00490f60": {
@@ -11569,7 +11649,7 @@
    "src/gx/texture.cpp"
   ],
   "frozen": "PumpBlpTextureAsync",
-  "frozenSize": 1532,
+  "frozenSize": 1520,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 684,
@@ -11937,7 +12017,7 @@
    "src/async/asyncfileread.cpp"
   ],
   "frozen": "AsyncFileReadSetProgressCallback",
-  "frozenSize": 0,
+  "frozenSize": 15,
   "how": "annotated",
   "module": "Texture.cpp",
   "refSize": 22,
@@ -13778,6 +13858,22 @@
   "refSize": 18,
   "status": "ported"
  },
+ "004c8fa0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Effect::SetParams",
+  "frozenSize": 3,
+  "how": "callgraph",
+  "module": "SoundInterface2.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "004c8fc0": {
   "branchRatio": 0.25,
   "constOverlap": 0.143,
@@ -14265,7 +14361,7 @@
    "src/object/client/objmgr.cpp"
   ],
   "frozen": "ClntObjMgrEnumVisibleObjects",
-  "frozenSize": 0,
+  "frozenSize": 160,
   "how": "annotated",
   "module": "ObjectMgrClient.cpp",
   "refSize": 117,
@@ -14381,6 +14477,22 @@
   "how": "annotated",
   "module": "ObjectMgrClient.cpp",
   "refSize": 274,
+  "status": "ported"
+ },
+ "004d7d20": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
+  "files": [
+   "src/glue/CGlueMgr.cpp",
+   "src/glue/cgluemgr.cpp"
+  ],
+  "frozen": "CGlueMgr::InitializeFFX",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "CGlueMgr.cpp",
+  "refSize": 115,
   "status": "ported"
  },
  "004d7f60": {
@@ -14624,13 +14736,13 @@
   "branchRatio": 0.312,
   "constOverlap": 0.083,
   "faithful": false,
-  "fidelity": 0.289,
+  "fidelity": 0.311,
   "files": [
    "src/glue/CGlueMgr.cpp",
    "src/glue/cgluemgr.cpp"
   ],
   "frozen": "CGlueMgr::Resume",
-  "frozenSize": 846,
+  "frozenSize": 788,
   "how": "string",
   "module": "CGlueMgr.cpp",
   "refSize": 961,
@@ -17160,6 +17272,38 @@
   "refSize": 287,
   "status": "ported"
  },
+ "004f2b40": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "CancelledReadCallback",
+  "frozenSize": 44,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 37,
+  "status": "ported"
+ },
+ "004f2b70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "LoadSuccessCallback",
+  "frozenSize": 117,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 103,
+  "status": "ported"
+ },
  "004f2be0": {
   "branchRatio": 1.0,
   "constOverlap": 0.067,
@@ -17174,6 +17318,54 @@
   "how": "override",
   "module": "TextureCache.cpp",
   "refSize": 253,
+  "status": "ported"
+ },
+ "004f2ce0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheAddRef",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 21,
+  "status": "ported"
+ },
+ "004f2d00": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetMip",
+  "frozenSize": 52,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 60,
+  "status": "ported"
+ },
+ "004f2d40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetPal",
+  "frozenSize": 46,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 49,
   "status": "ported"
  },
  "004f2d80": {
@@ -17192,6 +17384,22 @@
   "refSize": 39,
   "status": "ported"
  },
+ "004f2dc0": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheGetStreamedBytes",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 85,
+  "status": "ported"
+ },
  "004f2e50": {
   "branchRatio": 0.778,
   "constOverlap": 0.0,
@@ -17206,6 +17414,22 @@
   "how": "annotated",
   "module": "TextureCache.cpp",
   "refSize": 149,
+  "status": "ported"
+ },
+ "004f2ef0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "CACHEENTRY::Unload",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 97,
   "status": "ported"
  },
  "004f2f60": {
@@ -17238,6 +17462,22 @@
   "how": "string",
   "module": "TextureCache.cpp",
   "refSize": 144,
+  "status": "ported"
+ },
+ "004f31a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/component/Texture.cpp",
+   "src/component/texture.cpp"
+  ],
+  "frozen": "TextureCacheDestroyTexture",
+  "frozenSize": 291,
+  "how": "annotated",
+  "module": "TextureCache.cpp",
+  "refSize": 74,
   "status": "ported"
  },
  "004f38d0": {
@@ -17680,6 +17920,38 @@
   "refSize": 39,
   "status": "ported"
  },
+ "004f6970": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
+  ],
+  "frozen": "UpdateVisibleObject",
+  "frozenSize": 321,
+  "how": "annotated",
+  "module": "WorldFrame.cpp",
+  "refSize": 121,
+  "status": "ported"
+ },
+ "004f7020": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.615,
+  "files": [
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
+  ],
+  "frozen": "CGWorldFrame::SetScreenEffect",
+  "frozenSize": 371,
+  "how": "annotated",
+  "module": "WorldFrame.cpp",
+  "refSize": 330,
+  "status": "ported"
+ },
  "004f7250": {
   "branchRatio": 0.5,
   "constOverlap": 0.0,
@@ -17694,6 +17966,22 @@
   "how": "annotated",
   "module": "WorldFrame.cpp",
   "refSize": 64,
+  "status": "ported"
+ },
+ "004f7290": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
+  ],
+  "frozen": "PlayerDrunkenness",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldFrame.cpp",
+  "refSize": 78,
   "status": "ported"
  },
  "004f7310": {
@@ -17728,33 +18016,65 @@
   "refSize": 587,
   "status": "ported"
  },
+ "004f8770": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
+  ],
+  "frozen": "CGWorldFrame::UpdateGlowParams",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "WorldFrame.cpp",
+  "refSize": 218,
+  "status": "ported"
+ },
+ "004f88b0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.235,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/CGWorldFrame.cpp",
+   "src/ui/game/cgworldframe.cpp"
+  ],
+  "frozen": "CGWorldFrame::UpdateScreenEffect",
+  "frozenSize": 303,
+  "how": "annotated",
+  "module": "WorldFrame.cpp",
+  "refSize": 289,
+  "status": "ported"
+ },
  "004f8ea0": {
-  "branchRatio": 0.583,
+  "branchRatio": 0.875,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.276,
+  "fidelity": 0.483,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldRender",
-  "frozenSize": 1759,
+  "frozenSize": 1340,
   "how": "override",
   "module": "WorldFrame.cpp",
   "refSize": 1016,
   "status": "ported"
  },
  "004fa5f0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.185,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.176,
+  "fidelity": 0.255,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
   ],
   "frozen": "CGWorldFrame::OnWorldUpdate",
-  "frozenSize": 777,
+  "frozenSize": 544,
   "how": "override",
   "module": "WorldFrame.cpp",
   "refSize": 1493,
@@ -17779,8 +18099,8 @@
  "004fb080": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/ui/game/CGWorldFrame.cpp",
    "src/ui/game/cgworldframe.cpp"
@@ -35724,7 +36044,7 @@
    "src/ui/game/cgcamera.cpp"
   ],
   "frozen": "CGCamera::MouseLook",
-  "frozenSize": 974,
+  "frozenSize": 993,
   "how": "annotated",
   "module": "Camera.cpp",
   "refSize": 788,
@@ -39471,6 +39791,22 @@
   "refSize": 94,
   "status": "ported"
  },
+ "00616510": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ui/game/Cursor.cpp",
+   "src/ui/game/cursor.cpp"
+  ],
+  "frozen": "CursorSetMoney",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "ScriptEvents.cpp",
+  "refSize": 146,
+  "status": "ported"
+ },
  "006165b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -39485,6 +39821,38 @@
   "how": "annotated",
   "module": "ScriptEvents.cpp",
   "refSize": 117,
+  "status": "ported"
+ },
+ "00616630": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.857,
+  "files": [
+   "src/ui/game/Cursor.cpp",
+   "src/ui/game/cursor.cpp"
+  ],
+  "frozen": "CursorSetItem",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Cursor.cpp",
+  "refSize": 235,
+  "status": "ported"
+ },
+ "00616720": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.333,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ui/game/Cursor.cpp",
+   "src/ui/game/cursor.cpp"
+  ],
+  "frozen": "CursorSetIcon",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Cursor.cpp",
+  "refSize": 186,
   "status": "ported"
  },
  "006167e0": {
@@ -39607,7 +39975,7 @@
   "files": [],
   "frozen": "TSGrowableArray<unsigned int>::SetCount",
   "frozenSize": 519,
-  "how": "callgraph",
+  "how": "sticky",
   "module": "Cursor.cpp",
   "refSize": 103,
   "status": "ported"
@@ -41225,6 +41593,70 @@
   "refSize": 38,
   "status": "ported"
  },
+ "00681310": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "KeyByDepth",
+  "frozenSize": 29,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 26,
+  "status": "ported"
+ },
+ "00681330": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "CompareDepth",
+  "frozenSize": 30,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 53,
+  "status": "ported"
+ },
+ "00681370": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "KeyByState",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 22,
+  "status": "ported"
+ },
+ "00681390": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "CompareState",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
  "006813b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -41351,6 +41783,22 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 24,
+  "status": "ported"
+ },
+ "006814d0": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.1,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Texture.cpp",
+   "src/gx/texture.cpp"
+  ],
+  "frozen": "GxTexCopyFromTarget",
+  "frozenSize": 98,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 84,
   "status": "ported"
  },
  "00681580": {
@@ -41603,10 +42051,42 @@
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxPrimVertexPtr",
-  "frozenSize": 1142,
+  "frozenSize": 1127,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 75,
+  "status": "ported"
+ },
+ "00681b50": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "KeyDrawList",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "00681ba0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "GxuSortDrawList",
+  "frozenSize": 202,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 61,
   "status": "ported"
  },
  "00681be0": {
@@ -41645,13 +42125,12 @@
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.167,
+  "fidelity": 0.0,
   "files": [
-   "src/gx/Gx.cpp",
-   "src/gx/gx.cpp"
+   "src/gx/cgxdevice.hpp"
   ],
-  "frozen": "GxCaps",
-  "frozenSize": 12,
+  "frozen": "CGxDevice::TexCopyFromTarget",
+  "frozenSize": 3,
   "how": "callgraph",
   "module": "DBCache.cpp",
   "refSize": 328,
@@ -41666,8 +42145,8 @@
    "src/gx/Texture.cpp",
    "src/gx/texture.cpp"
   ],
-  "frozen": "GxTexCreate",
-  "frozenSize": 287,
+  "frozen": "GxTexCopyFromTarget",
+  "frozenSize": 98,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 60,
@@ -41754,16 +42233,16 @@
   "status": "ported"
  },
  "00682400": {
-  "branchRatio": 0.439,
+  "branchRatio": 0.537,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/gx/Buffer.cpp",
    "src/gx/buffer.cpp"
   ],
   "frozen": "GxPrimVertexPtr",
-  "frozenSize": 1142,
+  "frozenSize": 1127,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 897,
@@ -41783,6 +42262,38 @@
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 62,
+  "status": "ported"
+ },
+ "00682900": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "ClearDrawList",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 87,
+  "status": "ported"
+ },
+ "00682960": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Draw.cpp",
+   "src/gx/draw.cpp"
+  ],
+  "frozen": "GxuFlushDrawList",
+  "frozenSize": 295,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 158,
   "status": "ported"
  },
  "00682a00": {
@@ -42004,6 +42515,22 @@
   ],
   "frozen": "CGxDevice::WindowVisibleFlag",
   "frozenSize": 0,
+  "how": "annotated",
+  "module": "DBCache.cpp",
+  "refSize": 39,
+  "status": "ported"
+ },
+ "00682df0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::CapsWindowHasFocus",
+  "frozenSize": 25,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 39,
@@ -42816,7 +43343,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::RenderTargetSet",
-  "frozenSize": 113,
+  "frozenSize": 117,
   "how": "annotated",
   "module": "DBCache.cpp",
   "refSize": 189,
@@ -43815,7 +44342,7 @@
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "CGxDevice::CGxDevice",
-  "frozenSize": 2081,
+  "frozenSize": 2065,
   "how": "annotated",
   "module": "CGxDevice.cpp",
   "refSize": 2469,
@@ -44375,7 +44902,7 @@
    "src/gx/d3d/cgxdeviced3d.cpp"
   ],
   "frozen": "CGxDeviceD3d::IBufLock",
-  "frozenSize": 380,
+  "frozenSize": 382,
   "how": "annotated",
   "module": "CGxD3dDevice.cpp",
   "refSize": 433,
@@ -44590,41 +45117,26 @@
   "status": "ported"
  },
  "006908b0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.556,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
-  "files": [
-   "src/gx/cgxdevice.hpp"
-  ],
-  "frozen": "CGxDevice::DeviceAdapterInfo",
-  "frozenSize": 3,
-  "how": "annotated",
-  "module": "CGxD3dDevice.cpp",
-  "refSize": 93,
-  "status": "ported"
- },
- "00690910": {
-  "branchRatio": 0.6,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/gx/CGxDevice.cpp",
    "src/gx/cgxdevice.cpp"
   ],
   "frozen": "GxExtensionListContains",
   "frozenSize": 0,
-  "how": "callgraph",
+  "how": "annotated",
   "module": "CGxD3dDevice.cpp",
-  "refSize": 68,
+  "refSize": 93,
   "status": "ported"
  },
  "006909a0": {
   "branchRatio": -1.0,
   "constOverlap": -1.0,
   "faithful": false,
-  "fidelity": 0.015,
+  "fidelity": 0.024,
   "files": [
    "src/gx/gles/CGxDeviceGLES.cpp"
   ],
@@ -44857,6 +45369,22 @@
   "module": "CGxD3d9ExDevice.cpp",
   "refSize": 60,
   "status": "faithful"
+ },
+ "006a1950": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/gx/d3d/CGxDeviceD3d.cpp",
+   "src/gx/d3d/cgxdeviced3d.cpp"
+  ],
+  "frozen": "CGxDeviceD3d::ICaptureReadBlank",
+  "frozenSize": 117,
+  "how": "override",
+  "module": "CGxD3d9ExDevice.cpp",
+  "refSize": 116,
+  "status": "ported"
  },
  "006a1c60": {
   "branchRatio": 0.364,
@@ -45908,10 +46436,90 @@
    "src/gx/texture/tgafile.cpp"
   ],
   "frozen": "TgaFile::RemoveAlphaChannel",
-  "frozenSize": 0,
+  "frozenSize": 248,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 209,
+  "status": "ported"
+ },
+ "006aa950": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::SetImage",
+  "frozenSize": 301,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 279,
+  "status": "ported"
+ },
+ "006aaa70": {
+  "branchRatio": 0.188,
+  "constOverlap": 0.333,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::RunLength",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 255,
+  "status": "ported"
+ },
+ "006aab70": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.125,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::EncodeRow",
+  "frozenSize": 436,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 356,
+  "status": "ported"
+ },
+ "006aace0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::CompressRle",
+  "frozenSize": 278,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 242,
+  "status": "ported"
+ },
+ "006aade0": {
+  "branchRatio": 0.688,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.273,
+  "files": [
+   "src/gx/texture/TgaFile.cpp",
+   "src/gx/texture/tgafile.cpp"
+  ],
+  "frozen": "TgaFile::Write",
+  "frozenSize": 393,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 340,
   "status": "ported"
  },
  "006aaf40": {
@@ -46154,6 +46762,22 @@
   "refSize": 591,
   "status": "ported"
  },
+ "006abab0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "DxtAlpha4To8",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 11,
+  "status": "ported"
+ },
  "006abac0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -46168,6 +46792,102 @@
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 317,
+  "status": "ported"
+ },
+ "006abc00": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "DxtAlpha8To4",
+  "frozenSize": 6,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 11,
+  "status": "ported"
+ },
+ "006abc10": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "DxtAlphaSame",
+  "frozenSize": 4,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 8,
+  "status": "ported"
+ },
+ "006abc20": {
+  "branchRatio": 0.556,
+  "constOverlap": 0.056,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitArgb8888To16",
+  "frozenSize": 758,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 472,
+  "status": "ported"
+ },
+ "006abe00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb8888_Argb4444",
+  "frozenSize": 84,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 47,
+  "status": "ported"
+ },
+ "006abe30": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.286,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb8888_Argb1555",
+  "frozenSize": 84,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 47,
+  "status": "ported"
+ },
+ "006abe60": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.167,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb8888_Rgb565",
+  "frozenSize": 83,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 47,
   "status": "ported"
  },
  "006abe90": {
@@ -46202,19 +46922,100 @@
   "refSize": 126,
   "status": "ported"
  },
- "006ac130": {
-  "branchRatio": 0.0,
+ "006abfc0": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb8888_Argb8888_A1",
+  "frozenSize": 119,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 111,
+  "status": "ported"
+ },
+ "006ac030": {
+  "branchRatio": 0.333,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 1.0,
   "files": [
-   "src/gx/cgxdevice.hpp"
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
   ],
-  "frozen": "CGxDevice::DeviceAdapterInfo",
-  "frozenSize": 3,
+  "frozen": "Blit_Dxt1_Dxt1",
+  "frozenSize": 160,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 122,
+  "status": "ported"
+ },
+ "006ac0b0": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Dxt35_Dxt35",
+  "frozenSize": 178,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 128,
+  "status": "ported"
+ },
+ "006ac130": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/CGxDevice.cpp",
+   "src/gx/cgxdevice.cpp"
+  ],
+  "frozen": "CGxDevice::TexFormatStride",
+  "frozenSize": 78,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 96,
+  "status": "ported"
+ },
+ "006ac190": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_uint32_uint32",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 110,
+  "status": "ported"
+ },
+ "006ac200": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_uint16_uint16",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 102,
   "status": "ported"
  },
  "006ac270": {
@@ -46313,6 +47114,54 @@
   "refSize": 134,
   "status": "ported"
  },
+ "006acce0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_uint32",
+  "frozenSize": 170,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 9,
+  "status": "ported"
+ },
+ "006accf0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_Argb8888_Argb8888_A8",
+  "frozenSize": 137,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 119,
+  "status": "ported"
+ },
+ "006acd70": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Blit_uint16",
+  "frozenSize": 153,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 9,
+  "status": "ported"
+ },
  "006acd80": {
   "branchRatio": 0.4,
   "constOverlap": 0.286,
@@ -46339,7 +47188,7 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Dxt3DecodeBlock4444",
-  "frozenSize": 0,
+  "frozenSize": 297,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 239,
@@ -46355,7 +47204,7 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Dxt5DecodeBlock",
-  "frozenSize": 0,
+  "frozenSize": 351,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 327,
@@ -46371,7 +47220,7 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Dxt5DecodeBlock4444",
-  "frozenSize": 0,
+  "frozenSize": 378,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 308,
@@ -46381,13 +47230,29 @@
   "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 1.0,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
-  "frozen": "Dxt1DecodeBlock16",
-  "frozenSize": 0,
+  "frozen": "Dxt1DecodeBlockRgb565",
+  "frozenSize": 163,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 153,
+  "status": "ported"
+ },
+ "006ad2d0": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "Dxt1DecodeBlockArgb1555",
+  "frozenSize": 163,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 153,
@@ -46403,14 +47268,14 @@
    "src/gx/blit.cpp"
   ],
   "frozen": "Dxt1DecodeBlock",
-  "frozenSize": 0,
+  "frozenSize": 162,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 177,
   "status": "ported"
  },
- "006ae440": {
-  "branchRatio": 0.667,
+ "006ad440": {
+  "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.0,
@@ -46418,104 +47283,328 @@
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
+  "frozen": "BlitDxt1Rgb565General",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 354,
+  "status": "ported"
+ },
+ "006ad5b0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt1Rgb565Aligned",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 176,
+  "status": "ported"
+ },
+ "006ad660": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt1Argb1555General",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 354,
+  "status": "ported"
+ },
+ "006ad7d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt1Argb1555Aligned",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 176,
+  "status": "ported"
+ },
+ "006ad880": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt1Argb8888General",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 393,
+  "status": "ported"
+ },
+ "006ada10": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt1Argb8888Aligned",
+  "frozenSize": 34,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 207,
+  "status": "ported"
+ },
+ "006adae0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.043,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt3Argb4444General",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 374,
+  "status": "ported"
+ },
+ "006adc60": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt3Argb4444Aligned",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "006add20": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.043,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt3Argb8888General",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 396,
+  "status": "ported"
+ },
+ "006adeb0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt3Argb8888Aligned",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 213,
+  "status": "ported"
+ },
+ "006adf90": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.043,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt5Argb4444General",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 374,
+  "status": "ported"
+ },
+ "006ae110": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt5Argb4444Aligned",
+  "frozenSize": 350,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 181,
+  "status": "ported"
+ },
+ "006ae1d0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.043,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt5Argb8888General",
+  "frozenSize": 27,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 396,
+  "status": "ported"
+ },
+ "006ae360": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.077,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BlitDxt5Argb8888Aligned",
+  "frozenSize": 350,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 213,
+  "status": "ported"
+ },
+ "006ae440": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
   "frozen": "Blit_Dxt1_Rgb565",
-  "frozenSize": 386,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
   "status": "ported"
  },
  "006ae4a0": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt1_Argb1555",
-  "frozenSize": 386,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
   "status": "ported"
  },
  "006ae500": {
-  "branchRatio": 0.667,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt1_Argb8888",
-  "frozenSize": 384,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
   "status": "ported"
  },
  "006ae560": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.25,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt3_Argb4444",
-  "frozenSize": 477,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
   "status": "ported"
  },
  "006ae5c0": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.25,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt3_Argb8888",
-  "frozenSize": 449,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
   "status": "ported"
  },
  "006ae620": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.25,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt5_Argb4444",
-  "frozenSize": 640,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
   "status": "ported"
  },
  "006ae680": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.25,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/gx/Blit.cpp",
    "src/gx/blit.cpp"
   ],
   "frozen": "Blit_Dxt5_Argb8888",
-  "frozenSize": 605,
+  "frozenSize": 128,
   "how": "annotated",
   "module": "tga.cpp",
   "refSize": 84,
@@ -46553,6 +47642,22 @@
   "refSize": 87,
   "status": "ported"
  },
+ "006ae820": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.143,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/Blit.cpp",
+   "src/gx/blit.cpp"
+  ],
+  "frozen": "BuildDxtWeights",
+  "frozenSize": 421,
+  "how": "annotated",
+  "module": "tga.cpp",
+  "refSize": 136,
+  "status": "ported"
+ },
  "006ae8b0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -46567,6 +47672,22 @@
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 42,
+  "status": "ported"
+ },
+ "006ae8e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::HeaderValid",
+  "frozenSize": 23,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 31,
   "status": "ported"
  },
  "006ae900": {
@@ -46599,6 +47720,22 @@
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 61,
+  "status": "ported"
+ },
+ "006ae9e0": {
+  "branchRatio": 0.733,
+  "constOverlap": 0.182,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::DecompPalARGB8888",
+  "frozenSize": 634,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 428,
   "status": "ported"
  },
  "006aeba0": {
@@ -46665,6 +47802,38 @@
   "refSize": 797,
   "status": "ported"
  },
+ "006af660": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::GetMipWidth",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
+ "006af680": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/blp/CBLPFile.cpp",
+   "src/gx/blp/cblpfile.cpp"
+  ],
+  "frozen": "CBLPFile::GetMipHeight",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "blp.cpp",
+  "refSize": 25,
+  "status": "ported"
+ },
  "006af6a0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -46714,16 +47883,16 @@
   "status": "ported"
  },
  "006af810": {
-  "branchRatio": 0.714,
+  "branchRatio": 0.6,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.429,
   "files": [
    "src/gx/blp/CBLPFile.cpp",
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::DecompPal",
-  "frozenSize": 620,
+  "frozenSize": 443,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 339,
@@ -46733,7 +47902,7 @@
   "branchRatio": 0.632,
   "constOverlap": 0.125,
   "faithful": false,
-  "fidelity": 0.556,
+  "fidelity": 0.667,
   "files": [
    "src/gx/blp/CBLPFile.cpp",
    "src/gx/blp/cblpfile.cpp"
@@ -46762,16 +47931,16 @@
   "status": "ported"
  },
  "006afce0": {
-  "branchRatio": 0.471,
+  "branchRatio": 0.444,
   "constOverlap": 0.077,
   "faithful": false,
-  "fidelity": 0.364,
+  "fidelity": 0.545,
   "files": [
    "src/gx/blp/CBLPFile.cpp",
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::Lock2",
-  "frozenSize": 0,
+  "frozenSize": 480,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 507,
@@ -46803,7 +47972,7 @@
    "src/gx/blp/cblpfile.cpp"
   ],
   "frozen": "CBLPFile::LockChain2",
-  "frozenSize": 744,
+  "frozenSize": 352,
   "how": "annotated",
   "module": "blp.cpp",
   "refSize": 350,
@@ -46821,7 +47990,7 @@
   "frozen": "ClientConnection::Cleanup",
   "frozenSize": 40,
   "how": "callorder",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 27,
   "status": "ported"
  },
@@ -46837,7 +48006,7 @@
   "frozen": "ClientServices::Connection",
   "frozenSize": 8,
   "how": "override",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 26,
   "status": "ported"
  },
@@ -46853,7 +48022,7 @@
   "frozen": "ClientServices::LoginConnection",
   "frozenSize": 8,
   "how": "callgraph",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -46869,7 +48038,7 @@
   "frozen": "ClientServices::Send",
   "frozenSize": 62,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 41,
   "status": "ported"
  },
@@ -46885,7 +48054,7 @@
   "frozen": "ClientServices::SetMessageHandler",
   "frozenSize": 20,
   "how": "override",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 53,
   "status": "ported"
  },
@@ -46901,7 +48070,7 @@
   "frozen": "ClientServices::ClearMessageHandler",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 41,
   "status": "ported"
  },
@@ -46917,7 +48086,7 @@
   "frozen": "ClientServices::InitLoginServerCVars",
   "frozenSize": 634,
   "how": "string",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 455,
   "status": "ported"
  },
@@ -46933,7 +48102,7 @@
   "frozen": "ClientServices::GetSelectedRealmName",
   "frozenSize": 90,
   "how": "string",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 48,
   "status": "ported"
  },
@@ -46949,7 +48118,7 @@
   "frozen": "ClientServices::GetRealmList",
   "frozenSize": 12,
   "how": "callorder",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 178,
   "status": "ported"
  },
@@ -46965,7 +48134,7 @@
   "frozen": "ClientServices::GetInstance",
   "frozenSize": 93,
   "how": "override",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 15,
   "status": "ported"
  },
@@ -46981,7 +48150,7 @@
   "frozen": "ClientServices::GetErrorToken",
   "frozenSize": 28,
   "how": "override",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 30,
   "status": "ported"
  },
@@ -46997,7 +48166,7 @@
   "frozen": "ValidateName",
   "frozenSize": 131,
   "how": "callorder",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 37,
   "status": "ported"
  },
@@ -47013,7 +48182,7 @@
   "frozen": "ClientServices::SetAccountName",
   "frozenSize": 21,
   "how": "override",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 45,
   "status": "ported"
  },
@@ -47029,7 +48198,7 @@
   "frozen": "ClientServices::SetCharacterInfo",
   "frozenSize": 106,
   "how": "override",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 45,
   "status": "ported"
  },
@@ -47045,7 +48214,7 @@
   "frozen": "CGPlayer_C::GetLocalPlayerInfo",
   "frozenSize": 0,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -47061,7 +48230,7 @@
   "frozen": "CGPlayer_C::GetLocalPlayerName",
   "frozenSize": 20,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 15,
   "status": "ported"
  },
@@ -47077,7 +48246,7 @@
   "frozen": "CGPlayer_C::GetLocalPlayerRace",
   "frozenSize": 8,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -47093,7 +48262,7 @@
   "frozen": "CGPlayer_C::GetLocalPlayerClass",
   "frozenSize": 8,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -47109,7 +48278,7 @@
   "frozen": "CGPlayer_C::GetLocalPlayerSex",
   "frozenSize": 8,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -47125,7 +48294,7 @@
   "frozen": "CGPlayer_C::GetLocalPlayerLevel",
   "frozenSize": 8,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 6,
   "status": "ported"
  },
@@ -47141,7 +48310,7 @@
   "frozen": "ClientConnection::Connect",
   "frozenSize": 103,
   "how": "callorder",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 192,
   "status": "ported"
  },
@@ -47157,7 +48326,7 @@
   "frozen": "ClientConnection::GetCharacterList",
   "frozenSize": 69,
   "how": "callorder",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 147,
   "status": "ported"
  },
@@ -47173,7 +48342,7 @@
   "frozen": "ClientConnection::CreateCharacter",
   "frozenSize": 69,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 357,
   "status": "ported"
  },
@@ -47189,7 +48358,7 @@
   "frozen": "ClientConnection::DeleteCharacter",
   "frozenSize": 69,
   "how": "annotated",
-  "module": "blp.cpp",
+  "module": "ClientServices.cpp",
   "refSize": 242,
   "status": "ported"
  },
@@ -47493,6 +48662,22 @@
   "refSize": 662,
   "status": "ported"
  },
+ "006c09a0": {
+  "branchRatio": 0.778,
+  "constOverlap": 0.143,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/gx/Font.cpp",
+   "src/gx/font.cpp"
+  ],
+  "frozen": "GetCharacterWidth",
+  "frozenSize": 240,
+  "how": "callorder",
+  "module": "CheckExecutableSignature.cpp",
+  "refSize": 187,
+  "status": "ported"
+ },
  "006c0ac0": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
@@ -47507,6 +48692,22 @@
   "how": "callgraph",
   "module": "GxuFontUtil.cpp",
   "refSize": 37,
+  "status": "ported"
+ },
+ "006c1ae0": {
+  "branchRatio": 0.842,
+  "constOverlap": 0.036,
+  "faithful": false,
+  "fidelity": 0.7,
+  "files": [
+   "src/gx/font/Wrap.cpp",
+   "src/gx/font/wrap.cpp"
+  ],
+  "frozen": "CalcWrapPointBillboarded",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GxuFontUtil.cpp",
+  "refSize": 584,
   "status": "ported"
  },
  "006c2270": {
@@ -47539,6 +48740,83 @@
   "how": "annotated",
   "module": "GxuFontUtil.cpp",
   "refSize": 104,
+  "status": "ported"
+ },
+ "006c2600": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "CGxFont::RegisterEvictNotice",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "GxuFontUtil.cpp",
+  "refSize": 66,
+  "status": "ported"
+ },
+ "006c2a00": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "CGxFont::GlyphAdvance",
+  "frozenSize": 148,
+  "how": "annotated",
+  "module": "GxuFontUtil.cpp",
+  "refSize": 68,
+  "status": "ported"
+ },
+ "006c3c50": {
+  "branchRatio": -1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [],
+  "frozen": "TSHashTable<KERNNODE,KERNINGHASHKEY>::InternalNewNode",
+  "frozenSize": 465,
+  "how": "callgraph",
+  "module": "GxuFontUtil.cpp",
+  "refSize": 91,
+  "status": "ported"
+ },
+ "006c3d40": {
+  "branchRatio": 0.714,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.4,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "CGxFont::ComputeStep",
+  "frozenSize": 529,
+  "how": "annotated",
+  "module": "GxuFontUtil.cpp",
+  "refSize": 310,
+  "status": "ported"
+ },
+ "006c3e80": {
+  "branchRatio": 0.7,
+  "constOverlap": 0.091,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "CGxFont::ComputeStepFixedWidth",
+  "frozenSize": 426,
+  "how": "annotated",
+  "module": "GxuFontUtil.cpp",
+  "refSize": 317,
   "status": "ported"
  },
  "006c4190": {
@@ -47605,6 +48883,38 @@
   "refSize": 32,
   "status": "ported"
  },
+ "006c4f80": {
+  "branchRatio": 0.156,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/gx/font/CGxFont.cpp",
+   "src/gx/font/cgxfont.cpp"
+  ],
+  "frozen": "TEXTURECACHEROW::EvictGlyph",
+  "frozenSize": 785,
+  "how": "annotated",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 409,
+  "status": "ported"
+ },
+ "006c5e70": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/gx/font/CGxString.cpp",
+   "src/gx/font/cgxstring.cpp"
+  ],
+  "frozen": "CGxString::NoteTextureEvicted",
+  "frozenSize": 22,
+  "how": "annotated",
+  "module": "GxuFontMiscClasses.cpp",
+  "refSize": 31,
+  "status": "ported"
+ },
  "006c6b90": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -47615,7 +48925,7 @@
    "src/gx/font/cgxstring.cpp"
   ],
   "frozen": "CGxString::ClearInstanceData",
-  "frozenSize": 287,
+  "frozenSize": 241,
   "how": "callgraph",
   "module": "GxuFontMiscClasses.cpp",
   "refSize": 100,
@@ -47635,6 +48945,22 @@
   "how": "callgraph",
   "module": "GxuFontString.cpp",
   "refSize": 81,
+  "status": "ported"
+ },
+ "006c78f0": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.2,
+  "files": [
+   "src/gx/font/CGxString.cpp",
+   "src/gx/font/cgxstring.cpp"
+  ],
+  "frozen": "CGxString::SetGradient",
+  "frozenSize": 567,
+  "how": "annotated",
+  "module": "GxuFontString.cpp",
+  "refSize": 427,
   "status": "ported"
  },
  "006c8080": {
@@ -48944,6 +50270,22 @@
   "how": "annotated",
   "module": "UnitMissileTrajectory_C.cpp",
   "refSize": 306,
+  "status": "ported"
+ },
+ "006fda20": {
+  "branchRatio": 0.039,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/ParticleFx.cpp",
+   "src/world/particlefx.cpp"
+  ],
+  "frozen": "ParticleFxStepEmitters",
+  "frozenSize": 105,
+  "how": "callorder",
+  "module": "UnitMissileTrajectory_C.cpp",
+  "refSize": 1399,
   "status": "ported"
  },
  "006ff6a0": {
@@ -50960,7 +52302,7 @@
   "status": "ported"
  },
  "007300a0": {
-  "branchRatio": 1.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.667,
@@ -50969,7 +52311,7 @@
    "src/object/client/auracache.cpp"
   ],
   "frozen": "ReceiveAuraUpdate",
-  "frozenSize": 113,
+  "frozenSize": 128,
   "how": "handler",
   "module": "Unit_C.cpp",
   "refSize": 94,
@@ -54343,6 +55685,22 @@
   "refSize": 271,
   "status": "ported"
  },
+ "0077eff0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::RenderMap",
+  "frozenSize": 5,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 28,
+  "status": "ported"
+ },
  "0077f030": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -54389,6 +55747,22 @@
   "how": "annotated",
   "module": "World.cpp",
   "refSize": 26,
+  "status": "ported"
+ },
+ "0077f2e0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::UpdateObjectLighting",
+  "frozenSize": 5,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 12,
   "status": "ported"
  },
  "0077f310": {
@@ -54583,6 +55957,22 @@
   "how": "annotated",
   "module": "World.cpp",
   "refSize": 129,
+  "status": "ported"
+ },
+ "0077f8f0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorld.cpp",
+   "src/world/cworld.cpp"
+  ],
+  "frozen": "CWorld::SetUpdateCallback",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "World.cpp",
+  "refSize": 13,
   "status": "ported"
  },
  "0077f900": {
@@ -54874,16 +56264,16 @@
   "status": "ported"
  },
  "007826e0": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
-  "faithful": false,
+  "faithful": true,
   "fidelity": 1.0,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::RemoveObject",
-  "frozenSize": 105,
+  "frozenSize": 125,
   "how": "annotated",
   "module": "World.cpp",
   "refSize": 82,
@@ -54954,16 +56344,16 @@
   "status": "ported"
  },
  "007831a0": {
-  "branchRatio": 0.448,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.688,
+  "branchRatio": 0.655,
+  "constOverlap": 0.154,
+  "faithful": true,
+  "fidelity": 0.938,
   "files": [
    "src/world/CWorld.cpp",
    "src/world/cworld.cpp"
   ],
   "frozen": "CWorld::Update",
-  "frozenSize": 1265,
+  "frozenSize": 1580,
   "how": "override",
   "module": "World.cpp",
   "refSize": 862,
@@ -55789,13 +57179,13 @@
   "branchRatio": 0.217,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.474,
+  "fidelity": 0.579,
   "files": [
    "src/world/MapWeather.cpp",
    "src/world/mapweather.cpp"
   ],
   "frozen": "Snow::RenderShader",
-  "frozenSize": 895,
+  "frozenSize": 927,
   "how": "annotated",
   "module": "MapWeather.cpp",
   "refSize": 1155,
@@ -55869,13 +57259,13 @@
   "branchRatio": 0.154,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.316,
+  "fidelity": 0.421,
   "files": [
    "src/world/MapWeather.cpp",
    "src/world/mapweather.cpp"
   ],
   "frozen": "Sand::RenderShader",
-  "frozenSize": 923,
+  "frozenSize": 955,
   "how": "annotated",
   "module": "MapWeather.cpp",
   "refSize": 1267,
@@ -55933,13 +57323,13 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.571,
+  "fidelity": 0.714,
   "files": [
    "src/world/MapWeather.cpp",
    "src/world/mapweather.cpp"
   ],
   "frozen": "Snow::Snow",
-  "frozenSize": 707,
+  "frozenSize": 725,
   "how": "annotated",
   "module": "MapWeather.cpp",
   "refSize": 495,
@@ -55949,13 +57339,13 @@
   "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.75,
   "files": [
    "src/world/MapWeather.cpp",
    "src/world/mapweather.cpp"
   ],
   "frozen": "Sand::Sand",
-  "frozenSize": 0,
+  "frozenSize": 535,
   "how": "annotated",
   "module": "MapWeather.cpp",
   "refSize": 392,
@@ -56003,7 +57393,7 @@
    "src/world/mapweather.cpp"
   ],
   "frozen": "Weather::Update",
-  "frozenSize": 2432,
+  "frozenSize": 2068,
   "how": "annotated",
   "module": "MapWeather.cpp",
   "refSize": 972,
@@ -56490,7 +57880,7 @@
   "status": "stub"
  },
  "0078e400": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.25,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.838,
@@ -56499,7 +57889,7 @@
    "src/world/cworldparam.cpp"
   ],
   "frozen": "CWorldParam::Initialize",
-  "frozenSize": 2432,
+  "frozenSize": 2480,
   "how": "string",
   "module": "WorldParam.cpp",
   "refSize": 1354,
@@ -56682,6 +58072,22 @@
   "refSize": 39,
   "status": "ported"
  },
+ "0078fb50": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::PopFrustum",
+  "frozenSize": 7,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 8,
+  "status": "excluded"
+ },
  "0078fb60": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -56804,7 +58210,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::ViewWindowMerge",
-  "frozenSize": 0,
+  "frozenSize": 85,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 104,
@@ -56932,7 +58338,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SphereOutsideFrustum",
-  "frozenSize": 370,
+  "frozenSize": 0,
   "how": "annotated",
   "module": "WorldParam.cpp",
   "refSize": 70,
@@ -57014,6 +58420,22 @@
   "module": "WorldParam.cpp",
   "refSize": 32,
   "status": "diverged"
+ },
+ "00791950": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/CWorldScene.cpp",
+   "src/world/cworldscene.cpp"
+  ],
+  "frozen": "CWorldScene::PushFrustum",
+  "frozenSize": 164,
+  "how": "annotated",
+  "module": "WorldParam.cpp",
+  "refSize": 38,
+  "status": "excluded"
  },
  "00791980": {
   "branchRatio": 0.5,
@@ -57419,13 +58841,13 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.5,
+  "fidelity": 0.571,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::UpdateCamera",
-  "frozenSize": 2254,
+  "frozenSize": 2271,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 2291,
@@ -57441,7 +58863,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::AddPortalView",
-  "frozenSize": 0,
+  "frozenSize": 51,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 21,
@@ -57457,7 +58879,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::AddExteriorView",
-  "frozenSize": 0,
+  "frozenSize": 51,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 21,
@@ -57569,7 +58991,7 @@
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderDetailDoodads",
-  "frozenSize": 647,
+  "frozenSize": 661,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 756,
@@ -57608,16 +59030,16 @@
   "status": "ported"
  },
  "00798da0": {
-  "branchRatio": 0.263,
+  "branchRatio": 0.211,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.833,
+  "fidelity": 0.767,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::RenderTerrain",
-  "frozenSize": 2056,
+  "frozenSize": 1779,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 1379,
@@ -57802,14 +59224,14 @@
  "0079a870": {
   "branchRatio": 0.833,
   "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.745,
+  "faithful": true,
+  "fidelity": 0.843,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Render",
-  "frozenSize": 1699,
+  "frozenSize": 1809,
   "how": "annotated",
   "module": "WorldScene.cpp",
   "refSize": 1355,
@@ -58599,6 +60021,22 @@
   "refSize": 707,
   "status": "ported"
  },
+ "007a1e90": {
+  "branchRatio": 0.364,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/world/map/CMap.cpp",
+   "src/world/map/cmap.cpp"
+  ],
+  "frozen": "CMap::UpdateEntityLighting",
+  "frozenSize": 490,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 468,
+  "status": "ported"
+ },
  "007a20e0": {
   "branchRatio": 1.0,
   "constOverlap": 0.0,
@@ -59041,7 +60479,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::RectAdd",
-  "frozenSize": 0,
+  "frozenSize": 62,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 47,
@@ -59057,7 +60495,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::RectDivide",
-  "frozenSize": 0,
+  "frozenSize": 62,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 47,
@@ -59073,10 +60511,26 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupPortalContext",
-  "frozenSize": 456,
+  "frozenSize": 466,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 715,
+  "status": "ported"
+ },
+ "007a70d0": {
+  "branchRatio": 0.222,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::PortalDepth",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 310,
   "status": "ported"
  },
  "007a7210": {
@@ -59256,7 +60710,7 @@
   "status": "ported"
  },
  "007a8440": {
-  "branchRatio": 0.75,
+  "branchRatio": 0.571,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.75,
@@ -59265,7 +60719,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupFog",
-  "frozenSize": 200,
+  "frozenSize": 173,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 142,
@@ -59377,10 +60831,26 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::SetupLighting",
-  "frozenSize": 1006,
+  "frozenSize": 814,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 895,
+  "status": "ported"
+ },
+ "007a8f20": {
+  "branchRatio": 0.75,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "CMapObj::AddInteriorPortalView",
+  "frozenSize": 892,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 355,
   "status": "ported"
  },
  "007a9090": {
@@ -59415,6 +60885,22 @@
   "refSize": 151,
   "status": "ported"
  },
+ "007a9200": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.062,
+  "faithful": false,
+  "fidelity": 0.75,
+  "files": [
+   "src/world/map/CMapObjDraw.cpp",
+   "src/world/map/cmapobjdraw.cpp"
+  ],
+  "frozen": "AddExteriorCandidate",
+  "frozenSize": 841,
+  "how": "annotated",
+  "module": "Map.cpp",
+  "refSize": 375,
+  "status": "ported"
+ },
  "007a9380": {
   "branchRatio": 0.547,
   "constOverlap": 0.062,
@@ -59425,7 +60911,7 @@
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObjGroup::DrawBatchesOutdoor",
-  "frozenSize": 2051,
+  "frozenSize": 1939,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 2146,
@@ -59480,16 +60966,16 @@
   "status": "ported"
  },
  "007ac060": {
-  "branchRatio": 0.292,
-  "constOverlap": 0.093,
+  "branchRatio": 0.458,
+  "constOverlap": 0.163,
   "faithful": false,
-  "fidelity": 0.438,
+  "fidelity": 0.722,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
   ],
   "frozen": "CMapObj::WalkPortals",
-  "frozenSize": 1125,
+  "frozenSize": 2044,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 1591,
@@ -59537,7 +61023,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::UpdateAll",
-  "frozenSize": 676,
+  "frozenSize": 708,
   "how": "annotated",
   "module": "Map.cpp",
   "refSize": 460,
@@ -59546,8 +61032,8 @@
  "007ad1f0": {
   "branchRatio": 0.636,
   "constOverlap": 0.15,
-  "faithful": true,
-  "fidelity": 1.0,
+  "faithful": false,
+  "fidelity": 0.75,
   "files": [
    "src/world/map/CMapObjDraw.cpp",
    "src/world/map/cmapobjdraw.cpp"
@@ -60153,7 +61639,7 @@
  },
  "007afee0": {
   "branchRatio": 1.0,
-  "constOverlap": 0.143,
+  "constOverlap": 0.286,
   "faithful": true,
   "fidelity": 1.0,
   "files": [
@@ -60161,7 +61647,7 @@
    "src/world/map/cmapobj.cpp"
   ],
   "frozen": "CMapObj::Initialize",
-  "frozenSize": 333,
+  "frozenSize": 479,
   "how": "annotated",
   "module": "MapObj.cpp",
   "refSize": 348,
@@ -60197,6 +61683,22 @@
   "how": "annotated",
   "module": "MapObj.cpp",
   "refSize": 217,
+  "status": "ported"
+ },
+ "007b10e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.045,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
+  ],
+  "frozen": "DetailDoodad::SetupChunkShader",
+  "frozenSize": 175,
+  "how": "annotated",
+  "module": "MapObj.cpp",
+  "refSize": 197,
   "status": "ported"
  },
  "007b11b0": {
@@ -60248,17 +61750,17 @@
   "status": "ported"
  },
  "007b15d0": {
-  "branchRatio": 0.0,
-  "constOverlap": 0.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.042,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.714,
   "files": [
-   "src/gx/Transform.cpp",
-   "src/gx/transform.cpp"
+   "src/world/map/DetailDoodad.cpp",
+   "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "GxXformSet",
-  "frozenSize": 17,
-  "how": "callgraph",
+  "frozen": "DetailDoodad::SetupShaderConstants",
+  "frozenSize": 1187,
+  "how": "annotated",
   "module": "MapObj.cpp",
   "refSize": 1333,
   "status": "ported"
@@ -60296,16 +61798,16 @@
   "status": "ported"
  },
  "007b2760": {
-  "branchRatio": 0.5,
-  "constOverlap": 0.111,
-  "faithful": false,
-  "fidelity": 0.667,
+  "branchRatio": 0.812,
+  "constOverlap": 0.222,
+  "faithful": true,
+  "fidelity": 0.833,
   "files": [
    "src/world/map/DetailDoodad.cpp",
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::Initialize",
-  "frozenSize": 693,
+  "frozenSize": 989,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 586,
@@ -60363,13 +61865,13 @@
   "branchRatio": 0.043,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.263,
+  "fidelity": 0.421,
   "files": [
    "src/world/map/DetailDoodad.cpp",
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::SetupState",
-  "frozenSize": 338,
+  "frozenSize": 409,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 798,
@@ -60472,17 +61974,17 @@
   "status": "ported"
  },
  "007b3910": {
-  "branchRatio": 0.074,
-  "constOverlap": 1.0,
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.5,
   "files": [
    "src/world/map/DetailDoodad.cpp",
    "src/world/map/detaildoodad.cpp"
   ],
-  "frozen": "DetailDoodad::Scatter",
-  "frozenSize": 2320,
-  "how": "callgraph",
+  "frozen": "DetailDoodad::AllocInstance",
+  "frozenSize": 0,
+  "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 73,
   "status": "ported"
@@ -60490,14 +61992,14 @@
  "007b3960": {
   "branchRatio": 0.0,
   "constOverlap": -1.0,
-  "faithful": false,
-  "fidelity": 0.5,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/DetailDoodad.cpp",
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::ReleaseInstance",
-  "frozenSize": 624,
+  "frozenSize": 619,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 39,
@@ -60539,7 +62041,7 @@
   "branchRatio": 1.0,
   "constOverlap": 0.1,
   "faithful": false,
-  "fidelity": 0.714,
+  "fidelity": 0.5,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
@@ -60901,16 +62403,16 @@
   "status": "ported"
  },
  "007b6b00": {
-  "branchRatio": 0.667,
-  "constOverlap": 0.091,
-  "faithful": false,
-  "fidelity": 0.492,
+  "branchRatio": 0.762,
+  "constOverlap": 0.182,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::Update",
-  "frozenSize": 1205,
+  "frozenSize": 1576,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 975,
@@ -61160,13 +62662,13 @@
   "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.333,
+  "fidelity": 0.667,
   "files": [
    "src/world/map/CMap.cpp",
    "src/world/map/cmap.cpp"
   ],
   "frozen": "CMap::SetupChunkLighting",
-  "frozenSize": 124,
+  "frozenSize": 159,
   "how": "annotated",
   "module": "DetailDoodad.cpp",
   "refSize": 141,
@@ -61957,7 +63459,7 @@
   "status": "ported"
  },
  "007bbc50": {
-  "branchRatio": 0.333,
+  "branchRatio": 0.381,
   "constOverlap": 0.0,
   "faithful": false,
   "fidelity": 0.968,
@@ -61966,7 +63468,7 @@
    "src/world/mapshadow.cpp"
   ],
   "frozen": "MapShadowRenderView",
-  "frozenSize": 1627,
+  "frozenSize": 1944,
   "how": "annotated",
   "module": "MapShadow.cpp",
   "refSize": 2098,
@@ -63301,17 +64803,17 @@
   "status": "ported"
  },
  "007c3db0": {
-  "branchRatio": 0.0,
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.0,
+  "fidelity": 0.667,
   "files": [
    "src/world/map/CMapChunk.cpp",
    "src/world/map/cmapchunk.cpp"
   ],
-  "frozen": "CMapChunk::AlphaSize",
-  "frozenSize": 36,
-  "how": "order",
+  "frozen": "CMapChunk::SelectLights",
+  "frozenSize": 204,
+  "how": "annotated",
   "module": "MapMem.cpp",
   "refSize": 177,
   "status": "ported"
@@ -65103,13 +66605,13 @@
   "branchRatio": 0.667,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.444,
+  "fidelity": 0.556,
   "files": [
    "src/world/CWorldScene.cpp",
    "src/world/cworldscene.cpp"
   ],
   "frozen": "CWorldScene::SetupTerrainConstants",
-  "frozenSize": 1016,
+  "frozenSize": 1008,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1130,
@@ -65221,7 +66723,7 @@
    "src/world/map/cmaprenderchunk.cpp"
   ],
   "frozen": "CMapRenderChunk::DrawLocal",
-  "frozenSize": 893,
+  "frozenSize": 925,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 1207,
@@ -65276,17 +66778,17 @@
   "status": "ported"
  },
  "007d3390": {
-  "branchRatio": 0.042,
-  "constOverlap": 0.0,
-  "faithful": false,
-  "fidelity": 0.083,
+  "branchRatio": 0.646,
+  "constOverlap": 0.021,
+  "faithful": true,
+  "fidelity": 1.0,
   "files": [
    "src/world/map/DetailDoodad.cpp",
    "src/world/map/detaildoodad.cpp"
   ],
   "frozen": "DetailDoodad::CreateInstance",
-  "frozenSize": 194,
-  "how": "callgraph",
+  "frozenSize": 2843,
+  "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 2662,
   "status": "ported"
@@ -65515,17 +67017,33 @@
   "refSize": 13,
   "status": "verified"
  },
+ "007d4f20": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/map/LiquidSurface.cpp",
+   "src/world/map/liquidsurface.cpp"
+  ],
+  "frozen": "Liquid::CClientEnvironment::Release",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "MapChunkLiquid.cpp",
+  "refSize": 28,
+  "status": "excluded"
+ },
  "007d4f40": {
-  "branchRatio": 0.5,
+  "branchRatio": 1.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.222,
+  "fidelity": 0.333,
   "files": [
    "src/world/map/LiquidSurface.cpp",
    "src/world/map/liquidsurface.cpp"
   ],
   "frozen": "Liquid::CClientEnvironment::SetupLighting",
-  "frozenSize": 208,
+  "frozenSize": 332,
   "how": "annotated",
   "module": "MapChunkLiquid.cpp",
   "refSize": 439,
@@ -67290,36 +68808,580 @@
   "refSize": 62,
   "status": "ported"
  },
- "007ea260": {
+ "007e7fe0": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "FFXFieldRestored",
+  "frozenSize": 11,
+  "how": "annotated",
+  "module": "WorldText.cpp",
+  "refSize": 11,
+  "status": "ported"
+ },
+ "007e8080": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Pass::~Pass",
+  "frozenSize": 11,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 40,
+  "status": "ported"
+ },
+ "007e80b0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassPropagateFog::PassPropagateFog",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 140,
+  "status": "ported"
+ },
+ "007e8140": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassPropagateFog::~PassPropagateFog",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
+ "007e81b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 0.8,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogCombine::PassFogCombine",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 228,
+  "status": "ported"
+ },
+ "007e82a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogCombine::~PassFogCombine",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 216,
+  "status": "ported"
+ },
+ "007e8380": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "FieldPolar",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 132,
+  "status": "ported"
+ },
+ "007e8410": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogCombine::BuildVertices",
+  "frozenSize": 832,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 485,
+  "status": "ported"
+ },
+ "007e8600": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.333,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogCombine::BuildIndices",
+  "frozenSize": 1242,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 158,
+  "status": "ported"
+ },
+ "007e86a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.25,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassDeath::PassDeath",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 200,
+  "status": "ported"
+ },
+ "007e8770": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassDeath::~PassDeath",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
+ "007e87b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.062,
+  "faithful": true,
+  "fidelity": 0.917,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassDeath::Render",
+  "frozenSize": 491,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 355,
+  "status": "ported"
+ },
+ "007e8920": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassDeathNvrc::PassDeathNvrc",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 80,
+  "status": "ported"
+ },
+ "007e8990": {
+  "branchRatio": 0.6,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherBlur::PassNetherBlur",
+  "frozenSize": 595,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 414,
+  "status": "ported"
+ },
+ "007e8b30": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherBlur::~PassNetherBlur",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 93,
+  "status": "ported"
+ },
+ "007e8b90": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherBlur::IsValid",
+  "frozenSize": 71,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 56,
+  "status": "ported"
+ },
+ "007e8bd0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherCombine::PassNetherCombine",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 112,
+  "status": "ported"
+ },
+ "007e8c40": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherCombine::~PassNetherCombine",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
+ "007e8c80": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherCombine::Render",
+  "frozenSize": 567,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 410,
+  "status": "ported"
+ },
+ "007e8e40": {
+  "branchRatio": 0.385,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "NoiseTexCallback",
+  "frozenSize": 964,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 449,
+  "status": "ported"
+ },
+ "007e9010": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "EffectSpecial::SetParams",
+  "frozenSize": 146,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "007e9080": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.04,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassPropagateFog::Render",
+  "frozenSize": 524,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 466,
+  "status": "ported"
+ },
+ "007e9260": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.056,
+  "fidelity": 0.0,
   "files": [
-   "src/ffx/EffectDeath.cpp",
-   "src/ffx/effectdeath.cpp"
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogSource::~PassFogSource",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 64,
+  "status": "ported"
+ },
+ "007e92a0": {
+  "branchRatio": 0.188,
+  "constOverlap": 0.121,
+  "faithful": false,
+  "fidelity": 0.684,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogSource::Render",
+  "frozenSize": 851,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 918,
+  "status": "ported"
+ },
+ "007e9670": {
+  "branchRatio": 0.353,
+  "constOverlap": 0.053,
+  "faithful": false,
+  "fidelity": 0.786,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassFogCombine::Render",
+  "frozenSize": 703,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 686,
+  "status": "ported"
+ },
+ "007e9950": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassDeathNvrc::~PassDeathNvrc",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 71,
+  "status": "ported"
+ },
+ "007e99a0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.8,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassDeathNvrc::Render",
+  "frozenSize": 314,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 310,
+  "status": "ported"
+ },
+ "007e9b10": {
+  "branchRatio": 0.846,
+  "constOverlap": 0.047,
+  "faithful": false,
+  "fidelity": 0.718,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "PassNetherBlur::Render",
+  "frozenSize": 2980,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 1659,
+  "status": "ported"
+ },
+ "007ea1c0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/gx/Gx.cpp",
+   "src/gx/gx.cpp"
+  ],
+  "frozen": "GxCaps",
+  "frozenSize": 12,
+  "how": "callgraph",
+  "module": "FFXEffects.cpp",
+  "refSize": 96,
+  "status": "ported"
+ },
+ "007ea220": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Effect::~Effect",
+  "frozenSize": 19,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 62,
+  "status": "ported"
+ },
+ "007ea260": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
   ],
   "frozen": "EffectDeath::EffectDeath",
-  "frozenSize": 89,
-  "how": "string",
+  "frozenSize": 880,
+  "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 438,
   "status": "ported"
  },
- "007ea5f0": {
-  "branchRatio": 0.2,
+ "007ea420": {
+  "branchRatio": 0.5,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.125,
+  "fidelity": 0.0,
   "files": [
-   "src/glue/CGlueMgr.cpp",
-   "src/glue/cgluemgr.cpp"
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
   ],
-  "frozen": "CGlueMgr::InitializeFFX",
+  "frozen": "EffectDeath::~EffectDeath",
   "frozenSize": 0,
-  "how": "string",
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "007ea470": {
+  "branchRatio": 0.25,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.455,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "EffectNether::EffectNether",
+  "frozenSize": 509,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 290,
+  "status": "ported"
+ },
+ "007ea5a0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "EffectNether::~EffectNether",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 74,
+  "status": "ported"
+ },
+ "007ea5f0": {
+  "branchRatio": 0.2,
+  "constOverlap": 0.065,
+  "faithful": false,
+  "fidelity": 0.688,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "EffectSpecial::EffectSpecial",
+  "frozenSize": 1168,
+  "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 606,
+  "status": "ported"
+ },
+ "007ea850": {
+  "branchRatio": 0.667,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.667,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "EffectSpecial::~EffectSpecial",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "FFXEffects.cpp",
+  "refSize": 203,
   "status": "ported"
  },
  "007eae60": {
@@ -67588,7 +69650,7 @@
    "src/world/daynightlight.cpp"
   ],
   "frozen": "DayNightSetForcedParams",
-  "frozenSize": 0,
+  "frozenSize": 22,
   "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 28,
@@ -67604,7 +69666,7 @@
    "src/world/daynightlight.cpp"
   ],
   "frozen": "DayNightClearForcedParams",
-  "frozenSize": 0,
+  "frozenSize": 11,
   "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 11,
@@ -67780,7 +69842,7 @@
    "src/world/daynightlight.cpp"
   ],
   "frozen": "DayNightEndFogOverride",
-  "frozenSize": 0,
+  "frozenSize": 92,
   "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 78,
@@ -67796,7 +69858,7 @@
    "src/world/daynightlight.cpp"
   ],
   "frozen": "DayNightBeginFogOverride",
-  "frozenSize": 0,
+  "frozenSize": 212,
   "how": "annotated",
   "module": "FFXEffects.cpp",
   "refSize": 145,
@@ -81093,7 +83155,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapBindDetailDoodads",
-  "frozenSize": 0,
+  "frozenSize": 363,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 301,
@@ -81147,6 +83209,22 @@
   "refSize": 822,
   "status": "ported"
  },
+ "008753f0": {
+  "branchRatio": 0.444,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/world/ShadowMap.cpp",
+   "src/world/shadowmap.cpp"
+  ],
+  "frozen": "ShadowDumpTexture",
+  "frozenSize": 874,
+  "how": "order",
+  "module": "ShadowMap.cpp",
+  "refSize": 659,
+  "status": "ported"
+ },
  "00875c10": {
   "branchRatio": 0.0,
   "constOverlap": 0.0,
@@ -81180,7 +83258,7 @@
   "status": "ported"
  },
  "00875f80": {
-  "branchRatio": 0.714,
+  "branchRatio": 0.81,
   "constOverlap": 0.065,
   "faithful": false,
   "fidelity": 0.778,
@@ -81189,7 +83267,7 @@
    "src/world/shadowmap.cpp"
   ],
   "frozen": "ShadowMapRender",
-  "frozenSize": 1702,
+  "frozenSize": 1770,
   "how": "annotated",
   "module": "ShadowMap.cpp",
   "refSize": 983,
@@ -83959,6 +86037,22 @@
   "refSize": 6,
   "status": "ported"
  },
+ "008b5a30": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/db/rec/ScreenEffectRec.cpp",
+   "src/db/rec/screeneffectrec.cpp"
+  ],
+  "frozen": "ScreenEffectRec::GetFilename",
+  "frozenSize": 8,
+  "how": "string",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 6,
+  "status": "ported"
+ },
  "008b5cf0": {
   "branchRatio": 1.0,
   "constOverlap": -1.0,
@@ -84295,20 +86389,100 @@
   "refSize": 6,
   "status": "ported"
  },
- "008bfe80": {
-  "branchRatio": 0.0,
+ "008bfd30": {
+  "branchRatio": 0.4,
   "constOverlap": 0.0,
   "faithful": false,
-  "fidelity": 0.04,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "EffectGlow::IsEnabled",
+  "frozenSize": 268,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 92,
+  "status": "ported"
+ },
+ "008bfd90": {
+  "branchRatio": 0.4,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "EffectGlow::Render",
+  "frozenSize": 245,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 72,
+  "status": "ported"
+ },
+ "008bfde0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "EffectGlow::SetParams",
+  "frozenSize": 116,
+  "how": "annotated",
+  "module": "ComSatSoundIOSoundEngine.cpp",
+  "refSize": 73,
+  "status": "ported"
+ },
+ "008bfe80": {
+  "branchRatio": 0.105,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.6,
   "files": [
    "src/ffx/EffectGlow.cpp",
    "src/ffx/effectglow.cpp"
   ],
   "frozen": "EffectGlow::EffectGlow",
-  "frozenSize": 89,
-  "how": "string",
+  "frozenSize": 1964,
+  "how": "annotated",
   "module": "EffectGlow.cpp",
   "refSize": 834,
+  "status": "ported"
+ },
+ "008c01d0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "EffectGlow::~EffectGlow",
+  "frozenSize": 402,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 129,
+  "status": "ported"
+ },
+ "008c0290": {
+  "branchRatio": 1.0,
+  "constOverlap": -1.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::SavedView",
+  "frozenSize": 8,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 6,
   "status": "ported"
  },
  "008c02a0": {
@@ -84317,14 +86491,542 @@
   "faithful": false,
   "fidelity": 0.667,
   "files": [
-   "src/ffx/EffectDeath.cpp",
-   "src/ffx/effectdeath.cpp"
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
   ],
   "frozen": "FFXDeathCallback",
   "frozenSize": 47,
   "how": "annotated",
   "module": "EffectGlow.cpp",
   "refSize": 55,
+  "status": "ported"
+ },
+ "008c02e0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::SetEffect",
+  "frozenSize": 30,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 31,
+  "status": "ported"
+ },
+ "008c0300": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Pass::Pass",
+  "frozenSize": 107,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 95,
+  "status": "ported"
+ },
+ "008c0360": {
+  "branchRatio": 0.286,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.143,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::ReleaseTargets",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 553,
+  "status": "ported"
+ },
+ "008c0590": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::QuadCoords",
+  "frozenSize": 320,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 429,
+  "status": "ported"
+ },
+ "008c0740": {
+  "branchRatio": 0.429,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.5,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::GridCoords",
+  "frozenSize": 1186,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 1348,
+  "status": "ported"
+ },
+ "008c0c90": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.111,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::StreamQuad",
+  "frozenSize": 930,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 335,
+  "status": "ported"
+ },
+ "008c0de0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.231,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::StreamColored",
+  "frozenSize": 296,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 221,
+  "status": "ported"
+ },
+ "008c0ec0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::QuadIndex",
+  "frozenSize": 82,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 52,
+  "status": "ported"
+ },
+ "008c0f00": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.25,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::GridIndex",
+  "frozenSize": 297,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 262,
+  "status": "ported"
+ },
+ "008c1010": {
+  "branchRatio": 0.333,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::EndScene",
+  "frozenSize": 196,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 159,
+  "status": "ported"
+ },
+ "008c10b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::TargetKind",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 76,
+  "status": "ported"
+ },
+ "008c1100": {
+  "branchRatio": 0.857,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::CreateTarget",
+  "frozenSize": 568,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 368,
+  "status": "ported"
+ },
+ "008c12c0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Effect::Render",
+  "frozenSize": 173,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 37,
+  "status": "ported"
+ },
+ "008c12f0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Init",
+  "frozenSize": 342,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 547,
+  "status": "ported"
+ },
+ "008c1520": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::EndPass",
+  "frozenSize": 147,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 193,
+  "status": "ported"
+ },
+ "008c15f0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 0.875,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::UpdateTargets",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 370,
+  "status": "ported"
+ },
+ "008c1770": {
+  "branchRatio": 0.571,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::BeginScene",
+  "frozenSize": 721,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 247,
+  "status": "ported"
+ },
+ "008c1870": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::Effect::Effect",
+  "frozenSize": 46,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 30,
+  "status": "ported"
+ },
+ "008c1890": {
+  "branchRatio": 0.077,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFX.cpp",
+   "src/ffx/ffx.cpp"
+  ],
+  "frozen": "FFX::BeginPass",
+  "frozenSize": 542,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 686,
+  "status": "ported"
+ },
+ "008c1b40": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGauss4::PassGauss4",
+  "frozenSize": 136,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "008c1bb0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGauss4::~PassGauss4",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
+ "008c1bf0": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGauss4::IsValid",
+  "frozenSize": 40,
+  "how": "order",
+  "module": "EffectGlow.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "008c1c20": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.029,
+  "faithful": false,
+  "fidelity": 0.7,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGauss4::Render",
+  "frozenSize": 816,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 835,
+  "status": "ported"
+ },
+ "008c1f70": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassBox4::PassBox4",
+  "frozenSize": 136,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "008c1fe0": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassBox4::~PassBox4",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
+ "008c21e0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlow::PassGlow",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 107,
+  "status": "ported"
+ },
+ "008c2250": {
+  "branchRatio": 0.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlow::~PassGlow",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 59,
+  "status": "ported"
+ },
+ "008c22b0": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlowWave::~PassGlowWave",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 159,
+  "status": "ported"
+ },
+ "008c2350": {
+  "branchRatio": 0.286,
+  "constOverlap": 0.021,
+  "faithful": false,
+  "fidelity": 0.955,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlowWave::Render",
+  "frozenSize": 1678,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 1062,
+  "status": "ported"
+ },
+ "008c2780": {
+  "branchRatio": 0.0,
+  "constOverlap": -1.0,
+  "faithful": false,
+  "fidelity": 0.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlow::IsValid",
+  "frozenSize": 40,
+  "how": "order",
+  "module": "EffectGlow.cpp",
+  "refSize": 43,
+  "status": "ported"
+ },
+ "008c27b0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlow::Render",
+  "frozenSize": 448,
+  "how": "annotated",
+  "module": "EffectGlow.cpp",
+  "refSize": 311,
+  "status": "ported"
+ },
+ "008c2920": {
+  "branchRatio": 0.375,
+  "constOverlap": 0.05,
+  "faithful": false,
+  "fidelity": 0.167,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "WaveTexCallback",
+  "frozenSize": 1205,
+  "how": "annotated",
+  "module": "PassGlow.cpp",
+  "refSize": 946,
+  "status": "ported"
+ },
+ "008c2ce0": {
+  "branchRatio": 0.909,
+  "constOverlap": 0.071,
+  "faithful": false,
+  "fidelity": 0.364,
+  "files": [
+   "src/ffx/EffectGlow.cpp",
+   "src/ffx/effectglow.cpp"
+  ],
+  "frozen": "PassGlowWave::PassGlowWave",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "PassGlow.cpp",
+  "refSize": 466,
   "status": "ported"
  },
  "008c8de0": {
@@ -92132,6 +94834,54 @@
   "how": "annotated",
   "module": "cmemblock.cpp",
   "refSize": 152,
+  "status": "ported"
+ },
+ "009852a0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.2,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "NoiseSmoothed",
+  "frozenSize": 631,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 558,
+  "status": "ported"
+ },
+ "009854d0": {
+  "branchRatio": 1.0,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "NoiseInterpolated",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 161,
+  "status": "ported"
+ },
+ "00985580": {
+  "branchRatio": 0.5,
+  "constOverlap": 0.0,
+  "faithful": true,
+  "fidelity": 1.0,
+  "files": [
+   "src/ffx/FFXEffects.cpp",
+   "src/ffx/ffxeffects.cpp"
+  ],
+  "frozen": "NoiseOctaves",
+  "frozenSize": 0,
+  "how": "annotated",
+  "module": "cmemblock.cpp",
+  "refSize": 107,
   "status": "ported"
  },
  "009855f0": {

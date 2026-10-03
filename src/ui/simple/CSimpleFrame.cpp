@@ -1168,6 +1168,7 @@ void CSimpleFrame::OnFrameRender() {
     }
 }
 
+// ref: FUN_00490840
 void CSimpleFrame::OnFrameRender(CRenderBatch* batch, uint32_t layer) {
     if (!this->m_drawenabled[layer]) {
         return;

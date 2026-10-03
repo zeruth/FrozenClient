@@ -97,6 +97,7 @@ void CRenderBatch::Queue(CTexture* texture, EGxBlend alphaMode, int32_t posCount
     this->m_count++;
 }
 
+// ref: FUN_004858e0
 void CRenderBatch::QueueCallback(void (*callback)(void*), void* param) {
     auto node = this->m_callbacks.NewNode(2, 0, 0);
     node->callback = callback;

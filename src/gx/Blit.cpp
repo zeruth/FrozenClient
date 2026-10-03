@@ -279,7 +279,7 @@ void Blit_Argb4444_Abgr8888(const C2iVector& size, const void* in, uint32_t inSt
 // pointers and a clip rectangle, and per format pair an aligned and a general block walker.
 // ------------------------------------------------------------------------------------------------
 
-// ref: FUN_006ae820
+// The DXT weight tables (built by FUN_006ae820 below).
 // The 1/3 and 2/3 blend weights, precomputed so the interpolated endpoints cost two table reads
 // and an add. The reference keeps FOUR tables -- a 32-entry and a 64-entry copy of each weight,
 // for 5-bit and 6-bit channels -- built by one function over the same two formulas. frozen keeps
@@ -292,6 +292,7 @@ static uint16_t s_dxtWeight1_3[64];
 static uint16_t s_dxtWeight2_3[64];
 static int32_t s_dxtWeightsBuilt = 0;
 
+// ref: FUN_006ae820
 static void BuildDxtWeights() {
     for (uint32_t i = 0; i < 64; i++) {
         s_dxtWeight1_3[i] = static_cast<uint16_t>(((i << 8) / 3) + 1);

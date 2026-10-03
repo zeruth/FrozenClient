@@ -65,7 +65,8 @@ GHIDRA_PROJECTS = r'C:\Users\tyler\tools\ghidra-projects'
 GHIDRA_PROGRAM = 'WoW.exe'
 GHIDRA_SCRIPTS = os.path.join(HERE, 'ghidra')  # the exporters live with the tool
 PDBUTIL = r'C:\Program Files\LLVM\bin\llvm-pdbutil.exe'
-PDB = os.path.join(ROOT, 'build', 'dist', 'bin', 'Frozen.pdb')
+# FROZEN_PDB measures another build's PDB (build/bin/Release, say) without installing it.
+PDB = os.environ.get('FROZEN_PDB') or os.path.join(ROOT, 'build', 'dist', 'bin', 'Frozen.pdb')
 
 # Roots of the frame loop in the reference: CGWorldFrame::OnFrameRender and the client's main
 # idle. Reachability from these is what "world spine" means in the report.
