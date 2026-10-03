@@ -105,9 +105,24 @@ typedef LUA_INTEGER lua_Integer;
 
 
 /*
+** secure execution (taint)
+*/
+LUA_API const char *lua_tainted;  /* taint of the running code, NULL when secure */
+LUA_API int lua_taintexpected;  /* taint moves only while this is non-zero */
+LUA_API int lua_taintedclosure;  /* set while a tainted closure runs */
+LUA_API const char *lua_closuretaint;  /* taint given to Lua closures created untainted */
+LUA_API const char *lua_taintcreate;  /* taint new objects take while the code is tainted */
+
+/* the taint log (the client's taintLog CVar): told when tainted globals are read or written */
+#define LUA_TAINTLOG_WRITE	1
+#define LUA_TAINTLOG_READ	2
+LUA_API void (*lua_taintloghook) (lua_State *L, int access, const char *name, const char *taint);
+
+
+/*
 ** state manipulation
 */
-LUA_API lua_State *(lua_newstate) (lua_Alloc f, void *ud);
+LUA_API lua_State *(lua_newstate) (lua_Alloc f, void *ud, int profiling);
 LUA_API void       (lua_close) (lua_State *L);
 LUA_API lua_State *(lua_newthread) (lua_State *L);
 

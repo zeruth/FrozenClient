@@ -40,7 +40,11 @@ typedef union GCObject GCObject;
 ** Common Header for all collectable objects (in macro form, to be
 ** included in other objects)
 */
-#define CommonHeader	GCObject *next; lu_byte tt; lu_byte marked
+/*
+** The client's secure execution adds `taint' after `next': the taint the object was created
+** under (see luaC_link), null when it was created by secure code.
+*/
+#define CommonHeader	GCObject *next; const char *taint; lu_byte tt; lu_byte marked
 
 
 /*
@@ -68,7 +72,11 @@ typedef union {
 ** Tagged Values
 */
 
-#define TValuefields	Value value; int tt
+/*
+** Every value carries the taint of the code that produced it (null = secure). The reference
+** stores it in the word stock 5.1 leaves as padding, so a TValue stays 16 bytes there.
+*/
+#define TValuefields	Value value; int tt; const char *taint
 
 typedef struct lua_TValue {
   TValuefields;
@@ -160,7 +168,7 @@ typedef struct lua_TValue {
 
 #define setobj(L,obj1,obj2) \
   { const TValue *o2=(obj2); TValue *o1=(obj1); \
-    o1->value = o2->value; o1->tt=o2->tt; \
+    o1->value = o2->value; o1->tt=o2->tt; o1->taint=o2->taint; \
     checkliveness(G(L),o1); }
 
 
@@ -184,6 +192,45 @@ typedef struct lua_TValue {
 #define setsvalue2n	setsvalue
 
 #define setttype(obj, tt) (ttype(obj) = (tt))
+
+
+/*
+** Secure execution (taint).
+**
+** The macros above copy a value's taint along with it and never touch the running execution's
+** taint; that is the reference's behaviour wherever its code has no taint logic (table rehash,
+** the collector, ...). The functions that do have it are ported with the macros below, which
+** are the three shapes every taint-aware copy in the reference takes:
+**
+**   setobjtaint  -- a read onto the stack. A clean value takes the running code's taint; a
+**                   tainted one taints the running code (while taint is being tracked, and
+**                   unless a tainted closure is already running).
+**   setobjstore  -- a store (upvalue, table slot). The value keeps its own taint, and a tainted
+**                   one taints the running code under the same condition.
+**   settaint     -- a freshly produced value takes the running code's taint.
+*/
+#define taintread(t) \
+  { const char *i_t=(t); \
+    if (i_t != NULL && lua_taintexpected && !lua_taintedclosure) lua_tainted = i_t; }
+
+#define settaint(obj)	((obj)->taint = lua_tainted)
+
+#define setobjtaint(L,obj1,obj2) \
+  { const TValue *o2=(obj2); TValue *o1=(obj1); \
+    o1->value = o2->value; o1->tt=o2->tt; o1->taint=o2->taint; \
+    if (o2->taint == NULL) o1->taint = lua_tainted; \
+    else if (lua_taintexpected && !lua_taintedclosure) lua_tainted = o2->taint; \
+    checkliveness(G(L),o1); }
+
+#define setobjstore(L,obj1,obj2) \
+  { const TValue *o2=(obj2); TValue *o1=(obj1); \
+    o1->value = o2->value; o1->tt=o2->tt; o1->taint=o2->taint; \
+    taintread(o2->taint); \
+    checkliveness(G(L),o1); }
+
+/* the taint a new collectable object records: the running code's, or the creation override */
+#define luai_newtaint() \
+  ((lua_tainted != NULL && lua_taintcreate != NULL) ? lua_taintcreate : lua_tainted)
 
 
 #define iscollectable(o)	(ttype(o) >= LUA_TSTRING)
@@ -288,9 +335,22 @@ typedef struct UpVal {
 ** Closures
 */
 
+/*
+** CPU accounting for one closure while script profiling is on (the `scriptProfile' CVar):
+** allocated with the closure when global_State.profiling is set, null otherwise.
+*/
+typedef struct FuncProfile {
+  int calls;  /* times the closure was entered */
+  int depth;  /* activations now running, so recursion is timed once */
+  long long started;  /* clock at which the outermost running activation began */
+  long long owntime;  /* clocks spent in the closure itself */
+  long long totaltime;  /* clocks spent in it including what it called */
+} FuncProfile;
+
+
 #define ClosureHeader \
 	CommonHeader; lu_byte isC; lu_byte nupvalues; GCObject *gclist; \
-	struct Table *env
+	struct Table *env; FuncProfile *profile
 
 typedef struct CClosure {
   ClosureHeader;

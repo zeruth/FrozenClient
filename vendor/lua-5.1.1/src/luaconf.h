@@ -333,14 +333,16 @@
 ** CHANGE it to undefined as soon as your programs use only '...' to
 ** access vararg parameters (instead of the old 'arg' table).
 */
-#define LUA_COMPAT_VARARG
+/* the client is built without it: no implicit `arg' table (see adjust_varargs) */
+#undef LUA_COMPAT_VARARG
 
 /*
 @@ LUA_COMPAT_MOD controls compatibility with old math.mod function.
 ** CHANGE it to undefined as soon as your programs use 'math.fmod' or
 ** the new '%' operator instead of 'math.mod'.
 */
-#define LUA_COMPAT_MOD
+/* the client is built without it: no math.mod */
+#undef LUA_COMPAT_MOD
 
 /*
 @@ LUA_COMPAT_LSTR controls compatibility with old long string nesting
@@ -355,7 +357,8 @@
 ** CHANGE it to undefined as soon as you rename 'string.gfind' to
 ** 'string.gmatch'.
 */
-#define LUA_COMPAT_GFIND
+/* the client is built without it: string.gfind raises an error */
+#undef LUA_COMPAT_GFIND
 
 /*
 @@ LUA_COMPAT_OPENLIB controls compatibility with old 'luaL_openlib'
@@ -719,6 +722,19 @@ union luai_Cast { double l_d; long l_l; };
 ** CHANGE them if you defined LUAI_EXTRASPACE and need to do something
 ** extra when a thread is created/deleted/resumed/yielded.
 */
+/*
+@@ luai_validatefunction checks a callback points into the client's own code before the core
+@* calls it (the reference does this before C functions, hooks and protected bodies).
+@@ luai_clocks reads the high-resolution clock script profiling charges time with.
+*/
+#include <stdint.h>
+extern void OsValidateFunctionPointer(const void *function);
+extern uint64_t OsGetAsyncClocks(void);
+extern uint64_t OsGetAsyncClocksPerSecond(void);
+#define luai_validatefunction(f)	OsValidateFunctionPointer((const void *)(f))
+#define luai_clocks()			((long long)OsGetAsyncClocks())
+
+
 #define luai_userstateopen(L)		((void)L)
 #define luai_userstateclose(L)		((void)L)
 #define luai_userstatethread(L,L1)	((void)L)

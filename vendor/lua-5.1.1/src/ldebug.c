@@ -174,16 +174,22 @@ static void info_tailcall (lua_Debug *ar) {
 }
 
 
+/* ref: FUN_00850000 */
 static void collectvalidlines (lua_State *L, Closure *f) {
   if (f == NULL || f->c.isC) {
+    settaint(L->top);
     setnilvalue(L->top);
   }
   else {
     Table *t = luaH_new(L, 0, 0);
     int *lineinfo = f->l.p->lineinfo;
     int i;
-    for (i=0; i<f->l.p->sizelineinfo; i++)
-      setbvalue(luaH_setnum(L, t, lineinfo[i]), 1);
+    for (i=0; i<f->l.p->sizelineinfo; i++) {
+      TValue *o = luaH_setnum(L, t, lineinfo[i]);
+      settaint(o);
+      setbvalue(o, 1);
+    }
+    settaint(L->top);
     sethvalue(L, L->top, t); 
   }
   incr_top(L);
@@ -229,6 +235,7 @@ static int auxgetinfo (lua_State *L, const char *what, lua_Debug *ar,
 }
 
 
+/* ref: FUN_00850a90 */
 LUA_API int lua_getinfo (lua_State *L, const char *what, lua_Debug *ar) {
   int status;
   Closure *f = NULL;
@@ -248,6 +255,7 @@ LUA_API int lua_getinfo (lua_State *L, const char *what, lua_Debug *ar) {
   }
   status = auxgetinfo(L, what, ar, f, ci);
   if (strchr(what, 'f')) {
+    settaint(L->top);
     if (f == NULL) setnilvalue(L->top);
     else setclvalue(L, L->top, f);
     incr_top(L);
@@ -597,12 +605,13 @@ static void addinfo (lua_State *L, const char *msg) {
 }
 
 
+/* ref: FUN_00850830 */
 void luaG_errormsg (lua_State *L) {
   if (L->errfunc != 0) {  /* is there an error handling function? */
     StkId errfunc = restorestack(L, L->errfunc);
     if (!ttisfunction(errfunc)) luaD_throw(L, LUA_ERRERR);
-    setobjs2s(L, L->top, L->top - 1);  /* move argument */
-    setobjs2s(L, L->top - 1, errfunc);  /* push function */
+    setobjtaint(L, L->top, L->top - 1);  /* move argument */
+    setobjtaint(L, L->top - 1, errfunc);  /* push function */
     incr_top(L);
     luaD_call(L, L->top - 2, 1);  /* call it */
   }

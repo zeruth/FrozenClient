@@ -101,26 +101,29 @@ int luaO_str2d (const char *s, lua_Number *result) {
 
 
 
+/* ref: FUN_0084d520 */
 static void pushstr (lua_State *L, const char *str) {
+  if (str == NULL) str = "(null)";
+  settaint(L->top);
   setsvalue2s(L, L->top, luaS_new(L, str));
   incr_top(L);
 }
 
 
 /* this function handles only `%d', `%c', %f, %p, and `%s' formats */
+/* ref: FUN_0084d580 */
 const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
   int n = 1;
   pushstr(L, "");
   for (;;) {
     const char *e = strchr(fmt, '%');
     if (e == NULL) break;
+    settaint(L->top);
     setsvalue2s(L, L->top, luaS_newlstr(L, fmt, e-fmt));
     incr_top(L);
     switch (*(e+1)) {
       case 's': {
-        const char *s = va_arg(argp, char *);
-        if (s == NULL) s = "(null)";
-        pushstr(L, s);
+        pushstr(L, va_arg(argp, char *));
         break;
       }
       case 'c': {
@@ -131,11 +134,13 @@ const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
         break;
       }
       case 'd': {
+        settaint(L->top);
         setnvalue(L->top, cast_num(va_arg(argp, int)));
         incr_top(L);
         break;
       }
       case 'f': {
+        settaint(L->top);
         setnvalue(L->top, cast_num(va_arg(argp, l_uacNumber)));
         incr_top(L);
         break;

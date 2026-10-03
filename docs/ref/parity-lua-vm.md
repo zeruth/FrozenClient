@@ -18,9 +18,10 @@ been seen in a running client unless a row says so.
 | 0x00d4139c | `lua_tainted` | taint of the running execution (`const char*`, null = secure) |
 | 0x00d413a0 | `lua_taintexpected` | depth counter; taint only moves while it is non-zero |
 | 0x00d413a4 | `lua_taintedclosure` | set while a tainted closure is running, so reads stop re-tainting |
-| 0x00d413a8 | (todo name) | taint stamped on code loaded by `FrameScript_ExecuteFile` (set around its `lua_pcall`) |
-| 0x00d413ac | (todo name) | taint override for newly created objects (`CSimpleFrame::LoadXML` sets it) |
-| 0x00d413b0 | (todo name) | hook called from `luaV_gettable`/`luaV_settable` (set to 0x0052a650 by a script function) |
+| 0x00d413a8 | `lua_closuretaint` | taint given to Lua closures created untainted (`luaF_newLclosure`); `FrameScript_ExecuteFile` sets it around its `lua_pcall` |
+| 0x00d413ac | `lua_taintcreate` | taint new objects take while the code is tainted (`luaC_link`); `CSimpleFrame::LoadXML` sets it |
+| 0x00d413b0 | `lua_taintloghook` | the taint log (`taintLog` CVar): `luaV_gettable`/`luaV_settable` report tainted globals read or written (set to 0x0052a650) |
+| 0x00d415b8/bc | (Os.cpp statics) | `.text` bounds for `OsValidateFunctionPointer` (FUN_0086b5a0), run before every indirect call the core makes |
 | 0x00d413b8 | `lua_europeannumbers` | already ported (`lua_seteuropeannumbers`) |
 
 ## Object model (32-bit reference offsets)
@@ -73,6 +74,29 @@ attributes time to closures. This is what GetFunctionCPUUsage / GetAddOnCPUUsage
 ## Allocator
 
 `lmemPool.cpp` (0x00855570..0x00855a20): pooled small-object allocator behind `luaM_realloc_`.
+
+## Build options the reference was compiled with
+
+Lua **5.1.1** (the copyright string in WoW.exe), without `LUA_COMPAT_VARARG` (no implicit `arg`
+table; `parlist` makes no `arg` local), `LUA_COMPAT_MOD` (no `math.mod`) or `LUA_COMPAT_GFIND`
+(`string.gfind` raises), `LUA_COMPAT_LSTR` 1. `MAX_SIZET` is 0x1000000 (every size check in
+lstring/ltable/ldo/lvm uses a 16 MB limit). `f_parser` calls `luaY_parser` only: no binary chunks.
+`luaL_loadbuffer` skips a UTF-8 BOM.
+
+Libraries it registers: base (no print/dofile/loadfile/load/require/module), coroutine, string,
+table (+ Blizzard's `wipe`, `removemulti`), math (no `mod`, no `randomseed`), bit (bnot band bor
+bxor lshift rshift arshift mod). No io, os, package or debug.
+
+## Status
+
+- Done (2026-10-03): object model, taint globals and copy rule, every taint site in lstate,
+  lfunc, lstring, ltable, lapi, ldo (+ profiled precall/call/resume, pcall depth unwind), lvm
+  (both interpreters, taint log), llex/lparser/lcode constants, ldebug, lgc, lobject;
+  `OsValidateFunctionPointer`; compat options above. FrozenTest `[lua]` covers basics, taint and
+  the profiled interpreter.
+- Todo: `MAX_SIZET`, BOM skip, library tables (registrations above), lmemPool, the GC accounting
+  extensions (FUN_0085b0f0..0085b610) and their lapi wrappers, CPU-usage API, FrameScript
+  brackets and secure builtins, then the 1:1 sweep of the remaining unlinked functions.
 
 ## Order of work
 

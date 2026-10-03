@@ -108,12 +108,6 @@ const char* FrameScript_EventObject::GetName() {
     return this->m_key.GetString();
 }
 
-int64_t OsGetAsyncClocksPerSecond() {
-    // TODO
-
-    return 1000.0;
-}
-
 int32_t FrameScript_CompileFunction(const char* name, const char* wrapper, const char* body, CStatus* status) {
     lua_State* L = FrameScript::s_context;
 
@@ -745,7 +739,7 @@ int32_t FrameScript_HandleError(lua_State* L) {
 
 int32_t FrameScript_Initialize(int32_t a1) {
     FrameScript::s_mempool = luaM_initPool();
-    FrameScript::s_context = lua_newstate(luaM_reallocPool, FrameScript::s_mempool); // TODO a1
+    FrameScript::s_context = lua_newstate(luaM_reallocPool, FrameScript::s_mempool, a1);
     FrameScript::s_scriptTimeUsed = 0ll;
 
     int64_t v1 = OsGetAsyncClocksPerSecond();

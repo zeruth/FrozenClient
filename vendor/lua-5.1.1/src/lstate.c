@@ -24,6 +24,14 @@
 #include "ltm.h"
 
 
+/* ref: 0x00d4139c, 0x00d413a0, 0x00d413a4, 0x00d413a8, 0x00d413ac */
+const char *lua_tainted = NULL;
+int lua_taintexpected = 0;
+int lua_taintedclosure = 0;
+const char *lua_closuretaint = NULL;
+const char *lua_taintcreate = NULL;
+
+
 #define state_size(x)	(sizeof(x) + LUAI_EXTRASPACE)
 #define fromstate(l)	(cast(lu_byte *, (l)) - LUAI_EXTRASPACE)
 #define tostate(l)   (cast(lua_State *, cast(lu_byte *, l) + LUAI_EXTRASPACE))
@@ -39,6 +47,7 @@ typedef struct LG {
   
 
 
+/* ref: FUN_00855090 */
 static void stack_init (lua_State *L1, lua_State *L) {
   /* initialize CallInfo array */
   L1->base_ci = luaM_newvector(L, BASIC_CI_SIZE, CallInfo);
@@ -52,6 +61,7 @@ static void stack_init (lua_State *L1, lua_State *L) {
   L1->stack_last = L1->stack+(L1->stacksize - EXTRA_STACK)-1;
   /* initialize first ci */
   L1->ci->func = L1->top;
+  settaint(L1->top);
   setnilvalue(L1->top++);  /* `function' entry for this `ci' */
   L1->base = L1->ci->base = L1->top;
   L1->ci->top = L1->top + LUA_MINSTACK;
@@ -67,11 +77,14 @@ static void freestack (lua_State *L, lua_State *L1) {
 /*
 ** open parts that may cause memory-allocation errors
 */
+/* ref: FUN_00855120 */
 static void f_luaopen (lua_State *L, void *ud) {
   global_State *g = G(L);
   UNUSED(ud);
   stack_init(L, L);  /* init stack */
+  settaint(gt(L));
   sethvalue(L, gt(L), luaH_new(L, 0, 2));  /* table of globals */
+  settaint(registry(L));
   sethvalue(L, registry(L), luaH_new(L, 0, 2));  /* registry */
   luaS_resize(L, MINSTRTABSIZE);  /* initial size of string table */
   luaT_init(L);
@@ -98,10 +111,13 @@ static void preinit_state (lua_State *L, global_State *g) {
   L->base_ci = L->ci = NULL;
   L->savedpc = NULL;
   L->errfunc = 0;
+  L->externalabort = 0;
+  settaint(gt(L));
   setnilvalue(gt(L));
 }
 
 
+/* ref: FUN_008551b0 */
 static void close_state (lua_State *L) {
   global_State *g = G(L);
   luaF_close(L, L->stack);  /* close all upvalues for this thread */
@@ -116,12 +132,13 @@ static void close_state (lua_State *L) {
 }
 
 
+/* ref: FUN_00855240 */
 lua_State *luaE_newthread (lua_State *L) {
   lua_State *L1 = tostate(luaM_malloc(L, state_size(lua_State)));
   luaC_link(L, obj2gco(L1), LUA_TTHREAD);
   preinit_state(L1, G(L));
   stack_init(L1, L);  /* init stack */
-  setobj2n(L, gt(L1), gt(L));  /* share table of globals */
+  setobjstore(L, gt(L1), gt(L));  /* share table of globals */
   L1->hookmask = L->hookmask;
   L1->basehookcount = L->basehookcount;
   L1->hook = L->hook;
@@ -131,6 +148,7 @@ lua_State *luaE_newthread (lua_State *L) {
 }
 
 
+/* ref: FUN_00855310 */
 void luaE_freethread (lua_State *L, lua_State *L1) {
   luaF_close(L1, L1->stack);  /* close all upvalues for this thread */
   lua_assert(L1->openupval == NULL);
@@ -140,7 +158,8 @@ void luaE_freethread (lua_State *L, lua_State *L1) {
 }
 
 
-LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
+/* ref: FUN_00855370 */
+LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud, int profiling) {
   int i;
   lua_State *L;
   global_State *g;
@@ -150,7 +169,9 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g = &((LG *)L)->g;
   L->next = NULL;
   L->tt = LUA_TTHREAD;
+  L->taint = luai_newtaint();
   g->currentwhite = bit2mask(WHITE0BIT, FIXEDBIT);
+  g->profiling = (profiling != 0);
   L->marked = luaC_white(g);
   set2bits(L->marked, FIXEDBIT, SFIXEDBIT);
   preinit_state(L, g);
@@ -163,6 +184,7 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->strt.size = 0;
   g->strt.nuse = 0;
   g->strt.hash = NULL;
+  settaint(registry(L));
   setnilvalue(registry(L));
   luaZ_initbuffer(L, &g->buff);
   g->panic = NULL;
@@ -178,6 +200,8 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->gcpause = LUAI_GCPAUSE;
   g->gcstepmul = LUAI_GCMUL;
   g->gcdept = 0;
+  g->memoryusage = NULL;
+  g->cpuusage = NULL;
   for (i=0; i<NUM_TAGS; i++) g->mt[i] = NULL;
   if (luaD_rawrunprotected(L, f_luaopen, NULL) != 0) {
     /* memory allocation error: free partial state */
@@ -196,6 +220,7 @@ static void callallgcTM (lua_State *L, void *ud) {
 }
 
 
+/* ref: FUN_00855510 */
 LUA_API void lua_close (lua_State *L) {
   L = G(L)->mainthread;  /* only the main thread can be closed */
   lua_lock(L);

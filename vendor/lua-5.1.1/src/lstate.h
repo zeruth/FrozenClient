@@ -63,12 +63,31 @@ typedef struct CallInfo {
 
 
 /*
+** The client's per-taint accounting: one record per taint string (an AddOn's name), so the
+** interface can ask how much memory and time each AddOn uses.
+*/
+typedef struct TaintMemory {
+  const char *taint;
+  int bytes;  /* counted by lua_updatememoryusage */
+  struct TaintMemory *next;
+} TaintMemory;
+
+typedef struct TaintCPU {
+  const char *taint;
+  int unused;  /* never written by the reference */
+  long long time;  /* clocks charged to the taint */
+  struct TaintCPU *next;
+} TaintCPU;
+
+
+/*
 ** `global state', shared by all threads of this state
 */
 typedef struct global_State {
   stringtable strt;  /* hash table for strings */
   lua_Alloc frealloc;  /* function to reallocate memory */
   void *ud;         /* auxiliary data to `frealloc' */
+  lu_byte profiling;  /* script profiling (closures carry a FuncProfile) */
   lu_byte currentwhite;
   lu_byte gcstate;  /* state of garbage collector */
   int sweepstrgc;  /* position of sweep in `strt' */
@@ -85,6 +104,8 @@ typedef struct global_State {
   lu_mem gcdept;  /* how much GC is `behind schedule' */
   int gcpause;  /* size of pause between successive GCs */
   int gcstepmul;  /* GC `granularity' */
+  TaintMemory *memoryusage;  /* per-taint memory, see lua_updatememoryusage */
+  TaintCPU *cpuusage;  /* per-taint time, see lua_getcpuusage */
   lua_CFunction panic;  /* to be called in unprotected errors */
   TValue l_registry;
   struct lua_State *mainthread;
@@ -123,6 +144,8 @@ struct lua_State {
   GCObject *gclist;
   struct lua_longjmp *errorJmp;  /* current error recover point */
   ptrdiff_t errfunc;  /* current error handling function (stack index) */
+  int externalabort;  /* when set, the interpreter raises "external abort" at the next
+                         instruction; nothing in the 12340 reference was found to set it */
 };
 
 

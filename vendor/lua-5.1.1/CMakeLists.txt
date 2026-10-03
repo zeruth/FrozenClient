@@ -45,6 +45,12 @@ target_include_directories(lua-5.1
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+# OsValidateFunctionPointer and OsGetAsyncClocks (see luaconf.h)
+target_link_libraries(lua-5.1
+    PRIVATE
+        common
+)
+
 if(ANDROID)
     # Lua stores string bytes directly after the TString header. Bionic's fortified strchr
     # treats that pointer as a zero-size object and aborts inside the garbage collector.

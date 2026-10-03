@@ -253,6 +253,7 @@ static void checkstacksizes (lua_State *L, StkId max) {
 }
 
 
+/* ref: FUN_0085ac90 */
 static void traversestack (global_State *g, lua_State *l) {
   StkId o, lim;
   CallInfo *ci;
@@ -264,8 +265,10 @@ static void traversestack (global_State *g, lua_State *l) {
   }
   for (o = l->stack; o < l->top; o++)
     markvalue(g, o);
-  for (; o <= lim; o++)
+  for (; o <= lim; o++) {
+    settaint(o);
     setnilvalue(o);
+  }
   checkstacksizes(l, lim);
 }
 
@@ -348,6 +351,7 @@ static int iscleared (const TValue *o, int iskey) {
 /*
 ** clear collected entries from weaktables
 */
+/* ref: FUN_0085ae80 */
 static void cleartable (GCObject *l) {
   while (l) {
     Table *h = gco2h(l);
@@ -357,8 +361,10 @@ static void cleartable (GCObject *l) {
     if (testbit(h->marked, VALUEWEAKBIT)) {
       while (i--) {
         TValue *o = &h->array[i];
-        if (iscleared(o, 0))  /* value was collected? */
+        if (iscleared(o, 0)) {  /* value was collected? */
+          settaint(o);
           setnilvalue(o);  /* remove value */
+        }
       }
     }
     i = sizenode(h);
@@ -366,6 +372,7 @@ static void cleartable (GCObject *l) {
       Node *n = gnode(h, i);
       if (!ttisnil(gval(n)) &&  /* non-empty entry? */
           (iscleared(key2tval(n), 1) || iscleared(gval(n), 0))) {
+        settaint(gval(n));
         setnilvalue(gval(n));  /* remove value ... */
         removeentry(n);  /* remove entry from table */
       }
@@ -442,6 +449,7 @@ static void checkSizes (lua_State *L) {
 }
 
 
+/* ref: FUN_0085b300 */
 static void GCTM (lua_State *L) {
   global_State *g = G(L);
   GCObject *o = g->tmudata->gch.next;  /* get first element */
@@ -461,7 +469,8 @@ static void GCTM (lua_State *L) {
     lu_mem oldt = g->GCthreshold;
     L->allowhook = 0;  /* stop debug hooks during GC tag method */
     g->GCthreshold = 2*g->totalbytes;  /* avoid GC steps */
-    setobj2s(L, L->top, tm);
+    setobjtaint(L, L->top, tm);
+    settaint(L->top+1);
     setuvalue(L, L->top+1, udata);
     L->top += 2;
     luaD_call(L, L->top - 2, 0);
@@ -683,12 +692,14 @@ void luaC_barrierback (lua_State *L, Table *t) {
 }
 
 
+/* ref: FUN_0085bab0 */
 void luaC_link (lua_State *L, GCObject *o, lu_byte tt) {
   global_State *g = G(L);
   o->gch.next = g->rootgc;
   g->rootgc = o;
   o->gch.marked = luaC_white(g);
   o->gch.tt = tt;
+  o->gch.taint = luai_newtaint();
 }
 
 

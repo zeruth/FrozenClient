@@ -221,6 +221,7 @@ static void freeexp (FuncState *fs, expdesc *e) {
 }
 
 
+/* ref: FUN_00861f80 */
 static int addk (FuncState *fs, TValue *k, TValue *v) {
   lua_State *L = fs->L;
   TValue *idx = luaH_set(L, fs->h, k);
@@ -231,26 +232,34 @@ static int addk (FuncState *fs, TValue *k, TValue *v) {
     return cast_int(nvalue(idx));
   }
   else {  /* constant not found; create a new entry */
+    settaint(idx);
     setnvalue(idx, cast_num(fs->nk));
     luaM_growvector(L, f->k, fs->nk, f->sizek, TValue,
                     MAXARG_Bx, "constant table overflow");
-    while (oldsize < f->sizek) setnilvalue(&f->k[oldsize++]);
-    setobj(L, &f->k[fs->nk], v);
+    while (oldsize < f->sizek) {
+      settaint(&f->k[oldsize]);
+      setnilvalue(&f->k[oldsize++]);
+    }
+    setobjstore(L, &f->k[fs->nk], v);
     luaC_barrier(L, f, v);
     return fs->nk++;
   }
 }
 
 
+/* ref: FUN_008620b0 */
 int luaK_stringK (FuncState *fs, TString *s) {
   TValue o;
+  settaint(&o);
   setsvalue(fs->L, &o, s);
   return addk(fs, &o, &o);
 }
 
 
+/* ref: FUN_008620f0 */
 int luaK_numberK (FuncState *fs, lua_Number r) {
   TValue o;
+  settaint(&o);
   setnvalue(&o, r);
   return addk(fs, &o, &o);
 }
@@ -258,15 +267,19 @@ int luaK_numberK (FuncState *fs, lua_Number r) {
 
 static int boolK (FuncState *fs, int b) {
   TValue o;
+  settaint(&o);
   setbvalue(&o, b);
   return addk(fs, &o, &o);
 }
 
 
+/* ref: FUN_00862120 */
 static int nilK (FuncState *fs) {
   TValue k, v;
+  settaint(&v);
   setnilvalue(&v);
   /* cannot use nil as key; instead use table itself to represent nil */
+  settaint(&k);
   sethvalue(fs->L, &k, fs->h);
   return addk(fs, &k, &v);
 }
@@ -436,6 +449,7 @@ void luaK_exp2val (FuncState *fs, expdesc *e) {
 }
 
 
+/* ref: FUN_00862b90 */
 int luaK_exp2RK (FuncState *fs, expdesc *e) {
   luaK_exp2val(fs, e);
   switch (e->k) {

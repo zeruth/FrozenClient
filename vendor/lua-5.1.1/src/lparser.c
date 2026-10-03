@@ -325,6 +325,7 @@ static void pushclosure (LexState *ls, FuncState *func, expdesc *v) {
 }
 
 
+/* ref: FUN_0085f410 */
 static void open_func (LexState *ls, FuncState *fs) {
   lua_State *L = ls->L;
   Proto *f = luaF_newproto(L);
@@ -346,8 +347,10 @@ static void open_func (LexState *ls, FuncState *fs) {
   f->maxstacksize = 2;  /* registers 0/1 are always valid */
   fs->h = luaH_new(L, 0, 0);
   /* anchor table of constants and prototype (to avoid being collected) */
+  settaint(L->top);
   sethvalue2s(L, L->top, fs->h);
   incr_top(L);
+  settaint(L->top);
   setptvalue2s(L, L->top, f);
   incr_top(L);
 }

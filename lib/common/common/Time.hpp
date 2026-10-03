@@ -22,9 +22,10 @@ const char* OsTimeGetTimingMethodName(int32_t method);
 
 uint64_t OsGetAsyncTimeMs();
 
-uint64_t OsGetAsyncClocks();
+// C linkage: the Lua core (C) reads these for script profiling.
+extern "C" uint64_t OsGetAsyncClocks();
 
-uint64_t OsGetAsyncClocksPerSecond();
+extern "C" uint64_t OsGetAsyncClocksPerSecond();
 
 uint64_t OsGetAsyncTimeMsPrecise();
 
