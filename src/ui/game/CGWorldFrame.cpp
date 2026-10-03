@@ -425,18 +425,59 @@ void CGWorldFrame::OnWorldRender() {
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 }
 
-void CGWorldFrame::OnWorldUpdate() {
-    // The camera follows the active player until targeting is driven by the game
-    if (!this->m_camera->GetTarget()) {
-        this->m_camera->SetTarget(ClntObjMgrGetActivePlayer());
+// ref: FUN_004f6970
+// The per-object update the world update walks the visible objects with. The reference hands each
+// to its type's own update -- units FUN_00734390, game objects FUN_0070d040, the rest
+// FUN_007051b0 -- which place the model, keep the map entity with it and ease its light. Those
+// are phase 4; until they land, frozen does their placement part here.
+static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, __FILE__, __LINE__);
+
+    if (!object) {
+        return 1;
     }
 
-    auto target = ClntObjMgrObjectPtr(this->m_camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
+    if (object->m_model) {
+        float scale = object->GetScale();
 
-    // What the camera follows, as the world knows it (FUN_00780500 at 0x004fa7a0).
-    CWorld::s_focusEntity = target && target->m_worldObject
-        ? reinterpret_cast<CMapStaticEntity*>(target->m_worldObject)
-        : nullptr;
+        if (object->IsA(TYPE_UNIT)) {
+            scale *= static_cast<CGUnit_C*>(object)->GetModelScale();
+
+            // Keep the looping idle pose in sync with the unit's state each frame, so a unit
+            // that sits, stands, dies or emotes after spawn updates instead of holding its
+            // spawn-time pose. UpdateIdleAnimation only re-issues the sequence on a change.
+            static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
+
+            // Keep the unit's aura visuals (spell state kits) attached to match its auras.
+            UnitVisualsUpdate(static_cast<CGUnit_C*>(object));
+        }
+
+        object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), scale);
+
+        // The map's entity for the object follows it (the reference does this from the
+        // object's own movement update; this loop is where frozen places objects).
+        object->UpdateWorldObject(0);
+
+        // The entity's light eases toward what its placement found. The reference makes
+        // this call from the unit and game object per-frame updates (FUN_00734390 at
+        // 0x0073452f, FUN_0070d040 at 0x0070d065), both reached from this same visible-
+        // object walk (FUN_004f6970) and neither ported yet, so frozen makes it here.
+        if (object->m_worldObject && (object->IsA(TYPE_UNIT) || object->IsA(TYPE_GAMEOBJECT))) {
+            CWorld::UpdateObjectLighting(object->m_worldObject);
+        }
+
+    }
+
+    return 1;
+}
+
+// ref: FUN_004fa5f0
+// The world's update for one frame, in the reference's order. What the reference does here that
+// frozen does not yet have is marked in place, so filling it in is a matter of calling it.
+void CGWorldFrame::OnWorldUpdate() {
+    float dt = CWorld::GetTickTimeSec();
+
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
 
     // The load barriers measure from the unit this client moves (0x004fa65c).
     if (CGUnit_C::s_activeMover) {
@@ -447,77 +488,67 @@ void CGWorldFrame::OnWorldUpdate() {
         }
     }
 
-    // TODO
+    auto target = ClntObjMgrObjectPtr(this->m_camera->GetTarget(), TYPE_OBJECT, __FILE__, __LINE__);
+
+    // With no target the camera falls back to the player. TODO the reference tests the player for
+    // commentator mode first (FUN_006de980: descriptor flags 0x80000 with 0x400000 or a PvP state
+    // of 4) and hands the camera to the commentator view (FUN_005689a0) instead; it also checks a
+    // second camera target (+0x90) and, when the player is in a vehicle, re-seats the camera
+    // (FUN_006e2880, FUN_0074ce40).
+    if (!target && player) {
+        this->m_camera->SetTarget(ClntObjMgrGetActivePlayer());
+        target = player;
+    }
+
+    // What the camera follows, as the world knows it (FUN_00780500 at 0x004fa7a0).
+    CWorld::s_focusEntity = target && target->m_worldObject
+        ? reinterpret_cast<CMapStaticEntity*>(target->m_worldObject)
+        : nullptr;
+
+    // TODO FUN_0074b130(time): the vehicle passenger update.
 
     CGCamera::UpdateCallback(nullptr, this->m_camera);
 
-    // TODO
-
-    // The camera latches near/far at construction, so without this the projection never follows a
-    // farclip change or a map load -- and a world frame built before the first LoadMap would keep
-    // far = 0. Refresh both from the world before the projection is built.
+    // FROZEN-ONLY: the camera latches near/far at construction, so without this the projection
+    // never follows a farclip change or a map load -- and a world frame built before the first
+    // LoadMap would keep far = 0. The horizon distance, not farclip: fog still ends at farclip,
+    // but the geometry behind it has to be drawn or it is clipped away in a hard ring.
     this->m_camera->SetNearZ(CWorld::GetNearClip());
-    // The horizon distance, not farclip: fog still ends at farclip, but the geometry behind it has
-    // to be drawn or it is clipped away in a hard ring instead of fading into the haze.
     this->m_camera->SetFarZ(CWorld::GetHorizonFarClip());
 
     this->m_camera->SetupWorldProjection(this->m_screenRect);
 
-    // TODO
+    this->UpdateDayNight(dt);
+
+    // TODO the sound listener (0x004fa8d9 .. 0x004faa3a): at the camera, or behind and above the
+    // unit it follows by Sound_ListenerBackDist / Sound_ListenerUpDist (FUN_004c5b20).
+
+    // TODO FUN_00744140 (the objects' own pre-update walk), FUN_00616e80 (portraits), and the two
+    // deferred model-release lists (FUN_004f9310 on +0x29c and +0x2a8), which nothing in frozen
+    // fills.
+
+    ClntObjMgrEnumVisibleObjects(&UpdateVisibleObject, nullptr);
+
+    // TODO FUN_0077f2b0(FUN_004f6560), FUN_006fa450 (effects), FUN_00703b00 (missiles),
+    // FUN_00804d20 / FUN_00804c10 (spells).
 
     auto targetPos = target && !this->m_camera->HasModel()
         ? target->GetPosition()
         : this->m_camera->Position();
 
-    this->UpdateDayNight(CWorld::GetTickTimeSec());
-
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
-    // What the stand-in's per-frame update still did: refresh the outdoor light, and hand the
-    // camera to the sky, which builds its geometry around it.
+    // TODO the view-projection change test (FUN_004c1830 against +0x340) that marks the frame
+    // (+0xb10 bit 2) for OnWorldRender's FUN_00715380, then FUN_00405130, the sound updates
+    // (FUN_004d0110, FUN_004cdc80), the active mover's FUN_006fe7e0, FUN_00739630 and the world
+    // map's FUN_005488f0.
+
+    // FROZEN-ONLY: the sky builds its geometry around this.
     CWorldScene::s_worldCameraPos = this->m_camera->Position();
 
-    // Poll the server for questgiver status; nothing populates the overhead markers otherwise.
+    // FROZEN-ONLY: poll the server for questgiver status; nothing populates the overhead markers
+    // otherwise.
     QuestStatusUpdate(OsGetAsyncTimeMs());
-
-    // TODO the map entities carry this in the original; until CMap is ported every visible object
-    // places its model itself
-    auto objMgr = ClntObjMgrGetCurrent();
-
-    if (objMgr) {
-        for (auto object = objMgr->m_visibleObjects.Head(); object; object = objMgr->m_visibleObjects.Next(object)) {
-            if (object->m_model) {
-                float scale = object->GetScale();
-
-                if (object->IsA(TYPE_UNIT)) {
-                    scale *= static_cast<CGUnit_C*>(object)->GetModelScale();
-
-                    // Keep the looping idle pose in sync with the unit's state each frame, so a unit
-                    // that sits, stands, dies or emotes after spawn updates instead of holding its
-                    // spawn-time pose. UpdateIdleAnimation only re-issues the sequence on a change.
-                    static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
-
-                    // Keep the unit's aura visuals (spell state kits) attached to match its auras.
-                    UnitVisualsUpdate(static_cast<CGUnit_C*>(object));
-                }
-
-                object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), scale);
-
-                // The map's entity for the object follows it (the reference does this from the
-                // object's own movement update; this loop is where frozen places objects).
-                object->UpdateWorldObject(0);
-
-                // The entity's light eases toward what its placement found. The reference makes
-                // this call from the unit and game object per-frame updates (FUN_00734390 at
-                // 0x0073452f, FUN_0070d040 at 0x0070d065), both reached from this same visible-
-                // object walk (FUN_004f6970) and neither ported yet, so frozen makes it here.
-                if (object->m_worldObject && (object->IsA(TYPE_UNIT) || object->IsA(TYPE_GAMEOBJECT))) {
-                    CWorld::UpdateObjectLighting(object->m_worldObject);
-                }
-
-            }
-        }
-    }
 }
 
 // ref: FUN_004f8410
