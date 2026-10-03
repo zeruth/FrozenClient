@@ -784,6 +784,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void UpdateModelColor();
         void UpdateWheels();
         void UpdateVisible(uint32_t time);
+        void UpdateRipples(int32_t splash);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
@@ -1017,6 +1018,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
         uint32_t m_boneMask = 0;
         float m_boneValues[8] = {};
+        // +0xa58: when the next ripple may spread (UpdateRipples), 0 for at once.
+        uint32_t m_nextRippleTime = 0;
         // +0xfa0: when the wheels last turned (UpdateWheels).
         uint32_t m_wheelTime = 0;
         // Byte 3 of UNIT_FIELD_BYTES_1: 0 ground, 1 swim, 2 hover, 3 fly. ResolveAnimation asks

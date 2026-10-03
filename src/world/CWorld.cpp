@@ -274,6 +274,21 @@ int32_t CWorld::GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* he
     return 0;
 }
 
+// ref: FUN_0077f220
+// The two liquid bits of an entity standing in liquid (flags 0x100 and 0x200 under 0x20).
+int32_t CWorld::GetObjectLiquidFlags(HWORLDOBJECT object, uint32_t* bit8, uint32_t* bit9) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (entity && (entity->m_flags7c & 0x20)) {
+        *bit8 = (entity->m_flags7c >> 8) & 1;
+        *bit9 = (entity->m_flags7c >> 9) & 1;
+
+        return 1;
+    }
+
+    return 0;
+}
+
 // ref: FUN_007815c0
 void CWorld::UpdateWindowAndMap(const C3Vector& targetPos) {
     CWorld::s_prevWindowMinX = CMap::s_chunkWindowMinX;

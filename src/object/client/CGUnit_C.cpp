@@ -1,4 +1,5 @@
 #include "object/client/CGUnit_C.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include <new>
 #include <storm/Memory.hpp>
 #include "ui/game/CGGameUI.hpp"
@@ -11864,13 +11865,15 @@ void CGUnit_C::UpdateWheels() {
 // PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the floor check
 // every ten seconds (FUN_0071fa90), the target's name plate blink (FUN_00729740) and the name
 // plate step (FUN_007e6390), the scripted alpha timer (+0xb28), the missiles in flight
-// (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), the ripples
-// in water (FUN_0071cba0), a vehicle seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
+// (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), a vehicle
+// seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
 // kits (FUN_00728140, +0xf4c).
 void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
     this->UpdateModelColor();
 
     this->CGObject_C::UpdateForFrame(frame);
+
+    this->UpdateRipples(0);
 
     float elapsed = CGWorldFrame::s_currentWorldFrame ? CGWorldFrame::s_currentWorldFrame->m_elapsed : 0.0f;
     uint32_t moveFlags = this->m_move->m_moveFlags;
@@ -12054,4 +12057,134 @@ void CGUnit_C::UpdateVisible(uint32_t time) {
         effect->Update();
         effect = next;
     }
+}
+
+// Which ripple kinds are a moving unit's wake (0x00adac00): standing 0, turning 1, moving 2, a
+// splash 3. A wake trails the unit's heading at a rate set by its speed; the rest ring outward at
+// a random angle every 400..450 ms.
+static const uint8_t s_rippleIsWake[4] = { 0, 0, 1, 0 };
+
+// ref: FUN_0071cba0
+// A unit standing in shallow water rings it: while the water at its feet is deeper than nothing
+// and shallower than its own collision height (twice it, or a yard at least), a ripple spreads
+// from where it stands, sized by its scale and faded toward the depth limit. `splash` is an
+// animation event's ripple (0xc9 is the splash kind) and restarts the timer.
+void CGUnit_C::UpdateRipples(int32_t splash) {
+    uint32_t fieldBC = 0;
+    float surface = 0.0f;
+    uint32_t unused = 0;
+
+    if (!CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        return;
+    }
+
+    uint32_t inLiquid = 0;
+    uint32_t liquidBit9 = 0;
+
+    if (!CWorld::GetObjectLiquidFlags(this->m_worldObject, &inLiquid, &liquidBit9) || !inLiquid) {
+        return;
+    }
+
+    int32_t kind = 0;
+    uint32_t moveFlags = this->m_move->m_moveFlags;
+
+    if (splash) {
+        this->m_nextRippleTime = 0;
+
+        if (splash == 0xC9) {
+            kind = 3;
+        }
+    } else if (moveFlags & 0xF) {
+        kind = 2;
+    } else if (moveFlags & 0x30) {
+        kind = 1;
+    }
+
+    float depthLimit = this->m_localMove.m_collisionHeight + this->m_localMove.m_collisionHeight;
+
+    if (!(1.0f < depthLimit)) {
+        depthLimit = 1.0f;
+    }
+
+    float halfLimit = depthLimit * 0.5f;
+    float depth = surface - this->GetPosition().z;
+
+    if (!(depth < depthLimit)) {
+        return;
+    }
+
+    uint32_t now = CWorld::GetCurTimeMs();
+
+    if (this->m_nextRippleTime != 0 && static_cast<int32_t>(now - this->m_nextRippleTime) < 0) {
+        return;
+    }
+
+    C3Vector at = this->GetPosition();
+    at.z = surface;
+
+    float spacing = 1.0f;
+    float speed = this->m_move->m_currentSpeed;
+
+    if (s_rippleIsWake[kind] && 0.0001f < speed) {
+        spacing = 2.5f / (20.0f <= speed ? 20.0f : speed);
+    }
+
+    float rate = 1.0f / spacing;
+    float facing = this->GetFacing();
+    auto& seed = ObjectRandomSeed();
+
+    float size = this->GetBaseScale() * 0.3333333432674408f;
+    size = ((M2ParticleRand01(seed) * 0.2f - 0.1f) + 1.0f) * size;
+
+    if (size < 0.3333333432674408f) {
+        size = 0.3333333432674408f;
+    } else if (1.6666666269302368f <= size) {
+        size = 1.6666666269302368f;
+    }
+
+    float alpha = (M2ParticleRand01(seed) * 0.1f - 0.05f) + 0.65f;
+    float grow = (M2ParticleRand01(seed) * 1.5f - 0.75f + 3.75f) * 12.0f * 0.02777777798473835f * rate;
+    float life = 0.1666666716337204f;
+    float fade = 1.0f;
+
+    // Deeper than half the limit, the ripple shrinks and fades toward the limit.
+    if (halfLimit < depth) {
+        fade = 0.5f + ((depthLimit - depth) / (depthLimit - halfLimit)) * 0.5f;
+        life = fade * 0.1666666716337204f;
+        alpha = fade * alpha;
+        size = fade * size;
+    }
+
+    if (kind == 0) {
+        life *= 0.8f;
+        grow *= 0.25f;
+        size *= 0.6f;
+    }
+
+    float angle;
+
+    if (!s_rippleIsWake[kind]) {
+        angle = M2ParticleRand01(seed) * 6.2831854820251465f;
+    } else {
+        angle = facing;
+
+        if (moveFlags & 0x4) {
+            angle += (moveFlags & 0x1) ? 0.7853981852531433f : (moveFlags & 0x2) ? 2.356194496154785f : 1.5707963705062866f;
+        } else if (moveFlags & 0x8) {
+            angle -= (moveFlags & 0x1) ? 0.7853981852531433f : (moveFlags & 0x2) ? 2.356194496154785f : 1.5707963705062866f;
+        } else if (moveFlags & 0x2) {
+            angle += 3.1415927410125732f;
+        }
+    }
+
+    CWorld::AddRipple(at, angle, size, alpha, life, grow, s_rippleIsWake[kind],
+                      this->GetGUID() == ClntObjMgrGetActivePlayer() ? 1 : 0);
+
+    if (s_rippleIsWake[kind]) {
+        this->m_nextRippleTime = now - static_cast<uint32_t>(static_cast<int64_t>(fade * spacing * 0.25f * -1000.0f));
+        return;
+    }
+
+    uint32_t jitter = static_cast<uint32_t>((static_cast<uint64_t>(CRandom::uint32(seed)) * 50) >> 32);
+    this->m_nextRippleTime = jitter + 400 + now;
 }

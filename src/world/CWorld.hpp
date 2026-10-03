@@ -197,6 +197,7 @@ class CWorld {
         static bool QueryFacets(const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
         static void SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam);
         static int32_t GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4);
+        static int32_t GetObjectLiquidFlags(HWORLDOBJECT object, uint32_t* bit8, uint32_t* bit9);
         static void UpdateWindowAndMap(const C3Vector& targetPos);
         static uint32_t GetCurTimeMs();
         static float GetCurTimeSec();

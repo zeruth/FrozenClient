@@ -854,6 +854,10 @@ bool MountTransitionObject::Update() {
 // ------------------------------------------------------------------------------------------------
 
 // ref: FUN_007fc5a0
+CRndSeed& ObjectRandomSeed() {
+    return s_shardSeed;
+}
+
 void SpellVisualsInitialize() {
     void* mem = SMemAlloc(sizeof(CLightningSystem), ".\\SpellVisuals.cpp", 0x166, 0);
     g_lightningSystem = mem ? new (mem) CLightningSystem() : nullptr;
