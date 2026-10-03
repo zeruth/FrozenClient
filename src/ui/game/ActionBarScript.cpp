@@ -1,4 +1,5 @@
 #include "ui/game/ActionBarScript.hpp"
+#include "ui/game/CGGameUI.hpp"
 #include <storm/String.hpp>
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CGItem_C.hpp"
@@ -377,11 +378,9 @@ int32_t Script_GetMultiCastBarOffset(lua_State* L) {
 }
 
 // ref: FUN_005a7f60
-// TODO the reference first runs the protected-function check for category 0xe (FUN_005191c0),
-// which refuses the change when the script calling it is tainted. Frozen tracks no taint yet,
-// so the change always goes through.
+// Out of combat only for tainted code (protected action 0xe).
 int32_t Script_ChangeActionBarPage(lua_State* L) {
-    auto page = static_cast<int32_t>(lua_tonumber(L, 1) + 0.5) - 1;
+    auto page = static_cast<int32_t>(lua_tonumber(L, 1)) - 1;
 
     if (page < 0 || page >= NUM_ACTIONBAR_PAGES) {
         luaL_error(L, "ChangeActionBarPage() needs a page in the range 1 to %d", NUM_ACTIONBAR_PAGES);
@@ -389,7 +388,7 @@ int32_t Script_ChangeActionBarPage(lua_State* L) {
         return 0;
     }
 
-    if (page != static_cast<int32_t>(CGActionBar::s_currentPage)) {
+    if (CGGameUI::CanPerformAction(0xE) && page != static_cast<int32_t>(CGActionBar::s_currentPage)) {
         CGActionBar::s_currentPage = page;
 
         FrameScript_SignalEvent(SCRIPT_ACTIONBAR_PAGE_CHANGED, nullptr);
