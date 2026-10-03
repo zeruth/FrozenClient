@@ -17,7 +17,10 @@
 #include "db/rec/ChrRacesRec.hpp"
 #include "db/rec/CreatureDisplayInfoRec.hpp"
 #include "db/rec/CreatureDisplayInfoExtraRec.hpp"
+#include "db/rec/GameObjectArtKitRec.hpp"
 #include "db/rec/GameObjectDisplayInfoRec.hpp"
+#include "db/rec/LockRec.hpp"
+#include "db/rec/LockTypeRec.hpp"
 #include "db/rec/SpellRec.hpp"
 #include "db/rec/SpellIconRec.hpp"
 #include "db/rec/CreatureModelDataRec.hpp"
@@ -87,7 +90,10 @@ extern WowClientDB<ChrClassesRec> g_chrClassesDB;
 extern WowClientDB<ChrRacesRec> g_chrRacesDB;
 extern WowClientDB<CreatureDisplayInfoRec> g_creatureDisplayInfoDB;
 extern WowClientDB<CreatureDisplayInfoExtraRec> g_creatureDisplayInfoExtraDB;
+extern WowClientDB<GameObjectArtKitRec> g_gameObjectArtKitDB;
 extern WowClientDB<GameObjectDisplayInfoRec> g_gameObjectDisplayInfoDB;
+extern WowClientDB<LockRec> g_lockDB;
+extern WowClientDB<LockTypeRec> g_lockTypeDB;
 extern WowClientDB<SpellRec> g_spellDB;
 extern WowClientDB<SpellIconRec> g_spellIconDB;
 extern WowClientDB<CreatureModelDataRec> g_creatureModelDataDB;

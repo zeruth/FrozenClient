@@ -208,7 +208,7 @@ const char* CGUnit_C::GetDisplayRaceNameFromRecord(const ChrRacesRec* raceRec, U
 CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
     : CGObject_C(time, objCreate)
     , CGUnit(this->m_localMove)
-    , m_localMove(objCreate.move.status.position28, objCreate.move.status.facing34, this->GetGUID(), this)
+    , m_localMove(objCreate.move.status.position28, objCreate.move.status.facing34, this->m_obj->m_guid, this)
 {
     this->m_mountSound = STORM_NEW(SOUNDKITOBJECT);
 
@@ -3309,7 +3309,7 @@ bool CGUnit_C::CanShowLootAnimation() const {
     // A fishing bobber (GAMEOBJECT_BYTES_1 byte 1 == 17) and a living unit both refuse; so does an
     // item. Byte 1 of that field is the gameobject's type.
     if (target->IsA(TYPE_GAMEOBJECT)
-        && ((static_cast<CGGameObject_C*>(target)->GameObject()->bytes1 >> 8) & 0xFF) == 0x11) {
+        && static_cast<CGGameObject_C*>(target)->GameObject()->type == 0x11) {
         return false;
     }
 

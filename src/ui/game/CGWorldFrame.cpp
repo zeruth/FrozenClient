@@ -2,6 +2,7 @@
 #include <vector>
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
+#include "object/client/CGGameObject_C.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
@@ -733,10 +734,8 @@ void CGWorldFrame::OnWorldRender() {
 }
 
 // ref: FUN_004f6970
-// The per-object update the world update walks the visible objects with. The reference hands each
-// to its type's own update -- units FUN_00734390, game objects FUN_0070d040, the rest
-// FUN_007051b0 -- which place the model, keep the map entity with it and ease its light. Those
-// are phase 4; until they land, frozen does their placement part here.
+// The per-object update the world update walks the visible objects with: each type's own -- units
+// FUN_00734390, game objects FUN_0070d040, dynamic objects FUN_007051b0.
 static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
     auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, __FILE__, __LINE__);
 
@@ -744,30 +743,29 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
         return 1;
     }
 
-    if (object->m_model) {
-        if (object->IsA(TYPE_UNIT)) {
-            // Keep the looping idle pose in sync with the unit's state each frame, so a unit
-            // that sits, stands, dies or emotes after spawn updates instead of holding its
-            // spawn-time pose. UpdateIdleAnimation only re-issues the sequence on a change.
-            static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
+    if (object->IsA(TYPE_GAMEOBJECT)) {
+        static_cast<CGGameObject_C*>(object)->UpdateForFrame(CWorld::GetTickTimeMs());
 
-        }
+        return 1;
+    }
 
-        // The model itself is placed by the frame's object handler (CGWorldFrame::AddVisibleObject
-        // -> PlaceModel, slot 0x8c), as the reference does, for the objects the map walk reaches.
-
-        // The map's entity for the object follows it (the reference does this from the
-        // object's own movement update; this loop is where frozen places objects).
+    if (object->IsA(TYPE_UNIT) && object->m_model) {
+        // PHASE4(Unit_C): the unit's per-frame update (FUN_00734390) is not ported; until it is,
+        // frozen keeps the idle pose in step, keeps the map entity with the unit and eases its
+        // light here, which is the part of it the world needs.
+        static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
         object->UpdateWorldObject(0);
 
-        // The entity's light eases toward what its placement found. The reference makes
-        // this call from the unit and game object per-frame updates (FUN_00734390 at
-        // 0x0073452f, FUN_0070d040 at 0x0070d065), both reached from this same visible-
-        // object walk (FUN_004f6970) and neither ported yet, so frozen makes it here.
-        if (object->m_worldObject && (object->IsA(TYPE_UNIT) || object->IsA(TYPE_GAMEOBJECT))) {
+        if (object->m_worldObject) {
             CWorld::UpdateObjectLighting(object->m_worldObject);
         }
 
+        return 1;
+    }
+
+    if (object->IsA(TYPE_DYNAMICOBJECT)) {
+        // TODO(DynamicObject_C): FUN_007051b0, the spell's effect model starting once its spell
+        // has gone (FUN_00804cc0, FUN_00704f60).
     }
 
     return 1;

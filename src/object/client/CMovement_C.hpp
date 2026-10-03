@@ -4,6 +4,7 @@
 #include "object/client/CMovementData_C.hpp"
 #include "util/GUID.hpp"
 #include <storm/List.hpp>
+#include <tempest/Quaternion.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
@@ -20,6 +21,15 @@ int32_t MovementGetTransportMatrixChecked(WOWGUID transport, C44Matrix& matrix, 
 // ref: FUN_0074b590
 // The transport's facing (slot 0x34), 0 when it is not there.
 float MovementGetTransportFacing(WOWGUID transport);
+
+// The transport's rotation (slot 0x44), the identity when it is not there.
+C4Quaternion MovementGetTransportRotation(WOWGUID transport);
+
+class CPassenger;
+
+// Tell the transport a passenger joins (mode 1) or leaves (mode 2) it, through its slot 0xf4;
+// false when the transport is not there.
+int32_t MovementNotifyTransport(CPassenger* passenger, WOWGUID transport, int32_t mode);
 
 class CMovement_C : public CMovementData_C {
     public:

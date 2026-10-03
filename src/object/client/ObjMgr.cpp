@@ -167,6 +167,58 @@ WOWGUID ClntObjMgrGetActivePlayer() {
     return s_curMgr->m_activePlayer;
 }
 
+void ClntObjMgrUnlinkVisible(WOWGUID guid) {
+    auto mgr = ClntObjMgrGetCurrent();
+    auto object = FindActiveObject(guid);
+
+    if (object && mgr->m_visibleObjects.IsLinked(object)) {
+        mgr->m_visibleObjects.UnlinkNode(object);
+    }
+}
+
+void ClntObjMgrLinkVisible(WOWGUID guid) {
+    auto mgr = ClntObjMgrGetCurrent();
+    auto object = FindActiveObject(guid);
+
+    if (object && !mgr->m_visibleObjects.IsLinked(object)) {
+        mgr->m_visibleObjects.LinkToTail(object);
+    }
+}
+
+void ClntObjMgrLockObject(WOWGUID guid) {
+    auto object = FindActiveObject(guid);
+
+    if (object) {
+        object->SetObjectLocked(1);
+    }
+}
+
+void ClntObjMgrUnlockObject(WOWGUID guid, const char* fileName, int32_t lineNumber) {
+    auto object = FindActiveObject(guid);
+
+    if (!object) {
+        return;
+    }
+
+    object->SetObjectLocked(0);
+
+    if (object->IsObjectLocked() || !object->m_disablePending) {
+        return;
+    }
+
+    object->HandleOutOfRange(OUT_OF_RANGE_2);
+
+    if (object->IsObjectLocked()) {
+        object->SetDisablePending(1);
+
+        return;
+    }
+
+    object->SetDisablePending(0);
+    object->Disable();
+    HandleObjectOutOfRangePass2(object);
+}
+
 // ref: FUN_004d3730
 ClntObjMgr* ClntObjMgrGetCurrent() {
     return s_curMgr;

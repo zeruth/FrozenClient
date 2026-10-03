@@ -8,6 +8,7 @@
 #include "object/client/CastCache.hpp"
 #include "object/client/QuestStatusCache.hpp"
 #include "object/client/SpellBook.hpp"
+#include "object/client/CGGameObject_C.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/SpellVisuals.hpp"
 #include "object/client/CEffect.hpp"
@@ -271,6 +272,8 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     // (FUN_00742220 at 0x0040562b).
     ObjectsInitialize();
     UnitInitialize();
+    // The game object module's start (FUN_007140a0 at 0x00405630).
+    GameObjectInitialize();
 
     // TODO
 

@@ -15,6 +15,7 @@
 class CEffect;
 class CGWorldFrame;
 class CM2Model;
+class CPassenger;
 class SpellRec;
 class SpellVisualEffectNameRec;
 class SpellVisualKitModelAttachRec;
@@ -168,7 +169,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         virtual float GetFadeInAlpha() { return 1.0f; }                         // 0x0e8
         virtual bool Virtual0EC() { return false; }                             // 0x0ec
         virtual int32_t Virtual0F0(int32_t a2) { return 0; }                    // 0x0f0
-        virtual int32_t Virtual0F4(int32_t a2, int32_t a3) { return 1; }        // 0x0f4
+        virtual int32_t Virtual0F4(CPassenger* passenger, int32_t mode) { return 1; } // 0x0f4
         virtual float Virtual0F8();                                             // 0x0f8
         // 0x0fc: after a kit has played, for the object's own steps (the unit's animation and
         // sound). The base does nothing.
@@ -193,6 +194,8 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         CGObject_C(uint32_t time, CClientObjCreate& objCreate);
         void AddWorldObject();
         int32_t IsInReenable();
+        // Whether the object has a model and the model has loaded.
+        int32_t IsModelLoaded();
         int32_t IsObjectLocked();
         void PostInit(uint32_t time, const CClientObjCreate& init, bool a4);
         uint32_t GetBlock(uint32_t block) const;

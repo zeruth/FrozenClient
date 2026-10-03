@@ -13,6 +13,7 @@
 // (0x009cb680 onward): signature, file, query opcode, the fifth argument, whether the query carries
 // a guid, whether the cache persists, and the query rate.
 CreatureStatsCache g_creatureCache(0x574D4F42, "creaturecache.wdb", CMSG_QUERY_CREATURE, 0, true, true, 0);
+GameObjectStatsCache g_gameObjectCache(0x57474F42, "gameobjectcache.wdb", CMSG_QUERY_GAME_OBJECT, 0, true, true, 0);
 ItemStatsCache g_itemCache(0x57494442, "itemcache.wdb", CMSG_ITEM_QUERY_SINGLE, 0x57, false, true, 0x200);
 NameCache g_nameCache(0x574E414D, "namecache.wdb", CMSG_NAME_QUERY, 0, false, false, 0x100);
 PetNameCache g_petNameCache(0x57504E4D, "petnamecache.wdb", CMSG_QUERY_PET_NAME, 0, true, false, 0);
@@ -234,6 +235,83 @@ void CreatureStats_C::Write(CDataStore* msg) const {
     }
 
     PutI32(msg, this->m_movementID);
+}
+
+GameObjectStats_C::~GameObjectStats_C() {
+    for (auto& name : this->m_names) {
+        if (name) {
+            SMemFree(name, __FILE__, __LINE__, 0);
+        }
+    }
+
+    for (auto str : { this->m_iconName, this->m_castBarCaption, this->m_unk1 }) {
+        if (str) {
+            SMemFree(str, __FILE__, __LINE__, 0);
+        }
+    }
+}
+
+void GameObjectStats_C::PutQueryId(CDataStore* msg, const DBCACHEKEY32& id) {
+    msg->Put(id.m_id);
+}
+
+// ref: FUN_0098d750
+// The type and display, the four names (an empty one stored as null), the icon, the cast bar
+// caption and an unused string (always duplicated), the 24 data fields, the size and the six
+// quest items.
+void GameObjectStats_C::Read(CDataStore* msg) {
+    char buffer[1024];
+
+    this->m_type = GetI32(msg);
+    this->m_displayID = GetI32(msg);
+
+    for (auto& name : this->m_names) {
+        msg->GetString(buffer, sizeof(buffer));
+        name = DupOrNull(buffer);
+    }
+
+    msg->GetString(buffer, sizeof(buffer));
+    this->m_iconName = SStrDupA(buffer, __FILE__, __LINE__);
+
+    msg->GetString(buffer, sizeof(buffer));
+    this->m_castBarCaption = SStrDupA(buffer, __FILE__, __LINE__);
+
+    msg->GetString(buffer, sizeof(buffer));
+    this->m_unk1 = SStrDupA(buffer, __FILE__, __LINE__);
+
+    for (auto& data : this->m_data) {
+        data = GetI32(msg);
+    }
+
+    msg->Get(this->m_size);
+
+    for (auto& item : this->m_questItems) {
+        item = GetI32(msg);
+    }
+}
+
+// The reader's mirror, for the WDB file.
+void GameObjectStats_C::Write(CDataStore* msg) const {
+    PutI32(msg, this->m_type);
+    PutI32(msg, this->m_displayID);
+
+    for (auto name : this->m_names) {
+        msg->PutString(name ? name : "");
+    }
+
+    msg->PutString(this->m_iconName ? this->m_iconName : "");
+    msg->PutString(this->m_castBarCaption ? this->m_castBarCaption : "");
+    msg->PutString(this->m_unk1 ? this->m_unk1 : "");
+
+    for (auto data : this->m_data) {
+        PutI32(msg, data);
+    }
+
+    msg->Put(this->m_size);
+
+    for (auto item : this->m_questItems) {
+        PutI32(msg, item);
+    }
 }
 
 void ItemStats_C::PutQueryId(CDataStore* msg, const DBCACHEKEY32& id) {
@@ -567,6 +645,13 @@ int32_t ReceiveCreatureQueryResponse(void* param, NETMESSAGE msgId, uint32_t tim
     return 1;
 }
 
+// ref: FUN_006351b0
+int32_t ReceiveGameObjectQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    g_gameObjectCache.Response(msg, true);
+
+    return 1;
+}
+
 // ref: FUN_006354d0
 // Registered for 0x58 and for 0x39b both, as the reference does.
 int32_t ReceiveItemQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
@@ -662,6 +747,7 @@ int32_t ReceiveClientCacheVersion(void* param, NETMESSAGE msgId, uint32_t time, 
 // ref: FUN_00635b40
 void DBCacheRegisterHandlers() {
     ClientServices::SetMessageHandler(SMSG_QUERY_CREATURE_RESPONSE, &ReceiveCreatureQueryResponse, nullptr);
+    ClientServices::SetMessageHandler(SMSG_QUERY_GAME_OBJECT_RESPONSE, &ReceiveGameObjectQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_ITEM_QUERY_SINGLE_RESPONSE, &ReceiveItemQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE, &ReceiveNameQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_QUERY_PET_NAME_RESPONSE, &ReceivePetNameQueryResponse, nullptr);
@@ -672,6 +758,7 @@ void DBCacheRegisterHandlers() {
 // ref: FUN_006355e0
 void DBCacheUnregisterHandlers() {
     ClientServices::ClearMessageHandler(SMSG_QUERY_CREATURE_RESPONSE);
+    ClientServices::ClearMessageHandler(SMSG_QUERY_GAME_OBJECT_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_ITEM_QUERY_SINGLE_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_QUERY_PET_NAME_RESPONSE);
@@ -682,6 +769,7 @@ void DBCacheUnregisterHandlers() {
 // ref: FUN_00635060
 void DBCacheLoadAll() {
     g_creatureCache.Load();
+    g_gameObjectCache.Load();
     g_itemCache.Load();
     g_nameCache.Load();
     g_petNameCache.Load();
@@ -690,6 +778,7 @@ void DBCacheLoadAll() {
 // ref: FUN_00635100
 void DBCacheUpdateAll() {
     g_creatureCache.Update();
+    g_gameObjectCache.Update();
     g_itemCache.Update();
     g_nameCache.Update();
     g_petNameCache.Update();
@@ -698,6 +787,7 @@ void DBCacheUpdateAll() {
 // ref: FUN_00635540
 void DBCacheShutdownAll() {
     g_creatureCache.Shutdown();
+    g_gameObjectCache.Shutdown();
     g_itemCache.Shutdown();
     g_nameCache.Shutdown();
     g_petNameCache.Shutdown();
@@ -706,6 +796,7 @@ void DBCacheShutdownAll() {
 // ref: FUN_00635680
 void DBCacheClearUnloadedAll() {
     g_creatureCache.ClearUnloaded();
+    g_gameObjectCache.ClearUnloaded();
     g_itemCache.ClearUnloaded();
     g_nameCache.ClearUnloaded();
     g_petNameCache.ClearUnloaded();
@@ -714,6 +805,7 @@ void DBCacheClearUnloadedAll() {
 // ref: FUN_00635710
 void DBCacheSetSessionAll(uint32_t session) {
     g_creatureCache.SetSession(session);
+    g_gameObjectCache.SetSession(session);
     g_itemCache.SetSession(session);
     g_nameCache.SetSession(session);
     g_petNameCache.SetSession(session);

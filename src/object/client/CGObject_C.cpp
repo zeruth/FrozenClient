@@ -690,6 +690,13 @@ void CGObject_C::AddWorldObject() {
     }
 }
 
+// ref: FUN_00743390
+int32_t CGObject_C::IsModelLoaded() {
+    auto model = this->GetObjectModel();
+
+    return model && model->IsLoaded(0, 0) ? 1 : 0;
+}
+
 int32_t CGObject_C::IsInReenable() {
     return this->m_inReenable;
 }

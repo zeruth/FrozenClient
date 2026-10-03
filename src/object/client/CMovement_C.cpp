@@ -160,6 +160,29 @@ int32_t MovementGetTransportMatrixChecked(WOWGUID transport, C44Matrix& matrix, 
     return 0;
 }
 
+// ref: FUN_0074b510
+C4Quaternion MovementGetTransportRotation(WOWGUID transport) {
+    auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x6b);
+
+    if (!object) {
+        // "Failed to dereference transport! Provided GUID 0x%016I64X" in the reference.
+        return C4Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+
+    return object->GetRotation();
+}
+
+// ref: FUN_0074b340
+int32_t MovementNotifyTransport(CPassenger* passenger, WOWGUID transport, int32_t mode) {
+    auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x28);
+
+    if (!object) {
+        return 0;
+    }
+
+    return object->Virtual0F4(passenger, mode);
+}
+
 // ref: FUN_0074b590
 float MovementGetTransportFacing(WOWGUID transport) {
     auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x77);

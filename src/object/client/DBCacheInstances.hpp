@@ -54,6 +54,40 @@ class CreatureStats_C {
         const char* Name() const { return this->m_names[0]; }
 };
 
+// GameObjectStats.cpp: SMSG_QUERY_GAME_OBJECT_RESPONSE's template. 0xa0 bytes and version 1 in the
+// WDB header (FUN_0067c0e0 checks both); the field order is the reader's (FUN_0098d750).
+class GameObjectStats_C {
+    public:
+        static const uint32_t RECORD_SIZE = 0xa0;
+        static const uint32_t RECORD_VERSION = 1;
+
+        GameObjectStats_C() = default;
+        GameObjectStats_C(const GameObjectStats_C&) = delete;
+        GameObjectStats_C& operator=(const GameObjectStats_C&) = delete;
+        ~GameObjectStats_C();
+
+        static void PutQueryId(CDataStore* msg, const DBCACHEKEY32& id);
+
+        // ref: FUN_0098d750
+        void Read(CDataStore* msg);
+        void Write(CDataStore* msg) const;
+
+        int32_t m_type = 0;                 // +0x00, the GAMEOBJECT_TYPE_*
+        int32_t m_displayID = 0;            // +0x04, GameObjectDisplayInfo.dbc
+        char* m_iconName = nullptr;         // +0x08, the cursor the object gives ("Interact")
+        char* m_castBarCaption = nullptr;   // +0x0c
+        char* m_unk1 = nullptr;             // +0x10
+        // +0x14: the type's data fields. Which field means what depends on the type; the client
+        // looks them up by meaning through GameObjectDataIndex (FUN_00746190).
+        int32_t m_data[24] = {};
+        float m_size = 0.0f;                // +0x74
+        int32_t m_questItems[6] = {};       // +0x78
+        // +0x90: four names, the first the one shown; an empty one is null, as for creatures.
+        char* m_names[4] = {};
+
+        const char* Name() const { return this->m_names[0]; }
+};
+
 // ItemStats.cpp: SMSG_ITEM_QUERY_SINGLE_RESPONSE's record. 0x204 bytes and version 5 in the WDB
 // header. The reader is FUN_0098d910; docs/ref/parity-itemcache.md has the wire order.
 class ItemStats_C {
@@ -219,12 +253,14 @@ class PetNameRec {
 };
 
 typedef DBCache<CreatureStats_C, DBCACHEKEY32> CreatureStatsCache;
+typedef DBCache<GameObjectStats_C, DBCACHEKEY32> GameObjectStatsCache;
 typedef DBCache<ItemStats_C, DBCACHEKEY32> ItemStatsCache;
 typedef DBCache<NameCacheRec, DBCACHEKEY64> NameCache;
 typedef DBCache<PetNameRec, DBCACHEKEY32> PetNameCache;
 
 // The instances, constructed with the reference's arguments (FUN_009cb680 and its neighbours).
 extern CreatureStatsCache g_creatureCache;      // 0x00c5d690, 'WMOB', creaturecache.wdb
+extern GameObjectStatsCache g_gameObjectCache;  // 0x00c5d718, 'WGOB', gameobjectcache.wdb
 extern ItemStatsCache g_itemCache;              // 0x00c5d828, 'WIDB', itemcache.wdb
 extern NameCache g_nameCache;                   // 0x00c5d938, 'NAMW', namecache.wdb
 extern PetNameCache g_petNameCache;             // 0x00c5db58, 'MNPW', petnamecache.wdb
@@ -246,6 +282,8 @@ void DBCacheSetSessionAll(uint32_t session);
 
 // The message handlers.
 int32_t ReceiveCreatureQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+// ref: FUN_006351b0
+int32_t ReceiveGameObjectQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 int32_t ReceiveItemQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 int32_t ReceiveNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 int32_t ReceivePetNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
