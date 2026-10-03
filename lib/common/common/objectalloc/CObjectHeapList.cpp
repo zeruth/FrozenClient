@@ -13,6 +13,7 @@ void CObjectHeapList::Delete(uint32_t index) {
     // TODO free empty heaps
 }
 
+// ref: FUN_004d3250
 int32_t CObjectHeapList::New(uint32_t* index, void** a3, bool zero) {
     CObjectHeap* heap = nullptr;
 
@@ -30,9 +31,26 @@ int32_t CObjectHeapList::New(uint32_t* index, void** a3, bool zero) {
                 return 0;
             }
         } else {
-            // TODO
-            // Find available heap
-            STORM_ASSERT(false);
+            // A block freed below the current one: the first that is not full, preferring one
+            // whose memory is still allocated (FUN_004d3250).
+            heap = nullptr;
+
+            for (uint32_t i = 0; i < this->m_heaps.Count(); i++) {
+                auto candidate = &this->m_heaps[i];
+
+                if (candidate->m_allocated != this->m_objsPerBlock) {
+                    this->uint24 = i;
+                    heap = candidate;
+
+                    if (candidate->m_obj) {
+                        break;
+                    }
+                }
+            }
+
+            if (!heap) {
+                return 0;
+            }
         }
     }
 
