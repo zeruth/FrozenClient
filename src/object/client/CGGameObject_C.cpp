@@ -175,8 +175,7 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             break;
 
         case 33:
-            // TODO(World): destructible buildings (FUN_007128d0) still get the root behaviour.
-            behaviour = STORM_NEW(CGGameObjectType)(object, 5.0f);
+            behaviour = STORM_NEW(CGGameObjectDestructible)(object);
             break;
 
         default:

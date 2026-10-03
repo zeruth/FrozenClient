@@ -1,4 +1,8 @@
 #include "object/client/GameObjectTypes.hpp"
+#include <cstring>
+#include <algorithm>
+#include "util/Log.hpp"
+#include "object/client/CGUnit_C.hpp"
 #include <tempest/Math.hpp>
 #include <common/Time.hpp>
 #include "ui/game/CGWorldFrame.hpp"
@@ -1261,6 +1265,671 @@ void CGGameObjectDungeonDifficulty::UpdateFrame(uint32_t time) {
 
     if (hide && SI2::IsPlaying(this->m_sound)) {
         SI2::StopOrFadeOut(this->m_sound, 0, -1.0f, 1);
+    }
+}
+
+// ---- type 33 ------------------------------------------------------------------------------------
+
+static const int32_t GO_DATA_DESTRUCTIBLE_DATA = 0x7c;
+
+namespace {
+
+// ref: FUN_0070b830
+// The impact effect plays through (0x99 into 0x9a) and stops.
+void DestructibleImpactDone(CM2Model* model, uint32_t boneId, uint32_t animId, int32_t a4, int32_t a5, WOWGUID owner) {
+    (void)boneId;
+    (void)a5;
+    (void)owner;
+
+    if (a4 != 0) {
+        return;
+    }
+
+    model->SetBoneSequence(-1, animId == 0x99 ? 0x9a : 0, -1, 0, 1.0f, 1, 1);
+}
+
+// ref: FUN_0070b870
+// The ambient set loops: once its start has played it holds 0x9a.
+void DestructibleAmbientDone(CM2Model* model, uint32_t boneId, uint32_t animId, int32_t a4, int32_t a5, WOWGUID owner) {
+    (void)boneId;
+    (void)a5;
+    (void)owner;
+
+    if (a4 == 0 && animId != 0x9a) {
+        model->SetBoneSequence(-1, 0x9a, -1, 0, 1.0f, 1, 1);
+    }
+}
+
+// ref: FUN_0070b8b0
+// An outgoing state's set plays out (0x99, 0x9a) into its end (0x9b), then stops.
+void DestructibleOutgoingDone(CM2Model* model, uint32_t boneId, uint32_t animId, int32_t a4, int32_t a5, WOWGUID owner) {
+    (void)boneId;
+    (void)a5;
+    (void)owner;
+
+    if (a4 != 0) {
+        return;
+    }
+
+    if (animId == 0x99 || animId == 0x9a) {
+        model->SetBoneSequence(-1, 0x9b, -1, 0, 1.0f, 1, 1);
+    } else if (animId == 0x9b) {
+        model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 1, 1);
+    }
+}
+
+// ref: FUN_0070b800
+void DestructibleDestructionDone(CM2Model* model, uint32_t boneId, uint32_t animId, int32_t a4, int32_t a5, WOWGUID owner) {
+    (void)boneId;
+    (void)a5;
+    (void)owner;
+
+    if (a4 == 0 && animId != 0) {
+        model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 1, 1);
+    }
+}
+
+// ref: FUN_0070ca40
+// A building doodad's model event goes to the game object it belongs to.
+void DestructibleAnimEvent(CM2Model* model, uint32_t boneId, uint32_t eventId, uint32_t eventData,
+                           const C3Vector* position, uint32_t a6, WOWGUID owner) {
+    (void)model;
+    (void)boneId;
+
+    auto object = static_cast<CGGameObject_C*>(ClntObjMgrObjectPtr(owner, TYPE_GAMEOBJECT, ".\\GameObject_C.cpp", 0xd38));
+
+    if (object) {
+        object->m_type->OnAnimEvent(eventId, eventData, position, a6);
+    }
+}
+
+const char* DisplayModelName(int32_t displayID) {
+    auto display = g_gameObjectDisplayInfoDB.GetRecord(displayID);
+
+    return display ? display->m_modelName : nullptr;
+}
+
+} // namespace
+
+CGGameObjectDestructible::CGGameObjectDestructible(CGGameObject_C* owner) : CGGameObjectType(owner, 5.0f) {
+    this->m_sound = STORM_NEW(SOUNDKITOBJECT);
+}
+
+// ref: FUN_00712980
+// PARTIAL: the map's proxy (FUN_0077f290 -> FUN_0079eff0) is not kept; see PostInit.
+CGGameObjectDestructible::~CGGameObjectDestructible() {
+    for (auto& state : this->m_states) {
+        if (state.m_object) {
+            CWorld::RemoveDynamicObject(state.m_object);
+            state.m_object = nullptr;
+        }
+    }
+
+    if (this->m_rebuildFx) {
+        CWorld::RemoveDynamicObject(this->m_rebuildFx);
+        this->m_rebuildFx = nullptr;
+    }
+
+    this->m_mapObject = nullptr;
+
+    if (this->m_collisionProxy) {
+        CWorld::RemoveDynamicObject(this->m_collisionProxy);
+        this->m_collisionProxy = nullptr;
+    }
+
+    if (this->m_sound) {
+        SI2::StopOrFadeOut(this->m_sound, 0, -1.0f, 1);
+        this->m_sound->m_sound.DetachWithLoopFade();
+        this->m_sound->~SOUNDKITOBJECT();
+        STORM_FREE(this->m_sound);
+        this->m_sound = nullptr;
+    }
+}
+
+// GO flags 0x200 and 0x400 (with 0x800 above them): 0 intact, 1 damaged, 2 destroyed, 3 rebuilding.
+int32_t CGGameObjectDestructible::DamageState() const {
+    return static_cast<int32_t>((this->m_owner->GameObject()->flags >> 8) & 0xe) >> 1;
+}
+
+// ref: FUN_0070b720
+uint16_t CGGameObjectDestructible::ImpactSet(int32_t state) const {
+    auto data = this->m_modelData;
+
+    if (!data) {
+        return 0;
+    }
+
+    switch (state) {
+        case 0: return static_cast<uint16_t>(data->m_state0ImpactEffectDoodadSet);
+        case 1: return static_cast<uint16_t>(data->m_state1ImpactEffectDoodadSet);
+        case 2: return static_cast<uint16_t>(data->m_state2ImpactEffectDoodadSet);
+        default: return 0;
+    }
+}
+
+// ref: FUN_0070b760
+uint16_t CGGameObjectDestructible::DestructionSet(int32_t state) const {
+    auto data = this->m_modelData;
+
+    if (!data) {
+        return 0;
+    }
+
+    switch (state) {
+        case 1: return static_cast<uint16_t>(data->m_state1DestructionDoodadSet);
+        case 2: return static_cast<uint16_t>(data->m_state2DestructionDoodadSet);
+        case 3: return static_cast<uint16_t>(data->m_state3InitDoodadSet);
+        default: return 0;
+    }
+}
+
+// ref: FUN_0070b7a0
+uint16_t CGGameObjectDestructible::AmbientSet(int32_t state) const {
+    auto data = this->m_modelData;
+
+    if (!data) {
+        return 0;
+    }
+
+    switch (state) {
+        case 0: return static_cast<uint16_t>(data->m_state0AmbientDoodadSet);
+        case 1: return static_cast<uint16_t>(data->m_state1AmbientDoodadSet);
+        case 2: return static_cast<uint16_t>(data->m_state2AmbientDoodadSet);
+        case 3: return static_cast<uint16_t>(data->m_state3AmbientDoodadSet);
+        default: return 0;
+    }
+}
+
+WOWGUID CGGameObjectDestructible::OwnerKey() const {
+    return this->m_owner->GetGUID();
+}
+
+// ref: FUN_0070df30
+// Not while the active player stands in it; otherwise unless its data forbids it.
+bool CGGameObjectDestructible::CanHighlight() {
+    auto player = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.h", 0xa0));
+
+    if (player && CWorld::GetObjectBuildingOwner(player->m_worldObject) == this->m_owner->GetGUID()) {
+        return false;
+    }
+
+    return this->m_modelData && this->m_modelData->m_doNotHighlight == 0;
+}
+
+// ref: FUN_0070ca90
+int32_t CGGameObjectDestructible::NoHighlight() {
+    if (this->m_modelData && this->m_modelData->m_doNotHighlight != 0) {
+        return 1;
+    }
+
+    return this->m_owner && this->m_owner->m_state != 1;
+}
+
+// ref: FUN_0070e6a0
+// A damage flag changed: a hit (0x100) plays the state's impact set, then the state follows.
+void CGGameObjectDestructible::OnFlagsChanged(uint32_t changed) {
+    if (!this->m_modelData || !(changed & 0xf00)) {
+        return;
+    }
+
+    if (changed & 0x100) {
+        uint16_t set = this->ImpactSet(this->DamageState());
+
+        if (set != 0) {
+            CWorld::SetDynamicObjectDoodadSetShown(this->m_mapObject, 1, set);
+            CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x99, 0, set);
+            CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &DestructibleImpactDone, set, set);
+            CWorld::SetDynamicObjectAnimEvent(this->m_mapObject, &DestructibleAnimEvent, this->OwnerKey(), set);
+        }
+    }
+
+    this->ChangeState();
+}
+
+// ref: FUN_0070ec80
+void CGGameObjectDestructible::OnAnimEvent(uint32_t eventId, uint32_t data, const C3Vector* position, uint32_t a6) {
+    (void)a6;
+
+    GameObjectHandleAnimEvent(eventId, data, position, this->m_sound, this->m_owner->GameObject()->displayID);
+}
+
+// ref: FUN_0070ddd0
+// The map's proxy for the building: where it stands, how far its geobox reaches, and its id.
+//
+// PARTIAL: the proxy is not handed to the map (FUN_0077f290 -> FUN_0079eff0, the
+// CDestructibleProxy list the map's visibility walks read), so a map's own copy of the building
+// is not hidden under it.
+void CGGameObjectDestructible::PostInit(int32_t a4) {
+    (void)a4;
+
+    auto owner = this->m_owner;
+    auto display = g_gameObjectDisplayInfoDB.GetRecord(owner->GameObject()->displayID);
+
+    if (display) {
+        this->m_proxyPosition = owner->m_passenger.GetPosition(owner->m_passenger.m_position);
+
+        float x = std::max(display->m_geoBoxMin[0] * display->m_geoBoxMin[0], display->m_geoBoxMax[0] * display->m_geoBoxMax[0]);
+        float y = std::max(display->m_geoBoxMin[1] * display->m_geoBoxMin[1], display->m_geoBoxMax[1] * display->m_geoBoxMax[1]);
+        float z = std::max(display->m_geoBoxMin[2] * display->m_geoBoxMin[2], display->m_geoBoxMax[2] * display->m_geoBoxMax[2]);
+
+        this->m_proxyRadius = std::sqrt(std::sqrt(z) * std::sqrt(z) + std::sqrt(y) * std::sqrt(y) + std::sqrt(x) * std::sqrt(x));
+
+        uint32_t parent;
+        std::memcpy(&parent, &owner->GameObject()->parentRotation[0], sizeof(parent));
+        this->m_proxyID = parent == 0x5476ed ? 0x5476ed : 0;
+
+        if (this->m_proxyRadius < 0.001f) {
+            this->m_proxyRadius = 50.0f;
+            SysMsgPrintf(SYSMSG_ERROR, "Destructible building WMO(%s) has invalid geobox", display->m_modelName);
+        }
+    }
+
+    owner->UpdateWorldObject(0);
+}
+
+// ref: FUN_00710be0
+// Its stats are in: the four states' buildings named (a state without one keeps the one before),
+// each placed with its three effect sets and hidden, the current state's shown; the repair effect
+// and the colliding intact copy.
+//
+// PARTIAL: the destructible's name plate (FUN_007e6320 / FUN_007e5fd0, the PlayerName port's), and
+// the map's proxy (see PostInit).
+void CGGameObjectDestructible::OnStatsLoaded() {
+    auto owner = this->m_owner;
+
+    this->m_states[0].m_displayID = owner->m_stats->m_displayID;
+    auto name = DisplayModelName(this->m_states[0].m_displayID);
+
+    if (!name) {
+        SysMsgPrintf(SYSMSG_ERROR, "Destructible building - Game object id %d is missing its display record %d",
+                     owner->GetEntryID(), owner->GameObject()->displayID);
+    } else {
+        this->m_states[0].m_name = name;
+    }
+
+    this->m_modelData = g_destructibleModelDataDB.GetRecord(this->GetData(GO_DATA_DESTRUCTIBLE_DATA));
+
+    if (this->m_modelData) {
+        this->m_states[1].m_displayID = this->m_modelData->m_state1Wmo;
+        this->m_states[2].m_displayID = this->m_modelData->m_state2Wmo;
+        this->m_states[3].m_displayID = this->m_modelData->m_state3Wmo;
+
+        for (int32_t i = 1; i < 4; i++) {
+            auto& state = this->m_states[i];
+            const char* stateName = state.m_displayID ? DisplayModelName(state.m_displayID) : nullptr;
+
+            if (state.m_displayID && !stateName) {
+                SysMsgPrintf(SYSMSG_ERROR, "Destructible building - Game object id %d is missing its display record %d for state %d",
+                             owner->GetEntryID(), owner->GameObject()->displayID, i);
+            }
+
+            if (stateName) {
+                state.m_name = stateName;
+            } else {
+                state.m_displayID = this->m_states[i - 1].m_displayID;
+                state.m_name = this->m_states[i - 1].m_name;
+            }
+        }
+    }
+
+    C3Vector position = owner->m_passenger.GetPosition(owner->m_passenger.m_position);
+
+    for (int32_t i = 0; i < 4; i++) {
+        auto& state = this->m_states[i];
+
+        if (state.m_object || !state.m_name) {
+            continue;
+        }
+
+        uint16_t sets[3] = { this->DestructionSet(i), this->ImpactSet(i), this->AmbientSet(i) };
+        uint32_t id = i == 0 ? this->m_proxyID : 0;
+        float facing = owner->GetFacing();
+
+        state.m_object = CWorld::AddDynamicObject(state.m_name, position, facing, 0, 0, owner->GetGUID(), 3, sets, &this->m_proxyRadius, id);
+
+        if (state.m_object) {
+            CWorld::SetDynamicObjectShown(state.m_object, 0);
+            CWorld::SetDynamicObjectCollides(state.m_object, 0);
+        }
+
+        state.m_loading = 1;
+    }
+
+    this->m_mapObject = this->m_states[this->DamageState()].m_object;
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectShown(this->m_mapObject, 1);
+        CWorld::SetDynamicObjectCollides(this->m_mapObject, 1);
+    }
+
+    this->m_loading = 1;
+
+    if (this->m_modelData && this->m_modelData->m_repairGroundFx) {
+        auto fxName = DisplayModelName(this->m_modelData->m_repairGroundFx);
+
+        if (!fxName) {
+            SysMsgPrintf(SYSMSG_ERROR, "Destructible building - Game object id %d is missing its rebuild FX display record %d",
+                         owner->GetEntryID(), owner->GameObject()->displayID);
+        } else {
+            this->m_rebuildFx = CWorld::AddDynamicObject(fxName, position, owner->GetFacing(), 0, 0, 0, 0, nullptr, nullptr, 0);
+
+            if (this->m_rebuildFx) {
+                CWorld::SetDynamicObjectFlag2000(this->m_rebuildFx, 1);
+                CWorld::SetDynamicObjectShown(this->m_rebuildFx, 0);
+                CWorld::SetDynamicObjectCollides(this->m_rebuildFx, 0);
+            }
+        }
+    }
+
+    if (this->m_states[0].m_name) {
+        this->m_collisionProxy = CWorld::AddDynamicObject(this->m_states[0].m_name, position, owner->GetFacing(), 0, 0,
+                                                          owner->GetGUID(), 0, nullptr, nullptr, 0);
+
+        if (this->m_collisionProxy) {
+            CWorld::SetDynamicObjectShown(this->m_collisionProxy, 0);
+            CWorld::SetDynamicObjectCollides(this->m_collisionProxy, 0);
+        }
+    }
+}
+
+// ref: FUN_0070b6e0
+void CGGameObjectDestructible::OnDisable() {
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectShown(this->m_mapObject, 0);
+        CWorld::SetDynamicObjectCollides(this->m_mapObject, 0);
+    }
+}
+
+// ref: FUN_0070b6a0
+void CGGameObjectDestructible::OnPostReenable() {
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectShown(this->m_mapObject, 1);
+        CWorld::SetDynamicObjectCollides(this->m_mapObject, 1);
+    }
+}
+
+// ref: FUN_0070dfa0
+// The building follows the object's state: the new state's shown and colliding, the old one's not
+// (a player caught inside a building that falls is dropped); the old state's impact and ambient sets
+// play out in the new building; the state before that takes its sets back; then the new state's
+// destruction set plays, or, entering it by rising, both buildings start to move; and its ambient
+// set starts.
+void CGGameObjectDestructible::ChangeState() {
+    int32_t current = 0;
+
+    while (current < 4 && this->m_states[current].m_object != this->m_mapObject) {
+        current++;
+    }
+
+    int32_t next = this->DamageState();
+
+    if (next == current) {
+        return;
+    }
+
+    SI2::StopOrFadeOut(this->m_sound, 0, -1.0f, 1);
+
+    auto& incoming = this->m_states[next];
+    auto nextObject = incoming.m_object;
+
+    if (nextObject) {
+        CWorld::SetDynamicObjectShown(nextObject, 1);
+        CWorld::SetDynamicObjectCollides(nextObject, 1);
+    }
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectShown(this->m_mapObject, 0);
+        CWorld::SetDynamicObjectCollides(this->m_mapObject, 0);
+    }
+
+    if (this->m_mapObject && current < next && next != 3 && next != 0) {
+        auto player = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, ".\\GameObject_C.cpp", 0xe93));
+
+        if (player && !player->IsTransportUnit() && !(player->m_localMove.m_moveFlags & 0x2000000)) {
+            CAaBox box = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+            CWorld::GetDynamicObjectBounds(this->m_mapObject, box);
+
+            C44Matrix world;
+            this->m_owner->GetWorldMatrix(world);
+            C3Vector local = player->GetPosition() * world.AffineInverse();
+
+            // FUN_006cb930: strictly inside.
+            if (box.b.x < local.x && box.b.y < local.y && box.b.z < local.z
+                && local.x < box.t.x && local.y < box.t.y && local.z < box.t.z) {
+                // FUN_007189f0
+                player->m_localMove.QueueFallIfUnsupported(static_cast<int32_t>(OsGetAsyncTimeMs()));
+            }
+        }
+    }
+
+    uint16_t outgoing[2] = { this->ImpactSet(current), this->AmbientSet(current) };
+    uint16_t base = static_cast<uint16_t>((current + 1) * 100);
+
+    for (auto set : outgoing) {
+        if (set == 0) {
+            continue;
+        }
+
+        uint16_t moved = static_cast<uint16_t>(set + base);
+
+        CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x9b, 0, set);
+        CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &DestructibleOutgoingDone, moved, set);
+        CWorld::SetDynamicObjectAnimEvent(this->m_mapObject, &DestructibleAnimEvent, this->OwnerKey(), set);
+        CWorld::MoveDynamicObjectDoodadSet(this->m_mapObject, set, nextObject, moved);
+        CWorld::SetDynamicObjectDoodadSetShown(nextObject, 1, moved);
+    }
+
+    if (this->m_prevState != -1) {
+        auto prevObject = this->m_states[this->m_prevState].m_object;
+        uint16_t returning[2] = { this->ImpactSet(this->m_prevState), this->AmbientSet(this->m_prevState) };
+
+        for (auto set : returning) {
+            if (set == 0) {
+                continue;
+            }
+
+            uint16_t moved = static_cast<uint16_t>((this->m_prevState + 1) * 100 + set);
+
+            CWorld::MoveDynamicObjectDoodadSet(this->m_mapObject, moved, prevObject, set);
+            CWorld::SetDynamicObjectSequenceDone(prevObject, nullptr, 0, set);
+            CWorld::SetDynamicObjectDoodadSetShown(prevObject, 0, set);
+            CWorld::SetDynamicObjectSequence(prevObject, 0, 0, set);
+            CWorld::SetDynamicObjectAnimEvent(this->m_mapObject, &DestructibleAnimEvent, this->OwnerKey(), set);
+        }
+    }
+
+    this->m_mapObject = nextObject;
+    this->m_prevState = current;
+    incoming.m_rises = (next == 0 || next == 3) ? 1 : 0;
+
+    if (!this->m_mapObject || incoming.m_loading) {
+        return;
+    }
+
+    auto data = this->m_modelData;
+
+    if (!incoming.m_rises) {
+        if (data) {
+            uint16_t set = this->DestructionSet(this->DamageState());
+
+            if (set != 0) {
+                CWorld::SetDynamicObjectDoodadSetShown(this->m_mapObject, 1, set);
+                CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x99, 0, set);
+                CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &DestructibleDestructionDone, set, set);
+                CWorld::SetDynamicObjectAnimEvent(this->m_mapObject, &DestructibleAnimEvent, this->OwnerKey(), set);
+            }
+        }
+    } else if (data) {
+        float speed = 12.0f;
+
+        if (0.0f < static_cast<float>(data->m_healEffectSpeed)) {
+            speed = static_cast<float>(data->m_healEffectSpeed);
+        }
+
+        int32_t heal = data->m_healEffect;
+
+        if (heal != 4 && 0.0f < speed) {
+            CAaBox box = { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+            CWorld::GetDynamicObjectBounds(this->m_mapObject, box);
+            this->m_riseDepth = box.t.z - box.b.z;
+
+            C3Vector position = this->m_owner->GetPosition();
+            this->m_baseZ = position.z;
+            CWorld::SetDynamicObjectPosition(this->m_mapObject, position, this->m_owner->GetFacing(), 0.0f, 0.0f, 0);
+
+            this->m_rising = 1;
+            this->m_riseStart = CWorld::GetCurTimeMs();
+            this->m_riseDuration = static_cast<uint32_t>(static_cast<int64_t>(
+                std::nearbyint(this->m_riseDepth / (speed * 0.33333334f) * 1000.0f)));
+
+            if (this->m_prevState != -1 && heal != 3) {
+                auto prevObject = this->m_states[this->m_prevState].m_object;
+                CWorld::GetDynamicObjectBounds(prevObject, box);
+                this->m_prevRiseDepth = box.t.z - box.b.z;
+                CWorld::SetDynamicObjectShown(prevObject, 1);
+                CWorld::SetDynamicObjectCollides(prevObject, 1);
+            }
+
+            if (this->m_collisionProxy) {
+                CWorld::SetDynamicObjectCollides(this->m_collisionProxy, 1);
+            }
+        }
+    }
+
+    if (data) {
+        uint16_t set = this->AmbientSet(this->DamageState());
+
+        if (set != 0) {
+            CWorld::SetDynamicObjectDoodadSetShown(this->m_mapObject, 1, set);
+            CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x99, 0, set);
+            CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &DestructibleAmbientDone, set, set);
+            CWorld::SetDynamicObjectAnimEvent(this->m_mapObject, &DestructibleAnimEvent, this->OwnerKey(), set);
+        }
+    }
+}
+
+// ref: FUN_0070e750
+// While the buildings load, each that arrives has its effect sets paused and hidden (the shown one
+// starts its ambient set); then a rise in progress moves the buildings, a rise at its end puts
+// them in place.
+void CGGameObjectDestructible::UpdateFrame(uint32_t time) {
+    if (this->m_loading) {
+        this->m_loading = 0;
+
+        for (int32_t i = 0; i < 4; i++) {
+            auto& state = this->m_states[i];
+
+            if (!state.m_loading || !state.m_object) {
+                continue;
+            }
+
+            if (!CWorld::DynamicObjectIsLoaded(state.m_object)) {
+                this->m_loading = 1;
+                continue;
+            }
+
+            state.m_loading = 0;
+
+            uint16_t sets[3] = { this->DestructionSet(i), this->ImpactSet(i), this->AmbientSet(i) };
+
+            for (auto set : sets) {
+                if (set != 0) {
+                    CWorld::SetDynamicObjectEmittersPaused(state.m_object, 1, set);
+                    CWorld::SetDynamicObjectDoodadSetShown(state.m_object, 0, set);
+                }
+            }
+
+            if (state.m_object == this->m_mapObject) {
+                uint16_t set = this->AmbientSet(this->DamageState());
+
+                if (set != 0) {
+                    CWorld::SetDynamicObjectDoodadSetShown(this->m_mapObject, 1, set);
+                    CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x99, 0, set);
+                    CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &DestructibleAmbientDone, set, set);
+                    CWorld::SetDynamicObjectAnimEvent(this->m_mapObject, &DestructibleAnimEvent, this->OwnerKey(), set);
+                }
+            }
+        }
+
+        return;
+    }
+
+    if (!this->m_rising) {
+        return;
+    }
+
+    auto owner = this->m_owner;
+    float facing = owner->GetFacing();
+
+    if (this->m_riseStart + this->m_riseDuration <= time) {
+        if (this->m_rebuildFx) {
+            C3Vector fx = owner->GetPosition();
+            CWorld::SetDynamicObjectPosition(this->m_rebuildFx, fx, facing, 0.0f, 0.0f, 0);
+            CWorld::SetDynamicObjectShown(this->m_rebuildFx, 0);
+            CWorld::SetDynamicObjectCollides(this->m_rebuildFx, 0);
+        }
+
+        C3Vector position = owner->GetPosition();
+        position.z = this->m_baseZ;
+        CWorld::SetDynamicObjectPosition(this->m_mapObject, position, facing, 0.0f, 0.0f, 0);
+        this->m_rising = 0;
+
+        if (this->m_prevState != -1) {
+            auto prevObject = this->m_states[this->m_prevState].m_object;
+            CWorld::SetDynamicObjectShown(prevObject, 0);
+            CWorld::SetDynamicObjectCollides(prevObject, 0);
+            CWorld::SetDynamicObjectPosition(prevObject, position, facing, 0.0f, 0.0f, 0);
+        }
+
+        if (this->m_collisionProxy) {
+            CWorld::SetDynamicObjectCollides(this->m_collisionProxy, 0);
+        }
+
+        return;
+    }
+
+    C3Vector here = owner->GetPosition();
+    float f = static_cast<float>(time - this->m_riseStart) / static_cast<float>(this->m_riseDuration);
+    int32_t heal = this->m_modelData ? this->m_modelData->m_healEffect : 4;
+    auto prevObject = this->m_prevState != -1 ? this->m_states[this->m_prevState].m_object : nullptr;
+
+    if (heal != 0) {
+        // The new building rises out of the ground; with heal effect 2 the old one sinks into it.
+        float g = 1.0f - f;
+        C3Vector position = here;
+        position.z = this->m_baseZ - (1.0f - (1.0f - g * g * g)) * this->m_riseDepth;
+        CWorld::SetDynamicObjectPosition(this->m_mapObject, position, facing, 0.0f, 0.0f, 0);
+
+        if (prevObject && heal == 2) {
+            C3Vector old = owner->GetPosition();
+            old.z = this->m_baseZ - f * f * f * this->m_prevRiseDepth;
+            CWorld::SetDynamicObjectPosition(prevObject, old, facing, 0.0f, 0.0f, 0);
+        }
+    } else {
+        // Heal effect 0: the old building sinks in the first half, the new rises in the second.
+        float rise = 0.0f;
+
+        if (0.5f < f) {
+            float g = 1.0f - ((f - 0.5f) + (f - 0.5f));
+            rise = 1.0f - g * g * g;
+        }
+
+        C3Vector position = here;
+        position.z = this->m_baseZ - (1.0f - rise) * this->m_riseDepth;
+        CWorld::SetDynamicObjectPosition(this->m_mapObject, position, facing, 0.0f, 0.0f, 0);
+
+        if (prevObject) {
+            float sink = 0.5f <= f ? 1.0f : f * f * f * 8.0f;
+            C3Vector old = owner->GetPosition();
+            old.z = this->m_baseZ - this->m_prevRiseDepth * sink;
+            CWorld::SetDynamicObjectPosition(prevObject, old, facing, 0.0f, 0.0f, 0);
+        }
+    }
+
+    if (this->m_rebuildFx) {
+        CWorld::SetDynamicObjectShown(this->m_rebuildFx, 1);
+        CWorld::SetDynamicObjectCollides(this->m_rebuildFx, 1);
+        CWorld::SetDynamicObjectPosition(this->m_rebuildFx, here, facing, 0.0f, 0.0f, 0);
     }
 }
 

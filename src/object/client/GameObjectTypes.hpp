@@ -464,6 +464,68 @@ class CGGameObjectDungeonDifficulty : public CGGameObjectType {
         SOUNDKITOBJECT* m_sound = nullptr;  // +0x10
 };
 
+class DestructibleModelDataRec;
+
+// A destructible building (type 33, 0x00a344d0): one building per state (intact, damaged,
+// destroyed, rebuilding), all placed at load and only the state's shown. A state change hands the
+// outgoing state's effect doodads to the incoming building, plays its destruction set, and on a
+// rebuild lowers the old building and raises the new one. The state is GO flags bits 9..11.
+class CGGameObjectDestructible : public CGGameObjectType {
+    public:
+        // +0x14 + 0x10 * state.
+        struct State {
+            const char* m_name = nullptr;           // the building's file
+            int32_t m_displayID = 0;
+            CMapBaseObj* m_object = nullptr;
+            uint8_t m_loading = 0;                  // placed, not yet in
+            uint8_t m_rises = 0;                    // entered by rising (states 0 and 3)
+        };
+
+        // ref: FUN_007128d0
+        CGGameObjectDestructible(CGGameObject_C* owner);
+        ~CGGameObjectDestructible() override;
+
+        bool UsesModelBounds() override { return false; }                               // 0x04
+        bool CanHighlight() override;                                                    // 0x0c
+        int32_t NoHighlight() override;                                                  // 0x10
+        bool CanUse() override { return false; }                                        // 0x18
+        void OnFlagsChanged(uint32_t changed) override;                                 // 0x28
+        void OnAnimEvent(uint32_t eventId, uint32_t data, const C3Vector* position, uint32_t a6) override; // 0x40
+        // ref: FUN_0095cb40
+        void* GetMapObject() override { return this->m_mapObject; }                     // 0x70
+        void PostInit(int32_t a4) override;                                              // 0x74
+        void OnStatsLoaded() override;                                                   // 0x78
+        void OnDisable() override;                                                       // 0x80
+        void OnPostReenable() override;                                                  // 0x84
+        void UpdateFrame(uint32_t time) override;                                        // 0x90
+
+        int32_t DamageState() const;
+        uint16_t ImpactSet(int32_t state) const;
+        uint16_t DestructionSet(int32_t state) const;
+        uint16_t AmbientSet(int32_t state) const;
+        void ChangeState();
+        WOWGUID OwnerKey() const;
+
+        CMapBaseObj* m_mapObject = nullptr;         // +0x10, the shown state's building
+        State m_states[4];                          // +0x14
+        int32_t m_prevState = -1;                   // +0x54
+        float m_baseZ = 0.0f;                       // +0x58
+        uint32_t m_riseStart = 0;                   // +0x5c
+        uint32_t m_riseDuration = 0;                // +0x60
+        CMapBaseObj* m_rebuildFx = nullptr;         // +0x64, the repair ground effect
+        CMapBaseObj* m_collisionProxy = nullptr;    // +0x68, the intact building, colliding while it rises
+        float m_riseDepth = 0.0f;                   // +0x6c
+        float m_prevRiseDepth = 0.0f;               // +0x70
+        SOUNDKITOBJECT* m_sound = nullptr;          // +0x74
+        // +0x88: the proxy the map hides its own copy of the building by (CDestructibleProxy).
+        C3Vector m_proxyPosition = {};              // +0x94
+        float m_proxyRadius = 0.0f;                 // +0xa0
+        uint32_t m_proxyID = 0;                     // +0xa4
+        const DestructibleModelDataRec* m_modelData = nullptr; // +0xa8
+        uint8_t m_loading = 0;                      // +0xac
+        uint8_t m_rising = 0;                       // +0xad
+};
+
 // The sound a GameObjectDisplayInfo record carries in slot `index`, played at `position` --
 // following the object through `sound` when the kit says it loops (FUN_0070bf70).
 void GameObjectPlayDisplaySound(int32_t displayID, int32_t index, const C3Vector* position, SOUNDKITOBJECT* sound);

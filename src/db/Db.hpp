@@ -61,6 +61,7 @@
 #include "db/rec/TaxiPathNodeRec.hpp"
 #include "db/rec/TransportPhysicsRec.hpp"
 #include "db/rec/MapDifficultyRec.hpp"
+#include "db/rec/DestructibleModelDataRec.hpp"
 #include "db/rec/CurrencyTypesRec.hpp"
 #include "db/rec/SpellShapeshiftFormRec.hpp"
 #include "db/rec/FactionGroupRec.hpp"
@@ -143,6 +144,7 @@ extern WowClientDB<TransportRotationRec> g_transportRotationDB;
 extern WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
 extern WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
 extern WowClientDB<MapDifficultyRec> g_mapDifficultyDB;
+extern WowClientDB<DestructibleModelDataRec> g_destructibleModelDataDB;
 extern WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 extern WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;

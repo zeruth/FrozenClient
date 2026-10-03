@@ -59,6 +59,9 @@ class CMapBaseObj;
 // As CM2Model.hpp declares it.
 typedef void (*M2SequenceDoneCallback)(CM2Model* model, uint32_t boneId, uint32_t animId,
                                        int32_t a4, int32_t a5, WOWGUID owner);
+typedef void (*M2AnimEventCallback)(CM2Model* model, uint32_t boneId, uint32_t eventId,
+                                    uint32_t eventData, const C3Vector* position, uint32_t a6,
+                                    WOWGUID owner);
 
 class CWorld {
     public:
@@ -214,10 +217,18 @@ class CWorld {
         static bool DynamicObjectIsMapObj(CMapBaseObj* object);
         static bool DynamicObjectIsLoaded(CMapBaseObj* object);
         static void SetDynamicObjectPlacement(CMapBaseObj* object, const C44Matrix& placement);
-        static void SetDynamicObjectSequenceDone(CMapBaseObj* object, M2SequenceDoneCallback callback, WOWGUID owner);
-        static void SetDynamicObjectSequence(CMapBaseObj* object, uint32_t sequence, uint32_t a3, uint32_t a4);
+        static void SetDynamicObjectSequenceDone(CMapBaseObj* object, M2SequenceDoneCallback callback, WOWGUID owner, uint16_t set = 0);
+        static void SetDynamicObjectSequence(CMapBaseObj* object, uint32_t sequence, uint32_t a3, uint16_t set);
         static bool DynamicObjectContains(CMapBaseObj* object, const C3Vector& position);
         static void SetObjectHidden(HWORLDOBJECT object, int32_t hidden);
+        static void SetDynamicObjectPosition(CMapBaseObj* object, C3Vector& position, float rotZ, float rotY, float rotX, int32_t snap);
+        static void GetDynamicObjectBounds(CMapBaseObj* object, CAaBox& bounds);
+        static void SetDynamicObjectFlag2000(CMapBaseObj* object, int32_t set);
+        static void SetDynamicObjectEmittersPaused(CMapBaseObj* object, int32_t paused, uint16_t set);
+        static void SetDynamicObjectDoodadSetShown(CMapBaseObj* object, int32_t shown, uint16_t set);
+        static int32_t MoveDynamicObjectDoodadSet(CMapBaseObj* from, uint16_t set, CMapBaseObj* to, uint16_t newSet);
+        static void SetDynamicObjectAnimEvent(CMapBaseObj* object, M2AnimEventCallback callback, WOWGUID owner, uint16_t set);
+        static WOWGUID GetObjectBuildingOwner(HWORLDOBJECT object);
         static int32_t GetObjectLiquidFlags(HWORLDOBJECT object, uint32_t* bit8, uint32_t* bit9);
         static void UpdateWindowAndMap(const C3Vector& targetPos);
         static uint32_t GetCurTimeMs();

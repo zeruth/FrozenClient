@@ -1,3 +1,5 @@
+#include "model/CM2ParticleEmitter.hpp"
+#include "model/CM2Shared.hpp"
 #include <tempest/Rect.hpp>
 #include "world/DayNightLight.hpp"
 #include <tempest/ColorConvert.hpp>
@@ -4925,3 +4927,210 @@ void CMap::SetDoodadDefPlacement(CMapDoodadDef* def, const C44Matrix& placement)
     CMap::UpdateDoodadDefPlacement(def);
 }
 
+
+// ------------------------------------------------------------------------------------------------
+// A dynamic building's doodad sets (Map.cpp 0x007b4170 .. 0x007b7090): the destructible buildings
+// show, hide, animate and hand over whole sets as their state changes.
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_007b6800
+void CMap::LinkDoodadToDefGroups(CMapDoodadDef* doodad, CMapObjDef* def, int32_t intersect) {
+    for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+        auto group = static_cast<CMapObjDefGroup*>(link->owner);
+
+        if (def->m_mapObj->GroupFlags(group->m_groupIndex) & 0x410080) {
+            continue;
+        }
+
+        if (intersect && !doodad->m_bounds.Intersects(group->m_bounds)) {
+            continue;
+        }
+
+        auto groupLink = CMap::AllocBaseObjLink(doodad);
+        groupLink->ref = group;
+        group->m_doodadDefLinkList.LinkToTail(groupLink);
+        CMap::GrowParentBounds(doodad, group);
+    }
+}
+
+// ref: FUN_007b6ed0
+void CMap::RelinkDoodadToDefs(CMapDoodadDef* doodad, CMapObjDef* except) {
+    for (auto def = CMapObjDef::s_uniqueIds.Head(); def; def = CMapObjDef::s_uniqueIds.Next(def)) {
+        if (def == except || (def->m_flags & 0x10000) || !(def->m_flags & 0x80)) {
+            continue;
+        }
+
+        if (!def->m_defGroupLinkList.Head() || !doodad->m_bounds.Intersects(def->m_bounds)) {
+            continue;
+        }
+
+        CMap::LinkDoodadToDefGroups(doodad, def, 1);
+    }
+}
+
+// ref: FUN_007b69c0
+// The walk over a group's doodads stops at the first of the default set (0): the group lists its
+// extra sets' doodads first.
+void CMap::SetDoodadSetEmittersPaused(CMapObjDef* def, int32_t paused, uint16_t set) {
+    for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+        auto group = static_cast<CMapObjDefGroup*>(link->owner);
+
+        for (auto doodadLink = group->m_doodadDefLinkList.Head(); doodadLink; doodadLink = group->m_doodadDefLinkList.Next(doodadLink)) {
+            auto doodad = static_cast<CMapDoodadDef*>(doodadLink->owner);
+
+            if (doodad->m_doodadSetIndex == 0) {
+                break;
+            }
+
+            if (doodad->m_doodadSetIndex != set || !doodad->m_model) {
+                continue;
+            }
+
+            auto model = doodad->m_model;
+
+            if (!model->m_loaded) {
+                model->WaitForLoad(nullptr);
+            }
+
+            for (uint32_t i = 0; i < model->m_shared->m_data->particles.Count(); i++) {
+                auto emitter = model->m_particleEmitters[i];
+
+                if (!emitter) {
+                    continue;
+                }
+
+                if (paused) {
+                    emitter->m_flags |= 0x400000;
+                } else {
+                    emitter->m_flags &= ~0x400000u;
+                }
+            }
+        }
+    }
+}
+
+// ref: FUN_007b6f60
+void CMap::SetDoodadSetShown(CMapObjDef* def, int32_t shown, uint16_t set) {
+    for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+        auto group = static_cast<CMapObjDefGroup*>(link->owner);
+
+        for (auto doodadLink = group->m_doodadDefLinkList.Head(); doodadLink;) {
+            auto doodad = static_cast<CMapDoodadDef*>(doodadLink->owner);
+            doodadLink = group->m_doodadDefLinkList.Next(doodadLink);
+
+            if (doodad->m_doodadSetIndex == 0) {
+                break;
+            }
+
+            if (doodad->m_doodadSetIndex != set || !doodad->m_model) {
+                continue;
+            }
+
+            if (!shown) {
+                doodad->m_flags |= 0x120;
+
+                // Its links into other buildings go; the ones into this building's groups stay.
+                for (auto parent = doodad->m_parentLinkList.Head(); parent;) {
+                    auto next = doodad->m_parentLinkList.Next(parent);
+
+                    if (parent->ref && (parent->ref->m_type & CMapBaseObj::Type_MapObjDefGroup)) {
+                        auto owner = static_cast<CMapObjDefGroup*>(parent->ref)->m_parentLinkList.Head();
+
+                        if (!owner || owner->ref != def) {
+                            CMap::FreeBaseObjLink(parent);
+                        }
+                    } else {
+                        CMap::FreeBaseObjLink(parent);
+                    }
+
+                    parent = next;
+                }
+            } else {
+                doodad->m_flags &= ~0x120u;
+                doodad->m_flags7c &= ~0xe0u;
+                CMap::RelinkDoodadToDefs(doodad, def);
+            }
+        }
+    }
+}
+
+// ref: FUN_007b68a0
+int32_t CMap::MoveDoodadSet(CMapObjDef* from, uint16_t set, CMapObjDef* to, uint16_t newSet) {
+    if (!(to->m_flags & 0x80) || !to->m_defGroupLinkList.Head()) {
+        return 0;
+    }
+
+    for (auto link = from->m_defGroupLinkList.Head(); link; link = from->m_defGroupLinkList.Next(link)) {
+        auto group = static_cast<CMapObjDefGroup*>(link->owner);
+
+        for (auto doodadLink = group->m_doodadDefLinkList.Head(); doodadLink;) {
+            auto doodad = static_cast<CMapDoodadDef*>(doodadLink->owner);
+            doodadLink = group->m_doodadDefLinkList.Next(doodadLink);
+
+            if (doodad->m_doodadSetIndex == 0) {
+                break;
+            }
+
+            if (doodad->m_doodadSetIndex != set) {
+                continue;
+            }
+
+            for (auto parent = doodad->m_parentLinkList.Head(); parent;) {
+                auto next = doodad->m_parentLinkList.Next(parent);
+                CMap::FreeBaseObjLink(parent);
+                parent = next;
+            }
+
+            CMap::LinkDoodadToDefGroups(doodad, to, 0);
+            doodad->m_doodadSetIndex = newSet;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_007b4170
+// A set of 0 means every doodad of the group; otherwise the walk stops at the default set's.
+void CMap::SetGroupDoodadSequence(CMapObjDefGroup* group, uint32_t sequence, uint16_t set) {
+    for (auto link = group->m_doodadDefLinkList.Head(); link; link = group->m_doodadDefLinkList.Next(link)) {
+        auto doodad = static_cast<CMapDoodadDef*>(link->owner);
+
+        if (set != 0 && doodad->m_doodadSetIndex == 0) {
+            break;
+        }
+
+        if (doodad->m_model && doodad->m_doodadSetIndex == set) {
+            doodad->m_model->SetBoneSequence(-1, sequence, -1, 0, 1.0f, 1, 1);
+        }
+    }
+}
+
+// ref: FUN_007b41f0
+void CMap::SetGroupDoodadSequenceDone(CMapObjDefGroup* group, M2SequenceDoneCallback callback, WOWGUID owner, uint16_t set) {
+    for (auto link = group->m_doodadDefLinkList.Head(); link; link = group->m_doodadDefLinkList.Next(link)) {
+        auto doodad = static_cast<CMapDoodadDef*>(link->owner);
+
+        if (set != 0 && doodad->m_doodadSetIndex == 0) {
+            break;
+        }
+
+        if (doodad->m_model && doodad->m_doodadSetIndex == set) {
+            doodad->m_model->SetSequenceDoneCallback(callback, owner);
+        }
+    }
+}
+
+// ref: FUN_007b4270
+void CMap::SetGroupDoodadAnimEvent(CMapObjDefGroup* group, M2AnimEventCallback callback, WOWGUID owner, uint16_t set) {
+    for (auto link = group->m_doodadDefLinkList.Head(); link; link = group->m_doodadDefLinkList.Next(link)) {
+        auto doodad = static_cast<CMapDoodadDef*>(link->owner);
+
+        if (set != 0 && doodad->m_doodadSetIndex == 0) {
+            break;
+        }
+
+        if (doodad->m_model && doodad->m_doodadSetIndex == set) {
+            doodad->m_model->SetAnimEventCallback(callback, owner);
+        }
+    }
+}
