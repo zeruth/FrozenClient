@@ -1,4 +1,4 @@
-#include "object/client/NameCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "glue/CCharacterSelection.hpp"
@@ -737,7 +737,7 @@ int32_t Script_UnitName(lua_State* L) {
     }
 
     if (!resolved) {
-        resolved = NameCacheGetName(unit);
+        resolved = unit->GetUnitName(nullptr, 1);
     }
 
     if (resolved) {
@@ -1528,7 +1528,7 @@ int32_t Script_UnitDamage(lua_State* L) {
 // DIVERGED, deliberately, in the school those three modifiers are read for. The reference does not
 // use physical: it finds the equipped ranged weapon, looks its item record up in the cache, walks
 // that record's damage entries for the first with positive damage, and takes THAT entry's school.
-// Frozen has neither the equipped-weapon lookup nor damage fields on ItemInfo, so this asks for
+// Frozen has neither the equipped-weapon lookup nor damage fields on ItemStats_C, so this asks for
 // school 0.
 //
 // That is the right school for any ranged weapon dealing physical damage, which is nearly all of
@@ -3757,4 +3757,90 @@ void ScriptEventsInitialize() {
 
 void ScriptEventsRegisterEvents() {
     FrameScript_CreateEvents(g_scriptEvents, NUM_SCRIPT_EVENTS);
+}
+
+// ref: FUN_0060bb70
+// The reference compares the guid against each slot's guid directly; frozen asks the token
+// resolver for each candidate instead, which is the same comparison made through the one function
+// that defines what a token means. A numbered family stops at its first match, as the reference's
+// `break` does.
+const char* const* ScriptEventsGetUnitTokens(WOWGUID guid, int32_t* count) {
+    static char s_tokens[16][32];
+    static const char* s_tokenPtrs[16];
+
+    *count = 0;
+
+    if (!guid) {
+        return nullptr;
+    }
+
+    auto add = [count](const char* token) {
+        if (*count >= 16) {
+            return;
+        }
+
+        SStrCopy(s_tokens[*count], token, sizeof(s_tokens[*count]));
+        s_tokenPtrs[*count] = s_tokens[*count];
+        (*count)++;
+    };
+
+    auto matches = [guid](const char* token) {
+        WOWGUID resolved = 0;
+
+        return Script_GetGUIDFromToken(token, resolved, false) && resolved == guid;
+    };
+
+    char token[32];
+
+    for (const char* single : { "player", "vehicle", "pet" }) {
+        if (matches(single)) {
+            add(single);
+        }
+    }
+
+    struct Family { const char* unit; const char* pet; int32_t count; };
+    const Family families[] = {
+        { "party%d", "partypet%d", 4 },
+        { "raid%d", "raidpet%d", 40 },
+        { "arena%d", "arenapet%d", 5 },
+        { "boss%d", nullptr, 4 },
+    };
+
+    for (auto& family : families) {
+        for (int32_t i = 1; i <= family.count; i++) {
+            SStrPrintf(token, sizeof(token), family.unit, i);
+
+            if (matches(token)) {
+                add(token);
+                break;
+            }
+
+            if (family.pet) {
+                SStrPrintf(token, sizeof(token), family.pet, i);
+
+                if (matches(token)) {
+                    add(token);
+                    break;
+                }
+            }
+        }
+    }
+
+    for (const char* single : { "target", "focus", "mouseover" }) {
+        if (matches(single)) {
+            add(single);
+        }
+    }
+
+    return s_tokenPtrs;
+}
+
+// ref: FUN_0060bf10
+void ScriptEventsSignalUnitEvent(WOWGUID guid, int32_t event) {
+    int32_t count = 0;
+    auto tokens = ScriptEventsGetUnitTokens(guid, &count);
+
+    for (int32_t i = 0; i < count; i++) {
+        FrameScript_SignalEvent(event, "%s", tokens[i]);
+    }
 }

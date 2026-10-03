@@ -94,7 +94,7 @@ class CGTooltip : public CSimpleFrame {
         CGTooltip(CSimpleFrame* parent);
 };
 
-struct ItemInfo;
+class ItemStats_C;
 
 // The per-item stat totals the tooltip and GetItemStats build, 0x12c bytes in the reference.
 // stats[] is indexed as the reference indexes it: 0..6 armor then the six resistances, 8 attack
@@ -106,9 +106,9 @@ struct ItemStatTotals {
     uint32_t flags;
 
     void Clear();
-    void AddArmorAndResistances(const ItemInfo* info);
-    void AddSockets(const ItemInfo* info);
-    void AddItemStats(const ItemInfo* info);
+    void AddArmorAndResistances(const ItemStats_C* info);
+    void AddSockets(const ItemStats_C* info);
+    void AddItemStats(const ItemStats_C* info);
     void FoldStats(int32_t index, const int32_t* into, uint32_t count, int32_t collapse);
 };
 

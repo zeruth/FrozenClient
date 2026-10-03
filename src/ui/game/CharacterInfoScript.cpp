@@ -5,7 +5,7 @@
 #include "ui/FrameScript.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CGItem_C.hpp"
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/Types.hpp"
 #include "ui/game/ScriptUtil.hpp"
@@ -69,7 +69,7 @@ int32_t Script_GetInventoryItemTexture(lua_State* L) {
         return 0;
     }
 
-    auto info = ItemCacheGet(item->GetEntryID());
+    auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
     if (!info) {
         return 0;
@@ -152,7 +152,7 @@ int32_t Script_GetInventoryItemCount(lua_State* L) {
 // is the reference's: the failure path here pushes nil and returns 1.
 int32_t Script_GetInventoryItemQuality(lua_State* L) {
     auto item = Script_GetInventoryItem(L, 1, 2);
-    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     if (!info) {
         lua_pushnil(L);

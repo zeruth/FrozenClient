@@ -5,7 +5,7 @@
 #include "model/CM2Model.hpp"
 #include "model/CM2Scene.hpp"
 #include "object/client/CGUnit_C.hpp"
-#include "object/client/NameCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/client/ObjMgr.hpp"
 #include <common/Time.hpp>
 
@@ -150,12 +150,12 @@ void CGCharacterModelBase::SetUnitModel(CGUnit_C* unit) {
 
 // ref: FUN_00597700
 // Shows a creature template: its first display's model with that display's skin.
-void CGCharacterModelBase::SetCreatureModel(const CreatureCacheRec* creature) {
+void CGCharacterModelBase::SetCreatureModel(const CreatureStats_C* creature) {
     if (!creature) {
         return;
     }
 
-    auto displayInfoRec = g_creatureDisplayInfoDB.GetRecord(creature->displayID[0]);
+    auto displayInfoRec = g_creatureDisplayInfoDB.GetRecord(creature->m_displayID[0]);
 
     if (!displayInfoRec) {
         return;
@@ -194,7 +194,7 @@ void CGCharacterModelBase::SetUnit(WOWGUID guid) {
 }
 
 // ref: FUN_00597840
-void CGCharacterModelBase::SetCreature(const CreatureCacheRec* creature) {
+void CGCharacterModelBase::SetCreature(const CreatureStats_C* creature) {
     this->m_unitGUID = 0;
     this->m_creature = creature;
 

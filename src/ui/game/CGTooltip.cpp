@@ -2,7 +2,7 @@
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGTooltipScript.hpp"
 #include "ui/simple/CSimpleFontString.hpp"
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "ui/FrameScript.hpp"
 #include <storm/String.hpp>
 #include <cstring>
@@ -141,7 +141,7 @@ void ItemStatTotals::Clear() {
 }
 
 // ref: FUN_0061b8e0
-void ItemStatTotals::AddArmorAndResistances(const ItemInfo* info) {
+void ItemStatTotals::AddArmorAndResistances(const ItemStats_C* info) {
     this->flags |= 0x8;
 
     this->stats[0] += info->armor;
@@ -152,10 +152,10 @@ void ItemStatTotals::AddArmorAndResistances(const ItemInfo* info) {
 }
 
 // ref: FUN_0061b930
-void ItemStatTotals::AddSockets(const ItemInfo* info) {
+void ItemStatTotals::AddSockets(const ItemStats_C* info) {
     this->flags |= 0x10;
 
-    for (int32_t i = 0; i < ItemInfo::MAX_SOCKETS; i++) {
+    for (int32_t i = 0; i < ItemStats_C::MAX_SOCKETS; i++) {
         auto color = info->socketColor[i];
 
         if (color & 0x1) {
@@ -179,7 +179,7 @@ void ItemStatTotals::AddSockets(const ItemInfo* info) {
 // Stat type 38 (attack power) also counts toward both attack power totals, and 39 (ranged attack
 // power) toward the ranged one.
 // ref: FUN_0061b990
-void ItemStatTotals::AddItemStats(const ItemInfo* info) {
+void ItemStatTotals::AddItemStats(const ItemStats_C* info) {
     this->flags |= 0x20;
 
     for (int32_t i = 0; i < info->statsCount; i++) {

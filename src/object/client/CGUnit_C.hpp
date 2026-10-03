@@ -17,6 +17,7 @@ class CreatureDisplayInfoRec;
 class CreatureDisplayInfoExtraRec;
 class CreatureModelDataRec;
 class CreatureSoundDataRec;
+class CreatureStats_C;
 class UnitBloodLevelsRec;
 
 class FactionTemplateRec;
@@ -73,6 +74,25 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_004d43c0
         int32_t IsActiveMover() const;
         CreatureModelDataRec* GetModelData() const;
+
+        // ref: FUN_0072a000
+        // The unit's name: a player's from the name cache (with its realm in `realm` when it has
+        // one), a pet's from the pet name cache, a creature's from its template. Each cache that
+        // has not answered yet is asked, and the unit hears back through OnNameArrived. Never null:
+        // a name that has not arrived reads as UNKNOWNOBJECT.
+        const char* GetUnitName(const char** realm, int32_t checkPossess);
+
+        // ref: FUN_00728ca0
+        // The name cache's callback for a unit's name.
+        static void OnNameArrived(uint32_t id, const WOWGUID* guid, void* param, bool found);
+
+        // ref: FUN_0072cde0
+        // The creature cache's callback for a unit's template, registered by RefreshDataPointers.
+        static void OnCreatureStatsArrived(uint32_t id, const WOWGUID* guid, void* param, bool found);
+
+        // +0x964: the unit's creature template, once the creature cache has it. Null for players
+        // and for a creature whose record has not arrived.
+        const CreatureStats_C* m_creatureStats = nullptr;
         float GetModelScale() const;
         float GetRawSmoothFacing() const;
         void PostInit(uint32_t time, const CClientObjCreate& init, bool a4);

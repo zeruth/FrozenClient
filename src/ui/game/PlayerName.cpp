@@ -6,7 +6,7 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
-#include "object/client/NameCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/Client.hpp"
 #include "world/CWorld.hpp"
 #include "gx/Transform.hpp"
@@ -169,7 +169,7 @@ void PlayerNameRenderWorldText() {
             continue;
         }
 
-        const char* name = NameCacheGetName(object);
+        const char* name = static_cast<CGUnit_C*>(object)->GetUnitName(nullptr, 1);
 
         if (!name || !*name) {
             continue;

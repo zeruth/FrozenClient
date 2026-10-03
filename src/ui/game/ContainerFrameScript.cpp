@@ -2,7 +2,7 @@
 
 #include "object/Types.hpp"
 #include <storm/String.hpp>
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "db/Db.hpp"
 #include "object/client/CGBag_C.hpp"
 #include "object/client/CGContainer_C.hpp"
@@ -43,7 +43,7 @@ static const char* ICON_DIRECTORY = "Interface\\Icons";
 } // namespace
 
 const char* ItemDisplayIcon(CGItem_C* item) {
-    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
     auto rec = info ? g_itemDisplayInfoDB.GetRecord(info->displayInfoID) : nullptr;
 
     return (rec && rec->m_inventoryIcon[0]) ? rec->m_inventoryIcon[0] : "";
@@ -200,7 +200,7 @@ int32_t Script_GetContainerItemInfo(lua_State* L) {
         return 0;
     }
 
-    auto info = ItemCacheGet(item->GetEntryID());
+    auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true);
     auto iconName = ItemDisplayIcon(item);
 
     char icon[260] = { 0 };
@@ -336,7 +336,7 @@ int32_t Script_GetBagName(lua_State* L) {
                               __FILE__, __LINE__)
         : nullptr;
 
-    auto info = object ? ItemCacheGet(static_cast<CGItem_C*>(object)->GetEntryID()) : nullptr;
+    auto info = object ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(static_cast<CGItem_C*>(object)->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     if (!info || !info->Name() || !info->Name()[0]) {
         return 0;
@@ -353,7 +353,7 @@ int32_t Script_GetBagName(lua_State* L) {
 //
 // The backpack's family is literally 0 in the reference: it takes anything, and 0 is how that is
 // said. Frozen reports 0 for real bags too, which is right for a generic bag and wrong for a
-// quiver or a soul bag -- the family lives on the bag's item record and frozen's ItemInfo does not
+// quiver or a soul bag -- the family lives on the bag's item record and frozen's ItemStats_C does not
 // carry it.
 int32_t Script_GetContainerNumFreeSlots(lua_State* L) {
     if (!lua_isnumber(L, 1)) {

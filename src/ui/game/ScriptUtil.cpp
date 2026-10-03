@@ -7,7 +7,7 @@
 #include "ui/game/CGRaidInfo.hpp"
 #include "object/Client.hpp"
 #include "ui/game/CGGameUI.hpp"
-#include "object/client/NameCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include <storm/Array.hpp>
@@ -112,7 +112,7 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid) {
     name[len] = 0;
 
     // player
-    const char* playerName = activePlayer ? NameCacheGetName(activePlayer) : nullptr;
+    const char* playerName = activePlayer ? activePlayer->GetUnitName(nullptr, 1) : nullptr;
 
     if (playerName && !SStrCmpI(name, playerName, 0x7FFFFFFF)) {
         guid = activePlayer->GetGUID();
@@ -131,7 +131,7 @@ bool Script_GetGUIDFromString(const char*& token, WOWGUID& guid) {
         }
 
         auto pet = petGuid ? static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(petGuid, TYPE_UNIT, __FILE__, __LINE__)) : nullptr;
-        const char* petName = pet ? NameCacheGetName(pet) : nullptr;
+        const char* petName = pet ? pet->GetUnitName(nullptr, 1) : nullptr;
 
         if (petName && !SStrCmpI(name, petName, 0x7FFFFFFF)) {
             guid = petGuid;

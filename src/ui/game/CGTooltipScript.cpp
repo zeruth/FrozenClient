@@ -7,9 +7,8 @@
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "gx/Coordinate.hpp"
 #include "object/client/CGUnit_C.hpp"
-#include "object/client/NameCache.hpp"
 #include "object/client/CGItem_C.hpp"
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "ui/game/ContainerFrameScript.hpp"
 #include "ui/game/AuctionHouse.hpp"
 #include "ui/game/ItemSocketInfo.hpp"
@@ -243,11 +242,11 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
         ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, __FILE__, __LINE__));
 
     bool isPlayer = unit->IsA(TYPE_PLAYER);
-    auto info = NameCacheGetCreatureInfo(unit->GetEntryID());
+    auto info = unit->m_creatureStats;
 
     // The boss flag is creature type flag bit 2, and it does two things at once: it replaces the
     // classification with "Boss" and it hides the level.
-    bool isBoss = info && (info->typeFlags & 0x4) != 0;
+    bool isBoss = info && (info->m_typeFlags & 0x4) != 0;
 
     // A corpse takes over the class slot and drops the race.
     bool isCorpse = data->health < 1 || (data->dynamicFlags & 0x20) != 0;
@@ -296,7 +295,7 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
         // The second gate is a creature type flag frozen cannot name: the reference has a one-line
         // accessor for bit 26 (FUN_00715df0) and uses it only here, to suppress the type. What the
         // bit means has not been recovered -- only what it does.
-        bool suppressed = info && (info->typeFlags & 0x04000000) != 0;
+        bool suppressed = info && (info->m_typeFlags & 0x04000000) != 0;
         auto type = unit->GetCreatureType();
 
         if (type != 10 && !suppressed && unit->GetReaction(player) < 4) {
@@ -395,9 +394,7 @@ const char* TooltipUnitName(CGUnit_C* unit) {
         }
     }
 
-    auto cached = NameCacheGetName(unit);
-
-    return cached ? cached : "Unknown";
+    return unit->GetUnitName(nullptr, 1);
 }
 
 // Size the tooltip to the lines it is carrying.
@@ -948,7 +945,7 @@ int32_t CGTooltip_FadeOut(lua_State* L) {
 
 // ref: FUN_0062dae0
 // Defined below, next to the setters that are its other callers.
-void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durability, int32_t maxDurability);
+void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t durability, int32_t maxDurability);
 
 int32_t CGTooltip_SetHyperlink(lua_State* L) {
     auto tooltip = TooltipThis(L);
@@ -970,7 +967,7 @@ int32_t CGTooltip_SetHyperlink(lua_State* L) {
         // The link carries the entry as the first field after "item:", with the enchant, the three
         // gems and the rest following behind colons. Only the entry is read here; the suffix and
         // the gems change what the reference draws, and neither is ported.
-        auto info = ItemCacheGet(SStrToInt(item + 5));
+        auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(SStrToInt(item + 5))), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
         if (!info) {
             return 0;
@@ -1129,7 +1126,7 @@ int32_t CGTooltip_SetGlyph(lua_State* L) {
 // fetched: the damage band, then SPEED, then DPS_TEMPLATE, then ARMOR_TEMPLATE, then (far below
 // the parts not ported) DURABILITY_TEMPLATE and the description.
 //
-// Every value here comes from the item record read in ItemCache.cpp, whose field order was
+// Every value here comes from the item record read in DBCacheInstances.cpp, whose field order was
 // verified against the reference's own itemcache.wdb. The formats come from GlobalStrings through
 // FrameScript_GetText rather than being spelled out, so a non-English client formats its own way.
 //
@@ -1189,7 +1186,7 @@ static const int32_t ITEM_CLASS_ARMOR = 4;
 static const int32_t ITEM_CLASS_REAGENT = 5;
 static const int32_t ITEM_CLASS_PROJECTILE = 6;
 
-void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durability, int32_t maxDurability) {
+void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t durability, int32_t maxDurability) {
     TooltipClear(tooltip);
 
     int32_t line = 1;
@@ -1280,7 +1277,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
             // the line above prints.
             float total = 0.0f;
 
-            for (int32_t i = 0; i < ItemInfo::MAX_DAMAGES; i++) {
+            for (int32_t i = 0; i < ItemStats_C::MAX_DAMAGES; i++) {
                 total += (info->damageMin[i] + info->damageMax[i]) * 0.5f;
             }
 
@@ -1317,7 +1314,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemInfo* info, int32_t durabi
     // stats instead of storing them.
     if (info->scalingStatValue == 0) {
         for (auto wanted : STAT_DISPLAY_ORDER) {
-            for (int32_t i = 0; i < ItemInfo::MAX_STATS; i++) {
+            for (int32_t i = 0; i < ItemStats_C::MAX_STATS; i++) {
                 if (info->statValue[i] == 0 || info->statType[i] == -1 || info->statType[i] != wanted) {
                     continue;
                 }
@@ -1461,7 +1458,7 @@ int32_t CGTooltip_SetInventoryItem(lua_State* L) {
     }
 
     auto item = Script_GetInventoryItem(L, 2, 3);
-    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     // An item whose record has not arrived yet answers "no item" and leaves the tooltip alone. The
     // cache has asked for it by now, so the next hover fills in -- which is why FrameXML re-runs
@@ -1520,7 +1517,7 @@ int32_t CGTooltip_SetMerchantItem(lua_State* L) {
     auto item = MerchantGetItem(index);
 
     if (item && item->m_unk04) {
-        auto info = ItemCacheGet(item->m_unk04);
+        auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->m_unk04)), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
         if (info) {
             TooltipSetItemInfo(tooltip, info, 0, 0);
@@ -1556,7 +1553,7 @@ int32_t CGTooltip_SetBagItem(lua_State* L) {
     }
 
     auto item = Script_GetContainerItem(L, 2, 3);
-    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     if (!info) {
         return 0;
@@ -1704,7 +1701,7 @@ int32_t CGTooltip_SetAuctionSellItem(lua_State* L) {
 
     if (guid) {
         auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
-        auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+        auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
         if (info) {
             auto data = item->Item();
@@ -1759,7 +1756,7 @@ int32_t CGTooltip_SetSocketedItem(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(s_socketItem, TYPE_ITEM, __FILE__, __LINE__));
-    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     if (info) {
         auto data = item->Item();
@@ -1785,7 +1782,7 @@ int32_t CGTooltip_SetSocketGem(lua_State* L) {
     WOWGUID guid = index < 3 ? s_socketGems[index] : 0;
 
     auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
-    auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
+    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     if (info) {
         auto data = item->Item();

@@ -5,7 +5,7 @@
 #include "util/guid/Types.hpp"
 
 class CGUnit_C;
-struct CreatureCacheRec;
+class CreatureStats_C;
 
 class CGCharacterModelBase : public CSimpleModel {
     public:
@@ -32,7 +32,7 @@ class CGCharacterModelBase : public CSimpleModel {
         int32_t m_turning = 0;
         uint32_t m_turnEnd = 0;
         // +0x378: the creature template the frame shows when it shows no unit.
-        const CreatureCacheRec* m_creature = nullptr;
+        const CreatureStats_C* m_creature = nullptr;
 
         // Virtual member functions
         virtual int32_t GetScriptMetaTable();
@@ -42,8 +42,8 @@ class CGCharacterModelBase : public CSimpleModel {
 
         // Member functions
         CGCharacterModelBase(CSimpleFrame* parent);
-        void SetCreature(const CreatureCacheRec* creature);
-        void SetCreatureModel(const CreatureCacheRec* creature);
+        void SetCreature(const CreatureStats_C* creature);
+        void SetCreatureModel(const CreatureStats_C* creature);
         void SetRotation(float rotation);
         void SetUnit(WOWGUID guid);
         void SetUnitModel(CGUnit_C* unit);

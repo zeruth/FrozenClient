@@ -1,6 +1,6 @@
 #include "ui/game/CGCharacterModelBaseScript.hpp"
 #include "util/Lua.hpp"
-#include "object/client/NameCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "ui/game/CGCharacterModelBase.hpp"
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/FrameScript.hpp"
@@ -39,7 +39,7 @@ int32_t Script_SetCreature(lua_State* L) {
     }
 
     int32_t creatureID = static_cast<int32_t>(lua_tointeger(L, 2));
-    auto creature = NameCacheGetCreatureInfo(creatureID);
+    auto creature = g_creatureCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(creatureID)), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
     if (creature) {
         model->m_unitGUID = 0;

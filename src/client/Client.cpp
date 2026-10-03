@@ -9,8 +9,7 @@
 #include "object/client/QuestStatusCache.hpp"
 #include "object/client/SpellBook.hpp"
 #include "object/client/CGUnit_C.hpp"
-#include "object/client/NameCache.hpp"
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "client/Client.hpp"
 #include <storm/Log.hpp>
 #include "ui/InputControl.hpp"
@@ -212,8 +211,6 @@ void ClientInitializeGameTime() {
     ClientServices::SetMessageHandler(SMSG_GAME_TIME_SET, &ReceiveNewGameTime, nullptr);
     ClientServices::SetMessageHandler(SMSG_WEATHER, &ReceiveWeather, nullptr);
     ClientServices::SetMessageHandler(SMSG_UPDATE_ACTION_BUTTONS, &ReceiveActionButtons, nullptr);
-    NameCacheRegisterHandlers();
-    ItemCacheRegisterHandlers();
     AuraCacheRegisterHandlers();
     CastCacheRegisterHandlers();
     QuestStatusRegisterHandlers();
@@ -228,6 +225,11 @@ void ClientInitializeGameTime() {
 
 int32_t ClientIdle(const void* data, void* param) {
     ClientGameTimeTickHandler(data, nullptr);
+
+    // The caches send what their rate limit held back. The reference does this from the game
+    // UI's idle handler (FUN_0052af40, at 0x0052b242), which frozen has not ported; this is the
+    // game's idle handler, registered for the same event over the same span of the session.
+    DBCacheUpdateAll();
 
     // TODO Player_C_ZoneUpdateHandler(data, nullptr);
 
@@ -464,7 +466,12 @@ int32_t DestroyEngineCallback(const void* a1, void* a2) {
 
     WowClientDestroy();
 
-    // TODO the reference's shutdown between the two (0x004066e5..0x00406715)
+    // From the reference's shutdown between the two (FUN_00402910, called at 0x004066e5): the
+    // cache handlers go, then every cache is saved and emptied.
+    DBCacheUnregisterHandlers();
+    DBCacheShutdownAll();
+
+    // TODO the rest of FUN_00402910
 
     TextureDestroy();
 
@@ -967,9 +974,8 @@ void WowClientInit() {
     //     ComSatClient_Init();
     // }
 
-    // TODO
-    // DBCache_RegisterHandlers();
-    // DBCache_Initialize(a1);
+    DBCacheRegisterHandlers();
+    DBCacheLoadAll();
 
     CWorldParam::Initialize();
     CWorld::Initialize();

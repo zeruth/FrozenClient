@@ -5,7 +5,7 @@
 #include "model/Model2.hpp"
 #include "model/CM2Shared.hpp"
 #include "model/M2Data.hpp"
-#include "object/client/NameCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/client/CEffect.hpp"
 #include "object/client/CGGameObject_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -17,6 +17,9 @@
 #include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "ui/game/CGRaidInfo.hpp"
+#include "ui/game/ScriptEvents.hpp"
+#include "ui/game/Types.hpp"
+#include "ui/FrameScript.hpp"
 #include <storm/Error.hpp>
 #include <tempest/Math.hpp>
 #include <cstring>
@@ -568,13 +571,13 @@ const char* CGUnit_C::GetSubName() const {
         return nullptr;
     }
 
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
-    if (!info || info->subName.empty()) {
+    if (!info || !info->m_subName || !info->m_subName[0]) {
         return nullptr;
     }
 
-    return info->subName.c_str();
+    return info->m_subName;
 }
 
 // ref: FUN_0071f300
@@ -595,10 +598,10 @@ int32_t CGUnit_C::GetCreatureType() const {
         return form->m_creatureType;
     }
 
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
     if (info) {
-        return info->type;
+        return info->m_type;
     }
 
     // No creature template means a player, whose type comes from its race instead.
@@ -610,9 +613,9 @@ int32_t CGUnit_C::GetCreatureType() const {
 
 // ref: FUN_007153e0
 int32_t CGUnit_C::GetCreatureFamily() const {
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
-    return info ? info->family : 0;
+    return info ? info->m_family : 0;
 }
 
 // ref: FUN_00718a00
@@ -625,9 +628,9 @@ int32_t CGUnit_C::GetClassification() const {
         return 0;
     }
 
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
-    return info ? info->classification : 0;
+    return info ? info->m_rank : 0;
 }
 
 uint32_t CGUnit_C::GetSequenceDuration(int32_t animID) {
@@ -800,10 +803,14 @@ void CGUnit_C::RefreshDataPointers() {
         }
     }
 
-    // Creature stats
-
+    // Creature stats. A unit that is not something more (a player) has a creature template, and
+    // the cache is asked for it with the callback that installs it when it lands.
     if (this->GetType() == HIER_TYPE_UNIT) {
-        // TODO load creature stats
+        WOWGUID guid = this->GetGUID();
+
+        this->m_creatureStats = g_creatureCache.GetRecord(
+            DBCACHEKEY32(static_cast<uint32_t>(this->GetEntryID())), &guid,
+            &CGUnit_C::OnCreatureStatsArrived, nullptr, false);
     }
 
     // Flags
@@ -932,10 +939,10 @@ bool IsMovementStateOpcode(int32_t opcode) {
 
 // ref: FUN_00715f70
 uint32_t CGUnit_C::GetCreatureTypeFlag11() const {
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
     if (info) {
-        return (info->typeFlags >> 11) & 1;
+        return (info->m_typeFlags >> 11) & 1;
     }
 
     return 0;
@@ -943,10 +950,10 @@ uint32_t CGUnit_C::GetCreatureTypeFlag11() const {
 
 // ref: FUN_00715f90
 uint32_t CGUnit_C::GetCreatureTypeFlag12() const {
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
     if (info) {
-        return (info->typeFlags >> 12) & 1;
+        return (info->m_typeFlags >> 12) & 1;
     }
 
     return 0;
@@ -954,10 +961,10 @@ uint32_t CGUnit_C::GetCreatureTypeFlag12() const {
 
 // ref: FUN_00715df0
 uint32_t CGUnit_C::GetCreatureTypeFlag26() const {
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
     if (info) {
-        return (info->typeFlags >> 26) & 1;
+        return (info->m_typeFlags >> 26) & 1;
     }
 
     return 0;
@@ -965,18 +972,18 @@ uint32_t CGUnit_C::GetCreatureTypeFlag26() const {
 
 // ref: FUN_00715e50
 int32_t CGUnit_C::GetCreatureSkinningType() const {
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
     if (info) {
-        if (info->typeFlags & 0x100) {
+        if (info->m_typeFlags & 0x100) {
             return 1;
         }
 
-        if (info->typeFlags & 0x200) {
+        if (info->m_typeFlags & 0x200) {
             return 2;
         }
 
-        if (info->typeFlags & 0x8000) {
+        if (info->m_typeFlags & 0x8000) {
             return 3;
         }
     }
@@ -1162,13 +1169,13 @@ uint32_t CGUnit_C::GetCreatureTypeFlag10() const {
         return 0;
     }
 
-    auto info = NameCacheGetCreatureInfo(this->GetEntryID());
+    auto info = this->m_creatureStats;
 
     if (!info) {
         return 1;
     }
 
-    return (info->typeFlags >> 10) & 1;
+    return (info->m_typeFlags >> 10) & 1;
 }
 
 // ref: FUN_00718b70
@@ -4124,4 +4131,97 @@ void CGUnit_C::UpdateWorldObject(int32_t noRelink) {
     }
 
     CWorld::UpdateObject(this->m_worldObject, matrix, box, sphere, collisionCenter, noRelink, 0);
+}
+
+// ref: FUN_0072a000
+// PHASE4: the reference's first branch -- `checkPossess` with bit 0x80 of the unit's +0xf42 byte
+// set -- walks the unit's own aura table for a SPELL_AURA 0x117 effect and answers with the
+// caster's name. The aura table is the Unit_C port's (it is AuraCache in frozen today), so that
+// branch lands with it.
+const char* CGUnit_C::GetUnitName(const char** realm, int32_t checkPossess) {
+    auto data = this->Unit();
+    WOWGUID guid = this->GetGUID();
+
+    if (!this->IsA(TYPE_PLAYER)) {
+        if (data && data->petNumber != 0) {
+            DBCACHEKEY32 key(data->petNumber);
+
+            auto pet = g_petNameCache.GetRecord(key, &guid, &CGUnit_C::OnNameArrived, nullptr, true);
+
+            if (pet) {
+                if (pet->m_timestamp == data->petNameTimestamp) {
+                    return pet->m_name;
+                }
+
+                // A renamed pet: the stale record goes and the new name is asked for. PHASE4: the
+                // reference first hands the old name to the combat log (FUN_0074f400) so lines
+                // already printed keep it; that is UnitCombatLog_C's.
+                g_petNameCache.Invalidate(key);
+                g_petNameCache.GetRecord(key, &guid, &CGUnit_C::OnNameArrived, nullptr, true);
+            }
+        } else if (this->m_creatureStats) {
+            return this->m_creatureStats->m_names[0];
+        }
+    } else {
+        auto name = g_nameCache.GetRecord(DBCACHEKEY64(guid), &guid, &CGUnit_C::OnNameArrived, nullptr, true);
+
+        if (name) {
+            if (realm && name->m_realm[0]) {
+                *realm = name->m_realm;
+            }
+
+            return name->m_name;
+        }
+    }
+
+    auto unknown = FrameScript_GetText("UNKNOWNOBJECT", -1, GENDER_NOT_APPLICABLE);
+
+    if (!unknown || !*unknown) {
+        unknown = "Unknown Being";
+    }
+
+    return unknown;
+}
+
+// ref: FUN_00728ca0
+// PHASE4: three steps of the reference are not here yet, each waiting on a module of its own --
+// the name plate is hidden (FUN_00725840, NamePlate), the tooltip's level line is refreshed when
+// it shows this unit (FUN_00512ab0), and the party member slot the unit fills takes the new name
+// and signals PARTY_MEMBER event 0xa5 (FUN_005139b0). The UNIT_NAME_UPDATE signal every frame
+// waits on is here.
+void CGUnit_C::OnNameArrived(uint32_t id, const WOWGUID* guid, void* param, bool found) {
+    if (!found) {
+        return;
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(*guid, TYPE_UNIT, __FILE__, __LINE__));
+
+    if (!unit) {
+        return;
+    }
+
+    // FUN_00512b00
+    ScriptEventsSignalUnitEvent(*guid, SCRIPT_UNIT_NAME_UPDATE);
+}
+
+// ref: FUN_0072cde0
+// PHASE4: the reference also re-runs the unit's scale (FUN_0072cbb0, when the template has a
+// family) and its combat reach (FUN_00725f50) against the template, and does the name plate and
+// party slot steps OnNameArrived lists. Those are the Unit_C port's.
+void CGUnit_C::OnCreatureStatsArrived(uint32_t id, const WOWGUID* guid, void* param, bool found) {
+    auto stats = g_creatureCache.Peek(DBCACHEKEY32(id));
+
+    if (!stats) {
+        return;
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(*guid, TYPE_UNIT, __FILE__, __LINE__));
+
+    if (unit) {
+        unit->m_creatureStats = stats;
+    }
+
+    // FUN_00512b00, then FUN_0060bf10 with event 0x94.
+    ScriptEventsSignalUnitEvent(*guid, SCRIPT_UNIT_NAME_UPDATE);
+    ScriptEventsSignalUnitEvent(*guid, 0x94);
 }

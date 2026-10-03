@@ -2,7 +2,7 @@
 
 #include "object/client/CGItem_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 
 #include <storm/String.hpp>
 
@@ -34,7 +34,7 @@ char s_name[256];
 const char* ItemNameFromEntry(int32_t entryID, int32_t suffix) {
     s_name[0] = '\0';
 
-    auto info = ItemCacheGet(entryID);
+    auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(entryID)), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
     if (!info || !info->Name() || !info->Name()[0]) {
         return s_name;
@@ -95,7 +95,7 @@ const char* ItemLinkFromObject(CGItem_C* item) {
         return nullptr;
     }
 
-    auto info = ItemCacheGet(item->GetEntryID());
+    auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
     // An item whose cache record has not arrived still links, as common quality. The reference
     // uses 1 rather than waiting or failing.

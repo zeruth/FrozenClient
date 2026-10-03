@@ -24,7 +24,7 @@
 #include "client/ClientServices.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
-#include "object/client/ItemCache.hpp"
+#include "object/client/DBCacheInstances.hpp"
 #include "object/client/CGContainer_C.hpp"
 #include "object/client/CGItem_C.hpp"
 #include "ui/Types.hpp"
@@ -2334,7 +2334,7 @@ int32_t Script_GetItemInfo(lua_State* L) {
         return 0;
     }
 
-    auto info = entry ? ItemCacheGet(entry) : nullptr;
+    auto info = entry ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(entry)), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
 
     // No record, no values. The cache will have asked for it, so a second call once the reply
     // lands answers properly -- which is why FrameXML retries these.
@@ -2451,7 +2451,7 @@ static int32_t ItemStackMatching(WOWGUID guid, int32_t itemID, const char* name)
             return 0;
         }
     } else {
-        auto info = ItemCacheGet(entryID);
+        auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(entryID)), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
         if (!info || info->name.empty() || !name || SStrCmpI(info->name.c_str(), name, STORM_MAX_STR)) {
             return 0;
@@ -2607,7 +2607,7 @@ static bool PlayerHasEquippedItem(int32_t itemID, const char* name) {
 
         // By name: the item cache answers once the server has been asked, and asks on the first
         // miss, so an early call reports false and a later one succeeds.
-        auto info = ItemCacheGet(entryID);
+        auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(entryID)), nullptr, &DBCacheIgnoreCallback, nullptr, true);
 
         if (info && !info->name.empty() && name && !SStrCmpI(info->name.c_str(), name, STORM_MAX_STR)) {
             return true;
