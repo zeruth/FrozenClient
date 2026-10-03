@@ -5,108 +5,117 @@
 
 class SFile;
 
-// Spell.dbc: only the three fields the action bar needs.
-//
-// 49839 rows, 234 columns, 936 bytes a row in 3.3.5a. Almost all of it is combat data this client
-// has no use for yet, so the row is read as a flat block of 234 dwords and the wanted columns are
-// picked out by index rather than by declaring 234 members.
-//
-// The indices were confirmed against the shipped file rather than taken from a wiki: spell 133 reads
-// name "Fireball" at column 136 and icon 185 at column 133, and 585/2050 agree ("Smite",
-// "Lesser Heal").
+// Spell.dbc, 234 columns, 936 bytes a row in 3.3.5a. Held the way the reference holds it: the file
+// row with each 17-column localized string folded to one pointer, 0x2a8 bytes, so a column below
+// the name block (+0x220) is at column * 4 and one past the four strings at (column - 64) * 4. The
+// offsets beside the members are the reference's.
 class SpellRec {
     public:
         static const int32_t COLUMN_COUNT = 234;
-        static const int32_t COLUMN_ATTRIBUTES = 4;   // SPELL_ATTR0_*; 0x40 is PASSIVE
-        static const int32_t COLUMN_VISUAL = 131;     // SpellVisualID[2]: 131, 132
-        // The three Effect columns. The reference reads Effect[0] at +0x11c: 0x11c / 4 is 71, and
-        // the eight three-wide effect arrays from there end exactly at COLUMN_EFFECT_AURA.
-        static const int32_t COLUMN_EFFECT = 71;       // 71, 72, 73
-        // The three EffectApplyAuraName columns. Identified from the reference reading its spell
-        // record at +0x17c: 0x17c / 4 is 95, and 95 is where this array starts in the 234-column
-        // 3.3.5a layout, which the constants either side of it already assume.
-        static const int32_t COLUMN_EFFECT_AURA = 95;   // 95, 96, 97
 
-        // The reference's in-memory record is the file row with each 17-column localized string
-        // folded to one pointer, so an offset below the name block (+0x220) is column * 4 and one
-        // past the four strings is (column - 64) * 4. Every column below was located that way from
-        // an offset the reference reads.
-        static const int32_t COLUMN_DISPEL = 2;                     // +0x08
-        static const int32_t COLUMN_MECHANIC = 3;                   // +0x0c
-        static const int32_t COLUMN_ATTRIBUTES_EX = 5;              // +0x14
-        static const int32_t COLUMN_ATTRIBUTES_EX2 = 6;             // +0x18
-        static const int32_t COLUMN_ATTRIBUTES_EX3 = 7;             // +0x1c
-        static const int32_t COLUMN_ATTRIBUTES_EX4 = 8;             // +0x20
-        static const int32_t COLUMN_ATTRIBUTES_EX5 = 9;             // +0x24
-        static const int32_t COLUMN_ATTRIBUTES_EX6 = 10;            // +0x28
-        static const int32_t COLUMN_ATTRIBUTES_EX7 = 11;            // +0x2c
-        static const int32_t COLUMN_STANCES = 12;                   // +0x30, a 64-bit mask
-        static const int32_t COLUMN_STANCES_NOT = 14;               // +0x38, a 64-bit mask
-        static const int32_t COLUMN_TARGETS = 16;                   // +0x40
-        static const int32_t COLUMN_EFFECT_MECHANIC = 83;           // +0x14c, 3 columns
-        static const int32_t COLUMN_EFFECT_IMPLICIT_TARGET_A = 86;  // +0x158, 3 columns
-        static const int32_t COLUMN_EFFECT_IMPLICIT_TARGET_B = 89;  // +0x164, 3 columns
-        static const int32_t COLUMN_EFFECT_MISC_VALUE = 110;        // +0x1b8, 3 columns
-        static const int32_t COLUMN_EFFECT_SPELL_CLASS_MASK = 122;  // +0x1e8, 3 x 3 columns
-        static const int32_t COLUMN_SCHOOL_MASK = 225;              // +0x284
-        static const int32_t COLUMN_SPELL_MISSILE = 227;            // +0x28c
-        static const int32_t COLUMN_SPELL_PRIORITY = 135;           // +0x21c
-        static const int32_t COLUMN_CASTING_TIME_INDEX = 28;        // +0x70
-        static const int32_t COLUMN_MAX_LEVEL = 37;                 // +0x94
-        static const int32_t COLUMN_BASE_LEVEL = 38;                // +0x98
-        static const int32_t COLUMN_REQUIRED_AURA_VISION = 221;     // +0x274
-
-        static const int32_t COLUMN_ICON = 133;
-        static const int32_t COLUMN_ACTIVE_ICON = 134;  // immediately after the normal icon
-        static const int32_t COLUMN_NAME = 136;       // 17 locale columns, then
-        static const int32_t COLUMN_RANK = 153;       // "Rank N", or "" for an unranked spell
-
-        int32_t m_ID;
-        int32_t m_spellIconID;
-
-        // Shown instead of m_spellIconID while the spell is the one being tracked. Zero means the
-        // spell has no separate active icon and the normal one is used.
-        int32_t m_activeIconID;
-
-        // EffectApplyAuraName[3]. Only used to recognise the tracking spells so far: 44 and 45 are
-        // TRACK_CREATURES and TRACK_RESOURCES, 151 is TRACK_STEALTHED.
-        int32_t m_effectAura[3];
-        int32_t m_effect[3];
-        const char* m_name;
-        const char* m_rank;
-        int32_t m_spellVisualID[2];
-        uint32_t m_attributes;
-        int32_t m_dispel;
-        int32_t m_mechanic;
-        uint32_t m_attributesEx;
-        uint32_t m_attributesEx2;
-        uint32_t m_attributesEx3;
-        uint32_t m_attributesEx4;
-        // AttributesEx5. Bit 0x40000000 is read by CEffect::Play to raise the effect model's 0x4
-        // state bit.
-        uint32_t m_attributesEx5;
-        uint32_t m_attributesEx6;
-        uint32_t m_attributesEx7;
-        uint32_t m_stances[2];
-        uint32_t m_stancesNot[2];
-        uint32_t m_targets;
-        int32_t m_effectMechanic[3];
-        int32_t m_effectImplicitTargetA[3];
-        int32_t m_effectImplicitTargetB[3];
-        int32_t m_effectMiscValue[3];
-        uint32_t m_effectSpellClassMask[3][3];
-        uint32_t m_schoolMask;
-        // SpellMissile.dbc row the spell's projectile flies by, 0 for none.
-        int32_t m_spellMissileID;
-        // Which of two auras on the same slot shows its visual: the higher one keeps it.
-        int32_t m_spellPriority;
-        // SpellCastTimes.dbc row, and the levels the cast time and skill scale between.
-        int32_t m_castingTimeIndex;
-        int32_t m_maxLevel;
-        int32_t m_baseLevel;
-        // The aura vision level a player needs to see the aura's visual (PLAYER_FIELD_BYTES2
-        // byte 3), 0 for none.
-        int32_t m_requiredAuraVision;
+        int32_t m_ID;                                    // +0x000
+        int32_t m_category;                              // +0x004
+        int32_t m_dispel;                                // +0x008
+        int32_t m_mechanic;                              // +0x00c
+        uint32_t m_attributes;                           // +0x010 SPELL_ATTR0_*; 0x40 is PASSIVE
+        uint32_t m_attributesEx;                         // +0x014
+        uint32_t m_attributesEx2;                        // +0x018
+        uint32_t m_attributesEx3;                        // +0x01c
+        uint32_t m_attributesEx4;                        // +0x020
+        uint32_t m_attributesEx5;                        // +0x024 bit 0x40000000 raises the effect model's 0x4 state bit (CEffect::Play)
+        uint32_t m_attributesEx6;                        // +0x028
+        uint32_t m_attributesEx7;                        // +0x02c
+        uint32_t m_stances[2];                           // +0x030 a 64-bit form mask
+        uint32_t m_stancesNot[2];                        // +0x038 a 64-bit form mask
+        uint32_t m_targets;                              // +0x040
+        uint32_t m_targetCreatureType;                   // +0x044
+        int32_t m_requiresSpellFocus;                    // +0x048
+        uint32_t m_facingCasterFlags;                    // +0x04c
+        int32_t m_casterAuraState;                       // +0x050
+        int32_t m_targetAuraState;                       // +0x054
+        int32_t m_excludeCasterAuraState;                // +0x058
+        int32_t m_excludeTargetAuraState;                // +0x05c
+        int32_t m_casterAuraSpell;                       // +0x060
+        int32_t m_targetAuraSpell;                       // +0x064
+        int32_t m_excludeCasterAuraSpell;                // +0x068
+        int32_t m_excludeTargetAuraSpell;                // +0x06c
+        int32_t m_castingTimeIndex;                      // +0x070 SpellCastTimes.dbc
+        int32_t m_recoveryTime;                          // +0x074
+        int32_t m_categoryRecoveryTime;                  // +0x078
+        uint32_t m_interruptFlags;                       // +0x07c
+        uint32_t m_auraInterruptFlags;                   // +0x080
+        uint32_t m_channelInterruptFlags;                // +0x084
+        uint32_t m_procTypeMask;                         // +0x088
+        int32_t m_procChance;                            // +0x08c
+        int32_t m_procCharges;                           // +0x090
+        int32_t m_maxLevel;                              // +0x094
+        int32_t m_baseLevel;                             // +0x098
+        int32_t m_spellLevel;                            // +0x09c
+        int32_t m_durationIndex;                         // +0x0a0 SpellDuration.dbc
+        int32_t m_powerType;                             // +0x0a4
+        int32_t m_manaCost;                              // +0x0a8
+        int32_t m_manaCostPerLevel;                      // +0x0ac
+        int32_t m_manaPerSecond;                         // +0x0b0
+        int32_t m_manaPerSecondPerLevel;                 // +0x0b4
+        int32_t m_rangeIndex;                            // +0x0b8 SpellRange.dbc
+        float m_speed;                                   // +0x0bc
+        int32_t m_modalNextSpell;                        // +0x0c0
+        int32_t m_cumulativeAura;                        // +0x0c4
+        int32_t m_totem[2];                              // +0x0c8 items the caster must carry
+        int32_t m_reagent[8];                            // +0x0d0
+        int32_t m_reagentCount[8];                       // +0x0f0
+        int32_t m_equippedItemClass;                     // +0x110
+        uint32_t m_equippedItemSubclass;                 // +0x114 a mask over the class's subclasses
+        uint32_t m_equippedItemInvTypes;                 // +0x118
+        int32_t m_effect[3];                             // +0x11c
+        int32_t m_effectDieSides[3];                     // +0x128
+        float m_effectRealPointsPerLevel[3];             // +0x134
+        int32_t m_effectBasePoints[3];                   // +0x140
+        int32_t m_effectMechanic[3];                     // +0x14c
+        int32_t m_effectImplicitTargetA[3];              // +0x158
+        int32_t m_effectImplicitTargetB[3];              // +0x164
+        int32_t m_effectRadiusIndex[3];                  // +0x170
+        int32_t m_effectAura[3];                         // +0x17c EffectApplyAuraName
+        int32_t m_effectAuraPeriod[3];                   // +0x188
+        float m_effectAmplitude[3];                      // +0x194
+        int32_t m_effectChainTargets[3];                 // +0x1a0
+        int32_t m_effectItemType[3];                     // +0x1ac
+        int32_t m_effectMiscValue[3];                    // +0x1b8
+        int32_t m_effectMiscValueB[3];                   // +0x1c4
+        int32_t m_effectTriggerSpell[3];                 // +0x1d0
+        float m_effectPointsPerCombo[3];                 // +0x1dc
+        uint32_t m_effectSpellClassMask[3][3];           // +0x1e8
+        int32_t m_spellVisualID[2];                      // +0x20c
+        int32_t m_spellIconID;                           // +0x214
+        int32_t m_activeIconID;                          // +0x218 shown instead of m_spellIconID while the spell is tracked; 0 for none
+        int32_t m_spellPriority;                         // +0x21c of two auras on one slot, the higher keeps its visual
+        const char* m_name;                              // +0x220
+        const char* m_rank;                              // +0x224 "Rank N", or ""
+        const char* m_description;                       // +0x228
+        const char* m_auraDescription;                   // +0x22c
+        int32_t m_manaCostPct;                           // +0x230
+        int32_t m_startRecoveryCategory;                 // +0x234
+        int32_t m_startRecoveryTime;                     // +0x238
+        int32_t m_maxTargetLevel;                        // +0x23c
+        int32_t m_spellClassSet;                         // +0x240 SpellFamilyName
+        uint32_t m_spellClassMask[3];                    // +0x244 SpellFamilyFlags
+        int32_t m_maxTargets;                            // +0x250
+        int32_t m_defenseType;                           // +0x254
+        int32_t m_preventionType;                        // +0x258
+        int32_t m_stanceBarOrder;                        // +0x25c
+        float m_effectChainAmplitude[3];                 // +0x260
+        int32_t m_minFactionID;                          // +0x26c
+        int32_t m_minReputation;                         // +0x270
+        int32_t m_requiredAuraVision;                    // +0x274 PLAYER_FIELD_BYTES2 byte 3 level needed to see the aura visual
+        int32_t m_requiredTotemCategoryID[2];            // +0x278
+        int32_t m_requiredAreasID;                       // +0x280
+        uint32_t m_schoolMask;                           // +0x284
+        int32_t m_runeCostID;                            // +0x288 SpellRuneCost.dbc
+        int32_t m_spellMissileID;                        // +0x28c SpellMissile.dbc; 0 for none
+        int32_t m_powerDisplayID;                        // +0x290 PowerDisplay.dbc
+        float m_effectBonusCoefficient[3];               // +0x294
+        int32_t m_descriptionVariablesID;                // +0x2a0
+        int32_t m_difficulty;                            // +0x2a4
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();
