@@ -74,4 +74,18 @@ const char* UIBindingsKeyName(int32_t key, char* buffer, size_t bufferBytes);
 // 0x01/0x02 shift, 0x04/0x08 control, 0x10/0x20 alt, left and right.
 void UIBindingsModifierPrefix(uint32_t modifiers, char* buffer, size_t bufferBytes);
 
+// ref: FUN_005641c0
+void UIBindingsLoadText(int32_t set, const char* text);
+
+// ref: FUN_005643b0
+// The default keys, from WTF\DefaultBindings.wtf in the archives.
+void UIBindingsLoadDefaults();
+
+// ref: FUN_005622e0
+const char* UIBindingsFindForKey(const char* key);
+
+// ref: FUN_00563150
+// Run the command bound to a key string ("SHIFT-W"); true when a binding took it.
+int32_t UIBindingsDispatchKey(const char* key, int32_t down);
+
 #endif

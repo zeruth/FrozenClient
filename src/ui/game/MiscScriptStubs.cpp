@@ -1,3 +1,4 @@
+#include "ui/InputControl.hpp"
 #include "ui/game/MiscScriptStubs.hpp"
 
 #include "object/client/CGUnit_C.hpp"
@@ -57,7 +58,6 @@ WHOA_LUA_STUB(AddPreviewTalentPoints)
 WHOA_LUA_STUB(AddQuestWatch)
 WHOA_LUA_STUB(AddSkillUp)
 WHOA_LUA_STUB(AddTrackedAchievement)
-WHOA_LUA_STUB(AscendStop)
 WHOA_LUA_STUB(BuyGuildBankTab)
 WHOA_LUA_STUB(BuyGuildCharter)
 WHOA_LUA_STUB(BuyMerchantItem)
@@ -96,14 +96,6 @@ WHOA_LUA_STUB(ConfirmAcceptQuest)
 WHOA_LUA_STUB(ConfirmLootRoll)
 WHOA_LUA_STUB(ConfirmLootSlot)
 WHOA_LUA_STUB(DeclineQuest)
-WHOA_LUA_STUB(DescendStop)
-WHOA_LUA_STUB(JumpOrAscendStart)
-WHOA_LUA_STUB(MoveAndSteerStart)
-WHOA_LUA_STUB(MoveAndSteerStop)
-WHOA_LUA_STUB(MoveBackwardStart)
-WHOA_LUA_STUB(MoveBackwardStop)
-WHOA_LUA_STUB(MoveForwardStart)
-WHOA_LUA_STUB(MoveForwardStop)
 WHOA_LUA_STUB(PickupCompanion)
 WHOA_LUA_STUB(PickupContainerItem)
 WHOA_LUA_STUB(PickupEquipmentSet)
@@ -244,19 +236,11 @@ WHOA_LUA_STUB(Stopwatch_Pause)
 WHOA_LUA_STUB(Stopwatch_Play)
 WHOA_LUA_STUB(Stopwatch_StartCountdown)
 WHOA_LUA_STUB(Stopwatch_Toggle)
-WHOA_LUA_STUB(ToggleAutoRun)
 WHOA_LUA_STUB(TogglePetAutocast)
-WHOA_LUA_STUB(ToggleRun)
 WHOA_LUA_STUB(ToggleSpellAutocast)
 WHOA_LUA_STUB(TurnInArenaPetition)
 WHOA_LUA_STUB(TurnInGuildCharter)
 WHOA_LUA_STUB(TurnInPetition)
-WHOA_LUA_STUB(TurnLeftStart)
-WHOA_LUA_STUB(TurnLeftStop)
-WHOA_LUA_STUB(TurnOrActionStart)
-WHOA_LUA_STUB(TurnOrActionStop)
-WHOA_LUA_STUB(TurnRightStart)
-WHOA_LUA_STUB(TurnRightStop)
 WHOA_LUA_STUB(UseContainerItem)
 WHOA_LUA_STUB(UseEquipmentSet)
 WHOA_LUA_STUB(UseQuestLogSpecialItem)
@@ -359,8 +343,6 @@ WHOA_LUA_STUB(CalendarSetAbsMonth)
 WHOA_LUA_STUB(CalendarSetMonth)
 WHOA_LUA_STUB(CalendarUpdateEvent)
 WHOA_LUA_STUB(CallCompanion)
-WHOA_LUA_STUB(CameraOrSelectOrMoveStart)
-WHOA_LUA_STUB(CameraOrSelectOrMoveStop)
 WHOA_LUA_STUB(CastPetAction)
 WHOA_LUA_STUB(CastShapeshiftForm)
 WHOA_LUA_STUB(CastSpellByID)
@@ -975,10 +957,6 @@ WHOA_LUA_STUB(PetPassiveMode)
 WHOA_LUA_STUB(PetRename)
 WHOA_LUA_STUB(PetStopAttack)
 WHOA_LUA_STUB(PetWait)
-WHOA_LUA_STUB(PitchDownStart)
-WHOA_LUA_STUB(PitchDownStop)
-WHOA_LUA_STUB(PitchUpStart)
-WHOA_LUA_STUB(PitchUpStop)
 WHOA_LUA_STUB(PlaceAuctionBid)
 WHOA_LUA_STUB(PlaceGlyphInSocket)
 WHOA_LUA_STUB(PlayDance)
@@ -1060,10 +1038,6 @@ WHOA_LUA_STUB(SpellTargetUnit)
 WHOA_LUA_STUB(SplitContainerItem)
 WHOA_LUA_STUB(SplitGuildBankItem)
 WHOA_LUA_STUB(StablePet)
-WHOA_LUA_STUB(StrafeLeftStart)
-WHOA_LUA_STUB(StrafeLeftStop)
-WHOA_LUA_STUB(StrafeRightStart)
-WHOA_LUA_STUB(StrafeRightStop)
 WHOA_LUA_STUB(SummonRandomCritter)
 WHOA_LUA_STUB(TakeInboxItem)
 WHOA_LUA_STUB(TakeInboxMoney)
@@ -1155,7 +1129,7 @@ const ScriptFunction s_stubs[] = {
     { "AddQuestWatch",                           &Script_Stub_AddQuestWatch },
     { "AddSkillUp",                              &Script_Stub_AddSkillUp },
     { "AddTrackedAchievement",                   &Script_Stub_AddTrackedAchievement },
-    { "AscendStop",                              &Script_Stub_AscendStop },
+    { "AscendStop",                              &Script_AscendStop },
     { "BuyGuildBankTab",                         &Script_Stub_BuyGuildBankTab },
     { "BuyGuildCharter",                         &Script_Stub_BuyGuildCharter },
     { "BuyMerchantItem",                         &Script_Stub_BuyMerchantItem },
@@ -1194,14 +1168,14 @@ const ScriptFunction s_stubs[] = {
     { "ConfirmLootRoll",                         &Script_Stub_ConfirmLootRoll },
     { "ConfirmLootSlot",                         &Script_Stub_ConfirmLootSlot },
     { "DeclineQuest",                            &Script_Stub_DeclineQuest },
-    { "DescendStop",                             &Script_Stub_DescendStop },
-    { "JumpOrAscendStart",                       &Script_Stub_JumpOrAscendStart },
-    { "MoveAndSteerStart",                       &Script_Stub_MoveAndSteerStart },
-    { "MoveAndSteerStop",                        &Script_Stub_MoveAndSteerStop },
-    { "MoveBackwardStart",                       &Script_Stub_MoveBackwardStart },
-    { "MoveBackwardStop",                        &Script_Stub_MoveBackwardStop },
-    { "MoveForwardStart",                        &Script_Stub_MoveForwardStart },
-    { "MoveForwardStop",                         &Script_Stub_MoveForwardStop },
+    { "DescendStop",                             &Script_DescendStop },
+    { "JumpOrAscendStart",                       &Script_JumpOrAscendStart },
+    { "MoveAndSteerStart",                       &Script_MoveAndSteerStart },
+    { "MoveAndSteerStop",                        &Script_MoveAndSteerStop },
+    { "MoveBackwardStart",                       &Script_MoveBackwardStart },
+    { "MoveBackwardStop",                        &Script_MoveBackwardStop },
+    { "MoveForwardStart",                        &Script_MoveForwardStart },
+    { "MoveForwardStop",                         &Script_MoveForwardStop },
     { "PickupCompanion",                         &Script_Stub_PickupCompanion },
     { "PickupContainerItem",                     &Script_Stub_PickupContainerItem },
     { "PickupEquipmentSet",                      &Script_Stub_PickupEquipmentSet },
@@ -1337,19 +1311,19 @@ const ScriptFunction s_stubs[] = {
     { "Stopwatch_Play",                          &Script_Stub_Stopwatch_Play },
     { "Stopwatch_StartCountdown",                &Script_Stub_Stopwatch_StartCountdown },
     { "Stopwatch_Toggle",                        &Script_Stub_Stopwatch_Toggle },
-    { "ToggleAutoRun",                           &Script_Stub_ToggleAutoRun },
+    { "ToggleAutoRun",                           &Script_ToggleAutoRun },
     { "TogglePetAutocast",                       &Script_Stub_TogglePetAutocast },
-    { "ToggleRun",                               &Script_Stub_ToggleRun },
+    { "ToggleRun",                               &Script_ToggleRun },
     { "ToggleSpellAutocast",                     &Script_Stub_ToggleSpellAutocast },
     { "TurnInArenaPetition",                     &Script_Stub_TurnInArenaPetition },
     { "TurnInGuildCharter",                      &Script_Stub_TurnInGuildCharter },
     { "TurnInPetition",                          &Script_Stub_TurnInPetition },
-    { "TurnLeftStart",                           &Script_Stub_TurnLeftStart },
-    { "TurnLeftStop",                            &Script_Stub_TurnLeftStop },
-    { "TurnOrActionStart",                       &Script_Stub_TurnOrActionStart },
-    { "TurnOrActionStop",                        &Script_Stub_TurnOrActionStop },
-    { "TurnRightStart",                          &Script_Stub_TurnRightStart },
-    { "TurnRightStop",                           &Script_Stub_TurnRightStop },
+    { "TurnLeftStart",                           &Script_TurnLeftStart },
+    { "TurnLeftStop",                            &Script_TurnLeftStop },
+    { "TurnOrActionStart",                       &Script_TurnOrActionStart },
+    { "TurnOrActionStop",                        &Script_TurnOrActionStop },
+    { "TurnRightStart",                          &Script_TurnRightStart },
+    { "TurnRightStop",                           &Script_TurnRightStop },
     { "UseContainerItem",                        &Script_Stub_UseContainerItem },
     { "UseEquipmentSet",                         &Script_Stub_UseEquipmentSet },
     { "UseQuestLogSpecialItem",                  &Script_Stub_UseQuestLogSpecialItem },
@@ -1451,8 +1425,8 @@ const ScriptFunction s_stubs[] = {
     { "CalendarSetMonth",                        &Script_Stub_CalendarSetMonth },
     { "CalendarUpdateEvent",                     &Script_Stub_CalendarUpdateEvent },
     { "CallCompanion",                           &Script_Stub_CallCompanion },
-    { "CameraOrSelectOrMoveStart",               &Script_Stub_CameraOrSelectOrMoveStart },
-    { "CameraOrSelectOrMoveStop",                &Script_Stub_CameraOrSelectOrMoveStop },
+    { "CameraOrSelectOrMoveStart",               &Script_CameraOrSelectOrMoveStart },
+    { "CameraOrSelectOrMoveStop",                &Script_CameraOrSelectOrMoveStop },
     { "CastPetAction",                           &Script_Stub_CastPetAction },
     { "CastShapeshiftForm",                      &Script_Stub_CastShapeshiftForm },
     { "CastSpellByID",                           &Script_Stub_CastSpellByID },
@@ -1938,10 +1912,10 @@ const ScriptFunction s_stubs[] = {
     { "PetRename",                               &Script_Stub_PetRename },
     { "PetStopAttack",                           &Script_Stub_PetStopAttack },
     { "PetWait",                                 &Script_Stub_PetWait },
-    { "PitchDownStart",                          &Script_Stub_PitchDownStart },
-    { "PitchDownStop",                           &Script_Stub_PitchDownStop },
-    { "PitchUpStart",                            &Script_Stub_PitchUpStart },
-    { "PitchUpStop",                             &Script_Stub_PitchUpStop },
+    { "PitchDownStart",                          &Script_PitchDownStart },
+    { "PitchDownStop",                           &Script_PitchDownStop },
+    { "PitchUpStart",                            &Script_PitchUpStart },
+    { "PitchUpStop",                             &Script_PitchUpStop },
     { "PlaceAuctionBid",                         &Script_Stub_PlaceAuctionBid },
     { "PlaceGlyphInSocket",                      &Script_Stub_PlaceGlyphInSocket },
     { "PlayDance",                               &Script_Stub_PlayDance },
@@ -2013,10 +1987,10 @@ const ScriptFunction s_stubs[] = {
     { "SplitContainerItem",                      &Script_Stub_SplitContainerItem },
     { "SplitGuildBankItem",                      &Script_Stub_SplitGuildBankItem },
     { "StablePet",                               &Script_Stub_StablePet },
-    { "StrafeLeftStart",                         &Script_Stub_StrafeLeftStart },
-    { "StrafeLeftStop",                          &Script_Stub_StrafeLeftStop },
-    { "StrafeRightStart",                        &Script_Stub_StrafeRightStart },
-    { "StrafeRightStop",                         &Script_Stub_StrafeRightStop },
+    { "StrafeLeftStart",                         &Script_StrafeLeftStart },
+    { "StrafeLeftStop",                          &Script_StrafeLeftStop },
+    { "StrafeRightStart",                        &Script_StrafeRightStart },
+    { "StrafeRightStop",                         &Script_StrafeRightStop },
     { "SummonRandomCritter",                     &Script_Stub_SummonRandomCritter },
     { "TakeInboxItem",                           &Script_Stub_TakeInboxItem },
     { "TakeInboxMoney",                          &Script_Stub_TakeInboxMoney },

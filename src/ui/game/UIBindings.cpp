@@ -1,4 +1,6 @@
 #include "ui/game/UIBindings.hpp"
+#include "util/SFile.hpp"
+#include <cstring>
 #include "ui/FrameXML.hpp"
 #include "util/Log.hpp"
 #include "util/CStatus.hpp"
@@ -153,6 +155,10 @@ void EnsureLoaded() {
 
     SysMsgPrintf(SYSMSG_INFO, "Bindings: %d commands from Bindings.xml",
                  static_cast<int32_t>(s_commands.size()));
+
+    // The reference loads the default keys straight after the UI's XML (FUN_005643b0 at
+    // 0x0052adec); here that is straight after the commands they name.
+    UIBindingsLoadDefaults();
 }
 
 } // namespace
@@ -399,4 +405,130 @@ void UIBindingsModifierPrefix(uint32_t modifiers, char* buffer, size_t bufferByt
             SStrPack(buffer, prefix, bufferBytes);
         }
     }
+}
+
+// ref: FUN_005641c0
+// A bindings text: "BINDINGMODE n" picks the set, "bind KEY COMMAND" binds, "modifiedclick ACTION
+// BINDING" sets a modified click. Frozen keeps one binding set, so every mode binds into it.
+void UIBindingsLoadText(int32_t set, const char* text) {
+    (void)set;
+
+    while (text && *text) {
+        char line[1024];
+        SStrTokenize(&text, line, sizeof(line), "\r\n", nullptr);
+
+        const char* cursor = line;
+
+        while (*cursor == ' ' || *cursor == '\t') {
+            cursor++;
+        }
+
+        if (!SStrCmpI(cursor, "BINDINGMODE ", 12)) {
+            continue;
+        }
+
+        if (!SStrCmpI(cursor, "bind ", 5)) {
+            const char* rest = cursor + 5;
+            char key[32];
+            SStrTokenize(&rest, key, sizeof(key), " ", nullptr);
+
+            if (rest && *key) {
+                UIBindingsSetKey(key, rest);
+            }
+
+            continue;
+        }
+
+        // "modifiedclick": CGUIBindings owns the modified clicks, which come from Bindings.xml's
+        // own rows; a defaults file that overrides one is not handled yet.
+    }
+}
+
+// ref: FUN_005643b0
+// PARTIAL: a joystick's own default bindings (FUN_005f9890's XML, "DefaultBindings") and the
+// account-data handlers for the saved sets (FUN_006b9050, types 2 and 3) are the joystick and
+// account-data ports'.
+void UIBindingsLoadDefaults() {
+    void* data = nullptr;
+
+    if (!SFile::Load(nullptr, "WTF\\DefaultBindings.wtf", &data, nullptr, 1, 0x1, nullptr) || !data) {
+        return;
+    }
+
+    UIBindingsLoadText(0, static_cast<const char*>(data));
+    SFile::Unload(data);
+}
+
+// ref: FUN_005622e0
+// The command bound to a key with modifiers, trying the most specific prefix combination first:
+// with "ALT-CTRL-X" bound only as "X", the X binding still answers.
+const char* UIBindingsFindForKey(const char* key) {
+    char prefixes[3][32];
+    uint32_t count = 0;
+
+    while (count < 3) {
+        auto dash = SStrChr(key, '-');
+
+        if (!dash || dash == key) {
+            break;
+        }
+
+        size_t length = static_cast<size_t>(dash - key);
+
+        if (length > 31) {
+            length = 31;
+        }
+
+        memcpy(prefixes[count], key, length);
+        prefixes[count][length] = '\0';
+        key = dash + 1;
+        count++;
+    }
+
+    // Per prefix count, the number of tries and the prefix mask of each, most specific first
+    // (the table the reference builds on its stack).
+    static const uint32_t s_tries[4] = { 1, 2, 4, 8 };
+    static const uint32_t s_masks[4][8] = {
+        { 0 },
+        { 1, 0 },
+        { 3, 2, 1, 0 },
+        { 7, 6, 5, 3, 4, 2, 1, 0 },
+    };
+
+    for (uint32_t t = 0; t < s_tries[count]; t++) {
+        char name[128] = "";
+
+        for (uint32_t p = 0; p < count; p++) {
+            if (s_masks[count][t] & (1u << p)) {
+                SStrPack(name, prefixes[p], sizeof(name));
+                SStrPack(name, "-", sizeof(name));
+            }
+        }
+
+        SStrPack(name, key, sizeof(name));
+
+        if (auto command = UIBindingsGetCommandForKey(name)) {
+            return command;
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00563150
+// PARTIAL: the SPELL, ITEM, MACRO and CLICK override forms (SetBindingSpell and friends) are the
+// action-bar, item, macro and secure-frame ports'; a plain command runs.
+int32_t UIBindingsDispatchKey(const char* key, int32_t down) {
+    auto command = UIBindingsFindForKey(key);
+
+    if (!command) {
+        return 0;
+    }
+
+    if (!SStrCmpI(command, "SPELL ", 6) || !SStrCmpI(command, "ITEM ", 5)
+        || !SStrCmpI(command, "MACRO ", 6) || !SStrCmpI(command, "CLICK ", 6)) {
+        return 1;
+    }
+
+    return UIBindingsRunCommand(command, down != 0) ? 1 : 0;
 }

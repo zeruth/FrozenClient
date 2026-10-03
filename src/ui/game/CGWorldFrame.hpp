@@ -69,6 +69,8 @@ class CGWorldFrame : public CSimpleFrame {
         virtual void OnFrameRender(CRenderBatch* batch, uint32_t layer);
         // TODO
         virtual void OnFrameSizeChanged(const CRect& rect);
+        virtual int32_t OnLayerKeyDown(const CKeyEvent& evt);
+        virtual int32_t OnLayerKeyUp(const CKeyEvent& evt);
         virtual int32_t OnLayerMouseDown(const CMouseEvent& evt, const char* btn);
         virtual int32_t OnLayerMouseUp(const CMouseEvent& evt, const char* btn);
         virtual int32_t OnLayerTrackUpdate(const CMouseEvent& evt);
@@ -117,6 +119,16 @@ class CGWorldFrame : public CSimpleFrame {
         CRect m_viewport;
 
     public:
+        // +0xb18: per key, the binding string its press ran, so the release runs the same one
+        // whatever the modifiers have done meanwhile (0x24 bytes each: the string, then the
+        // modifiers it was made with).
+        struct KeyBinding {
+            char name[32];
+            uint32_t modifiers;
+        };
+
+        KeyBinding m_keyBindings[0x313] = {};
+
         // The world's viewport rect (NDC). The world text pass runs after OnWorldRender has
         // restored the UI viewport, so it needs this to place screen-space text correctly when the
         // WorldFrame does not fill the window.

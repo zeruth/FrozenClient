@@ -1,3 +1,4 @@
+#include "ui/InputControl.hpp"
 #include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
@@ -1569,8 +1570,19 @@ int32_t Script_GetNetStats(lua_State* L) {
     return 4;
 }
 
+// ref: FUN_0051b1d0
+// PARTIAL: the sit or stand that follows when the player is not flying (FUN_006dcb40, the stand
+// state request) is the Player_C port's; the descend half is ported.
 int32_t Script_SitStandOrDescendStart(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\GameUI.cpp", 0xa0);
+
+    if (!player) {
+        return 0;
+    }
+
+    InputControlDescendStart(L);
+
+    return 0;
 }
 
 int32_t Script_StopCinematic(lua_State* L) {

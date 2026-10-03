@@ -33,6 +33,8 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/UIBindings.hpp"
+#include "event/CEvent.hpp"
 #include "object/client/SpellVisuals.hpp"
 #include "object/client/CEffect.hpp"
 #include <cmath>
@@ -365,6 +367,104 @@ void CGWorldFrame::OnFrameSizeChanged(const CRect& rect) {
 }
 
 // Right or left drag rotates the camera; the wheel zooms it
+namespace {
+
+// ref: FUN_0055e2c0
+// The binding string for a key event: the modifier prefix (less the key's own modifier bit, for
+// a modifier key) and the key's name. Only for a key press without the repeat count (< 2).
+bool WorldFrameBindingString(const CKeyEvent& evt, char* buffer, size_t bufferBytes) {
+    uint32_t modifiers = evt.metaKeyState;
+
+    if (evt.repeat >= 2) {
+        return false;
+    }
+
+    if (static_cast<int32_t>(evt.key) < 6) {
+        modifiers &= ~(1u << static_cast<int32_t>(evt.key));
+    }
+
+    char prefix[64] = "";
+    UIBindingsModifierPrefix(modifiers, prefix, sizeof(prefix));
+
+    char keyBuffer[32];
+    auto name = UIBindingsKeyName(static_cast<int32_t>(evt.key), keyBuffer, sizeof(keyBuffer));
+
+    if (!name || !*name) {
+        return false;
+    }
+
+    SStrCopy(buffer, prefix, bufferBytes);
+    SStrPack(buffer, name, bufferBytes);
+
+    return true;
+}
+
+} // namespace
+
+// ref: FUN_004f6ae0
+// PARTIAL: a modifier key's own press signals MODIFIER_STATE_CHANGED with its name (FUN_004f5fb0)
+// in the reference; frozen consumes it without the signal.
+int32_t CGWorldFrame::OnLayerKeyDown(const CKeyEvent& evt) {
+    if (this->CSimpleFrame::OnLayerKeyDown(evt)) {
+        return 1;
+    }
+
+    int32_t key = static_cast<int32_t>(evt.key);
+
+    if (key < 0 || 0x313 <= key) {
+        return 0;
+    }
+
+    if (key < 6) {
+        return 1;
+    }
+
+    auto& binding = this->m_keyBindings[key];
+
+    if (!WorldFrameBindingString(evt, binding.name, sizeof(binding.name))) {
+        return 0;
+    }
+
+    binding.modifiers = evt.metaKeyState;
+
+    return UIBindingsDispatchKey(binding.name, 1);
+}
+
+// ref: FUN_004f6b70
+int32_t CGWorldFrame::OnLayerKeyUp(const CKeyEvent& evt) {
+    if (this->CSimpleFrame::OnLayerKeyUp(evt)) {
+        return 1;
+    }
+
+    int32_t key = static_cast<int32_t>(evt.key);
+
+    if (key < 0 || 0x313 <= key) {
+        return 0;
+    }
+
+    if (key < 6) {
+        return 1;
+    }
+
+    auto& binding = this->m_keyBindings[key];
+
+    if (!binding.name[0]) {
+        binding.modifiers = 0;
+        WorldFrameBindingString(evt, binding.name, sizeof(binding.name));
+
+        if (!binding.name[0]) {
+            return 0;
+        }
+    }
+
+    binding.modifiers |= evt.metaKeyState;
+
+    int32_t result = UIBindingsDispatchKey(binding.name, 0);
+    binding.name[0] = '\0';
+
+    return result;
+}
+
 int32_t CGWorldFrame::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) {
     if (btn) {
         return this->CSimpleFrame::OnLayerMouseDown(evt, btn);
