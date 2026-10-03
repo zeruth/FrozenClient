@@ -495,13 +495,17 @@ int32_t DecalCollectReceivers(const CAaBox& casterBox, uint32_t queryMask, uint3
 
     s_decalCasterBox = casterBox;
 
+    // NOT PORTED: the reference copies the global at 0x00cd7690 into 0x00af3e0c here (0x007e3645).
+    // Neither has a frozen counterpart, and nothing on this path reads the copy back.
+
     if (*wantM2) {
         s_decalCollectM2 = 1;
 
-        // TODO FUN_007a2aa0, 447 bytes, reached through the one-line wrapper FUN_0077f350: fill
-        // s_decalM2Receivers with up to ten models whose bounds meet the caster's box. Nothing
-        // calls this path yet -- the blob's flags leave bit 0 clear.
-        s_decalM2ReceiverCount = 0;
+        // Up to ten building doodads under the caster, through the one-line wrapper FUN_0077f350.
+        // The mask is a constant, 0x2000000 (doodads flagged 0x1000), not the caller's query mask
+        // (0x007e3659). The blob's flags leave bit 0 clear, so blobs never take this path.
+        s_decalM2ReceiverCount = MapQueryBoxModels(reinterpret_cast<CM2Model**>(s_decalM2Receivers), 10,
+                                                   casterBox, 0x2000000);
     }
 
     if (*wantHits) {
@@ -892,13 +896,7 @@ void DecalDrawProjected(const CAaBox& bounds, const CImVector& color, const C44M
     g_theGxDevicePtr->XformPush(GxXform_Tex0, stage0);
     g_theGxDevicePtr->XformPush(GxXform_Tex1, stage1);
 
-    // TODO FUN_007e35f0, 228 bytes: the QUERY that fills the receiver lists, and the one thing
-    // still missing. It stashes the caster's box at DAT_00d38058 and the query mask at
-    // DAT_00d38050, resets the five hit-record counters, and runs FUN_007a6af0 (the WMO and terrain
-    // halves, which read both globals back) and FUN_007a2aa0 (the M2 half). Two things it decides:
-    // the M2 list is collected only when bit 0 of `flags` is set, and the hit query runs only when
-    // `queryMask` is non-zero. Until it lands s_hitRecordCount is whatever an unrelated query left,
-    // so the walk below normally finds nothing and draws nothing.
+    // The walk runs the receiver query itself (DecalCollectReceivers, FUN_007e35f0) before it draws.
     DecalDrawReceivers(bounds, color, queryMask, flags, strength);
 
     g_theGxDevicePtr->XformPop(GxXform_Tex1);

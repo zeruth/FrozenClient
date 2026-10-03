@@ -1987,9 +1987,7 @@ void CWorldScene::DrawEntityShadows() {
 
                 entity->m_model->GetSequenceInfo(0, 0, info);
 
-                // The reference's own gate and projector. They draw nothing yet -- the receiver
-                // walk behind DecalDrawProjected is still a TODO -- but the footprint, the
-                // projection volume and the decal state are all built the reference's way now.
+                // The reference's own gate, projector and receiver walk.
                 ShadowDrawBlob(info.extent, entity->m_model);
             }
 
