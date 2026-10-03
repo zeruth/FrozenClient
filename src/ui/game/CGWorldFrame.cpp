@@ -6,6 +6,9 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
+#include "ffx/FFX.hpp"
+#include "ffx/EffectGlow.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
 #include "world/OverheadIcons.hpp"
@@ -127,7 +130,90 @@ CGWorldFrame::CGWorldFrame(CSimpleFrame* parent) : CSimpleFrame(parent) {
 
     this->m_camera = STORM_NEW(CGCamera);
 
-    // TODO
+    // TODO the spell shadow textures (DAT_00b74350) and the event handler for event 6.
+
+    // The full-screen effects (0x004fae99 .. 0x004faeec).
+    FFX::Init();
+
+    CGWorldFrame::s_glowEffect = STORM_NEW(EffectGlow);
+
+    // TODO EffectDeath (FUN_007ea260), the nether effect (FUN_007ea470) and EffectSpecial
+    // (FUN_007ea5f0) are not FFX effects in frozen yet.
+    CGWorldFrame::s_deathEffect = nullptr;
+    CGWorldFrame::s_netherEffect = nullptr;
+    CGWorldFrame::s_specialEffect = nullptr;
+
+    CGWorldFrame::UpdateScreenEffect();
+
+    // TODO FUN_0047c500.
+}
+
+FFX::Effect* CGWorldFrame::s_glowEffect;
+FFX::Effect* CGWorldFrame::s_deathEffect;
+FFX::Effect* CGWorldFrame::s_netherEffect;
+FFX::Effect* CGWorldFrame::s_specialEffect;
+
+// ref: FUN_004f7020
+void CGWorldFrame::SetScreenEffect(int32_t id) {
+    // TODO the ScreenEffect.dbc record (DAT_00ad4510): its type picks the glow (0), death (1),
+    // nether with a fog override (2) or the special effect with the record's parameters (3),
+    // then forces its light parameters and its ambience and music. Frozen has no ScreenEffect
+    // table, so every id takes the reference's no-record arm.
+    (void)id;
+
+    DayNightEndFogOverride();
+    FFX::SetEffect(CGWorldFrame::s_glowEffect);
+    DayNightClearForcedParams();
+
+    // TODO FUN_004c8fa0(0, 0): clear the screen effect's ambience and music.
+}
+
+// ref: FUN_004f88b0
+void CGWorldFrame::UpdateScreenEffect() {
+    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+    // TODO with a player, the reference walks its auras from the last back for one whose spell
+    // carries a screen-effect aura and uses that effect's id; frozen keeps no client aura list,
+    // so it takes the no-aura arm.
+    (void)player;
+
+    CGWorldFrame::SetScreenEffect(0);
+}
+
+// ref: FUN_004f8770
+void CGWorldFrame::UpdateGlowParams() {
+    if (FFX::s_activeEffect != CGWorldFrame::s_glowEffect) {
+        return;
+    }
+
+    // The day's glow as a byte (the reference's add-512 float trick truncates).
+    uint32_t dayGlow = static_cast<uint8_t>(static_cast<int32_t>(DayNightGetBlock()->info.glow * 255.0f));
+
+    uint32_t underwater = 0;
+    uint8_t grey = 0;
+
+    if (ClntObjMgrGetCurrent()) {
+        auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+
+        if (player) {
+            // TODO FUN_004f7290 on the player's info block (+0x1008): its drunkenness, 0 to 1,
+            // from the larger of the descriptor's drunk byte and the local one. Frozen keeps
+            // neither yet, so the player is sober.
+            uint8_t drunk = static_cast<uint8_t>(static_cast<int32_t>(0.0f * 255.0f));
+
+            if (CWorldScene::s_cameraLiquidType) {
+                grey = 0x54;
+                underwater = 1;
+            }
+
+            if (grey < drunk) {
+                grey = drunk;
+            }
+        }
+    }
+
+    uint32_t params[3] = { underwater, dayGlow, grey };
+    CGWorldFrame::s_glowEffect->SetParams(3, params);
 }
 
 void CGWorldFrame::OnFrameRender(CRenderBatch* batch, uint32_t layer) {
@@ -245,9 +331,10 @@ void CGWorldFrame::OnWorldRender() {
     GxRsPush();
     GxRsSet(GxRs_Multisample, 1);
 
-    // TODO the full-screen glow's entry (phase 3): FUN_004f8770 hands the active effect its
-    // parameters from the day/night block and the camera's liquid, and FUN_008c1770 shrinks the
-    // viewport to the glow target's size while the effect is on.
+    // The full-screen effect's parameters, and the world kept within what its scene target can
+    // take.
+    CGWorldFrame::UpdateGlowParams();
+    FFX::BeginScene();
 
     // A world frame that does not cover the screen clears its own rectangle first.
     CRect fullScreen = { 0.0f, 0.0f, 1.0f, 1.0f };
@@ -412,8 +499,10 @@ void CGWorldFrame::OnWorldRender() {
 
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 
-    // TODO FUN_008c1010, the glow's composite (the target read back and drawn full screen,
-    // phase 3), and FUN_00747ae0 (clear the units' 0x1000 flag, phase 4).
+    // The world copied out and the active full-screen effect run over it.
+    FFX::EndScene();
+
+    // TODO FUN_00747ae0 (clear the units' 0x1000 flag, phase 4).
 }
 
 // ref: FUN_004f6970

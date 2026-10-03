@@ -783,6 +783,19 @@ uint32_t GxCalcTexelStrideInBytes(EGxTexFormat format, uint32_t width) {
 
 // ref: FUN_00681ee0
 // The parameter-block form, under the empty name.
+// ref: FUN_006814d0
+// Only a texture made to be rendered into can take a copy of the target, and a cube map only into
+// one of its six faces.
+int32_t GxTexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane) {
+    if (dst && dst->m_flags.m_renderTarget && (dst->m_target != GxTex_CubeMap || plane < 6)) {
+        return g_theGxDevicePtr->TexCopyFromTarget(dst, dstPos, srcPos, size, level, plane);
+    }
+
+    SErrSetLastError(0x57);
+
+    return 0;
+}
+
 int32_t GxTexCreate(const CGxTexParms& parms, CGxTex*& texId) {
     return GxTexCreate(
         parms.target,

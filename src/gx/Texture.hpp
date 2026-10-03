@@ -4,6 +4,7 @@
 #include "gx/Types.hpp"
 #include "gx/texture/CGxTex.hpp"
 #include "gx/texture/CTexture.hpp"
+#include <tempest/Vector.hpp>
 
 typedef HOBJECT HTEXTURE;
 
@@ -135,6 +136,9 @@ int32_t GxTexCreate(EGxTexTarget, uint32_t, uint32_t, uint32_t, EGxTexFormat, EG
 int32_t GxTexCreate(uint32_t width, uint32_t height, EGxTexFormat format, CGxTexFlags flags, void* userArg, void (*userFunc)(EGxTexCommand, uint32_t, uint32_t, uint32_t, uint32_t, void*, uint32_t&, const void*&), CGxTex*& texId);
 
 void GxTexDestroy(CGxTex* texId);
+
+// Copy a block of the colour target into a render-target texture. ref: FUN_006814d0
+int32_t GxTexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane);
 
 void GxTexParameters(const CGxTex* texId, CGxTexParms& parms);
 

@@ -1,4 +1,5 @@
 #include "glue/CGlueMgr.hpp"
+#include "ffx/FFX.hpp"
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "client/Client.hpp"
@@ -711,6 +712,7 @@ static bool FFXSpecialCallback(CVar* var, const char* oldValue, const char* valu
     return true;
 }
 
+// ref: FUN_004d7d20
 void CGlueMgr::InitializeFFX() {
     if (CGlueMgr::m_ffxActive) {
         return;
@@ -718,7 +720,7 @@ void CGlueMgr::InitializeFFX() {
 
     CGlueMgr::m_ffxActive = 1;
 
-    // TODO FFX::Init();
+    FFX::Init();
 
     CGlueMgr::m_deathEffect = STORM_NEW(EffectDeath);
     CGlueMgr::m_glowEffect = STORM_NEW(EffectGlow);

@@ -395,6 +395,8 @@ class CGxDevice {
         virtual void DeviceEvictResources() {};
         virtual void DeviceAdapterInfo(char* buffer, uint32_t size) {};
         virtual void CaptureGet(uint32_t& width, uint32_t& height, const uint32_t*& bits);
+        // Copy a block of the colour target into a level of a texture. The base device cannot.
+        virtual int32_t TexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane) { return 0; };
         virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {};
         // FROZEN-ONLY debug: copy a render-target texture back to memory as one float per texel
         // (the red channel of a colour target, the value of an R32F one). Returns 0 where the

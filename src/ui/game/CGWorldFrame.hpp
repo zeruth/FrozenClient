@@ -6,6 +6,10 @@
 
 class CGCamera;
 
+namespace FFX {
+    class Effect;
+}
+
 class CGWorldFrame : public CSimpleFrame {
     public:
         // Static variables
@@ -13,6 +17,13 @@ class CGWorldFrame : public CSimpleFrame {
         // frame, but it was missing the keyword, so every instance carried its own copy and the
         // qualified writes in member functions silently meant "this->".
         static CGWorldFrame* s_currentWorldFrame;
+
+        // The world's full-screen effects (DAT_00b74364, DAT_00b74368, DAT_00b74360 and
+        // DAT_00b7435c): the glow that normally runs, and the three a screen effect can swap in.
+        static FFX::Effect* s_glowEffect;
+        static FFX::Effect* s_deathEffect;
+        static FFX::Effect* s_netherEffect;
+        static FFX::Effect* s_specialEffect;
 
         // Static functions
         static CSimpleFrame* Create(CSimpleFrame* parent);
@@ -22,6 +33,15 @@ class CGWorldFrame : public CSimpleFrame {
         // reads it straight off the current frame -- `s_currentWorldFrame ? its camera : null` --
         // and 103 call sites go through it. ref: FUN_004f5960
         static CGCamera* GetActiveCamera();
+
+        // Run the full-screen effect a ScreenEffect.dbc record names, or the glow when there is
+        // none. ref: FUN_004f7020
+        static void SetScreenEffect(int32_t id);
+        // The screen effect the player's auras ask for, if any. ref: FUN_004f88b0
+        static void UpdateScreenEffect();
+        // Feed the glow the day's glow, and under water or drunk the grey of its combine.
+        // ref: FUN_004f8770
+        static void UpdateGlowParams();
 
         // Virtual member functions
         virtual void OnFrameRender(CRenderBatch* batch, uint32_t layer);
