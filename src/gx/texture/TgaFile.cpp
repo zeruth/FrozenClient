@@ -1,4 +1,6 @@
 #include "gx/texture/TgaFile.hpp"
+#include <storm/String.hpp>
+#include <cstdio>
 #include "util/SFile.hpp"
 #include <storm/Error.hpp>
 #include <storm/Memory.hpp>
@@ -593,4 +595,237 @@ void TgaDownsample(uint32_t* dst, uint32_t dstWidth, uint32_t dstHeight, const u
 
         src += (blockHeight - 1) * srcWidth * 4;
     }
+}
+
+// ref: FUN_006aa950
+int32_t TgaFile::SetImage(const void* image, uint16_t width, uint16_t height, uint8_t depth, uint8_t alphaBits,
+                          int32_t topDown, int32_t rightToLeft) {
+    if (!image || (depth != 32 && depth != 24) || (alphaBits != 0 && alphaBits != 8)) {
+        SErrSetLastError(0x57);
+
+        return 0;
+    }
+
+    uint8_t descriptor = this->m_header.imageDescriptor;
+    memset(&this->m_header, 0, sizeof(this->m_header));
+
+    this->m_header.height = height;
+    this->m_header.imageDescriptor = static_cast<uint8_t>(
+        ((topDown ? 2 : 0) | (rightToLeft ? 1 : 0)) << 4 | (descriptor & 0xc0) | (alphaBits & 0xf)
+    );
+    this->m_header.pixelDepth = depth;
+    this->m_header.width = width;
+    this->m_imageBytes = ((depth + 7) >> 3) * static_cast<uint32_t>(height) * static_cast<uint32_t>(width);
+    this->m_header.imageType = 2;
+
+    if (this->m_image) {
+        SMemFree(this->m_image, __FILE__, __LINE__, 0x0);
+    }
+
+    this->m_image = static_cast<uint8_t*>(SMemAlloc(this->m_imageBytes, __FILE__, __LINE__, 0x0));
+
+    if (!this->m_image) {
+        return 0;
+    }
+
+    memcpy(this->m_image, image, this->m_imageBytes);
+
+    this->m_footer.extensionOffset = 0;
+    this->m_footer.developerOffset = 0;
+    SStrCopy(this->m_footer.signature, "TRUEVISION-XFILE.", sizeof(this->m_footer.signature));
+
+    return 1;
+}
+
+// ref: FUN_006aaa70
+int32_t TgaFile::RunLength(const uint8_t* pixel, int32_t count) const {
+    uint32_t pixelBytes = (this->m_header.pixelDepth + 7) >> 3;
+
+    uint8_t first[4] = { 0, 0, 0, 0 };
+    memcpy(first, pixel, pixelBytes);
+
+    if (count > 0x80) {
+        count = 0x80;
+    }
+
+    int32_t run = 0;
+
+    while (count > 0) {
+        count--;
+
+        if (memcmp(pixel, first, pixelBytes) != 0) {
+            return run;
+        }
+
+        pixel += pixelBytes;
+        run++;
+    }
+
+    return run;
+}
+
+// ref: FUN_006aab70
+int32_t TgaFile::EncodeRow(const uint8_t** src, uint8_t** dst) {
+    const uint8_t* in = *src;
+    uint8_t* out = *dst;
+    int32_t remaining = this->m_header.width;
+    uint8_t* literal = nullptr;
+
+    uint32_t pixelBytes = (this->m_header.pixelDepth + 7) >> 3;
+    uint32_t limit = static_cast<uint32_t>(this->m_header.height) * this->m_header.width * pixelBytes;
+
+    while (remaining) {
+        int32_t run = this->RunLength(in, remaining);
+
+        if (run < 2) {
+            // A literal packet: open one, or grow the open one until it holds 128 pixels.
+            uint8_t* pixelOut;
+
+            if (!literal || *literal == 0x7f) {
+                *out = 0;
+                literal = out;
+                pixelOut = out + 1;
+                this->m_imageBytes++;
+            } else {
+                (*literal)++;
+                pixelOut = out;
+            }
+
+            this->m_imageBytes += pixelBytes;
+
+            if (limit <= this->m_imageBytes) {
+                return 0;
+            }
+
+            memcpy(pixelOut, in, pixelBytes);
+
+            out = pixelOut + pixelBytes;
+            in += pixelBytes;
+            remaining--;
+        } else {
+            this->m_imageBytes += pixelBytes + 1;
+            literal = nullptr;
+
+            if (limit <= this->m_imageBytes) {
+                return 0;
+            }
+
+            *out = static_cast<uint8_t>((run - 1) | 0x80);
+            memcpy(out + 1, in, pixelBytes);
+
+            out += 1 + pixelBytes;
+            in += pixelBytes * run;
+            remaining -= run;
+        }
+    }
+
+    *src = in;
+    *dst = out;
+
+    return 1;
+}
+
+// ref: FUN_006aace0
+int32_t TgaFile::CompressRle() {
+    const uint8_t* src = this->m_image;
+
+    if (!src) {
+        SErrSetLastError(0xf7200081);
+
+        return 0;
+    }
+
+    if (this->m_header.imageType > 8) {
+        SErrSetLastError(0xf7200083);
+
+        return 0;
+    }
+
+    auto encoded = static_cast<uint8_t*>(SMemAlloc(this->m_imageBytes, __FILE__, __LINE__, 0x0));
+
+    if (!encoded) {
+        return 0;
+    }
+
+    this->m_imageBytes = 0;
+    uint8_t* dst = encoded;
+
+    for (uint32_t row = this->m_header.height; row; row--) {
+        if (!this->EncodeRow(&src, &dst)) {
+            // It will not shrink: keep the image uncompressed.
+            SMemFree(encoded, __FILE__, __LINE__, 0x0);
+            this->m_imageBytes = ((this->m_header.pixelDepth + 7) >> 3) * this->m_header.width * this->m_header.height;
+
+            return 1;
+        }
+    }
+
+    this->m_header.imageType += 8;
+
+    SMemFree(this->m_image, __FILE__, __LINE__, 0x0);
+    this->m_image = encoded;
+
+    return 1;
+}
+
+// ref: FUN_006aade0
+// DIVERGED in the file calls only: the reference goes through its own Os file wrappers
+// (FUN_00461fa0 / 461b90 / 461b00 / 461ce0); frozen uses the C library.
+int32_t TgaFile::Write(const char* fileName) {
+    if (!fileName) {
+        SErrSetLastError(0x57);
+
+        return 0;
+    }
+
+    if (!this->m_image) {
+        SErrSetLastError(0xf7200081);
+
+        return 0;
+    }
+
+    FILE* file = fopen(fileName, "wb");
+
+    if (!file) {
+        return 0;
+    }
+
+    int32_t result = 0;
+
+    do {
+        if (fwrite(&this->m_header, 1, sizeof(this->m_header), file) != sizeof(this->m_header)) {
+            break;
+        }
+
+        if (this->m_header.idLength
+            && fwrite(this->m_idField, 1, this->m_header.idLength, file) != this->m_header.idLength) {
+            break;
+        }
+
+        if (this->m_header.colorMapType) {
+            auto bytes = static_cast<size_t>(this->ColorMapBytes());
+
+            if (fwrite(this->m_colorMap, 1, bytes, file) != bytes) {
+                break;
+            }
+        }
+
+        if (fwrite(this->m_image, 1, this->m_imageBytes, file) != this->m_imageBytes) {
+            break;
+        }
+
+        if (fwrite(&this->m_footer, 1, sizeof(this->m_footer), file) != sizeof(this->m_footer)) {
+            break;
+        }
+
+        result = 1;
+    } while (false);
+
+    fclose(file);
+
+    if (!result) {
+        remove(fileName);
+    }
+
+    return result;
 }

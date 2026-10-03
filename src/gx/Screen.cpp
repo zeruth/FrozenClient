@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "gx/Screen.hpp"
+#include "gx/texture/TgaFile.hpp"
 #include "event/Event.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/Device.hpp"
@@ -38,8 +39,9 @@ int32_t OnIdle(const EVENT_DATA_IDLE* data, void* a2) {
 // only sound way to see what Frozen actually drew.
 //
 // Unset, it costs one getenv on the first frame and nothing after.
-// Writes the frame the device captured on the last present as an uncompressed, top-down 24-bit
-// TGA. The capture is the reference's (CaptureRequest before the present, CaptureGet after).
+// Writes the frame the device captured on the last present the way the reference's TGA branch of
+// ScreenshotRequest does (0x004a8570): the 32-bit capture taken as a top-down image, its alpha
+// dropped, run-length encoded if that makes it smaller, and written with the TGA 2.0 footer.
 static void ScreenshotWriteTga(const char* path) {
     uint32_t width;
     uint32_t height;
@@ -50,27 +52,15 @@ static void ScreenshotWriteTga(const char* path) {
         return;
     }
 
-    FILE* out = fopen(path, "wb");
+    TgaFile tga = {};
 
-    if (!out) {
-        return;
+    if (tga.SetImage(bits, static_cast<uint16_t>(width), static_cast<uint16_t>(height), 32, 0, 1, 0)) {
+        tga.RemoveAlphaChannel();
+        tga.CompressRle();
+        tga.Write(path);
     }
 
-    unsigned char header[18] = { 0 };
-    header[2] = 2;
-    header[12] = static_cast<unsigned char>(width & 0xFF);
-    header[13] = static_cast<unsigned char>((width >> 8) & 0xFF);
-    header[14] = static_cast<unsigned char>(height & 0xFF);
-    header[15] = static_cast<unsigned char>((height >> 8) & 0xFF);
-    header[16] = 24;
-    header[17] = 0x20;
-    fwrite(header, 1, sizeof(header), out);
-
-    for (uint32_t i = 0; i < width * height; i++) {
-        fwrite(&bits[i], 1, 3, out);
-    }
-
-    fclose(out);
+    tga.Close();
 }
 
 static void AutoScreenshotCheck() {

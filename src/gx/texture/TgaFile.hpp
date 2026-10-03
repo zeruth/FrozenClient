@@ -23,9 +23,17 @@ struct TgaHeader {
     uint8_t imageDescriptor;            // low four bits: alpha bits per pixel
 };
 
+// The 26-byte TGA 2.0 footer: the extension and developer area offsets, then the signature.
+struct TgaFooter {
+    uint32_t extensionOffset;
+    uint32_t developerOffset;
+    char signature[18];
+};
+
 #pragma pack(pop)
 
 static_assert(sizeof(TgaHeader) == 0x12, "TgaHeader is 18 bytes");
+static_assert(sizeof(TgaFooter) == 0x1a, "TgaFooter is 26 bytes");
 
 // The reference's TGA image reader. The offsets in the comments are the reference's.
 //
@@ -43,7 +51,9 @@ class TgaFile {
     // +0x1C: the header's optional ID field, `idLength` bytes of it, read straight after the
     // header. Nothing interprets it; it is read so the file position lands on the colour map.
     void* m_idField;
-    uint8_t m_unk20[0x3C - 0x20];
+    // +0x20: the footer a written file ends with (SetImage fills it).
+    TgaFooter m_footer;
+    uint8_t m_unk3A[0x3C - 0x3A];
     uint32_t m_imageBytes;              // +0x3C
     // +0x40: the colour map, ColorMapBytes() of it, present only when colorMapType is non-zero.
     void* m_colorMap;
@@ -78,6 +88,23 @@ class TgaFile {
     int32_t RemoveAlphaChannel();
     // Replace whatever alpha there is with `alpha` (one byte per pixel), or opaque when null.
     int32_t AddAlpha(const uint8_t* alpha);
+
+    // Take a copy of a 24 or 32-bit image to write, with 0 or 8 alpha bits, and its row and
+    // column order. ref: FUN_006aa950
+    int32_t SetImage(const void* image, uint16_t width, uint16_t height, uint8_t depth, uint8_t alphaBits,
+                     int32_t topDown, int32_t rightToLeft);
+    // How many pixels from `pixel` on are the same as it, at most `count` and 128.
+    // ref: FUN_006aaa70
+    int32_t RunLength(const uint8_t* pixel, int32_t count) const;
+    // One row run-length encoded from *src into *dst, both advanced; 0 when the encoding has grown
+    // to the uncompressed size. ref: FUN_006aab70
+    int32_t EncodeRow(const uint8_t** src, uint8_t** dst);
+    // Run-length encode the image; an image that will not shrink stays as it is.
+    // ref: FUN_006aace0
+    int32_t CompressRle();
+    // Write the header, ID, colour map, image and footer to a file, deleting it on a failed
+    // write. ref: FUN_006aade0
+    int32_t Write(const char* fileName);
 };
 
 // Box-filters a 32-bit image down: each output pixel is its block's colour weighted by alpha
