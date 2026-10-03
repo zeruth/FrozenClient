@@ -44,20 +44,26 @@ static void BuildBoxes() {
 }
 
 // Part of ref: FUN_007cd4e0
-// One volume becomes a silhouette pyramid: a plane through the camera and each edge of the
-// polygon, so anything inside all of them is behind the polygon from here. There is no cap
-// plane -- the reference adds one per edge and no more, and the frustum test upstream is what
-// keeps things behind the camera out.
+// One volume becomes a closed pyramid: a plane through the camera and each edge of the polygon,
+// then the polygon's own plane as the cap, so a sphere is hidden only when it is inside the
+// silhouette AND beyond the polygon.
 //
-// The table's polygons do NOT share a winding -- fifteen wind one way, fifteen the other and
-// thirty-two are vertical -- so the sign of a plane depends on the volume it came from. The
-// order below is the reference's own, taken off the call site's instructions.
+// The cap is also what fixes the winding. The table's polygons do not share one -- fifteen wind
+// one way, fifteen the other and thirty-two are vertical -- so after the planes are built the
+// reference tests the camera against the cap, and when the camera is on its negative side it
+// negates every plane of the volume (0x007cd7a0..0x007cd830, against 0.0 at 0x009e418c). After
+// that "behind every plane" always means the far side of the polygon, inside its silhouette.
+//
+// Frozen had neither: no cap, so everything between the camera and an occluder counted as hidden
+// behind it, and no flip, so half the volumes hid the wrong region outright. Units and row
+// doodads go through this test (terrain and chunk doodads do not), which is why the world drew
+// while players and creatures dropped out -- all of them, the player included, in Goldshire.
 // ref: FUN_007cd4e0
 static void AddVolume(const C3Vector& camera, const float* vertices, uint32_t count) {
     CWorldScene::OcclusionVolume volume;
 
     volume.firstPlane = static_cast<int32_t>(CWorldScene::s_occlusionPlanes.Count());
-    volume.planeCount = static_cast<int32_t>(count);
+    volume.planeCount = 0;
 
     for (uint32_t i = 0; i < count; i++) {
         const C3Vector& a = *reinterpret_cast<const C3Vector*>(vertices + i * 3);
@@ -70,6 +76,33 @@ static void AddVolume(const C3Vector& camera, const float* vertices, uint32_t co
         PlaneFromPoints(&plane, a, b, camera);
 
         CWorldScene::s_occlusionPlanes.Add(1, &plane);
+        volume.planeCount++;
+    }
+
+    if (!volume.planeCount) {
+        return;
+    }
+
+    // The cap: the polygon's own plane, through its first three vertices.
+    const C3Vector& v0 = *reinterpret_cast<const C3Vector*>(vertices);
+    const C3Vector& v1 = *reinterpret_cast<const C3Vector*>(vertices + 3);
+    const C3Vector& v2 = *reinterpret_cast<const C3Vector*>(vertices + 6);
+
+    C4Plane cap;
+    PlaneFromPoints(&cap, v0, v1, v2);
+
+    CWorldScene::s_occlusionPlanes.Add(1, &cap);
+    volume.planeCount++;
+
+    if (camera.x * cap.n.x + camera.y * cap.n.y + camera.z * cap.n.z + cap.d < 0.0f) {
+        for (int32_t i = 0; i < volume.planeCount; i++) {
+            C4Plane& plane = CWorldScene::s_occlusionPlanes[volume.firstPlane + i];
+
+            plane.n.x = -plane.n.x;
+            plane.n.y = -plane.n.y;
+            plane.n.z = -plane.n.z;
+            plane.d = -plane.d;
+        }
     }
 
     CWorldScene::s_occlusionVolumes.Add(1, &volume);
