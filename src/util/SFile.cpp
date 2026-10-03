@@ -423,6 +423,14 @@ void SFileCritSectLeave(SCritSect* critSect) {
     critSect->Leave();
 }
 
+// ref: FUN_00421850
+// The name the file was opened by, copied out.
+int32_t SFile::GetFileName(SFile* file, char* buffer, size_t bufferSize) {
+    SStrCopy(buffer, file->m_filename ? file->m_filename : "", bufferSize);
+
+    return 1;
+}
+
 // ref: FUN_004217e0
 // DIVERGED: Storm adds a file's present and total bytes only when the file lives in a streaming
 // archive, and adds nothing otherwise. Frozen reads every file locally, so there is never a

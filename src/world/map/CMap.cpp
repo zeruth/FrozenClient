@@ -1563,97 +1563,136 @@ void CMap::Update(int32_t update) {
             // Loading behind a loading screen: drain every read, update, and repeat, so each
             // round loads what the previous one's reads revealed. The progress callback marks a
             // quarter, a half, two thirds and three quarters.
-            static const float LOAD_PROGRESS[4] = { 0.25f, 0.5f, 0.66f, 0.75f };
-
-            for (int32_t round = 0; round < 4; round++) {
-                AsyncFileReadWaitAll();
-
-                if (CMap::s_loadProgressCallback) {
-                    CMap::s_loadProgressCallback(LOAD_PROGRESS[round], CMap::s_loadProgressArg);
-                }
-
-                if (round == 3) {
-                    break;
-                }
-
-                CMap::UpdateAreas(update);
-                CMap::UpdateMapObjDefs(update);
-                CMapObj::UpdateAll();
-                CMap::UpdatePendingEntities();
-            }
-        } else {
-            // Streaming: wait on the target tile's own read with a sleep and a progress tick,
-            // then until every entity and every building group round the target has its files.
-            CMapArea* area = CMap::GetTargetArea(CWorld::s_targetPos);
-
-            if (area && area->m_asyncObject) {
-                AsyncFileReadLockQueue();
-                AsyncFileReadLinkObject(area->m_asyncObject, 1);
-                AsyncFileReadUnlockQueue();
-
-                while (area->m_asyncObject) {
-                    AsyncFileReadPollHandler(nullptr, nullptr);
-
-                    // The reference reports the tile file's streamed share here (FUN_004217e0);
-                    // frozen's files are all local, so the share is the whole file.
-                    if (CMap::s_loadProgressCallback) {
-                        CMap::s_loadProgressCallback(0.20000000298023224f, CMap::s_loadProgressArg);
-                    }
-
-                    OsSleep(10);
-                }
-            }
+            AsyncFileReadWaitAll();
 
             if (CMap::s_loadProgressCallback) {
-                CMap::s_loadProgressCallback(0.20000000298023224f, CMap::s_loadProgressArg);
+                CMap::s_loadProgressCallback(0.25f, CMap::s_loadProgressArg);
             }
 
-            auto pass = [&]() {
-                CMap::UpdateAreas(update);
-                CMap::UpdateMapObjDefs(update);
-                CMapObj::UpdateAll();
-                CMap::UpdatePendingEntities();
-            };
-
-            pass();
-            AsyncFileReadPollHandler(nullptr, nullptr);
-
-            CMapChunk* chunk = CMap::GetTargetChunk(CWorld::s_targetPos);
-            float progress = 0.0f;
-            int32_t initial = CMap::CountPendingEntities(chunk, &progress, 0);
-
-            for (int32_t left = initial; left; ) {
-                OsSleep(10);
-                AsyncFileReadPollHandler(nullptr, nullptr);
-                pass();
-                left = CMap::CountPendingEntities(chunk, &progress, initial);
-
-                if (CMap::s_loadProgressCallback) {
-                    CMap::s_loadProgressCallback(progress * 0.25f + 0.20000000298023224f, CMap::s_loadProgressArg);
-                }
-            }
-
-            pass();
-            AsyncFileReadPollHandler(nullptr, nullptr);
-
-            initial = CMap::CountPendingMapObjs(chunk, &progress, 0);
+            CMap::UpdateAreas(update);
+            CMap::UpdateMapObjDefs(update);
             CMapObj::UpdateAll();
+            CMap::UpdatePendingEntities();
+            AsyncFileReadWaitAll();
 
-            for (int32_t left = initial; left; ) {
-                OsSleep(10);
-                AsyncFileReadPollHandler(nullptr, nullptr);
-                pass();
-                left = CMap::CountPendingMapObjs(chunk, &progress, initial);
-
-                if (CMap::s_loadProgressCallback) {
-                    float done = static_cast<float>(static_cast<uint32_t>(initial - left));
-                    CMap::s_loadProgressCallback(done * 0.30000001192092896f / static_cast<float>(static_cast<uint32_t>(initial)) + 0.44999998807907104f, CMap::s_loadProgressArg);
-                }
+            if (CMap::s_loadProgressCallback) {
+                CMap::s_loadProgressCallback(0.5f, CMap::s_loadProgressArg);
             }
 
-            pass();
-            AsyncFileReadPollHandler(nullptr, nullptr);
+            CMap::UpdateAreas(update);
+            CMap::UpdateMapObjDefs(update);
+            CMapObj::UpdateAll();
+            CMap::UpdatePendingEntities();
+            AsyncFileReadWaitAll();
+
+            if (CMap::s_loadProgressCallback) {
+                CMap::s_loadProgressCallback(0.66f, CMap::s_loadProgressArg);
+            }
+
+            CMap::UpdateAreas(update);
+            CMap::UpdateMapObjDefs(update);
+            CMapObj::UpdateAll();
+            CMap::UpdatePendingEntities();
+            AsyncFileReadWaitAll();
+
+            if (CMap::s_loadProgressCallback) {
+                CMap::s_loadProgressCallback(0.75f, CMap::s_loadProgressArg);
+            }
+
+            return;
         }
+
+        // Streaming: wait on the target tile's own read, reporting how much of its file has
+        // streamed in, then until every entity and every building group round the target has
+        // its files.
+        CMapArea* area = CMap::GetTargetArea(CWorld::s_targetPos);
+
+        if (area && area->m_asyncObject) {
+            char fileName[260];
+            SFile::GetFileName(area->m_asyncObject->file, fileName, sizeof(fileName));
+
+            AsyncFileReadLockQueue();
+            AsyncFileReadLinkObject(area->m_asyncObject, 1);
+            AsyncFileReadUnlockQueue();
+
+            while (area->m_asyncObject) {
+                uint64_t done = 0;
+                uint64_t total = 0;
+                SFile::GetStreamedBytes(fileName, &done, &total);
+
+                AsyncFileReadPollHandler(nullptr, nullptr);
+
+                if (CMap::s_loadProgressCallback) {
+                    // DIVERGED: the reference divides unguarded, and a file outside a
+                    // streaming archive reports 0 of 0 bytes -- frozen's always do -- which
+                    // hands the loading bar a NaN. Reported as the whole share instead.
+                    float share = total ? static_cast<float>(static_cast<double>(done) / static_cast<double>(total)) : 1.0f;
+                    CMap::s_loadProgressCallback(share * 0.20000000298023224f, CMap::s_loadProgressArg);
+                }
+
+                OsSleep(10);
+            }
+        }
+
+        if (CMap::s_loadProgressCallback) {
+            CMap::s_loadProgressCallback(0.20000000298023224f, CMap::s_loadProgressArg);
+        }
+
+        CMap::UpdateAreas(update);
+        CMap::UpdateMapObjDefs(update);
+        CMapObj::UpdateAll();
+        CMap::UpdatePendingEntities();
+        AsyncFileReadPollHandler(nullptr, nullptr);
+
+        CMapChunk* chunk = CMap::GetTargetChunk(CWorld::s_targetPos);
+        float progress = 0.0f;
+        int32_t initial = CMap::CountPendingEntities(chunk, &progress, 0);
+        int32_t left = initial;
+
+        while (left) {
+            OsSleep(10);
+            AsyncFileReadPollHandler(nullptr, nullptr);
+            CMap::UpdateAreas(update);
+            CMap::UpdateMapObjDefs(update);
+            CMapObj::UpdateAll();
+            CMap::UpdatePendingEntities();
+            left = CMap::CountPendingEntities(chunk, &progress, initial);
+
+            if (CMap::s_loadProgressCallback) {
+                CMap::s_loadProgressCallback(progress * 0.25f + 0.20000000298023224f, CMap::s_loadProgressArg);
+            }
+        }
+
+        CMap::UpdateAreas(update);
+        CMap::UpdateMapObjDefs(update);
+        CMapObj::UpdateAll();
+        CMap::UpdatePendingEntities();
+        AsyncFileReadPollHandler(nullptr, nullptr);
+
+        initial = CMap::CountPendingMapObjs(chunk, &progress, 0);
+        CMapObj::UpdateAll();
+        left = initial;
+
+        while (left) {
+            OsSleep(10);
+            AsyncFileReadPollHandler(nullptr, nullptr);
+            CMap::UpdateAreas(update);
+            CMap::UpdateMapObjDefs(update);
+            CMapObj::UpdateAll();
+            CMap::UpdatePendingEntities();
+            left = CMap::CountPendingMapObjs(chunk, &progress, initial);
+
+            if (CMap::s_loadProgressCallback) {
+                float done = static_cast<float>(static_cast<uint32_t>(initial - left));
+                CMap::s_loadProgressCallback(done * 0.30000001192092896f / static_cast<float>(static_cast<uint32_t>(initial)) + 0.44999998807907104f, CMap::s_loadProgressArg);
+            }
+        }
+
+        CMap::UpdateAreas(update);
+        CMap::UpdateMapObjDefs(update);
+        CMapObj::UpdateAll();
+        CMap::UpdatePendingEntities();
+        AsyncFileReadPollHandler(nullptr, nullptr);
     }
 }
 

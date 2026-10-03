@@ -45,6 +45,7 @@ class SFile {
         // How much of a file a streaming install has on disk so far, added to `done` and
         // `total`. ref: FUN_004217e0 (Storm FUN_00461040)
         static void GetStreamedBytes(const char* name, uint64_t* done, uint64_t* total);
+        static int32_t GetFileName(SFile* file, char* buffer, size_t bufferSize);
         static int32_t IsStreamingTrial();
         static int32_t Load(SArchive* archive, const char* filename, void** buffer, size_t* bytes, size_t extraBytes, uint32_t flags, SOVERLAPPED* overlapped);
         static int32_t Open(const char* filename, SFile** file);
