@@ -584,8 +584,9 @@ void LoadingScreenSetProgress2(float progress) {
     LoadingScreenUpdate(progress == 1.0f);
 }
 
+// ref: FUN_0040af40
 void LoadingScreenSetProgress3(float progress) {
-    if (progress < s_progress[2]) {
+    if (progress <= s_progress[2]) {
         return;
     }
 

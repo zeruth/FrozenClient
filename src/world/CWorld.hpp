@@ -114,6 +114,15 @@ class CWorld {
         // Public static variables
         static uint32_t s_enables;
         static int32_t s_updateCount;           // DAT_00cd7690
+        // The last thirty frame times, in seconds, and where the next one goes (DAT_00cd76b0,
+        // DAT_00cd7728).
+        static float s_frameTimes[30];
+        static uint32_t s_frameTimeIndex;
+        // Run once an update, after the window check (DAT_00cd7764). The client points it at its
+        // frame-time histogram (FUN_00462360, not ported) during startup.
+        static void (*s_updateCallback)();
+        // ref: FUN_0077f8f0
+        static void SetUpdateCallback(void (*callback)());
         static uint32_t s_enables2;
         // The reference's THIRD enables word, 0x00cd7754, and it is not a general flag set: one
         // bit per M2 draw pass. World init raises the low three (there are three passes), and the

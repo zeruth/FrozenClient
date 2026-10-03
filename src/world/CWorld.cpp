@@ -37,6 +37,7 @@
 #include "world/MapWeather.hpp"
 #include "world/map/CMap.hpp"
 #include "gx/LoadingScreen.hpp"
+#include "async/AsyncFileRead.hpp"
 #include "util/SFile.hpp"
 #include "db/Db.hpp"
 #include "client/Client.hpp"
@@ -101,6 +102,9 @@ float CWorld::s_groundEffectDistSq;
 int32_t CWorld::s_textureCacheSize;
 int32_t CWorld::s_textureCacheDirty = 1;
 int32_t CWorld::s_updateCount;
+float CWorld::s_frameTimes[30];
+uint32_t CWorld::s_frameTimeIndex;
+void (*CWorld::s_updateCallback)();
 // Zenith first, horizon last, then the fog band -- the order the dome's rings read them in.
 C3Vector CWorld::s_skyColors[6] = {
     { 0.2f, 0.35f, 0.65f }, { 0.3f, 0.42f, 0.7f }, { 0.4f, 0.5f, 0.75f },
@@ -1262,6 +1266,18 @@ void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg)
     lighting->m_flags &= ~0x8u;
 }
 
+// ref: FUN_0077f8f0
+void CWorld::SetUpdateCallback(void (*callback)()) {
+    CWorld::s_updateCallback = callback;
+}
+
+// The loading screen's progress, as CMap::Update reports it while a far-clip jump has the
+// loading screen up: FUN_0040af40 takes the progress alone, and the map's callback slot passes
+// an argument after it that the reference's cdecl call simply leaves on the stack.
+static void ReportLoadProgress(float progress, void* arg) {
+    LoadingScreenSetProgress3(progress);
+}
+
 void CWorld::SetLoadProgressCallback(void (*callback)(float)) {
     CWorld::s_loadProgressCallback = callback;
 }
@@ -1395,7 +1411,12 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
 
     CWorld::UpdateTextureCacheSize();
 
-    // TODO the 30-entry frame-time ring (DAT_00cd76b0 / DAT_00cd7728)
+    CWorld::s_frameTimes[CWorld::s_frameTimeIndex] = CWorld::s_tickTimeSec;
+    CWorld::s_frameTimeIndex++;
+
+    if (CWorld::s_frameTimeIndex == 30) {
+        CWorld::s_frameTimeIndex = 0;
+    }
 
     CWorld::s_prevWindowMinX = CMap::s_chunkWindowMinX;
     CWorld::s_prevWindowMinY = CMap::s_chunkWindowMinY;
@@ -1421,10 +1442,11 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
 
     CWorld::s_updateCount++;
 
-    // TODO the per-update callback (DAT_00cd7764)
+    if (CWorld::s_updateCallback) {
+        CWorld::s_updateCallback();
+    }
 
-    // The reference steps by DAT_00cd76a0, the frame time its ring average (FUN_0077f900, not
-    // ported) produces; the tick time is the nearest thing frozen keeps
+    // The texture scrolls step by the frame's tick (DAT_00cd76a0).
     float scrollStep = CWorld::s_tickTimeSec;
 
     for (int32_t i = 0; i < 8; i++) {
@@ -1449,7 +1471,8 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
     CWorld::s_updateFarClip = CWorld::s_farClip;
 
     if (bigChange) {
-        // TODO the load progress callback (DAT_00cdfff4 = FUN_0040af40, DAT_00cdfff0 = 0)
+        CMap::s_loadProgressCallback = &ReportLoadProgress;
+        CMap::s_loadProgressArg = nullptr;
         LoadingScreenStart(CMap::s_mapID, 1);
         CMap::s_loading = 1;
     }
@@ -1458,7 +1481,9 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
 
     if (bigChange) {
         CMap::s_loading = 0;
-        // TODO FUN_004b9910(0, 0)
+        CMap::s_loadProgressCallback = nullptr;
+        CMap::s_loadProgressArg = nullptr;
+        AsyncFileReadSetProgressCallback(nullptr, nullptr);
         LoadingScreenFinish();
     }
 
@@ -1511,7 +1536,8 @@ void CWorld::Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, con
         }
     }
 
-    // TODO the scene's +0x140 from DAT_00cd8794, which follows at 0x007834e5
+    // The world scene learns which side of the liquid the camera is on (0x007834e5).
+    CWorld::s_m2Scene->m_cameraLiquidType = CWorldScene::s_cameraLiquidType;
 }
 
 // ref: FUN_0077f030

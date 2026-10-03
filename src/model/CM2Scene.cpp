@@ -1059,7 +1059,7 @@ void CM2Scene::Animate(const C3Vector& cameraPos) {
             belowLiquid = distance <= radius;
 
             if (!(this->m_cache->m_flags & 0x2) && aboveLiquid && belowLiquid) {
-                aboveLiquid = this->uint140 == 0;
+                aboveLiquid = this->m_cameraLiquidType == 0;
                 belowLiquid = !aboveLiquid;
             }
         }

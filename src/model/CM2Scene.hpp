@@ -128,9 +128,10 @@ class CM2Scene {
         // Born zero here, which is MORE defined than the reference, whose constructor never
         // writes this field at all -- see the long note at CM2Scene::Draw for why that makes the
         // reference's own gate unportable and why frozen does not have it.
-        // +0x140: which side of the liquid plane a model straddling it is drawn on when clip planes
-        // are off (CM2Scene::Animate). The constructor zeroes it and nothing else writes it.
-        uint32_t uint140 = 0;
+        // +0x140: the camera's liquid type, which side of the liquid plane a model straddling it
+        // is drawn on when clip planes are off (CM2Scene::Animate). CWorld::Update copies
+        // CWorldScene::s_cameraLiquidType into the world scene's every update.
+        uint32_t m_cameraLiquidType = 0;
         // +0x144: the passes CM2Scene::Draw draws. The constructor sets every bit (FUN_008216c0,
         // 0x00821834); the world frame narrows its own scene to CWorld::s_m2PassMask.
         uint32_t m_passMask = 0xFFFFFFFF;
