@@ -212,7 +212,25 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         void PostInitActivePlayer();
         void SetStorage(uint32_t* storage, uint32_t* saved);
         void UpdatePartyMemberState();
-        void BuildCharacterComponent();
+        // ref: FUN_006e04d0 / FUN_006dc7e0 / FUN_006e05d0
+        // A player's hands hold its visible items, read through the item cache.
+        virtual const UNIT_WEAPON_INFO* GetWeaponInfo(int32_t hand, int32_t ignoreHidden);
+        virtual const ItemDisplayInfoRec* GetWeaponDisplay(int32_t hand);
+        virtual int32_t GetWeaponDisplayID(int32_t hand);
+
+        // ref: FUN_006e09e0
+        // Every visible item onto the player's component and into its hands.
+        int32_t ApplyVisibleItems();
+
+        // ref: FUN_006e08c0
+        void ApplyVisibleItem(const CVisibleItemData* item, int32_t slot);
+
+        // ref: FUN_006de840
+        // The active player sees others in their natural form (player flags byte 0xf42 bit 1).
+        static bool ActivePlayerSeesNatural();
+
+        // +0x1908: what each hand holds (GetWeaponInfo).
+        UNIT_WEAPON_INFO m_handInfo[3];
 
         // +0x1858: how the player sees the world. 0x1 through its farsight object, 0x2, 0x4 and
         // 0x8 not identified. PHASE4(Player_C): its writers (FUN_006e29b5 and friends) are the

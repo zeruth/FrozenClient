@@ -13,6 +13,8 @@
 
 class CCharacterComponent;
 class CEffect;
+class CGPlayer_C;
+class ItemDisplayInfoRec;
 class SpellRec;
 class CDataStore;
 class SOUNDKITOBJECT;
@@ -48,6 +50,19 @@ struct CAuraState {
 
     // ref: FUN_00716510
     void Read(const CGUnit_C* unit, uint32_t now, CDataStore* msg);
+};
+
+// What the model code knows of the item a hand holds (8 bytes a hand, the unit's at +0x9a4 and a
+// player's at +0x1908): from Item.dbc for a creature's virtual items, from the item cache for a
+// player's visible ones.
+struct UNIT_WEAPON_INFO {
+    uint8_t m_class = 0;            // +0x00
+    uint8_t m_subclass = 0;         // +0x01
+    uint8_t m_soundOverride = 0;    // +0x02
+    uint8_t m_material = 0;         // +0x03
+    uint8_t m_inventoryType = 0;    // +0x04: 0xe shield, 0x19 thrown, 0x1a ranged-right
+    uint8_t m_sheathType = 0;       // +0x05
+    uint8_t m_pad[2] = {};
 };
 
 // A pair the reference keeps per aura slot, twice (+0xdd8 and +0xe5c), initialised to
@@ -99,9 +114,61 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The model the world draws for the unit: its mount when it rides one, the unit's own
         // model otherwise.
         virtual CM2Model* GetObjectModel();
+        // ref: FUN_0073e410
+        // Rebuild the unit's model from its display (`force`, or when the display has changed):
+        // the creature skin, its scale, its pose, its aura and channel visuals, and its mount.
+        virtual void UpdateModel(int32_t force);
+        // ref: FUN_0073e840
+        virtual void OnModelLoaded(CM2Model* model);
+        // ref: FUN_00730f30
+        // The unit waits hidden until its character component is built and its textures are in.
+        virtual void GetHidden(uint32_t flags, int32_t* hidden, int32_t* hiddenOther);
         // ref: FUN_00715b50
         // The display's opacity (CreatureDisplayInfo column 5) over 255, or fully opaque.
         virtual float GetFadeInAlpha();
+
+        // The unit's own slots, past the base's, in the reference's order (0x00a34d90).
+        virtual void Virtual108() {}                                                    // 0x108
+        virtual void Virtual10C() {}                                                    // 0x10c
+        virtual void Virtual110() {}                                                    // 0x110
+        virtual void Virtual114() {}                                                    // 0x114
+        // ref: FUN_00747310
+        // One of the creature's own sounds (CreatureSoundData), by kind; unless `force`, only as
+        // often as the kind's chance allows (0x00adb5d8).
+        virtual void PlayUnitSound(int32_t kind, int32_t force);                        // 0x118
+        // ref: FUN_007464d0
+        // The armour foley of the unit's model, when Sound_EnableArmorFoleySoundForOthers is on.
+        virtual void PlayArmorFoley();                                                  // 0x11c
+        // ref: FUN_007463e0
+        // The impact sound family its sound data names (0x00a37170), 0 for none.
+        virtual int32_t GetImpactSoundType();                                           // 0x120
+        virtual int32_t Virtual124() { return 0; }                                      // 0x124
+        // ref: FUN_00716490
+        virtual bool IsDead() const;                                                    // 0x128
+        // ref: FUN_0071f440
+        // The item `hand` holds (0 main, 1 off, 2 ranged), or null when it holds nothing or, unless
+        // `ignoreHidden`, the hand is hidden (FUN_00718fc0).
+        virtual const UNIT_WEAPON_INFO* GetWeaponInfo(int32_t hand, int32_t ignoreHidden); // 0x12c
+        // ref: FUN_0071f540
+        virtual const ItemDisplayInfoRec* GetWeaponDisplay(int32_t hand);               // 0x130
+        // ref: FUN_00718b10
+        virtual int32_t GetWeaponDisplayID(int32_t hand);                               // 0x134
+        // ref: FUN_0071a380
+        virtual uint8_t GetStandStateByte() const;                                      // 0x138
+        // ref: FUN_0071aa70
+        // The skill the unit casts `spell` at: five per level, capped at five per the spell's own
+        // maximum level.
+        virtual int32_t GetSpellSkill(const SpellRec* spell);                           // 0x13c
+        // ref: FUN_00734f70
+        virtual void GetDefenseSkill(int32_t* skill, int32_t* bonus);                   // 0x140
+        // ref: FUN_00734fa0
+        virtual void GetWeaponSkill(int32_t attack, int32_t* skill, int32_t* bonus);    // 0x144
+        // ref: FUN_0071ad20
+        // How long the unit's cast of `spell` takes: its SpellCastTimes row at the unit's skill,
+        // scaled by its casting speed.
+        virtual int32_t GetSpellCastTime(const SpellRec* spell);                        // 0x148
+        // ref: FUN_006e6fc0
+        virtual float GetMovementPitch() const;                                         // 0x14c
         // ref: FUN_0071c0e0
         // The display's scale times the object's, and the mount's while the unit rides.
         virtual float GetScale() const;
@@ -142,16 +209,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void PostMovementUpdate(const CClientMoveUpdate& move, int32_t activeMover);
         void SetStorage(uint32_t* storage, uint32_t* saved);
 
-        // Build a character component for a humanoid NPC from its CreatureDisplayInfoExtra (race,
-        // sex, skin/face/hair and equipment), the same way a player model is dressed. Returns true
-        // when the display uses extended (character) data; false for ordinary creature models.
-        bool BuildNpcCharacterComponent();
 
-        // PHASE4(Unit_C): frozen's dressing of a new non-player unit model -- a character
-        // component from CreatureDisplayInfoExtra, else the monster skin and geosets, then the
-        // virtual items in its hands. It stands in for the reference unit's UpdateModel
-        // (FUN_0073e410, vtable slot 0x1c) and goes when that is ported.
-        void DressNpcModel(CM2Model* model);
 
         // Re-evaluate the looping idle animation from the unit's current state (dead / stand state /
         // emote) and apply it to the model only when it changes, so a unit that sits, stands, dies
@@ -237,6 +295,102 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_00723730
         // Put the unit's own item back in a component section an item visual had taken.
         void ReapplyItemSection(int32_t section);
+
+        // The weapon layer.
+
+        // ref: FUN_00718fc0
+        // The hand is hidden: the main hand while the unit is disarmed (flags 0x200000) and holds a
+        // two-hander in it, the off hand likewise or while disarmed in it (flags 2 0x80); never
+        // the ranged.
+        int32_t IsHandHidden(int32_t hand);
+
+        // ref: FUN_00725010
+        // A creature's virtual item in `hand` changed from `oldEntry`: the hand's display and item
+        // record follow, the old item comes off and the new one goes on.
+        void UpdateVirtualItem(int32_t hand, int32_t oldEntry);
+
+        // ref: FUN_0072dbc0
+        // Put the item `hand` holds where the sheath state wants it: in the hand, or in its sheath.
+        void AttachHandItem(int32_t hand);
+
+        // ref: FUN_0072b7f0
+        // The ranged weapon, in the hand (`inHand`) or its sheath; `heldRight` says whether it is a
+        // gun or a thrown weapon, which is held in the right hand.
+        int32_t AttachRangedWeapon(int32_t inHand, uint8_t* heldRight);
+
+        // ref: FUN_0072afe0
+        void ReleaseRangedWeapon();
+
+        // ref: FUN_007310a0
+        // Move the item in `hand` between the hand and its sheath (`toSheath`).
+        int32_t MoveHandItem(int32_t hand, int32_t toSheath);
+
+        // ref: FUN_00721ed0
+        // The unit fights unarmed: its upper body plays an unarmed animation, or a combat one with
+        // nothing in the main hand.
+        bool IsFightingUnarmed();
+
+        // ref: FUN_00736d30
+        // Sheathe or draw: 0 sheathed, 1 melee, 2 ranged. `animate` plays the draw (the weapons move
+        // at once otherwise); `fromServer` skips telling the server.
+        void SetSheathState(int32_t state, int32_t animate, int32_t fromServer);
+
+        // ref: FUN_00731f40
+        void AttachWeaponsForSheath();
+
+        // ref: FUN_00736b60 / FUN_007367b0 / FUN_007368b0 / FUN_007369b0
+        void PlaySheathAnimation();
+        int32_t PlayMainHandSheath();
+        int32_t PlayOffHandSheath();
+        void PlayDrawAnimation();
+
+        // The model layer.
+
+        // ref: FUN_0072a480
+        // The display the unit should wear is not the one its model is.
+        bool NeedsModelUpdate();
+
+        // ref: FUN_007179d0
+        void SetUnitModel(CM2Model* model);
+
+        // ref: FUN_00722ae0 / FUN_0072cbb0
+        // The display's scale, and the unit eased to it.
+        float GetDisplayScale(int32_t displayID);
+        void UpdateDisplayScale(int32_t keepScale);
+
+        // ref: FUN_00728e70
+        // Every aura's visual again, after the model changed under them.
+        void ReplayAuraVisuals();
+
+        // ref: FUN_0072bc70
+        // The visual of the spell the unit is channelling.
+        void UpdateChannelVisual();
+
+        // ref: FUN_00717310
+        // How far through its current animation the unit is, 0..1.
+        float GetAnimationProgress();
+
+        // ref: FUN_00730100
+        // Dress the unit's model: its character component for a character display, then its items
+        // and the weapons in its hands. 0 while the model is not in.
+        int32_t BuildComponent();
+
+        // ref: FUN_0071d010
+        // The character component, from the display's extra row or, for `player`, the player's
+        // appearance; `raceSexFromExtra` takes race and sex from the extra row.
+        int32_t InitComponent(CGPlayer_C* player, int32_t raceSexFromExtra);
+
+        // ref: FUN_0071a430
+        // A player wearing a character display (model data flag 4, extra flag 1).
+        bool IsCharacterDisplayPlayer() const;
+
+        // ref: FUN_00716e20
+        // The item visuals among the unit's effects retake their sections.
+        void ApplyItemVisualEffects();
+
+        // ref: FUN_00716f10
+        // Ask the server for a mirror image's appearance (CMSG_GET_MIRRORIMAGE_DATA).
+        void RequestMirrorImageData();
 
         // ref: FUN_00715670 / FUN_00715690
         // The mount transition the unit is playing, and the effect that plays it.
@@ -706,6 +860,22 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         TSGrowableArray<CAuraSlotState> m_auraSlotStates[2];
         TSGrowableArray<int32_t> m_auraVisualSpells;
         uint8_t m_auraTypeMask[40] = {};
+        // +0x998: the display of what each hand holds, and +0x9a4 the items themselves, from the
+        // unit's virtual items (UpdateVirtualItem).
+        int32_t m_weaponDisplays[3] = {};
+        UNIT_WEAPON_INFO m_weaponInfo[3];
+        // +0xa3c..+0xa4c: the unit's footprint: its texture, length, width and particle scale.
+        int32_t m_footprintTexture = 0;
+        float m_footprintLength = 0.0f;
+        float m_footprintWidth = 0.0f;
+        float m_footprintParticleScale = 0.0f;
+        // +0xb3c: the scale of the display the unit wears (GetDisplayScale), which GetScale applies.
+        float m_displayScale = 1.0f;
+        // +0xb40: the ranged weapon's model while it is in the hand; +0xb44 its arrow.
+        CM2Model* m_rangedModel = nullptr;
+        CM2Model* m_rangedAmmoModel = nullptr;
+        // +0xb58: the sheath state before the current one.
+        int32_t m_previousSheathState = 0;
         // +0x9e4: when the unit last changed target (UNIT_FIELD_TARGET, FUN_00716900).
         uint32_t m_targetChangeTime = 0;
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).

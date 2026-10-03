@@ -51,6 +51,9 @@ class SpellRec {
         static const int32_t COLUMN_SCHOOL_MASK = 225;              // +0x284
         static const int32_t COLUMN_SPELL_MISSILE = 227;            // +0x28c
         static const int32_t COLUMN_SPELL_PRIORITY = 135;           // +0x21c
+        static const int32_t COLUMN_CASTING_TIME_INDEX = 28;        // +0x70
+        static const int32_t COLUMN_MAX_LEVEL = 37;                 // +0x94
+        static const int32_t COLUMN_BASE_LEVEL = 38;                // +0x98
         static const int32_t COLUMN_REQUIRED_AURA_VISION = 221;     // +0x274
 
         static const int32_t COLUMN_ICON = 133;
@@ -97,6 +100,10 @@ class SpellRec {
         int32_t m_spellMissileID;
         // Which of two auras on the same slot shows its visual: the higher one keeps it.
         int32_t m_spellPriority;
+        // SpellCastTimes.dbc row, and the levels the cast time and skill scale between.
+        int32_t m_castingTimeIndex;
+        int32_t m_maxLevel;
+        int32_t m_baseLevel;
         // The aura vision level a player needs to see the aura's visual (PLAYER_FIELD_BYTES2
         // byte 3), 0 for none.
         int32_t m_requiredAuraVision;

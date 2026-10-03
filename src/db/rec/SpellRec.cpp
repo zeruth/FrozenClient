@@ -61,6 +61,9 @@ bool SpellRec::Read(SFile* f, const char* stringBuffer) {
     this->m_schoolMask = columns[SpellRec::COLUMN_SCHOOL_MASK];
     this->m_spellMissileID = static_cast<int32_t>(columns[SpellRec::COLUMN_SPELL_MISSILE]);
     this->m_spellPriority = static_cast<int32_t>(columns[SpellRec::COLUMN_SPELL_PRIORITY]);
+    this->m_castingTimeIndex = static_cast<int32_t>(columns[SpellRec::COLUMN_CASTING_TIME_INDEX]);
+    this->m_maxLevel = static_cast<int32_t>(columns[SpellRec::COLUMN_MAX_LEVEL]);
+    this->m_baseLevel = static_cast<int32_t>(columns[SpellRec::COLUMN_BASE_LEVEL]);
     this->m_requiredAuraVision = static_cast<int32_t>(columns[SpellRec::COLUMN_REQUIRED_AURA_VISION]);
 
     for (int32_t i = 0; i < 2; i++) {

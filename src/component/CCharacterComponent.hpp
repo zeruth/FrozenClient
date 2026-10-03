@@ -62,6 +62,10 @@ class CCharacterComponent {
         static void FreeComponent(CCharacterComponent* component);
         static GEOCOMPONENTLINKS GetSheatheLink(SHEATHE_TYPE sheatheType, bool a2);
         static void Initialize();
+        // ref: FUN_004f18f0
+        // The components waiting to be composited are composited once their variations and items
+        // have loaded. On EVENT_ID_POLL, from Initialize.
+        static int32_t ProcessPending(const void* data, void* param);
         static void Initialize(EGxTexFormat textureFormat, uint32_t textureLevel, int32_t thread, int32_t compress);
         static void Paste(void* srcTexture, MipBits* dstMips, const C2iVector& a3, const C2iVector& a4, const C2iVector& a5, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel);
         static void PasteFromSkin(COMPONENT_SECTIONS section, void* srcTexture, MipBits* dstMips);
@@ -73,12 +77,19 @@ class CCharacterComponent {
         static void PasteTransparent8Bit(void* srcTexture, const BlpPalPixel* srcPal, MipBits* dstMips, const C2iVector& dstPos, uint32_t dstWidth, const C2iVector& srcPos, const C2iVector& srcSize, TCTEXTUREINFO& srcInfo, int32_t srcMipLevel, int32_t dstMipLevelOfs);
         static void RemoveHandItem(CM2Model* model, INVENTORY_SLOTS invSlot, SHEATHE_TYPE sheatheType, bool shield);
         static void RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link);
+        // ref: FUN_004eb070
+        // Take a hand's item off both places it can hang: the hand, and the sheath its type uses.
+        // `shield` makes the off hand's place the shield rather than the left hand.
+        static void RemoveHandItemLinks(CM2Model* model, INVENTORY_SLOTS invSlot, int32_t sheatheType, bool shield);
         static void ReplaceMonsterSkin(CM2Model* model, const CreatureDisplayInfoRec* displayInfoRec, const CreatureModelDataRec* modelDataRec);
         static void UpdateBaseTexture(EGxTexCommand cmd, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels);
         static void ValidateComponentData(ComponentData* data, COMPONENT_CONTEXT context);
 
         // Member variables
         uint32_t m_flags = 0x1 | 0x2 | 0x4;
+        // +0x00 in the reference: the component's link in the list of those waiting to be
+        // composited (0x00ac46e4), which RenderPrep(0) joins and RenderPrepSections leaves.
+        TSLink<CCharacterComponent> m_pendingLink;
         uint32_t m_sectionDirty = 0xFFFFFFFF;
         uint32_t m_memHandle;
         EGxTexFormat m_textureFormat = CCharacterComponent::s_gxFormat;
@@ -136,6 +147,13 @@ class CCharacterComponent {
         void RenderPrepAll();
         void RenderPrepSections();
         void RemoveItem(ITEM_SLOT itemSlot);
+        // ref: FUN_004ee6d0
+        // RemoveItem by inventory slot, as AddItemBySlot is AddItem by one.
+        void RemoveItemBySlot(INVENTORY_SLOTS invSlot);
+        // ref: FUN_004f1fc0
+        // A baked NPC component's whole skin is one texture (npcBakedTexturePath), put on the
+        // model's skin slot in place of the composited one.
+        int32_t LoadBakedTexture(const char* a2);
         void RemoveItemByInventoryType(int32_t inventoryType);
         void ReplaceExtraSkinTexture(const char* a2);
         void ReplaceHairTexture(int32_t hairStyleID, const char* a3);

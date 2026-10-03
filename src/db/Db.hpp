@@ -32,6 +32,7 @@
 #include "db/rec/SpellVisualKitModelAttachRec.hpp"
 #include "db/rec/SpellVisualKitAreaModelRec.hpp"
 #include "db/rec/SpellEffectCameraShakesRec.hpp"
+#include "db/rec/SpellCastTimesRec.hpp"
 #include "db/rec/SpellChainEffectsRec.hpp"
 #include "db/rec/LightRec.hpp"
 #include "db/rec/LightParamsRec.hpp"
@@ -100,6 +101,7 @@ extern WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 extern WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 extern WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 extern WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
+extern WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
 extern WowClientDB<SpellChainEffectsRec> g_spellChainEffectsDB;
 extern WowClientDB<VehicleSeatRec> g_vehicleSeatDB;
 extern WowClientDB<LightRec> g_lightDB;

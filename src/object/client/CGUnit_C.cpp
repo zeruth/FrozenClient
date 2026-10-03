@@ -1,6 +1,13 @@
 #include "object/client/CGUnit_C.hpp"
+#include <storm/String.hpp>
+#include "ui/game/PortraitButton.hpp"
+#include "component/ComponentData.hpp"
+#include "client/ClientServices.hpp"
+#include "net/Types.hpp"
 #include "object/client/SpellVisuals.hpp"
 #include "object/client/Mirror.hpp"
+#include "util/Random.hpp"
+#include <tempest/random/CRandom.hpp>
 #include "console/CVar.hpp"
 #include "console/Types.hpp"
 #include "model/CM2Scene.hpp"
@@ -205,6 +212,30 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 {
     this->m_mountSound = STORM_NEW(SOUNDKITOBJECT);
 
+    // What each hand holds, from the virtual items (0x0073fbd3 .. 0x0073fc88); later changes come
+    // through OnVirtualItemChanged.
+    for (int32_t hand = 0; hand < 3; hand++) {
+        auto item = g_itemDB.GetRecord(this->m_unit ? this->m_unit->virtualItemSlotID[hand] : 0);
+
+        UNIT_WEAPON_INFO info;
+
+        if (item) {
+            this->m_weaponDisplays[hand] = item->m_displayInfoID;
+            info.m_class = static_cast<uint8_t>(item->m_classID);
+            info.m_subclass = static_cast<uint8_t>(item->m_subclassID);
+            info.m_soundOverride = static_cast<uint8_t>(item->m_soundOverrideSubclassID);
+            info.m_material = static_cast<uint8_t>(item->m_material);
+            info.m_inventoryType = static_cast<uint8_t>(item->m_inventoryType);
+            info.m_sheathType = static_cast<uint8_t>(item->m_sheatheType);
+        } else {
+            this->m_weaponDisplays[hand] = 0;
+        }
+
+        this->m_weaponInfo[hand] = info;
+    }
+
+    this->m_targetChangeTime = CWorld::GetTickTimeMs() - 1000;
+
     // TODO
 
     this->RefreshDataPointers();
@@ -346,84 +377,6 @@ float CGUnit_C::GetModelScale() const {
     return scale > 0.0f ? scale : 1.0f;
 }
 
-bool CGUnit_C::BuildNpcCharacterComponent() {
-    if (!this->m_model) {
-        return false;
-    }
-
-    auto disp = g_creatureDisplayInfoDB.GetRecord(this->GetDisplayID());
-
-    if (!disp || disp->m_extendedDisplayInfoID <= 0) {
-        return false; // an ordinary creature model, not a character
-    }
-
-    auto extra = g_creatureDisplayInfoExtraDB.GetRecord(disp->m_extendedDisplayInfoID);
-
-    if (!extra) {
-        return false;
-    }
-
-    // Dress it exactly like a player character, but from the creature's extended (character) data.
-    ComponentData data;
-    data.raceID = extra->m_displayRaceID;
-    data.sexID = extra->m_displaySexID;
-    data.classID = 1; // class does not affect appearance; a valid value keeps the component happy
-    data.skinColorID = extra->m_skinID;
-    data.faceID = extra->m_faceID;
-    data.hairStyleID = extra->m_hairStyleID;
-    data.hairColorID = extra->m_hairColorID;
-    data.facialHairStyleID = extra->m_facialHairID;
-
-    this->m_model->AddRef();
-    data.model = this->m_model;
-    data.flags |= 0x2;
-
-    // A unit can be built more than once (respawn, tile reload, display change). Free any component
-    // it already carries first: the component heap is a fixed-size ObjectAlloc pool, and leaking
-    // into it eventually makes AllocComponent return null -- which then crashed in Init, since
-    // neither call site checked. Release the model reference taken just above if it does fail.
-    if (this->m_characterComponent) {
-        CCharacterComponent::FreeComponent(this->m_characterComponent);
-        this->m_characterComponent = nullptr;
-    }
-
-    this->m_characterComponent = CCharacterComponent::AllocComponent();
-
-    if (!this->m_characterComponent) {
-        this->m_model->Release();
-        return false;
-    }
-
-    this->m_characterComponent->Init(&data, nullptr);
-
-    // NPCItemDisplay[11] holds ItemDisplayInfo ids for the visible armour slots, in this order.
-    static const int32_t s_slotInvType[11] = {
-        1,  // head
-        3,  // shoulders
-        4,  // shirt (body)
-        5,  // chest
-        6,  // waist
-        7,  // legs
-        8,  // feet
-        9,  // wrists
-        10, // hands
-        16, // back (cloak)
-        19  // tabard
-    };
-
-    for (int32_t i = 0; i < 11; i++) {
-        int32_t displayID = extra->m_npcitemDisplay[i];
-
-        if (displayID > 0) {
-            this->m_characterComponent->AddItemByInventoryType(s_slotInvType[i], displayID);
-        }
-    }
-
-    this->m_characterComponent->RenderPrep(1);
-    this->m_model->IsDrawable(1, 1);
-
-    return true;
-}
 
 C3Vector CGUnit_C::GetPosition() const {
     return this->CGUnit::GetPosition();
@@ -441,12 +394,18 @@ WOWGUID CGUnit_C::GetTransportGUID() const {
     return this->m_localMove.GetTransportGUID();
 }
 
+// ref: FUN_0073fcc0
+// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the collision box
+// (FUN_00725f50), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
+// party and raid slots (FUN_005139b0, FUN_0054d1c0), the vehicle and passenger starts and the
+// ObjectEffect package (FUN_00725df0) are the Movement, PlayerName, party and ObjectEffect ports'.
 void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
-    // TODO
+    this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
+
+    this->UpdateShadowRadius();
+    this->UpdateEffectAttachments();
 
     this->CGObject_C::PostInit(time, init, a4);
-
-    // TODO
 
     if (this->m_displayInfo) {
         CCharacterComponent::ApplyMonsterGeosets(this->m_model, this->m_displayInfo);
@@ -457,7 +416,32 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
         }
     }
 
-    // TODO
+    this->m_mountDisplayID = this->m_unit->mountDisplayID;
+
+    if (this->m_modelData) {
+        this->m_footprintTexture = this->m_modelData->m_footprintTextureID;
+        this->m_footprintLength = this->m_modelData->m_footprintTextureWidth * 0.02777777798473835f;
+        this->m_footprintWidth = 0.02777777798473835f * this->m_modelData->m_footprintTextureLength;
+        this->m_footprintParticleScale = this->m_modelData->m_footprintParticleScale;
+    }
+
+    this->UpdateMountSound();
+
+    // The component is built once the model is in (GetHidden -> BuildComponent).
+    if (this->m_characterComponent) {
+        CCharacterComponent::FreeComponent(this->m_characterComponent);
+        this->m_characterComponent = nullptr;
+    }
+
+    this->m_stateFlags = (this->m_stateFlags & ~0x20000u) | 0x400000;
+
+    this->PlaceModel(0.0f);
+
+    if (this->m_unit->health < 1) {
+        this->StopAllEffects(0);
+    } else if (0 < this->m_unit->mountDisplayID) {
+        this->Mount(1, 1);
+    }
 
     this->m_smoothFacing = CMath::normalizeangle0to2pi(this->GetRawFacing());
 
@@ -4474,15 +4458,15 @@ bool CGUnit_C::DrawsThroughComponent() const {
 }
 
 // ref: FUN_00723730
-// PHASE4(Player_C): a player's own item goes back through CGPlayer_C's visible item applier
-// (FUN_006e08c0), which is the Player_C equipment port's; until it lands the player's body is
-// rebuilt from its equipment the way frozen dresses it.
 void CGUnit_C::ReapplyItemSection(int32_t section) {
     if (this->DrawsThroughComponent() && this->IsA(TYPE_PLAYER)) {
         int32_t slot = ComponentItemSlotToInvSlot(section);
 
         if (slot != -1) {
-            static_cast<CGPlayer_C*>(this)->BuildCharacterComponent();
+            this->m_characterComponent->RemoveItem(static_cast<ITEM_SLOT>(section));
+
+            auto player = static_cast<CGPlayer_C*>(this);
+            player->ApplyVisibleItem(&player->Player()->visibleItems[slot], slot);
         }
 
         return;
@@ -5011,66 +4995,10 @@ void CGUnit_C::UpdateObjectEffects() {
     }
 }
 
-void CGUnit_C::DressNpcModel(CM2Model* model) {
-    auto unit = this->Unit();
-
-    if (!this->BuildNpcCharacterComponent()) {
-        auto modelDataRec = this->GetModelData();
-        auto displayInfoRec = g_creatureDisplayInfoDB.GetRecord(this->GetDisplayID());
-
-        if (displayInfoRec) {
-            CCharacterComponent::ApplyMonsterGeosets(model, displayInfoRec);
-            CCharacterComponent::ReplaceMonsterSkin(model, displayInfoRec, modelDataRec);
-        }
-    }
-
-    if (!unit) {
-        return;
-    }
-
-    static const INVENTORY_SLOTS handSlots[3] = { INVSLOT_MAINHAND, INVSLOT_OFFHAND, INVSLOT_RANGED };
-    bool sheathed = (unit->bytes2 & 0xFF) == 0;
-
-    for (int32_t i = 0; i < 3; i++) {
-        int32_t entryID = unit->virtualItemSlotID[i];
-
-        if (!entryID) {
-            continue;
-        }
-
-        auto itemRec = g_itemDB.GetRecord(entryID);
-
-        if (!itemRec || itemRec->m_displayInfoID <= 0) {
-            continue;
-        }
-
-        auto displayRec = g_itemDisplayInfoDB.GetRecord(itemRec->m_displayInfoID);
-
-        if (!displayRec) {
-            continue;
-        }
-
-        bool shield = itemRec->m_inventoryType == INVTYPE_SHIELD;
-        bool heldRight = itemRec->m_inventoryType == INVTYPE_RANGEDRIGHT || itemRec->m_inventoryType == INVTYPE_THROWN;
-
-        CCharacterComponent::AddHandItem(
-            model,
-            displayRec,
-            handSlots[i],
-            static_cast<SHEATHE_TYPE>(itemRec->m_sheatheType),
-            sheathed,
-            shield,
-            heldRight,
-            0
-        );
-    }
-}
 
 // ref: FUN_0071c0e0
-// +0xb3c in the reference is the display scale, cached; frozen reads it from the display and
-// model data rows (GetModelScale).
 float CGUnit_C::GetScale() const {
-    float scale = this->GetModelScale() * this->m_scaleMultiplier * this->m_scale;
+    float scale = this->m_displayScale * this->m_scaleMultiplier * this->m_scale;
 
     if (this->m_mountModel) {
         scale *= this->m_mountScale;
@@ -5756,6 +5684,10 @@ void CGUnit_C::RemoveColorEffects(int32_t spellID) {
 // Field handlers
 // ------------------------------------------------------------------------------------------------
 
+int32_t OnVirtualItemChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param);
+int32_t OnDisplayChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param);
+int32_t OnSheathChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param);
+
 namespace {
 
 CGUnit_C* HandlerUnit(WOWGUID guid, int32_t line) {
@@ -5816,16 +5748,21 @@ int32_t OnDynamicFlagsChanged(WOWGUID guid, uint32_t offset, uint32_t size, cons
 
 // ref: FUN_00741d00
 // PARTIAL: the reference registers 30 handlers here; each joins as its body is ported. Still to
-// come: the virtual items (0xc8, FUN_00728e20), level (0xc0, FUN_00730050), entry (object 0xc,
+// come: level (0xc0, FUN_00730050), entry (object 0xc,
 // FUN_0072ceb0), health (0x48, FUN_0073f330), power and max power (0x4c/0x6c, FUN_007234d0 /
 // FUN_007235c0), power type (0x47, FUN_00723620), aura state (0xdc, FUN_00716810), flags and flags 2
 // (0xd4/0xd8, FUN_0073f270 / FUN_0073f2b0), visibility (0x112, FUN_0073f2f0), PvP (0x1d1,
-// FUN_00728d20), faction (0xc4, FUN_00723680), charm and summon (0x18, FUN_00728d60), display
-// (0xf4, FUN_00716860), stand state (0x110, FUN_0073f460), NPC flags (0x130, FUN_0071c9d0), pet name
+// FUN_00728d20), faction (0xc4, FUN_00723680), charm and summon (0x18, FUN_00728d60), stand state
+// (0x110, FUN_0073f460), NPC flags (0x130, FUN_0071c9d0), pet name
 // timestamp (0x118, FUN_0072cf70), 0x124 (FUN_00741a00), channel (0x38, FUN_0073f4f0), pet number
-// (0x114, FUN_0072cff0), scale (object 0x10, FUN_0072d070), sheath (0x1d0, FUN_00737aa0) and hover
-// height (0x230, FUN_0071ca10).
+// (0x114, FUN_0072cff0), scale (object 0x10, FUN_0072d070) and hover height (0x230, FUN_0071ca10).
 void RegisterUnitFieldHandlers() {
+    for (uint32_t offset = 0xC8; offset < 0xD4; offset += 4) {
+        MirrorRegisterHandler(ID_UNIT, offset, 4, &OnVirtualItemChanged, nullptr, 0, 0);
+    }
+
+    MirrorRegisterHandler(ID_UNIT, 0xF4, 4, &OnDisplayChanged, nullptr, 1, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x1D0, 1, &OnSheathChanged, nullptr, 0, 0);
     MirrorRegisterHandler(ID_UNIT, 0x113, 1, &OnAnimTierChanged, nullptr, 0, 0);
     MirrorRegisterHandler(ID_UNIT, 0xFC, 4, &OnMountDisplayChanged, nullptr, 0, 0);
     MirrorRegisterHandler(ID_UNIT, 0x134, 4, &OnDynamicFlagsChanged, nullptr, 0, 0);
@@ -5846,4 +5783,1857 @@ void UnitInitialize() {
     }
 
     UnitSoundInitialize();
+}
+
+// ------------------------------------------------------------------------------------------------
+// The unit's own slots
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// How often each kind of creature sound plays, in percent (0x00adb5d8).
+const uint32_t s_unitSoundChance[14] = { 70, 100, 60, 100, 100, 40, 100, 100, 100, 100, 100, 100, 100, 0 };
+
+// The impact sound families (0x00a37170).
+const int32_t s_impactSoundTypes[4] = { 0, 8, 7, 9 };
+
+// When the unit's last "kind 5" sound played (DAT_00ca12d4): those wait ten seconds between them.
+uint32_t s_lastStandSound;
+
+// ref: FUN_007461e0
+int32_t GetCreatureSound(const CreatureSoundDataRec* sound, int32_t kind) {
+    if (!sound) {
+        return 0;
+    }
+
+    switch (kind) {
+        case 0: return sound->m_soundExertionID;
+        case 1: return sound->m_soundExertionCriticalID;
+        case 2:
+        case 0xD: return sound->m_soundInjuryID;
+        case 3: return sound->m_soundInjuryCriticalID;
+        case 4: return sound->m_soundStunID;
+        case 5: return sound->m_soundStandID;
+        case 7: return sound->m_soundAggroID;
+        case 8: return sound->m_soundAlertID;
+        case 9: return sound->m_soundInjuryCrushingBlowID;
+        case 10: return sound->m_soundWingGlideID;
+        case 0xB: return sound->m_birthSoundID;
+        case 0xC: return sound->m_spellCastDirectedSoundID;
+        default: return 0;
+    }
+}
+
+// ref: FUN_00746b30
+// The sound kind's channel: 9/0xf for exertions, 0xb/0x10 for injuries, the second when the
+// creature template asks for its sounds louder (type flags 0x20).
+int32_t GetUnitSoundChannel(const CGUnit_C* unit, int32_t kind) {
+    bool loud = unit->m_creatureStats && (unit->m_creatureStats->m_typeFlags & 0x20);
+
+    switch (kind) {
+        case 0:
+        case 1:
+            return loud ? 0xF : 9;
+
+        case 2:
+        case 3:
+        case 9:
+            return loud ? 0x10 : 0xB;
+
+        default:
+            return 0;
+    }
+}
+
+} // namespace
+
+// ref: FUN_00747310
+void CGUnit_C::PlayUnitSound(int32_t kind, int32_t force) {
+    if (!force) {
+        uint32_t roll = static_cast<uint32_t>((static_cast<uint64_t>(CRandom::uint32(g_rndSeed)) * 101) >> 32);
+
+        if (s_unitSoundChance[kind] < roll) {
+            return;
+        }
+    }
+
+    if (kind == 5) {
+        uint32_t now = CWorld::GetTickTimeMs();
+
+        if (static_cast<int32_t>(now - s_lastStandSound - 10000) < 0) {
+            return;
+        }
+
+        s_lastStandSound = now;
+    }
+
+    int32_t soundID = GetCreatureSound(this->GetSoundData(), kind);
+
+    if (!soundID) {
+        return;
+    }
+
+    C3Vector position = this->GetPosition();
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+    properties.m_type = GetUnitSoundChannel(this, kind);
+
+    if (CGUnit_C::s_activeMover == this->GetGUID() || this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        static CVar* listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+        bool atCharacter = listenerAtCharacter && listenerAtCharacter->GetInt() != 0;
+
+        if (atCharacter) {
+            properties.m_fadeOutTime = 0.6499999761581421f;
+        }
+
+        properties.int20 = 0x6E;
+
+        SI2::PlaySoundKit(soundID, atCharacter ? nullptr : &position, nullptr, &properties, 0, nullptr, 1, 0);
+
+        return;
+    }
+
+    if (kind == 7) {
+        properties.int30 = 0;
+    }
+
+    SI2::PlaySoundKit(soundID, &position, nullptr, &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_007464d0
+// TODO(SoundInterface2DSP): FUN_004cfc10 plays the foley of the model data's foley material.
+void CGUnit_C::PlayArmorFoley() {
+}
+
+// ref: FUN_007463e0
+int32_t CGUnit_C::GetImpactSoundType() {
+    if (this->m_soundData && static_cast<uint32_t>(this->m_soundData->m_creatureImpactType) < 4) {
+        return s_impactSoundTypes[this->m_soundData->m_creatureImpactType];
+    }
+
+    return 0;
+}
+
+// ref: FUN_00716490
+bool CGUnit_C::IsDead() const {
+    return this->m_unit->health <= 0;
+}
+
+// ref: FUN_0071f440
+const UNIT_WEAPON_INFO* CGUnit_C::GetWeaponInfo(int32_t hand, int32_t ignoreHidden) {
+    if (!this->GetWeaponDisplayID(hand)) {
+        return nullptr;
+    }
+
+    if (!ignoreHidden) {
+        if (hand == 0) {
+            if (this->m_unit->flags & 0x200000) {
+                auto main = this->GetWeaponInfo(0, 1);
+
+                if (main) {
+                    return main->m_class == 2 ? nullptr : &this->m_weaponInfo[0];
+                }
+            }
+        } else if (hand == 1) {
+            if (this->m_unit->flags & 0x200000) {
+                this->GetWeaponInfo(0, 1);
+
+                if (!this->IsHandHidden(0)) {
+                    auto off = this->GetWeaponInfo(1, 1);
+
+                    if (off && off->m_class == 2) {
+                        return nullptr;
+                    }
+                }
+            }
+
+            if (this->m_unit->flags2 & 0x80) {
+                return nullptr;
+            }
+        } else if (hand == 2) {
+            if (this->m_unit->flags2 & 0x400) {
+                return nullptr;
+            }
+        }
+    }
+
+    return &this->m_weaponInfo[hand];
+}
+
+// ref: FUN_0071f540
+const ItemDisplayInfoRec* CGUnit_C::GetWeaponDisplay(int32_t hand) {
+    return g_itemDisplayInfoDB.GetRecord(this->m_weaponDisplays[hand]);
+}
+
+// ref: FUN_00718b10
+int32_t CGUnit_C::GetWeaponDisplayID(int32_t hand) {
+    return this->m_weaponDisplays[hand];
+}
+
+// ref: FUN_0071a380
+uint8_t CGUnit_C::GetStandStateByte() const {
+    return static_cast<uint8_t>(this->m_unit->bytes1 & 0xFF);
+}
+
+// ref: FUN_0071aa70
+int32_t CGUnit_C::GetSpellSkill(const SpellRec* spell) {
+    int32_t skill = this->m_unit->level * 5;
+
+    if (0 < spell->m_maxLevel && spell->m_maxLevel * 5 <= skill) {
+        skill = spell->m_maxLevel * 5;
+    }
+
+    return skill < 0 ? 0 : skill;
+}
+
+// ref: FUN_00734f70
+void CGUnit_C::GetDefenseSkill(int32_t* skill, int32_t* bonus) {
+    *skill = this->m_unit->level * 5;
+    *bonus = 0;
+}
+
+// ref: FUN_00734fa0
+void CGUnit_C::GetWeaponSkill(int32_t attack, int32_t* skill, int32_t* bonus) {
+    *skill = this->m_unit->level * 5;
+    *bonus = 0;
+}
+
+// ref: FUN_0071ad20
+int32_t CGUnit_C::GetSpellCastTime(const SpellRec* spell) {
+    if (!spell) {
+        return 0;
+    }
+
+    auto castTime = g_spellCastTimesDB.GetRecord(spell->m_castingTimeIndex);
+
+    if (!castTime) {
+        return 0;
+    }
+
+    int32_t ms = (this->GetSpellSkill(spell) / 5 - spell->m_baseLevel) * castTime->m_perLevel + castTime->m_base;
+
+    if (ms < castTime->m_minimum) {
+        ms = castTime->m_minimum;
+    }
+
+    if ((spell->m_attributes & 0x30) == 0 && (spell->m_attributesEx3 & 0x20000000) == 0 && 0 < ms) {
+        float speed = this->m_unit->modCastingSpeed;
+
+        if (speed != 1.0f) {
+            ms = static_cast<int32_t>(lrintf(static_cast<float>(ms) * speed));
+        }
+    }
+
+    if (spell->m_attributes & 0x2) {
+        ms = 0x7FFFFFFF;
+    }
+
+    return ms < 1 ? 0 : ms;
+}
+
+// ref: FUN_006e6fc0
+float CGUnit_C::GetMovementPitch() const {
+    return this->m_localMove.GetPitch();
+}
+
+// ------------------------------------------------------------------------------------------------
+// Weapons and the sheath
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// The inventory slot each hand's virtual item goes through (0x00adac04). Only two entries: the
+// ranged hand reads past the table, into a value both helpers below reject, so a creature's ranged
+// virtual item never goes on here -- it goes through AttachRangedWeapon.
+const uint32_t s_handInvSlots[2] = { 0xF, 0x10 };
+
+uint32_t HandInvSlot(int32_t hand) {
+    return hand < 2 ? s_handInvSlots[hand] : 0x3F000000;
+}
+
+} // namespace
+
+// ref: FUN_00718fc0
+int32_t CGUnit_C::IsHandHidden(int32_t hand) {
+    if (hand == 2) {
+        return 0;
+    }
+
+    if (this->m_unit->flags & 0x200000) {
+        auto main = this->GetWeaponInfo(0, 1);
+
+        if (hand == 0) {
+            return main && main->m_class == 2 ? 1 : 0;
+        }
+
+        if (!this->IsHandHidden(0)) {
+            auto off = this->GetWeaponInfo(1, 1);
+
+            if (off && off->m_class == 2) {
+                return 1;
+            }
+        }
+    }
+
+    if (hand == 1 && (this->m_unit->flags2 & 0x80)) {
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_00725010
+// TODO(WeaponTrail): FUN_00720170 gives the new weapon its trail.
+void CGUnit_C::UpdateVirtualItem(int32_t hand, int32_t oldEntry) {
+    auto old = g_itemDB.GetRecord(oldEntry);
+    auto item = g_itemDB.GetRecord(this->m_unit->virtualItemSlotID[hand]);
+
+    this->m_weaponDisplays[hand] = item ? item->m_displayInfoID : 0;
+
+    UNIT_WEAPON_INFO info;
+
+    if (item) {
+        info.m_class = static_cast<uint8_t>(item->m_classID);
+        info.m_subclass = static_cast<uint8_t>(item->m_subclassID);
+        info.m_soundOverride = static_cast<uint8_t>(item->m_soundOverrideSubclassID);
+        info.m_material = static_cast<uint8_t>(item->m_material);
+        info.m_inventoryType = static_cast<uint8_t>(item->m_inventoryType);
+        info.m_sheathType = static_cast<uint8_t>(item->m_sheatheType);
+    }
+
+    this->m_weaponInfo[hand] = info;
+
+    int32_t oldSheath = old ? old->m_sheatheType : 0;
+    CCharacterComponent::RemoveHandItemLinks(this->m_model, static_cast<INVENTORY_SLOTS>(HandInvSlot(hand)), oldSheath, false);
+
+    if (hand == 1) {
+        CCharacterComponent::RemoveHandItemLinks(this->m_model, static_cast<INVENTORY_SLOTS>(s_handInvSlots[1]), oldSheath, true);
+    }
+
+    auto now = this->GetWeaponInfo(hand, 0);
+
+    if (now) {
+        auto display = this->GetWeaponDisplay(hand);
+
+        if (display) {
+            CCharacterComponent::AddHandItem(this->m_model, display, static_cast<INVENTORY_SLOTS>(HandInvSlot(hand)),
+                                             static_cast<SHEATHE_TYPE>(now->m_sheathType), this->m_sheathState == 0,
+                                             now->m_inventoryType == 0xE, false, 0);
+        }
+    }
+}
+
+// ref: FUN_00721ed0
+bool CGUnit_C::IsFightingUnarmed() {
+    uint32_t animID = 0xFFFFFFFF;
+
+    if (this->m_model && this->m_model->IsLoaded(0, 0)) {
+        if (this->m_upperBodyBoneId == 0xFFFFFFFF || (animID = this->m_model->GetBoneUint90(this->m_upperBodyBoneId)) == 0xFFFFFFFF) {
+            animID = this->m_model->GetBoneUint90(0xFFFFFFFF);
+        }
+    }
+
+    if (IsUnarmedAnimation(animID)) {
+        return true;
+    }
+
+    return IsCombatAnimation(animID) && !this->GetWeaponInfo(0, 0);
+}
+
+// ref: FUN_0072dbc0
+// TODO(WeaponTrail): FUN_00720170, as in UpdateVirtualItem; TODO(Player_C): a player's hand item
+// also takes its enchantment visual (FUN_006e1290).
+void CGUnit_C::AttachHandItem(int32_t hand) {
+    if (this->m_modelData && (this->m_modelData->m_flags & 0x10)) {
+        return;
+    }
+
+    if (!this->m_model) {
+        return;
+    }
+
+    auto info = this->GetWeaponInfo(hand, 0);
+
+    if (!info) {
+        return;
+    }
+
+    auto display = this->GetWeaponDisplay(hand);
+
+    if (!display) {
+        return;
+    }
+
+    int32_t sheathType = info->m_sheathType;
+    bool sheathed;
+    int32_t state;
+
+    if (this->m_sheathState == 2) {
+        sheathed = hand != 2;
+        state = 2;
+    } else {
+        int32_t effective;
+
+        if (hand == 1 && this->IsFightingUnarmed()) {
+            state = this->m_sheathState;
+            effective = AdjustSheathState(state, reinterpret_cast<const uint8_t*>(this->GetWeaponInfo(0, 0)),
+                                          reinterpret_cast<const uint8_t*>(info));
+        } else {
+            state = this->m_sheathState;
+            effective = state;
+        }
+
+        sheathed = effective == 0;
+    }
+
+    bool shield = info->m_inventoryType == 0xE;
+    bool heldRight = info->m_inventoryType == 0x1A || info->m_inventoryType == 0x19;
+
+    uint32_t invSlot;
+    uint32_t hand_link;
+    bool first;
+
+    if (hand == 0) {
+        if (this->m_unit->flags & 0x200000) {
+            auto main = this->GetWeaponInfo(0, 1);
+
+            if (main && main->m_class == 2) {
+                return;
+            }
+        }
+
+        hand_link = 1;
+        invSlot = 0xF;
+        first = true;
+    } else if (hand == 1) {
+        if (this->m_unit->flags & 0x200000) {
+            this->GetWeaponInfo(0, 1);
+
+            if (!this->IsHandHidden(0)) {
+                auto off = this->GetWeaponInfo(1, 1);
+
+                if (off && off->m_class == 2) {
+                    return;
+                }
+            }
+        }
+
+        if (this->m_unit->flags2 & 0x80) {
+            return;
+        }
+
+        if (!this->IsA(TYPE_PLAYER)) {
+            auto main = this->GetWeaponInfo(0, 0);
+
+            if (main && main->m_class == 2) {
+                uint8_t sub = main->m_subclass;
+
+                if (sub == 1 || sub == 5 || sub == 8 || sub == 10 || sub == 12 || sub == 6 || sub == 17 || sub == 20) {
+                    return;
+                }
+            }
+        }
+
+        hand_link = 2;
+        invSlot = 0x10;
+        first = false;
+    } else {
+        if (state != 2) {
+            CCharacterComponent::RemoveHandItemLinks(this->m_model, static_cast<INVENTORY_SLOTS>(0x11), 0, false);
+
+            return;
+        }
+
+        if (!this->IsHandHidden(heldRight ? 0 : 1)) {
+            this->AttachRangedWeapon(0, nullptr);
+        }
+
+        return;
+    }
+
+    // While the ranged weapon is out, the hand item is kept rather than rebuilt.
+    CM2Model* kept = nullptr;
+
+    if (this->m_sheathState == 2) {
+        for (auto child = this->m_model->m_attachList; child; child = child->m_attachNext) {
+            if (child->m_attachId == hand_link) {
+                child->m_refCount++;
+                child->DetachFromParent();
+                kept = child;
+
+                break;
+            }
+        }
+    }
+
+    int32_t link = CCharacterComponent::AddHandItem(this->m_model, display, static_cast<INVENTORY_SLOTS>(invSlot),
+                                                    static_cast<SHEATHE_TYPE>(sheathType), sheathed, shield, heldRight, 0);
+
+    (void)link;
+    (void)first;
+
+    if (kept) {
+        kept->AttachToParent(this->m_model, hand_link, nullptr, 0);
+        kept->Release();
+    }
+}
+
+// ref: FUN_0072afe0
+// TODO(Combat): an active player's auto-shot stops (FUN_007272c0) when nothing else is attacking.
+void CGUnit_C::ReleaseRangedWeapon() {
+    this->m_animFlags &= ~0x4000u;
+
+    if (this->m_rangedAmmoModel && this->m_rangedAmmoModel->m_attachParent) {
+        this->m_rangedAmmoModel->DetachFromParent();
+    }
+
+    if (this->m_rangedModel && this->m_rangedModel->IsLoaded(0, 0)
+        && this->m_rangedModel->GetBoneUint90(0xFFFFFFFF) != 0xA1) {
+        this->m_rangedModel->SetBoneSequence(0xFFFFFFFF, 0, 0xFFFFFFFF, 0, 1.0f, 1, 1);
+    }
+}
+
+// ref: FUN_0072b7f0
+// TODO(Combat): the active player re-arms its auto-shot at the target when the spell it is
+// casting or channelling (+0xa60) is one (FUN_0072b4a0); TODO(Player_C): a player's quiver (item
+// section 11) is added or removed with the bow.
+int32_t CGUnit_C::AttachRangedWeapon(int32_t inHand, uint8_t* heldRight) {
+    if (this->m_modelData && (this->m_modelData->m_flags & 0x10)) {
+        return 0;
+    }
+
+    auto info = this->GetWeaponInfo(2, 0);
+
+    if (!info) {
+        return 0;
+    }
+
+    this->ReleaseRangedWeapon();
+
+    bool right = info->m_inventoryType == 0x1A || info->m_inventoryType == 0x19;
+
+    if (heldRight) {
+        *heldRight = right ? 1 : 0;
+    }
+
+    if (this->m_rangedModel) {
+        this->m_rangedModel->m_flag20 = 1;
+        this->m_rangedModel->m_lightingCallback = nullptr;
+        this->m_rangedModel->m_lightingArg = nullptr;
+        this->m_rangedModel->Release();
+        this->m_rangedModel = nullptr;
+    }
+
+    if (!inHand) {
+        this->m_model->DetachAllChildrenById(1);
+        this->m_model->DetachAllChildrenById(2);
+        this->m_model->DetachAllChildrenById(0);
+    }
+
+    auto display = this->GetWeaponDisplay(2);
+    int32_t link = CCharacterComponent::AddHandItem(this->m_model, display, static_cast<INVENTORY_SLOTS>(0x11),
+                                                    static_cast<SHEATHE_TYPE>(info->m_sheathType), inHand != 0, false, right, 0);
+
+    for (auto child = this->m_model->m_attachList; child; child = child->m_attachNext) {
+        if (static_cast<int32_t>(child->m_attachId) == link) {
+            this->m_rangedModel = child;
+            child->m_refCount++;
+            child->SetSequenceDoneCallback(nullptr, 0);
+
+            break;
+        }
+    }
+
+    if (inHand) {
+        this->UpdateSheathedAuraVisuals(1, 0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_007310a0
+int32_t CGUnit_C::MoveHandItem(int32_t hand, int32_t toSheath) {
+    auto model = this->m_model;
+
+    if (!model) {
+        return 0;
+    }
+
+    auto info = this->GetWeaponInfo(hand, 0);
+
+    if (!info) {
+        return 0;
+    }
+
+    bool rightHanded = hand == 0 || info->m_inventoryType == 0x1A || info->m_inventoryType == 0x19;
+
+    uint32_t handLink;
+
+    if (hand == 0) {
+        handLink = 1;
+    } else if (hand == 1) {
+        handLink = info->m_inventoryType != 0xE ? 2 : 0;
+    } else if (hand == 2) {
+        handLink = rightHanded ? 1 : 2;
+    } else {
+        return 0;
+    }
+
+    uint32_t from;
+    uint32_t to;
+
+    if (!toSheath) {
+        from = CCharacterComponent::GetSheatheLink(static_cast<SHEATHE_TYPE>(info->m_sheathType), rightHanded);
+        to = handLink;
+    } else {
+        from = handLink;
+        to = CCharacterComponent::GetSheatheLink(static_cast<SHEATHE_TYPE>(info->m_sheathType), rightHanded);
+    }
+
+    // TODO(Player_C): the active player holding a shield while its fishing pole flag (DAT_00bd19b8)
+    // is up leaves the shield off.
+
+    for (auto child = model->m_attachList; child; child = child->m_attachNext) {
+        if (child->m_attachId != from) {
+            continue;
+        }
+
+        child->m_refCount++;
+        child->DetachFromParent();
+
+        if (to != 0xFFFFFFFF) {
+            child->AttachToParent(model, to, nullptr, 0);
+        }
+
+        child->Release();
+
+        if (handLink != 0) {
+            if (to == handLink) {
+                CCharacterComponent::ComponentCloseFingers(model, static_cast<COMP_HAND_SLOT>(handLink != 1));
+            } else {
+                CCharacterComponent::ComponentOpenFingers(model, static_cast<COMP_HAND_SLOT>(handLink != 1));
+            }
+        }
+
+        if (hand != 2) {
+            if (toSheath && rightHanded) {
+                this->UpdateSheathedAuraVisuals(1, 0);
+            }
+
+            return 1;
+        }
+
+        if (!toSheath) {
+            return 1;
+        }
+
+        this->AttachHandItem(0);
+        this->AttachHandItem(1);
+
+        if (rightHanded) {
+            this->UpdateSheathedAuraVisuals(1, 0);
+        }
+
+        return 1;
+    }
+
+    this->AttachHandItem(hand);
+
+    if (toSheath && rightHanded) {
+        this->UpdateSheathedAuraVisuals(1, 0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00736d30
+// PHASE4(Vehicle_C): an animated draw repeats its bone release on every live passenger.
+void CGUnit_C::SetSheathState(int32_t state, int32_t animate, int32_t fromServer) {
+    if (this->IsFightingUnarmed()) {
+        state = AdjustSheathState(state, reinterpret_cast<const uint8_t*>(this->GetWeaponInfo(0, 0)),
+                                  reinterpret_cast<const uint8_t*>(this->GetWeaponInfo(1, 0)));
+    }
+
+    if (state == 2 && this->IsA(TYPE_PLAYER)) {
+        auto classRec = g_chrClassesDB.GetRecord(static_cast<uint8_t>(this->m_unit->bytes0 >> 8));
+
+        if (!classRec || (classRec->m_flags & 0x8)) {
+            return;
+        }
+    }
+
+    if (state == this->m_sheathState) {
+        return;
+    }
+
+    if (this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x10000000) && !fromServer) {
+        return;
+    }
+
+    if (!this->m_model) {
+        return;
+    }
+
+    if (animate) {
+        if (!this->m_vehiclePassenger || !this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+            if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(3)) {
+                this->m_model->UnsetBoneSequence(3, 1, 1);
+            }
+
+            if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(2)) {
+                this->m_model->UnsetBoneSequence(2, 1, 1);
+            }
+        }
+    }
+
+    this->m_previousSheathState = this->m_sheathState;
+    this->m_sheathState = state;
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer() && !fromServer) {
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(CMSG_SET_SHEATHED));
+        msg.Put(static_cast<uint32_t>(this->m_sheathState));
+        msg.Finalize();
+        ClientServices::Send(&msg);
+    }
+
+    if (state != 0) {
+        this->UpdateSheathedAuraVisuals(0, 0);
+    }
+
+    if (animate) {
+        this->AttachWeaponsForSheath();
+    } else {
+        this->PlaySheathAnimation();
+    }
+}
+
+// ref: FUN_00731f40
+// TODO(Combat): leaving the ranged state stops the active player's auto-shot (FUN_007272c0).
+void CGUnit_C::AttachWeaponsForSheath() {
+    int32_t state = this->m_sheathState;
+
+    if (state == 0) {
+        if (this->m_previousSheathState == 1) {
+            this->MoveHandItem(0, 1);
+            this->MoveHandItem(1, 1);
+        } else if (this->m_previousSheathState == 2) {
+            this->m_model->DetachAllChildrenById(0x23);
+
+            if (this->m_characterComponent && this->IsA(TYPE_PLAYER)) {
+                this->m_characterComponent->RemoveItem(ITEMSLOT_11);
+            }
+
+            auto ranged = this->GetWeaponInfo(2, 0);
+
+            if (ranged) {
+                if (ranged->m_inventoryType != 0x1A && ranged->m_inventoryType != 0x19) {
+                    this->m_model->DetachAllChildrenById(2);
+                    CCharacterComponent::ComponentOpenFingers(this->m_model, static_cast<COMP_HAND_SLOT>(1));
+                } else {
+                    this->m_model->DetachAllChildrenById(1);
+                    CCharacterComponent::ComponentOpenFingers(this->m_model, static_cast<COMP_HAND_SLOT>(0));
+                }
+            }
+        }
+
+        this->m_animFlags &= 0xFFCFFFFF;
+
+        return;
+    }
+
+    if (state == 1) {
+        if (this->m_previousSheathState == 2) {
+            this->AttachRangedWeapon(1, nullptr);
+        }
+
+        if (this->MoveHandItem(0, 0)) {
+            this->m_animFlags |= 0x100000;
+        }
+
+        if (this->MoveHandItem(1, 0)) {
+            this->m_animFlags |= 0x200000;
+        }
+
+        return;
+    }
+
+    if (state == 2) {
+        if (this->m_previousSheathState == 1) {
+            this->MoveHandItem(0, 1);
+            this->MoveHandItem(1, 1);
+        }
+
+        this->m_animFlags &= 0xFFCFFFFF;
+
+        uint8_t right = 0;
+
+        if (this->AttachRangedWeapon(0, &right)) {
+            this->m_animFlags |= right ? 0x100000 : 0x200000;
+        }
+    }
+}
+
+// ref: FUN_007367b0
+int32_t CGUnit_C::PlayMainHandSheath() {
+    this->m_animFlags |= 0x100000;
+
+    if (this->m_previousSheathState == 0) {
+        return 0;
+    }
+
+    if (this->m_sheathState == 1) {
+        auto main = this->GetWeaponInfo(0, 0);
+
+        if (main) {
+            uint32_t anim = ((1u << (main->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 3, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+
+            return 1;
+        }
+    } else if (this->m_sheathState == 2) {
+        auto ranged = this->GetWeaponInfo(2, 0);
+
+        if (ranged && (ranged->m_inventoryType == 0x1A || ranged->m_inventoryType == 0x19)) {
+            this->AttachRangedWeapon(1, nullptr);
+
+            uint32_t anim = ((1u << (ranged->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 3, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_007368b0
+int32_t CGUnit_C::PlayOffHandSheath() {
+    this->m_animFlags |= 0x200000;
+
+    if (this->m_previousSheathState == 0) {
+        return 0;
+    }
+
+    if (this->m_sheathState == 1) {
+        auto off = this->GetWeaponInfo(1, 0);
+
+        if (off) {
+            uint32_t anim = ((1u << (off->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 2, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+
+            return 1;
+        }
+    } else if (this->m_sheathState == 2) {
+        auto ranged = this->GetWeaponInfo(2, 0);
+
+        if (ranged && ranged->m_inventoryType != 0x1A && ranged->m_inventoryType != 0x19) {
+            this->AttachRangedWeapon(1, nullptr);
+
+            uint32_t anim = ((1u << (ranged->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 2, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_007369b0
+void CGUnit_C::PlayDrawAnimation() {
+    if (this->m_sheathState == 1) {
+        auto main = this->GetWeaponInfo(0, 0);
+        auto off = this->GetWeaponInfo(1, 0);
+
+        if (main) {
+            uint32_t anim = ((1u << (main->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 3, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+            this->m_animFlags |= 0x100000;
+        }
+
+        if (off) {
+            uint32_t anim = ((1u << (off->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 2, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+            this->m_animFlags |= 0x200000;
+        }
+
+        return;
+    }
+
+    if (this->m_sheathState != 2) {
+        return;
+    }
+
+    auto ranged = this->GetWeaponInfo(2, 0);
+
+    if (!ranged) {
+        return;
+    }
+
+    this->AttachRangedWeapon(1, nullptr);
+
+    uint32_t anim = ((1u << (ranged->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+
+    if (ranged->m_inventoryType != 0x1A && ranged->m_inventoryType != 0x19) {
+        this->SetBoneSequence(this->m_model, 2, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+        this->m_animFlags |= 0x200000;
+
+        return;
+    }
+
+    this->SetBoneSequence(this->m_model, 3, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+    this->m_animFlags |= 0x100000;
+}
+
+// ref: FUN_00736b60
+// TODO(Combat): leaving the ranged state stops the active player's auto-shot (FUN_007272c0).
+void CGUnit_C::PlaySheathAnimation() {
+    int32_t previous = this->m_previousSheathState;
+
+    if (previous == 0) {
+        this->PlayDrawAnimation();
+
+        return;
+    }
+
+    if (previous == 1) {
+        auto main = this->GetWeaponInfo(0, 0);
+        auto off = this->GetWeaponInfo(1, 0);
+
+        if (!main) {
+            this->PlayMainHandSheath();
+        } else {
+            uint32_t anim = ((1u << (main->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+            this->SetBoneSequence(this->m_model, 3, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+            this->m_animFlags &= ~0x100000u;
+        }
+
+        if (!off) {
+            this->PlayOffHandSheath();
+
+            return;
+        }
+
+        uint32_t anim = ((1u << (off->m_sheathType & 0x1F)) & 0x88) ? 0x5A : 0x59;
+        this->SetBoneSequence(this->m_model, 2, anim, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+        this->m_animFlags &= ~0x200000u;
+
+        return;
+    }
+
+    if (previous != 2) {
+        return;
+    }
+
+    this->m_model->DetachAllChildrenById(0x23);
+
+    if (this->m_characterComponent && this->IsA(TYPE_PLAYER)) {
+        this->m_characterComponent->RemoveItem(ITEMSLOT_11);
+    }
+
+    auto ranged = this->GetWeaponInfo(2, 0);
+
+    if (!ranged) {
+        this->PlayDrawAnimation();
+
+        return;
+    }
+
+    if (ranged->m_inventoryType != 0x1A && ranged->m_inventoryType != 0x19) {
+        this->SetBoneSequence(this->m_model, 2, 0x59, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+        this->m_animFlags &= ~0x200000u;
+        this->PlayMainHandSheath();
+
+        return;
+    }
+
+    this->SetBoneSequence(this->m_model, 3, 0x59, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+    this->m_animFlags &= ~0x100000u;
+    this->PlayOffHandSheath();
+}
+
+// ------------------------------------------------------------------------------------------------
+// The model
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+const CreatureDisplayInfoRec* WornDisplay(const CGUnit_C* unit, int32_t* idOut) {
+    int32_t id = unit->m_localDisplayID;
+
+    if (id == 0 || unit->Unit()->nativeDisplayID != unit->Unit()->displayID) {
+        id = unit->Unit()->displayID;
+    }
+
+    if (idOut) {
+        *idOut = id;
+    }
+
+    return g_creatureDisplayInfoDB.GetRecord(id);
+}
+
+} // namespace
+
+// ref: FUN_0072a480
+bool CGUnit_C::NeedsModelUpdate() {
+    int32_t id;
+    auto display = WornDisplay(this, &id);
+
+    if (!display) {
+        // "NOUNITDISPLAYID|%d|%s" (SysMsgPrintf) in the reference.
+        return false;
+    }
+
+    if (display == this->m_displayInfo) {
+        return false;
+    }
+
+    if (this->m_displayInfo && display->m_modelID == this->m_displayInfo->m_modelID) {
+        if (g_creatureModelDataDB.GetRecord(display->m_modelID) == this->m_modelData) {
+            return g_creatureSoundDataDB.GetRecord(display->m_soundID) != this->m_soundData;
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_007179d0
+// PHASE4(Missile_C): the unit's missiles in flight reattach to the new model (FUN_00703900).
+void CGUnit_C::SetUnitModel(CM2Model* model) {
+    if (this->m_model == model) {
+        return;
+    }
+
+    if (!this->m_mountModel) {
+        this->Virtual0E0();
+    }
+
+    // FUN_00743660
+    if (model) {
+        model->m_refCount++;
+    }
+
+    auto previous = this->m_model;
+    this->m_model = model;
+
+    this->ModelChanged(previous);
+}
+
+// ref: FUN_00722ae0
+float CGUnit_C::GetDisplayScale(int32_t displayID) {
+    auto display = g_creatureDisplayInfoDB.GetRecord(displayID);
+
+    if (!display) {
+        return 1.0f;
+    }
+
+    auto modelData = g_creatureModelDataDB.GetRecord(display->m_modelID);
+
+    if (!modelData) {
+        return 1.0f;
+    }
+
+    // FUN_0071c110: a creature of a family (a pet) grows with its level between the family's
+    // two scales, and takes that scale when it is the larger, or always when it is a pet.
+    float scale = GetNativeRaceModelScale(display) * display->m_creatureModelScale * modelData->m_modelScale;
+
+    if (!(0.0f < scale)) {
+        scale = 1.0f;
+    }
+
+    auto family = this->m_creatureStats ? g_creatureFamilyDB.GetRecord(this->m_creatureStats->m_family) : nullptr;
+
+    if (!family) {
+        return scale;
+    }
+
+    int32_t span = family->m_maxScaleLevel - family->m_minScaleLevel;
+    int32_t into = this->m_unit->level < family->m_minScaleLevel ? 0 : this->m_unit->level - family->m_minScaleLevel;
+
+    if (span < into) {
+        into = span;
+    }
+
+    float fraction = span != 0 ? static_cast<float>(into) / static_cast<float>(span) : 0.0f;
+    float grown = (family->m_maxScale - family->m_minScale) * fraction + family->m_minScale;
+
+    if (scale < grown || this->m_unit->petNumber != 0) {
+        return grown;
+    }
+
+    return scale;
+}
+
+// ref: FUN_0072cbb0
+// PHASE4(Vehicle_C): a vehicle re-seats its passengers at the new scale (FUN_00757d10).
+void CGUnit_C::UpdateDisplayScale(int32_t keepScale) {
+    float previous = this->m_displayScale;
+    this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
+
+    float scale = keepScale ? this->m_scale : previous / this->m_displayScale * this->m_scale;
+
+    this->SetScaleEase(scale);
+    this->UpdateShadowRadius();
+    this->UpdateEffectAttachments();
+}
+
+// ref: FUN_00728e70
+void CGUnit_C::ReplayAuraVisuals() {
+    for (int32_t slot = static_cast<int32_t>(this->m_auras.Count()) - 1; slot >= 0; slot--) {
+        int32_t spellID = this->m_auras[slot].m_spellID;
+
+        if (!spellID) {
+            continue;
+        }
+
+        if (auto spell = g_spellDB.GetRecord(spellID)) {
+            this->AddAuraVisual(slot, spell);
+        }
+    }
+}
+
+// ref: FUN_0072bc70
+// TODO(Combat): a channel that is an auto-attack (spell attributes 0x4000) re-arms the active
+// player's swing at the channel target (FUN_0072b4a0); TODO(Spell_C): a fishing channel strings its
+// line (FUN_007221d0).
+void CGUnit_C::UpdateChannelVisual() {
+    this->m_stateFlags &= ~0x8000u;
+
+    auto spell = g_spellDB.GetRecord(this->m_unit->channelSpell);
+
+    if (!spell) {
+        return;
+    }
+
+    if (spell->m_attributesEx & 0x4000) {
+        this->m_stateFlags |= 0x8000;
+    }
+
+    auto visual = GetSpellVisual(spell);
+    auto kit = visual ? g_spellVisualKitDB.GetRecord(visual->m_channelKit) : nullptr;
+
+    if (!kit) {
+        return;
+    }
+
+    auto castKit = g_spellVisualKitDB.GetRecord(visual->m_castKit);
+    bool playing = castKit && castKit->m_animID == static_cast<int32_t>(this->GetCurrentAnimationId());
+
+    SPELLVISUALKITPARAMS params;
+    params.m_spell = spell;
+    params.m_kit = kit;
+    params.m_kitType = 2;
+    params.m_stateParam = 1;
+    params.m_param9 = -1;
+    params.m_param8 = playing ? 0 : 1;
+
+    this->PlayKit(params);
+}
+
+// ref: FUN_00717310
+float CGUnit_C::GetAnimationProgress() {
+    if (!this->m_model || !this->m_model->IsLoaded(0, 0)) {
+        return 0.0f;
+    }
+
+    M2BoneSequenceState state = {};
+
+    if (this->m_upperBodyBoneId != 0xFFFFFFFF) {
+        this->m_model->GetBoneSequenceState(this->m_upperBodyBoneId, &state);
+    }
+
+    if (state.uint90 == 0xFFFFFFFF) {
+        this->m_model->GetBoneSequenceState(0xFFFFFFFF, &state);
+    }
+
+    float length = static_cast<float>(state.endTime - state.startTime);
+
+    if (!(0.0f < length)) {
+        return 0.0f;
+    }
+
+    float progress = static_cast<float>(static_cast<uint32_t>(state.currentTime)) / length;
+
+    if (progress < 0.0f) {
+        return 0.0f;
+    }
+
+    return progress < 1.0f ? progress : 1.0f;
+}
+
+// ref: FUN_0073e410
+// TODO(PlayerName): the name plate is rebuilt for the new model (FUN_007e6320, FUN_00719050).
+// PHASE4(ObjectEffect): the ObjectEffect package follows (FUN_00725df0).
+void CGUnit_C::UpdateModel(int32_t force) {
+    if (!force && !this->NeedsModelUpdate()) {
+        return;
+    }
+
+    this->m_boneMask = 0;
+
+    // A unit dying or dead keeps its death pose through the rebuild.
+    uint32_t pose = 0x1FA;
+
+    if (this->IsDeadOrFeigning()) {
+        int32_t behavior = GetAnimationBehavior(this->GetCurrentAnimationId());
+
+        if (IsAnimationBehavior1Or131Or466To467(behavior) && this->GetAnimationProgress() < 0.5f) {
+            pose = behavior;
+        }
+    }
+
+    // FUN_00746340
+    SI2::StopOrFadeOut(this->m_mountSound, 0, 0.5f, 1);
+
+    auto previousModelData = this->m_modelData;
+    this->RefreshDataPointers();
+
+    this->m_animFlags &= ~0x180u;
+    this->m_upperBodyBoneId = 0xFFFFFFFF;
+
+    const char* fileName;
+
+    if (!this->GetModelFileName(fileName)) {
+        return;
+    }
+
+    auto model = CWorld::GetM2Scene()->CreateModel(fileName, 0);
+
+    if (!model) {
+        return;
+    }
+
+    this->m_animFlags |= 0x8000000;
+
+    uint32_t current = this->GetCurrentAnimationId();
+
+    model->SetSequenceDoneCallback(&CGUnit_C::OnSequenceDone, this->GetGUID());
+
+    this->SetUnitModel(model);
+    model->Release();
+
+    model->m_flag4 = this->m_modelData && (this->m_modelData->m_flags & 0x200) ? 1 : 0;
+
+    this->UpdateDisplayScale(previousModelData ? 1 : 0);
+    this->PlaceModel(0.0f);
+    model->ForceAnimate();
+
+    CCharacterComponent::ApplyMonsterGeosets(this->m_model, this->m_displayInfo);
+    CCharacterComponent::ReplaceMonsterSkin(this->m_model, this->m_displayInfo, this->m_modelData);
+
+    if (this->m_modelData) {
+        this->m_footprintTexture = this->m_modelData->m_footprintTextureID;
+        this->m_footprintLength = this->m_modelData->m_footprintTextureWidth * 0.02777777798473835f;
+        this->m_footprintWidth = 0.02777777798473835f * this->m_modelData->m_footprintTextureLength;
+        this->m_footprintParticleScale = this->m_modelData->m_footprintParticleScale;
+    }
+
+    this->UpdateMountSound();
+    RetargetCamera(this);
+
+    this->OnReenable();
+
+    if (this->m_characterComponent) {
+        CCharacterComponent::FreeComponent(this->m_characterComponent);
+        this->m_characterComponent = nullptr;
+    }
+
+    // The component is built once the new model is in (GetHidden -> BuildComponent).
+    this->m_stateFlags = (this->m_stateFlags & ~0x20000u) | 0x400000;
+
+    this->ApplyAlphaEffects();
+    this->ReplayAuraVisuals();
+    this->UpdateChannelVisual();
+
+    if (this->m_modelData && (this->m_modelData->m_flags & 0x8)) {
+        this->m_animFlags |= 0x20000;
+    } else {
+        this->m_animFlags &= ~0x20000u;
+    }
+
+    this->m_animFlags &= 0xF932DFF3;
+
+    if (this->m_modelData && (this->m_modelData->m_flags & 0x40)) {
+        this->m_stateFlags |= 0x2000000;
+    } else {
+        this->m_stateFlags &= ~0x2000000u;
+    }
+
+    uint8_t setFlags = 0;
+
+    if (pose == 0x1FA) {
+        pose = this->GetCurrentAnimationId();
+
+        if (pose == 0 && current != 0x1FA && current != 0xFFFFFFFF && this->m_localMove.IsInForcedMotion()) {
+            pose = current;
+        } else {
+            // A death kit playing on the unit keeps its blend flags.
+            for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+                if (!effect->m_kit || !IsDeathAnimation(effect->m_kit->m_animID)) {
+                    continue;
+                }
+
+                uint32_t kitFlags = effect->m_kit->m_flags;
+
+                if (kitFlags & 0x4) setFlags |= 2;
+                if (kitFlags & 0x8) setFlags |= 4;
+                if (kitFlags & 0x10) setFlags |= 8;
+                if (kitFlags & 0x100) setFlags |= 0x20;
+
+                if (setFlags & 6) {
+                    break;
+                }
+            }
+
+            if ((setFlags & 6) == 0) {
+                setFlags = 0;
+            }
+        }
+    }
+
+    this->SetAnimation(pose, setFlags);
+
+    if (this->m_mountModel) {
+        this->m_model->AttachToParent(this->m_mountModel, 0, nullptr, 0);
+    }
+
+    this->m_animFlags &= ~0x8000000u;
+}
+
+// ref: FUN_0073e840
+// PHASE4(Vehicle_C): a vehicle's or a passenger's seat follows the loaded model (FUN_00757d10,
+// FUN_00757e70, FUN_00748620).
+void CGUnit_C::OnModelLoaded(CM2Model* model) {
+    this->CGObject_C::OnModelLoaded(model);
+
+    if (this->GetTransportGUID() && model->m_loaded) {
+        C44Matrix transport;
+        MovementGetTransportMatrixChecked(this->GetTransportGUID(), transport, this->GetGUID(), ".\\Unit_C.cpp", 0x40c8);
+
+        model->m_particleRelativeMatrix = transport;
+        model->SetParticleRelative(&model->m_particleRelativeMatrix);
+    }
+
+    if (model == this->m_model) {
+        this->m_animFlags &= ~0x180u;
+
+        if (model->HasBone(4)) {
+            this->m_animFlags |= 0x80;
+        }
+
+        if (model->HasBone(6)) {
+            this->m_animFlags |= 0x100;
+        }
+
+        if (this->m_animFlags & 0x80) {
+            this->m_upperBodyBoneId = 4;
+        } else {
+            this->m_upperBodyBoneId = (this->m_animFlags & 0x100) ? 6 : 0xFFFFFFFF;
+        }
+
+        this->AttachQuestMarker();
+    } else if (model == this->m_mountModel && !model->HasAttachment(0)) {
+        // "MOUNTDISPLAYIDNOMOUNTATTACHMENT|%d" (SysMsgPrintf) in the reference.
+    }
+
+    if (this->m_postInited) {
+        this->UpdateAnimation(1, 0xFFFFFFFF);
+
+        if (GetAnimationBehavior(this->GetCurrentAnimationId()) == 0x7F) {
+            this->m_fadeDuration = 0;
+            this->m_alpha = this->m_alphaTo;
+        }
+
+        this->UpdateObjectEffects();
+    }
+
+    if (model == this->GetObjectModel()) {
+        this->UpdateBoneMask();
+    }
+
+    if (this->m_pendingStateKitSpell) {
+        bool still = false;
+
+        for (uint32_t slot = 0; slot < this->m_auras.Count(); slot++) {
+            if (this->m_auras[slot].m_spellID == this->m_pendingStateKitSpell) {
+                still = true;
+                break;
+            }
+        }
+
+        if (still) {
+            auto spell = g_spellDB.GetRecord(this->m_pendingStateKitSpell);
+            auto visual = spell ? GetSpellVisual(spell) : nullptr;
+            auto kit = visual ? g_spellVisualKitDB.GetRecord(visual->m_stateKit) : nullptr;
+
+            if (kit) {
+                SPELLVISUALKITPARAMS params;
+                params.m_spell = spell;
+                params.m_kit = kit;
+                params.m_kitType = 2;
+                params.m_stateParam = 1;
+                params.m_param9 = -1;
+
+                this->PlayKit(params);
+            }
+        }
+
+        this->m_pendingStateKitSpell = 0;
+    }
+}
+
+// ref: FUN_0071a430
+bool CGUnit_C::IsCharacterDisplayPlayer() const {
+    return this->IsA(TYPE_PLAYER) && this->m_modelData && (this->m_modelData->m_flags & 0x4)
+        && this->m_displayInfoExtra && (this->m_displayInfoExtra->m_flags & 0x1);
+}
+
+// ref: FUN_00716e20
+void CGUnit_C::ApplyItemVisualEffects() {
+    for (auto effect = this->m_effects; effect; ) {
+        auto next = effect->m_linkNext;
+
+        if (effect->m_flags & CEffect::EFFECT_ITEM_VISUAL) {
+            effect->ApplyItemSection();
+        }
+
+        effect = next;
+    }
+}
+
+// ref: FUN_00716f10
+void CGUnit_C::RequestMirrorImageData() {
+    this->m_stateFlags |= 0x20000;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_GET_MIRROR_IMAGE_DATA));
+    msg.Put(this->GetGUID());
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_0071d010
+int32_t CGUnit_C::InitComponent(CGPlayer_C* player, int32_t raceSexFromExtra) {
+    this->m_characterComponent = CCharacterComponent::AllocComponent();
+
+    if (!this->m_characterComponent) {
+        return 0;
+    }
+
+    ComponentData data;
+
+    if (raceSexFromExtra) {
+        data.raceID = this->m_displayInfoExtra->m_displayRaceID;
+        data.sexID = this->m_displayInfoExtra->m_displaySexID;
+    } else {
+        data.raceID = static_cast<uint8_t>(this->m_unit->bytes0);
+        data.sexID = static_cast<uint8_t>(this->m_unit->bytes0 >> 16);
+    }
+
+    data.classID = static_cast<uint8_t>(this->m_unit->bytes0 >> 8);
+
+    if (!player) {
+        auto extra = this->m_displayInfoExtra;
+
+        data.skinColorID = extra->m_skinID;
+        data.faceID = extra->m_faceID;
+        data.hairStyleID = extra->m_hairStyleID;
+        data.hairColorID = extra->m_hairColorID;
+        data.facialHairStyleID = extra->m_facialHairID;
+
+        if (!CGPlayer_C::ActivePlayerSeesNatural() || !this->IsOtherPlayerWithFlaggedModel()) {
+            if (!extra->m_bakeName || !extra->m_bakeName[0]) {
+                return 0;
+            }
+
+            data.flags |= 0x1;
+            SStrPrintf(data.npcBakedTexturePath, sizeof(data.npcBakedTexturePath), "%s%s", "Textures\\BakedNpcTextures\\", extra->m_bakeName);
+        }
+    } else {
+        auto appearance = player->Player();
+
+        data.skinColorID = appearance->skinID;
+        data.faceID = appearance->faceID;
+        data.hairStyleID = appearance->hairStyleID;
+        data.hairColorID = appearance->hairColorID;
+        data.facialHairStyleID = appearance->facialHairStyleID;
+    }
+
+    data.model = this->m_model;
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        data.flags |= 0x2;
+    } else {
+        data.flags &= ~0x2u;
+    }
+
+    data.model->m_refCount++;
+
+    CCharacterComponent::ValidateComponentData(&data, player ? static_cast<COMPONENT_CONTEXT>(1) : static_cast<COMPONENT_CONTEXT>(2));
+    this->m_characterComponent->Init(&data, nullptr);
+
+    return 1;
+}
+
+// ref: FUN_00730100
+int32_t CGUnit_C::BuildComponent() {
+    if (!this->m_model || !this->m_model->IsLoaded(0, 0)) {
+        return 0;
+    }
+
+    this->m_stateFlags &= ~0x400000u;
+
+    if (this->m_characterComponent) {
+        CCharacterComponent::FreeComponent(this->m_characterComponent);
+        this->m_characterComponent = nullptr;
+    }
+
+    // A mirror image waits for the server to send whose appearance it wears.
+    if (this->m_unit->flags2 & 0x10) {
+        if ((this->m_stateFlags & 0x20000) == 0) {
+            this->RequestMirrorImageData();
+        }
+
+        this->m_stateFlags |= 0x400000;
+
+        return 0;
+    }
+
+    auto player = this->IsA(TYPE_PLAYER) ? static_cast<CGPlayer_C*>(this) : nullptr;
+
+    if (this->IsCharacterDisplayPlayer()) {
+        this->InitComponent(player, 1);
+    } else if (this->m_displayInfoExtra) {
+        if (!this->InitComponent(nullptr, 1)) {
+            return 0;
+        }
+    } else if (player && this->m_modelData && (this->m_modelData->m_flags & 0x4)) {
+        this->InitComponent(player, 0);
+    }
+
+    if (!player || !player->ApplyVisibleItems()) {
+        if ((!CGPlayer_C::ActivePlayerSeesNatural() || !this->IsOtherPlayerWithFlaggedModel())
+            && this->m_characterComponent && this->m_displayInfoExtra) {
+            for (int32_t slot = 0; slot < 11; slot++) {
+                int32_t displayID = this->m_displayInfoExtra->m_npcitemDisplay[slot];
+
+                if (displayID) {
+                    this->m_characterComponent->AddItem(static_cast<ITEM_SLOT>(slot), displayID, 0);
+                }
+            }
+        }
+
+        this->AttachHandItem(0);
+        this->AttachHandItem(1);
+        this->AttachHandItem(2);
+    }
+
+    this->ApplyItemVisualEffects();
+
+    // FUN_00512b50
+    PortraitRefresh(this->GetGUID(), 3);
+
+    return 1;
+}
+
+// ref: FUN_00730f30
+// PHASE4(VehiclePassenger_C): a passenger whose seat hides it stays hidden (+0xf60).
+void CGUnit_C::GetHidden(uint32_t flags, int32_t* hidden, int32_t* hiddenOther) {
+    this->CGObject_C::GetHidden(flags, hidden, hiddenOther);
+
+    if ((this->m_stateFlags & 0x400000) && !this->BuildComponent()) {
+        *hiddenOther = 1;
+    } else if (*hidden == 0 && *hiddenOther == 0) {
+        if (this->m_characterComponent && !this->m_characterComponent->RenderPrep(0)) {
+            *hiddenOther = 1;
+        } else if (this->m_model && this->m_model->m_flag4000) {
+            // While its model is still settling, the unit stays hidden until one of its attached
+            // items can draw.
+            bool drawable = false;
+
+            for (auto child = this->m_model->m_attachList; child; child = child->m_attachNext) {
+                if (child->m_attachParent ? child->m_flag80 : child->m_flag8) {
+                    drawable = true;
+                    break;
+                }
+            }
+
+            if (!drawable) {
+                *hiddenOther = 1;
+            }
+        }
+    } else if (this->m_characterComponent) {
+        // FUN_004efed0: the geosets keep up while the unit is hidden.
+        // TODO(CharacterComponent): an unbaked component with work pending queues it
+        // (FUN_006ded60) instead.
+        if ((this->m_characterComponent->m_data.flags & 0x1) || (this->m_characterComponent->m_flags & 0x1) == 0) {
+            if (this->m_characterComponent->m_flags & 0x4) {
+                this->m_characterComponent->GeosRenderPrep();
+            }
+        }
+    }
+
+    // The rider is drawn with its mount.
+    if (this->m_mountModel && this->m_model) {
+        uint32_t draw = (*hidden == 0 && *hiddenOther == 0) ? 1 : 0;
+
+        if (this->m_model->m_attachParent) {
+            this->m_model->m_flag80 = draw;
+            this->m_model->m_flag20000 = draw;
+        } else {
+            this->m_model->m_flag8 = draw;
+            this->m_model->m_flag10000 = draw;
+        }
+
+        *hiddenOther = 0;
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+// Field handlers: the model
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_00728e20
+int32_t OnVirtualItemChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x672));
+
+    if (unit) {
+        unit->UpdateVirtualItem(static_cast<int32_t>((offset - 0xC8) >> 2), *static_cast<const int32_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716860
+// TODO(PlayerName): the active player's name plate refreshes when the option is up (FUN_0052e9f0).
+int32_t OnDisplayChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x398));
+
+    if (!unit) {
+        return 1;
+    }
+
+    if (unit->IsA(TYPE_PLAYER) && unit->m_formReverted && unit->m_localDisplayID == unit->Unit()->nativeDisplayID) {
+        unit->m_localDisplayID = 0;
+    }
+
+    unit->UpdateModel(0);
+
+    return 1;
+}
+
+// ref: FUN_00737aa0
+int32_t OnSheathChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x466));
+
+    if (!unit) {
+        return 1;
+    }
+
+    int32_t was = *static_cast<const int32_t*>(old);
+
+    if (unit->GetGUID() != ClntObjMgrGetActivePlayer() || unit->m_sheathState == was) {
+        unit->SetSheathState(static_cast<uint8_t>(unit->Unit()->bytes2), 1, 1);
+    }
+
+    return 1;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The player's hands and equipment
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+const ItemStats_C* ItemStats(int32_t entry) {
+    if (entry < 0) {
+        entry = -entry;
+    }
+
+    return g_itemCache.GetRecord(DBCACHEKEY32(entry), nullptr, nullptr, nullptr, true);
+}
+
+// ref: FUN_00758e50
+int32_t VisibleItemDisplay(const CVisibleItemData* item) {
+    int32_t entry = item->entryID < 0 ? -item->entryID : item->entryID;
+
+    if (auto stats = ItemStats(entry)) {
+        return stats->displayInfoID;
+    }
+
+    auto rec = g_itemDB.GetRecord(entry);
+
+    return rec ? rec->m_displayInfoID : 0;
+}
+
+} // namespace
+
+// ref: FUN_006de840
+bool CGPlayer_C::ActivePlayerSeesNatural() {
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+
+    // PHASE4(Player_C): the byte at +0xf42 is not named on CGPlayer_C yet; nothing sets it.
+    return player && false;
+}
+
+// ref: FUN_006e04d0
+const UNIT_WEAPON_INFO* CGPlayer_C::GetWeaponInfo(int32_t hand, int32_t ignoreHidden) {
+    const CVisibleItemData* item = nullptr;
+
+    if (hand == 0) {
+        if (!ignoreHidden && this->IsHandHidden(0)) {
+            return nullptr;
+        }
+
+        item = &this->Player()->visibleItems[INVSLOT_MAINHAND];
+    } else if (hand == 1) {
+        if (!ignoreHidden && this->IsHandHidden(1)) {
+            return nullptr;
+        }
+
+        item = &this->Player()->visibleItems[INVSLOT_OFFHAND];
+    } else if (hand == 2) {
+        if (!ignoreHidden && (this->Unit()->flags2 & 0x400)) {
+            return nullptr;
+        }
+
+        item = &this->Player()->visibleItems[INVSLOT_RANGED];
+    }
+
+    if (!item || (!ignoreHidden && item->entryID <= 0) || item->entryID == 0) {
+        return nullptr;
+    }
+
+    int32_t entry = item->entryID < 0 ? -item->entryID : item->entryID;
+    auto stats = ItemStats(entry);
+    auto rec = g_itemDB.GetRecord(entry);
+
+    UNIT_WEAPON_INFO& info = this->m_handInfo[hand];
+    info.m_class = static_cast<uint8_t>(stats ? stats->itemClass : 0);
+    info.m_subclass = static_cast<uint8_t>(stats ? stats->subClass : 0);
+    info.m_material = static_cast<uint8_t>(stats ? stats->material : (rec ? rec->m_material : 0));
+    info.m_inventoryType = static_cast<uint8_t>(stats ? stats->inventoryType : (rec ? rec->m_inventoryType : 0));
+    info.m_sheathType = static_cast<uint8_t>(stats ? stats->sheath : (rec ? rec->m_sheatheType : 0));
+    info.m_soundOverride = static_cast<uint8_t>(stats ? stats->soundOverrideSubclass : (rec ? rec->m_soundOverrideSubclassID : 0));
+
+    return &info;
+}
+
+// ref: FUN_006dc7e0
+const ItemDisplayInfoRec* CGPlayer_C::GetWeaponDisplay(int32_t hand) {
+    return g_itemDisplayInfoDB.GetRecord(this->GetWeaponDisplayID(hand));
+}
+
+// ref: FUN_006e05d0
+int32_t CGPlayer_C::GetWeaponDisplayID(int32_t hand) {
+    int32_t slot;
+
+    if (hand == 0) {
+        if (this->IsHandHidden(0)) {
+            return 0;
+        }
+
+        slot = INVSLOT_MAINHAND;
+    } else if (hand == 1) {
+        if (this->IsHandHidden(1)) {
+            return 0;
+        }
+
+        slot = INVSLOT_OFFHAND;
+    } else if (hand == 2) {
+        slot = INVSLOT_RANGED;
+    } else {
+        return 0;
+    }
+
+    return VisibleItemDisplay(&this->Player()->visibleItems[slot]);
+}
+
+// ref: FUN_006e08c0
+// TODO(WeaponTrail): FUN_00720170 after a hand item; TODO(Player_C): the tabard's guild emblem
+// (FUN_006db510 -> FUN_007eada0) is part of the tabard path, which here adds the plain item.
+void CGPlayer_C::ApplyVisibleItem(const CVisibleItemData* item, int32_t slot) {
+    if (!item || item->entryID == 0 || VisibleItemDisplay(item) <= 0) {
+        return;
+    }
+
+    int32_t hand;
+
+    if (slot == INVSLOT_MAINHAND) {
+        hand = 0;
+    } else if (slot == INVSLOT_OFFHAND) {
+        hand = 1;
+    } else if (slot == INVSLOT_RANGED) {
+        hand = 2;
+    } else {
+        if (!this->m_characterComponent || !this->DrawsThroughComponent()) {
+            return;
+        }
+
+        if (CGPlayer_C::ActivePlayerSeesNatural() && this->IsOtherPlayerWithFlaggedModel()) {
+            return;
+        }
+
+        if (slot == INVSLOT_HEAD && (this->Player()->flags & 0x400)) {
+            return;
+        }
+
+        if (slot == INVSLOT_BACK && (this->Player()->flags & 0x800)) {
+            return;
+        }
+
+        this->m_characterComponent->AddItemBySlot(static_cast<INVENTORY_SLOTS>(slot), VisibleItemDisplay(item), 0);
+
+        return;
+    }
+
+    this->AttachHandItem(hand);
+}
+
+// ref: FUN_006e09e0
+int32_t CGPlayer_C::ApplyVisibleItems() {
+    if (!this->DrawsThroughComponent()) {
+        return 0;
+    }
+
+    for (int32_t slot = 0; slot < 19; slot++) {
+        const CVisibleItemData* item = &this->Player()->visibleItems[slot];
+
+        // An item not yet known (a negative entry) comes off until it is.
+        if (item->entryID != 0 && item->entryID < 1) {
+            if (slot == INVSLOT_MAINHAND) {
+                if (this->m_sheathState == 1 || this->m_sheathState == 0) {
+                    CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_MAINHAND, 0, false);
+                }
+            } else if (slot == INVSLOT_OFFHAND) {
+                if (this->m_sheathState == 1 || this->m_sheathState == 0) {
+                    CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_OFFHAND, 0, false);
+                    CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_OFFHAND, 0, true);
+                }
+            } else if (slot == INVSLOT_RANGED) {
+                if (this->m_sheathState == 2 || this->m_sheathState == 0) {
+                    CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_RANGED, 0, false);
+                }
+
+                if (this->m_sheathState == 2) {
+                    CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_OFFHAND, 0, false);
+                    CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_MAINHAND, 0, false);
+                }
+            } else if (this->m_characterComponent) {
+                this->m_characterComponent->RemoveItemBySlot(static_cast<INVENTORY_SLOTS>(slot));
+            }
+        }
+
+        this->ApplyVisibleItem(item, slot);
+
+        if (item->entryID == 0 && slot == INVSLOT_MAINHAND) {
+            for (int32_t sheath = 0; sheath < 4; sheath++) {
+                CCharacterComponent::RemoveHandItemLinks(this->m_model, INVSLOT_MAINHAND, sheath, false);
+            }
+        }
+    }
+
+    return 1;
 }

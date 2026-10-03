@@ -607,9 +607,6 @@ float CGObject_C::Virtual0F8() {
 // treats it: game objects 0xb, dynamic objects 10, corpses with bones 2, units 0x10 with the
 // creature template's two bits, players 0x30.
 //
-// PHASE4(Unit_C): the model dressing below (the character component, the monster skin, the hand
-// items) is frozen's, standing in for the reference unit's UpdateModel (FUN_0073e410), and moves
-// there with the Unit_C port. The world entry itself is the reference's.
 void CGObject_C::AddWorldObject() {
     if (!this->m_model) {
         const char* fileName;
@@ -628,22 +625,10 @@ void CGObject_C::AddWorldObject() {
 
                 this->SetModelFinish(model);
 
-                if (model && this->IsA(TYPE_PLAYER)) {
-                    static_cast<CGPlayer_C*>(this)->BuildCharacterComponent();
-                }
-
+                // PHASE4(Unit_C): frozen's per-frame idle pose (UpdateIdleAnimation) stands in for
+                // the unit's animation update until the per-frame unit update is ported.
                 if (model && this->IsA(TYPE_UNIT)) {
                     static_cast<CGUnit_C*>(this)->UpdateIdleAnimation();
-                }
-
-                if (model && this->IsA(TYPE_UNIT) && !this->IsA(TYPE_PLAYER)) {
-                    static_cast<CGUnit_C*>(this)->DressNpcModel(model);
-                }
-
-                // PHASE4(Unit_C): the reference seats a unit on its mount from the descriptor
-                // handler and UpdateModel; until those land, the mount follows the model here.
-                if (model && this->IsA(TYPE_UNIT)) {
-                    static_cast<CGUnit_C*>(this)->SetMountDisplay(static_cast<CGUnit_C*>(this)->Unit()->mountDisplayID);
                 }
             }
 

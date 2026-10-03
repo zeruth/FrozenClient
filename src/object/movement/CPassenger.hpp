@@ -17,6 +17,7 @@ class CPassenger {
         C3Vector GetPosition() const;
         C3Vector GetPosition(const C3Vector& position) const;
         float GetRawFacing() const;
+        float GetPitch() const { return this->m_pitch; }
         WOWGUID GetTransportGUID() const;
 
     protected:
@@ -26,6 +27,8 @@ class CPassenger {
         C3Vector m_position;
         // TODO
         float m_facing;
+        // ref +0x24. PHASE4(MovementShared): its writers are the movement port's.
+        float m_pitch = 0.0f;
         // TODO
         const WOWGUID& m_guid;
         // TODO

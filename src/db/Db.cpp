@@ -30,6 +30,7 @@ WowClientDB<SpellVisualEffectNameRec> g_spellVisualEffectNameDB;
 WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
+WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
 WowClientDB<SpellChainEffectsRec> g_spellChainEffectsDB;
 WowClientDB<VehicleSeatRec> g_vehicleSeatDB;
 WowClientDB<LightRec> g_lightDB;
@@ -104,6 +105,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_spellVisualKitModelAttachDB, __FILE__, __LINE__);
     loadFn(&g_spellVisualKitAreaModelDB, __FILE__, __LINE__);
     loadFn(&g_spellEffectCameraShakesDB, __FILE__, __LINE__);
+    loadFn(&g_spellCastTimesDB, __FILE__, __LINE__);
     loadFn(&g_spellChainEffectsDB, __FILE__, __LINE__);
     loadFn(&g_vehicleSeatDB, __FILE__, __LINE__);
     loadFn(&g_lightDB, __FILE__, __LINE__);

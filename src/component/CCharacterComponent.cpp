@@ -1,4 +1,5 @@
 #include "component/CCharacterComponent.hpp"
+#include "event/Event.hpp"
 #include "component/Texture.hpp"
 #include "component/Util.hpp"
 #include "console/CVar.hpp"
@@ -490,6 +491,9 @@ void CCharacterComponent::Initialize(EGxTexFormat textureFormat, uint32_t textur
         CCharacterComponent::s_textureSize,
         CCharacterComponent::s_textureSize
     );
+
+    // The pending composites run on the poll (0x004f1eaf).
+    EventRegisterEx(EVENT_ID_POLL, &CCharacterComponent::ProcessPending, nullptr, 0.0f);
 }
 
 int32_t CCharacterComponent::NextBeardStyle(COMPONENT_CONTEXT context) {
@@ -1661,6 +1665,45 @@ void CCharacterComponent::RemoveItemByInventoryType(int32_t inventoryType) {
 
 // ref: FUN_004e79a0
 // The reference inlines ComponentOpenFingers here; the unset loops are the same.
+// ref: FUN_004eb070
+void CCharacterComponent::RemoveHandItemLinks(CM2Model* model, INVENTORY_SLOTS invSlot, int32_t sheatheType, bool shield) {
+    if (!model || static_cast<uint32_t>(invSlot) - 0xE >= 5) {
+        return;
+    }
+
+    uint32_t hand = 0xFFFFFFFF;
+    uint32_t sheath = 0xFFFFFFFF;
+
+    if (invSlot == 0xF) {
+        hand = ATTACH_HANDR;
+
+        switch (sheatheType) {
+            case 1: sheath = ATTACH_SHEATH_MAINHAND; break;
+            case 2: sheath = ATTACH_LARGEWEAPONLEFT; break;
+            case 3: sheath = ATTACH_HIPWEAPONLEFT; break;
+            case 4: sheath = ATTACH_SHEATH_SHIELD; break;
+            default: break;
+        }
+    } else if (0xF < invSlot && invSlot < 0x12) {
+        hand = ATTACH_HANDL;
+
+        switch (sheatheType) {
+            case 1: sheath = ATTACH_SHEATH_OFFHAND; break;
+            case 2: sheath = ATTACH_LARGEWEAPONRIGHT; break;
+            case 3: sheath = ATTACH_HIPWEAPONRIGHT; break;
+            case 4: sheath = ATTACH_SHEATH_SHIELD; break;
+            default: break;
+        }
+
+        if (shield) {
+            hand = ATTACH_SHIELD;
+        }
+    }
+
+    CCharacterComponent::RemoveLinkpt(model, static_cast<GEOCOMPONENTLINKS>(hand));
+    CCharacterComponent::RemoveLinkpt(model, static_cast<GEOCOMPONENTLINKS>(sheath));
+}
+
 void CCharacterComponent::RemoveLinkpt(CM2Model* model, GEOCOMPONENTLINKS link) {
     if (link == ATTACH_NONE) {
         return;
@@ -1902,6 +1945,51 @@ void CCharacterComponent::AddItem(ITEM_SLOT itemSlot, const ItemDisplayInfoRec* 
         if (*displayRec->m_texture[section] && s_itemPriority[itemSlot][section] != -1) {
             (this->*CCharacterComponent::s_itemFunc[section])(itemSlot, displayRec, true);
         }
+    }
+}
+
+// ref: FUN_004f1fc0
+// TODO(CharacterComponent): the reference follows with FUN_004ea0b0, which is not identified.
+int32_t CCharacterComponent::LoadBakedTexture(const char* a2) {
+    this->m_data.flags &= ~0x1u;
+
+    if (this->m_data.npcBakedTexturePath[0] == '\0' || !this->m_data.model) {
+        return 0;
+    }
+
+    CStatus status;
+    auto texture = TextureCreate(this->m_data.npcBakedTexturePath, CGxTexFlags(GxTex_LinearMipLinear, 0, 0, 0, 0, 0, 1),
+                                 &status, 0);
+
+    if (!texture) {
+        return 0;
+    }
+
+    this->m_data.model->ReplaceTexture(1, texture);
+    HandleClose(texture);
+
+    this->m_data.flags |= 0x1;
+    this->m_flags |= 0x5;
+    this->m_flags &= ~0x8u;
+
+    return 1;
+}
+
+// ref: FUN_004ee6d0
+void CCharacterComponent::RemoveItemBySlot(INVENTORY_SLOTS invSlot) {
+    switch (invSlot) {
+        case INVSLOT_HEAD: this->RemoveItem(ITEMSLOT_0); break;
+        case INVSLOT_SHOULDER: this->RemoveItem(ITEMSLOT_1); break;
+        case INVSLOT_BODY: this->RemoveItem(ITEMSLOT_2); break;
+        case INVSLOT_CHEST: this->RemoveItem(ITEMSLOT_3); break;
+        case INVSLOT_WAIST: this->RemoveItem(ITEMSLOT_4); break;
+        case INVSLOT_LEGS: this->RemoveItem(ITEMSLOT_5); break;
+        case INVSLOT_FEET: this->RemoveItem(ITEMSLOT_6); break;
+        case INVSLOT_WRIST: this->RemoveItem(ITEMSLOT_7); break;
+        case INVSLOT_HAND: this->RemoveItem(ITEMSLOT_8); break;
+        case INVSLOT_BACK: this->RemoveItem(ITEMSLOT_10); break;
+        case INVSLOT_TABARD: this->RemoveItem(ITEMSLOT_9); break;
+        default: break;
     }
 }
 
@@ -2204,6 +2292,11 @@ int32_t CCharacterComponent::Init(ComponentData* data, const char* a3) {
 
     // TODO
 
+    // A baked NPC wears its baked skin (FUN_004f24d0 -> FUN_004f1fc0).
+    if (this->m_data.flags & 0x1) {
+        this->LoadBakedTexture(a3);
+    }
+
     this->SetSkinColor(this->m_data.skinColorID, false, true, a3);
     this->SetHairStyle(this->m_data.hairStyleID, a3);
     this->SetBeardStyle(this->m_data.facialHairStyleID, false, a3);
@@ -2373,6 +2466,30 @@ void CCharacterComponent::PrepSections() {
     }
 }
 
+namespace {
+
+typedef STORM_EXPLICIT_LIST(CCharacterComponent, m_pendingLink) PENDING_COMPONENTS;
+
+// The components waiting to be composited (0x00ac46e4). On the heap and never freed, as the
+// client keeps it for its life and a static would be destroyed after the component heap.
+PENDING_COMPONENTS* s_pendingComponents;
+
+PENDING_COMPONENTS& PendingComponents() {
+    if (!s_pendingComponents) {
+        s_pendingComponents = new PENDING_COMPONENTS();
+    }
+
+    return *s_pendingComponents;
+}
+
+} // namespace
+
+// ref: FUN_004f1520
+// With nothing to composite only the geosets are brought up to date. Otherwise `a2` composites
+// now; without it the component joins the pending list (ProcessPending composites it when its
+// textures are in) and says it is not ready yet when its whole texture is to be redone.
+// TODO(CharacterComponent): the threaded composite's job (+0x52c) is dropped here as the
+// reference drops it.
 int32_t CCharacterComponent::RenderPrep(int32_t a2) {
     if (this->m_data.flags & 0x1) {
         if (this->m_flags & 0x4) {
@@ -2382,23 +2499,61 @@ int32_t CCharacterComponent::RenderPrep(int32_t a2) {
         return 1;
     }
 
-    // TODO
-
-    if (a2) {
-        // TODO
-
-        this->VariationsLoaded(1);
-        this->ItemsLoaded(1);
-
-        this->m_flags |= 8u;
-
-        this->RenderPrepSections();
-        // TODO this->Sub79F820();
+    if (this->m_sectionDirty == 0 && (this->m_flags & 0x1) == 0) {
+        if (this->m_flags & 0x4) {
+            this->GeosRenderPrep();
+        }
 
         return 1;
     }
 
-    // TODO
+    if (this->m_flags & 0x1) {
+        if (a2) {
+            this->VariationsLoaded(1);
+            this->ItemsLoaded(1);
+
+            this->m_flags |= 8u;
+
+            this->RenderPrepSections();
+            // TODO this->Sub79F820();
+
+            return 1;
+        }
+
+        if (!this->m_pendingLink.IsLinked()) {
+            PendingComponents().LinkToTail(this);
+        }
+
+        return 0;
+    }
+
+    if (!this->m_pendingLink.IsLinked()) {
+        PendingComponents().LinkToTail(this);
+    }
+
+    return 1;
+}
+
+// ref: FUN_004f18f0
+// TODO(CharacterComponent): the threaded composite (FUN_004f1790, FUN_004f0e80, FUN_004f1180) is
+// not ported; frozen composites on the main thread (see Initialize).
+int32_t CCharacterComponent::ProcessPending(const void* data, void* param) {
+    auto& pending = PendingComponents();
+
+    for (auto component = pending.Head(); component; ) {
+        auto next = pending.Next(component);
+
+        if (component->VariationsLoaded(0) && component->ItemsLoaded(0)) {
+            component->m_flags |= 8u;
+
+            // FUN_004f14a0, which leaves the list.
+            component->RenderPrepSections();
+            // TODO this->Sub79F820();
+        }
+
+        component = next;
+    }
+
     return 1;
 }
 
@@ -2676,6 +2831,9 @@ void CCharacterComponent::RenderPrepSections() {
     }
 
     // TODO component request logic
+
+    // Composited: off the pending list (FUN_004f14a0).
+    this->m_pendingLink.Unlink();
 
     s_bInRenderPrep = 0;
 }
