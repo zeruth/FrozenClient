@@ -1865,11 +1865,20 @@ void CMovementData_C::InitFromCreate(int32_t time, const CClientMoveUpdate& move
     this->m_pitchRate = move.float80;
     this->m_moveFlags = 0;
 
-    if (this->m_spline && (this->m_spline->flags & 0x800)) {
-        this->m_owner->OnLanded(0, 1);
-    }
+    if (!(move.status.moveFlags & 0x8000000)) {
+        if (this->m_spline && (this->m_spline->flags & 0x800)) {
+            this->m_owner->OnLanded(0, 1);
+        }
 
-    this->ClearSpline();
+        this->ClearSpline();
+    } else {
+        // A unit created part way along a spline carries it on (FUN_006f1240 copies it).
+        this->PrepareSpline(this->m_position);
+        this->FlushEvents(0, 1);
+        this->LeaveMoversIfIdle(0);
+        *this->m_spline = move.spline;
+        this->m_spline->spline.m_splineMode = (this->m_spline->flags & 0x42000) ? 1 : 0;
+    }
 
     int32_t skew = 0;
     this->ApplyStatus(time, move.status, &skew, activeMover, 1);
@@ -1896,15 +1905,54 @@ void CMovementData_C::InitFromCreate(int32_t time, const CClientMoveUpdate& move
 }
 
 // ref: FUN_006e9c30
-// NOT PORTED: walking a unit along a server spline (FUN_0098ca00 evaluates the curve). Nothing in
-// frozen gives a movement a spline yet -- the create block's and SMSG_MONSTER_MOVE's arrive with
-// the remote-movement port -- so m_spline is always null and this is never reached.
+// One step along the spline: the position it puts the unit at, the jump and the animation the
+// spline begins, and a jump too far to walk taken at once (0).
 int32_t CMovementData_C::StepSpline(int32_t time, uint32_t ms, C3Vector* position) {
-    (void)time;
-    (void)ms;
-    (void)position;
+    auto spline = this->m_spline;
+    bool wasArcing = (this->m_moveFlags2 & 0x80) && spline && !(spline->flags & 0x400) && (spline->flags & 0x800);
+    bool wasAnimating = (this->m_moveFlags2 & 0x100) && spline && !(spline->flags & 0x400) && (spline->flags & 0x200000);
 
-    return 0;
+    if (!this->EvaluateSpline(time, position)) {
+        return 0;
+    }
+
+    spline = this->m_spline;
+
+    // The arc or the spline's animation began this step.
+    if (!wasArcing && (this->m_moveFlags2 & 0x80) && spline && !(spline->flags & 0x400) && (spline->flags & 0x800)) {
+        this->m_owner->SendMovement(static_cast<uint32_t>(time), MSG_MOVE_JUMP, 1, 0.0f, 0, 0, 0xff);
+    }
+
+    if (!wasAnimating && (this->m_moveFlags2 & 0x100) && spline && !(spline->flags & 0x400) && (spline->flags & 0x200000)) {
+        this->m_owner->SetSplineAnimationTier(static_cast<uint8_t>(spline->flags & 0xff));
+    }
+
+    if (this->m_moveFlags & 0xc0100f) {
+        float dx = position->x - this->m_position.x;
+        float dy = position->y - this->m_position.y;
+        float dz = position->z - this->m_position.z;
+        float flat = dx * dx + dy * dy;
+        float seconds = static_cast<float>(ms) * 0.0010000000474974513f;
+        float speed = flat / (seconds * seconds);
+
+        // Faster than sixty yards a second, or three yards away: there, not walked there.
+        if (3600.0f < speed || 9.0f < flat + dz * dz) {
+            this->m_position = *position;
+
+            if (this->m_moveFlags & 0x1000) {
+                if (!this->IsSplineFlag200()) {
+                    this->m_fallStartElevation = this->GetFallHeight(static_cast<int32_t>(this->m_fallTime));
+                } else {
+                    this->m_fallTime = this->m_spline->uint28;
+                }
+            }
+
+            // FUN_00632050: the world update at the new position, not identified.
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 // ref: FUN_006eae70
@@ -2884,4 +2932,110 @@ int32_t CMovementData_C::SplineSetGravity(int32_t enable) {
     this->OnGravityChanged();
 
     return 1;
+}
+
+// ------------------------------------------------------------------------------------------------
+// Server splines: the monster move's start, stop and options (Movement.cpp)
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_006eb680
+// Put the unit on a spline through `points`. Not one that roots it in place (0x1800000), and not a
+// rooted or transported unit unless the spline is a fall or a jump (0xa00).
+int32_t CMovementData_C::StartSpline(const C3Vector* points, uint32_t count, uint32_t duration, uint32_t flags,
+                                     uint32_t id) {
+    if (flags & 0x1800000) {
+        return 0;
+    }
+
+    this->LeaveMoversIfIdle(0);
+
+    if ((this->m_moveFlags & 0x100800) && !(flags & 0xa00)) {
+        return 0;
+    }
+
+    this->PrepareSpline(points[count - 1]);
+
+    if (auto globals = MovementGetGlobals()) {
+        this->InitSpline(static_cast<int32_t>(globals->m_lastTime), points, count, duration, flags, id);
+    }
+
+    if (!this->m_moverLink.IsLinked() && MovementGetGlobals()) {
+        MovementLinkMover(this);
+    }
+
+    this->m_spline->spline.Evaluate(1.0f, this->m_spline->vector1F8, 1);
+
+    return 1;
+}
+
+// ref: FUN_006f11b0
+// The unit is put where a spline would have taken it, at once: the queue flushed first when the
+// message says so.
+void CMovementData_C::StopSplineAt(uint32_t id, const C3Vector& destination, uint32_t flags, int32_t flush) {
+    this->PrepareSpline(destination);
+
+    if (flush) {
+        this->FlushEvents(0, 1);
+        this->LeaveMoversIfIdle(0);
+    }
+
+    this->SetSplineStopped(id, flags);
+    this->SetPositionAndLand(this->m_spline->vector1F8, flags & 0x1800000);
+    this->m_spline->uint28 = this->m_spline->uint2C;
+    this->m_spline->flags |= 0x100;
+
+    if (auto globals = MovementGetGlobals()) {
+        this->EndSpline(static_cast<int32_t>(globals->m_stepTime));
+    }
+}
+
+// ref: FUN_006e9780
+// The spline carries an animation tier (the low byte of its flags) from `time` ms in; one that
+// starts at once applies it now.
+void CMovementData_C::SetSplineAnimation(uint8_t tier, uint32_t time) {
+    this->m_spline->flags = (this->m_spline->flags & 0xffffff00) | tier;
+    this->m_spline->uint210 = time;
+
+    if (time == 0) {
+        this->SetMoveFlags2Bit100(1);
+        this->m_owner->SetSplineAnimationTier(tier);
+    }
+}
+
+// ref: FUN_006e96c0
+// A parabolic spline: its vertical acceleration and when the arc starts. One that starts at once
+// jumps now (a knockback, 0x4000, plays the knockback instead).
+void CMovementData_C::SetSplineParabolic(float acceleration, uint32_t time) {
+    this->m_spline->float20C = acceleration;
+    this->m_spline->uint210 = time;
+
+    if (this->m_spline->uint210 != 0) {
+        this->SetMoveFlags2Bit80(0);
+        return;
+    }
+
+    this->SetMoveFlags2Bit80(1);
+
+    if (auto globals = MovementGetGlobals()) {
+        int32_t opcode = (this->m_spline->flags & 0x4000) ? 0xf0 : MSG_MOVE_JUMP;
+        this->m_owner->SendMovement(globals->m_lastTime, opcode, 0, 0.0f, 0, 0, 0xff);
+    }
+}
+
+// ref: FUN_006ee510
+// Face a world facing; a unit standing still has its queue flushed and leaves the movers.
+void CMovementData_C::FaceForSpline(float facing, int32_t flush) {
+    this->SetWorldFacing(facing);
+
+    if (!(this->m_moveFlags & 0xc010ff) && flush) {
+        this->FlushEvents(1, 1);
+        this->LeaveMoversIfIdle(1);
+    }
+}
+
+// ref: FUN_006f0c70
+// The spline's transport. PARTIAL: boarding it (FUN_006ec400) goes through SetTransport, which
+// does not board yet, so the CMSG 0x38d the active player answers a boarding with is not sent.
+void CMovementData_C::SetSplineTransport(WOWGUID transport, uint8_t seat) {
+    this->SetTransport(transport, seat);
 }

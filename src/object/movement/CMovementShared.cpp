@@ -1,6 +1,9 @@
 #include <tempest/Matrix.hpp>
 #include "object/client/CMovement_C.hpp"
 #include "object/movement/CMovementShared.hpp"
+#include <new>
+#include <algorithm>
+#include <storm/Memory.hpp>
 #include "object/movement/CMovementStatus.hpp"
 #include "object/movement/CMoveSpline.hpp"
 #include <common/Time.hpp>
@@ -377,6 +380,16 @@ void CMovementShared::SetMoveFlags2Bit80(int32_t enable) {
     }
 
     this->m_moveFlags2 &= 0xff7f;
+}
+
+// ref: FUN_0098b5b0
+void CMovementShared::SetMoveFlags2Bit40(int32_t enable) {
+    if (enable) {
+        this->m_moveFlags2 |= 0x40;
+        return;
+    }
+
+    this->m_moveFlags2 &= 0xffbf;
 }
 
 // ref: FUN_0098b590
@@ -1462,6 +1475,7 @@ void CMovementShared::ClearSpline() {
     this->m_moveFlags2 &= 0xff7f;
 
     if (this->m_spline) {
+        CMovementShared::DeleteSpline(this->m_spline);
         this->m_spline = nullptr;
 
         if (!(this->m_moveFlags & 0x1000)) {
@@ -1758,4 +1772,319 @@ WOWGUID CMovementShared::TakeTransportFromStatus(const CMovementStatus& status) 
     }
 
     return transport;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The server spline a unit is walked along (MovementShared.cpp 0x00986de0 .. 0x0098ca00)
+// ------------------------------------------------------------------------------------------------
+
+CMovementShared::~CMovementShared() {
+    CMovementShared::DeleteSpline(this->m_spline);
+    this->m_spline = nullptr;
+}
+
+// ref: FUN_0074b7b0
+CMoveSpline* CMovementShared::NewSpline() {
+    auto memory = SMemAlloc(sizeof(CMoveSpline), ".\\Movement_C.cpp", 0xa7, 0x0);
+
+    return memory ? new (memory) CMoveSpline() : nullptr;
+}
+
+// ref: FUN_0074b7e0
+void CMovementShared::DeleteSpline(CMoveSpline* spline) {
+    if (!spline) {
+        return;
+    }
+
+    spline->~CMoveSpline();
+    SMemFree(spline, "delete", -1, 0x0);
+}
+
+// ref: FUN_009870f0
+// A spline to fill, ending at `end`.
+void CMovementShared::PrepareSpline(const C3Vector& end) {
+    if (!this->m_spline) {
+        this->m_spline = CMovementShared::NewSpline();
+    }
+
+    this->m_spline->flags = 0;
+    this->m_spline->vector1F8 = end;
+}
+
+// ref: FUN_0098c770
+// Walk the unit along `points` from `time`, taking `duration` ms: curved when the flags ask for a
+// Catmull-Rom (0x2000) or a cyclic flight (0x40000), straight otherwise. The spline moves the unit
+// forward (backward under 0x8000000), lifts a root for a spline that falls or jumps (0xa00), and
+// starts the fall of a falling one (0x200).
+void CMovementShared::InitSpline(int32_t time, const C3Vector* points, uint32_t count, uint32_t duration,
+                                 uint32_t flags, uint32_t id) {
+    auto spline = this->m_spline;
+
+    spline->flags = flags;
+    spline->start = static_cast<uint32_t>(time);
+    spline->uint28 = 0;
+    spline->uint2C = duration;
+    spline->spline.m_splineMode = (flags & 0x42000) ? 1 : 0;
+    spline->spline.SetPoints(points, count);
+    spline->uint30 = id;
+    spline->float208 = 1.0f;
+    spline->float204 = 1.0f;
+
+    this->SetMoveForward(~(flags >> 27) & 1, 1);
+
+    if ((this->m_moveFlags & 0x800) && (flags & 0xa00)) {
+        this->m_moveFlags = (this->m_moveFlags & 0xfffff7ff) | 0x100000;
+    }
+
+    if (flags & 0x200) {
+        if (this->m_moveFlags & 0x2000000) {
+            this->StopFlyAndSwim();
+        }
+
+        this->StartFall(0.0f);
+    }
+
+    spline->uint210 = 0;
+    spline->float20C = 0.0f;
+}
+
+// ref: FUN_009873a0
+// The spline the unit was told to stop at: its id, no points. A rooted unit the stop lifts
+// (0x1000000) stops being rooted by the spline.
+void CMovementShared::SetSplineStopped(uint32_t id, uint32_t flags) {
+    if ((flags & 0x1000000) && (this->m_moveFlags & 0x800)) {
+        this->m_moveFlags = (this->m_moveFlags & 0xfffff7ff) | 0x100000;
+    }
+
+    if (this->m_spline) {
+        this->m_spline->uint30 = id;
+        this->m_spline->spline.SetPoints(nullptr, 0);
+    }
+}
+
+// ref: FUN_00986de0
+// The time the spline takes, its duration stretched by the speed change in force.
+float CMovementShared::GetSplineDuration() const {
+    return static_cast<float>(this->m_spline->uint2C) * this->m_spline->float204;
+}
+
+// ref: FUN_00987d20
+// The height the spline's vertical motion puts the unit at `elapsed` ms in: a falling spline
+// (0x200) by the fall from where it started, down to its end; a parabolic one (0x800) by the arc
+// it was given, from its start time on.
+float CMovementShared::GetSplineHeight(uint32_t elapsed, float z) const {
+    auto spline = this->m_spline;
+
+    if (!elapsed || !(elapsed < spline->uint2C)) {
+        return z;
+    }
+
+    if (!(spline->flags & 0x800)) {
+        if (spline->flags & 0x200) {
+            float height = this->m_fallStartElevation - FallDistance(MsToSeconds(elapsed), 0, 0.0f);
+
+            return spline->vector1F8.z < height ? height : spline->vector1F8.z;
+        }
+
+        return z;
+    }
+
+    if (!(spline->uint210 < elapsed)) {
+        return z;
+    }
+
+    float start = MsToSeconds(spline->uint210);
+    float t = MsToSeconds(elapsed) - start;
+    float total = MsToSeconds(spline->uint2C) - start;
+
+    return (total * spline->float20C * 0.5f * t - spline->float20C * t * t * 0.5f) + z;
+}
+
+// ref: FUN_0098c940
+// A cyclic spline that came in from outside its loop (0x100000) starts over on the loop alone:
+// its first point dropped, the loop's own closing point in its place.
+void CMovementShared::RestartSplineLoop(int32_t time) {
+    auto old = this->m_spline;
+
+    if (!old) {
+        return;
+    }
+
+    uint32_t count = old->spline.PointCount();
+
+    if (count <= 3) {
+        return;
+    }
+
+    TSGrowableArray<C3Vector> points;
+    points.SetCount(count);
+    old->spline.GetPoints(points.m_data, count);
+    points[0] = points[count - 3];
+
+    auto fresh = CMovementShared::NewSpline();
+
+    if (!fresh) {
+        return;
+    }
+
+    this->m_spline = fresh;
+    this->InitSpline(time, points.m_data, count - 1, old->uint2C, old->flags, old->uint30);
+
+    CMovementShared::DeleteSpline(old);
+}
+
+// ref: FUN_0098ca00
+// Where the spline puts the unit at `time`, and the facing, direction, pitch and tilt it gives
+// it there. 0 when the unit is not moving along it at all.
+uint32_t CMovementShared::EvaluateSpline(int32_t time, C3Vector* position) {
+    *position = this->m_position;
+
+    if (!(this->m_moveFlags & 0x3)) {
+        return this->m_moveFlags & 0xc0100f;
+    }
+
+    auto spline = this->m_spline;
+
+    if (spline->flags & 0x400000) {
+        return 1;
+    }
+
+    spline->uint28 = static_cast<uint32_t>(time) - spline->start;
+
+    uint32_t duration = static_cast<uint32_t>(static_cast<float>(spline->uint2C) * spline->float204 + 0.5f);
+    float t = 0.0f;
+
+    if (duration == 0) {
+        spline->flags |= 0x100;
+        t = 1.0f;
+    } else if (0 <= static_cast<int32_t>(spline->uint28)) {
+        if (spline->uint28 < duration) {
+            t = static_cast<float>(spline->uint28) / static_cast<float>(duration);
+        } else if (!(spline->flags & 0x80000)) {
+            spline->flags |= 0x100;
+            t = 1.0f;
+        } else {
+            // Around the loop again.
+            spline->uint28 = spline->uint28 - duration;
+            spline->start = static_cast<uint32_t>(time) - spline->uint28;
+
+            if (spline->flags & 0x100000) {
+                this->RestartSplineLoop(static_cast<int32_t>(this->m_spline->start));
+                spline = this->m_spline;
+                spline->flags &= 0xffefffff;
+            }
+
+            spline->float204 = spline->float208;
+            spline->float208 = 1.0f;
+
+            duration = static_cast<uint32_t>(std::nearbyint(this->GetSplineDuration() + 0.5f));
+
+            if (duration == 0) {
+                t = 1.0f;
+            } else {
+                t = static_cast<float>(spline->uint28) / static_cast<float>(duration);
+            }
+        }
+    }
+
+    C3SplineFrame frame;
+    frame.forward = this->m_direction;
+    spline->spline.Frame(t, frame, 1);
+
+    if (!(spline->flags & 0x4200)) {
+        if (0.0018490000022575259f < frame.forward.y * frame.forward.y + frame.forward.x * frame.forward.x) {
+            this->m_facing = std::atan2(frame.forward.y, frame.forward.x);
+        }
+    }
+
+    if (spline->flags & 0x8000000) {
+        this->m_facing -= 3.1415927410125732f;
+    }
+
+    if (this->m_facing < 0.0f) {
+        this->m_facing = 6.2831854820251465f + this->m_facing;
+    }
+
+    this->m_direction = frame.forward;
+
+    if (!(this->m_moveFlags & 0x2200000)) {
+        if (spline->flags & 0x2000) {
+            // A flying spline banks into its turns: toward where it will be a second on, by twice
+            // the angle between the heading and that, at most a right angle.
+            float ahead = 1.0f;
+
+            if (duration != 0) {
+                ahead = static_cast<float>(spline->uint28 + 1000) / static_cast<float>(duration);
+            }
+
+            if ((spline->flags & 0x80000) && 1.0f < ahead) {
+                ahead -= 1.0f;
+            }
+
+            ahead = std::min(std::max(ahead, 0.0f), 1.0f);
+
+            C3Vector target = { 0.0f, 0.0f, 0.0f };
+            spline->spline.Evaluate(ahead, target, 1);
+
+            C3Vector here = this->m_position;
+            C2Vector heading = { this->m_direction.x, this->m_direction.y };
+            C2Vector toward = { target.x - here.x, target.y - here.y };
+            heading.Normalize();
+            toward.Normalize();
+
+            float cosine = std::min(std::max(heading.x * toward.x + toward.y * heading.y, -1.0f), 1.0f);
+            float angle = std::acos(cosine);
+
+            if (!(heading.y * toward.x - toward.y * heading.x < 0.0f)) {
+                angle = -angle;
+            }
+
+            float bank = std::min(std::max(angle + angle, -1.5707963705062866f), 1.5707963705062866f);
+            C33Matrix rotation = C33Matrix::RotationAroundAxis(bank, this->m_direction, false);
+            C3Vector up = { 0.0f, 0.0f, 1.0f };
+            this->m_up = up * rotation;
+        }
+    } else {
+        this->m_pitch = std::asin(frame.forward.z);
+    }
+
+    *position = frame.position;
+
+    if (!(spline->flags & 0x200000)) {
+        if (!(spline->flags & 0x800)) {
+            if (spline->flags & 0x200) {
+                float z = this->GetSplineHeight(spline->uint28, position->z);
+                position->z = z;
+
+                if (std::fabs(z - this->m_spline->vector1F8.z) < MOVE_SPEED_EPSILON) {
+                    float fall = FallTimeForDistance(this->m_fallStartElevation - z, 0);
+                    int32_t fallMs = static_cast<int32_t>(std::nearbyint(fall * 1000.0f));
+
+                    if (fallMs < static_cast<int32_t>(this->m_spline->uint28)) {
+                        this->m_spline->uint28 = static_cast<uint32_t>(fallMs);
+                    }
+
+                    this->m_spline->flags |= 0x100;
+                }
+            }
+        } else {
+            if (spline->uint210 < spline->uint28 && !(this->m_moveFlags2 & 0x80)) {
+                this->m_fallStartElevation = this->m_position.z;
+                this->m_moveFlags2 |= 0x80;
+            }
+
+            float z = this->GetSplineHeight(this->m_spline->uint28, position->z);
+            position->z = z;
+
+            if (this->m_fallStartElevation < z) {
+                this->m_fallStartElevation = this->m_position.z;
+                return 1;
+            }
+        }
+    } else if (!(this->m_moveFlags2 & 0x100) && spline->uint210 < spline->uint28) {
+        this->m_moveFlags2 |= 0x100;
+        return 1;
+    }
+
+    return 1;
 }

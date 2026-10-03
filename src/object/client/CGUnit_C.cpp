@@ -6668,6 +6668,539 @@ int32_t UnitSplineFlagHandler(void* param, NETMESSAGE msgId, uint32_t time, CDat
     return unit ? unit->OnSplineFlagMessage(msgId) : 0;
 }
 
+} // namespace
+
+// ------------------------------------------------------------------------------------------------
+// SMSG_MONSTER_MOVE: a unit walked along a server spline (Unit_C.cpp 0x0073c8e0, 0x0073f590)
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+const float SPLINE_POINT_EPSILON = 0.0007716049929149449f;   // 0x00a349b0, (1/36)^2
+
+float DistanceSq(const C3Vector& a, const C3Vector& b) {
+    float dx = b.x - a.x;
+    float dy = b.y - a.y;
+    float dz = b.z - a.z;
+
+    return dz * dz + dy * dy + dx * dx;
+}
+
+// ref: FUN_004f5130
+// The world angle from `from` to `to`.
+float AngleTo(const C3Vector& from, const C3Vector& to) {
+    float dy = to.y - from.y;
+
+    if (std::fabs(to.x - from.x) < 2.384185791015625e-07f) {
+        return dy < 0.0f ? 1.5f * 3.1415927410125732f : 0.5f * 3.1415927410125732f;
+    }
+
+    if (2.384185791015625e-07f <= std::fabs(dy)) {
+        return std::atan2(dy, to.x - from.x);
+    }
+
+    return to.x < from.x ? 3.1415927410125732f : 0.0f;
+}
+
+} // namespace
+
+// ref: FUN_007180c0
+// Fit the path to where the unit stands (`position`, in the transport's space when there is
+// one): a path still ahead of it gains its position as the first point, one it is part way along
+// starts where it is, one already behind it becomes a straight line to the end. The points sit at
+// `points`, with room for one before them; the result is the new first point, or null with
+// `*count` 0 when nothing is left to walk.
+C3Vector* CGUnit_C::FitSplineToPosition(WOWGUID transport, const C3Vector& position, C3Vector* points,
+                                        uint32_t* count) {
+    C3Vector here = position;
+
+    if (transport) {
+        C44Matrix matrix;
+        MovementGetTransportMatrixChecked(transport, matrix, 0, ".\\Unit_C.cpp", 0x2257);
+        here = here * matrix.AffineInverse();
+    }
+
+    uint32_t n = *count;
+
+    if (n == 1) {
+        if (SPLINE_POINT_EPSILON <= DistanceSq(points[0], here)) {
+            points[-1] = here;
+            (*count)++;
+            return points - 1;
+        }
+
+        *count = 0;
+        return nullptr;
+    }
+
+    uint32_t segments = n - 1;
+    uint32_t ahead = 0;
+    uint32_t behind = 0;
+
+    for (uint32_t i = 0; i < segments; i++) {
+        const C3Vector& a = points[i];
+        const C3Vector& b = points[i + 1];
+        C3Vector d = { b.x - a.x, b.y - a.y, b.z - a.z };
+        float offset = -(d.x * here.x + d.y * here.y + d.z * here.z);
+        float s0 = d.x * a.x + d.y * a.y + d.z * a.z + offset;
+        float s1 = d.x * b.x + d.y * b.y + d.z * b.z + offset;
+
+        if (s0 < 0.0f || s1 < 0.0f) {
+            if (0.0f < s0 || 0.0f < s1) {
+                break;
+            }
+
+            behind++;
+        } else {
+            ahead++;
+        }
+    }
+
+    if (ahead == segments) {
+        float dx = points[0].x - here.x;
+        float dy = points[0].y - here.y;
+
+        if (1.0f <= dy * dy + dx * dx) {
+            points[-1] = here;
+            (*count)++;
+            return points - 1;
+        }
+
+        return points;
+    }
+
+    if (behind == segments) {
+        if (SPLINE_POINT_EPSILON <= DistanceSq(points[n - 1], here)) {
+            points[0] = here;
+            points[1] = points[n - 1];
+            *count = 2;
+            return points;
+        }
+
+        *count = 0;
+        return nullptr;
+    }
+
+    for (uint32_t i = 0; i < *count - 1; i++) {
+        const C3Vector& a = points[i];
+        const C3Vector& b = points[i + 1];
+        C3Vector d = { b.x - a.x, b.y - a.y, b.z - a.z };
+        float inv = 1.0f / std::sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+        C3Vector unit = { inv * d.x, inv * d.y, inv * d.z };
+        float offset = -(unit.x * here.x + unit.y * here.y + here.z * unit.z);
+        float s0 = unit.x * a.x + unit.y * a.y + unit.z * a.z + offset;
+        float s1 = unit.z * b.z + b.y * unit.y + b.x * unit.x + offset;
+
+        if (s0 <= 0.0f && 0.0f <= s1) {
+            // It stands beside this segment: start from the foot of it.
+            float f = s0 / (s0 - s1);
+            C3Vector foot = { d.x * f + a.x, d.y * f + a.y, d.z * f + a.z };
+
+            if (SPLINE_POINT_EPSILON <= DistanceSq(foot, b)) {
+                points[i] = foot;
+            } else if (SPLINE_POINT_EPSILON <= DistanceSq(here, b)) {
+                points[i] = here;
+                *count -= i;
+                return points + i;
+            } else {
+                i++;
+
+                if (i == segments) {
+                    *count = 0;
+                    return nullptr;
+                }
+            }
+
+            *count -= i;
+            return points + i;
+        }
+
+        if (0.0f <= s0 && 0.0f <= s1) {
+            *count -= i;
+            C3Vector* first = points + i;
+            float dx = first->x - here.x;
+            float dy = first->y - here.y;
+
+            if (1.0f <= dy * dy + dx * dx) {
+                first[-1] = here;
+                (*count)++;
+                return first - 1;
+            }
+
+            return first;
+        }
+    }
+
+    return points;
+}
+
+// ref: FUN_00718930
+// Face the unit a spline names as its target.
+void CGUnit_C::FaceSplineTarget(WOWGUID target, int32_t flush) {
+    auto object = ClntObjMgrObjectPtr(target, TYPE_OBJECT, ".\\Unit_C.cpp", 0x2609);
+
+    if (!object) {
+        return;
+    }
+
+    this->m_localMove.FaceForSpline(AngleTo(this->GetPosition(), object->GetPosition()), flush);
+}
+
+// ref: FUN_0073af00
+// The animation tier a spline gives the unit (ground, swim, hover, fly): leaving the ground for
+// hover or flight plays the take-off (0x1ca), coming back down plays the landing (0x1cc).
+void CGUnit_C::SetSplineAnimationTier(uint8_t tier) {
+    int32_t current = this->m_animTier;
+
+    if (current == 0 && (tier == 3 || tier == 2)) {
+        this->SetAnimation(0x1ca, 0);
+    } else if ((current == 3 && tier == 0) || (current == 2 && tier == 0)) {
+        this->SetAnimation(0x1cc, 0);
+    }
+
+    this->m_animTier = tier;
+}
+
+// ref: FUN_0073c8e0
+// A monster move: where the unit starts, the kind of move (0 a path, 1 a stop, 2 .. 4 a path
+// that faces a spot, a target or an angle), then for a path its flags, its options and its points.
+// The path is fitted to where the unit is, padded at both ends, and walked at the speed its
+// length and duration give, capped by the unit's run speed; a path too short to walk puts the
+// unit at its end at once. PARTIAL: a vehicle's own spline step (FUN_00758130), the player's
+// stand-up (FUN_006dcb40) and the effect +0x980 releases are the vehicle, Player_C and
+// ObjectEffect ports'.
+void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport, uint8_t seat, int32_t flush) {
+    auto& move = this->m_localMove;
+
+    this->m_stateFlags |= 0x20000000;
+
+    if (flush) {
+        move.FlushEvents(0, 0);
+    }
+
+    move.SetSplineTransport(transport, seat);
+    this->m_stateFlags &= 0xdfffffff;
+
+    if (move.m_transportGUID != transport) {
+        return;
+    }
+
+    move.SetMoveFlags2Bit100(0);
+
+    C3Vector start = { 0.0f, 0.0f, 0.0f };
+    msg->Get(start.x);
+    msg->Get(start.y);
+    msg->Get(start.z);
+
+    uint32_t id;
+    msg->Get(id);
+
+    uint8_t type;
+    msg->Get(type);
+
+    C3Vector spot = { 0.0f, 0.0f, 0.0f };
+    WOWGUID target = 0;
+    float angle = 0.0f;
+
+    switch (type) {
+        case 1: {
+            C3Vector here = this->GetRawPosition();
+            auto tolerance = CVar::Lookup("pathDistTol");
+            float limit = tolerance ? tolerance->m_floatValue : 1.0f;
+
+            if (DistanceSq(here, start) < limit * limit) {
+                move.StopSplineAt(id, start, 0, 1);
+                this->UpdateAnimation(0, 0xffffffff);
+                return;
+            }
+
+            break;
+        }
+
+        case 2:
+            *msg >> spot;
+            break;
+
+        case 3:
+            msg->Get(target);
+            break;
+
+        case 4:
+            msg->Get(angle);
+            break;
+
+        default:
+            break;
+    }
+
+    uint32_t flags;
+    uint32_t duration = 0;
+    uint32_t pointCount;
+    uint8_t animTier = 0;
+    uint32_t animTime = 0;
+    float acceleration = 0.0f;
+    uint32_t arcStart = 0;
+
+    if (type == 1) {
+        flags = 0x1000;
+        pointCount = 1;
+    } else {
+        msg->Get(flags);
+
+        if (flags & 0x200000) {
+            msg->Get(animTier);
+            msg->Get(animTime);
+        }
+
+        msg->Get(duration);
+
+        if (flags & 0x800) {
+            msg->Get(acceleration);
+            msg->Get(arcStart);
+        }
+
+        msg->Get(pointCount);
+    }
+
+    // Room for the points, two before them and a padding point after.
+    TSGrowableArray<C3Vector> buffer;
+    buffer.SetCount(pointCount + 4);
+    C3Vector* points = buffer.m_data;
+
+    float facing = this->GetRawFacing();
+    C3Vector forward = { std::cos(facing), std::sin(facing), 0.0f };
+    C3Vector destination = { 0.0f, 0.0f, 0.0f };
+    C3Vector* list = nullptr;
+    uint32_t count = 0;
+
+    if (type == 1) {
+        C3Vector here = this->GetRawPosition();
+        points[0] = { here.x - forward.x, here.y - forward.y, here.z - forward.z };
+        points[1] = here;
+        points[2] = start;
+        points[3] = start;
+        destination = start;
+        list = points;
+        count = 4;
+    } else if (!(flags & 0x42000)) {
+        // A straight path: the start, the waypoints packed around the midpoint, the end.
+        *msg >> destination;
+
+        C3Vector* path = points + 2;
+        path[0] = start;
+        uint32_t n = 1;
+
+        if (pointCount <= 1) {
+            if (SPLINE_POINT_EPSILON < DistanceSq(destination, start)) {
+                path[1] = destination;
+                n = 2;
+            }
+        } else {
+            C3Vector middle = {
+                (start.x + destination.x) * 0.5f,
+                (destination.y + start.y) * 0.5f,
+                (destination.z + start.z) * 0.5f,
+            };
+
+            for (uint32_t i = 0; i < pointCount - 1; i++) {
+                ReadPackedMovementOffset(msg, middle, path[n]);
+                n++;
+            }
+
+            path[n] = destination;
+            n++;
+        }
+
+        C3Vector* fitted = CGUnit_C::FitSplineToPosition(transport, this->GetPosition(), path, &n);
+
+        if (fitted && n) {
+            // Pad both ends: the last point repeated, the first mirrored across the second.
+            list = fitted - 1;
+            list[n + 1] = list[n];
+            list[0] = {
+                list[1].x - (list[2].x - list[1].x),
+                list[1].y - (list[2].y - list[1].y),
+                list[1].z - (list[2].z - list[1].z),
+            };
+            count = n + 2;
+        }
+    } else {
+        // A curve or a flight: from just behind the unit through every point.
+        C3Vector here = this->GetRawPosition();
+        points[0] = { here.x - forward.x, here.y - forward.y, here.z - forward.z };
+        points[1] = here;
+        uint32_t n = 2;
+
+        C3Vector point;
+        msg->Get(point.x);
+        msg->Get(point.y);
+        msg->Get(point.z);
+
+        if (SPLINE_POINT_EPSILON <= DistanceSq(point, here)) {
+            points[2] = point;
+            n = 3;
+        }
+
+        for (uint32_t i = 1; i < pointCount; i++) {
+            msg->Get(point.x);
+            msg->Get(point.y);
+            msg->Get(point.z);
+            points[n++] = point;
+        }
+
+        if (!(flags & 0x80000)) {
+            points[n] = point;
+            destination = point;
+        } else {
+            // A loop closes on its own first two points.
+            points[n] = points[2];
+            n++;
+            points[n] = points[3];
+            destination = points[2];
+        }
+
+        list = points;
+        count = n + 1;
+    }
+
+    bool started = false;
+
+    if (list && 3 < count) {
+        float length = 0.0f;
+
+        for (uint32_t i = 1; i + 1 < count - 1; i++) {
+            length = std::sqrt(DistanceSq(list[i], list[i + 1])) + length;
+        }
+
+        if (0.1666666716337204f < length) {
+            float speed = std::max(28.0f, this->m_move->m_runSpeed * 4.0f);
+
+            if (flags & 0x42000) {
+                speed = 50.0f;
+            }
+
+            if (duration != 0) {
+                float limit = length / (static_cast<float>(duration) * 0.001f);
+
+                if (limit < speed) {
+                    speed = limit;
+                }
+            }
+
+            if (9.5367431640625e-07f < speed) {
+                int32_t ms = static_cast<int32_t>(std::nearbyint((length / speed) * 1000.0f));
+                uint32_t splineDuration = 1 < ms ? static_cast<uint32_t>(ms) : 1;
+
+                if (move.StartSpline(list, count, splineDuration, flags, id)) {
+                    started = true;
+
+                    if (type == 2) {
+                        move.SetSplineFacingSpot(spot);
+                    } else if (type == 3) {
+                        move.SetSplineFacingTarget(target);
+                    } else if (type == 4) {
+                        move.SetSplineFacingAngle(angle);
+                    }
+
+                    if (!(flags & 0x800)) {
+                        if (flags & 0x200000) {
+                            // Coming down from hover or flight lands at the end: the landing
+                            // starts its own length before the spline does.
+                            if ((this->m_animTier == 3 && (animTier == 0 || animTier == 2))
+                                || (this->m_animTier == 2 && animTier == 0)) {
+                                if (auto model = this->GetObjectModel()) {
+                                    M2SequenceInfo info = {};
+                                    model->GetSequenceInfo(0x1cf, 0, info);
+
+                                    if (info.duration + animTime < splineDuration) {
+                                        animTime = splineDuration - info.duration;
+                                    }
+                                }
+                            }
+
+                            move.SetSplineAnimation(animTier, animTime);
+                        }
+                    } else {
+                        move.SetSplineParabolic(acceleration, arcStart);
+                    }
+
+                    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+                        if (auto input = InputControlGetActive()) {
+                            input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (!started && type != 1) {
+        // Nothing to walk: face where the move faces and be at its end.
+        if (type == 2) {
+            C3Vector world = spot;
+
+            if (transport) {
+                C44Matrix matrix;
+                MovementGetTransportMatrixChecked(transport, matrix, 0, ".\\Unit_C.cpp", 0x2257);
+                world = spot * matrix;
+            }
+
+            move.FaceForSpline(AngleTo(this->GetPosition(), world), flush);
+        } else if (type == 3) {
+            this->FaceSplineTarget(target, flush);
+        } else if (type == 4) {
+            move.FaceForSpline(move.GetFacing(angle), flush);
+        }
+
+        move.StopSplineAt(id, destination, flags, flush);
+    } else if (!started) {
+        move.StopSplineAt(id, destination, flags, flush);
+    }
+
+    this->ReleaseRangedWeapon();
+    this->UpdateAnimation(0, 0xffffffff);
+}
+
+namespace {
+
+// ref: FUN_0073f590
+// SMSG_MONSTER_MOVE and SMSG_MONSTER_MOVE_TRANSPORT (with the transport and the seat). PARTIAL: a
+// passenger's seat (FUN_0074c040) decides a vehicle move first, the vehicle port's.
+int32_t UnitMonsterMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x5d4));
+
+    if (!unit) {
+        msg->Seek(msg->Size());
+        return 0;
+    }
+
+    WOWGUID transport = 0;
+    uint8_t seat = 0xff;
+
+    if (msgId == SMSG_MONSTER_MOVE_TRANSPORT) {
+        SmartGUID transportGuid;
+        *msg >> transportGuid;
+        transport = transportGuid;
+        msg->Get(seat);
+    }
+
+    // FUN_0074b9b0: the byte before the move toggles move-flags-2 0x40 (the unit is carried).
+    uint8_t carried = 0;
+    msg->Get(carried);
+    unit->m_localMove.SetMoveFlags2Bit40(carried);
+
+    unit->OnMonsterMove(msg, msgId, transport, seat, 1);
+
+    return 1;
+}
+
+} // namespace
+
+namespace {
+
 // The movement registrations of FUN_00742220, in its order.
 void RegisterUnitMovementHandlers() {
     static const uint16_t s_remote[] = {
@@ -6705,6 +7238,9 @@ void RegisterUnitMovementHandlers() {
     for (auto op : s_splineFlag) {
         ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(op), &UnitSplineFlagHandler, nullptr);
     }
+
+    ClientServices::SetMessageHandler(SMSG_ON_MONSTER_MOVE, &UnitMonsterMoveHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_MONSTER_MOVE_TRANSPORT, &UnitMonsterMoveHandler, nullptr);
 }
 
 } // namespace

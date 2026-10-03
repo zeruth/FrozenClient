@@ -206,6 +206,12 @@ class CMovementData_C : public CMovementShared {
         void SplineStartSwim();
         void SplineStopSwim();
         void SplineSetFlying(int32_t fly);
+        int32_t StartSpline(const C3Vector* points, uint32_t count, uint32_t duration, uint32_t flags, uint32_t id);
+        void StopSplineAt(uint32_t id, const C3Vector& destination, uint32_t flags, int32_t flush);
+        void SetSplineAnimation(uint8_t tier, uint32_t time);
+        void SetSplineParabolic(float acceleration, uint32_t time);
+        void FaceForSpline(float facing, int32_t flush);
+        void SetSplineTransport(WOWGUID transport, uint8_t seat);
         int32_t SplineSetGravity(int32_t enable);
         // ref: FUN_006ea7e0
         int32_t Interpolate(int32_t time, int32_t ms, C3Vector* position, float* facing, float* pitch);

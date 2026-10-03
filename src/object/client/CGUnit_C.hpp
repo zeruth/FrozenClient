@@ -882,6 +882,11 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         int32_t RemoteTeleport(int32_t time, const CMovementStatus& status);
         void ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg);
         void ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* msg);
+        static C3Vector* FitSplineToPosition(WOWGUID transport, const C3Vector& position, C3Vector* points,
+                                             uint32_t* count);
+        void FaceSplineTarget(WOWGUID target, int32_t flush);
+        void SetSplineAnimationTier(uint8_t tier);
+        void OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport, uint8_t seat, int32_t flush);
 
         // Movement members. +0x948 / +0x94c: when a turn and a pitch report were deferred, +0x950 /
         // +0x954 their opcodes; +0x9bc the last teleport acknowledgement; +0xa50 / +0xa54 the

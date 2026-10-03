@@ -44,6 +44,10 @@ class CMovementShared : public CPassenger {
         // Public member functions
         // ref: FUN_0098c580
         CMovementShared(const WOWGUID& transportGUID, const C3Vector& position, float facing, const WOWGUID& guid);
+        // The spline belongs to the movement (ClearSpline frees it the same way).
+        ~CMovementShared();
+        CMovementShared(const CMovementShared&) = delete;
+        CMovementShared& operator=(const CMovementShared&) = delete;
         float GetCurrentSpeed(int walk) const;
         uint32_t GetMoveFlags() const { return this->m_moveFlags; }
         uint16_t GetMoveFlags2() const { return this->m_moveFlags2; }
@@ -64,6 +68,20 @@ class CMovementShared : public CPassenger {
 
         // ref: FUN_0098b590
         void SetMoveFlags2Bit100(int32_t enable);
+        // ref: FUN_0098b5b0
+        void SetMoveFlags2Bit40(int32_t enable);
+
+        // The server spline (0x00986de0 .. 0x0098ca00)
+        static CMoveSpline* NewSpline();
+        static void DeleteSpline(CMoveSpline* spline);
+        void PrepareSpline(const C3Vector& end);
+        void InitSpline(int32_t time, const C3Vector* points, uint32_t count, uint32_t duration, uint32_t flags,
+                        uint32_t id);
+        void SetSplineStopped(uint32_t id, uint32_t flags);
+        float GetSplineDuration() const;
+        float GetSplineHeight(uint32_t elapsed, float z) const;
+        void RestartSplineLoop(int32_t time);
+        uint32_t EvaluateSpline(int32_t time, C3Vector* position);
 
         // ref: FUN_006e9640
         void SetSplineFacingSpot(const C3Vector& spot);
