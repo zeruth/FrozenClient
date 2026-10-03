@@ -33,6 +33,10 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "object/client/SpellVisuals.hpp"
+#include "object/client/CEffect.hpp"
+#include <cmath>
+#include "object/client/CGObject_C.hpp"
 #include "gx/Coordinate.hpp"
 #include "gx/Shader.hpp"
 #include "gx/Transform.hpp"
@@ -409,6 +413,123 @@ int32_t CGWorldFrame::OnLayerMouseWheel(const CMouseEvent& evt) {
 
 CGWorldFrame* CGWorldFrame::s_currentWorldFrame = nullptr;
 
+// ref: FUN_004f9f70
+int32_t CGWorldFrame::ObjectWorldHandler(void* param, int32_t flags, uint32_t guidLow, uint32_t guidHigh,
+                                         uint32_t param32) {
+    auto frame = CGWorldFrame::s_currentWorldFrame;
+
+    WOWGUID guid = (static_cast<WOWGUID>(guidHigh) << 32) | guidLow;
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\WorldFrame.cpp", 0x41f);
+
+    if (!object) {
+        return 1;
+    }
+
+    object->m_unreached = (flags & 0x4) ? 1 : 0;
+
+    if (!object->m_disabled) {
+        auto model = object->GetObjectModel();
+
+        // FUN_00743450
+        if (model && model->IsDrawable(0, 0)) {
+            frame->AddVisibleObject(object, static_cast<uint32_t>(flags));
+
+            return 1;
+        }
+    }
+
+    auto model = object->GetObjectModel();
+
+    if (model) {
+        if (model->m_attachParent) {
+            model->m_flag80 = 0;
+            model->m_flag20000 = 0;
+        } else {
+            model->m_flag8 = 0;
+            model->m_flag10000 = 0;
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_004f8d10
+void CGWorldFrame::AddVisibleObject(CGObject_C* object, uint32_t flags) {
+    auto model = object->GetObjectModel();
+
+    if (!model) {
+        return;
+    }
+
+    int32_t hidden = 0;
+    int32_t hiddenOther = 0;
+    object->GetHidden(flags, &hidden, &hiddenOther);
+
+    uint32_t draw = (hidden == 0 && hiddenOther == 0) ? 1 : 0;
+
+    object->UpdateForFrame(this);
+
+    if (!object->PlaceModel(this->m_elapsed)) {
+        return;
+    }
+
+    // Units, game objects and corpses (type bits 0x08, 0x20, 0x80) the frame draws can be picked.
+    if ((object->IsA(TYPE_UNIT) || object->IsA(TYPE_GAMEOBJECT) || object->IsA(TYPE_CORPSE)) && draw
+        && !object->m_disablePending) {
+        auto record = this->m_freeModelRecords.Head();
+
+        if (record) {
+            record->m_link.Unlink();
+        } else {
+            record = this->NewModelRecord();
+        }
+
+        this->m_modelRecords.LinkToTail(record);
+
+        auto recordModel = object->GetObjectModel();
+        record->m_model = recordModel;
+        recordModel->m_refCount++;
+        record->m_guid = object->GetGUID();
+    }
+
+    if (model->m_attachParent) {
+        model->m_flag80 = draw;
+        model->m_flag20000 = draw;
+    } else {
+        model->m_flag8 = draw;
+        model->m_flag10000 = draw;
+    }
+}
+
+// ref: FUN_004f89e0
+CModelRecord* CGWorldFrame::NewModelRecord() {
+    auto record = STORM_NEW(CModelRecord);
+    record->m_distance = INFINITY;
+
+    return record;
+}
+
+// ref: FUN_004f9310
+void CGWorldFrame::ReleaseModelRecords(STORM_EXPLICIT_LIST(CModelRecord, m_link)& list) {
+    for (auto record = list.Head(); record; record = list.Next(record)) {
+        if (record->m_model) {
+            record->m_model->Release();
+            record->m_model = nullptr;
+        }
+    }
+
+    while (auto record = list.Head()) {
+        record->m_link.Unlink();
+        this->m_freeModelRecords.LinkToTail(record);
+    }
+}
+
+// ref: FUN_004fa5d0
+void CGWorldFrame::ReleaseAllModelRecords() {
+    this->ReleaseModelRecords(this->m_modelRecords);
+    this->ReleaseModelRecords(this->m_modelRecords2);
+}
+
 const CRect* CGWorldFrame::GetWorldViewport() {
     auto frame = CGWorldFrame::s_currentWorldFrame;
     return frame ? &frame->m_viewport : nullptr;
@@ -575,9 +696,14 @@ void CGWorldFrame::OnWorldRender() {
     // (CSimpleModel) still feed.
     ParticleFxEndFrame();
 
-    // TODO FUN_004f8a40(0x20000) under the same cursor test, FUN_007fca30 (mount transitions),
-    // FUN_007f9ec0 (a camera-centred pass), FUN_006fdfb0 (missile trajectories) and FUN_004f6f90
-    // (the frame's two held objects) -- phase 3 and 4.
+    // TODO FUN_004f8a40(0x20000) under the same cursor test.
+
+    // The spell visuals: chains, shards and mount transitions advance, then draw (0x004f91d4,
+    // 0x004f91d9).
+    SpellVisualsUpdate();
+    SpellVisualsDraw();
+
+    // TODO FUN_006fdfb0 (missile trajectories) and FUN_004f6f90 (the frame's two held objects).
 
     // The underwater motes last in the world (FUN_0077f9d0 -> FUN_0079ca70).
     CWorld::RenderParticulates();
@@ -620,11 +746,7 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
     }
 
     if (object->m_model) {
-        float scale = object->GetScale();
-
         if (object->IsA(TYPE_UNIT)) {
-            scale *= static_cast<CGUnit_C*>(object)->GetModelScale();
-
             // Keep the looping idle pose in sync with the unit's state each frame, so a unit
             // that sits, stands, dies or emotes after spawn updates instead of holding its
             // spawn-time pose. UpdateIdleAnimation only re-issues the sequence on a change.
@@ -634,7 +756,8 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
             UnitVisualsUpdate(static_cast<CGUnit_C*>(object));
         }
 
-        object->m_model->SetWorldTransform(object->GetPosition(), object->GetFacing(), scale);
+        // The model itself is placed by the frame's object handler (CGWorldFrame::AddVisibleObject
+        // -> PlaceModel, slot 0x8c), as the reference does, for the objects the map walk reaches.
 
         // The map's entity for the object follows it (the reference does this from the
         // object's own movement update; this loop is where frozen places objects).
@@ -658,6 +781,9 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
 // frozen does not yet have is marked in place, so filling it in is a matter of calling it.
 void CGWorldFrame::OnWorldUpdate() {
     float dt = CWorld::GetTickTimeSec();
+
+    // FUN_004fa040 stores its elapsed time here (0x004fa344) before the update runs.
+    this->m_elapsed = dt;
 
     auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
 
@@ -705,14 +831,21 @@ void CGWorldFrame::OnWorldUpdate() {
     // TODO the sound listener (0x004fa8d9 .. 0x004faa3a): at the camera, or behind and above the
     // unit it follows by Sound_ListenerBackDist / Sound_ListenerUpDist (FUN_004c5b20).
 
-    // TODO FUN_00744140 (the objects' own pre-update walk), FUN_00616e80 (portraits), and the two
-    // deferred model-release lists (FUN_004f9310 on +0x29c and +0x2a8), which nothing in frozen
-    // fills.
+    // The objects' ObjectEffect managers (FUN_00744140), then the frame's pick lists from the last
+    // frame let go (FUN_004f9310 on +0x29c and +0x2a8, 0x004faa51).
+    // TODO FUN_00616e80 (portraits).
+    ObjectsUpdateObjectEffects();
+
+    this->ReleaseAllModelRecords();
 
     ClntObjMgrEnumVisibleObjects(&UpdateVisibleObject, nullptr);
 
-    // TODO FUN_0077f2b0(FUN_004f6560), FUN_006fa450 (effects), FUN_00703b00 (missiles),
-    // FUN_00804d20 / FUN_00804c10 (spells).
+    // TODO FUN_0077f2b0(FUN_004f6560).
+
+    // Every effect advances (0x004faa83).
+    CEffect::UpdateAll();
+
+    // TODO FUN_00703b00 (missiles), FUN_00804d20 / FUN_00804c10 (spells).
 
     auto targetPos = target && !this->m_camera->HasModel()
         ? target->GetPosition()

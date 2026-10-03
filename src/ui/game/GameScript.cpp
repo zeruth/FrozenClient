@@ -1645,9 +1645,15 @@ int32_t Script_OpeningCinematic(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00516760
 int32_t Script_InCinematic(lua_State* L) {
-    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
-    lua_pushboolean(L, 0);
+    if (CGGameUI::InCinematic()) {
+        lua_pushnumber(L, 1.0);
+
+        return 1;
+    }
+
+    lua_pushnil(L);
 
     return 1;
 }

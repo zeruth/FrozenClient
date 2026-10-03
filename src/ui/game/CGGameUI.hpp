@@ -59,6 +59,9 @@ class CGGameUI {
         static WOWGUID& GetCurrentObjectTrack();
         static uint32_t GetCursorMoney();
         static WOWGUID& GetLockedTarget();
+        // ref: FUN_005124d0
+        // Whether an opening or in-game cinematic is playing.
+        static int32_t InCinematic();
         static void DisplayError(uint32_t errorCode, ...);
         static char s_lastError[3000];  // the last formatted error text (reference DAT_00bcfb90)
         static void Initialize();
@@ -84,6 +87,8 @@ class CGGameUI {
         static uint32_t s_cursorMacro;
         static bool s_inWorld;
         static WOWGUID s_lockedTarget;
+        // Set while a cinematic plays (DAT_00bd07fc): FUN_00528af0 raises it, FUN_00528c30 drops it.
+        static int32_t s_inCinematic;
         static bool s_loggingIn;
 };
 

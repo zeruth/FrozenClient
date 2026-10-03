@@ -85,6 +85,10 @@ class CGMinimapFrame : public CSimpleFrame {
         static const MINIMAP_TRACKING_TYPE s_trackingTypes[NUM_MINIMAP_TRACKING_TYPES]; // ref: DAT_00a11c50
         static const MINIMAP_TRACKING_TYPE* s_otherTracking;                            // ref: DAT_00beba64
 
+        // ref: FUN_0057bf30
+        // The selected tracking row is "Low Level Quests" (kind 3).
+        static bool IsTrackingTrivialQuests();
+
         // The spell half. The reference builds a list of the tracking spells the player knows into
         // DAT_00be8dec/DAT_00be8de8 and puts it BEFORE the rows above, so a tracking id indexes the
         // spells first and the table second. That list needs the spellbook side, which is not

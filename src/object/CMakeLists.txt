@@ -17,4 +17,6 @@ target_link_libraries(object
     PRIVATE
         db
         ui
+        # FMOD headers only: CEffect embeds a SOUNDKITOBJECT (see src/world/CMakeLists.txt).
+        fmod
 )

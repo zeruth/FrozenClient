@@ -68,10 +68,6 @@ float UnitTop(CGObject_C* object) {
         const M2Bounds& b = model->m_shared->m_data->bounds;
         float scale = object->GetScale();
 
-        if (object->IsA(TYPE_UNIT)) {
-            scale *= static_cast<CGUnit_C*>(object)->GetModelScale();
-        }
-
         float modelTop = b.extent.t.z * scale;
 
         if (modelTop > 0.1f) {

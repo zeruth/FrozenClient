@@ -79,13 +79,20 @@ class CMovementShared : public CPassenger {
         // gate consults to decide that the unit's own pose is not its to choose.
         bool IsInForcedMotion() const;
 
+        // ref: FUN_00987490
+        // The movement's up vector in world space: turned by the transport's matrix when it
+        // rides one.
+        C3Vector GetWorldUp() const;
+
         // ref: FUN_0071c720
         // Mask 0x42200000: hovering, swimming, falling slowly.
         int32_t IsUnsupportedHoveringSwimmingOrSlowFalling() const;
 
     protected:
         // Protected member variables
-        // TODO
+        // ref +0x38: the movement's up vector, in the transport's space. PHASE4(MovementShared):
+        // its writers are the movement port's, so it stays straight up.
+        C3Vector m_up = { 0.0f, 0.0f, 1.0f };
         uint32_t m_moveFlags;       // ref +0x44
         // The second movement flag word. Written by movement code not ported yet, so it reads 0.
         uint16_t m_moveFlags2 = 0;  // ref +0x48

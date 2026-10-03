@@ -52,8 +52,14 @@ bool SpellRec::Read(SFile* f, const char* stringBuffer) {
     this->m_mechanic = static_cast<int32_t>(columns[SpellRec::COLUMN_MECHANIC]);
     this->m_attributesEx = columns[SpellRec::COLUMN_ATTRIBUTES_EX];
     this->m_attributesEx2 = columns[SpellRec::COLUMN_ATTRIBUTES_EX2];
+    this->m_attributesEx3 = columns[SpellRec::COLUMN_ATTRIBUTES_EX3];
+    this->m_attributesEx4 = columns[SpellRec::COLUMN_ATTRIBUTES_EX4];
+    this->m_attributesEx5 = columns[SpellRec::COLUMN_ATTRIBUTES_EX5];
+    this->m_attributesEx6 = columns[SpellRec::COLUMN_ATTRIBUTES_EX6];
+    this->m_attributesEx7 = columns[SpellRec::COLUMN_ATTRIBUTES_EX7];
     this->m_targets = columns[SpellRec::COLUMN_TARGETS];
     this->m_schoolMask = columns[SpellRec::COLUMN_SCHOOL_MASK];
+    this->m_spellMissileID = static_cast<int32_t>(columns[SpellRec::COLUMN_SPELL_MISSILE]);
 
     for (int32_t i = 0; i < 2; i++) {
         this->m_stances[i] = columns[SpellRec::COLUMN_STANCES + i];

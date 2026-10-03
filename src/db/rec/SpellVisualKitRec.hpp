@@ -28,7 +28,12 @@ class SpellVisualKitRec {
         int32_t m_worldEffect;
         int32_t m_soundID;
         int32_t m_shakeID;
-        int32_t m_flags;
+        int32_t m_charProc[4];
+        float m_charParamZero[4];
+        float m_charParamOne[4];
+        float m_charParamTwo[4];
+        float m_charParamThree[4];
+        int32_t m_flags;                    // +0x94
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

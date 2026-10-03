@@ -142,6 +142,10 @@ class CWorld {
         // Public static functions
         static HWORLDOBJECT AddObject(CM2Model* model, void* handler, void* handlerParam, uint64_t param64, uint32_t param32, uint32_t objFlags);
         static void RemoveObject(HWORLDOBJECT object);
+        // ref: FUN_00782350
+        // The world entry draws `model` from now on, and the model answers for its lighting
+        // through the entry.
+        static void SetObjectModel(HWORLDOBJECT object, CM2Model* model);
         // ref: FUN_0077f2e0
         static void UpdateObjectLighting(HWORLDOBJECT object);
         // The map entity of what the camera follows (DAT_00cd87a8), set each world update; the

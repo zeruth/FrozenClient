@@ -35,7 +35,10 @@ class CGCorpse {
         uint32_t* m_corpseSaved;
 
         // Protected member functions
+    public:
+        // Public, as the reference reads it from Object_C.cpp (FUN_00743760).
         CGCorpseData* Corpse() const;
+    protected:
 };
 
 #endif

@@ -5,6 +5,8 @@
 #include "ui/Types.hpp"
 #include <storm/Array.hpp>
 #include <storm/Hash.hpp>
+#include "util/guid/Types.hpp"
+#include <tempest/Vector.hpp>
 #include <cstdint>
 
 class SOUNDKITDEF;
@@ -33,8 +35,16 @@ class SI2 {
         static void InitSoundKitDefs();
         static void InitSoundKitGroups();
         static bool IsPlaying(SOUNDKITOBJECT* object);
-        static int32_t PlaySoundKit(const char *name, int a2, SOUNDKITOBJECT* object, SoundKitProperties* properties);
-        static int32_t PlaySoundKit(int32_t id, int32_t a2, SOUNDKITOBJECT* object, SoundKitProperties* properties, int32_t a5,  void* a6, int32_t a7, int32_t a8);
+        static int32_t PlaySoundKit(const char *name, const C3Vector* position, SOUNDKITOBJECT* object, SoundKitProperties* properties);
+        static int32_t PlaySoundKit(int32_t id, const C3Vector* position, SOUNDKITOBJECT* object, SoundKitProperties* properties, int32_t a5,  void* a6, int32_t a7, int32_t a8);
+
+        // ref: FUN_004c5bf0
+        // The kit's SoundKitDef has flag 0x200: it plays at the listener rather than the source.
+        static uint32_t SoundKitFollowsListener(int32_t id);
+
+        // ref: FUN_004c5d60
+        // The position SESound asks for when a sound follows an object.
+        static bool GetObjectPosition(WOWGUID guid, C3Vector* position);
         static void PlayUISound(int32_t id);
         static void RegisterCVars();
         static void RegisterUserCVars();

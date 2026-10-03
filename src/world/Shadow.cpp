@@ -533,7 +533,7 @@ int32_t DecalCollectReceivers(const CAaBox& casterBox, uint32_t queryMask, uint3
 // ref: FUN_006c42f0
 // Swap red and blue when the device wants RGBA rather than ARGB. The reference calls this on any
 // colour it is about to put in a vertex stream by hand; five call sites share it.
-static void DecalFixupColor(uint32_t& color) {
+void DecalFixupColor(uint32_t& color) {
     if (GxCaps().m_colorFormat != GxCF_rgba) {
         return;
     }

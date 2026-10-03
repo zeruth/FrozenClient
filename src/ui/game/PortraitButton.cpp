@@ -1,4 +1,6 @@
 #include "ui/game/PortraitButton.hpp"
+#include "ui/game/ScriptEvents.hpp"
+#include "ui/game/Types.hpp"
 #include "gx/Device.hpp"
 #include "gx/Draw.hpp"
 #include "gx/Gx.hpp"
@@ -48,4 +50,18 @@ int32_t PortraitTestBackBufferAlpha() {
 // queue, so there is nothing to mark and nothing to queue through.
 void PortraitButtonInvalidateAll() {
     g_portraitAlphaSupported = PortraitTestBackBufferAlpha();
+}
+
+// ref: FUN_00618110
+// DIVERGED in its first step: the reference marks the unit's entry in the portrait cache
+// (0x00c5ce08, +0x20) stale, and frozen has no portrait cache (see PortraitButtonInvalidateAll).
+// The events are the reference's.
+void PortraitRefresh(const WOWGUID& guid, uint32_t flags) {
+    if (flags & 0x2) {
+        ScriptEventsQueueUnitEvent(guid, SCRIPT_UNIT_PORTRAIT_UPDATE);
+    }
+
+    if (flags & 0x1) {
+        ScriptEventsQueueUnitEvent(guid, SCRIPT_UNIT_MODEL_CHANGED);
+    }
 }

@@ -1850,17 +1850,21 @@ void CWorldScene::TraverseRowEntities(Row* row) {
                 entity->m_model->m_flag10000 = draw;
             }
 
-            // TODO the reference also hangs FUN_00780cd0 off the model here, the hook that
-            // lets an entity answer for its own lighting.
+            // The hook that lets the entity answer for its own lighting (0x007931b1).
+            entity->m_model->m_lightingCallback = &CWorld::LightingCallback;
+            entity->m_model->m_lightingArg = entity;
         }
 
         // The entity is visible, so it joins the frame's list -- through the same link the row
-        // used, which is why next was read first. That list is what the shadow pass draws from,
-        // and it is already reduced to what the frame can see.
-        //
-        // TODO the reference asks the entity's own callback first and keeps it out when the
-        // callback refuses; frozen has no entity callbacks yet, so every visible entity joins.
-        CWorldScene::s_frameEntityList.LinkToTail(entity);
+        // used, which is why next was read first -- unless its own handler refuses it (event 5).
+        // That list is what the shadow pass draws from.
+        typedef int32_t (*Handler)(void* param, int32_t event, uint32_t guidLow, uint32_t guidHigh, uint32_t param32);
+        auto handler = reinterpret_cast<Handler>(entity->m_handler);
+
+        if (!handler || handler(entity->m_handlerParam, 5, static_cast<uint32_t>(entity->m_param64),
+                                static_cast<uint32_t>(entity->m_param64 >> 32), entity->m_param32)) {
+            CWorldScene::s_frameEntityList.LinkToTail(entity);
+        }
 
         entity = next;
     }

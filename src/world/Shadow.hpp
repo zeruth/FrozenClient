@@ -40,6 +40,10 @@ extern int32_t g_shadowLOD;
 // ref: FUN_007e4a40
 void ShadowInit();
 
+// ref: FUN_006c42f0
+// Swap red and blue when the device wants RGBA rather than ARGB.
+void DecalFixupColor(uint32_t& color);
+
 // Release all three textures. ref: FUN_007e2c80
 void ShadowDestroy();
 

@@ -1,3 +1,5 @@
+#include "object/client/CGObject_C.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "object/client/CMovement_C.hpp"
 #include "client/ClientServices.hpp"
 #include "net/Types.hpp"
@@ -123,4 +125,48 @@ void MoveEventQueueInsert(CPlayerMoveEventList* queue, CPlayerMoveEvent* event) 
     }
 
     queue->LinkToTail(event);
+}
+
+// ref: FUN_0074b430
+int32_t MovementGetTransportMatrix(WOWGUID transport, C44Matrix& matrix) {
+    auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x53);
+
+    if (object) {
+        C44Matrix world;
+        object->GetWorldMatrix(world);
+        matrix = world;
+
+        return 1;
+    }
+
+    matrix = C44Matrix();
+
+    return 0;
+}
+
+// ref: FUN_0074b4c0
+int32_t MovementGetTransportMatrixChecked(WOWGUID transport, C44Matrix& matrix, WOWGUID owner,
+                                          const char* file, int32_t line) {
+    if (MovementGetTransportMatrix(transport, matrix)) {
+        return 1;
+    }
+
+    // "Failed to dereference transport! Provided GUID 0x%016I64X from %s(%d)" (FUN_005eeb70), a
+    // debug-build message.
+    (void)owner;
+    (void)file;
+    (void)line;
+
+    return 0;
+}
+
+// ref: FUN_0074b590
+float MovementGetTransportFacing(WOWGUID transport) {
+    auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x77);
+
+    if (!object) {
+        return 0.0f;
+    }
+
+    return object->GetFacing();
 }

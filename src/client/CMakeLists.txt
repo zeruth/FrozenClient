@@ -51,6 +51,8 @@ target_link_libraries(client
         net
         util
         world
+        # FMOD headers only: CEffect embeds a SOUNDKITOBJECT (see src/world/CMakeLists.txt).
+        fmod
     PUBLIC
         bc
         common

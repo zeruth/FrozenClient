@@ -11,6 +11,9 @@
 #include <tempest/Box.hpp>
 
 class CCharacterComponent;
+class CEffect;
+class SOUNDKITOBJECT;
+class MountTransitionObject;
 class ChrClassesRec;
 class ChrRacesRec;
 class CreatureDisplayInfoRec;
@@ -66,6 +69,20 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // TODO
         virtual int32_t CanHighlight();
         virtual int32_t CanBeTargetted();
+        // ref: FUN_006e6f80
+        // The model the world draws for the unit: its mount when it rides one, the unit's own
+        // model otherwise.
+        virtual CM2Model* GetObjectModel();
+        // ref: FUN_00715b50
+        // The display's opacity (CreatureDisplayInfo column 5) over 255, or fully opaque.
+        virtual float GetFadeInAlpha();
+        // ref: FUN_0071c0e0
+        // The display's scale times the object's, and the mount's while the unit rides.
+        virtual float GetScale() const;
+        // ref: FUN_0071fd80
+        // Put the unit's model (its mount's, when it rides) where the unit is, leaning with the
+        // ground it stands on.
+        virtual int32_t PlaceModel(float elapsed);
         // TODO
 
         // Public member functions
@@ -103,6 +120,12 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // sex, skin/face/hair and equipment), the same way a player model is dressed. Returns true
         // when the display uses extended (character) data; false for ordinary creature models.
         bool BuildNpcCharacterComponent();
+
+        // PHASE4(Unit_C): frozen's dressing of a new non-player unit model -- a character
+        // component from CreatureDisplayInfoExtra, else the monster skin and geosets, then the
+        // virtual items in its hands. It stands in for the reference unit's UpdateModel
+        // (FUN_0073e410, vtable slot 0x1c) and goes when that is ported.
+        void DressNpcModel(CM2Model* model);
 
         // Re-evaluate the looping idle animation from the unit's current state (dead / stand state /
         // emote) and apply it to the model only when it changes, so a unit that sits, stands, dies
@@ -145,6 +168,132 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         uint32_t GetCreatureTypeFlag26() const;
         int32_t GetCreatureSkinningType() const;
         void PlayEmote(uint32_t emoteID);
+
+        // ref: FUN_0074b8b0
+        // The unit rides another unit: its transport guid is a vehicle's, or a player's.
+        bool IsTransportUnit() const;
+
+        // ref: FUN_00717e50
+        // The unit's smoothed facing in world space: its own plus that of every unit it rides,
+        // turned by the facing of the transport at the bottom of the chain.
+        float GetWorldSmoothFacing();
+
+        // ref: FUN_00716190
+        // Stand state 1 Sit, or 4 through 6 (the chair heights).
+        bool IsSittingStandState() const;
+
+        // ref: FUN_00722180
+        // Something other than the unit drives its pose: the vehicle it is, the creature
+        // template's no-animation bit (type flags 0x8), or animation 0x79 already playing.
+        bool IsAnimationLocked();
+
+        // ref: FUN_00736640
+        // The unit flinches: StandWound (8), CombatWound (9) or, when `critical`, CombatCritical
+        // (10), on its upper body unless that is playing a ready pose. Nothing plays while the
+        // unit is dead, locked or running an effect that holds its animation (flag 0x4).
+        void PlayWoundAnimation(int32_t critical);
+
+        // ref: FUN_00735bb0
+        // Re-time `model`'s sequence on `boneId`, and when it is this vehicle's own model, the
+        // sequence of every live passenger with it.
+        void SetBoneSequenceTimeOnPassengers(CM2Model* model, uint32_t boneId, int32_t time, int32_t fromPassenger);
+
+        // ref: FUN_00735dd0
+        // Freeze (`hold`) or release `model`'s animation, and its live passengers' with it.
+        void SetAnimationHoldOnPassengers(CM2Model* model, int32_t hold, int32_t fromPassenger);
+
+        // ref: FUN_007202c0
+        // The unit draws its body through a character component: a player whose display is a
+        // character model, a unit that has reverted from a form, or one wearing its own native
+        // display.
+        bool DrawsThroughComponent() const;
+
+        // ref: FUN_00723730
+        // Put the unit's own item back in a component section an item visual had taken.
+        void ReapplyItemSection(int32_t section);
+
+        // ref: FUN_00715670 / FUN_00715690
+        // The mount transition the unit is playing, and the effect that plays it.
+        void SetMountTransition(MountTransitionObject* transition, CEffect* effect);
+        void ClearMountTransition();
+
+        // ref: FUN_007412b0
+        // A finished mount transition hands the unit the mount it was leading to.
+        void ReleaseMountTransition();
+
+        // ref: FUN_00715d90 / FUN_00715db0
+        // Creature template type flags 0x400000 and 0x2000000, which pick the unit's world flags.
+        uint32_t GetCreatureTypeFlag22() const;
+        uint32_t GetCreatureTypeFlag25() const;
+
+        // ref: FUN_00717ad0
+        // How tall the unit's model data says it is (its geometry box), scaled.
+        float GetModelHeight();
+
+        // ref: FUN_0071a7f0
+        // The model carries the attachment a spell visual names: the attachment itself when
+        // `worldAttach`, else the spell attachment table's entry for it (0x00adaa20).
+        int32_t HasSpellAttachment(int32_t attachment, int32_t worldAttach);
+
+        // ref: FUN_0071a860
+        // Where a spell visual's attachment is, with `offset` in its space.
+        C3Vector& GetSpellAttachmentWorldPosition(C3Vector& out, int32_t attachment, const C3Vector& offset,
+                                                  int32_t worldAttach);
+
+        // ref: FUN_00746bd0
+        // An attachment's world position with `offset` in its space; a model without it falls
+        // back on the unit's position, raised by the attachment's default height (0x00adb630).
+        C3Vector& GetAttachmentPosition(C3Vector& out, uint32_t attachment, const C3Vector* offset);
+
+        // The mount layer.
+
+        // ref: FUN_00740450
+        // Ride `displayID` (0 to dismount): the old mount comes off, the new one is built and the
+        // unit sits on it, the mount sound and name plate follow.
+        void SetMountDisplay(int32_t displayID);
+
+        // ref: FUN_0073d5d0
+        // Build the mount model for m_mountDisplayID and seat the unit's model on it.
+        void Mount(int32_t displayID, int32_t checkCollision);
+
+        // ref: FUN_0073d940
+        // Take the unit's model off its mount and drop the mount model.
+        void Dismount(int32_t restoreCollision);
+
+        // ref: FUN_00717910
+        void SetMountModel(CM2Model* model);
+
+        // ref: FUN_007195d0
+        // The CreatureSoundData row of the mount, from its display or its model data.
+        const CreatureSoundDataRec* GetMountSoundData() const;
+
+        // ref: FUN_00720330
+        // The blob shadow's radius from the unit's shadow box, softened past 1.5 yards.
+        void UpdateShadowRadius();
+
+        // ref: FUN_00715fd0
+        // Which of bones 0x1b..0x22 the unit's model carries.
+        void UpdateBoneMask();
+
+        // ref: FUN_007467f0
+        // The mount's looping sound plays while the unit rides and is not in flight.
+        void UpdateMountSound();
+
+        // ref: FUN_007470d0
+        void PlayDismountSound();
+
+        // ref: FUN_007412e0
+        // The active player asks the server to dismount (CMSG_CANCEL_MOUNT_AURA) and comes off now.
+        void RequestDismount();
+
+        // ref: FUN_0071e5b0
+        // The unit's ObjectEffect package follows the three sequences it is playing.
+        void UpdateObjectEffects();
+
+        // ref: FUN_0071a3f0
+        // The CreatureSoundData row the unit's sounds come from: its mount's while it rides, a
+        // pet's own pet row when its sound data names one, else its own.
+        const CreatureSoundDataRec* GetSoundData() const;
 
         // ref: FUN_00716710
         bool IsPlayerControlled() const;
@@ -408,8 +557,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         int32_t GetLocalDisplayID() const;
         void RefreshDataPointers();
 
-    private:
-        // Private member variables
+    // The reference has no access control; ports elsewhere in the client read these fields
+    // directly, the way the original does.
+    public:
+        // Member variables
         // TODO
         CMovement_C m_localMove;
         // TODO
@@ -434,7 +585,34 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The mount the unit is riding, as its own model with the unit's model attached under it
         // (the reference builds it in FUN_0073c0c0 from UNIT_FIELD_MOUNTDISPLAYID). Its root bone
         // carries the mount's animation, which is why GetBoneSequenceStates reads it first.
-        CM2Model* m_mountModel = nullptr;
+        CM2Model* m_mountModel = nullptr;           // +0x98c
+        // +0x990: the mount's model scale (CreatureDisplayInfo column 4), which the rider is
+        // scaled back out of.
+        float m_mountScale = 1.0f;
+        // +0x978: the mount's CreatureSoundData row (GetMountSoundData).
+        const CreatureSoundDataRec* m_mountSoundData = nullptr;
+        // +0x9c0: the creature display the unit rides, 0 for none (UNIT_FIELD_MOUNTDISPLAYID).
+        int32_t m_mountDisplayID = 0;
+        // +0x9c4 / +0x9c8: the mount transition playing, and the effect playing it.
+        MountTransitionObject* m_mountTransition = nullptr;
+        CEffect* m_mountTransitionEffect = nullptr;
+        // +0x9f4: set when the unit reverts from a form to its native display (FUN_00721cf0).
+        uint8_t m_formReverted = 0;
+        // +0xac4: the mount's looping sound. The reference embeds it; frozen holds it by pointer
+        // so the unit header does not carry the sound engine's (FMOD's) headers into every library
+        // that includes it. Made with the unit, freed with it.
+        SOUNDKITOBJECT* m_mountSound = nullptr;
+        // +0xad8..+0xae0: the mount's footprint texture, and its length and width.
+        int32_t m_mountFootprintTexture = 0;
+        float m_mountFootprintLength = 0.0f;
+        float m_mountFootprintWidth = 0.0f;
+        // +0x9d8: the axis the model leans along, eased toward the movement's up vector.
+        C3Vector m_tiltAxis = { 0.0f, 0.0f, 1.0f };
+        // +0xb0c: the blob shadow's radius (UpdateShadowRadius).
+        float m_shadowRadius = 0.0f;
+        // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
+        uint32_t m_boneMask = 0;
+        uint32_t m_boneValues[8] = {};
         // Byte 3 of UNIT_FIELD_BYTES_1: 0 ground, 1 swim, 2 hover, 3 fly. ResolveAnimation asks
         // AnimationData for the tiered variant of an animation before the plain one, so a flying
         // unit gets the flying walk. The reference refreshes it from the descriptor in its
@@ -496,6 +674,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 };
 
 int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+
+// ref: FUN_00747860
+// The unit sound module's start: the FootstepSounds CVar and the dismount sound.
+void UnitSoundInitialize();
 
 // Opcode classifiers for the unit's movement messages, named by the sets they test.
 

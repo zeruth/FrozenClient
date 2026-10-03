@@ -1,4 +1,13 @@
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/SpellVisuals.hpp"
+#include "console/CVar.hpp"
+#include "console/Types.hpp"
+#include "model/CM2Scene.hpp"
+#include "net/Connection.hpp"
+#include "sound/SI2.hpp"
+#include "sound/SOUNDKITOBJECT.hpp"
+#include "sound/SoundKitProperties.hpp"
+#include "ui/game/PlayerName.hpp"
 #include "world/CWorld.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
@@ -192,6 +201,8 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
     , CGUnit(this->m_localMove)
     , m_localMove(objCreate.move.status.position28, objCreate.move.status.facing34, this->GetGUID(), this)
 {
+    this->m_mountSound = STORM_NEW(SOUNDKITOBJECT);
+
     // TODO
 
     this->RefreshDataPointers();
@@ -200,6 +211,13 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 }
 
 CGUnit_C::~CGUnit_C() {
+    if (this->m_mountSound) {
+        SI2::StopOrFadeOut(this->m_mountSound, 1, 0.0f, 1);
+        this->m_mountSound->~SOUNDKITOBJECT();
+        STORM_FREE(this->m_mountSound);
+        this->m_mountSound = nullptr;
+    }
+
     // Free the composited body built for a humanoid NPC (players keep their own component in
     // CGPlayer_C, so this only ever fires for NPCs). Units stream in and out with the tiles, so a
     // leak here would grow unbounded.
@@ -4224,4 +4242,869 @@ void CGUnit_C::OnCreatureStatsArrived(uint32_t id, const WOWGUID* guid, void* pa
     // FUN_00512b00, then FUN_0060bf10 with event 0x94.
     ScriptEventsSignalUnitEvent(*guid, SCRIPT_UNIT_NAME_UPDATE);
     ScriptEventsSignalUnitEvent(*guid, 0x94);
+}
+
+// ------------------------------------------------------------------------------------------------
+// The effect- and mount-facing helpers
+// ------------------------------------------------------------------------------------------------
+
+float NormalizeAngle(float angle);
+
+namespace {
+
+// The model attachment each spell visual attachment index names (0x00adaa20). Index 13 reads
+// entry 4 (0x00adaa30) instead of its own.
+const int32_t s_spellAttachments[16] = { 20, 34, 19, 21, 22, 17, 23, 24, 25, 15, 16, 37, 38, 22, 47, 48 };
+
+// How high above a unit an attachment sits when its model lacks it, by attachment (0x00adb630).
+const float s_attachmentHeights[50] = {
+    1.0f, 1.0f, 1.0f, 1.5f, 1.5f, 1.8f, 1.8f, 0.5f, 0.5f, 1.0f,
+    1.0f, 2.0f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 2.0f, 2.5f, 0.0f,
+    2.0f, 1.5f, 1.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 3.0f,
+    1.5f, 1.5f, 1.0f, 1.0f, 1.5f, 1.0f, 1.0f, 2.5f, 1.5f, 0.0f,
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+};
+
+// The dismount sound, the SoundEntries row named "SpiritWolf (DONOTRENAME)" (DAT_00ca12cc).
+int32_t s_dismountSoundID;
+
+// The camera follows a unit whose model changed under it.
+void RetargetCamera(CGUnit_C* unit) {
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (camera && camera->GetTarget() == unit->GetGUID()) {
+        camera->SetTarget(unit->GetGUID());
+    }
+}
+
+} // namespace
+
+// ref: FUN_00747860
+// PHASE4(UnitSound): the footstep tables FUN_00747760 builds first are the unit sound port's.
+void UnitSoundInitialize() {
+    CVar::Register("FootstepSounds", nullptr, 0x0, "1", nullptr, SOUND);
+
+    for (uint32_t i = 0; i < static_cast<uint32_t>(g_soundEntriesDB.GetNumRecords()); i++) {
+        auto entry = g_soundEntriesDB.GetRecordByIndex(i);
+
+        if (entry && entry->m_name && !SStrCmp(entry->m_name, "SpiritWolf (DONOTRENAME)", STORM_MAX_STR)) {
+            s_dismountSoundID = entry->m_ID;
+
+            break;
+        }
+    }
+}
+
+// ref: FUN_006e6f80
+CM2Model* CGUnit_C::GetObjectModel() {
+    return this->m_mountModel ? this->m_mountModel : this->m_model;
+}
+
+// ref: FUN_00715b50
+float CGUnit_C::GetFadeInAlpha() {
+    if (this->m_displayInfo) {
+        return static_cast<float>(this->m_displayInfo->m_creatureModelAlpha) * 0.003921568859368563f;
+    }
+
+    return 1.0f;
+}
+
+// ref: FUN_0074b8b0
+bool CGUnit_C::IsTransportUnit() const {
+    WOWGUID transport = this->m_localMove.GetTransportGUID();
+    uint32_t low = static_cast<uint32_t>(transport);
+    uint32_t high = static_cast<uint32_t>(transport >> 32);
+
+    if ((high & 0xF0F00000) == 0xF0500000) {
+        return true;
+    }
+
+    if ((high & 0xF0000000) != 0) {
+        return false;
+    }
+
+    return !(low == 0 && (high & 0xF07FFFFF) == 0);
+}
+
+// ref: FUN_00717e50
+// The reference reads the movement of whatever the walk last reached, which is null when a unit
+// in the chain is not there; the walk stops at the last unit found instead.
+float CGUnit_C::GetWorldSmoothFacing() {
+    float facing = 0.0f;
+    CGUnit_C* unit = this;
+
+    for (;;) {
+        facing += unit->m_smoothFacing;
+
+        if (!unit->IsTransportUnit()) {
+            break;
+        }
+
+        auto next = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(unit->GetTransportGUID(), TYPE_UNIT, ".\\Unit_C.cpp", 0x206a));
+
+        if (!next) {
+            break;
+        }
+
+        unit = next;
+    }
+
+    return unit->m_localMove.GetFacing(facing);
+}
+
+// ref: FUN_00716190
+bool CGUnit_C::IsSittingStandState() const {
+    uint8_t standState = static_cast<uint8_t>(this->m_unit->bytes1 & 0xFF);
+
+    return standState == 1 || (4 <= standState && standState <= 6);
+}
+
+// ref: FUN_00722180
+bool CGUnit_C::IsAnimationLocked() {
+    if (this->m_vehicle && this->m_vehicle->m_rec && this->m_vehicle->ControlsPassengerAnimation()) {
+        return true;
+    }
+
+    if (this->m_creatureStats) {
+        return (this->m_creatureStats->m_typeFlags >> 3) & 1;
+    }
+
+    return this->GetCurrentAnimationId() == 0x79;
+}
+
+// ref: FUN_00736640
+void CGUnit_C::PlayWoundAnimation(int32_t critical) {
+    if (this->IsDeadOrFeigning() || !this->m_model || !this->m_model->IsLoaded(0, 0) || this->IsAnimationLocked()) {
+        return;
+    }
+
+    for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+        if (effect->m_flags & 0x4) {
+            return;
+        }
+    }
+
+    uint32_t animID;
+    uint32_t boneID = this->m_upperBodyBoneId;
+
+    if (critical) {
+        animID = 10;
+    } else if (this->m_attackTarget) {
+        animID = 9;
+    } else {
+        animID = 8;
+
+        if (!this->m_mountModel && (this->m_localMove.GetMoveFlags() & 0x2E0100F) == 0
+            && !this->m_localMove.IsUnsupportedOrHovering() && !this->IsSittingStandState()
+            && GetAnimationBehavior(this->GetCurrentAnimationId()) != 0x62) {
+            boneID = 0xFFFFFFFF;
+        }
+    }
+
+    if (boneID == this->m_upperBodyBoneId) {
+        uint32_t upper = this->m_model->GetBoneUint90(0xFFFFFFFF);
+
+        if (IsReadyAnimation(upper) || upper == 0) {
+            boneID = 0xFFFFFFFF;
+        }
+    }
+
+    animID = this->ResolveAnimation(animID, nullptr);
+
+    if (this->m_model->HasSequence(animID)) {
+        this->SetBoneSequence(this->m_model, boneID, animID, 0xFFFFFFFF, 0, 1.0f, 0, 0, 0);
+    }
+
+    this->UpdateObjectEffects();
+}
+
+// ref: FUN_00735bb0
+// PHASE4(Vehicle_C): the reference repeats the change on every passenger in the vehicle's seat
+// list (+0x170/+0x178), which CVehicle_C does not carry yet; nothing creates a vehicle, so the walk
+// has nothing to reach.
+void CGUnit_C::SetBoneSequenceTimeOnPassengers(CM2Model* model, uint32_t boneId, int32_t time, int32_t fromPassenger) {
+    if (!model) {
+        return;
+    }
+
+    if (!fromPassenger && this->m_vehiclePassenger && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+        return;
+    }
+
+    model->SetBoneSequenceTime(boneId, time);
+}
+
+// ref: FUN_00735dd0
+// PHASE4(Vehicle_C): the passenger walk, as in SetBoneSequenceTimeOnPassengers.
+void CGUnit_C::SetAnimationHoldOnPassengers(CM2Model* model, int32_t hold, int32_t fromPassenger) {
+    if (!model) {
+        return;
+    }
+
+    if (!fromPassenger && this->m_vehiclePassenger && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+        return;
+    }
+
+    if (hold) {
+        uint32_t time = model->m_scene->m_time;
+        model->m_animationHeldTime = time ? time : 1;
+    } else {
+        model->m_animationHeldTime = 0;
+    }
+}
+
+// ref: FUN_007202c0
+bool CGUnit_C::DrawsThroughComponent() const {
+    if (this->IsA(TYPE_PLAYER) && this->m_modelData && (this->m_modelData->m_flags & 0x4)
+        && this->m_displayInfoExtra && (this->m_displayInfoExtra->m_flags & 0x1)) {
+        return true;
+    }
+
+    if (this->m_formReverted) {
+        return true;
+    }
+
+    if (this->m_localDisplayID) {
+        return this->m_localDisplayID == this->m_unit->nativeDisplayID;
+    }
+
+    return this->m_unit->nativeDisplayID == this->m_unit->displayID;
+}
+
+// ref: FUN_00723730
+// PHASE4(Player_C): a player's own item goes back through CGPlayer_C's visible item applier
+// (FUN_006e08c0), which is the Player_C equipment port's; until it lands the player's body is
+// rebuilt from its equipment the way frozen dresses it.
+void CGUnit_C::ReapplyItemSection(int32_t section) {
+    if (this->DrawsThroughComponent() && this->IsA(TYPE_PLAYER)) {
+        int32_t slot = ComponentItemSlotToInvSlot(section);
+
+        if (slot != -1) {
+            static_cast<CGPlayer_C*>(this)->BuildCharacterComponent();
+        }
+
+        return;
+    }
+
+    if (!this->m_characterComponent || !this->m_displayInfoExtra) {
+        return;
+    }
+
+    this->m_characterComponent->RemoveItem(static_cast<ITEM_SLOT>(section));
+
+    int32_t displayID = this->m_displayInfoExtra->m_npcitemDisplay[section];
+
+    if (displayID) {
+        this->m_characterComponent->AddItem(static_cast<ITEM_SLOT>(section), displayID, 0);
+    }
+}
+
+// ref: FUN_00715670
+void CGUnit_C::SetMountTransition(MountTransitionObject* transition, CEffect* effect) {
+    this->m_mountTransition = transition;
+    this->m_mountTransitionEffect = effect;
+}
+
+// ref: FUN_00715690
+void CGUnit_C::ClearMountTransition() {
+    this->m_mountTransition = nullptr;
+    this->m_mountTransitionEffect = nullptr;
+}
+
+// ref: FUN_007412b0
+void CGUnit_C::ReleaseMountTransition() {
+    if (this->m_mountTransitionEffect) {
+        this->SetMountDisplay(this->m_mountTransitionEffect->m_displayID);
+    }
+
+    this->m_mountTransitionEffect = nullptr;
+    this->m_mountTransition = nullptr;
+}
+
+// ref: FUN_00715d90
+uint32_t CGUnit_C::GetCreatureTypeFlag22() const {
+    return this->m_creatureStats ? (this->m_creatureStats->m_typeFlags >> 22) & 1 : 0;
+}
+
+// ref: FUN_00715db0
+uint32_t CGUnit_C::GetCreatureTypeFlag25() const {
+    return this->m_creatureStats ? (this->m_creatureStats->m_typeFlags >> 25) & 1 : 0;
+}
+
+// ref: FUN_00717ad0
+float CGUnit_C::GetModelHeight() {
+    auto modelData = this->m_modelData ? this->m_modelData : this->GetModelData();
+
+    if (!modelData) {
+        return 0.0f;
+    }
+
+    return this->GetScale() * (modelData->m_geoBoxMaxZ - modelData->m_geoBoxMinZ);
+}
+
+// ref: FUN_0071a7f0
+int32_t CGUnit_C::HasSpellAttachment(int32_t attachment, int32_t worldAttach) {
+    if (!this->m_model || !this->m_model->IsLoaded(0, 0)) {
+        return 0;
+    }
+
+    if (worldAttach) {
+        return this->m_model->HasAttachment(attachment);
+    }
+
+    if (attachment == 13) {
+        return this->m_model->HasAttachment(s_spellAttachments[4]);
+    }
+
+    return this->m_model->HasAttachment(s_spellAttachments[attachment]);
+}
+
+// ref: FUN_0071a860
+// Attachment 13 is the weapon in the right hand: the first of the weapon model's attachments 4..0
+// it carries, else the default.
+C3Vector& CGUnit_C::GetSpellAttachmentWorldPosition(C3Vector& out, int32_t attachment, const C3Vector& offset,
+                                                    int32_t worldAttach) {
+    if (worldAttach) {
+        return this->GetAttachmentPosition(out, attachment, &offset);
+    }
+
+    if (attachment != 13) {
+        return this->GetAttachmentPosition(out, s_spellAttachments[attachment], &offset);
+    }
+
+    for (auto child = this->m_model->m_attachList; child; child = child->m_attachNext) {
+        if (child->m_attachId != 1) {
+            continue;
+        }
+
+        for (int32_t id = 4; id >= 0; id--) {
+            if (child->HasAttachment(id)) {
+                C44Matrix transform = child->GetAttachmentWorldTransform(id);
+                out = offset * transform;
+
+                return out;
+            }
+        }
+
+        break;
+    }
+
+    return this->GetAttachmentPosition(out, s_spellAttachments[4], &offset);
+}
+
+// ref: FUN_00746bd0
+C3Vector& CGUnit_C::GetAttachmentPosition(C3Vector& out, uint32_t attachment, const C3Vector* offset) {
+    bool hasOffset = offset && (offset->x != 0.0f || offset->y != 0.0f || offset->z != 0.0f);
+
+    if (this->m_model && this->m_model->IsLoaded(0, 0) && this->m_model->HasAttachment(attachment)) {
+        if (hasOffset) {
+            C44Matrix transform = this->m_model->GetAttachmentWorldTransform(attachment);
+            out = *offset * transform;
+
+            return out;
+        }
+
+        out = this->m_model->GetAttachmentWorldPosition(attachment);
+
+        return out;
+    }
+
+    C3Vector point = offset ? *offset : C3Vector(0.0f, 0.0f, 0.0f);
+
+    if (attachment < 50) {
+        point.z += s_attachmentHeights[attachment];
+    }
+
+    if (!hasOffset) {
+        C3Vector base = this->m_vehiclePassenger ? this->GetModelWorldPosition() : this->GetPosition();
+        out = { base.x + point.x, base.y + point.y, base.z + point.z };
+
+        return out;
+    }
+
+    C44Matrix world;
+
+    if (this->m_vehiclePassenger) {
+        this->GetModelWorldMatrix(world);
+    } else {
+        this->GetWorldMatrix(world);
+    }
+
+    out = point * world;
+
+    return out;
+}
+
+// ref: FUN_0071a3f0
+const CreatureSoundDataRec* CGUnit_C::GetSoundData() const {
+    if (this->m_mountSoundData) {
+        return this->m_mountSoundData;
+    }
+
+    if (this->m_soundData && this->m_unit->petNumber && 0 < this->m_soundData->m_creatureSoundDataIdpet) {
+        return g_creatureSoundDataDB.GetRecord(this->m_soundData->m_creatureSoundDataIdpet);
+    }
+
+    return this->m_soundData;
+}
+
+// ref: FUN_00740450
+// PHASE4(Vehicle_C): a vehicle with passengers keeps its mount (m_stateFlags 0x10000000) while
+// its seat list is not empty; CVehicle_C carries no seat list yet, so that test reads empty.
+// PHASE4(ObjectEffect): the reference ends with FUN_00725df0, the unit's ObjectEffect package.
+void CGUnit_C::SetMountDisplay(int32_t displayID) {
+    if (displayID == this->m_mountDisplayID) {
+        return;
+    }
+
+    this->m_stateFlags &= ~0x10000000u;
+
+    if (this->m_mountDisplayID) {
+        this->Dismount(displayID == 0);
+    }
+
+    int32_t previous = this->m_mountDisplayID;
+    this->m_mountDisplayID = displayID;
+
+    if (displayID) {
+        auto transition = this->m_mountTransition;
+
+        this->Mount(0, previous == 0);
+
+        // No transition leads to this mount: it appears with the hard-coded mount effect.
+        if (!transition) {
+            auto effect = CEffect::Create();
+            WOWGUID guid = this->GetGUID();
+            effect->InitializeHardcoded(6, guid, &CGObject_C::KitEffectOneShot);
+            effect->m_flags |= 0x20;
+            effect->Release();
+        }
+    }
+
+    this->UpdateMountSound();
+    this->AttachQuestMarker();
+    PlayerNameInvalidate(this->m_nameDesc);
+}
+
+// ref: FUN_0073d5d0
+// PHASE4(Unit_C): the reference gives the mount the unit's anim-event handler (FUN_00734a40,
+// which forwards to FUN_00732650); frozen has no unit anim-event handler yet.
+// PHASE4(Player_C): a player mounting where the mount does not fit (FUN_006d7720 against the
+// model data's mount height) dismounts at once.
+void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
+    this->m_boneMask = 0;
+
+    if (!this->m_mountModel) {
+        auto display = g_creatureDisplayInfoDB.GetRecord(this->m_mountDisplayID);
+
+        if (!display) {
+            return;
+        }
+
+        auto modelData = g_creatureModelDataDB.GetRecord(display->m_modelID);
+
+        if (!modelData) {
+            return;
+        }
+
+        this->m_mountScale = display->m_creatureModelScale;
+
+        auto mount = CWorld::GetM2Scene()->CreateModel(modelData->m_modelName, 0);
+
+        if (!mount) {
+            return;
+        }
+
+        mount->SetSequenceDoneCallback(&CGUnit_C::OnSequenceDone, this->GetGUID());
+
+        C44Matrix placement = this->m_model->matrixB4;
+        mount->m_flag8000 = 1;
+        mount->matrixB4 = placement;
+
+        CCharacterComponent::ApplyMonsterGeosets(mount, display);
+        CCharacterComponent::ReplaceMonsterSkin(mount, display, modelData);
+
+        this->SetMountModel(mount);
+        mount->Release();
+
+        this->m_mountFootprintTexture = modelData->m_footprintTextureID;
+        this->m_mountFootprintLength = modelData->m_footprintTextureWidth * 0.02777777798473835f;
+        this->m_mountFootprintWidth = 0.02777777798473835f * modelData->m_footprintTextureLength;
+        this->m_mountSoundData = this->GetMountSoundData();
+
+        this->m_mountModel->m_flag80000 = this->m_model->m_flag80000;
+        this->m_model->m_flag80000 = 0;
+
+        auto parent = this->m_model->m_attachParent;
+        uint32_t parentAttach = this->m_model->m_attachId;
+
+        if (parent) {
+            this->m_model->DetachFromParent();
+        }
+
+        this->m_model->AttachToParent(this->m_mountModel, 0, nullptr, 0);
+
+        if (parent) {
+            this->m_mountModel->AttachToParent(parent, parentAttach, nullptr, 0);
+        }
+
+        this->SetBoneSequence(this->m_model, 0xFFFFFFFF, this->m_mountedAnimID, 0xFFFFFFFF, 0, 1.0f, 1, 1, 0);
+
+        // The rider is drawn at its own scale, not the mount's.
+        C44Matrix unscale;
+        unscale.Scale(1.0f / this->m_mountScale);
+        this->m_model->m_flag8000 = 1;
+        this->m_model->matrixB4 = unscale;
+
+        this->m_mountModel->m_baseDiffuse = this->m_model->m_baseDiffuse;
+        this->m_model->m_baseAlpha = 1.0f;
+        this->m_model->m_baseDiffuse = { 1.0f, 1.0f, 1.0f };
+        this->m_model->m_baseEmissive = { 0.0f, 0.0f, 0.0f };
+
+        (void)displayID;
+        (void)checkCollision;
+    }
+
+    if (this->m_mountTransitionEffect && (this->m_mountTransitionEffect->m_flags & 0x100) == 0) {
+        this->m_mountTransitionEffect->Finish();
+    }
+
+    this->m_animFlags |= 0x10;
+    this->UpdateAnimation(0, 0xFFFFFFFF);
+
+    RetargetCamera(this);
+
+    this->UpdateObjectEffects();
+}
+
+// ref: FUN_0073d940
+// PHASE4(Movement): `restoreCollision` re-runs the unit's collision box (FUN_00725f50).
+void CGUnit_C::Dismount(int32_t restoreCollision) {
+    if (!this->m_mountModel) {
+        return;
+    }
+
+    auto mount = this->m_model->m_attachParent;
+
+    if (mount) {
+        auto parent = mount->m_attachParent;
+        uint32_t parentAttach = mount->m_attachId;
+
+        this->m_model->m_flag80000 = mount->m_flag80000;
+        this->m_model->DetachFromParent();
+
+        if (parent) {
+            this->m_model->AttachToParent(parent, parentAttach, nullptr, 0);
+        }
+    }
+
+    this->m_model->m_baseDiffuse = this->m_mountModel->m_baseDiffuse;
+
+    this->SetMountModel(nullptr);
+    this->SetBoneSequence(this->m_model, 0xFFFFFFFF, 0, 0xFFFFFFFF, 0, 1.0f, 0, 1, 0);
+
+    this->m_animFlags &= 0xFF77DFFB;
+    this->UpdateAnimation(0, 0xFFFFFFFF);
+
+    this->UpdateShadowRadius();
+    this->UpdateEffectAttachments();
+
+    this->m_mountSoundData = nullptr;
+
+    RetargetCamera(this);
+
+    this->PlayDismountSound();
+
+    (void)restoreCollision;
+
+    if (this->GetObjectModel()->IsLoaded(0, 0)) {
+        this->UpdateBoneMask();
+    } else {
+        this->m_boneMask = 0;
+    }
+
+    this->UpdateObjectEffects();
+
+    this->m_stateFlags &= ~0x10000000u;
+}
+
+// ref: FUN_00717910
+void CGUnit_C::SetMountModel(CM2Model* model) {
+    if (model == this->m_mountModel) {
+        return;
+    }
+
+    this->Virtual0E0();
+
+    if (model) {
+        model->m_refCount++;
+    }
+
+    if (this->m_mountModel) {
+        if (this->m_mountModel->m_attachParent) {
+            this->m_mountModel->DetachFromParent();
+        }
+
+        this->m_mountModel->SetLoadedCallback(nullptr, nullptr);
+        this->m_mountModel->Release();
+    }
+
+    this->m_mountModel = model;
+
+    if (!model) {
+        if (this->GetObjectModel()->IsLoaded(0, 0)) {
+            this->UpdateHeight();
+        } else {
+            this->SetFlag21();
+        }
+    } else {
+        model->SetLoadedCallback(&CGObject_C::ModelLoadedCallback, this);
+    }
+
+    if (this->m_worldObject) {
+        CWorld::SetObjectModel(this->m_worldObject, this->GetObjectModel());
+    }
+}
+
+// ref: FUN_007195d0
+const CreatureSoundDataRec* CGUnit_C::GetMountSoundData() const {
+    auto display = g_creatureDisplayInfoDB.GetRecord(this->m_mountDisplayID);
+
+    if (!display) {
+        return nullptr;
+    }
+
+    if (auto sound = g_creatureSoundDataDB.GetRecord(display->m_soundID)) {
+        return sound;
+    }
+
+    auto modelData = g_creatureModelDataDB.GetRecord(display->m_modelID);
+
+    return modelData ? g_creatureSoundDataDB.GetRecord(modelData->m_soundID) : nullptr;
+}
+
+// ref: FUN_00720330
+void CGUnit_C::UpdateShadowRadius() {
+    CAaBox box;
+    this->GetShadowBox(box);
+
+    float dx = box.t.x - box.b.x;
+    float dy = box.t.y - box.b.y;
+
+    if (2.384185791015625e-07f <= fabsf(dx) || 2.384185791015625e-07f <= fabsf(dy)) {
+        float radius = sqrtf(dy * dy + dx * dx) * 0.5f;
+        float scaled = this->GetScale() * radius;
+
+        this->m_shadowRadius = sqrtf(scaled);
+
+        if (5.0f < scaled) {
+            float over = scaled - 5.0f;
+            this->m_shadowRadius = over * over * 0.05999999865889549f + sqrtf(scaled);
+        }
+
+        if (this->m_shadowRadius <= 10.0f) {
+            return;
+        }
+
+        this->m_shadowRadius = 10.0f;
+
+        return;
+    }
+
+    this->m_shadowRadius = 1.2000000476837158f;
+}
+
+// ref: FUN_00715fd0
+void CGUnit_C::UpdateBoneMask() {
+    this->m_boneMask = 0;
+
+    auto model = this->GetObjectModel();
+
+    for (uint32_t bone = 0x1B; bone < 0x23; bone++) {
+        if (model->HasBone(bone)) {
+            this->m_boneMask |= 1u << (bone - 0x1B);
+            this->m_boneValues[bone - 0x1B] = 0;
+        }
+    }
+}
+
+// ref: FUN_007467f0
+// PHASE4(Sound): the reference first asks the sound engine whether the same sound already plays
+// within six yards (FUN_004cfe00 over SESound's channel list) and leaves it to that one.
+void CGUnit_C::UpdateMountSound() {
+    auto soundData = this->GetSoundData();
+
+    if (0 < this->m_unit->health && (this->m_unit->flags2 & 0x1) == 0 && soundData
+        && soundData->m_loopSoundID != 0 && !SI2::IsPlaying(this->m_mountSound)) {
+        C3Vector position = this->GetPosition();
+
+        SoundKitProperties properties;
+        properties.ResetToDefaults();
+        properties.uint1c = 1;
+        properties.int30 = 0;
+        properties.byte38 = 1;
+
+        SI2::PlaySoundKit(soundData->m_loopSoundID, &position, this->m_mountSound, &properties, 0, nullptr, 1, 0);
+        this->m_mountSound->SetObjectGUID(this->GetGUID());
+
+        return;
+    }
+
+    SI2::StopOrFadeOut(this->m_mountSound, 0, 0.5f, 1);
+}
+
+// ref: FUN_007470d0
+void CGUnit_C::PlayDismountSound() {
+    static CVar* listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+
+    bool isMover = CGUnit_C::s_activeMover == this->GetGUID();
+    bool atCharacter = isMover && listenerAtCharacter && listenerAtCharacter->GetInt() != 0;
+
+    C3Vector position = this->GetPosition();
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    if (isMover) {
+        properties.int20 = 0x6E;
+
+        if (atCharacter) {
+            properties.m_fadeOutTime = 0.6499999761581421f;
+        }
+    }
+
+    SI2::PlaySoundKit(s_dismountSoundID, atCharacter ? nullptr : &position, nullptr, &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_007412e0
+// PHASE4(Vehicle_C): the seat-list test, as in SetMountDisplay.
+// PHASE4(ObjectEffect): FUN_00725df0 at the end, as in SetMountDisplay.
+void CGUnit_C::RequestDismount() {
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer() || (this->m_unit->flags >> 20) & 1) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_CANCEL_MOUNT_AURA));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    if (this->m_mountDisplayID) {
+        this->m_stateFlags &= ~0x10000000u;
+        this->Dismount(1);
+        this->m_mountDisplayID = 0;
+        this->UpdateMountSound();
+        this->AttachQuestMarker();
+        PlayerNameInvalidate(this->m_nameDesc);
+    }
+}
+
+// ref: FUN_0071e5b0
+// PHASE4(ObjectEffect): everything past the first test drives the unit's ObjectEffect manager
+// (+0xcc), which nothing creates until ObjectEffect.cpp is ported; with none, the reference
+// returns here too.
+void CGUnit_C::UpdateObjectEffects() {
+    if (!this->m_objectEffects) {
+        return;
+    }
+}
+
+void CGUnit_C::DressNpcModel(CM2Model* model) {
+    auto unit = this->Unit();
+
+    if (!this->BuildNpcCharacterComponent()) {
+        auto modelDataRec = this->GetModelData();
+        auto displayInfoRec = g_creatureDisplayInfoDB.GetRecord(this->GetDisplayID());
+
+        if (displayInfoRec) {
+            CCharacterComponent::ApplyMonsterGeosets(model, displayInfoRec);
+            CCharacterComponent::ReplaceMonsterSkin(model, displayInfoRec, modelDataRec);
+        }
+    }
+
+    if (!unit) {
+        return;
+    }
+
+    static const INVENTORY_SLOTS handSlots[3] = { INVSLOT_MAINHAND, INVSLOT_OFFHAND, INVSLOT_RANGED };
+    bool sheathed = (unit->bytes2 & 0xFF) == 0;
+
+    for (int32_t i = 0; i < 3; i++) {
+        int32_t entryID = unit->virtualItemSlotID[i];
+
+        if (!entryID) {
+            continue;
+        }
+
+        auto itemRec = g_itemDB.GetRecord(entryID);
+
+        if (!itemRec || itemRec->m_displayInfoID <= 0) {
+            continue;
+        }
+
+        auto displayRec = g_itemDisplayInfoDB.GetRecord(itemRec->m_displayInfoID);
+
+        if (!displayRec) {
+            continue;
+        }
+
+        bool shield = itemRec->m_inventoryType == INVTYPE_SHIELD;
+        bool heldRight = itemRec->m_inventoryType == INVTYPE_RANGEDRIGHT || itemRec->m_inventoryType == INVTYPE_THROWN;
+
+        CCharacterComponent::AddHandItem(
+            model,
+            displayRec,
+            handSlots[i],
+            static_cast<SHEATHE_TYPE>(itemRec->m_sheatheType),
+            sheathed,
+            shield,
+            heldRight,
+            0
+        );
+    }
+}
+
+// ref: FUN_0071c0e0
+// +0xb3c in the reference is the display scale, cached; frozen reads it from the display and
+// model data rows (GetModelScale).
+float CGUnit_C::GetScale() const {
+    float scale = this->GetModelScale() * this->m_scaleMultiplier * this->m_scale;
+
+    if (this->m_mountModel) {
+        scale *= this->m_mountScale;
+    }
+
+    return scale;
+}
+
+// ref: FUN_0071fd80
+// PHASE4(Vehicle_C): a passenger is placed by its seat (FUN_0074a7f0).
+// PHASE4(Unit_C): a swimming or flying unit pitches with its movement (FUN_00719b80 for the active
+// mover, FUN_00719a90 for the rest), a unit leading a mount transition is placed along it
+// (FUN_007193f0), and the transition's model follows the unit (FUN_0071fbf0). Those land with the
+// movement smoothing they read; until then every unit takes the ground placement below.
+int32_t CGUnit_C::PlaceModel(float elapsed) {
+    // FUN_007197d0: the lean eases toward the movement's up vector while that is not too steep.
+    C3Vector up = this->m_localMove.GetWorldUp();
+
+    if (0.3572123646736145f <= up.z) {
+        float ease = static_cast<float>(pow(0.0017999890446662903, static_cast<double>(elapsed)));
+
+        this->m_tiltAxis = {
+            (this->m_tiltAxis.x - up.x) * ease + up.x,
+            (this->m_tiltAxis.y - up.y) * ease + up.y,
+            (this->m_tiltAxis.z - up.z) * ease + up.z
+        };
+    }
+
+    auto model = this->GetObjectModel();
+
+    if (model) {
+        float scale = this->GetScale();
+        float facing = this->GetRenderFacing();
+
+        model->SetWorldTransform(this->GetPosition(), facing, scale, &this->m_tiltAxis);
+    }
+
+    return 1;
 }

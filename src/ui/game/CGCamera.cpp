@@ -4172,7 +4172,7 @@ void CGCamera::UpdateTargetCamera(CGObject_C* target, int32_t time) {
         position.z = floor;
 
         if (s_belowWorld) {
-            SI2::PlaySoundKit("SpaceDeathUniversal", 0, nullptr, nullptr);
+            SI2::PlaySoundKit("SpaceDeathUniversal", nullptr, nullptr, nullptr);
         }
 
         s_belowWorld = false;

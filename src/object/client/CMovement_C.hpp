@@ -7,6 +7,20 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+// ref: FUN_0074b430
+// The matrix of the transport `transport` (its world matrix, slot 0xc4), or identity and 0 when
+// it is not there.
+int32_t MovementGetTransportMatrix(WOWGUID transport, C44Matrix& matrix);
+
+// ref: FUN_0074b4c0
+// MovementGetTransportMatrix, complaining when the transport is missing.
+int32_t MovementGetTransportMatrixChecked(WOWGUID transport, C44Matrix& matrix, WOWGUID owner,
+                                          const char* file, int32_t line);
+
+// ref: FUN_0074b590
+// The transport's facing (slot 0x34), 0 when it is not there.
+float MovementGetTransportFacing(WOWGUID transport);
+
 class CMovement_C : public CMovementData_C {
     public:
         // Public member functions

@@ -26,4 +26,13 @@ const char* const* ScriptEventsGetUnitTokens(WOWGUID guid, int32_t* count);
 // how UNIT_NAME_UPDATE and its siblings reach every frame showing the unit.
 void ScriptEventsSignalUnitEvent(WOWGUID guid, int32_t event);
 
+// ref: FUN_006143f0
+// Queue a unit event for the next flush, once per unit and event. A zero guid queues a plain
+// event with no unit token.
+void ScriptEventsQueueUnitEvent(const WOWGUID& guid, int32_t event);
+
+// ref: FUN_00614760
+// Signal every queued unit event, from the game UI's idle (0x0052b247).
+void ScriptEventsFlushUnitEvents();
+
 #endif

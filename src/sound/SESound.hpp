@@ -1,6 +1,7 @@
 #ifndef SOUND_SE_SOUND_HPP
 #define SOUND_SE_SOUND_HPP
 
+#include "util/guid/Types.hpp"
 #include "sound/SEChannelGroup.hpp"
 #include "sound/SESoundInternal.hpp"
 #include "sound/SEUserData.hpp"
@@ -33,6 +34,10 @@ class SESound {
         static int32_t s_Initialized;
         static SCritSect s_InternalCritSect;
         static STORM_LIST(SESoundInternal) s_InternalList;
+        // The sounds that follow an object (0x00b1d6bc), and how the engine finds where that object
+        // is (0x00d4380c): the client's resolver, handed to Init.
+        static STORM_EXPLICIT_LIST(SESoundInternal, m_objectLink) s_ObjectSounds;
+        static bool (*s_ObjectPositionCallback)(WOWGUID guid, C3Vector* position);
         static TSHashTable<SOUND_INTERNAL_LOOKUP, HASHKEY_NONE> s_InternalLookupTable;
         static HASHKEY_NONE s_InternalLookupKey;
         static SCritSect s_LoadingCritSect;
@@ -60,7 +65,7 @@ class SESound {
         static int32_t GetNumOutputDrivers(int32_t chatSystem);
         static int32_t GetOutputDriverName(int32_t index, char* buffer, size_t bufferSize, int32_t chatSystem);
         static int32_t Heartbeat(const void* data, void* param);
-        static void Init(int32_t maxChannels, int32_t (*a2), int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*deviceListChangedCallback)(), int32_t a9);
+        static void Init(int32_t maxChannels, bool (*objectPosition)(WOWGUID, C3Vector*), int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*deviceListChangedCallback)(), int32_t a9);
         static void SetDeviceListChangedCallback(void (*callback)());
         static int32_t IsInitialized();
         static void Log_Write(int32_t line, const char* file, FMOD_RESULT result, const char* fmt, ...);
@@ -86,6 +91,14 @@ class SESound {
         void SetFadeInTime(float fadeInTime);
         void SetFadeOutTime(float fadeOutTime);
         void SetPosition(const C3Vector& position);
+
+        // ref: FUN_00879aa0
+        // Follow `guid`: the engine moves the sound to the object every heartbeat.
+        void SetObjectGUID(WOWGUID guid);
+
+        // ref: FUN_00879f70
+        // Every following sound to its object, or off the list when the object has gone.
+        static void UpdateObjectSounds();
         void SetUserData(SEUserData* userData);
         void SetVolume(float volume);
         void StopOrFadeOut(int32_t stop, float fadeOutTime);

@@ -176,7 +176,7 @@ void PlayerNameRenderWorldText() {
         }
 
         // Above the head: the model box top, scaled, plus a small gap
-        float scale = object->GetScale() * static_cast<CGUnit_C*>(object)->GetModelScale();
+        float scale = object->GetScale();
         float top = 2.0f;
 
         if (object->m_model->m_shared && object->m_model->m_shared->m_m2DataLoaded && object->m_model->m_shared->m_data) {
@@ -265,4 +265,37 @@ void PlayerNameRenderWorldText() {
     }
 
     ExpireTexts();
+}
+
+// ref: FUN_007e5130
+void PlayerNameInvalidate(void* desc) {
+    if (desc) {
+        static_cast<PLAYERNAMEDESC*>(desc)->m_flags |= 0x1;
+    }
+}
+
+// ref: FUN_007e5150
+bool PlayerNameIsHighlighted(void* desc) {
+    return desc && (static_cast<PLAYERNAMEDESC*>(desc)->m_flags & 0x8);
+}
+
+// ref: FUN_007e5420
+float PlayerNameGetMarkerScale(CGObject_C* object) {
+    float height;
+
+    if (object->IsA(TYPE_UNIT)) {
+        height = static_cast<CGUnit_C*>(object)->GetModelHeight();
+    } else if (object->m_model && object->m_model->IsLoaded(0, 0) && object->m_model->HasAttachment(0x12)) {
+        C3Vector attach = object->m_model->GetAttachmentWorldPosition(0x12);
+        C3Vector position = object->m_model->GetPosition();
+        height = attach.z - position.z;
+    } else {
+        height = object->m_height * object->m_scale * 1.25f;
+    }
+
+    if (4.0f < height) {
+        return height * 0.25f * 1.5f;
+    }
+
+    return 1.0f;
 }

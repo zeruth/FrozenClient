@@ -75,9 +75,11 @@ float RandomOneToTwo() {
     return value;
 }
 
+} // namespace
+
 // ref: FUN_006f7a10
 // The polynomial sine the object effects use: sin(x) from the same cubic as CGCamera::SineEase,
-// a quarter turn on.
+// a quarter turn on. Shared: the lightning bolts (Lightning.cpp) wave by it too.
 float PolySin(float x) {
     float fraction;
     int32_t whole;
@@ -90,8 +92,6 @@ float PolySin(float x) {
     }
 
     return value;
-}
-
 }
 
 // ref: FUN_0079e100

@@ -1,3 +1,5 @@
+#include <tempest/Matrix.hpp>
+#include "object/client/CMovement_C.hpp"
 #include "object/movement/CMovementShared.hpp"
 #include "object/movement/CMoveSpline.hpp"
 
@@ -328,4 +330,20 @@ int32_t CMovementShared::IsSplineFlag2000() const {
     }
 
     return 0;
+}
+
+// ref: FUN_00987490
+C3Vector CMovementShared::GetWorldUp() const {
+    if (!this->m_transportGUID) {
+        return this->m_up;
+    }
+
+    C44Matrix transport;
+    MovementGetTransportMatrixChecked(this->m_transportGUID, transport, this->m_guid, ".\\MovementShared.cpp", 0x4f);
+
+    return {
+        transport.b0 * this->m_up.y + transport.c0 * this->m_up.z + this->m_up.x * transport.a0,
+        transport.b1 * this->m_up.y + transport.c1 * this->m_up.z + this->m_up.x * transport.a1,
+        transport.b2 * this->m_up.y + transport.c2 * this->m_up.z + this->m_up.x * transport.a2
+    };
 }

@@ -1,4 +1,6 @@
 #include "sound/SI2.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/client/CGObject_C.hpp"
 #include "console/CVar.hpp"
 #include "event/Event.hpp"
 #include "sound/CVarHandlers.hpp"
@@ -190,7 +192,7 @@ int32_t SI2::Init(int32_t a1) {
 
     SESound::Init(
         512,
-        nullptr,                // TODO callback fn
+        &SI2::GetObjectPosition,
         enableReverb,
         enableSoftwareHRTF,
         &numChannels,
@@ -303,7 +305,7 @@ bool SI2::IsPlaying(SOUNDKITOBJECT* object) {
     return object->m_sound.IsPlaying();
 }
 
-int32_t SI2::PlaySoundKit(const char *name, int a2, SOUNDKITOBJECT* object, SoundKitProperties* properties) {
+int32_t SI2::PlaySoundKit(const char *name, const C3Vector* position, SOUNDKITOBJECT* object, SoundKitProperties* properties) {
     if (!SESound::IsInitialized()) {
         return 17;
     }
@@ -314,10 +316,10 @@ int32_t SI2::PlaySoundKit(const char *name, int a2, SOUNDKITOBJECT* object, Soun
         return 7;
     }
 
-    return SI2::PlaySoundKit(id, a2, object, properties, 0, nullptr, 1, 0);
+    return SI2::PlaySoundKit(id, position, object, properties, 0, nullptr, 1, 0);
 }
 
-int32_t SI2::PlaySoundKit(int32_t id, int32_t a2, SOUNDKITOBJECT* object, SoundKitProperties* properties, int32_t a5,  void* a6, int32_t a7, int32_t a8) {
+int32_t SI2::PlaySoundKit(int32_t id, const C3Vector* position, SOUNDKITOBJECT* object, SoundKitProperties* properties, int32_t a5,  void* a6, int32_t a7, int32_t a8) {
     // Basic validations
 
     if (id <= 0) {
@@ -433,8 +435,8 @@ int32_t SI2::PlaySoundKit(int32_t id, int32_t a2, SOUNDKITOBJECT* object, SoundK
 
     // TODO
 
-    if (a2) {
-        // TODO
+    if (position) {
+        // TODO the 3D load (the reference positions the sound here)
     } else {
         auto result = sound->Load(
             filename,
@@ -1209,4 +1211,26 @@ int32_t SI2::StopOrFadeOut(SOUNDKITOBJECT* object, int32_t stop, float fadeOutTi
     }
 
     return 0;
+}
+
+// ref: FUN_004c5d60
+bool SI2::GetObjectPosition(WOWGUID guid, C3Vector* position) {
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\SoundInterface2.cpp", 0xab);
+
+    if (object) {
+        *position = object->GetPosition();
+    }
+
+    return object != nullptr;
+}
+
+// ref: FUN_004c5bf0
+uint32_t SI2::SoundKitFollowsListener(int32_t id) {
+    auto def = SI2::GetSoundKitDef(id);
+
+    if (!def) {
+        return 0;
+    }
+
+    return def->flags & 0x200;
 }

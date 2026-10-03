@@ -55,6 +55,11 @@ const MINIMAP_TRACKING_TYPE CGMinimapFrame::s_trackingTypes[NUM_MINIMAP_TRACKING
 };
 
 const MINIMAP_TRACKING_TYPE* CGMinimapFrame::s_otherTracking = nullptr;
+
+// ref: FUN_0057bf30
+bool CGMinimapFrame::IsTrackingTrivialQuests() {
+    return CGMinimapFrame::s_otherTracking && CGMinimapFrame::s_otherTracking->kind == 3;
+}
 // ref: FUN_007fdf60
 // A spell is a tracking spell when any of its three effect auras is one of the three tracking
 // aura types. Nothing else about the spell matters -- not its school, not its category.

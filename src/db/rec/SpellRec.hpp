@@ -35,6 +35,11 @@ class SpellRec {
         static const int32_t COLUMN_MECHANIC = 3;                   // +0x0c
         static const int32_t COLUMN_ATTRIBUTES_EX = 5;              // +0x14
         static const int32_t COLUMN_ATTRIBUTES_EX2 = 6;             // +0x18
+        static const int32_t COLUMN_ATTRIBUTES_EX3 = 7;             // +0x1c
+        static const int32_t COLUMN_ATTRIBUTES_EX4 = 8;             // +0x20
+        static const int32_t COLUMN_ATTRIBUTES_EX5 = 9;             // +0x24
+        static const int32_t COLUMN_ATTRIBUTES_EX6 = 10;            // +0x28
+        static const int32_t COLUMN_ATTRIBUTES_EX7 = 11;            // +0x2c
         static const int32_t COLUMN_STANCES = 12;                   // +0x30, a 64-bit mask
         static const int32_t COLUMN_STANCES_NOT = 14;               // +0x38, a 64-bit mask
         static const int32_t COLUMN_TARGETS = 16;                   // +0x40
@@ -44,6 +49,7 @@ class SpellRec {
         static const int32_t COLUMN_EFFECT_MISC_VALUE = 110;        // +0x1b8, 3 columns
         static const int32_t COLUMN_EFFECT_SPELL_CLASS_MASK = 122;  // +0x1e8, 3 x 3 columns
         static const int32_t COLUMN_SCHOOL_MASK = 225;              // +0x284
+        static const int32_t COLUMN_SPELL_MISSILE = 227;            // +0x28c
 
         static const int32_t COLUMN_ICON = 133;
         static const int32_t COLUMN_ACTIVE_ICON = 134;  // immediately after the normal icon
@@ -69,6 +75,13 @@ class SpellRec {
         int32_t m_mechanic;
         uint32_t m_attributesEx;
         uint32_t m_attributesEx2;
+        uint32_t m_attributesEx3;
+        uint32_t m_attributesEx4;
+        // AttributesEx5. Bit 0x40000000 is read by CEffect::Play to raise the effect model's 0x4
+        // state bit.
+        uint32_t m_attributesEx5;
+        uint32_t m_attributesEx6;
+        uint32_t m_attributesEx7;
         uint32_t m_stances[2];
         uint32_t m_stancesNot[2];
         uint32_t m_targets;
@@ -78,6 +91,8 @@ class SpellRec {
         int32_t m_effectMiscValue[3];
         uint32_t m_effectSpellClassMask[3][3];
         uint32_t m_schoolMask;
+        // SpellMissile.dbc row the spell's projectile flies by, 0 for none.
+        int32_t m_spellMissileID;
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

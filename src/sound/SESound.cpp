@@ -25,6 +25,8 @@ SCritSect SESound::s_CritSect3;
 int32_t SESound::s_Initialized;
 SCritSect SESound::s_InternalCritSect;
 STORM_LIST(SESoundInternal) SESound::s_InternalList;
+STORM_EXPLICIT_LIST(SESoundInternal, m_objectLink) SESound::s_ObjectSounds;
+bool (*SESound::s_ObjectPositionCallback)(WOWGUID guid, C3Vector* position);
 TSHashTable<SOUND_INTERNAL_LOOKUP, HASHKEY_NONE> SESound::s_InternalLookupTable;
 HASHKEY_NONE SESound::s_InternalLookupKey;
 SCritSect SESound::s_LoadingCritSect;
@@ -398,6 +400,9 @@ int32_t SESound::Heartbeat(const void* data, void* param) {
 
     SESound::ProcessReadyDiskSounds();
 
+    // FUN_00879f70, from the heartbeat (0x0087c4ea).
+    SESound::UpdateObjectSounds();
+
     // TODO
 
     SESound::s_pGameSystem->update();
@@ -409,8 +414,11 @@ int32_t SESound::Heartbeat(const void* data, void* param) {
     return 1;
 }
 
-void SESound::Init(int32_t maxChannels, int32_t* a2, int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*deviceListChangedCallback)(), int32_t a9) {
+void SESound::Init(int32_t maxChannels, bool (*objectPosition)(WOWGUID, C3Vector*), int32_t enableReverb, int32_t enableSoftwareHRTF, int32_t* numChannels, int32_t* outputDriverIndex, const char* outputDriverName, void (*deviceListChangedCallback)(), int32_t a9) {
     SESound::s_Initialized = 0;
+
+    // The resolver for sounds that follow an object (0x0087dd5a stores it).
+    SESound::s_ObjectPositionCallback = objectPosition;
 
     // TODO
 
@@ -1173,4 +1181,46 @@ void SESound::StopOrFadeOut(int32_t stop, float fadeOutTime) {
 
     this->m_internal->m_sound = nullptr;
     this->m_internal = nullptr;
+}
+
+// ref: FUN_00879aa0
+void SESound::SetObjectGUID(WOWGUID guid) {
+    auto internal = this->m_internal;
+
+    if (!internal) {
+        return;
+    }
+
+    internal->m_objectGUID = guid;
+
+    SESound::LockInternal();
+    SESound::s_ObjectSounds.LinkToTail(internal);
+    SESound::UnlockInternal();
+}
+
+// ref: FUN_00879f70
+void SESound::UpdateObjectSounds() {
+    SESound::LockInternal();
+
+    for (auto internal = SESound::s_ObjectSounds.Head(); internal; ) {
+        auto next = SESound::s_ObjectSounds.Next(internal);
+
+        C3Vector position = { 0.0f, 0.0f, 0.0f };
+
+        if (SESound::s_ObjectPositionCallback) {
+            if (!SESound::s_ObjectPositionCallback(internal->m_objectGUID, &position)) {
+                internal->m_objectLink.Unlink();
+            } else {
+                internal->m_position = position;
+
+                if (internal->m_fmodChannel) {
+                    internal->m_fmodChannel->set3DAttributes(reinterpret_cast<const FMOD_VECTOR*>(&position), nullptr);
+                }
+            }
+        }
+
+        internal = next;
+    }
+
+    SESound::UnlockInternal();
 }

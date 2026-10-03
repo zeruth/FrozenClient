@@ -49,6 +49,14 @@ bool SpellVisualKitRec::Read(SFile* f, const char* stringBuffer) {
     this->m_worldEffect = static_cast<int32_t>(columns[14]);
     this->m_soundID = static_cast<int32_t>(columns[15]);
     this->m_shakeID = static_cast<int32_t>(columns[16]);
+
+    for (int32_t i = 0; i < 4; i++) {
+        this->m_charProc[i] = static_cast<int32_t>(columns[17 + i]);
+        this->m_charParamZero[i] = *reinterpret_cast<const float*>(&columns[21 + i]);
+        this->m_charParamOne[i] = *reinterpret_cast<const float*>(&columns[25 + i]);
+        this->m_charParamTwo[i] = *reinterpret_cast<const float*>(&columns[29 + i]);
+        this->m_charParamThree[i] = *reinterpret_cast<const float*>(&columns[33 + i]);
+    }
     this->m_flags = static_cast<int32_t>(columns[37]);
 
     return true;

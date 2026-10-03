@@ -41,12 +41,28 @@ bool SpellVisualRec::Read(SFile* f, const char* stringBuffer) {
     this->m_channelKit = static_cast<int32_t>(columns[6]);
     this->m_hasMissile = static_cast<int32_t>(columns[7]);
     this->m_missileModel = static_cast<int32_t>(columns[8]);
+    this->m_missilePathType = static_cast<int32_t>(columns[9]);
+    this->m_missileDestinationAttachment = static_cast<int32_t>(columns[10]);
+    this->m_missileSound = static_cast<int32_t>(columns[11]);
+    this->m_animEventSoundID = static_cast<int32_t>(columns[12]);
     this->m_flags = static_cast<int32_t>(columns[13]);
     this->m_casterImpactKit = static_cast<int32_t>(columns[14]);
     this->m_targetImpactKit = static_cast<int32_t>(columns[15]);
+    this->m_missileAttachment = static_cast<int32_t>(columns[16]);
+    this->m_missileFollowGroundHeight = static_cast<int32_t>(columns[17]);
+    this->m_missileFollowGroundDropSpeed = static_cast<int32_t>(columns[18]);
+    this->m_missileFollowGroundApproach = static_cast<int32_t>(columns[19]);
+    this->m_missileFollowGroundFlags = static_cast<int32_t>(columns[20]);
+    this->m_missileMotion = static_cast<int32_t>(columns[21]);
+    this->m_missileTargetingKit = static_cast<int32_t>(columns[22]);
     this->m_instantAreaKit = static_cast<int32_t>(columns[23]);
     this->m_impactAreaKit = static_cast<int32_t>(columns[24]);
     this->m_persistentAreaKit = static_cast<int32_t>(columns[25]);
+
+    for (int32_t i = 0; i < 3; i++) {
+        this->m_missileCastOffset[i] = *reinterpret_cast<const float*>(&columns[26 + i]);
+        this->m_missileImpactOffset[i] = *reinterpret_cast<const float*>(&columns[29 + i]);
+    }
 
     return true;
 }

@@ -3844,3 +3844,44 @@ void ScriptEventsSignalUnitEvent(WOWGUID guid, int32_t event) {
         FrameScript_SignalEvent(event, "%s", tokens[i]);
     }
 }
+
+namespace {
+
+// The queued unit events (DAT_00c259fc: capacity, count and data), 0x10 bytes each in the
+// reference: the guid and the event.
+struct QueuedUnitEvent {
+    WOWGUID guid;
+    int32_t event;
+};
+
+TSGrowableArray<QueuedUnitEvent> s_queuedUnitEvents;
+
+} // namespace
+
+// ref: FUN_006143f0
+void ScriptEventsQueueUnitEvent(const WOWGUID& guid, int32_t event) {
+    for (uint32_t i = 0; i < s_queuedUnitEvents.Count(); i++) {
+        if (s_queuedUnitEvents[i].guid == guid && s_queuedUnitEvents[i].event == event) {
+            return;
+        }
+    }
+
+    auto queued = s_queuedUnitEvents.New();
+    queued->guid = guid;
+    queued->event = event;
+}
+
+// ref: FUN_00614760
+void ScriptEventsFlushUnitEvents() {
+    for (uint32_t i = 0; i < s_queuedUnitEvents.Count(); i++) {
+        auto& queued = s_queuedUnitEvents[i];
+
+        if (queued.guid == 0) {
+            FrameScript_SignalEvent(queued.event, nullptr);
+        } else {
+            ScriptEventsSignalUnitEvent(queued.guid, queued.event);
+        }
+    }
+
+    s_queuedUnitEvents.SetCount(0);
+}

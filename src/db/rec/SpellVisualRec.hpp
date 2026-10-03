@@ -22,12 +22,25 @@ class SpellVisualRec {
         int32_t m_channelKit;
         int32_t m_hasMissile;
         int32_t m_missileModel;
-        int32_t m_flags;
+        int32_t m_missilePathType;
+        int32_t m_missileDestinationAttachment;   // +0x28
+        int32_t m_missileSound;
+        int32_t m_animEventSoundID;
+        int32_t m_flags;                          // +0x34
         int32_t m_casterImpactKit;
         int32_t m_targetImpactKit;
+        int32_t m_missileAttachment;              // +0x40
+        int32_t m_missileFollowGroundHeight;
+        int32_t m_missileFollowGroundDropSpeed;
+        int32_t m_missileFollowGroundApproach;
+        int32_t m_missileFollowGroundFlags;
+        int32_t m_missileMotion;
+        int32_t m_missileTargetingKit;
         int32_t m_instantAreaKit;
         int32_t m_impactAreaKit;
         int32_t m_persistentAreaKit;
+        float m_missileCastOffset[3];             // +0x68
+        float m_missileImpactOffset[3];           // +0x74
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

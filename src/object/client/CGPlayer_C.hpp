@@ -214,7 +214,10 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         void UpdatePartyMemberState();
         void BuildCharacterComponent();
 
-        CCharacterComponent* m_characterComponent = nullptr;
+        // +0x1858: how the player sees the world. 0x1 through its farsight object, 0x2, 0x4 and
+        // 0x8 not identified. PHASE4(Player_C): its writers (FUN_006e29b5 and friends) are the
+        // Player_C port's.
+        uint32_t m_viewFlags = 0;
 };
 
 uint32_t Player_C_GetDisplayId(uint32_t race, uint32_t sex);

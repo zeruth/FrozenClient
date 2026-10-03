@@ -1,3 +1,6 @@
+#include "ui/game/CGWorldFrame.hpp"
+#include "object/client/SpellVisuals.hpp"
+#include "object/client/CEffect.hpp"
 #include "client/ClientHandlers.hpp"
 #include <cstdio>
 #include <cstdlib>
@@ -20,7 +23,20 @@ static C3Vector s_newPosition;
 static uint32_t s_newZoneID;
 static const char* s_newMapname;
 
+// ref: FUN_00403b70
 void LoadNewWorld(const void* eventData, void* param) {
+    // TODO
+
+    // The old world's spell visuals and effects go (0x00403bac, 0x00403bb1), the screen effect is
+    // reset (0x00403bb7) and the frame's pick lists let go (0x00403bc9).
+    SpellVisualsReleaseObjects();
+    CEffect::ReleaseAll();
+    CGWorldFrame::SetScreenEffect(0);
+
+    if (CGWorldFrame::s_currentWorldFrame) {
+        CGWorldFrame::s_currentWorldFrame->ReleaseAllModelRecords();
+    }
+
     // TODO
 
     if (CWorld::s_weather) {

@@ -1,6 +1,7 @@
 #ifndef SOUND_SE_SOUND_INTERNAL_HPP
 #define SOUND_SE_SOUND_INTERNAL_HPP
 
+#include "util/guid/Types.hpp"
 #include <storm/List.hpp>
 #include <tempest/Vector.hpp>
 #include <fmod.hpp>
@@ -48,6 +49,10 @@ class SESoundInternal : public TSLinkedNode<SESoundInternal> {
         FMOD_MODE m_fmodMode = FMOD_DEFAULT;
         uint8_t m_playing = 0;
         uint8_t m_stopped = 0;
+        // +0xc8: the object this sound follows, set by SESound::SetObjectGUID, and its link in
+        // SESound::s_ObjectSounds (the list at 0x00b1d6bc).
+        WOWGUID m_objectGUID = 0;
+        TSLink<SESoundInternal> m_objectLink;
         // TODO
         int32_t m_nonblockingReady = 0;
         // TODO

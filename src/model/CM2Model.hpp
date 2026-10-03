@@ -305,18 +305,15 @@ class CM2Model {
         // new matrix's AffineInverse so they do not jump; passing null runs the same transform
         // with the OUTGOING matrix on the way out.
         //
-        // STILL EFFECTIVELY NULL, because nothing in frozen CALLS that setter yet -- the
-        // reference's eight callers are all unported. So every particle continues to draw in
-        // world space, which is also what the reference does for anything that never calls it.
-        // The difference is that the mechanism is now here rather than missing.
+        // Its callers are the object ports: CGObject_C::SetParticleRelative (FUN_00744380) points
+        // it at m_particleRelativeMatrix below.
         C44Matrix* m_particleRelative = nullptr;
 
-        // NOT PORTED, and recorded so the gap is visible rather than silently closed: the
-        // reference has a THIRD C44Matrix at +0x134, between matrixF4 and the pointer above. The
-        // constructor identity-initialises it at 0x82c002..0x82c058 -- the 1.0 stores land on
-        // 0x134, 0x148, 0x15c and 0x170, a 0x14 stride, which is a 4x4 diagonal and nothing else.
-        // Its readers have not been traced. Frozen's layout therefore diverges here by 0x40
-        // bytes, which costs nothing because no offset in frozen is hard-coded.
+        // +0x134: the model's own copy of the space its particles are relative to, which the
+        // constructor identity-initialises (0x0082c002..0x0082c058) and
+        // CGObject_C::SetParticleRelative copies the owner's matrix into before pointing
+        // m_particleRelative at it.
+        C44Matrix m_particleRelativeMatrix;
 
         // This model's own tint, before anything a parent hands down: the reference keeps these at
         // +0x178 through +0x194 and folds them into the current values every animate. Nothing

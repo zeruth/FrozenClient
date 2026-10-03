@@ -9,8 +9,11 @@
 #include "object/client/QuestStatusCache.hpp"
 #include "object/client/SpellBook.hpp"
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/SpellVisuals.hpp"
+#include "object/client/CEffect.hpp"
 #include "object/client/DBCacheInstances.hpp"
 #include "client/Client.hpp"
+#include "ui/game/ScriptEvents.hpp"
 #include <storm/Log.hpp>
 #include "ui/InputControl.hpp"
 #include "client/gui/OsGui.hpp"
@@ -231,6 +234,9 @@ int32_t ClientIdle(const void* data, void* param) {
     // game's idle handler, registered for the same event over the same span of the session.
     DBCacheUpdateAll();
 
+    // The queued unit events, right after the caches in the same handler (0x0052b247).
+    ScriptEventsFlushUnitEvents();
+
     // TODO Player_C_ZoneUpdateHandler(data, nullptr);
 
     return 1;
@@ -260,6 +266,11 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
 
     ClntObjMgrInitializeShared();
     ClntObjMgrInitializeStd(mapId);
+
+    // The selection circle and quest marker models (0x00405621), then the unit module's start
+    // (FUN_00742220 at 0x0040562b), of which only the unit sound step is ported.
+    ObjectsInitialize();
+    UnitSoundInitialize();
 
     // TODO
 
@@ -470,6 +481,9 @@ int32_t DestroyEngineCallback(const void* a1, void* a2) {
     // cache handlers go, then every cache is saved and emptied.
     DBCacheUnregisterHandlers();
     DBCacheShutdownAll();
+
+    // Every effect, right after the caches (0x00402942).
+    CEffect::ReleaseAll();
 
     // TODO the rest of FUN_00402910
 
@@ -905,6 +919,9 @@ void WowClientDestroy() {
 
     ShadowDestroy();
 
+    // FUN_007fcbc0, third in FUN_00402910.
+    SpellVisualsShutdown();
+
     CGlueMgr::Shutdown();
 
     // TODO
@@ -960,8 +977,8 @@ void WowClientInit() {
     GlueScriptEventsInitialize();
     ScriptEventsInitialize();
 
-    // TODO
-    // sub_6F75E0();
+    // The hard-coded effect models (FUN_006f75e0, a thunk to CEffect::LoadHardcodedEffects).
+    CEffect::LoadHardcodedEffects();
 
     CCharacterComponent::Initialize();
 
@@ -1031,7 +1048,9 @@ void WowClientInit() {
 
     // TODO
     // CGlueMgr::m_pendingTimerAlert = dword_B2F9D8;
-    // sub_7FC5A0();
+
+    // The spell visuals' lightning, model attach table and the rest (0x004042a7).
+    SpellVisualsInitialize();
 
     EventRegister(EVENT_ID_POLL, &PollNet);
 }

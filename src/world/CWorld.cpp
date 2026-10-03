@@ -202,6 +202,30 @@ HWORLDOBJECT CWorld::AddObject(CM2Model* model, void* handler, void* handlerPara
     return reinterpret_cast<HWORLDOBJECT>(entity);
 }
 
+// ref: FUN_00782350
+void CWorld::SetObjectModel(HWORLDOBJECT object, CM2Model* model) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (entity->m_model) {
+        entity->m_model->m_lightingCallback = nullptr;
+        entity->m_model->m_lightingArg = nullptr;
+        entity->m_model->Release();
+    }
+
+    entity->m_flags7c &= ~0x4000u;
+    entity->m_model = model;
+
+    if (model) {
+        if (!SStrCmpI("InvisibleStalker.m2", model->m_shared->m_filePath, STORM_MAX_STR)) {
+            entity->m_flags7c |= 0x4000;
+        }
+
+        entity->m_model->m_lightingCallback = &CWorld::LightingCallback;
+        entity->m_model->m_lightingArg = entity;
+        entity->m_model->m_refCount++;
+    }
+}
+
 // ref: FUN_007826e0
 void CWorld::RemoveObject(HWORLDOBJECT object) {
     auto entity = reinterpret_cast<CMapEntity*>(object);

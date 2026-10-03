@@ -65,6 +65,7 @@ uint32_t CGGameUI::s_cursorMacro;
 CScriptObject* CGGameUI::s_gameTooltip;
 bool CGGameUI::s_inWorld;
 WOWGUID CGGameUI::s_lockedTarget;
+int32_t CGGameUI::s_inCinematic;
 bool CGGameUI::s_loggingIn;
 CSimpleTop* CGGameUI::s_simpleTop;
 
@@ -225,6 +226,11 @@ char* CGGameUI::GetLastError() {
 
 uint32_t CGGameUI::GetCursorMoney() {
     return CGGameUI::s_cursorMoney;
+}
+
+// ref: FUN_005124d0
+int32_t CGGameUI::InCinematic() {
+    return CGGameUI::s_inCinematic;
 }
 
 WOWGUID& CGGameUI::GetLockedTarget() {

@@ -1,36 +1,36 @@
+#include "object/client/CMovement_C.hpp"
 #include "object/movement/CPassenger.hpp"
 #include <tempest/Matrix.hpp>
+
+float NormalizeAngle(float angle);
 
 float CPassenger::GetFacing() const {
     return this->GetFacing(this->m_facing);
 }
 
+// ref: FUN_004f42a0
 float CPassenger::GetFacing(float facing) const {
-    // If on transport, transform facing by transport facing
-    if (this->m_transportGUID) {
-        float transportFacing = 0.0f;
-        // TODO MovementGetTransportFacing(this->m_transportGUID);
-
-        return facing + transportFacing;
+    if (!this->m_transportGUID) {
+        return facing;
     }
 
-    return facing;
+    return NormalizeAngle(MovementGetTransportFacing(this->m_transportGUID) + facing);
 }
 
 C3Vector CPassenger::GetPosition() const {
     return this->GetPosition(this->m_position);
 }
 
+// ref: FUN_004f4460
 C3Vector CPassenger::GetPosition(const C3Vector& position) const {
-    // If on transport, transform position by transport matrix
-    if (this->m_transportGUID) {
-        C44Matrix transportMatrix;
-        // TODO MovementGetTransportMtxX(this->m_transportGUID, &transportMatrix);
-
-        return position * transportMatrix;
+    if (!this->m_transportGUID) {
+        return position;
     }
 
-    return position;
+    C44Matrix transportMatrix;
+    MovementGetTransportMatrixChecked(this->m_transportGUID, transportMatrix, this->m_guid, ".\\Passenger.cpp", 0);
+
+    return position * transportMatrix;
 }
 
 float CPassenger::GetRawFacing() const {
