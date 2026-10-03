@@ -827,13 +827,18 @@ static bool CollideFacetAtTop(CMovementData_C* move, uint32_t facet) {
 }
 
 // ref: FUN_0075d0a0
-// The point lies inside the facet's three edges (within a twelfth of a yard).
+// The point lies over the facet: inside its three edges swept straight up (within a twelfth of a
+// yard). The up vector arrives in EDI in the reference, which the decompiler drops; the stores at
+// 0x0075d0a7 .. 0x0075d137 build it as (0, 0, 1). Sweeping along the facet's own normal instead
+// tilts the edge planes on a slope, so a unit standing over a sloped facet tested as off it, the
+// fall never landed, and it slid along the ground still falling.
 static bool CollidePointOverFacet(uint32_t facet, const C3Vector& point) {
     const M2CollisionTriangle& tri = s_facets.facets[facet];
     static const uint8_t s_corners[3] = { 0, 1, 2 };
     C4Plane planes[4];
 
-    TriangleSweepPlanes(tri.vertices, s_corners, tri.plane, tri.plane.n, planes);
+    static const C3Vector s_up = { 0.0f, 0.0f, 1.0f };
+    TriangleSweepPlanes(tri.vertices, s_corners, tri.plane, s_up, planes);
 
     for (uint32_t i = 0; i < 3; i++) {
         if (COLLIDE_NEAR_EDGE < PlaneDistance(planes[i], point)) {
