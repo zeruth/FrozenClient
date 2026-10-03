@@ -1949,18 +1949,16 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
     // Animate builds. The reference also raises a flag on the scene around the two calls
     // (scene +0x1c, bit 1), which frozen's CM2Scene layout does not place yet.
     //
-    // Frozen's particle stand-in rides along: it reads which emitters are drawing before Animate
-    // (Animate clears the flag it reads) and steps them after.
+    // The particles are the M2 scene's own now: Animate steps every emitter through its bone
+    // (CM2Model::AnimateParticleEmitter, FUN_008309c0) and the scene draws them as type-4
+    // elements. Frozen's stand-in used to ride along here, capturing and stepping a second,
+    // unanimated simulation on top of it.
     auto scene = CWorld::GetM2Scene();
-
-    ParticleFxCaptureEmitters();
 
     if (scene) {
         scene->AdvanceTime(static_cast<uint32_t>(lrintf(dt * 1000.0f)));
         scene->Animate(cameraPos);
     }
-
-    ParticleFxStepEmitters();
 
     // FUN_006fda20, the missile trajectories, is Unit_C work (phase 4).
 

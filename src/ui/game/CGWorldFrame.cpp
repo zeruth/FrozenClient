@@ -560,9 +560,8 @@ void CGWorldFrame::OnWorldRender() {
     if (!CWorld::IsCameraUnderLiquid()) {
         if (scene) { scene->Draw(M2PASS_2); }
 
-        // FROZEN-ONLY: the particle emitters' quads, which belong with pass 2 in the reference,
-        // and the overhead icons.
-        ParticleFxRender();
+        // FROZEN-ONLY: the overhead icons. (The particle stand-in drew here too; the reference's
+        // particles draw inside the scene passes, and the stand-in is retired from the world.)
         OverheadIconsRender();
 
         CWorldScene::DrawLiquidPass();
@@ -581,11 +580,11 @@ void CGWorldFrame::OnWorldRender() {
 
     if (CWorld::IsCameraUnderLiquid()) {
         // FROZEN-ONLY: as above, after the last pass under water.
-        ParticleFxRender();
         OverheadIconsRender();
     }
 
-    // FROZEN-ONLY
+    // FROZEN-ONLY: ages the stand-in's entries, which only the UI model previews
+    // (CSimpleModel) still feed.
     ParticleFxEndFrame();
 
     // TODO FUN_004f8a40(0x20000) under the same cursor test, FUN_007fca30 (mount transitions),
