@@ -35,7 +35,7 @@ int32_t RealmConnection::MessageHandler(void* param, NETMESSAGE msgId, uint32_t 
     }
 
     case SMSG_CHARACTER_LOGIN_FAILED: {
-        // TODO
+        result = connection->CharacterLoginFailedHandler(msgId, time, msg);
         break;
     }
 
@@ -45,17 +45,19 @@ int32_t RealmConnection::MessageHandler(void* param, NETMESSAGE msgId, uint32_t 
     }
 
     case SMSG_LOGOUT_CANCEL_ACK: {
-        // TODO
+        connection->HandleLogoutCancelAck();
+        result = 1;
         break;
     }
 
     case SMSG_LOGOUT_COMPLETE: {
-        // TODO
+        connection->HandleLogoutComplete();
+        result = 1;
         break;
     }
 
     case SMSG_LOGOUT_RESPONSE: {
-        // TODO
+        result = connection->LogoutResponseHandler(msgId, time, msg);
         break;
     }
 
@@ -308,6 +310,31 @@ int32_t RealmConnection::DeleteCharHandler(uint32_t msgId, uint32_t time, CDataS
     msg->Get(result);
 
     this->HandleCharacterDelete(result);
+
+    return 1;
+}
+
+// ref: FUN_00464460
+int32_t RealmConnection::CharacterLoginFailedHandler(uint32_t msgId, uint32_t time, CDataStore* msg) {
+    uint8_t result;
+    msg->Get(result);
+
+    this->HandleCharacterLoginFailed(result);
+
+    return 1;
+}
+
+// ref: FUN_004647e0
+// The server's answer to a logout request: a nonzero result refuses it, and an instant logout
+// needs no countdown.
+int32_t RealmConnection::LogoutResponseHandler(uint32_t msgId, uint32_t time, CDataStore* msg) {
+    uint32_t result = 0;
+    msg->Get(result);
+
+    uint8_t instant = 0;
+    msg->Get(instant);
+
+    this->HandleLogoutResponse(result, instant);
 
     return 1;
 }

@@ -32,6 +32,8 @@ extern CVar* s_checkAddonVersionCvar;
 
 void ClientInitializeGame(uint32_t mapId, C3Vector position);
 
+void ClientDestroyGame(int32_t charSelect, int32_t resumeGlue, int32_t loginFailed);
+
 void ClientPostClose(int32_t a1);
 
 void CommonMain();

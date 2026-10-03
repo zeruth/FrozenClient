@@ -2,6 +2,12 @@
 #include "net/Login.hpp"
 #include "client/ClientServices.hpp"
 #include "ui/FrameScript.hpp"
+#include "client/Client.hpp"
+#include "ui/game/CGGameUI.hpp"
+#include "ui/game/Types.hpp"
+#include "net/Types.hpp"
+#include <storm/Error.hpp>
+#include <common/DataStore.hpp>
 
 void ClientConnection::AccountLogin(const char* name, const char* password, int32_t region, WOW_LOCALE locale) {
     // Assertion-like thing
@@ -19,15 +25,31 @@ void ClientConnection::AccountLogin_Queued() {
     // TODO CGlueMgr::UpdateWaitQueue(this->m_queuePosition);
 }
 
+// ref: FUN_006b1200
 void ClientConnection::Cancel(int32_t errorCode) {
     this->Complete(0, errorCode);
 }
 
+// ref: FUN_006b18c0
+void ClientConnection::CancelLogout() {
+    CDataStore msg;
+
+    msg.Put(static_cast<uint32_t>(CMSG_LOGOUT_CANCEL));
+
+    msg.Finalize();
+
+    this->Send(&msg);
+
+    this->m_logoutPending = 0;
+}
+
+// ref: FUN_006b1790
 void ClientConnection::CharacterLogin(uint64_t guid, int32_t a2) {
     this->Initiate(COP_LOGIN_CHARACTER, 76, nullptr);
 
     if (this->m_connected) {
         this->RequestCharacterLogin(guid, a2);
+        this->m_loginRequested = 1;
     } else {
         this->Cancel(4);
     }
@@ -105,6 +127,11 @@ void ClientConnection::EnumerateCharacters(ENUMERATE_CHARACTERS_CALLBACK callbac
     }
 }
 
+// ref: FUN_006b21f0
+void ClientConnection::ForceLogout() {
+    this->RequestLogout(0, 1);
+}
+
 void ClientConnection::GetCharacterList() {
     this->Initiate(COP_GET_CHARACTERS, 43, nullptr);
 
@@ -134,6 +161,102 @@ void ClientConnection::HandleCharacterDelete(uint8_t result) {
     this->Complete(result == 71, result);
 }
 
+// ref: FUN_006b2070
+// The server would not put the character in the world: leave the game and fail the login with
+// the matching CHAR_LOGIN_* code.
+void ClientConnection::HandleCharacterLoginFailed(uint8_t result) {
+    if (this->m_inWorld) {
+        this->SetInWorld(0);
+    }
+
+    this->m_loginRequested = 0;
+
+    STORM_ASSERT(ClientServices::s_currentConnection);
+
+    if (this == ClientServices::s_currentConnection) {
+        ClientDestroyGame(1, 1, 1);
+    }
+
+    switch (result) {
+        case 1:
+            this->Cancel(78);
+            break;
+
+        case 2:
+            this->Cancel(79);
+            break;
+
+        case 3:
+            this->Cancel(80);
+            break;
+
+        case 4:
+            this->Cancel(82);
+            break;
+
+        case 5:
+            this->Cancel(83);
+            break;
+
+        case 6:
+            this->Cancel(84);
+            break;
+
+        case 7:
+            this->Cancel(85);
+            break;
+
+        case 8:
+            this->Cancel(86);
+            break;
+
+        default:
+            this->Cancel(81);
+            break;
+    }
+}
+
+// ref: FUN_006b2180
+// The server has taken the character out of the world: back to character select, or out of the
+// program when the logout was a quit.
+void ClientConnection::HandleLogoutComplete() {
+    if (this->m_inWorld) {
+        this->SetInWorld(0);
+    }
+
+    this->m_loginRequested = 0;
+
+    STORM_ASSERT(ClientServices::s_currentConnection);
+
+    if (this == ClientServices::s_currentConnection) {
+        ClientDestroyGame(1, 1, 0);
+    }
+
+    this->m_logoutPending = 0;
+
+    if (this->m_logoutQuit) {
+        ClientPostClose(0);
+    }
+}
+
+// ref: FUN_006b08b0
+void ClientConnection::HandleLogoutResponse(int32_t result, uint8_t instant) {
+    if (result) {
+        CGGameUI::DisplayError(410);
+        this->m_logoutPending = 0;
+    } else if (!instant) {
+        FrameScript_SignalEvent(this->m_logoutQuit ? SCRIPT_PLAYER_QUITING : SCRIPT_PLAYER_CAMPING, nullptr);
+    }
+}
+
+// ref: FUN_006b0900
+void ClientConnection::HandleLogoutCancelAck() {
+    if (this->m_logoutPending) {
+        FrameScript_SignalEvent(SCRIPT_LOGOUT_CANCEL, nullptr);
+        this->m_logoutPending = 0;
+    }
+}
+
 int32_t ClientConnection::HandleConnect() {
     this->Complete(1, 5);
 
@@ -155,6 +278,54 @@ void ClientConnection::Initiate(WOWCS_OPS op, int32_t errorCode, void (*cleanup)
 
 int32_t ClientConnection::IsConnected() {
     return this->m_connected;
+}
+
+// ref: FUN_006b1930
+// Asks the server to take the character out of the world. A request already pending is not
+// repeated unless this one is instant, and with no character in the world there is nothing to do.
+void ClientConnection::RequestLogout(uint8_t quit, uint8_t instant) {
+    if (this->m_logoutPending && !instant) {
+        return;
+    }
+
+    if (!this->m_inWorld) {
+        return;
+    }
+
+    STORM_ASSERT(ClientServices::s_currentConnection);
+
+    if (this == ClientServices::s_currentConnection) {
+        this->m_logoutQuit = quit;
+
+        if (!instant) {
+            this->m_logoutPending = 1;
+        }
+
+        CDataStore msg;
+
+        msg.Put(static_cast<uint32_t>(instant ? CMSG_PLAYER_LOGOUT : CMSG_LOGOUT_REQUEST));
+
+        msg.Finalize();
+
+        this->Send(&msg);
+    } else {
+        this->SetInWorld(0);
+        this->m_loginRequested = 0;
+    }
+}
+
+// ref: FUN_006b1840
+// Finishes the character login and records whether a character is now in the world. Leaving the
+// world this way also ends any logout that was waiting on the server.
+void ClientConnection::SetInWorld(int32_t inWorld) {
+    this->Complete(1, 77);
+
+    this->m_inWorld = inWorld;
+
+    if (this->m_logoutPending) {
+        FrameScript_SignalEvent(SCRIPT_LOGOUT_CANCEL, nullptr);
+        this->m_logoutPending = 0;
+    }
 }
 
 int32_t ClientConnection::PollStatus(WOWCS_OPS& op, const char** msg, int32_t& result, int32_t& errorCode) {

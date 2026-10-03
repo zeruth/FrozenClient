@@ -11,6 +11,7 @@
 #include "client/ClientServices.hpp"
 #include <common/DataStore.hpp>
 #include <storm/Error.hpp>
+#include "net/Connection.hpp"
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
 uint32_t CGPlayer_C::s_itemProficiency[17];  // ref: DAT_00c9d4f0
@@ -639,6 +640,11 @@ void CGPlayer_C::PostInitActivePlayer() {
         // TODO
 
         CGGameUI::EnterWorld();
+
+        // TODO FUN_00520f70
+
+        // The character login is done and the character is in the world (0x006e8199).
+        ClientServices::Connection()->SetInWorld(1);
     }
 
     // TODO

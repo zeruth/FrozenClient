@@ -18,6 +18,8 @@
 #include <common/DataStore.hpp>
 #include <cstdint>
 #include <tempest/Vector.hpp>
+#include "client/ClientServices.hpp"
+#include "net/Connection.hpp"
 
 static float s_newFacing;
 static C3Vector s_newPosition;
@@ -26,6 +28,9 @@ static const char* s_newMapname;
 
 // ref: FUN_00403b70
 void LoadNewWorld(const void* eventData, void* param) {
+    // The character leaves the world it was in (0x00403b82).
+    ClientServices::Connection()->SetInWorld(0);
+
     // TODO
 
     // The old world's spell visuals and effects go (0x00403bac, 0x00403bb1), the screen effect is

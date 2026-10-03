@@ -48,6 +48,10 @@ class RealmConnection : public NetClient {
         virtual int32_t HandleAuthChallenge(AuthenticationChallenge* challenge);
         virtual void HandleCharacterCreate(uint8_t result) = 0;
         virtual void HandleCharacterDelete(uint8_t result) = 0;
+        virtual void HandleCharacterLoginFailed(uint8_t result) = 0;
+        virtual void HandleLogoutComplete() = 0;
+        virtual void HandleLogoutResponse(int32_t result, uint8_t instant) = 0;
+        virtual void HandleLogoutCancelAck() = 0;
 
         // Member functions
         RealmConnection(RealmResponse* realmResponse);
@@ -55,6 +59,8 @@ class RealmConnection : public NetClient {
         int32_t HandleCharEnum(uint32_t msgId, uint32_t time, CDataStore* msg);
         int32_t CreateCharHandler(uint32_t msgId, uint32_t time, CDataStore* msg);
         int32_t DeleteCharHandler(uint32_t msgId, uint32_t time, CDataStore* msg);
+        int32_t CharacterLoginFailedHandler(uint32_t msgId, uint32_t time, CDataStore* msg);
+        int32_t LogoutResponseHandler(uint32_t msgId, uint32_t time, CDataStore* msg);
         void RequestCharacterCreate(const CHARACTER_CREATE_INFO* info);
         void RequestCharacterDelete(uint64_t guid);
         void RequestCharacterEnum();

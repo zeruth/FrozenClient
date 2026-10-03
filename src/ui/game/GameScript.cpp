@@ -45,6 +45,8 @@
 #include "util/Unimplemented.hpp"
 #include <cmath>
 #include <ctime>
+#include "net/Connection.hpp"
+#include "client/Client.hpp"
 
 // The map the game UI believes it is on. Outside the anonymous namespace because RaidInfo reads
 // it too; declared in GameScript.hpp.
@@ -649,12 +651,18 @@ int32_t Script_Stuck(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00510430
 int32_t Script_Logout(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    ClientServices::Connection()->RequestLogout(0, 0);
+
+    return 0;
 }
 
+// ref: FUN_00510450
 int32_t Script_Quit(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    ClientServices::Connection()->RequestLogout(1, 0);
+
+    return 0;
 }
 
 // ref: FUN_005104a0
@@ -1130,16 +1138,32 @@ int32_t Script_DeclineArenaTeam(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0051ac90
+// Insecure code may cancel a logout only from a hardware event.
 int32_t Script_CancelLogout(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_tainted && CGGameUI::s_simpleTop && !CGGameUI::s_simpleTop->m_hardwareEvent) {
+        CGGameUI::ReportBlockedAction(nullptr, 1);
+
+        return 0;
+    }
+
+    ClientServices::Connection()->CancelLogout();
+
+    return 0;
 }
 
+// ref: FUN_005109f0
 int32_t Script_ForceLogout(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    ClientServices::Connection()->ForceLogout();
+
+    return 0;
 }
 
+// ref: FUN_00510a00
 int32_t Script_ForceQuit(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    ClientPostClose(0);
+
+    return 0;
 }
 
 // ref: FUN_00515a50

@@ -477,6 +477,34 @@ void ClientRegisterConsoleCommands() {
     CVar::Register("accounttype", "Account Type", 0x0, "", nullptr, GAME, false, nullptr, false);
 }
 
+// ref: FUN_00406510
+// Tears the game down: every module the game start brought up lets go of its handlers, objects and
+// caches, the loading screen is finished, and the glue comes back on the login or character
+// select screen.
+//
+// Frozen has no world exit yet. The teardown below needs the counterparts of the reference's
+// module shutdowns, most of which frozen does not have, and resuming the glue over a game that is
+// still standing would leave two interfaces sharing one script state. Until that lands this does
+// nothing, so a logout leaves the client in the world while the server has already let the
+// character go. The order to port, from the reference:
+//   game flag 0x00b2f9a0 gate; DAT_00b2f9e0 = 0; EventUnregister(IDLE, FUN_00403340);
+//   clear handlers 0x1cb 0x1cd 0x3e 0x3f 0x40 0x99 0x9b 0x236 0x3c5; free DAT_00b2fe50 (FUN_00401220);
+//   FUN_00703cd0 (missiles), FUN_006b51b0 (friends), FUN_0078e960 (world params),
+//   FUN_00709a10 (items), FUN_006e4780 + FUN_006e0300 (player), FUN_007e7fd0 (world text),
+//   FUN_00810920 (spells), FUN_00742bb0 (units), GameObjectShutdown, ObjectsShutdown,
+//   FUN_006f0c30 (movement), FUN_006fafb0 (loot rolls), EventUnregister(IDLE, FUN_006f1490),
+//   FUN_00809a60, FUN_004d6750 (object manager), FUN_00724ea0 (units), SpellVisualsReleaseObjects,
+//   CEffect::ReleaseAll, CGWorldFrame::SetScreenEffect(0), ReleaseAllModelRecords,
+//   FUN_00783180 (world fadeouts), FUN_007e4bc0, FUN_007e53a0 + FUN_007e6a30 (player names),
+//   FUN_00529160 (the game UI), FUN_007e2810, FUN_004c9bf0 + FUN_004c9420 + FUN_004cb3b0 (sound),
+//   FUN_004c5b80, FUN_004d5c80 (object mirrors), FUN_006b9020(0); clear the game flag;
+//   LoadingScreenFinish; FUN_00532890 (party); then, with resumeGlue, CGlueMgr::Resume, glue
+//   status 11 when loginFailed, and SET_GLUE_SCREEN "charselect" or "login".
+void ClientDestroyGame(int32_t charSelect, int32_t resumeGlue, int32_t loginFailed) {
+    // TODO
+}
+
+// ref: FUN_004033c0
 void ClientPostClose(int32_t a1) {
     // TODO s_finalDialog = a1;
     EventPostCloseEx(nullptr);
