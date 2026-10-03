@@ -1,6 +1,9 @@
 #ifndef WORLD_MAP_WEATHER_HPP
 #define WORLD_MAP_WEATHER_HPP
 
+#include <tempest/Matrix.hpp>
+#include <tempest/Vector.hpp>
+
 #include "gx/Texture.hpp"
 #include "net/Types.hpp"
 #include <storm/Array.hpp>
@@ -356,5 +359,8 @@ void WeatherSetAmbience(int32_t ambienceID);
 
 // SMSG_WEATHER: Weather.dbc id, intensity 0..1, abrupt flag.
 int32_t ReceiveWeather(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+
+// ref: FUN_004c3460 -- see the definition in MapWeather.cpp.
+C44Matrix RotationAroundAxis4(float angle, const C3Vector& axis, bool unit);
 
 #endif

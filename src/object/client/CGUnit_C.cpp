@@ -24,6 +24,7 @@
 #include "ui/game/CGMinimapFrame.hpp"
 #include "world/CWorld.hpp"
 #include "world/map/CMap.hpp"
+#include "world/MapWeather.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
 #include "model/Model2.hpp"
@@ -458,6 +459,14 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     }
 
     this->m_smoothFacing = CMath::normalizeangle0to2pi(this->GetRawFacing());
+    this->m_smoothFacingStep = 0.0f;
+    this->m_smoothFacingHistory[0] = 0.0f;
+    this->m_smoothFacingHistory[1] = 0.0f;
+    this->m_smoothFacingHistory[2] = 0.0f;
+    this->m_smoothFacingHistory[3] = 0.0f;
+    this->m_lowerBodyFacing = this->GetRawFacing();
+    this->m_lowerBodyFacingStep = 0.0f;
+    this->m_lowerBodyBlend = 1.0f;
 
     // TODO
 }
@@ -492,7 +501,7 @@ void CGUnit_C::PostMovementUpdate(const CClientObjCreate& init, int32_t activeMo
 // the caster footprint -- that is why a footprint grows as something rears up and shrinks as it
 // crouches, instead of being a fixed circle.
 //
-// This used to walk m_data->sequences itself, matching m_animSeq against sequences[i].id, and
+// This used to walk m_data->sequences itself, matching the applied id against sequences[i].id, and
 // returned 0 when no sequence carried that id. That is wrong in the case that matters: a model
 // frequently does NOT carry the animation it is asked for, and the reference does not give up when
 // that happens -- CM2Model::GetSequenceInfo (FUN_0082ced0) walks the model's fallback chain first
@@ -570,7 +579,9 @@ float CGUnit_C::GetAnimFootprint() const {
         return 0.0f;
     }
 
-    if (this->m_animSeq < 0) {
+    int32_t animID = static_cast<int32_t>(this->GetCurrentAnimationId());
+
+    if (animID < 0) {
         return 0.0f;
     }
 
@@ -582,7 +593,7 @@ float CGUnit_C::GetAnimFootprint() const {
     }
 
     M2SequenceInfo info = {};
-    model->GetSequenceInfo(static_cast<uint32_t>(this->m_animSeq), 0, info);
+    model->GetSequenceInfo(static_cast<uint32_t>(animID), 0, info);
 
     const CAaBox& e = info.extent;
     float ex = (e.t.x - e.b.x) * 0.5f;
@@ -673,128 +684,29 @@ int32_t CGUnit_C::GetClassification() const {
     return info ? info->m_rank : 0;
 }
 
-uint32_t CGUnit_C::GetSequenceDuration(int32_t animID) {
-    if (!this->m_model || !this->m_model->m_shared || !this->m_model->m_shared->m_m2DataLoaded || !this->m_model->m_shared->m_data) {
-        return 0;
-    }
-
-    auto& sequences = this->m_model->m_shared->m_data->sequences;
-
-    for (uint32_t i = 0; i < sequences.Count(); i++) {
-        if (sequences[i].id == animID) {
-            return sequences[i].duration;
-        }
-    }
-
-    return 0;
-}
-
-void CGUnit_C::UpdateIdleAnimation() {
-    if (!this->m_model) {
-        return;
-    }
-
-    // Same priority order the reference uses for a unit's looping pose: a dead unit holds Dead;
-    // otherwise a scripted stand state (UNIT_FIELD_BYTES_1 byte 0) picks the matching sit/sleep/
-    // kneel/submerged loop; otherwise an emote state resolves through Emotes.dbc -> AnimationData id;
-    // otherwise plain Stand. Animation ids are AnimationData.dbc entries SetBoneSequence resolves.
-    auto unitData = this->Unit();
-    uint32_t now = this->m_model && this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
-    bool dead = unitData && unitData->maxHealth > 0 && unitData->health <= 0;
-    int32_t standState = unitData ? (unitData->bytes1 & 0xFF) : 0;
-    int32_t seq;
-
-    if (dead) {
-        // Match the reference's death handling. A unit already dead when first seen (a corpse placed
-        // in the world) settles straight into the Dead pose. A unit that dies while we are watching
-        // plays the Death fall (AnimationData 1) once, then settles into Dead (6) when it ends -- we
-        // time the fall off the model's own Death duration rather than assuming a non-looping hold.
-        if (!this->m_wasDead && this->m_animSeq != -1) {
-            uint32_t deathDuration = this->GetSequenceDuration(1);
-
-            if (deathDuration > 0) {
-                seq = 1; // Death fall
-                this->m_deathStartTime = now;
-                this->m_deathDuration = deathDuration;
-            } else {
-                seq = 6; // model has no Death animation -> straight to Dead
-            }
-        } else if (this->m_animSeq == 1 && (now - this->m_deathStartTime) < this->m_deathDuration) {
-            seq = 1; // still falling
-        } else {
-            seq = 6; // Dead (settled, or spawned as a corpse)
-        }
-
-        this->m_wasDead = true;
-    } else {
-        this->m_wasDead = false;
-
-        if (standState != 0) {
-            switch (standState) {
-                case 1: seq = 97; break;   // SIT              -> SitGround
-                case 2: seq = 103; break;  // SIT_CHAIR        -> SitChairMed
-                case 3: seq = 100; break;  // SLEEP            -> Sleep
-                case 4: seq = 102; break;  // SIT_LOW_CHAIR    -> SitChairLow
-                case 5: seq = 103; break;  // SIT_MEDIUM_CHAIR -> SitChairMed
-                case 6: seq = 104; break;  // SIT_HIGH_CHAIR   -> SitChairHigh
-                case 7: seq = 6; break;    // DEAD             -> Dead
-                case 8: seq = 115; break;  // KNEEL            -> KneelLoop
-                case 9: seq = 202; break;  // SUBMERGED        -> Submerged
-                default: seq = 0; break;
-            }
-        } else if (this->m_emoteSeq && now < this->m_emoteEndMs) {
-            // A one-shot emote outranks the resting pose while it is still running, but NOT death
-            // or a scripted stand state -- a unit that is sitting or dead should not be interrupted
-            // by a gesture.
-            seq = this->m_emoteSeq;
-        } else if (unitData && unitData->emoteState) {
-            auto emote = g_emotesDB.GetRecord(unitData->emoteState);
-            seq = (emote && emote->m_animID > 0) ? emote->m_animID : 0;
-        } else {
-            seq = 0; // Stand
-        }
-    }
-
-    // A model that has no animation for the requested pose falls back to Stand, the way the
-    // reference does: most creatures carry no SitChair/Sleep/Submerged or emote animation, and
-    // asking for one leaves them in whatever pose they held.
-    if (seq != 0 && !this->GetSequenceDuration(seq)) {
-        seq = 0;
-    }
-
-    // Only restart the sequence when it actually changes; re-issuing it every frame would keep
-    // resetting the animation to frame 0 and freeze it.
-    if (this->m_emoteSeq && now >= this->m_emoteEndMs) {
-        this->m_emoteSeq = 0;
-    }
-
-    if (seq != this->m_animSeq) {
-        this->m_model->SetBoneSequence(-1, seq, -1, 0, 1.0f, 0, 1);
-        this->m_animSeq = seq;
-    }
-}
-
-// SMSG_EMOTE: play an emote once.
-//
-// Emotes.dbc maps the emote id to an AnimationData id, the same table UNIT_NPC_EMOTESTATE resolves
-// through. A model that has no animation for it is left alone rather than snapped to Stand.
+// ref: FUN_0073ab90
+// A one-shot emote (SMSG_EMOTE, or the player's own): its animation plays unless it is already
+// playing, the unit channels, or it is busy (animation flag 0x400) -- and a unit in combat only
+// plays the two emotes meant for it (0xc0 and 0xc8).
 void CGUnit_C::PlayEmote(uint32_t emoteID) {
     auto emote = g_emotesDB.GetRecord(static_cast<int32_t>(emoteID));
 
-    if (!emote || emote->m_animID <= 0) {
+    if (!emote) {
         return;
     }
 
-    uint32_t duration = this->GetSequenceDuration(emote->m_animID);
+    int32_t animID = emote->m_animID;
 
-    if (!duration) {
+    if (animID < 0 || 0x1FA <= animID || static_cast<int32_t>(this->GetCurrentAnimationId()) == animID) {
         return;
     }
 
-    uint32_t now = this->m_model && this->m_model->m_scene ? this->m_model->m_scene->m_time : 0;
+    bool combatEmote = animID == 0xC0 || animID == 200;
 
-    this->m_emoteSeq = emote->m_animID;
-    this->m_emoteEndMs = now + duration;
+    if (this->m_unit->channelSpell == 0 && !(this->m_animFlags & 0x400)
+        && (combatEmote || !this->IsAttackingOrPetInCombat())) {
+        this->SetAnimation(static_cast<uint32_t>(animID), 0);
+    }
 }
 
 void CGUnit_C::RefreshDataPointers() {
@@ -885,13 +797,11 @@ int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* m
         return 1;
     }
 
-    auto object = ClntObjMgrObjectPtr(guid, TYPE_UNIT, __FILE__, __LINE__);
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, __FILE__, __LINE__));
 
-    if (!object) {
-        return 1;
+    if (unit && static_cast<uint8_t>(unit->Unit()->bytes1) != 3 && !(unit->m_localMove.m_moveFlags & 0x200000)) {
+        unit->PlayEmote(emoteID);
     }
-
-    static_cast<CGUnit_C*>(object)->PlayEmote(emoteID);
 
     return 1;
 }
@@ -6701,8 +6611,7 @@ int32_t OnEntryChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void*
 // active player's movement re-runs first.
 //
 // PARTIAL: the name plate's health (FUN_0098e5b0) and the unit frames (FUN_0053cf10) are the name
-// plate and UI ports'; the blood row (+0x97c, UnitBlood.dbc through the display) is not loaded, so
-// no unit is marked bleeding.
+// plate and UI ports'.
 int32_t OnHealthChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
     auto unit = HandlerUnit(guid, 0x2d4);
 
@@ -6715,6 +6624,8 @@ int32_t OnHealthChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void
 
     if (0.2f <= static_cast<float>(data->health) / static_cast<float>(data->maxHealth) || unit->IsDead()) {
         unit->m_stateFlags &= 0xFFFFFFFD;
+    } else if (unit->m_bloodRec) {
+        unit->m_stateFlags |= 0x2;
     }
 
     int32_t was = *static_cast<const int32_t*>(old);
@@ -11769,4 +11680,378 @@ void CGUnit_C::OnChannelSpellChanged(int32_t oldSpell) {
     }
 
     this->UpdateChannelVisual();
+}
+
+// ------------------------------------------------------------------------------------------------
+// The unit's per-frame update (Unit_C.cpp FUN_0073dab0 and FUN_00734390, with their helpers).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_007156c0
+// An angle brought into [-pi, pi].
+float WrapAngleSigned(float angle) {
+    if (CMath::PI < angle) {
+        return std::fmod(angle + CMath::PI, CMath::TWO_PI) - CMath::PI;
+    }
+
+    if (angle < -CMath::PI) {
+        return std::fmod(angle - CMath::PI, CMath::TWO_PI) + CMath::PI;
+    }
+
+    return angle;
+}
+
+// ref: FUN_00719660
+// The lower body's facing chases `target`: first kept within a quarter turn of the model's
+// facing, then sprung toward the target at rate 20, then blended with the target by the
+// blend weight (1 springs fully, 0 snaps).
+void CGUnit_C::TurnLowerBodyToward(float target) {
+    float facing = this->m_smoothFacing;
+
+    if (facing + CMath::PI < this->m_lowerBodyFacing) {
+        facing += CMath::TWO_PI;
+    } else if (this->m_lowerBodyFacing < facing - CMath::PI) {
+        facing -= CMath::TWO_PI;
+    }
+
+    const float limit = 1.5704764127731323f;
+
+    if (this->m_lowerBodyFacing + limit < facing) {
+        this->m_lowerBodyFacing = facing - limit;
+    } else if (facing < this->m_lowerBodyFacing - limit) {
+        this->m_lowerBodyFacing = facing + limit;
+    }
+
+    this->m_lowerBodyFacing = WrapAngleSigned(this->m_lowerBodyFacing);
+
+    float to = target;
+
+    if (to + CMath::PI < this->m_lowerBodyFacing) {
+        to += CMath::TWO_PI;
+    } else if (this->m_lowerBodyFacing < to - CMath::PI) {
+        to -= CMath::TWO_PI;
+    }
+
+    float dt = CGWorldFrame::s_currentWorldFrame ? CGWorldFrame::s_currentWorldFrame->m_elapsed : 0.0f;
+    float x = dt * 20.0f;
+    float decay = 1.0f / (x * x * 0.48f + x * x * x * 0.235f + x + 1.0f);
+    float away = this->m_lowerBodyFacing - to;
+    float pull = (away * 20.0f + this->m_lowerBodyFacingStep) * dt;
+
+    this->m_lowerBodyFacing = (away + pull) * decay + to;
+    this->m_lowerBodyFacingStep = (this->m_lowerBodyFacingStep - pull * 20.0f) * decay;
+    this->m_lowerBodyFacing = this->m_lowerBodyFacing * this->m_lowerBodyBlend + (1.0f - this->m_lowerBodyBlend) * to;
+}
+
+// ref: FUN_00720db0
+// The model's diffuse colour: a running colour effect's (CEffect +0xec), white otherwise.
+//
+// PARTIAL: the timed colour flash (+0xb10..+0xb1c, FUN_0071a9a0, set by FUN_0071a940's caller) is
+// not ported; nothing that sets it is, so it never runs.
+void CGUnit_C::UpdateModelColor() {
+    uint32_t color = 0xFFFFFFFF;
+
+    if (this->m_colorEffects) {
+        color = this->m_colorEffects->m_color;
+    }
+
+    auto model = this->GetObjectModel();
+
+    if (!model) {
+        return;
+    }
+
+    const float scale = 0.003921568859368563f;
+
+    model->m_baseDiffuse = {
+        static_cast<float>((color >> 16) & 0xFF) * scale,
+        static_cast<float>((color >> 8) & 0xFF) * scale,
+        static_cast<float>(color & 0xFF) * scale,
+    };
+}
+
+// ref: FUN_0071bd20
+// A vehicle's wheels (bones 0x1b..0x22 the model carries, m_boneMask) turn with the ground speed
+// and the turn: each spins about its axle by the distance its pivot travels over its radius.
+// A unit on a spline that does not drive its wheels, or rooted, holds them where they are.
+void CGUnit_C::UpdateWheels() {
+    if (!this->m_boneMask) {
+        return;
+    }
+
+    auto model = this->GetObjectModel();
+
+    if (!model) {
+        return;
+    }
+
+    uint32_t now = CWorld::GetCurTimeMs();
+    int32_t elapsed = static_cast<int32_t>(now - this->m_wheelTime);
+
+    if (elapsed < 2) {
+        elapsed = 1;
+    } else if (499 < elapsed) {
+        elapsed = 500;
+    }
+
+    this->m_wheelTime = now;
+
+    float seconds = static_cast<float>(elapsed) * 0.001f;
+    auto move = this->m_move;
+    uint32_t moveFlags = move->m_moveFlags;
+    float roll;
+    float turn;
+
+    if (moveFlags & 0xD) {
+        roll = move->m_currentSpeed * seconds;
+    } else if (moveFlags & 0x2) {
+        roll = -(move->m_currentSpeed * seconds);
+    } else {
+        roll = 0.0f;
+    }
+
+    if (moveFlags & 0x10) {
+        turn = (-move->m_turnRate - this->m_smoothFacingStep) * seconds;
+    } else if (moveFlags & 0x20) {
+        turn = (move->m_turnRate - this->m_smoothFacingStep) * seconds;
+    } else {
+        turn = -(seconds * this->m_smoothFacingStep);
+    }
+
+    auto spline = move->m_spline;
+    bool hold = !(!spline || (spline->flags & 0x400) || !(spline->flags & 0x2000)) || (moveFlags & 0x2200000);
+
+    for (int32_t i = 0; i < 8; i++) {
+        if (!(this->m_boneMask & (1u << i))) {
+            continue;
+        }
+
+        uint32_t bone = static_cast<uint32_t>(i) + 0x1B;
+
+        if (!hold) {
+            C3Vector pivot;
+            model->GetBonePivot(pivot, bone);
+
+            if (0.001f < std::fabs(pivot.z)) {
+                auto& m = model->matrixB4;
+                float scale = std::sqrt(m.a2 * m.a2 + m.a0 * m.a0 + m.a1 * m.a1);
+                float y = pivot.y * scale;
+                float z = scale * pivot.z;
+                float angle = (y * turn + roll) / z + this->m_boneValues[i];
+
+                while (angle < -CMath::PI) {
+                    angle += CMath::TWO_PI;
+                }
+
+                while (CMath::PI < angle) {
+                    angle -= CMath::TWO_PI;
+                }
+
+                this->m_boneValues[i] = angle;
+            }
+        }
+
+        model->SetBoneFlags(bone, 0x80, 0x80);
+        model->SetBoneMatrix(bone, RotationAroundAxis4(this->m_boneValues[i], { 0.0f, 1.0f, 0.0f }, true));
+    }
+}
+
+// ref: FUN_0073dab0
+// The unit's own per-frame step, after the object's: the model's colour, the lower body twisting
+// toward where the unit moves (bones 4 and 6 carry the difference, the upper body a quarter turn
+// at most and the head the rest), the turn-in-place shuffle, the wheels, and the regeneration
+// lock's model flag.
+//
+// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the floor check
+// every ten seconds (FUN_0071fa90), the target's name plate blink (FUN_00729740) and the name
+// plate step (FUN_007e6390), the scripted alpha timer (+0xb28), the missiles in flight
+// (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), the ripples
+// in water (FUN_0071cba0), a vehicle seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
+// kits (FUN_00728140, +0xf4c).
+void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
+    this->UpdateModelColor();
+
+    this->CGObject_C::UpdateForFrame(frame);
+
+    float elapsed = CGWorldFrame::s_currentWorldFrame ? CGWorldFrame::s_currentWorldFrame->m_elapsed : 0.0f;
+    uint32_t moveFlags = this->m_move->m_moveFlags;
+    // A vehicle whose row has flag 0x200 or 0x1000 (VehicleRec +4) holds the legs straight; the
+    // rows are the vehicle port's, so none does.
+    bool seatHolds = false;
+
+    if (this->m_unit->health < 1
+        || (this->m_vehiclePassenger && (this->m_vehiclePassenger->m_state == 2 || this->m_vehiclePassenger->m_state == 5))
+        || (moveFlags & 0x2200000) || seatHolds || !(this->m_animFlags & 0x180)) {
+        this->m_lowerBodyFacing = this->m_smoothFacing;
+        this->m_lowerBodyFacingStep = 0.0f;
+        this->m_lowerBodyBlend = 0.0f;
+    } else if (!(moveFlags & 0xC)) {
+        if (!(moveFlags & 0x1003)) {
+            if (this->m_lowerBodyBlend < 1.0f) {
+                this->m_lowerBodyBlend = elapsed * 2.5f + this->m_lowerBodyBlend;
+            }
+        } else if (this->m_lowerBodyBlend <= 0.0f) {
+            this->m_lowerBodyFacing = this->m_smoothFacing;
+            this->m_lowerBodyFacingStep = 0.0f;
+        } else {
+            this->m_lowerBodyBlend -= elapsed * 2.5f;
+
+            if (1.0f < this->m_lowerBodyBlend) {
+                this->m_lowerBodyBlend = 1.0f;
+            }
+
+            this->TurnLowerBodyToward(this->m_smoothFacing);
+        }
+    } else {
+        // Strafing: the legs turn a quarter turn toward the side (an eighth when also moving
+        // forward or back), the other way when strafing left and right together or neither.
+        float offset = (moveFlags & 0x3) ? 0.7853981852531433f : 1.5707963705062866f;
+        uint32_t sides = moveFlags & 0x6;
+
+        if (sides == 6 || sides == 0) {
+            offset = -offset;
+        }
+
+        this->m_lowerBodyBlend = 1.0f;
+
+        float target = WrapAngleSigned(this->m_smoothFacing - this->m_lowerBodyFacing + offset);
+        this->TurnLowerBodyToward(WrapAngleSigned(target + this->m_lowerBodyFacing));
+    }
+
+    float delta = WrapAngleSigned(this->m_smoothFacing - this->m_lowerBodyFacing);
+    float magnitude = std::fabs(delta);
+    float turnLeft = 0.0f;
+    auto model = this->m_model;
+
+    if (0.001f <= magnitude) {
+        if (1.5707963705062866f < magnitude) {
+            turnLeft = std::copysign(magnitude - 1.5707963705062866f, delta);
+        }
+
+        // Standing and not steered: the legs catch up at eight times the turn rate since the unit
+        // last stood still.
+        if (!(this->m_move->m_moveFlags & 0xC) && !(this->m_animFlags & 0x1)) {
+            uint32_t still = static_cast<uint32_t>(OsGetAsyncTimeMs()) - this->m_turnStillTime;
+            float step = static_cast<float>(still) * 0.001f * this->m_localMove.m_turnRate * 8.0f;
+
+            if (magnitude < step) {
+                step = magnitude;
+            }
+
+            turnLeft += std::copysign(step, delta);
+        }
+
+        this->m_lowerBodyFacing = WrapAngleSigned(turnLeft + this->m_lowerBodyFacing);
+
+        float remaining = std::fabs(WrapAngleSigned(this->m_smoothFacing - this->m_lowerBodyFacing));
+
+        if (remaining < 1e-05f) {
+            if (model) {
+                model->SetBoneFlags(4, 0, 0x80);
+                model->SetBoneFlags(6, 0, 0x80);
+            }
+        } else if (model) {
+            if (!this->m_mountModel && (this->m_animFlags & 0x80)) {
+                float spine = remaining;
+
+                if (this->GetGUID() != ClntObjMgrGetActivePlayer() || s_clickToMoveState == 13) {
+                    spine *= 0.5f;
+                }
+
+                if (0.7853981852531433f < spine) {
+                    spine = 0.7853981852531433f;
+                }
+
+                model->SetBoneFlags(4, 0x80, 0x80);
+                model->SetBoneMatrix(4, RotationAroundAxis4(std::copysign(spine, delta), { 0.0f, 0.0f, 1.0f }, true));
+
+                remaining -= spine;
+            }
+
+            if (this->m_animFlags & 0x100) {
+                float head = remaining < 0.7853981852531433f ? remaining : 0.7853981852531433f;
+
+                model->SetBoneFlags(6, 0x80, 0x80);
+                model->SetBoneMatrix(6, RotationAroundAxis4(std::copysign(head, delta), { 0.0f, 0.0f, 1.0f }, true));
+            }
+        }
+    } else if (model) {
+        model->SetBoneFlags(4, 0, 0x80);
+        model->SetBoneFlags(6, 0, 0x80);
+    }
+
+    this->UpdateWheels();
+
+    this->m_animFlags &= 0xFFFFE7FF;
+
+    bool looting = this->GetGUID() == ClntObjMgrGetActivePlayer()
+        && static_cast<CGPlayer_C*>(this)->m_lootTarget != 0;
+
+    if (!(this->m_move->m_moveFlags & 0x2E0100F) && !looting && this->GetStandStateByte() == 0) {
+        if (1e-05f < turnLeft) {
+            this->m_animFlags |= 0x800;
+        } else if (turnLeft < -1e-05f) {
+            this->m_animFlags |= 0x1000;
+        }
+
+        auto objectModel = this->GetObjectModel();
+        int32_t current = objectModel ? static_cast<int32_t>(objectModel->GetBoneUint90(0xFFFFFFFF)) : -1;
+        int32_t want = -1;
+
+        if ((this->m_move->m_moveFlags & 0x10) || (this->m_animFlags & 0x800)) {
+            want = 0xB;
+        } else if ((this->m_move->m_moveFlags & 0x20) || (this->m_animFlags & 0x1000)) {
+            want = 0xC;
+        } else if (current == 0xB || current == 0xC) {
+            want = 0;
+        }
+
+        if (want != -1 && current != want && this->CanPlayTurnAnimation()) {
+            this->UpdateAnimation(0, 0xFFFFFFFF);
+        }
+    }
+
+    if (this->m_model) {
+        this->m_model->m_flag4000 = (this->m_unit->flags2 >> 1) & 1;
+    }
+}
+
+// ref: FUN_00734390
+// The world frame's step for a visible unit: the height a model flagged for it re-measures, and
+// with its model loaded, the world object's light and the unit's effects.
+//
+// PARTIAL, each the subsystem's own port: the holiday costume display swap (FUN_0072e270, driven
+// by Player_C's DAT_00c9eab0), the missile the unit holds and releases (+0x9ec, FUN_0072df00 /
+// FUN_0072e240, and state 0x800), the name plate removal off screen (FUN_00725840), the blood
+// spurts of a badly hurt unit (FUN_00720220, UnitBlood.dbc), click-to-move steering
+// (FUN_007317a0) and the seat's per-frame hook (passenger flag 0x10, vtable 0x14).
+void CGUnit_C::UpdateVisible(uint32_t time) {
+    (void)time;
+
+    if (this->m_flag21) {
+        auto model = this->GetObjectModel();
+
+        if (model && model->IsLoaded(0, 0)) {
+            this->UpdateHeight();
+        }
+    }
+
+    this->m_stateFlags &= 0x7FFFFFFF;
+
+    if (!this->m_worldObject) {
+        return;
+    }
+
+    auto model = this->GetObjectModel();
+
+    if (!model || !model->IsLoaded(0, 0)) {
+        return;
+    }
+
+    CWorld::UpdateObjectLighting(this->m_worldObject);
+
+    for (auto effect = this->m_effects; effect;) {
+        auto next = effect->m_linkNext;
+        effect->Update();
+        effect = next;
+    }
 }

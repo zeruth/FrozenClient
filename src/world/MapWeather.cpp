@@ -197,7 +197,7 @@ C3Vector TransformPoint(const C44Matrix& m, const C3Vector& v) {
 
 // ref: FUN_004c3460
 // A 4x4 rotation by `angle` about `axis` (normalised first unless `unit` says it already is)
-static C44Matrix RotationAroundAxis4(float angle, const C3Vector& axis, bool unit) {
+C44Matrix RotationAroundAxis4(float angle, const C3Vector& axis, bool unit) {
     float x = axis.x;
     float y = axis.y;
     float z = axis.z;

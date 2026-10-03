@@ -114,6 +114,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The model the world draws for the unit: its mount when it rides one, the unit's own
         // model otherwise.
         virtual CM2Model* GetObjectModel();
+        virtual void UpdateForFrame(CGWorldFrame* frame);
         // ref: FUN_0073e410
         // Rebuild the unit's model from its display (`force`, or when the display has changed):
         // the creature skin, its scale, its pose, its aura and channel visuals, and its mount.
@@ -214,7 +215,6 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // Re-evaluate the looping idle animation from the unit's current state (dead / stand state /
         // emote) and apply it to the model only when it changes, so a unit that sits, stands, dies
         // or starts an emote after spawn updates its pose instead of freezing on its spawn-time one.
-        void UpdateIdleAnimation();
 
         // Horizontal half-extent (yards, unscaled) of the unit's CURRENT animation bounds, or 0
         // when the model has no per-sequence bounds. The reference sizes a blob shadow from the
@@ -224,7 +224,6 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         CAaBox& GetShadowBox(CAaBox& box) const;
 
         // Duration (ms) of the model's animation with the given AnimationData id, or 0 if it has none.
-        uint32_t GetSequenceDuration(int32_t animID);
 
         // ref: FUN_0071af70
         // The unit's current shapeshift form, byte 3 of UNIT_FIELD_BYTES_2. Zero is no form. The
@@ -781,6 +780,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void UpdateFishingLine();
         void OnChannelObjectChanged(WOWGUID oldObject, int32_t oldSpell);
         void OnChannelSpellChanged(int32_t oldSpell);
+        void TurnLowerBodyToward(float target);
+        void UpdateModelColor();
+        void UpdateWheels();
+        void UpdateVisible(uint32_t time);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
@@ -949,15 +952,6 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         UnitBloodLevelsRec* m_bloodRec = nullptr;
         // TODO
         CCharacterComponent* m_characterComponent = nullptr; // composited body for humanoid NPCs
-        int32_t m_animSeq = -1;         // last idle sequence applied by UpdateIdleAnimation (-1 = none yet)
-        // A one-shot emote from SMSG_EMOTE. Unlike UNIT_NPC_EMOTESTATE, which is a looping pose the
-        // unit holds, this plays once and then the unit returns to whatever pose it was in -- it is
-        // how a scripted creature does a gesture, e.g. the Lich King planting his sword.
-        int32_t m_emoteSeq = 0;         // AnimationData id currently playing, 0 = none
-        uint32_t m_emoteEndMs = 0;      // scene clock time the one-shot finishes
-        bool m_wasDead = false;         // dead state last update, to detect the moment of death
-        uint32_t m_deathStartTime = 0;  // scene time (ms) the Death fall began
-        uint32_t m_deathDuration = 0;   // duration (ms) of the model's Death animation
         int32_t m_localDisplayID = 0;
         // The mount the unit is riding, as its own model with the unit's model attached under it
         // (the reference builds it in FUN_0073c0c0 from UNIT_FIELD_MOUNTDISPLAYID). Its root bone
@@ -1022,7 +1016,9 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         uint32_t m_targetChangeTime = 0;
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
         uint32_t m_boneMask = 0;
-        uint32_t m_boneValues[8] = {};
+        float m_boneValues[8] = {};
+        // +0xfa0: when the wheels last turned (UpdateWheels).
+        uint32_t m_wheelTime = 0;
         // Byte 3 of UNIT_FIELD_BYTES_1: 0 ground, 1 swim, 2 hover, 3 fly. ResolveAnimation asks
         // AnimationData for the tiered variant of an animation before the plain one, so a flying
         // unit gets the flying walk. The reference refreshes it from the descriptor in its
@@ -1091,6 +1087,11 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         float m_smoothFacing;
         // +0xaa4: the smoothing step the turn is taking (0 when it is not smoothing).
         float m_smoothFacingStep = 0.0f;
+        // +0xa94: the facing the legs point (the lower body), +0xa98 the speed it turns at and
+        // +0xa9c how much of the spring it takes; the spine and head turn the rest of the way.
+        float m_lowerBodyFacing = 0.0f;
+        float m_lowerBodyFacingStep = 0.0f;
+        float m_lowerBodyBlend = 1.0f;
         // +0xaa8: the last four turns the facing average took, newest first; [0] == 0 starts over.
         float m_smoothFacingHistory[4] = {};
         // +0x980: the line from a fishing rod to its bobber while the unit channels at one.

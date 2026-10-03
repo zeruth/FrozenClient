@@ -924,16 +924,8 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
         return 1;
     }
 
-    if (object->IsA(TYPE_UNIT) && object->m_model) {
-        // PHASE4(Unit_C): the unit's per-frame update (FUN_00734390) is not ported; until it is,
-        // frozen keeps the idle pose in step, keeps the map entity with the unit and eases its
-        // light here, which is the part of it the world needs.
-        static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
-        object->UpdateWorldObject(0);
-
-        if (object->m_worldObject) {
-            CWorld::UpdateObjectLighting(object->m_worldObject);
-        }
+    if (object->IsA(TYPE_UNIT)) {
+        static_cast<CGUnit_C*>(object)->UpdateVisible(CWorld::GetCurTimeMs());
 
         return 1;
     }

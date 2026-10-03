@@ -624,12 +624,6 @@ void CGObject_C::AddWorldObject() {
                 this->ModelChanged(previous);
 
                 this->SetModelFinish(model);
-
-                // PHASE4(Unit_C): frozen's per-frame idle pose (UpdateIdleAnimation) stands in for
-                // the unit's animation update until the per-frame unit update is ported.
-                if (model && this->IsA(TYPE_UNIT)) {
-                    static_cast<CGUnit_C*>(this)->UpdateIdleAnimation();
-                }
             }
 
             if (model) {
