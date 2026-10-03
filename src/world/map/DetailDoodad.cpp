@@ -1,4 +1,6 @@
 #include "world/map/DetailDoodad.hpp"
+#include <common/ObjectAlloc.hpp>
+#include "world/CWorldScene.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/DayNightLight.hpp"
 #include "world/map/CMapLight.hpp"
@@ -49,6 +51,8 @@ CGxPool* s_indexPool = nullptr;
 TSGrowableArray<CGxBuf*> s_buffers;
 int32_t s_rebuild = 1;
 int32_t s_useShaders = 0;
+// DAT_00d1c4e4: the WDETAILDOODADINST heap.
+static uint32_t* s_instanceHeap = nullptr;
 float s_fadeDistance = 70.0f;
 HTEXTURE s_fadeTexture = nullptr;
 
@@ -166,9 +170,11 @@ void CreateBuffers() {
 // The table is as long as the highest id the DBC carries, so a kind can be looked up by its id
 // with no search; the ids it does not use stay null.
 void Initialize() {
-    // TODO the reference also makes the "WDETAILDOODADINST" object heap the scattered instances
-    // come from, and loads the module's own shaders. Frozen's stand-in already holds a detail
-    // pixel shader; the heap waits for the scatter builder that would use it.
+    // The heap the scattered instances come from (0x007b2779), once.
+    if (!s_instanceHeap) {
+        s_instanceHeap = STORM_NEW(uint32_t)(ObjectAllocAddHeap(sizeof(CDetailDoodadData), 0x10, "WDETAILDOODADINST", true));
+    }
+
     //
     // s_useShaders stays 0 for exactly that reason. The reference sets it from a device setting
     // and then loads Shaders\Vertex\DetailDoodad and Shaders\Pixel\DetailDoodad only if it is
@@ -467,29 +473,12 @@ static void PrepareCell(CMapChunk* chunk, uint32_t row, uint32_t col, SCell* cel
         float ha = heights[va];
         float hb = heights[vb];
 
-        // The plane through the cell's centre and the triangle's two corners, the same one
-        // CMapChunk::HeightAt solves.
-        float nx = (hb - hm) * (ay - midY) - (ha - hm) * (by - midY);
-        float ny = (ha - hm) * (bx - midX) - (hb - hm) * (ax - midX);
-        float nz = (by - midY) * (ax - midX) - (bx - midX) * (ay - midY);
-
-        // This winding puts the normal under the ground, and it comes out scaled by twice the
-        // triangle's area. CMapChunk::HeightAt can leave both alone because its division
-        // cancels them, but MIN_NORMAL_Z is a slope against a unit normal, so here the plane
-        // has to be turned up the right way and normalized -- which is what PlaneFromPoints
-        // hands back, and frozen does have that (CWorldScene.cpp); it takes three points where
-        // this already holds a centre and two corners, so the normalize is written out.
-        float len = sqrtf(nx * nx + ny * ny + nz * nz);
-        float scale = len > 0.0f ? -1.0f / len : 0.0f;
-
-        nx *= scale;
-        ny *= scale;
-        nz *= scale;
-
-        cell->plane[t].n.x = nx;
-        cell->plane[t].n.y = ny;
-        cell->plane[t].n.z = nz;
-        cell->plane[t].d = -(midX * nx + midY * ny + nz * hm);
+        // The plane through the cell's centre and the triangle's two corners, facing up: the
+        // reference's PlaneFromPoints(centre, cornerB, cornerA) at 0x007d36fc.
+        C3Vector centre = { midX, midY, hm };
+        C3Vector cornerA = { ax, ay, ha };
+        C3Vector cornerB = { bx, by, hb };
+        PlaneFromPoints(&cell->plane[t], centre, cornerB, cornerA);
 
         for (uint32_t k = 0; k < 3; k++) {
             cell->base[t][k] = 0.0f;
@@ -525,223 +514,6 @@ static float SignedUnit(uint32_t r) {
     return (r & 0x80000000u) ? 2.0f - f : f - 2.0f;
 }
 
-// Part of ref: FUN_007d3390
-// The picking and placing half of the scatter, without the instance and batch bookkeeping the
-// reference wraps around it.
-uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance) {
-    if (!chunk->m_header || !chunk->m_heights || !chunk->m_layers || !chunk->m_header->nLayers) {
-        return 0;
-    }
-
-    if (!chunk->DetailDoodadsReady()) {
-        return 0;
-    }
-
-    uint32_t density = CWorldParam::cvar_groundEffectDensity
-        ? static_cast<uint32_t>(CWorldParam::cvar_groundEffectDensity->GetInt())
-        : 0;
-
-    if (!density) {
-        return 0;
-    }
-
-    if (density > MAX_PER_CHUNK) {
-        density = MAX_PER_CHUNK;
-    }
-
-    // The chunk's own indices seed it, so it scatters the same way every time it loads.
-    CRndSeed seed(static_cast<uint32_t>(chunk->m_indexX) << 16 | static_cast<uint32_t>(chunk->m_indexY));
-
-    static SCell s_cells[64];
-    uint8_t prepared[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-
-    static uint8_t s_pickCol[MAX_PER_CHUNK];
-    static uint8_t s_pickRow[MAX_PER_CHUNK];
-
-    for (uint32_t i = 0; i < density; i++) {
-        uint32_t col = CRandom::uint32(seed) & 7;
-        uint32_t row = CRandom::uint32(seed) & 7;
-
-        s_pickCol[i] = static_cast<uint8_t>(col);
-        s_pickRow[i] = static_cast<uint8_t>(row);
-
-        // A cell picked twice is prepared once; the second pick still scatters on it.
-        if (prepared[row] & (1 << col)) {
-            continue;
-        }
-
-        prepared[row] |= static_cast<uint8_t>(1 << col);
-
-        PrepareCell(chunk, row, col, &s_cells[col + row * 8]);
-    }
-
-    uint32_t placed = 0;
-
-    for (uint32_t i = 0; i < density; i++) {
-        uint32_t col = s_pickCol[i];
-        uint32_t row = s_pickRow[i];
-
-        // A hole in the chunk, and there is no cell to stand on.
-
-        if (HOLE_MASK[(col >> 1) + (row >> 1) * 4] & chunk->m_header->holes) {
-            continue;
-        }
-
-        // Which of the chunk's layers the cell takes, two bits a column of the low quality
-        // texture map.
-        uint32_t layer = (chunk->m_lowQualityTextureMap[row] & TEXMAP_MASK[col]) >> TEXMAP_SHIFT[col];
-
-        // TODO the chunk's predTex bit for this column overrides that choice in the reference;
-        // which layer it selects instead is not established, so the map's answer stands.
-
-        if (layer >= chunk->m_header->nLayers) {
-            continue;
-        }
-
-        auto effect = g_groundEffectTextureDB.GetRecord(chunk->m_layers[layer].effectId);
-
-        if (!effect) {
-            continue;
-        }
-
-        // Deal the effect's four kinds into sixteen slots by weight, stepping thirteen at a
-        // time so they interleave instead of clumping, then fill the rest round-robin.
-        int32_t bag[16];
-        uint32_t slot = 0;
-        uint32_t dealt = 0;
-
-        for (uint32_t k = 0; k < 16; k++) {
-            bag[k] = 0;
-        }
-
-        for (uint32_t k = 0; k < 4; k++) {
-            for (int32_t w = 0; w < effect->m_doodadWeight[k]; w++) {
-                bag[slot & 15] = effect->m_doodadID[k];
-                slot += 13;
-                dealt++;
-            }
-        }
-
-        for (; dealt < 16; dealt++) {
-            bag[slot & 15] = effect->m_doodadID[dealt & 3];
-            slot += 13;
-        }
-
-        uint32_t perCell = static_cast<uint32_t>(effect->m_amount);
-
-        if (!perCell) {
-            perCell = 8;
-        }
-
-        const SCell& cell = s_cells[col + row * 8];
-
-        for (uint32_t n = 0; n < perCell; n++) {
-            float ja = SignedUnit(CRandom::uint32(seed));
-            float jb = SignedUnit(CRandom::uint32(seed));
-
-            int32_t kind = bag[(n + i) & 15];
-
-            if (!kind) {
-                continue;
-            }
-
-            float ox = ja * CELL_HALF + CELL_HALF;
-            float oy = jb * CELL_HALF + CELL_HALF;
-
-            float x = -oy;
-            float y = -ox;
-
-            // Which of the cell's four triangles the point landed in, by its two diagonals.
-            uint32_t tri = (y - x) < 0.0f ? 1u : 0u;
-
-            if (((-y - CELL_SIZE_POS) - x) > 0.0f) {
-                tri += 2;
-            }
-
-            const C4Plane& plane = cell.plane[tri];
-
-            // Too steep to stand anything on.
-            if (plane.n.z < MIN_NORMAL_Z || plane.n.z == 0.0f) {
-                continue;
-            }
-
-            x -= static_cast<float>(row) * CELL_SIZE_POS;
-            y -= static_cast<float>(col) * CELL_SIZE_POS;
-
-            float z = -((y * plane.n.y + plane.n.x * x + plane.d) / plane.n.z);
-
-            // The colour across the triangle: the larger jitter drives the corner term and what
-            // is left of it the other.
-            float w = fabsf(jb) > fabsf(ja) ? fabsf(jb) : fabsf(ja);
-            float lead = fabsf(jb) > fabsf(ja) ? jb : ja;
-            float t2 = 0.5f - lead * 0.5f;
-
-            if ((y - x) < 0.0f) {
-                t2 = 1.0f - t2;
-            }
-
-            t2 *= w;
-
-            float c[3];
-
-            for (uint32_t k = 0; k < 3; k++) {
-                c[k] = cell.base[tri][k] + cell.toA[tri][k] * w + cell.toB[tri][k] * t2;
-
-                if (c[k] > COLOR_MAX) {
-                    c[k] = COLOR_MAX;
-                }
-
-                if (c[k] < 0.0f) {
-                    c[k] = 0.0f;
-                }
-            }
-
-
-            C3Vector position;
-
-            position.x = x;
-            position.y = y;
-            position.z = z;
-
-            float rotation = (SignedUnit(CRandom::uint32(seed)) + 1.0f) * TAU_HALF;
-            float scale = SignedUnit(CRandom::uint32(seed)) * SCALE_JITTER + 1.0f;
-
-            // White when the chunk carries no MCCV or the kind asks to ignore it (flag 0x2):
-            // the reference's 0xffffff at 0x007d3c2b. Frozen used the zeroed cell colour, which
-            // the fixed-function path never showed (its material diffuse was white) but the
-            // module's shader multiplies by -- every chunk without MCCV drew its grass black.
-            auto entry = s_models[kind];
-            bool plain = !chunk->m_vertexColors || (entry && entry->m_rec && (entry->m_rec->m_flags & 0x2));
-
-            uint32_t color = plain
-                ? 0xffffffffu
-                : 0xff000000u
-                    | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
-                    | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
-                    | static_cast<uint32_t>(c[0] + ROUND_BIAS);
-
-            // In the chunk's baked shadow (MCSH, 64x64 bits, a row of eight bytes per 64 cells
-            // of the 33.3-yard chunk: 1.92 per yard) the alpha drops to 0, which the vertex
-            // ramp (0.3a + 0.7) turns into 70% brightness. 0x007d3c68: each axis is the jitter
-            // within the cell plus the cell's own origin, 4.1667 a cell.
-            if (chunk->m_shadow) {
-                int32_t sx = static_cast<int32_t>(lrintf((ox + static_cast<float>(col) * CELL_SIZE_POS) * 1.92f - 0.5f));
-                int32_t sy = static_cast<int32_t>(lrintf((oy + static_cast<float>(row) * CELL_SIZE_POS) * 1.92f - 0.5f));
-
-                if (chunk->m_shadow[(sx >> 3) + sy * 8] & (1 << (sx & 7))) {
-                    color &= 0x00ffffffu;
-                }
-            }
-
-            AddPlacement(instance, kind, position, rotation, scale, plane.n,
-                         static_cast<uint16_t>(col + row * 8), color);
-
-            placed++;
-        }
-    }
-
-    return placed;
-}
 
 // ref: FUN_007b31e0
 // Batches are keyed by TEXTURE, so grass of several kinds still draws in one call. A placement
@@ -1204,28 +976,250 @@ int32_t SetupState() {
     return 0;
 }
 
-// Take an instance for a chunk and scatter it.
-//
-// The reference takes these from a "WDETAILDOODADINST" object heap, which frozen does not have;
-// this allocates one instead. Recorded rather than hidden: the behaviour is the same, the
-// allocator is not.
+// ref: FUN_007b3910
+// One instance from the WDETAILDOODADINST heap, its heap slot kept in its first word.
+static CDetailDoodadData* AllocInstance() {
+    uint32_t memHandle = 0;
+    void* mem = nullptr;
+
+    if (!s_instanceHeap || !ObjectAlloc(*s_instanceHeap, &memHandle, &mem, false) || !mem) {
+        return nullptr;
+    }
+
+    auto instance = new (mem) CDetailDoodadData();
+    instance->m_memHandle = memHandle;
+
+    return instance;
+}
+
+// ref: FUN_007d3390
+// A chunk's grass: once the chunk is ready, two seeds (the second from the chunk's indices, so it
+// scatters the same way every time it loads), an instance linked both ways, and then, unless
+// grass is off, the cells picked and prepared and the placements dealt onto them. A chunk that
+// places nothing keeps its empty instance, as the reference's does.
 CDetailDoodadData* CreateInstance(CMapChunk* chunk) {
-    auto instance = static_cast<CDetailDoodadData*>(
-        SMemAlloc(sizeof(CDetailDoodadData), __FILE__, __LINE__, 0x0));
+    if (!chunk->m_header || !chunk->m_heights || !chunk->m_layers || !chunk->m_header->nLayers) {
+        return nullptr;
+    }
+
+    if (!chunk->DetailDoodadsReady()) {
+        return nullptr;
+    }
+
+    CRndSeed unused(0);
+    CRndSeed seed(static_cast<uint32_t>(chunk->m_indexX) << 16 | static_cast<uint32_t>(chunk->m_indexY));
+
+    auto instance = AllocInstance();
 
     if (!instance) {
         return nullptr;
     }
 
-    new (instance) CDetailDoodadData();
-
+    chunk->m_detailDoodads = instance;
     instance->m_chunk = chunk;
 
-    if (!Scatter(chunk, instance)) {
-        ReleaseInstance(instance);
+    uint32_t density = CWorldParam::cvar_groundEffectDensity
+        ? static_cast<uint32_t>(CWorldParam::cvar_groundEffectDensity->GetInt())
+        : 0;
 
-        return nullptr;
+    if (!density) {
+        return instance;
     }
+
+    if (density > MAX_PER_CHUNK) {
+        density = MAX_PER_CHUNK;
+    }
+
+
+    static SCell s_cells[64];
+    uint8_t prepared[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    static uint8_t s_pickCol[MAX_PER_CHUNK];
+    static uint8_t s_pickRow[MAX_PER_CHUNK];
+
+    for (uint32_t i = 0; i < density; i++) {
+        uint32_t col = CRandom::uint32(seed) & 7;
+        uint32_t row = CRandom::uint32(seed) & 7;
+
+        s_pickCol[i] = static_cast<uint8_t>(col);
+        s_pickRow[i] = static_cast<uint8_t>(row);
+
+        // A cell picked twice is prepared once; the second pick still scatters on it.
+        if (prepared[row] & (1 << col)) {
+            continue;
+        }
+
+        prepared[row] |= static_cast<uint8_t>(1 << col);
+
+        PrepareCell(chunk, row, col, &s_cells[col + row * 8]);
+    }
+
+    uint32_t placed = 0;
+
+    for (uint32_t i = 0; i < density; i++) {
+        uint32_t col = s_pickCol[i];
+        uint32_t row = s_pickRow[i];
+
+        // A hole in the chunk, and there is no cell to stand on.
+
+        if (HOLE_MASK[(col >> 1) + (row >> 1) * 4] & chunk->m_header->holes) {
+            continue;
+        }
+
+        // Which of the chunk's layers the cell takes, two bits a column of the low quality
+        // texture map.
+        uint32_t layer = (chunk->m_lowQualityTextureMap[row] & TEXMAP_MASK[col]) >> TEXMAP_SHIFT[col];
+
+        // TODO the chunk's predTex bit for this column overrides that choice in the reference;
+        // which layer it selects instead is not established, so the map's answer stands.
+
+        if (layer >= chunk->m_header->nLayers) {
+            continue;
+        }
+
+        auto effect = g_groundEffectTextureDB.GetRecord(chunk->m_layers[layer].effectId);
+
+        if (!effect) {
+            continue;
+        }
+
+        // Deal the effect's four kinds into sixteen slots by weight, stepping thirteen at a
+        // time so they interleave instead of clumping, then fill the rest round-robin.
+        int32_t bag[16];
+        uint32_t slot = 0;
+        uint32_t dealt = 0;
+
+        for (uint32_t k = 0; k < 16; k++) {
+            bag[k] = 0;
+        }
+
+        for (uint32_t k = 0; k < 4; k++) {
+            for (int32_t w = 0; w < effect->m_doodadWeight[k]; w++) {
+                bag[slot & 15] = effect->m_doodadID[k];
+                slot += 13;
+                dealt++;
+            }
+        }
+
+        for (; dealt < 16; dealt++) {
+            bag[slot & 15] = effect->m_doodadID[dealt & 3];
+            slot += 13;
+        }
+
+        uint32_t perCell = static_cast<uint32_t>(effect->m_amount);
+
+        if (!perCell) {
+            perCell = 8;
+        }
+
+        const SCell& cell = s_cells[col + row * 8];
+
+        for (uint32_t n = 0; n < perCell; n++) {
+            float ja = SignedUnit(CRandom::uint32(seed));
+            float jb = SignedUnit(CRandom::uint32(seed));
+
+            int32_t kind = bag[(n + i) & 15];
+
+            if (!kind) {
+                continue;
+            }
+
+            float ox = ja * CELL_HALF + CELL_HALF;
+            float oy = jb * CELL_HALF + CELL_HALF;
+
+            float x = -oy;
+            float y = -ox;
+
+            // Which of the cell's four triangles the point landed in, by its two diagonals.
+            uint32_t tri = (y - x) < 0.0f ? 1u : 0u;
+
+            if (((-y - CELL_SIZE_POS) - x) > 0.0f) {
+                tri += 2;
+            }
+
+            const C4Plane& plane = cell.plane[tri];
+
+            // Too steep to stand anything on.
+            if (plane.n.z < MIN_NORMAL_Z || plane.n.z == 0.0f) {
+                continue;
+            }
+
+            x -= static_cast<float>(row) * CELL_SIZE_POS;
+            y -= static_cast<float>(col) * CELL_SIZE_POS;
+
+            float z = -((y * plane.n.y + plane.n.x * x + plane.d) / plane.n.z);
+
+            // The colour across the triangle: the larger jitter drives the corner term and what
+            // is left of it the other.
+            float w = fabsf(jb) > fabsf(ja) ? fabsf(jb) : fabsf(ja);
+            float lead = fabsf(jb) > fabsf(ja) ? jb : ja;
+            float t2 = 0.5f - lead * 0.5f;
+
+            if ((y - x) < 0.0f) {
+                t2 = 1.0f - t2;
+            }
+
+            t2 *= w;
+
+            float c[3];
+
+            for (uint32_t k = 0; k < 3; k++) {
+                c[k] = cell.base[tri][k] + cell.toA[tri][k] * w + cell.toB[tri][k] * t2;
+
+                if (c[k] > COLOR_MAX) {
+                    c[k] = COLOR_MAX;
+                }
+
+                if (c[k] < 0.0f) {
+                    c[k] = 0.0f;
+                }
+            }
+
+
+            C3Vector position;
+
+            position.x = x;
+            position.y = y;
+            position.z = z;
+
+            float rotation = (SignedUnit(CRandom::uint32(seed)) + 1.0f) * TAU_HALF;
+            float scale = SignedUnit(CRandom::uint32(seed)) * SCALE_JITTER + 1.0f;
+
+            // White when the chunk carries no MCCV or the kind asks to ignore it (flag 0x2):
+            // the reference's 0xffffff at 0x007d3c2b. Frozen used the zeroed cell colour, which
+            // the fixed-function path never showed (its material diffuse was white) but the
+            // module's shader multiplies by -- every chunk without MCCV drew its grass black.
+            auto entry = s_models[kind];
+            bool plain = !chunk->m_vertexColors || (entry && entry->m_rec && (entry->m_rec->m_flags & 0x2));
+
+            uint32_t color = plain
+                ? 0xffffffffu
+                : 0xff000000u
+                    | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
+                    | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
+                    | static_cast<uint32_t>(c[0] + ROUND_BIAS);
+
+            // In the chunk's baked shadow (MCSH, 64x64 bits, a row of eight bytes per 64 cells
+            // of the 33.3-yard chunk: 1.92 per yard) the alpha drops to 0, which the vertex
+            // ramp (0.3a + 0.7) turns into 70% brightness. 0x007d3c68: each axis is the jitter
+            // within the cell plus the cell's own origin, 4.1667 a cell.
+            if (chunk->m_shadow) {
+                int32_t sx = static_cast<int32_t>(lrintf((ox + static_cast<float>(col) * CELL_SIZE_POS) * 1.92f - 0.5f));
+                int32_t sy = static_cast<int32_t>(lrintf((oy + static_cast<float>(row) * CELL_SIZE_POS) * 1.92f - 0.5f));
+
+                if (chunk->m_shadow[(sx >> 3) + sy * 8] & (1 << (sx & 7))) {
+                    color &= 0x00ffffffu;
+                }
+            }
+
+            AddPlacement(instance, kind, position, rotation, scale, plane.n,
+                         static_cast<uint16_t>(col + row * 8), color);
+
+            placed++;
+        }
+    }
+
+    (void)placed;
 
     return instance;
 }
@@ -1278,9 +1272,11 @@ void ReleaseInstance(CDetailDoodadData* instance) {
         ReturnBuffers(batch);
     }
 
+    uint32_t memHandle = instance->m_memHandle;
+
     instance->~CDetailDoodadData();
 
-    SMemFree(instance, __FILE__, __LINE__, 0x0);
+    ObjectFree(*s_instanceHeap, memHandle);
 }
 
 }

@@ -233,7 +233,7 @@ struct SBatch {
 // +0x7c), and unlinks +0x9c from the chunk's list before relinking the instance elsewhere.
 class CDetailDoodadData {
     public:
-        uint32_t unk00 = 0;             // +0x00
+        uint32_t m_memHandle = 0;       // +0x00: its slot in the WDETAILDOODADINST heap
         SBatch m_batches[4];            // +0x04: a chunk draws at most four textures' worth
         uint32_t m_queued = 0;          // +0x94: cleared by the pass as it takes the instance
         CMapChunk* m_chunk = nullptr;   // +0x98: the chunk it was scattered on
@@ -263,7 +263,6 @@ void CreateBuffers();
 // Scatter one chunk's grass into `instance`, returning how many were placed. Part of
 // FUN_007d3390: the picking and placing, without the allocation of the instance itself.
 // Places nothing when the chunk has no layers or its models have not arrived.
-uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance);
 
 // The model has landed, so its first texture can be resolved and kept as the batching key.
 // ref: FUN_007b1b10
