@@ -2,6 +2,8 @@
 #include "async/AsyncFile.hpp"
 #include "async/AsyncFileRead.hpp"
 #include "gx/Blp.hpp"
+#include "gx/blp/CBLPFile.hpp"
+#include "async/CAsyncObject.hpp"
 #include "gx/Device.hpp"
 #include "gx/Texture.hpp"
 #include "util/SFile.hpp"
@@ -26,6 +28,17 @@ static bool AsyncReadIsUnstarted(CAsyncObject* object) {
 }
 
 
+// ref: FUN_004f2b40
+// A cancelled read's buffer outlives the entry that asked for it; it is freed here once the read
+// lets go of it.
+static void CancelledReadCallback(CAsyncObject* object) {
+    void* buffer = object->buffer;
+
+    AsyncFileReadDestroyObject(object);
+    SMemFree(buffer, __FILE__, __LINE__, 0x0);
+}
+
+// ref: FUN_004f2b70
 void LoadSuccessCallback(void* handle) {
     auto entry = static_cast<CACHEENTRY*>(handle);
 
@@ -33,7 +46,9 @@ void LoadSuccessCallback(void* handle) {
     entry->m_asyncObject = nullptr;
 
     auto& header = *static_cast<BLPHeader*>(entry->m_data);
-    // TODO CBLPFile::ValidateHeader(header);
+
+    // The reference checks the header and goes on regardless of the answer.
+    CBLPFile::HeaderValid(&header);
 
     auto& info = entry->m_info;
     info.width = header.width;
@@ -63,6 +78,33 @@ CACHEENTRY::CACHEENTRY() {
 
 void CACHEENTRY::AddRef() {
     this->m_refCount++;
+}
+
+// ref: FUN_004f2ef0
+void CACHEENTRY::Unload() {
+    int32_t freeData = 1;
+
+    if (this->m_asyncObject) {
+        freeData = AsyncFileReadCancel(this->m_asyncObject, &CancelledReadCallback);
+        this->m_asyncObject = nullptr;
+    }
+
+    if (this->m_data && freeData) {
+        SMemFree(this->m_data, __FILE__, __LINE__, 0x0);
+    }
+
+    this->m_size = 0;
+    this->m_data = nullptr;
+    this->m_fileName[0] = '\0';
+}
+
+// ref: FUN_004f2ce0
+void TextureCacheAddRef(void* handle) {
+    if (!handle) {
+        return;
+    }
+
+    static_cast<CACHEENTRY*>(handle)->m_refCount++;
 }
 
 TCTEXTUREINFO& CACHEENTRY::Info() {
@@ -206,8 +248,52 @@ void* TextureCacheCreateTexture(const char* fileName) {
     return texture;
 }
 
+// ref: FUN_004f31a0
+// Drop one reference; the last one takes the entry out of the table, unloads it and gives its
+// slot back to the heap.
 void TextureCacheDestroyTexture(void* texture) {
-    // TODO
+    auto entry = static_cast<CACHEENTRY*>(texture);
+
+    if (!entry) {
+        return;
+    }
+
+    entry->m_refCount--;
+
+    if (static_cast<int32_t>(entry->m_refCount) >= 1) {
+        return;
+    }
+
+    s_cacheTable.Unlink(entry);
+
+    uint32_t* heap = s_entryHeap;
+    entry->Unload();
+
+    ObjectFree(*heap, entry->m_memHandle);
+}
+
+// ref: FUN_004f2dc0
+// How much of a texture's file has streamed in, starting its load if it has not started. Each
+// count is one higher than the file's own, the done count only once the read has finished, so a
+// texture that is still reading never reports itself complete.
+void TextureCacheGetStreamedBytes(void* handle, uint64_t* done, uint64_t* total) {
+    auto entry = static_cast<CACHEENTRY*>(handle);
+
+    if (!entry) {
+        return;
+    }
+
+    if (!entry->IsMissing() && !entry->m_data) {
+        entry->LoadTexture();
+    }
+
+    SFile::GetStreamedBytes(entry->m_fileName, done, total);
+
+    (*total)++;
+
+    if (!entry->m_asyncObject) {
+        (*done)++;
+    }
 }
 
 // ref: FUN_004f2e50
@@ -265,6 +351,7 @@ int32_t TextureCacheGetInfo(void* handle, TCTEXTUREINFO& info, int32_t force) {
     return 1;
 }
 
+// ref: FUN_004f2d00
 uint8_t* TextureCacheGetMip(void* handle, uint32_t mipLevel) {
     auto entry = static_cast<CACHEENTRY*>(handle);
 
@@ -282,10 +369,11 @@ uint8_t* TextureCacheGetMip(void* handle, uint32_t mipLevel) {
     return static_cast<uint8_t*>(entry->m_data) + mipOffset;
 }
 
+// ref: FUN_004f2d40
 BlpPalPixel* TextureCacheGetPal(void* handle) {
     auto entry = static_cast<CACHEENTRY*>(handle);
 
-    if (entry->IsMissing() || !entry->m_data) {
+    if (!entry || entry->IsMissing() || !entry->m_data) {
         return nullptr;
     }
 

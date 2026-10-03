@@ -38,6 +38,9 @@ class CACHEENTRY : public TSHashObject<CACHEENTRY, HASHKEY_NONE> {
         bool IsMissing();
         int32_t LoadTexture();
         bool NeedsLoad();
+        // Give up the entry's data: cancel a read still in flight (its buffer is freed when the
+        // read finishes) or free what was read, and forget the name. ref: FUN_004f2ef0
+        void Unload();
 };
 
 // ref: FUN_004b5600
@@ -54,6 +57,12 @@ int32_t TextureBuildAlternateName(const char* fileName, int32_t type, char* out,
                                   uint32_t outSize);
 
 void* TextureCacheCreateTexture(const char* fileName);
+
+// One more holder of a cache entry. ref: FUN_004f2ce0
+void TextureCacheAddRef(void* handle);
+
+// ref: FUN_004f2dc0
+void TextureCacheGetStreamedBytes(void* handle, uint64_t* done, uint64_t* total);
 
 void TextureCacheDestroyTexture(void* texture);
 
