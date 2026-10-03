@@ -31,6 +31,8 @@ class C33Matrix {
     void FromEulerAnglesZYX(float yaw, float pitch, float roll);
     C33Matrix& operator*=(float a);
     C33Matrix Transpose() const;
+    float Determinant() const;
+    C33Matrix Inverse(float det) const;
 };
 
 C33Matrix operator*(const C33Matrix& l, const C33Matrix& r);

@@ -149,6 +149,28 @@ C33Matrix C33Matrix::Transpose() const {
     };
 }
 
+float C33Matrix::Determinant() const {
+    return this->a0 * (this->b1 * this->c2 - this->b2 * this->c1)
+        - this->a1 * (this->b0 * this->c2 - this->b2 * this->c0)
+        + this->a2 * (this->b0 * this->c1 - this->b1 * this->c0);
+}
+
+C33Matrix C33Matrix::Inverse(float det) const {
+    float inv = 1.0f / det;
+
+    return {
+        (this->b1 * this->c2 - this->b2 * this->c1) * inv,
+        (this->a2 * this->c1 - this->a1 * this->c2) * inv,
+        (this->a1 * this->b2 - this->a2 * this->b1) * inv,
+        (this->b2 * this->c0 - this->b0 * this->c2) * inv,
+        (this->a0 * this->c2 - this->a2 * this->c0) * inv,
+        (this->a2 * this->b0 - this->a0 * this->b2) * inv,
+        (this->b0 * this->c1 - this->b1 * this->c0) * inv,
+        (this->a1 * this->c0 - this->a0 * this->c1) * inv,
+        (this->a0 * this->b1 - this->a1 * this->b0) * inv
+    };
+}
+
 // ref: FUN_004c5340
 C33Matrix operator*(const C33Matrix& l, const C33Matrix& r) {
     float a0 = l.a0 * r.a0 + l.a1 * r.b0 + l.a2 * r.c0;
