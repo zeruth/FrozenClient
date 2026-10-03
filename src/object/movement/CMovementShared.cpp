@@ -8,6 +8,7 @@
 #include "object/movement/CMoveSpline.hpp"
 #include <common/Time.hpp>
 #include <cmath>
+#include <vector>
 
 float NormalizeAngle(float angle);
 
@@ -87,6 +88,7 @@ float FallTimeForDistance(float distance, int32_t safeFall) {
 CMovementShared::CMovementShared(const WOWGUID& transportGUID, const C3Vector& position, float facing, const WOWGUID& guid)
     : CPassenger(transportGUID, position, guid)
 {
+    this->m_passengerFlags |= 0x1;
     this->m_up = { 0.0f, 0.0f, 1.0f };
     this->m_moveFlags = 0x0;
     this->m_moveFlags2 = 0;
@@ -2123,4 +2125,94 @@ void CMovementShared::SyncSplineProgress(float progress) {
     }
 
     spline->float208 = 1.0f;
+}
+
+// ------------------------------------------------------------------------------------------------
+// Moving between a transport's space and the world's (MovementShared.cpp 0x0098b770 .. 0x0098c760)
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_0098b770
+// The spline's facing spot is carried, then its facing turned -- both, whichever the spline faces,
+// over the same union as the reference does -- and its points carried.
+void CMovementShared::TransformSpline(const C44Matrix& matrix, float facing) {
+    auto spline = this->m_spline;
+
+    C3Vector out;
+    TransformPointInPlace(out, spline->face.spot, matrix);
+    spline->face.facing = NormalizeAngle(spline->face.facing + facing);
+
+    uint32_t count = spline->spline.PointCount();
+
+    if (!count) {
+        return;
+    }
+
+    std::vector<C3Vector> storage(count);
+    auto points = storage.data();
+    spline->spline.GetPoints(points, count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        points[i] = points[i] * matrix;
+    }
+
+    spline->spline.SetPoints(points, count);
+}
+
+// ref: FUN_0098b850
+void CMovementShared::TransformState(const C44Matrix& matrix, float facing, const C3Vector& position) {
+    this->m_fallStartElevation = matrix.a2 * position.x + matrix.c2 * this->m_fallStartElevation + matrix.b2 * position.y + matrix.d2;
+    this->m_splineElevation = this->m_splineElevation * matrix.c2 + matrix.a2 * position.x + matrix.b2 * position.y + matrix.d2;
+
+    C3Vector out;
+    TransformPointInPlace(out, this->m_anchorPosition, matrix);
+    this->m_anchorFacing = NormalizeAngle(this->m_anchorFacing + facing);
+
+    C3Vector d = this->m_direction;
+    this->m_direction = {
+        matrix.a0 * d.x + matrix.b0 * d.y + matrix.c0 * d.z,
+        matrix.b1 * d.y + matrix.c1 * d.z + matrix.a1 * d.x,
+        d.z * matrix.c2 + matrix.a2 * d.x + matrix.b2 * d.y,
+    };
+
+    this->m_direction2d = { this->m_direction.x, this->m_direction.y };
+
+    float length = this->m_direction2d.x * this->m_direction2d.x + this->m_direction2d.y * this->m_direction2d.y;
+
+    if (2.384185791015625e-07f < length) {
+        float inv = 1.0f / std::sqrt(length);
+        this->m_direction2d.x *= inv;
+        this->m_direction2d.y = inv * this->m_direction2d.y;
+    }
+
+    if (this->m_spline && !(this->m_spline->flags & 0x400)) {
+        this->TransformSpline(matrix, facing);
+    }
+}
+
+// ref: FUN_0098b9a0
+// PHASE4(Vehicle_C): a unit transport's seat lets the passenger go (FUN_0074b670 -> FUN_00757ef0).
+float CMovementShared::LeaveTransportState(const C44Matrix& matrix, float facing, const C3Vector& position) {
+    this->TransformState(matrix, facing, position);
+    this->m_transportLink.Unlink();
+    this->m_moveFlags &= ~0x8000000u;
+
+    return facing;
+}
+
+// ref: FUN_0098c730
+float CMovementShared::LeaveTransportSpace(C44Matrix& matrix) {
+    C3Vector position = this->m_position;
+    float facing = this->TransformToWorld(matrix);
+
+    return this->LeaveTransportState(matrix, facing, position);
+}
+
+// ref: FUN_0098ba20
+float CMovementShared::EnterTransportSpace(WOWGUID transport, C44Matrix& inverse, C44Matrix* matrix) {
+    C3Vector position = this->m_position;
+    float facing = this->TransformToTransport(transport, inverse, matrix);
+    this->TransformState(inverse, facing, position);
+    MovementNotifyTransport(this, transport, 0);
+
+    return facing;
 }

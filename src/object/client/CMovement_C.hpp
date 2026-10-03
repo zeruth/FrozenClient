@@ -26,10 +26,37 @@ float MovementGetTransportFacing(WOWGUID transport);
 C4Quaternion MovementGetTransportRotation(WOWGUID transport);
 
 class CPassenger;
+class CGGameObject_C;
 
-// Tell the transport a passenger joins (mode 1) or leaves (mode 2) it, through its slot 0xf4;
-// false when the transport is not there.
+// ref: FUN_0074b730
+// A transport whose building is in joins the ones the movement poll steps (DAT_00adb74c).
+void MovementLinkTransport(CGGameObject_C* transport);
+
+// ref: FUN_0074b750
+void MovementUnlinkTransport(CGGameObject_C* transport);
+
+// ref: FUN_0074b6e0
+// Every moving transport steps (its type's slot 0x8c) to `time`, `elapsed` after the last.
+void MovementUpdateTransports(uint32_t time, uint32_t elapsed);
+
+// Tell the transport a passenger is aboard, through its slot 0xf4; false when the transport is
+// not there. `mode` 1 holds a self-moving passenger to the server's word until the transport's
+// building is in (CGGameObjectTransportBase::UpdatePassenger). The reference's fifth argument is a
+// call-site number (1 join, 2 rejoin, 3 SetTransport) the release build does not read.
 int32_t MovementNotifyTransport(CPassenger* passenger, WOWGUID transport, int32_t mode);
+
+// ref: FUN_0074b3f0
+// Whether `transport` is there and is one (its slot 0xec).
+bool MovementTransportIsValid(WOWGUID transport);
+
+// ref: FUN_0074b5e0
+// Whether `position` (in the transport's space) is over the transport (its slot 0xf0).
+int32_t MovementTransportContains(WOWGUID transport, const C3Vector& position);
+
+// ref: FUN_0074b380
+// The camera that follows `guid` follows it onto `transport` (a unit's guid is a vehicle's, which
+// the vehicle camera handles instead).
+void MovementCameraFollowTransport(WOWGUID guid, WOWGUID transport);
 
 // The movement globals, one per object manager (the reference reaches them through the TLS object
 // manager, +0xd4; 0x140 bytes, allocated in Movement.cpp line 0x399).
@@ -53,6 +80,10 @@ struct CMovementGlobals {
 // ref: FUN_0074b330
 // The current object manager's movement globals.
 CMovementGlobals* MovementGetGlobals();
+
+// ref: FUN_006e8f70
+// The path time of the transport the active player rides, kept with the one before it.
+void MovementSetTransportTime(uint32_t time);
 
 // ref: FUN_006e8f90
 // The movers' clock, when it is valid.

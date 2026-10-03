@@ -3,6 +3,10 @@
 #include "object/client/ClntObjMgr.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CMovement_C.hpp"
+#include "object/client/CGGameObject_C.hpp"
+#include "object/client/GameObjectTypes.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "ui/game/CGWorldFrame.hpp"
 #include "event/Event.hpp"
 #include <common/Time.hpp>
 #include <storm/String.hpp>
@@ -186,6 +190,74 @@ int32_t MovementNotifyTransport(CPassenger* passenger, WOWGUID transport, int32_
     return object->Virtual0F4(passenger, mode);
 }
 
+static STORM_EXPLICIT_LIST(CGGameObject_C, m_transportLink) s_movingTransports;
+
+// ref: FUN_0074b730
+void MovementLinkTransport(CGGameObject_C* transport) {
+    s_movingTransports.LinkToTail(transport);
+}
+
+// ref: FUN_0074b750
+void MovementUnlinkTransport(CGGameObject_C* transport) {
+    transport->m_transportLink.Unlink();
+}
+
+// ref: FUN_0074b6e0
+void MovementUpdateTransports(uint32_t time, uint32_t elapsed) {
+    for (auto transport = s_movingTransports.Head(); transport; transport = s_movingTransports.Next(transport)) {
+        transport->m_type->UpdateTransport(time, static_cast<int32_t>(elapsed));
+    }
+}
+
+// ref: FUN_0074b3f0
+bool MovementTransportIsValid(WOWGUID transport) {
+    auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x44);
+
+    if (!object) {
+        return false;
+    }
+
+    return object->Virtual0EC();
+}
+
+// ref: FUN_0074b5e0
+int32_t MovementTransportContains(WOWGUID transport, const C3Vector& position) {
+    auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x81);
+
+    if (!object) {
+        return 0;
+    }
+
+    return object->Virtual0F0(&position);
+}
+
+// ref: FUN_0074b380
+void MovementCameraFollowTransport(WOWGUID guid, WOWGUID transport) {
+    uint32_t low = static_cast<uint32_t>(transport);
+    uint32_t high = static_cast<uint32_t>(transport >> 32);
+
+    if ((high & 0xf0f00000) == 0xf0500000) {
+        return;
+    }
+
+    if ((high & 0xf0000000) == 0 && !(low == 0 && (high & 0xf07fffff) == 0)) {
+        return;
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (camera && camera->GetTarget() == guid) {
+        camera->SetRelativeTo(transport);
+    }
+}
+
+// ref: FUN_006e8f70
+void MovementSetTransportTime(uint32_t time) {
+    auto globals = MovementGetGlobals();
+    globals->m_transportTime2 = globals->m_transportTime;
+    globals->m_transportTime = time;
+}
+
 // ref: FUN_0074b590
 float MovementGetTransportFacing(WOWGUID transport) {
     auto object = ClntObjMgrObjectPtr(transport, TYPE_OBJECT, ".\\Movement_C.cpp", 0x77);
@@ -280,8 +352,6 @@ void MovementUpdateMovers(uint32_t now, uint32_t last) {
 }
 
 // ref: FUN_006f1490
-// PARTIAL: the transports' own update (FUN_0074b6e0, the transport list at 0x00adb74c) comes
-// before the movers in the reference; frozen has no transport list yet.
 int32_t MovementPoll(const void* data, void* param) {
     (void)data;
     (void)param;
@@ -296,6 +366,8 @@ int32_t MovementPoll(const void* data, void* param) {
     int32_t elapsed = static_cast<int32_t>(now - globals->m_lastTime);
 
     if (elapsed > 0) {
+        MovementUpdateTransports(now, static_cast<uint32_t>(elapsed));
+
         if (globals->m_movers.Head()) {
             MovementUpdateMovers(now, globals->m_lastTime);
         }

@@ -1999,7 +1999,7 @@ bool CWorld::DynamicObjectIsLoaded(CMapBaseObj* object) {
 
     if (object->m_type & CMapBaseObj::Type_DoodadDef) {
         auto doodad = static_cast<CMapDoodadDef*>(object);
-        return doodad->m_model && doodad->m_model->IsLoaded(0, 0);
+        return !doodad->m_model || doodad->m_model->IsLoaded(0, 0);
     }
 
     return false;
@@ -2015,6 +2015,70 @@ void CWorld::SetDynamicObjectPlacement(CMapBaseObj* object, const C44Matrix& pla
     if (object->m_type & CMapBaseObj::Type_DoodadDef) {
         CMap::SetDoodadDefPlacement(static_cast<CMapDoodadDef*>(object), placement);
     }
+}
+
+// ref: FUN_0077fec0
+// The dynamic object plays `sequence`: a prop's model does; a building's animated doodads do.
+// PARTIAL: a building's doodads taking it (FUN_007b45f0 -> FUN_007b4170) waits on the group doodad
+// animation port.
+void CWorld::SetDynamicObjectSequence(CMapBaseObj* object, uint32_t sequence, uint32_t a3, uint32_t a4) {
+    (void)a3;
+    (void)a4;
+
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        auto doodad = static_cast<CMapDoodadDef*>(object);
+
+        if (doodad->m_model) {
+            doodad->m_model->SetBoneSequence(-1, sequence, -1, 0, 1.0f, 1, 1);
+        }
+    }
+}
+
+// ref: FUN_0077ffb0
+// Whether a point in the object's own space is aboard it: inside a building's convex volume, or
+// inside a prop's collision box (its top raised by 1.64 + 1/72 yards, room for a passenger's
+// height). An object of neither kind holds everything; a prop not yet loaded holds nothing.
+bool CWorld::DynamicObjectContains(CMapBaseObj* object, const C3Vector& position) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        return static_cast<CMapObjDef*>(object)->m_mapObj->PointInConvexVolume(position);
+    }
+
+    if (!(object->m_type & CMapBaseObj::Type_DoodadDef)) {
+        return true;
+    }
+
+    auto model = static_cast<CMapDoodadDef*>(object)->m_model;
+
+    if (!model || !model->IsLoaded(0, 0)) {
+        return false;
+    }
+
+    if (!model->m_shared->m_m2DataLoaded) {
+        model->WaitForLoad(nullptr);
+    }
+
+    const CAaBox& box = model->m_shared->m_data->collisionBounds.extent;
+
+    const C4Plane planes[6] = {
+        { {  1.0f,  0.0f,  0.0f }, -box.t.x },
+        { {  0.0f,  1.0f,  0.0f }, -box.t.y },
+        { {  0.0f,  0.0f,  1.0f }, -box.t.z - 1.6404099f - 0.013888889f },
+        { { -1.0f,  0.0f,  0.0f },  box.b.x },
+        { {  0.0f, -1.0f,  0.0f },  box.b.y },
+        { {  0.0f,  0.0f, -1.0f },  box.b.z },
+    };
+
+    for (const auto& plane : planes) {
+        if (0.0f < plane.n.y * position.y + plane.n.z * position.z + plane.n.x * position.x + plane.d) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // ref: FUN_0077ff10

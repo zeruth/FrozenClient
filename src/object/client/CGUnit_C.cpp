@@ -7572,7 +7572,7 @@ void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport,
         move.FlushEvents(0, 0);
     }
 
-    move.SetSplineTransport(transport, seat);
+    move.SetSplineTransport(transport, seat, 1);
     this->m_stateFlags &= 0xdfffffff;
 
     if (move.m_transportGUID != transport) {
@@ -9642,6 +9642,18 @@ void CGUnit_C::UpdateModel(int32_t force) {
     this->m_animFlags &= ~0x8000000u;
 }
 
+// ref: FUN_00715270
+void CGUnit_C::AddFacingOffset(float delta) {
+    this->m_smoothFacing = NormalizeAngle(delta + this->m_smoothFacing);
+    this->m_lowerBodyFacing = NormalizeAngle(delta + this->m_lowerBodyFacing);
+}
+
+// ref: FUN_0071c4d0
+// PHASE4(Vehicle_C): a passenger's vehicle (FUN_007599d0) through its seat at +0xf64.
+WOWGUID CGUnit_C::GetCameraTransportGUID() {
+    return this->GetTransportGUID();
+}
+
 // ref: FUN_0073e840
 // PHASE4(Vehicle_C): a vehicle's or a passenger's seat follows the loaded model (FUN_00757d10,
 // FUN_00757e70, FUN_00748620).
@@ -10208,6 +10220,19 @@ void CGUnit_C::CancelClickToMove(int32_t face, int32_t stop) {
     }
 
     s_clickToMoveState = 13;
+}
+
+// ref: FUN_00722010
+// PARTIAL: click-to-move is not ported, so its state is always 13 and there is nothing to carry;
+// the move-to target (DAT_00ca1264, state 4) and the facing target (DAT_00ca11ec, states 2 and 8)
+// join it.
+void CGUnit_C::CarryClickToMove(const C44Matrix& matrix, float facing) {
+    (void)matrix;
+    (void)facing;
+
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer() || s_clickToMoveState == 13) {
+        return;
+    }
 }
 
 // ref: FUN_0072ea50

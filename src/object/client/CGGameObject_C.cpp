@@ -155,16 +155,20 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             break;
 
         case 11:
+            behaviour = STORM_NEW(CGGameObjectTransport)(object);
+            break;
+
         case 14:
+            behaviour = STORM_NEW(CGGameObjectMapObject)(object);
+            break;
+
         case 15:
         case 31:
         case 33:
         case 35:
-            // TODO(World): transports (FUN_00713820), map objects (FUN_0070c510), MO transports
-            // (FUN_007141d0), dungeon difficulty portals (FUN_00712820), destructible buildings
-            // (FUN_007128d0) and trap doors (FUN_00713790) draw a map object through the world's
-            // dynamic map object calls (FUN_00783500 and its neighbours in World.cpp), which are
-            // not ported; until they are, these get the root behaviour.
+            // TODO(World): MO transports (FUN_007141d0, the ShipPath subsystem), dungeon
+            // difficulty portals (FUN_00712820), destructible buildings (FUN_007128d0) and trap
+            // doors (FUN_00713790) still get the root behaviour.
             behaviour = STORM_NEW(CGGameObjectType)(object, 5.0f);
             break;
 
@@ -335,8 +339,9 @@ CGGameObject_C::~CGGameObject_C() {
         this->m_type = nullptr;
     }
 
-    // TODO the link at +0x198 and the twelve lists at +0x108 are emptied, then the passenger's
-    // link in its transport's list (+0xd8); none of those are kept yet.
+    // TODO the twelve lists at +0x108 are emptied (not kept yet).
+    this->m_transportLink.Unlink();
+    this->m_passenger.m_transportLink.Unlink();
 }
 
 // ref: FUN_00712f30
@@ -427,7 +432,8 @@ void CGGameObject_C::Disable() {
         this->m_type->OnDisable();
     }
 
-    // TODO the link at +0x198 comes out of its list (FUN_0079f820).
+    // FUN_0079f820
+    this->m_transportLink.Unlink();
 
     ReleaseAttachedModel(this->m_highlightModel);
 
@@ -642,6 +648,26 @@ void CGGameObject_C::AttachQuestMarker() {
     this->UpdateQuestMarkerSequence();
 }
 
+// ref: FUN_007110b0
+CMapBaseObj* CGGameObject_C::AddMapObject(WOWGUID owner, int32_t wait, int32_t extraSetCount, const uint16_t* extraSets) {
+    auto name = this->GetDisplayModelName();
+
+    if (!name) {
+        return nullptr;
+    }
+
+    C3Vector position = this->m_passenger.GetPosition(this->m_passenger.m_position);
+    float facing = this->GetFacing();
+
+    auto object = CWorld::AddDynamicObject(name, position, facing, wait, 0, owner, extraSetCount, extraSets, nullptr, 0);
+
+    if (!object) {
+        SysMsgPrintf(SYSMSG_ERROR, "Game object (%d): failed to load: \"%s\"", this->GetEntryID(), name);
+    }
+
+    return object;
+}
+
 // ref: FUN_0070ee80
 // The transports, map objects, destructible buildings and trap doors draw a map object instead.
 int32_t CGGameObject_C::GetModelFileName(const char*& name) const {
@@ -837,8 +863,8 @@ bool CGGameObject_C::Virtual0EC() {
 }
 
 // ref: FUN_00712e90
-int32_t CGGameObject_C::Virtual0F0(int32_t a2) {
-    return this->m_type->Virtual06C(a2);
+int32_t CGGameObject_C::Virtual0F0(const C3Vector* position) {
+    return this->m_type->Virtual06C(position);
 }
 
 // ref: FUN_00712eb0

@@ -1,13 +1,17 @@
 #ifndef OBJECT_CLIENT_GAME_OBJECT_TYPES_HPP
 #define OBJECT_CLIENT_GAME_OBJECT_TYPES_HPP
 
+#include "object/movement/CPassenger.hpp"
 #include "sound/SOUNDKITOBJECT.hpp"
+#include "util/GUID.hpp"
+#include <storm/List.hpp>
+#include <tempest/Quaternion.hpp>
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
 class CGGameObject_C;
 class CM2Model;
-class CPassenger;
+class CMapBaseObj;
 
 // The behaviour a game object gets from its GAMEOBJECT_TYPE_*: CGGameObject_C's constructor makes
 // one (FUN_00714250, by the type byte of GAMEOBJECT_BYTES_1) and keeps it at +0x1a0, and most of
@@ -76,7 +80,7 @@ class CGGameObjectType {
         virtual float GetScaleMultiplier() { return -1.0f; }                            // 0x64
         // A passenger joins (mode 1) or leaves (mode 2) the transport this object is.
         virtual void UpdatePassenger(CPassenger* passenger, int32_t mode) {}            // 0x68
-        virtual int32_t Virtual06C(int32_t a2) { return 0; }                            // 0x6c
+        virtual int32_t Virtual06C(const C3Vector* position) { return 0; }              // 0x6c
         // The map object (WMO) the type draws, for the types that draw one.
         virtual void* GetMapObject() { return nullptr; }                                // 0x70
         virtual void PostInit(int32_t a4) {}                                            // 0x74
@@ -308,6 +312,99 @@ class CGGameObjectBarberChair : public CGGameObjectChair {
 
         bool CanUseNow(int32_t* error, float* range, const char** spellName) override;  // 0x1c
         int32_t GetSeatCount() override { return 1; }                                   // 0xb0
+};
+
+// A game object that is a map object (type 14, 0x00a33790): it places its display, a building or a
+// prop, through the world's dynamic objects instead of drawing a model of its own. The map object
+// types below build on it; each adds the creation and destruction slots 0xb0 and 0xb4.
+class CGGameObjectMapObject : public CGGameObjectType {
+    public:
+        CGGameObjectMapObject(CGGameObject_C* owner) : CGGameObjectType(owner, 5.0f) {}
+        ~CGGameObjectMapObject() override;
+
+        bool UsesModelBounds() override { return false; }                               // 0x04
+        bool CanHighlight() override { return false; }                                  // 0x0c
+        bool CanUse() override { return false; }                                        // 0x18
+        void* GetMapObject() override { return this->m_mapObject; }                     // 0x70
+        // ref: FUN_0070b270
+        void OnStatsLoaded() override { this->CreateMapObject(); }                       // 0x78
+        // ref: FUN_0070b280
+        void OnDisable() override { this->DestroyMapObject(); }                          // 0x80
+        void OnPostReenable() override { this->CreateMapObject(); }                      // 0x84
+        virtual void CreateMapObject();                                                  // 0xb0
+        virtual void DestroyMapObject();                                                 // 0xb4
+
+        // +0x10: the building or prop the world placed for the object.
+        CMapBaseObj* m_mapObject = nullptr;
+};
+
+// The moving map objects' common base (0x00a33e60): they carry passengers and keep their own place
+// (+0x20) apart from the object's resting one.
+class CGGameObjectTransportBase : public CGGameObjectMapObject {
+    public:
+        CGGameObjectTransportBase(CGGameObject_C* owner);
+        ~CGGameObjectTransportBase() override;
+
+        C3Vector GetPosition() override { return this->m_position; }                     // 0x54
+        C3Vector GetRawPosition() override { return this->m_position; }                  // 0x58
+        // ref: FUN_007126c0
+        float GetScaleMultiplier() override { return this->m_speed; }                    // 0x64
+        void UpdatePassenger(CPassenger* passenger, int32_t mode) override;              // 0x68
+        int32_t Virtual06C(const C3Vector* position) override;                           // 0x6c
+        void OnStatsLoaded() override;                                                   // 0x78
+        // ref: FUN_0070c540
+        void OnReenable() override { this->m_animState = -1; this->m_arrived = 0; }      // 0x7c
+        void OnDisable() override;                                                       // 0x80
+        void OnPostReenable() override;                                                  // 0x84
+        // ref: FUN_00959d00
+        int32_t Virtual0A8() override { return static_cast<int32_t>(this->m_adjustedTime); } // 0xa8
+
+        // +0x14: the passengers riding it, threaded through CPassenger::m_transportLink.
+        STORM_EXPLICIT_LIST(CPassenger, m_transportLink) m_passengers;
+        C3Vector m_position = {};           // +0x20
+        float m_speed = 0.0f;               // +0x2c, yards per second along its path
+        uint32_t m_time = 0;                // +0x30, the path time it last stepped to
+        int32_t m_arrived = 0;              // +0x34, its map object has loaded
+        int32_t m_animState = -1;           // +0x38, the state the path was last set for
+        uint32_t m_adjustedTime = 0;        // +0x3c, the path time (AdjustTime) of the last step
+};
+
+// An elevator or other keyed transport (type 11, 0x00a34808): TransportAnimation keys move it from
+// its place and TransportRotation keys turn it, on a loop or, with a level set, between two stops
+// the object's state chooses.
+class CGGameObjectTransport : public CGGameObjectTransportBase {
+    public:
+        CGGameObjectTransport(CGGameObject_C* owner);
+
+        void OnStateChanged(int32_t from, int32_t to) override;                         // 0x30
+        void OnStatsLoaded() override;                                                   // 0x78
+        void OnReenable() override;                                                      // 0x7c
+        void OnPostReenable() override;                                                  // 0x84
+        void UpdateTransport(uint32_t time, int32_t elapsed) override;                   // 0x8c
+        uint32_t AdjustTime(uint32_t time) override;                                     // 0xa4
+
+        void Initialize();
+        void SetPathStart(uint32_t time);
+        uint32_t PathDuration(int32_t state);
+        uint32_t AdjustTime(int32_t state, uint32_t time);
+        float PathProgress(uint32_t time, int32_t state);
+        uint32_t ResetPath(uint32_t time);
+        void Evaluate(uint32_t time, C3Vector* offset, C4Quaternion* rotation);
+        C3Vector EvaluatePosition(uint32_t time);
+        C4Quaternion EvaluateRotation(uint32_t time);
+        float StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction);
+        C44Matrix* UpdateWorldMatrix();
+        void MovePassengers(int32_t* cameraRides);
+
+        uint32_t m_animFirst = 0;           // +0x40, the first TransportAnimation row
+        uint32_t m_animCount = 0;           // +0x44
+        uint32_t m_animKey = 0;             // +0x48, the key it is between
+        uint32_t m_rotFirst = 0;            // +0x4c, the first TransportRotation row
+        uint32_t m_rotCount = 0;            // +0x50
+        uint32_t m_rotKey = 0;              // +0x54
+        uint32_t m_sequence = 0x1FA;        // +0x58, the sequence its key plays
+        uint32_t m_pathStart = 0;           // +0x5c, when the path began for the current state
+        uint32_t m_pathOffset = 0;          // +0x60, how far into the path a reversal started
 };
 
 // The sound a GameObjectDisplayInfo record carries in slot `index`, played at `position` --

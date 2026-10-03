@@ -1,4 +1,10 @@
 #include "object/client/GameObjectTypes.hpp"
+#include <tempest/Math.hpp>
+#include <common/Time.hpp>
+#include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "object/client/CMovementData_C.hpp"
+#include "object/client/CMovement_C.hpp"
 #include "client/ClientServices.hpp"
 #include "db/Db.hpp"
 #include "model/CM2Model.hpp"
@@ -164,6 +170,748 @@ int32_t GameObjectDataIndex(int32_t type, int32_t meaning) {
     }
 
     return -1;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The map object types: the object's display placed in the world as a building or a prop, and,
+// for the transports, moved along a path with what rides it.
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_0070d900
+CGGameObjectMapObject::~CGGameObjectMapObject() {
+    if (this->m_mapObject) {
+        CWorld::RemoveDynamicObject(this->m_mapObject);
+        this->m_mapObject = nullptr;
+    }
+}
+
+// ref: FUN_00711a10
+// Transports (11, 15) and trap doors (35) own their building -- it carries their guid, so what
+// stands on it knows what it rides -- and an elevator's is flagged 0x1000; a destructible building
+// (33) makes its own; anything else's carries no owner.
+void CGGameObjectMapObject::CreateMapObject() {
+    auto owner = this->m_owner;
+
+    switch (owner->GameObject()->type) {
+        case 11:
+        case 15:
+        case 35:
+            this->m_mapObject = owner->AddMapObject(owner->GetGUID(), 0, 0, nullptr);
+
+            if (this->m_mapObject && owner->GameObject()->type == 11) {
+                CWorld::SetDynamicObjectFlag1000(this->m_mapObject, 1);
+            }
+
+            break;
+
+        case 33:
+            break;
+
+        default:
+            this->m_mapObject = owner->AddMapObject(0, 0, 0, nullptr);
+            break;
+    }
+}
+
+// ref: FUN_0070b290
+void CGGameObjectMapObject::DestroyMapObject() {
+    if (this->m_mapObject) {
+        CWorld::RemoveDynamicObject(this->m_mapObject);
+        this->m_mapObject = nullptr;
+    }
+}
+
+// ref: FUN_00713250
+CGGameObjectTransportBase::CGGameObjectTransportBase(CGGameObject_C* owner) : CGGameObjectMapObject(owner) {
+    this->m_position = owner->m_passenger.GetPosition(owner->m_passenger.m_position);
+}
+
+// ref: FUN_00712610
+CGGameObjectTransportBase::~CGGameObjectTransportBase() {
+    if (this->m_mapObject) {
+        MovementUnlinkTransport(this->m_owner);
+    }
+
+    // FUN_007cecd0
+    while (auto passenger = this->m_passengers.Head()) {
+        passenger->m_transportLink.Unlink();
+    }
+}
+
+// ref: FUN_00711ab0
+// A passenger is aboard: it is threaded onto the list (again, if it was), and one that moves on
+// its own is held to the server's word (MOVEFLAG_SPLINE_ENABLED) until the building is in. The
+// active player's movement takes the transport's path time.
+void CGGameObjectTransportBase::UpdatePassenger(CPassenger* passenger, int32_t mode) {
+    passenger->m_transportLink.Unlink();
+    this->m_passengers.LinkToTail(passenger);
+
+    if (mode && (passenger->m_passengerFlags & 0x1)) {
+        if (!this->m_mapObject || !CWorld::DynamicObjectIsLoaded(this->m_mapObject)) {
+            // FUN_009872a0
+            static_cast<CMovementShared*>(passenger)->m_moveFlags |= MOVEFLAG_SPLINE_ENABLED;
+        }
+    }
+
+    if (passenger->m_guid == ClntObjMgrGetActivePlayer()) {
+        MovementSetTransportTime(this->m_adjustedTime);
+    }
+}
+
+// ref: FUN_0070b360
+int32_t CGGameObjectTransportBase::Virtual06C(const C3Vector* position) {
+    if (!this->m_mapObject) {
+        return 1;
+    }
+
+    return CWorld::DynamicObjectContains(this->m_mapObject, *position);
+}
+
+// ref: FUN_0070b330
+void CGGameObjectTransportBase::OnStatsLoaded() {
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+}
+
+void CGGameObjectTransportBase::OnPostReenable() {
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+}
+
+// ref: FUN_0070ffd0
+// The transport is disabled: everyone riding it is put off -- the camera no longer relative to it,
+// a unit dropped where it is (falling if nothing holds it up), anything else just left in the
+// world -- and its building goes.
+void CGGameObjectTransportBase::OnDisable() {
+    auto camera = CGWorldFrame::GetActiveCamera();
+    int32_t now = static_cast<int32_t>(OsGetAsyncTimeMs());
+
+    for (auto passenger = this->m_passengers.Head(); passenger;) {
+        auto next = this->m_passengers.Next(passenger);
+
+        if (camera->GetTarget() == passenger->m_guid) {
+            camera->SetRelativeTo(0);
+        }
+
+        if (!(passenger->m_passengerFlags & 0x1)) {
+            passenger->ChangeTransport(0);
+        } else {
+            auto move = static_cast<CMovementData_C*>(passenger);
+            move->ClearSplineEnabled();
+
+            if (passenger->m_guid == ClntObjMgrGetActivePlayer()) {
+                move->QueueFallIfUnsupported(now);
+            } else if (move->FallIfUnsupported() && !move->m_moverLink.IsLinked() && MovementGetGlobals()) {
+                // FUN_006eb650
+                MovementLinkMover(move);
+            }
+
+            move->SetSplineTransport(0, 0xff, 1);
+        }
+
+        passenger = next;
+    }
+
+    if (this->m_mapObject) {
+        MovementUnlinkTransport(this->m_owner);
+    }
+
+    this->DestroyMapObject();
+}
+
+// ---- type 11 ------------------------------------------------------------------------------------
+
+namespace {
+
+// ref: FUN_0070c8c0
+// The first TransportAnimation row for a transport entry (the table is sorted by entry), or -1.
+int32_t FindTransportAnimation(int32_t entry) {
+    int32_t lo = 0;
+    int32_t hi = g_transportAnimationDB.GetNumRecords();
+
+    while (lo < hi) {
+        int32_t mid = (lo + hi) / 2;
+
+        if (g_transportAnimationDB.GetRecordByIndex(mid)->m_transportID < entry) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+
+    if (lo < g_transportAnimationDB.GetNumRecords() && g_transportAnimationDB.GetRecordByIndex(lo)->m_transportID == entry) {
+        return lo;
+    }
+
+    return -1;
+}
+
+// ref: FUN_0070c930
+int32_t FindTransportRotation(int32_t entry) {
+    int32_t lo = 0;
+    int32_t hi = g_transportRotationDB.GetNumRecords();
+
+    while (lo < hi) {
+        int32_t mid = (lo + hi) / 2;
+
+        if (g_transportRotationDB.GetRecordByIndex(mid)->m_gameObjectsID < entry) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+
+    if (lo < g_transportRotationDB.GetNumRecords() && g_transportRotationDB.GetRecordByIndex(lo)->m_gameObjectsID == entry) {
+        return lo;
+    }
+
+    return -1;
+}
+
+// The last animation key's time: the length of the path.
+uint32_t LastKeyTime(const CGGameObjectTransport* transport) {
+    return g_transportAnimationDB.GetRecordByIndex(transport->m_animFirst + transport->m_animCount - 1)->m_timeIndex;
+}
+
+// ref: FUN_0070b2b0
+// The building's sequence ended: an opening plays on into its held pose, a closing into its rest.
+void TransportSequenceDone(CM2Model* model, uint32_t boneId, uint32_t animId, int32_t a4, int32_t a5, WOWGUID owner) {
+    (void)boneId;
+    (void)a5;
+    (void)owner;
+
+    if (a4 != 0) {
+        return;
+    }
+
+    uint32_t next;
+
+    switch (animId) {
+        case 0x92: next = 0x93; break;
+        case 0x94: next = 0x95; break;
+        case 0xa2: next = 0xa3; break;
+        case 0xa4: next = 0; break;
+        default: return;
+    }
+
+    model->SetBoneSequence(-1, next, -1, 0, 1.0f, 1, 1);
+}
+
+} // namespace
+
+// ref: FUN_00713820
+// The keyed transport: its TransportAnimation and TransportRotation runs found by entry, then its
+// first place on the path taken.
+CGGameObjectTransport::CGGameObjectTransport(CGGameObject_C* owner) : CGGameObjectTransportBase(owner) {
+    int32_t entry = owner->GetEntryID();
+    int32_t first = FindTransportAnimation(entry);
+
+    if (first != -1) {
+        this->m_animFirst = static_cast<uint32_t>(first);
+        this->m_animCount = 1;
+
+        for (int32_t i = first + 1; i < g_transportAnimationDB.GetNumRecords(); i++) {
+            if (g_transportAnimationDB.GetRecordByIndex(i)->m_transportID != entry) {
+                break;
+            }
+
+            this->m_animCount++;
+        }
+    }
+
+    first = FindTransportRotation(entry);
+
+    if (first != -1) {
+        this->m_rotFirst = static_cast<uint32_t>(first);
+        this->m_rotCount = 1;
+
+        for (int32_t i = first + 1; i < g_transportRotationDB.GetNumRecords(); i++) {
+            if (g_transportRotationDB.GetRecordByIndex(i)->m_gameObjectsID != entry) {
+                break;
+            }
+
+            this->m_rotCount++;
+        }
+    }
+
+    this->Initialize();
+}
+
+// ref: FUN_00710570
+// How long the path runs in a state: the whole loop with no level set, the way up (state 0) or
+// down otherwise.
+uint32_t CGGameObjectTransport::PathDuration(int32_t state) {
+    if (this->m_animCount == 0) {
+        return 0;
+    }
+
+    uint32_t level = static_cast<uint32_t>(this->m_owner->GameObject()->level);
+
+    if (level == 0) {
+        return LastKeyTime(this);
+    }
+
+    if (state == 0) {
+        return level;
+    }
+
+    return LastKeyTime(this) - level;
+}
+
+// ref: FUN_00710640
+// Where on the path a moment falls: a loop wraps; a two-stop transport runs from its start time
+// (and its reversal's offset) and holds at the stop.
+uint32_t CGGameObjectTransport::AdjustTime(int32_t state, uint32_t time) {
+    if (this->m_animCount == 0) {
+        return time;
+    }
+
+    uint32_t level = static_cast<uint32_t>(this->m_owner->GameObject()->level);
+
+    if (level == 0) {
+        return time % LastKeyTime(this);
+    }
+
+    time -= this->m_pathStart;
+
+    if (state == this->m_animState) {
+        time += this->m_pathOffset;
+    } else if (time < this->m_pathOffset) {
+        time = this->m_pathOffset - time;
+    } else {
+        time = 0;
+    }
+
+    if (this->m_animState == 0) {
+        if (level < time) {
+            return level;
+        }
+    } else {
+        time += level;
+
+        if (LastKeyTime(this) <= time) {
+            time = 0;
+        }
+    }
+
+    return time;
+}
+
+// ref: FUN_00713990
+uint32_t CGGameObjectTransport::AdjustTime(uint32_t time) {
+    return this->AdjustTime(this->m_owner->GameObject()->state, time);
+}
+
+// ref: FUN_00710780
+// How far through its state's run the path is at `time` (0..1).
+float CGGameObjectTransport::PathProgress(uint32_t time, int32_t state) {
+    int32_t at = static_cast<int32_t>(this->AdjustTime(state, time));
+    int32_t current = this->m_animState;
+    uint32_t duration = this->PathDuration(current);
+
+    if (current != 0) {
+        if (at == 0) {
+            at = static_cast<int32_t>(LastKeyTime(this));
+        }
+
+        at -= this->m_owner->GameObject()->level;
+    }
+
+    float done = state == current ? static_cast<float>(static_cast<uint32_t>(at))
+                                  : static_cast<float>(duration - static_cast<uint32_t>(at));
+
+    return done / static_cast<float>(duration);
+}
+
+// ref: FUN_007105d0
+// A two-stop transport's run began animProgress/65535 of the way through, at `time`.
+void CGGameObjectTransport::SetPathStart(uint32_t time) {
+    auto data = this->m_owner->GameObject();
+
+    if (data->level == 0 || this->m_animCount == 0) {
+        return;
+    }
+
+    uint32_t duration = this->PathDuration(data->state);
+
+    float into = static_cast<float>(data->animProgress) * 1.52590219e-05f * static_cast<float>(duration);
+    this->m_pathStart = time - static_cast<uint32_t>(static_cast<int32_t>(std::nearbyint(into)));
+}
+
+// ref: FUN_0070da40
+// The path restarted for the object's state: at the stop for state 0, at the far end otherwise.
+uint32_t CGGameObjectTransport::ResetPath(uint32_t time) {
+    auto data = this->m_owner->GameObject();
+    int32_t state = data->state;
+    uint32_t level = static_cast<uint32_t>(data->level);
+
+    this->m_animState = state;
+    this->m_pathOffset = 0;
+
+    if (state == 0) {
+        this->m_pathStart = time - level;
+        return level;
+    }
+
+    this->m_pathStart = level - LastKeyTime(this) + time;
+
+    return 0;
+}
+
+// ref: FUN_0070daa0
+// The offset at a path time: the two keys around it lerped and turned by the object's own
+// rotation. A key's sequence starts on the building as the path reaches it.
+//
+// PARTIAL: the owner's effect kit for the sequence (FUN_0070bb10, through FUN_006f17f0 and the
+// CEffect list) is the ObjectEffect port's.
+C3Vector CGGameObjectTransport::EvaluatePosition(uint32_t time) {
+    if (this->m_animCount < 2) {
+        return { 0.0f, 0.0f, 0.0f };
+    }
+
+    uint32_t next = this->m_animKey + 1;
+    next = next != this->m_animCount ? next : 0;
+
+    const TransportAnimationRec* a;
+    const TransportAnimationRec* b;
+
+    while (true) {
+        b = g_transportAnimationDB.GetRecordByIndex(this->m_animFirst + next);
+        a = g_transportAnimationDB.GetRecordByIndex(this->m_animFirst + this->m_animKey);
+
+        if (a->m_timeIndex <= time && time < b->m_timeIndex) {
+            break;
+        }
+
+        this->m_animKey = next;
+        next = next + 1 != this->m_animCount ? next + 1 : 0;
+    }
+
+    float t = static_cast<float>(time - a->m_timeIndex) / static_cast<float>(b->m_timeIndex - a->m_timeIndex);
+
+    if (this->m_mapObject && a->m_sequenceID != this->m_sequence) {
+        this->m_sequence = a->m_sequenceID;
+        CWorld::SetDynamicObjectSequence(this->m_mapObject, a->m_sequenceID, 0, 0);
+    }
+
+    auto parent = this->m_owner->GameObject()->parentRotation;
+    C44Matrix turn(C4Quaternion(parent[0], parent[1], parent[2], parent[3]));
+
+    float u = 1.0f - t;
+    float x = a->m_pos[0] * u + t * b->m_pos[0];
+    float y = a->m_pos[1] * u + b->m_pos[1] * t;
+    float z = b->m_pos[2] * t + a->m_pos[2] * u;
+
+    return {
+        x * turn.a0 + turn.b0 * y + turn.c0 * z,
+        turn.a1 * x + turn.b1 * y + turn.c1 * z,
+        x * turn.a2 + y * turn.b2 + turn.c2 * z,
+    };
+}
+
+// ref: FUN_0070dc10
+// The rotation at a path time: the keys around it slerped, after the object's own rotation. A key
+// at time 0 closes the loop at the path's length. A transport with fewer than two keys keeps the
+// object's rotation.
+C4Quaternion CGGameObjectTransport::EvaluateRotation(uint32_t time) {
+    if (this->m_rotCount < 2) {
+        return this->m_owner->GetRotation();
+    }
+
+    auto parent = this->m_owner->GameObject()->parentRotation;
+    C4Quaternion base(parent[0], parent[1], parent[2], parent[3]);
+
+    uint32_t next = this->m_rotKey + 1;
+    next = next != this->m_rotCount ? next : 0;
+
+    while (true) {
+        auto a = g_transportRotationDB.GetRecordByIndex(this->m_rotFirst + this->m_rotKey);
+        auto b = g_transportRotationDB.GetRecordByIndex(this->m_rotFirst + next);
+        uint32_t end = b->m_timeIndex;
+
+        if (end == 0 && this->m_animCount != 0) {
+            end = LastKeyTime(this);
+        }
+
+        if (a->m_timeIndex <= time && time < end) {
+            float t = static_cast<float>(time - a->m_timeIndex) / static_cast<float>(b->m_timeIndex - a->m_timeIndex);
+            C4Quaternion q = C4Quaternion::Slerp(t, C4Quaternion(a->m_rot[0], a->m_rot[1], a->m_rot[2], a->m_rot[3]),
+                                                 C4Quaternion(b->m_rot[0], b->m_rot[1], b->m_rot[2], b->m_rot[3]));
+
+            return q * base;
+        }
+
+        this->m_rotKey = next;
+        next = next + 1 != this->m_rotCount ? next + 1 : 0;
+    }
+}
+
+// ref: FUN_007106d0
+// The path's offset and rotation at `time`; a reversed two-stop transport that has reached the
+// stop it was heading for restarts its path from there.
+void CGGameObjectTransport::Evaluate(uint32_t time, C3Vector* offset, C4Quaternion* rotation) {
+    auto data = this->m_owner->GameObject();
+    int32_t state = data->state;
+    uint32_t at = this->AdjustTime(state, time);
+
+    if (this->m_pathOffset != 0) {
+        bool atStop = (this->m_animState == state && this->m_animState == 0) ? at == static_cast<uint32_t>(data->level) : at == 0;
+
+        if (atStop) {
+            at = this->ResetPath(time);
+        }
+    }
+
+    *offset = this->EvaluatePosition(at);
+    *rotation = this->EvaluateRotation(at);
+}
+
+// ref: FUN_0070c650
+// The object's world matrix rebuilt from its rotation at the transport's place.
+C44Matrix* CGGameObjectTransport::UpdateWorldMatrix() {
+    auto owner = this->m_owner;
+
+    owner->m_worldMatrix = C44Matrix(owner->GetRotation());
+    owner->m_worldMatrix.d0 = this->m_position.x;
+    owner->m_worldMatrix.d1 = this->m_position.y;
+    owner->m_worldMatrix.d2 = this->m_position.z;
+
+    return &owner->m_worldMatrix;
+}
+
+// ref: FUN_00711f20
+// The transport's first place: its state, the path started from the object's progress, and the
+// offset and rotation there applied to where the object rests.
+void CGGameObjectTransport::Initialize() {
+    auto owner = this->m_owner;
+
+    this->m_animState = owner->GameObject()->state;
+
+    uint32_t time = static_cast<uint32_t>(OsGetAsyncTimeMs()) + static_cast<uint32_t>(owner->m_timeOffset);
+    this->SetPathStart(time);
+    this->m_time = time;
+
+    C3Vector offset = { 0.0f, 0.0f, 0.0f };
+    C4Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
+    this->Evaluate(time, &offset, &rotation);
+
+    this->m_position = owner->m_passenger.GetPosition(owner->m_passenger.m_position) + offset;
+
+    owner->m_passenger.SetPackedRotation(rotation);
+    owner->m_passenger.m_passengerFlags |= 0x2;
+    this->UpdateWorldMatrix();
+}
+
+// ref: FUN_00710820
+// The object's state changed (a two-stop transport was called): short of 95% of the way it
+// reverses from where it is, keeping the share already travelled; past that it starts afresh.
+void CGGameObjectTransport::OnStateChanged(int32_t from, int32_t to) {
+    if (this->m_owner->GameObject()->level == 0 || this->m_animCount == 0 || this->m_animState == to) {
+        return;
+    }
+
+    uint32_t time = static_cast<uint32_t>(OsGetAsyncTimeMs()) + static_cast<uint32_t>(this->m_owner->m_timeOffset);
+    float progress = this->PathProgress(time, from);
+
+    if (progress < 0.95f) {
+        uint32_t duration = this->PathDuration(from);
+        float travelled = static_cast<float>(duration) * progress;
+
+        this->m_pathStart = time;
+        this->m_pathOffset = static_cast<uint32_t>(static_cast<int32_t>(std::nearbyint(travelled - 0.5f)));
+        return;
+    }
+
+    this->m_pathStart = time;
+    this->m_animState = to;
+    this->m_pathOffset = 0;
+}
+
+// ref: FUN_0070b5c0
+// Its stats are in: the building is made and joins the moving transports, its sequences answer
+// their ends, and it is placed by the object's matrix.
+void CGGameObjectTransport::OnStatsLoaded() {
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &TransportSequenceDone, 0);
+
+        C44Matrix world;
+        this->m_owner->GetWorldMatrix(world);
+        CWorld::SetDynamicObjectPlacement(this->m_mapObject, world);
+    }
+}
+
+// ref: FUN_00712010
+void CGGameObjectTransport::OnReenable() {
+    this->m_animState = -1;
+    this->m_arrived = 0;
+    this->Initialize();
+}
+
+// ref: FUN_0070b630
+void CGGameObjectTransport::OnPostReenable() {
+    this->m_sequence = 0x1FA;
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &TransportSequenceDone, 0);
+    }
+}
+
+// ref: FUN_0070c550
+// The step from the transport's place to `to` over `elapsed` ms: its length, its direction, and
+// the speed it implies.
+//
+// PARTIAL: a change of speed tells the owner's effects (FUN_006f3910, the ObjectEffect port's).
+float CGGameObjectTransport::StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction) {
+    float dx = to.x - this->m_position.x;
+    float dy = to.y - this->m_position.y;
+    float dz = to.z - this->m_position.z;
+    float length = std::sqrt(dz * dz + dy * dy + dx * dx);
+
+    this->m_speed = length / (static_cast<float>(elapsed) * 0.001f);
+
+    if (direction && 2.384185791015625e-07f <= std::fabs(length)) {
+        float inv = 1.0f / length;
+        *direction = { inv * dx, inv * dy, dz * inv };
+    }
+
+    return length;
+}
+
+// ref: FUN_007132e0
+// Everyone riding it follows: the building is placed, each passenger's world entry re-placed in
+// the transport's space, and the active player's movement takes the path time when it rides.
+// `cameraRides` reports whether the camera's target is aboard.
+//
+// PHASE4(Vehicle_C): a vehicle riding it carries its own passengers along (FUN_00757be0).
+void CGGameObjectTransport::MovePassengers(int32_t* cameraRides) {
+    *cameraRides = 0;
+
+    auto owner = this->m_owner;
+    C44Matrix* world = &owner->m_worldMatrix;
+    bool isMapObj = false;
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectPlacement(this->m_mapObject, *world);
+        isMapObj = CWorld::DynamicObjectIsMapObj(this->m_mapObject);
+    }
+
+    WOWGUID cameraTarget = CGWorldFrame::GetActiveCamera()->GetTarget();
+    auto player = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, ".\\GameObject_C.cpp", 0x682));
+
+    for (auto passenger = this->m_passengers.Head(); passenger; passenger = this->m_passengers.Next(passenger)) {
+        if (this->m_arrived && (passenger->m_passengerFlags & 0x1)
+            && (static_cast<CMovementShared*>(passenger)->m_moveFlags & MOVEFLAG_SPLINE_ENABLED)) {
+            static_cast<CMovementShared*>(passenger)->ClearSplineEnabled();
+        }
+
+        if (passenger->m_guid == cameraTarget) {
+            *cameraRides = 1;
+        }
+
+        auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(passenger->m_guid, TYPE_OBJECT, ".\\GameObject_C.cpp", 0x68d));
+
+        object->UpdateWorldObject((object == player || !isMapObj) ? 0 : 1);
+        object->SetParticleRelative(world);
+    }
+
+    if (player && player->GetTransportGUID() == owner->GetGUID()) {
+        MovementSetTransportTime(this->m_adjustedTime);
+    }
+}
+
+// ref: FUN_007139e0
+// One movement poll: once the building is in, an unkeyed transport is placed and stays; a long gap
+// is taken in a jump to 250 ms before now; then the path is stepped, the transport placed, and its
+// passengers carried.
+//
+// PARTIAL: the passengers' sweep against the world as a prop carries them (FUN_00760720, the
+// collision port's), which runs for each self-moving passenger before the transport moves.
+void CGGameObjectTransport::UpdateTransport(uint32_t time, int32_t elapsed) {
+    auto owner = this->m_owner;
+
+    if (!this->m_arrived && this->m_mapObject && CWorld::DynamicObjectIsLoaded(this->m_mapObject)) {
+        this->m_arrived = 1;
+
+        if (this->m_animCount == 0 && this->m_rotCount == 0) {
+            C44Matrix world;
+            owner->GetWorldMatrix(world);
+            CWorld::SetDynamicObjectPlacement(this->m_mapObject, world);
+            return;
+        }
+    }
+
+    uint32_t step = static_cast<uint32_t>(elapsed);
+
+    if (250 < step) {
+        uint32_t jump = static_cast<uint32_t>(owner->m_timeOffset) - 250 + time;
+        this->m_time = jump;
+
+        if (owner->GameObject()->level != 0 && static_cast<int32_t>(this->m_pathStart - jump) >= 0) {
+            this->m_time = this->m_pathStart;
+        }
+
+        C3Vector offset = { 0.0f, 0.0f, 0.0f };
+        C4Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
+        this->Evaluate(this->m_time, &offset, &rotation);
+
+        owner->m_passenger.SetPackedRotation(rotation);
+        owner->m_passenger.m_passengerFlags |= 0x2;
+
+        this->m_position = owner->m_passenger.GetPosition(owner->m_passenger.m_position) + offset;
+        step = 250;
+    }
+
+    this->m_time = time + static_cast<uint32_t>(owner->m_timeOffset);
+    this->m_adjustedTime = this->AdjustTime(this->m_animState, this->m_time);
+
+    C3Vector offset = { 0.0f, 0.0f, 0.0f };
+    C4Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
+    this->Evaluate(this->m_time, &offset, &rotation);
+
+    C3Vector to = owner->m_passenger.GetPosition(owner->m_passenger.m_position) + offset;
+    C3Vector direction = { 0.0f, 0.0f, 0.0f };
+    float length = this->StepTo(step, to, &direction);
+
+    if (this->m_passengers.Head()) {
+        if (9.5367431640625e-07f <= std::fabs(length)) {
+            this->m_position = to;
+        }
+
+        owner->m_passenger.SetPackedRotation(rotation);
+        owner->m_passenger.m_passengerFlags |= 0x2;
+        this->UpdateWorldMatrix();
+
+        int32_t cameraRides = 0;
+        this->MovePassengers(&cameraRides);
+
+        return;
+    }
+
+    this->m_position = to;
+    owner->m_passenger.SetPackedRotation(rotation);
+    owner->m_passenger.m_passengerFlags |= 0x2;
+    auto world = this->UpdateWorldMatrix();
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectPlacement(this->m_mapObject, *world);
+    }
 }
 
 // ref: FUN_0070bf70

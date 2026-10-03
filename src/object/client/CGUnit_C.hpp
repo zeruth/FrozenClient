@@ -1122,6 +1122,16 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0xa9c how much of the spring it takes; the spine and head turn the rest of the way.
         float m_lowerBodyFacing = 0.0f;
         float m_lowerBodyFacingStep = 0.0f;
+        // ref: FUN_00715270
+        // A transport change turns the frame the facings are kept in; both are carried by `delta`.
+        void AddFacingOffset(float delta);
+        // ref: FUN_00722010
+        // A click-to-move the active player is following moves with it into another space.
+        void CarryClickToMove(const C44Matrix& matrix, float facing);
+        // ref: FUN_0071c4d0
+        // The transport the camera should follow the unit onto: a vehicle seat's vehicle when it
+        // rides one (FUN_007599d0), otherwise its transport.
+        WOWGUID GetCameraTransportGUID();
         float m_lowerBodyBlend = 1.0f;
         // +0xaa8: the last four turns the facing average took, newest first; [0] == 0 starts over.
         float m_smoothFacingHistory[4] = {};

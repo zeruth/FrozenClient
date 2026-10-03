@@ -215,6 +215,8 @@ class CWorld {
         static bool DynamicObjectIsLoaded(CMapBaseObj* object);
         static void SetDynamicObjectPlacement(CMapBaseObj* object, const C44Matrix& placement);
         static void SetDynamicObjectSequenceDone(CMapBaseObj* object, M2SequenceDoneCallback callback, WOWGUID owner);
+        static void SetDynamicObjectSequence(CMapBaseObj* object, uint32_t sequence, uint32_t a3, uint32_t a4);
+        static bool DynamicObjectContains(CMapBaseObj* object, const C3Vector& position);
         static int32_t GetObjectLiquidFlags(HWORLDOBJECT object, uint32_t* bit8, uint32_t* bit9);
         static void UpdateWindowAndMap(const C3Vector& targetPos);
         static uint32_t GetCurTimeMs();

@@ -1572,6 +1572,23 @@ void SetDefaultDirectionalLight() {
     g_theGxDevicePtr->RsSet(GxRs_Lighting, 1);
 }
 
+// ref: FUN_007aea10
+bool CMapObj::PointInConvexVolume(const C3Vector& point) {
+    if (!this->m_rootLoaded) {
+        return false;
+    }
+
+    for (uint32_t i = 0; i < this->m_convexVolumePlaneCount; i++) {
+        const C4Plane& plane = this->m_mcvp[i];
+
+        if (0.0f < plane.n.x * point.x + plane.n.z * point.z + plane.n.y * point.y + plane.d) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // ref: FUN_007ae810
 bool CMapObj::PointInBounds(const C3Vector& point) {
     if (!this->m_rootLoaded) {

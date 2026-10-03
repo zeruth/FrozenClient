@@ -215,7 +215,7 @@ class CMovementData_C : public CMovementShared {
         void SetSplineAnimation(uint8_t tier, uint32_t time);
         void SetSplineParabolic(float acceleration, uint32_t time);
         void FaceForSpline(float facing, int32_t flush);
-        void SetSplineTransport(WOWGUID transport, uint8_t seat);
+        void SetSplineTransport(WOWGUID transport, uint8_t seat, int32_t force);
         int32_t SplineSetGravity(int32_t enable);
         // ref: FUN_006ea7e0
         int32_t Interpolate(int32_t time, int32_t ms, C3Vector* position, float* facing, float* pitch);
@@ -251,6 +251,13 @@ class CMovementData_C : public CMovementShared {
 
         // ref: FUN_006ea1d0
         int32_t SetTransport(WOWGUID transport, uint8_t seat);
+        // ref: FUN_006ec400
+        // CMovementData_C::ForceSetTransportInt (its assertion names it): move onto `transport`
+        // keeping the unit where it is in the world. Refused while a spline runs unless `force`.
+        int32_t ForceSetTransport(WOWGUID transport, uint8_t seat, int32_t force);
+        // ref: FUN_006ec3b0
+        // The queued facing and teleport events turn with the frame they are kept in.
+        void RotateQueuedEvents(float facing);
         // ref: FUN_006ea520
         void TakeTransport(const CMovementStatus& status);
         // ref: FUN_006ea550

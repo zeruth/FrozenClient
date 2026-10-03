@@ -9,6 +9,7 @@
 // first contact whether to slide along it, step up onto it, fall off it or land on it.
 
 #include "object/client/CMovementData_C.hpp"
+#include "object/client/ObjMgr.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CMovement_C.hpp"
@@ -1798,17 +1799,21 @@ void CollideRestore(CMovementData_C* move, const CollideSavedState& state) {
 
 // ref: FUN_006ec7b0
 // The local player stands on `floor`: a transport's guid joins it, zero leaves the one it rides
-// unless it is still over it. NOT PORTED: the join and leave themselves (FUN_006ec400,
-// CMovementData_C::ForceSetTransportInt) and the over-the-transport test (FUN_0074b5e0) are the
-// transport port's; frozen has no transports for a unit to stand on, so nothing changes.
+// unless it is still over it.
 int32_t CMovementData_C::SetFloorObject(WOWGUID floor) {
-    if (!this->IsActivePlayer() || this->IsSplineActive()) {
+    if (this->m_owner->GetGUID() != ClntObjMgrGetActivePlayer()) {
         return 0;
     }
 
-    (void)floor;
+    if (this->m_spline && !(this->m_spline->flags & 0x400)) {
+        return 0;
+    }
 
-    return 0;
+    if (!floor && this->m_transportGUID && MovementTransportContains(this->m_transportGUID, this->m_position)) {
+        return 0;
+    }
+
+    return this->ForceSetTransport(floor, 0xff, 0);
 }
 
 // ref: FUN_0075eda0

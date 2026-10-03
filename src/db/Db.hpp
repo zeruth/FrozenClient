@@ -56,6 +56,8 @@
 #include "db/rec/MaterialRec.hpp"
 #include "db/rec/TerrainTypeRec.hpp"
 #include "db/rec/FootstepTerrainLookupRec.hpp"
+#include "db/rec/TransportAnimationRec.hpp"
+#include "db/rec/TransportRotationRec.hpp"
 #include "db/rec/CurrencyTypesRec.hpp"
 #include "db/rec/SpellShapeshiftFormRec.hpp"
 #include "db/rec/FactionGroupRec.hpp"
@@ -133,6 +135,8 @@ extern WowClientDB<CreatureMovementInfoRec> g_creatureMovementInfoDB;
 extern WowClientDB<MaterialRec> g_materialDB;
 extern WowClientDB<TerrainTypeRec> g_terrainTypeDB;
 extern WowClientDB<FootstepTerrainLookupRec> g_footstepTerrainLookupDB;
+extern WowClientDB<TransportAnimationRec> g_transportAnimationDB;
+extern WowClientDB<TransportRotationRec> g_transportRotationDB;
 extern WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 extern WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 extern WowClientDB<FactionGroupRec> g_factionGroupDB;

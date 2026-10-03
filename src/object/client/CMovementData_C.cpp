@@ -1,4 +1,5 @@
 #include "object/client/CMovementData_C.hpp"
+#include "model/CM2Model.hpp"
 #include "object/client/CClientMoveUpdate.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
@@ -1633,7 +1634,7 @@ void CMovementData_C::Knockback(const C2Vector& direction, float horizontalSpeed
 
 // ref: FUN_006ea1d0
 // PARTIAL: the vehicle passenger bookkeeping on either side of the change (FUN_0074cf30,
-// FUN_00757ef0) and the unit's facing correction (FUN_00715270) are the vehicle port's.
+// FUN_00757ef0) is the vehicle port's.
 int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
     if (this->m_transportGUID == transport && this->m_transportSeat == seat) {
         return 1;
@@ -1658,17 +1659,32 @@ int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
             };
         }
 
-        this->LeaveTransport();
+        float oldFacing = MovementGetTransportFacing(this->m_transportGUID);
+        // FUN_0079f820
+        this->m_transportLink.Unlink();
         this->m_transportGUID = 0;
         this->ClearSplineEnabled();
+
+        auto model = this->m_owner->GetObjectModel();
+
+        if (model && model->m_loaded) {
+            model->SetParticleRelative(nullptr);
+        }
+
+        this->m_owner->AddFacingOffset(oldFacing);
     }
 
     if (transport) {
-        if (!MovementNotifyTransport(this, transport, 3)) {
+        // One that has not entered the world, or whose spline (if any) has stopped, is held to
+        // the server's position until the transport is in.
+        int32_t mode = !this->m_owner->m_postInited && (!this->m_spline || (this->m_spline->flags & 0x400)) ? 1 : 0;
+
+        if (!MovementNotifyTransport(this, transport, mode)) {
             return 0;
         }
 
         this->m_transportGUID = transport;
+        float newFacing = MovementGetTransportFacing(transport);
 
         if (this->m_moveFlags & 0x1000) {
             C44Matrix matrix;
@@ -1681,6 +1697,17 @@ int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
                 this->m_direction.x * inverse.a2 + this->m_direction.y * inverse.b2 + this->m_direction.z * inverse.c2
             };
         }
+
+        auto model = this->m_owner->GetObjectModel();
+
+        if (model && model->m_loaded) {
+            C44Matrix matrix;
+            MovementGetTransportMatrixChecked(transport, matrix, this->m_guid, ".\\Movement.cpp", 0x9d4);
+            model->m_particleRelativeMatrix = matrix;
+            model->SetParticleRelative(&model->m_particleRelativeMatrix);
+        }
+
+        this->m_owner->AddFacingOffset(-newFacing);
     }
 
     if (this->m_moveFlags & 0x1000) {
@@ -1693,6 +1720,116 @@ int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
             this->m_direction2d.y /= length;
         }
     }
+
+    return 1;
+}
+
+// A unit's guid as a transport: a vehicle's (high 0xf05.) or a player's, whose seats the vehicle
+// code keeps rather than the transport's own space.
+static bool GuidIsUnitTransport(WOWGUID guid) {
+    uint32_t low = static_cast<uint32_t>(guid);
+    uint32_t high = static_cast<uint32_t>(guid >> 32);
+
+    if ((high & 0xf0f00000) == 0xf0500000) {
+        return true;
+    }
+
+    return (high & 0xf0000000) == 0 && !(low == 0 && (high & 0xf07fffff) == 0);
+}
+
+// ref: FUN_006ec3b0
+void CMovementData_C::RotateQueuedEvents(float facing) {
+    for (auto event = this->m_events.Head(); event; event = this->m_events.Next(event)) {
+        if (event->type == 0x13 || event->hasStatus) {
+            event->facing = NormalizeAngle(facing + event->facing);
+        }
+    }
+}
+
+// ref: FUN_006ec400
+// PHASE4(Vehicle_C): the seat bookkeeping when either guid is a unit's (FUN_0074cf30) and a
+// vehicle letting the passenger go (FUN_00757ef0).
+int32_t CMovementData_C::ForceSetTransport(WOWGUID transport, uint8_t seat, int32_t force) {
+    if (transport == this->m_transportGUID && seat == this->m_transportSeat) {
+        return 0;
+    }
+
+    if (!force && this->m_spline) {
+        return 0;
+    }
+
+    if (transport && !MovementTransportIsValid(transport)) {
+        return 0;
+    }
+
+    if (this->m_transportGUID && !ClntObjMgrObjectPtr(this->m_transportGUID, TYPE_OBJECT, ".\\Movement.cpp", 0x593)) {
+        // "CMovementData_C::ForceSetTransportInt() was called with an invalid m_transportGUID"
+        // (FUN_005eeb70, a debug-build message).
+        this->m_transportGUID = 0;
+
+        return 0;
+    }
+
+    this->m_transportSeat = seat;
+
+    if (transport == this->m_transportGUID) {
+        return 1;
+    }
+
+    auto owner = this->m_owner;
+    C44Matrix matrix;
+
+    if (this->m_transportGUID) {
+        float facing = this->LeaveTransportSpace(matrix);
+        auto model = owner->GetObjectModel();
+
+        if (model && model->m_loaded) {
+            model->SetParticleRelative(nullptr);
+        }
+
+        owner->AddFacingOffset(facing);
+        owner->CarryClickToMove(matrix, facing);
+
+        if (!GuidIsUnitTransport(this->m_transportGUID)) {
+            this->RotateQueuedEvents(facing);
+        }
+    }
+
+    if (transport) {
+        C44Matrix inverse;
+        float facing = this->EnterTransportSpace(transport, inverse, &matrix);
+        auto model = owner->GetObjectModel();
+
+        if (model && model->m_loaded) {
+            model->m_particleRelativeMatrix = matrix;
+            model->SetParticleRelative(&model->m_particleRelativeMatrix);
+        }
+
+        owner->AddFacingOffset(facing);
+        owner->CarryClickToMove(inverse, facing);
+
+        if (!GuidIsUnitTransport(transport)) {
+            this->RotateQueuedEvents(facing);
+        }
+
+        if (this->m_moveFlags & 0x200000) {
+            this->StopFly();
+        }
+
+        // Changing from one transport to another while the active mover: the next status says
+        // which path time it was taken at.
+        if (this->m_transportGUID && owner->IsActiveMover()) {
+            auto globals = MovementGetGlobals();
+            globals->m_transportTimeLatched = globals->m_transportTime != globals->m_transportTime2;
+        }
+    }
+
+    if (this->m_moveFlags & 0xc00000) {
+        this->ResetAnchor(0);
+    }
+
+    this->m_transportGUID = transport;
+    MovementCameraFollowTransport(this->m_guid, owner->GetCameraTransportGUID());
 
     return 1;
 }
@@ -2661,8 +2798,7 @@ void CMovementData_C::QueueTeleport(int32_t time, uint8_t send, uint32_t counter
 }
 
 // ref: FUN_006ecf80
-// Put the unit at `position` (in `transport`'s space when it has one). PARTIAL: boarding the
-// transport (FUN_006ec400) goes through SetTransport, which does not board yet; the vehicle seat
+// Put the unit at `position` (in `transport`'s space when it has one). PARTIAL: the vehicle seat
 // moves (FUN_0074b380, FUN_0074b620) and the world update at the new position (FUN_00632050) are
 // the vehicle and world ports'.
 int32_t CMovementData_C::TeleportTo(WOWGUID transport, const C3Vector& position, float facing, int32_t clearSpline,
@@ -2673,7 +2809,7 @@ int32_t CMovementData_C::TeleportTo(WOWGUID transport, const C3Vector& position,
         this->m_owner->m_stateFlags &= 0xdfffffff;
     }
 
-    int32_t result = this->SetTransport(transport, seat);
+    int32_t result = this->ForceSetTransport(transport, seat, 1);
     this->m_owner->m_stateFlags &= 0xdfffffff;
 
     if (this->m_transportGUID == transport) {
@@ -3091,8 +3227,15 @@ void CMovementData_C::FaceForSpline(float facing, int32_t flush) {
 }
 
 // ref: FUN_006f0c70
-// The spline's transport. PARTIAL: boarding it (FUN_006ec400) goes through SetTransport, which
-// does not board yet, so the CMSG 0x38d the active player answers a boarding with is not sent.
-void CMovementData_C::SetSplineTransport(WOWGUID transport, uint8_t seat) {
-    this->SetTransport(transport, seat);
+// The spline's transport, boarded keeping the unit's place; the active player tells the server
+// it has (CMSG 0x38d).
+void CMovementData_C::SetSplineTransport(WOWGUID transport, uint8_t seat, int32_t force) {
+    if (!this->ForceSetTransport(transport, seat, force)) {
+        return;
+    }
+
+    if (this->m_owner->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        auto globals = MovementGetGlobals();
+        this->m_owner->SendMovementStatus(globals->m_lastTime, 0x38d, 0.0f, 0, 0, 0xff);
+    }
 }
