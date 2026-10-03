@@ -1,5 +1,6 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/SpellVisuals.hpp"
+#include "object/client/Mirror.hpp"
 #include "console/CVar.hpp"
 #include "console/Types.hpp"
 #include "model/CM2Scene.hpp"
@@ -5749,4 +5750,100 @@ void CGUnit_C::RemoveColorEffects(int32_t spellID) {
 
         effect = next;
     }
+}
+
+// ------------------------------------------------------------------------------------------------
+// Field handlers
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+CGUnit_C* HandlerUnit(WOWGUID guid, int32_t line) {
+    return static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", line));
+}
+
+// ref: FUN_007167c0
+// UNIT_FIELD_BYTES_1 byte 3: the animation tier the unit plays its moves at.
+int32_t OnAnimTierChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x27a);
+
+    if (unit) {
+        int32_t tier = static_cast<uint8_t>(unit->Unit()->bytes1 >> 24);
+
+        if (tier != unit->m_animTier) {
+            unit->m_animTier = tier;
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716900
+// UNIT_FIELD_TARGET.
+int32_t OnTargetChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x47c);
+
+    if (unit) {
+        unit->m_targetChangeTime = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    }
+
+    return 1;
+}
+
+// ref: FUN_007419c0
+// UNIT_FIELD_MOUNTDISPLAYID.
+int32_t OnMountDisplayChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x28c);
+
+    if (unit) {
+        unit->SetMountDisplay(unit->Unit()->mountDisplayID);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f4b0
+// UNIT_DYNAMIC_FLAGS.
+int32_t OnDynamicFlagsChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x3eb);
+
+    if (unit) {
+        unit->UpdateAnimation(0, 0xFFFFFFFF);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00741d00
+// PARTIAL: the reference registers 30 handlers here; each joins as its body is ported. Still to
+// come: the virtual items (0xc8, FUN_00728e20), level (0xc0, FUN_00730050), entry (object 0xc,
+// FUN_0072ceb0), health (0x48, FUN_0073f330), power and max power (0x4c/0x6c, FUN_007234d0 /
+// FUN_007235c0), power type (0x47, FUN_00723620), aura state (0xdc, FUN_00716810), flags and flags 2
+// (0xd4/0xd8, FUN_0073f270 / FUN_0073f2b0), visibility (0x112, FUN_0073f2f0), PvP (0x1d1,
+// FUN_00728d20), faction (0xc4, FUN_00723680), charm and summon (0x18, FUN_00728d60), display
+// (0xf4, FUN_00716860), stand state (0x110, FUN_0073f460), NPC flags (0x130, FUN_0071c9d0), pet name
+// timestamp (0x118, FUN_0072cf70), 0x124 (FUN_00741a00), channel (0x38, FUN_0073f4f0), pet number
+// (0x114, FUN_0072cff0), scale (object 0x10, FUN_0072d070), sheath (0x1d0, FUN_00737aa0) and hover
+// height (0x230, FUN_0071ca10).
+void RegisterUnitFieldHandlers() {
+    MirrorRegisterHandler(ID_UNIT, 0x113, 1, &OnAnimTierChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xFC, 4, &OnMountDisplayChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x134, 4, &OnDynamicFlagsChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x30, 8, &OnTargetChanged, nullptr, 0, 0);
+}
+
+} // namespace
+
+// ref: FUN_00742220
+// The reference undoes this at the end of a game (FUN_00742bb0, from FUN_00406510); frozen has no
+// end of game yet, so a second game in the same session registers nothing twice.
+void UnitInitialize() {
+    static bool registered = false;
+
+    if (!registered) {
+        RegisterUnitFieldHandlers();
+        registered = true;
+    }
+
+    UnitSoundInitialize();
 }

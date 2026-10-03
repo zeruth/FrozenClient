@@ -268,9 +268,9 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     ClntObjMgrInitializeStd(mapId);
 
     // The selection circle and quest marker models (0x00405621), then the unit module's start
-    // (FUN_00742220 at 0x0040562b), of which only the unit sound step is ported.
+    // (FUN_00742220 at 0x0040562b).
     ObjectsInitialize();
-    UnitSoundInitialize();
+    UnitInitialize();
 
     // TODO
 

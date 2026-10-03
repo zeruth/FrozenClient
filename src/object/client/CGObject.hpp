@@ -36,12 +36,14 @@ class CGObject {
         float GetScale() const;
         int32_t GetEntryID() const;
 
-    protected:
-        // Protected member variables
+    // The storage and its saved copy are read directly by the mirror (Mirror.cpp, the reference's
+    // ObjectMgrClient), as the reference reads them; it has no access control.
+    public:
         CGObjectData* m_obj;
         uint32_t* m_objSaved;
         OBJECT_TYPE_ID m_typeID;
 
+    protected:
         // Protected member functions
         CGObjectData* Obj() const;
 };

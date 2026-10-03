@@ -17,9 +17,15 @@
 #include "ui/FrameScript.hpp"
 #include "ui/game/Types.hpp"
 #include <vector>
+#include <cstring>
+#include <storm/List.hpp>
 #include <common/DataStore.hpp>
 
 #define MAX_CHANGE_MASKS 42
+
+// The most descriptor blocks any type has (the active player's), which is the stride of the
+// handler table.
+#define MIRROR_BLOCKS_PER_TYPE 0x52E
 
 static uint32_t s_objMirrorBlocks[] = {
     CGObject::TotalFields(),
@@ -156,6 +162,260 @@ OBJECT_TYPE_ID IncTypeID(CGObject_C* object, OBJECT_TYPE_ID curTypeID) {
 
 int32_t IsMaskBitSet(uint32_t* masks, uint32_t block) {
     return masks[block / 32] & (1 << (block % 32));
+}
+
+// ------------------------------------------------------------------------------------------------
+// The field handlers
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+#include "object/client/MirrorSavedFields.inl"
+
+// One registered field handler (RTTI CMirrorHandler, 0x30 bytes).
+struct CMirrorHandler {
+    TSLink<CMirrorHandler> m_link;      // +0x00, in its (type, block) list
+    TSLink<CMirrorHandler> m_pending;   // +0x08, in an update's pending list
+    MIRRORHANDLER m_handler = nullptr;  // +0x10
+    void* m_param = nullptr;            // +0x14
+    uint32_t m_countdown = 0;           // +0x18, blocks left in the field
+    uint32_t m_offset = 0;              // +0x1c, byte offset in the object's storage
+    uint32_t m_size = 0;                // +0x24
+    int32_t m_a6 = 0;                   // +0x28
+    uint8_t m_firing = 0;               // +0x2c
+    uint8_t m_delete = 0;               // +0x2d
+    uint8_t m_always = 0;               // +0x2e
+    // Where the field's own type starts, which the offset the handler is told is relative to.
+    uint32_t m_typeBase = 0;
+};
+
+typedef STORM_EXPLICIT_LIST(CMirrorHandler, m_link) HANDLER_LIST;
+typedef STORM_EXPLICIT_LIST(CMirrorHandler, m_pending) PENDING_LIST;
+
+// The handlers by type and by the block their field starts at (0x00b4b020). On the heap and never
+// freed: the client keeps them for its life, and a static would run its destructor over freed
+// Storm memory at exit.
+HANDLER_LIST* s_handlers;
+
+HANDLER_LIST& Handlers(uint32_t type, uint32_t block) {
+    if (!s_handlers) {
+        s_handlers = new HANDLER_LIST[NUM_CLIENT_OBJECT_TYPES * MIRROR_BLOCKS_PER_TYPE];
+    }
+
+    return s_handlers[type * MIRROR_BLOCKS_PER_TYPE + block];
+}
+
+// Where a type's fields start in the storage, in bytes (FUN_004d5ba0's switch).
+uint32_t TypeBase(uint32_t type) {
+    switch (type) {
+        case ID_ITEM:
+        case ID_UNIT:
+        case ID_GAMEOBJECT:
+        case ID_DYNAMICOBJECT:
+        case ID_CORPSE:
+            return 0x18;
+
+        case ID_CONTAINER:
+            return 0x100;
+
+        case ID_PLAYER:
+            return 0x250;
+
+        default:
+            return 0;
+    }
+}
+
+uint32_t FindSaved(const uint32_t* table, uint32_t count, uint32_t field, uint32_t missing) {
+    for (uint32_t i = 0; i < count; i++) {
+        if (table[i] == field) {
+            return i;
+        }
+    }
+
+    return missing;
+}
+
+// ref: FUN_004d43f0
+// The byte in the saved array that keeps a copy of storage byte `offset` of a `type` object.
+uint32_t SavedOffset(uint32_t type, uint32_t offset, bool activePlayer) {
+    uint32_t base;
+    uint32_t index;
+
+    switch (type) {
+        case ID_CONTAINER:
+            if (0xFF < offset) {
+                base = 3 + 0x2F;
+                index = FindSaved(s_savedContainer, 0x48, (offset - 0x100) >> 2, 0x4A);
+                break;
+            }
+            // fallthrough
+
+        case ID_ITEM:
+            if (0x17 < offset) {
+                base = 3;
+                index = FindSaved(s_savedItem, 0x2F, (offset - 0x18) >> 2, 0x3A);
+                break;
+            }
+
+            base = 0;
+            index = FindSaved(s_savedObject, 3, offset >> 2, 6);
+            break;
+
+        case ID_PLAYER:
+            if (0x24F < offset) {
+                base = 3 + 0x7B;
+                index = FindSaved(s_savedPlayer, 0xAD, (offset - 0x250) >> 2, 0x49A);
+
+                if (index == 0x49A && activePlayer) {
+                    uint32_t extra = FindSaved(s_savedActivePlayer, 0x366, (offset - 0x250) >> 2, 0x49A);
+
+                    if (extra != 0x49A) {
+                        index = extra + 0xAD;
+                    }
+                }
+
+                break;
+            }
+            // fallthrough
+
+        case ID_UNIT:
+            if (0x17 < offset) {
+                base = 3;
+                index = FindSaved(s_savedUnit, 0x7B, (offset - 0x18) >> 2, 0x8E);
+                break;
+            }
+
+            base = 0;
+            index = FindSaved(s_savedObject, 3, offset >> 2, 6);
+            break;
+
+        case ID_GAMEOBJECT:
+            if (0x17 < offset) {
+                base = 3;
+                index = FindSaved(s_savedGameObject, 4, (offset - 0x18) >> 2, 0xC);
+                break;
+            }
+
+            base = 0;
+            index = FindSaved(s_savedObject, 3, offset >> 2, 6);
+            break;
+
+        case ID_CORPSE:
+            if (0x17 < offset) {
+                base = 3;
+                index = FindSaved(s_savedCorpse, 3, (offset - 0x18) >> 2, 0x1E);
+                break;
+            }
+
+            base = 0;
+            index = FindSaved(s_savedObject, 3, offset >> 2, 6);
+            break;
+
+        default:
+            base = 0;
+            index = FindSaved(s_savedObject, 3, offset >> 2, 6);
+            break;
+    }
+
+    return (offset & 3) + (base + index) * 4;
+}
+
+uint8_t* Storage(CGObject_C* object) {
+    return reinterpret_cast<uint8_t*>(object->m_obj);
+}
+
+uint8_t* Saved(CGObject_C* object) {
+    return reinterpret_cast<uint8_t*>(object->m_objSaved);
+}
+
+// ref: FUN_004d4850
+// The handlers whose field has run out leave the pending list.
+void AgePending(PENDING_LIST& pending) {
+    for (auto handler = pending.Head(); handler; ) {
+        auto next = pending.Next(handler);
+
+        if (--handler->m_countdown == 0) {
+            handler->m_pending.Unlink();
+        }
+
+        handler = next;
+    }
+}
+
+// ref: FUN_004d5350
+// The handlers whose field starts at this block join the pending list for as many blocks as the
+// field covers.
+bool AddPending(HANDLER_LIST& list, PENDING_LIST& pending) {
+    if (!list.Head()) {
+        return false;
+    }
+
+    for (auto handler = list.Head(); handler; handler = list.Next(handler)) {
+        if (handler->m_pending.IsLinked()) {
+            handler->m_pending.Unlink();
+        }
+
+        if (handler->m_a6 != 1) {
+            pending.LinkToTail(handler);
+        } else {
+            pending.LinkToHead(handler);
+        }
+
+        handler->m_countdown = (handler->m_size + 3 + (handler->m_offset & 3)) >> 2;
+    }
+
+    return true;
+}
+
+// ref: FUN_004d52b0
+// Before a block is overwritten, the fields that start in it are copied to the saved array.
+void SaveFields(HANDLER_LIST& list, CGObject_C* object, bool activePlayer, uint32_t type) {
+    for (auto handler = list.Head(); handler; handler = list.Next(handler)) {
+        uint32_t saved = SavedOffset(type, handler->m_offset, activePlayer);
+        memcpy(Saved(object) + saved, Storage(object) + handler->m_offset, handler->m_size);
+    }
+}
+
+// ref: FUN_004d5150
+// Every pending handler is called once, if its field differs from the saved copy (or always).
+void Dispatch(PENDING_LIST& pending, WOWGUID guid, CGObject_C* object, uint32_t type, bool activePlayer) {
+    for (auto handler = pending.Head(); handler; ) {
+        auto next = pending.Next(handler);
+
+        handler->m_firing = 1;
+        handler->m_countdown = 1;
+
+        const uint8_t* current = Storage(object) + handler->m_offset;
+        const uint8_t* saved = Saved(object) + SavedOffset(type, handler->m_offset, activePlayer);
+
+        if (handler->m_always || memcmp(current, saved, handler->m_size) != 0) {
+            handler->m_handler(guid, handler->m_offset - handler->m_typeBase, handler->m_size, saved, handler->m_param);
+        }
+
+        handler->m_firing = 0;
+        handler = next;
+    }
+}
+
+} // namespace
+
+// ref: FUN_004d5ba0
+void MirrorRegisterHandler(OBJECT_TYPE_ID type, uint32_t offset, uint32_t size, MIRRORHANDLER handler,
+                           void* param, int32_t a6, int32_t always) {
+    uint32_t base = TypeBase(type);
+
+    // FUN_004d5850
+    auto mirror = new CMirrorHandler();
+    mirror->m_offset = base + offset;
+    mirror->m_size = size;
+    mirror->m_handler = handler;
+    mirror->m_param = param;
+    mirror->m_a6 = a6;
+    mirror->m_always = always != 0;
+    mirror->m_typeBase = base;
+
+    Handlers(type, offset >> 2).LinkToTail(mirror);
 }
 
 namespace {
@@ -412,6 +672,9 @@ int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid) {
     OBJECT_TYPE_ID typeID = ID_OBJECT;
     uint32_t blockOffset = 0;
     uint32_t numBlocks = GetNumDwordBlocks(object->GetType(), guid);
+    bool activePlayer = guid == ClntObjMgrGetActivePlayer();
+
+    PENDING_LIST pending;
 
     for (int32_t block = 0; block < numBlocks; block++) {
         if (block >= s_objMirrorBlocks[typeID]) {
@@ -419,16 +682,30 @@ int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid) {
             typeID = IncTypeID(object, typeID);
         }
 
+        AgePending(pending);
+        AddPending(Handlers(typeID, block - blockOffset), pending);
+
+        // The reference also adds the object's own watchers here (FUN_004d3d40: the lists at
+        // +0x44 onwards); frozen objects carry none, since nothing registers one.
+
         if (IsMaskBitSet(changeMasks, block)) {
             // Read past it. The value is already stored; see the note above.
             uint32_t blockValue = 0;
             msg->Get(blockValue);
+
+            Dispatch(pending, guid, object, typeID, activePlayer);
+        } else if (a2) {
+            Dispatch(pending, guid, object, typeID, activePlayer);
         }
     }
 
-    // TODO the reference walks its watcher list here, one pass per block. Until that exists, the
-    // unit fields the player and target frames depend on are signalled from the recorded change
-    // set. Deliberately narrow: see docs/ref/parity-mirror.md.
+    // FUN_007cecd0
+    while (auto handler = pending.Head()) {
+        handler->m_pending.Unlink();
+    }
+
+    // FROZEN-ONLY until the unit and player field handlers are all registered: the events the
+    // unit and player frames depend on, from the recorded change set. See docs/ref/parity-mirror.md.
     if (object->IsA(TYPE_UNIT)) {
         SignalUnitFieldEvents(static_cast<CGUnit_C*>(object), guid);
     }
@@ -458,7 +735,13 @@ int32_t FillInPartialObjectData(CGObject_C* object, WOWGUID guid, CDataStore* ms
         }
 
         if (!forFullUpdate) {
-            // TODO
+            // The fields starting in this block keep their old value for the handlers
+            // (FUN_004d53c0 -> FUN_004d52b0).
+            auto& handlers = Handlers(typeID, block - blockOffset);
+
+            if (handlers.Head()) {
+                SaveFields(handlers, object, guid == ClntObjMgrGetActivePlayer(), typeID);
+            }
         }
 
         if (IsMaskBitSet(changeMasks, block)) {

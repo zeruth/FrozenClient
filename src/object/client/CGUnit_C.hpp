@@ -706,6 +706,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         TSGrowableArray<CAuraSlotState> m_auraSlotStates[2];
         TSGrowableArray<int32_t> m_auraVisualSpells;
         uint8_t m_auraTypeMask[40] = {};
+        // +0x9e4: when the unit last changed target (UNIT_FIELD_TARGET, FUN_00716900).
+        uint32_t m_targetChangeTime = 0;
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
         uint32_t m_boneMask = 0;
         uint32_t m_boneValues[8] = {};
@@ -780,6 +782,13 @@ int32_t ReceiveAuraUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataSto
 // ref: FUN_00747860
 // The unit sound module's start: the FootstepSounds CVar and the dismount sound.
 void UnitSoundInitialize();
+
+// ref: FUN_00742220
+// The unit module's start for a game: its field handlers and the unit sound start.
+// PARTIAL: the message handlers, the unit heap, the threat and combat tables and the six other
+// module starts it makes (FUN_008100e0, FUN_00756bd0, FUN_007165d0, FUN_00703b80, FUN_00756e30,
+// FUN_0074a070, FUN_00759160, FUN_006fc8e0, FUN_0074b880) are ported with their modules.
+void UnitInitialize();
 
 // Opcode classifiers for the unit's movement messages, named by the sets they test.
 
