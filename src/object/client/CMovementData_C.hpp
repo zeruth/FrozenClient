@@ -147,6 +147,66 @@ class CMovementData_C : public CMovementShared {
         int32_t SelectLandingOpcode(uint32_t oldFlags, uint32_t jumping) const;
         // ref: FUN_006e9ff0
         void Knockback(const C2Vector& direction, float horizontalSpeed, float verticalSpeed);
+
+        // Remote movement (0x006ec8b0 .. 0x006f1180)
+        void QueueStatusEvent(int32_t time, int32_t type, uint8_t send, uint32_t counter, float value,
+                              const CMovementStatus* status);
+        void QueueKnockbackStatusEvent(int32_t time, int32_t type, uint8_t send, uint32_t counter,
+                                       const C2Vector& direction, float horizontalSpeed, float verticalSpeed,
+                                       const CMovementStatus* status);
+        int32_t FinishRemoteStatus(const CMovementStatus& status);
+        int32_t ApplyRemoteStatus(int32_t time, const CMovementStatus& status, int32_t type, float value);
+        int32_t ApplyRemoteFacingStatus(int32_t time, const CMovementStatus& status);
+        int32_t ApplyRemoteKnockbackStatus(int32_t time, const CMovementStatus& status, int32_t type,
+                                           const C2Vector& direction, float horizontalSpeed, float verticalSpeed);
+        int32_t RemoteStartMove(int32_t time, const CMovementStatus& status, int32_t forward);
+        int32_t RemoteStartStrafe(int32_t time, const CMovementStatus& status, int32_t left);
+        int32_t RemoteStopMove(int32_t time, const CMovementStatus& status);
+        int32_t RemoteStopStrafe(int32_t time, const CMovementStatus& status);
+        int32_t RemoteJump(int32_t time, const CMovementStatus& status);
+        int32_t RemoteStartTurn(int32_t time, const CMovementStatus& status, int32_t left);
+        int32_t RemoteStopTurn(int32_t time, const CMovementStatus& status);
+        int32_t RemoteStartPitch(int32_t time, const CMovementStatus& status, int32_t up);
+        int32_t RemoteStopPitch(int32_t time, const CMovementStatus& status);
+        int32_t RemoteSetRun(int32_t time, const CMovementStatus& status, int32_t run);
+        int32_t RemoteHeartbeat(int32_t time, const CMovementStatus& status);
+        int32_t RemoteStartSwim(int32_t time, const CMovementStatus& status);
+        int32_t RemoteStopSwim(int32_t time, const CMovementStatus& status);
+        int32_t RemoteSetFacing(int32_t time, const CMovementStatus& status);
+        int32_t RemoteSetPitch(int32_t time, const CMovementStatus& status);
+        int32_t RemoteRoot(int32_t time, const CMovementStatus& status);
+        int32_t RemoteUnroot(int32_t time, const CMovementStatus& status);
+        int32_t RemoteSetGravity(int32_t time, const CMovementStatus& status);
+        int32_t RemoteFeatherFall(int32_t time, const CMovementStatus& status);
+        int32_t RemoteWaterWalk(int32_t time, const CMovementStatus& status);
+        int32_t RemoteHover(int32_t time, const CMovementStatus& status);
+        int32_t RemoteCanFly(int32_t time, const CMovementStatus& status);
+        int32_t RemoteSwimFlyTransition(int32_t time, const CMovementStatus& status);
+        int32_t RemoteStartAscend(int32_t time, const CMovementStatus& status, int32_t up);
+        int32_t RemoteStopAscend(int32_t time, const CMovementStatus& status);
+        int32_t RemoteKnockback(int32_t time, const CMovementStatus& status, const C2Vector& direction,
+                                float horizontalSpeed, float verticalSpeed);
+        int32_t RemoteTeleport(int32_t time, const CMovementStatus& status);
+        int32_t RemoteSetCollisionHeight(int32_t time, const CMovementStatus& status, float height);
+        int32_t RemoteSetSpeed(int32_t time, const CMovementStatus& status, int32_t type, float speed);
+        int32_t SetSpeedForEvent(int32_t type, float speed);
+        void QueueForcedValue(int32_t time, int32_t type, uint32_t counter, float value);
+        void QueueEchoedValue(int32_t time, int32_t type, float value);
+        void QueueForcedState(int32_t time, int32_t type, uint32_t counter);
+        void QueueForcedKnockback(int32_t time, uint32_t counter, const C2Vector& direction, float horizontalSpeed,
+                                  float verticalSpeed);
+        void QueueTeleport(int32_t time, uint8_t send, uint32_t counter, const CMovementStatus& status);
+        int32_t TeleportTo(WOWGUID transport, const C3Vector& position, float facing, int32_t clearSpline,
+                           int32_t fromServer, uint8_t seat);
+        void RunServerEvent(CPlayerMoveEvent* event, int32_t clearSpline);
+        void FlushEvents(int32_t clearSpline, int32_t stopAll);
+        void SplineUnroot();
+        void SplineSetHover(int32_t hover);
+        void SplineRoot();
+        void SplineStartSwim();
+        void SplineStopSwim();
+        void SplineSetFlying(int32_t fly);
+        int32_t SplineSetGravity(int32_t enable);
         // ref: FUN_006ea7e0
         int32_t Interpolate(int32_t time, int32_t ms, C3Vector* position, float* facing, float* pitch);
         // ref: FUN_006e9c30

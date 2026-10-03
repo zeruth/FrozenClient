@@ -869,6 +869,19 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_00717c50
         // Make `guid` the unit the input moves, and tell the server.
         static void SetActiveMover(WOWGUID guid);
+        // Movement messages (0x00740d30 .. 0x00741c90, 0x007307a0)
+        int32_t OnRemoteMoveMessage(int32_t opcode, CDataStore* msg);
+        int32_t OnForcedMoveMessage(int32_t opcode, CDataStore* msg);
+        int32_t OnSpeedMessage(int32_t opcode, CDataStore* msg);
+        int32_t OnSplineSpeedMessage(int32_t opcode, float speed);
+        int32_t OnSplineFlagMessage(int32_t opcode);
+        int32_t RemoteKnockback(int32_t time, const CMovementStatus& status, CDataStore* msg);
+        int32_t RemoteStartTurn(int32_t time, const CMovementStatus& status, int32_t left);
+        int32_t RemoteStartPitch(int32_t time, const CMovementStatus& status, int32_t up);
+        int32_t RemoteUnroot(int32_t time, const CMovementStatus& status);
+        int32_t RemoteTeleport(int32_t time, const CMovementStatus& status);
+        void ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg);
+        void ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* msg);
 
         // Movement members. +0x948 / +0x94c: when a turn and a pitch report were deferred, +0x950 /
         // +0x954 their opcodes; +0x9bc the last teleport acknowledgement; +0xa50 / +0xa54 the

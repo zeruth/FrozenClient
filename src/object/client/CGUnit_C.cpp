@@ -6264,6 +6264,451 @@ void RegisterUnitFieldHandlers() {
 
 } // namespace
 
+
+// ------------------------------------------------------------------------------------------------
+// Movement messages: other units' MSG_MOVE_* broadcasts, the server's forced changes to the local
+// player, speeds and spline states (Unit_C.cpp 0x00740d30 .. 0x00741c90, 0x007307a0).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_007187f0
+// A knockback broadcast: the status, then the direction and the two speeds.
+int32_t CGUnit_C::RemoteKnockback(int32_t time, const CMovementStatus& status, CDataStore* msg) {
+    C2Vector direction = { 0.0f, 0.0f };
+    float horizontal;
+    float vertical;
+
+    msg->Get(direction.x);
+    msg->Get(direction.y);
+    msg->Get(horizontal);
+    msg->Get(vertical);
+
+    return this->m_localMove.RemoteKnockback(time, status, direction, horizontal, vertical);
+}
+
+// ref: FUN_00718890
+// A stunned unit (UNIT_FLAG_STUNNED, 0x40000) does not turn.
+int32_t CGUnit_C::RemoteStartTurn(int32_t time, const CMovementStatus& status, int32_t left) {
+    if (this->m_unit->flags & 0x40000) {
+        return 0;
+    }
+
+    return this->m_localMove.RemoteStartTurn(time, status, left);
+}
+
+// ref: FUN_007188c0
+int32_t CGUnit_C::RemoteStartPitch(int32_t time, const CMovementStatus& status, int32_t up) {
+    if (this->m_unit->flags & 0x40000) {
+        return 0;
+    }
+
+    return this->m_localMove.RemoteStartPitch(time, status, up);
+}
+
+// ref: FUN_007188f0
+// The unroot runs with state bit 0x20000000 up, so what it triggers knows it came from the server.
+int32_t CGUnit_C::RemoteUnroot(int32_t time, const CMovementStatus& status) {
+    this->m_stateFlags |= 0x20000000;
+    int32_t result = this->m_localMove.RemoteUnroot(time, status);
+    this->m_stateFlags &= 0xdfffffff;
+
+    return result;
+}
+
+// ref: FUN_007189a0
+// PARTIAL: a passenger teleported into a seat (move-flags-2 0x2000) boards it (FUN_0074be10, the
+// vehicle port's).
+int32_t CGUnit_C::RemoteTeleport(int32_t time, const CMovementStatus& status) {
+    return this->m_localMove.RemoteTeleport(time, status);
+}
+
+// ref: FUN_00740d30
+// Another unit's MSG_MOVE_*: its status, then the change the opcode names. A change that took
+// re-chooses the unit's animation.
+int32_t CGUnit_C::OnRemoteMoveMessage(int32_t opcode, CDataStore* msg) {
+    CMovementStatus status;
+    *msg >> status;
+
+    int32_t time = static_cast<int32_t>(OsGetAsyncTimeMs());
+    auto& move = this->m_localMove;
+    int32_t changed;
+
+    switch (opcode) {
+        case 0x0b5: changed = move.RemoteStartMove(time, status, 1); break;
+        case 0x0b6: changed = move.RemoteStartMove(time, status, 0); break;
+        case 0x0b7: changed = move.RemoteStopMove(time, status); break;
+        case 0x0b8: changed = move.RemoteStartStrafe(time, status, 1); break;
+        case 0x0b9: changed = move.RemoteStartStrafe(time, status, 0); break;
+        case 0x0ba: changed = move.RemoteStopStrafe(time, status); break;
+        case 0x0bb: changed = move.RemoteJump(time, status); break;
+        case 0x0bc: changed = this->RemoteStartTurn(time, status, 1); break;
+        case 0x0bd: changed = this->RemoteStartTurn(time, status, 0); break;
+        case 0x0be: changed = move.RemoteStopTurn(time, status); break;
+        case 0x0bf: changed = this->RemoteStartPitch(time, status, 1); break;
+        case 0x0c0: changed = this->RemoteStartPitch(time, status, 0); break;
+        case 0x0c1: changed = move.RemoteStopPitch(time, status); break;
+        case 0x0c2: changed = move.RemoteSetRun(time, status, 1); break;
+        case 0x0c3: changed = move.RemoteSetRun(time, status, 0); break;
+        case 0x0c5: changed = this->RemoteTeleport(time, status); break;
+        case 0x0c9:
+        case 0x0ee: changed = move.RemoteHeartbeat(time, status); break;
+        case 0x0ca:
+        case 0x341: changed = move.RemoteStartSwim(time, status); break;
+        case 0x0cb:
+        case 0x342: changed = move.RemoteStopSwim(time, status); break;
+        case 0x0d9: return 1;
+        case 0x0da: changed = move.RemoteSetFacing(time, status); break;
+        case 0x0db: changed = move.RemoteSetPitch(time, status); break;
+        case 0x0ec: changed = move.RemoteRoot(time, status); break;
+        case 0x0ed: changed = this->RemoteUnroot(time, status); break;
+        case 0x0f1: changed = this->RemoteKnockback(time, status, msg); break;
+        case 0x0f7: changed = move.RemoteHover(time, status); break;
+        case 0x2b0: changed = move.RemoteFeatherFall(time, status); break;
+        case 0x2b1: changed = move.RemoteWaterWalk(time, status); break;
+        case 0x34a: changed = move.RemoteSwimFlyTransition(time, status); break;
+        case 0x359: changed = move.RemoteStartAscend(time, status, 1); break;
+        case 0x35a: changed = move.RemoteStopAscend(time, status); break;
+        case 0x3a7: changed = move.RemoteStartAscend(time, status, 0); break;
+        case 0x3ad: changed = move.RemoteCanFly(time, status); break;
+        case 0x4d2: changed = move.RemoteSetGravity(time, status); break;
+        default: return 0;
+    }
+
+    if (changed) {
+        this->OnMovementPacketSent(opcode);
+        this->UpdateAnimation(0, 0xffffffff);
+    }
+
+    return 1;
+}
+
+// ref: FUN_007406a0
+// A speed broadcast (MSG_MOVE_SET_*_SPEED, MSG_MOVE_SET_COLLISION_HGT). The local player already
+// took it from the forced change and applies the echo without answering; another unit takes it
+// with its status.
+int32_t CGUnit_C::OnSpeedMessage(int32_t opcode, CDataStore* msg) {
+    CMovementStatus status;
+    *msg >> status;
+
+    int32_t time = static_cast<int32_t>(OsGetAsyncTimeMs());
+    float value;
+    msg->Get(value);
+
+    int32_t type;
+
+    switch (opcode) {
+        case 0x0cd: type = 0x17; break;
+        case 0x0cf: type = 0x18; break;
+        case 0x0d1: type = 0x19; break;
+        case 0x0d3: type = 0x1a; break;
+        case 0x0d5: type = 0x1b; break;
+        case 0x37e: type = 0x1c; break;
+        case 0x380: type = 0x1d; break;
+        case 0x0d8: type = 0x1e; break;
+        case 0x45b: type = 0x1f; break;
+        case 0x518: type = 0x3a; break;
+        default: return 0;
+    }
+
+    if (this->GetGUID() == CGUnit_C::s_activeMover) {
+        this->m_localMove.QueueEchoedValue(time, type, value);
+        return 1;
+    }
+
+    int32_t changed = type == 0x3a
+        ? this->m_localMove.RemoteSetCollisionHeight(time, status, value)
+        : this->m_localMove.RemoteSetSpeed(time, status, type, value);
+
+    if (changed) {
+        this->OnMovementPacketSent(opcode);
+        this->UpdateAnimation(0, 0xffffffff);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00740a60
+// A spline speed (SMSG_SPLINE_SET_*_SPEED): set at once, nothing to answer.
+int32_t CGUnit_C::OnSplineSpeedMessage(int32_t opcode, float speed) {
+    auto& move = this->m_localMove;
+
+    switch (opcode) {
+        case 0x2fe: move.SetRunSpeed(speed); break;
+        case 0x2ff: move.SetRunBackSpeed(speed); break;
+        case 0x300: move.SetSwimSpeed(speed); break;
+        case 0x301: move.SetWalkSpeed(speed); break;
+        case 0x302: move.SetSwimBackSpeed(speed); break;
+        case 0x303: move.SetTurnRate(speed); break;
+        case 0x385: move.SetFlightSpeed(speed); break;
+        case 0x386: move.SetFlightBackSpeed(speed); break;
+        case 0x45e: move.SetPitchRate(speed); break;
+        default: return 0;
+    }
+
+    this->OnMovementPacketSent(opcode);
+    this->UpdateAnimation(0, 0xffffffff);
+
+    return 1;
+}
+
+// ref: FUN_00740ba0
+// A spline state (SMSG_SPLINE_MOVE_*): the queue is flushed first, then the state set at once.
+int32_t CGUnit_C::OnSplineFlagMessage(int32_t opcode) {
+    auto& move = this->m_localMove;
+    move.FlushEvents(0, 0);
+
+    switch (opcode) {
+        case 0x304: move.SplineUnroot(); break;
+        case 0x305: move.SetSafeFall(1); move.RestartFall(); break;
+        case 0x306: move.SetSafeFall(0); move.RestartFall(); break;
+        case 0x307: move.SplineSetHover(1); break;
+        case 0x308: move.SplineSetHover(0); break;
+        case 0x309: move.SetWaterWalking(1); break;
+        case 0x30a: move.SetWaterWalking(0); break;
+        case 0x30b: move.SplineStartSwim(); break;
+        case 0x30c: move.SplineStopSwim(); break;
+        case 0x30d: move.SetRun(1); break;
+        case 0x30e: move.SetRun(0); break;
+        case 0x31a: move.SplineRoot(); break;
+        case 0x422: move.SplineSetFlying(1); break;
+        case 0x423: move.SplineSetFlying(0); break;
+        case 0x4d3: move.SplineSetGravity(0); break;
+        case 0x4d4: move.SplineSetGravity(1); break;
+        default: return 0;
+    }
+
+    this->OnMovementPacketSent(opcode);
+    this->UpdateAnimation(0, 0xffffffff);
+
+    return 1;
+}
+
+// ref: FUN_0072d1b0
+// SMSG_MOVE_KNOCK_BACK: the local player is thrown. PARTIAL: an open loot window closes first
+// (MovementStartPrologue(1, 1, 0), the loot port's); a unit that is not the active mover becomes
+// it through FUN_00729010, which is SetActiveMover here.
+void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg) {
+    if (this->IsActiveMover()) {
+        this->CancelClickToMove(0, 1);
+    }
+
+    C2Vector direction = { 0.0f, 0.0f };
+    float horizontal;
+    float vertical;
+
+    msg->Get(direction.x);
+    msg->Get(direction.y);
+    msg->Get(horizontal);
+    msg->Get(vertical);
+
+    if (this->GetGUID() != CGUnit_C::s_activeMover) {
+        CGUnit_C::SetActiveMover(this->GetGUID());
+    }
+
+    this->m_localMove.QueueForcedKnockback(time, counter, direction, horizontal, vertical);
+}
+
+// ref: FUN_0072d2d0
+// MSG_MOVE_TELEPORT_ACK from the server: a normal player turns the camera to the new facing and
+// takes the teleport (answered when the event runs); anything else answers at once. PARTIAL: as
+// ReceiveKnockback, the loot window and FUN_00729010.
+void CGUnit_C::ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* msg) {
+    CMovementStatus status;
+    *msg >> status;
+
+    if (ClntObjMgrGetPlayerType() == PLAYER_NORMAL) {
+        if (auto camera = CGWorldFrame::GetActiveCamera()) {
+            camera->FaceYaw(status.facing34);
+        }
+
+        if (this->GetGUID() != CGUnit_C::s_activeMover) {
+            CGUnit_C::SetActiveMover(this->GetGUID());
+        }
+
+        if (this->IsActiveMover()) {
+            this->CancelClickToMove(0, 1);
+        }
+
+        this->m_localMove.QueueTeleport(time, 1, counter, status);
+
+        return;
+    }
+
+    CDataStore ack;
+    ack.Put(static_cast<uint32_t>(MSG_MOVE_TELEPORT_ACK));
+    ack.Put(this->GetGUID());
+    ack.Put(counter);
+    ack.Put(static_cast<uint32_t>(time));
+    ack.Finalize();
+    ClientServices::Send(&ack);
+}
+
+// ref: FUN_007307a0
+// The server's changes to the local player: each read with its counter and queued, to be applied
+// and acknowledged when its time comes.
+int32_t CGUnit_C::OnForcedMoveMessage(int32_t opcode, CDataStore* msg) {
+    int32_t time = static_cast<int32_t>(OsGetAsyncTimeMs());
+    auto& move = this->m_localMove;
+
+    uint32_t counter = 0;
+    msg->Get(counter);
+
+    float value;
+
+    switch (opcode) {
+        case 0x0c7:
+            this->ReceiveTeleportAck(time, counter, msg);
+            break;
+
+        case 0x0de: move.QueueForcedState(time, 0x27, counter); break;
+        case 0x0df: move.QueueForcedState(time, 0x28, counter); break;
+
+        case 0x0e2: {
+            // The extra byte: when set, the speed is also the one the client remembers as the
+            // unit's base run speed (DAT_00ca11a4, read by nothing ported).
+            uint8_t remember;
+            msg->Get(remember);
+            msg->Get(value);
+            move.QueueForcedValue(time, 0x17, counter, value);
+            break;
+        }
+
+        case 0x0e4: msg->Get(value); move.QueueForcedValue(time, 0x18, counter, value); break;
+        case 0x2da: msg->Get(value); move.QueueForcedValue(time, 0x19, counter, value); break;
+        case 0x0e6: msg->Get(value); move.QueueForcedValue(time, 0x1a, counter, value); break;
+        case 0x2dc: msg->Get(value); move.QueueForcedValue(time, 0x1b, counter, value); break;
+        case 0x381: msg->Get(value); move.QueueForcedValue(time, 0x1c, counter, value); break;
+        case 0x383: msg->Get(value); move.QueueForcedValue(time, 0x1d, counter, value); break;
+        case 0x2de: msg->Get(value); move.QueueForcedValue(time, 0x1e, counter, value); break;
+        case 0x45c: msg->Get(value); move.QueueForcedValue(time, 0x1f, counter, value); break;
+        case 0x516: msg->Get(value); move.QueueForcedValue(time, 0x3a, counter, value); break;
+
+        case 0x0e8: move.QueueForcedState(time, 0x29, counter); break;
+        case 0x0ea: move.QueueForcedState(time, 0x2a, counter); break;
+        case 0x0ef: this->ReceiveKnockback(time, counter, msg); break;
+        case 0x0f2: move.QueueForcedState(time, 0x23, counter); break;
+        case 0x0f3: move.QueueForcedState(time, 0x24, counter); break;
+        case 0x0f4: move.QueueForcedState(time, 0x25, counter); break;
+        case 0x0f5: move.QueueForcedState(time, 0x26, counter); break;
+        case 0x33e: move.QueueForcedState(time, 0x38, counter); break;
+        case 0x33f: move.QueueForcedState(time, 0x39, counter); break;
+        case 0x343: move.QueueForcedState(time, 0x2f, counter); break;
+        case 0x344: move.QueueForcedState(time, 0x30, counter); break;
+        case 0x4ce: move.QueueForcedState(time, 0x21, counter); break;
+        case 0x4d0: move.QueueForcedState(time, 0x20, counter); break;
+
+        default:
+            break;
+    }
+
+    return 1;
+}
+
+namespace {
+
+// The unit a movement message names, or nothing: an unknown one's message is skipped whole.
+CGUnit_C* MovementMessageUnit(CDataStore* msg, int32_t line) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", line));
+
+    if (!unit) {
+        msg->Seek(msg->Size());
+    }
+
+    return unit;
+}
+
+// ref: FUN_00741b60
+int32_t UnitRemoteMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    auto unit = MovementMessageUnit(msg, 0x515);
+
+    return unit ? unit->OnRemoteMoveMessage(msgId, msg) : 0;
+}
+
+// ref: FUN_00732450
+int32_t UnitForcedMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x5fe));
+
+    return unit ? unit->OnForcedMoveMessage(msgId, msg) : 1;
+}
+
+// ref: FUN_00741b00
+int32_t UnitSpeedHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    auto unit = MovementMessageUnit(msg, 0x4e7);
+
+    return unit ? unit->OnSpeedMessage(msgId, msg) : 0;
+}
+
+// ref: FUN_00741bc0
+int32_t UnitSplineSpeedHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    float speed;
+    msg->Get(speed);
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x52f));
+
+    if (!unit) {
+        msg->Seek(msg->Size());
+        return 0;
+    }
+
+    return unit->OnSplineSpeedMessage(msgId, speed);
+}
+
+// ref: FUN_00741c30
+int32_t UnitSplineFlagHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    auto unit = MovementMessageUnit(msg, 0x559);
+
+    return unit ? unit->OnSplineFlagMessage(msgId) : 0;
+}
+
+// The movement registrations of FUN_00742220, in its order.
+void RegisterUnitMovementHandlers() {
+    static const uint16_t s_remote[] = {
+        0x0b5, 0x0b6, 0x0b7, 0x0b8, 0x0b9, 0x0ba, 0x0bb, 0x0bc, 0x0bd, 0x0be, 0x0bf, 0x0c0, 0x0c1,
+        0x0c2, 0x0c3, 0x0c5, 0x0c9, 0x0ca, 0x0cb, 0x0d9, 0x0da, 0x0db, 0x0ec, 0x0ed, 0x0ee, 0x0f1,
+        0x0f7, 0x2b0, 0x2b1, 0x341, 0x342, 0x34a, 0x359, 0x35a, 0x3a7, 0x3ad, 0x4d2,
+    };
+    static const uint16_t s_forced[] = {
+        0x0c7, 0x0de, 0x0df, 0x0e2, 0x0e4, 0x0e6, 0x0e8, 0x0ea, 0x0ef, 0x0f2, 0x0f3, 0x0f4, 0x0f5,
+        0x2da, 0x2dc, 0x2de, 0x33e, 0x33f, 0x343, 0x344, 0x381, 0x383, 0x45c, 0x4ce, 0x4d0, 0x516,
+    };
+    static const uint16_t s_speed[] = { 0x0cd, 0x0cf, 0x0d1, 0x0d3, 0x0d5, 0x0d8, 0x37e, 0x380, 0x45b, 0x518 };
+    static const uint16_t s_splineSpeed[] = { 0x2fe, 0x2ff, 0x300, 0x301, 0x302, 0x303, 0x385, 0x386, 0x45e };
+    static const uint16_t s_splineFlag[] = {
+        0x304, 0x305, 0x306, 0x307, 0x308, 0x309, 0x30a, 0x30b, 0x30c, 0x30d, 0x30e, 0x31a, 0x422,
+        0x423, 0x4d3, 0x4d4,
+    };
+
+    for (auto op : s_remote) {
+        ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(op), &UnitRemoteMoveHandler, nullptr);
+    }
+
+    for (auto op : s_forced) {
+        ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(op), &UnitForcedMoveHandler, nullptr);
+    }
+
+    for (auto op : s_speed) {
+        ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(op), &UnitSpeedHandler, nullptr);
+    }
+
+    for (auto op : s_splineSpeed) {
+        ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(op), &UnitSplineSpeedHandler, nullptr);
+    }
+
+    for (auto op : s_splineFlag) {
+        ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(op), &UnitSplineFlagHandler, nullptr);
+    }
+}
+
+} // namespace
+
 // ref: FUN_00742220
 // The reference undoes this at the end of a game (FUN_00742bb0, from FUN_00406510); frozen has no
 // end of game yet, so a second game in the same session registers nothing twice.
@@ -6272,6 +6717,7 @@ void UnitInitialize() {
 
     if (!registered) {
         RegisterUnitFieldHandlers();
+        RegisterUnitMovementHandlers();
         registered = true;
     }
 

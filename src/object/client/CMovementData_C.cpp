@@ -1937,3 +1937,951 @@ void CMovementData_C::EndSpline(int32_t time) {
         this->m_owner->SendSplineDone(time, id);
     }
 }
+
+// ------------------------------------------------------------------------------------------------
+// Remote movement: other units' statuses as they arrive, and the server's forced changes to the
+// local player. The reference keeps these beside the local queue creators in Movement.cpp
+// (0x006ec8b0 .. 0x006f1180): each applies the status at once when it is due, or queues it as an
+// event to apply when its time comes.
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// ref: FUN_006e9050
+// The event carries the status: transport, flags, then the position and facing in the
+// transport's space when there is one, the world's otherwise.
+void MoveEventSetStatus(CPlayerMoveEvent* event, const CMovementStatus& status) {
+    event->transport = status.transport;
+    event->moveFlags = status.moveFlags;
+    event->moveFlags2 = status.uint14;
+
+    if (status.transport) {
+        event->position = status.position18;
+        event->facing = status.facing24;
+        event->seat = status.byte16;
+    } else {
+        event->position = status.position28;
+        event->facing = status.facing34;
+    }
+
+    event->pitch = status.float38;
+    event->hasStatus = 1;
+    event->fallTime = status.uint3C;
+}
+
+// The reference's DAT_00c9ecc8: a flush already running.
+int32_t s_flushingEvents;
+
+} // namespace
+
+// ref: FUN_006ec8b0
+// A status that is not due yet waits as an event. The first such event of an idle queue starts
+// the interpolation toward it.
+void CMovementData_C::QueueStatusEvent(int32_t time, int32_t type, uint8_t send, uint32_t counter, float value,
+                                       const CMovementStatus* status) {
+    auto event = MoveEventAllocate(time, type);
+
+    if (!event) {
+        return;
+    }
+
+    event->value[0] = value;
+    event->send = send;
+    event->counter = counter;
+
+    bool hadEvents = this->m_events.Head() != nullptr;
+
+    if (status) {
+        MoveEventSetStatus(event, *status);
+    }
+
+    MoveEventQueueInsert(&this->m_events, event);
+
+    if (!this->m_moverLink.IsLinked() && MovementGetGlobals()) {
+        MovementLinkMover(this);
+    }
+
+    if (status && !hadEvents && MovementGetGlobals()) {
+        this->UpdateInterpolation(static_cast<int32_t>(MovementGetGlobals()->m_lastTime));
+    }
+}
+
+// ref: FUN_006ec950
+// The same for a knockback, whose event carries the direction and the two speeds.
+void CMovementData_C::QueueKnockbackStatusEvent(int32_t time, int32_t type, uint8_t send, uint32_t counter,
+                                                const C2Vector& direction, float horizontalSpeed,
+                                                float verticalSpeed, const CMovementStatus* status) {
+    auto event = MoveEventAllocate(time, type);
+
+    if (!event) {
+        return;
+    }
+
+    event->counter = counter;
+    event->send = send;
+    event->value[0] = direction.x;
+    event->value[1] = direction.y;
+    event->value[2] = horizontalSpeed;
+    event->value[3] = verticalSpeed;
+
+    bool hadEvents = this->m_events.Head() != nullptr;
+
+    if (status) {
+        MoveEventSetStatus(event, *status);
+    }
+
+    MoveEventQueueInsert(&this->m_events, event);
+
+    if (!this->m_moverLink.IsLinked() && MovementGetGlobals()) {
+        MovementLinkMover(this);
+    }
+
+    if (status && !hadEvents && MovementGetGlobals()) {
+        this->UpdateInterpolation(static_cast<int32_t>(MovementGetGlobals()->m_lastTime));
+    }
+}
+
+// The tail every remote apply shares: a status without the spline flag ends the spline the unit
+// was on (landing it first when the spline was a fall), and the unit joins or leaves the movers.
+int32_t CMovementData_C::FinishRemoteStatus(const CMovementStatus& status) {
+    if (!(status.moveFlags & 0x8000000)) {
+        if (this->m_spline && (this->m_spline->flags & 0x800)) {
+            this->m_owner->OnLanded(0, 1);
+        }
+
+        this->ClearSpline();
+    }
+
+    if (!(this->m_moveFlags & 0xc010ff) && !this->m_events.Head()) {
+        this->LeaveMoversIfIdle(1);
+        return 1;
+    }
+
+    if (!this->m_moverLink.IsLinked() && MovementGetGlobals()) {
+        MovementLinkMover(this);
+    }
+
+    return 1;
+}
+
+// ref: FUN_006ed990
+// Apply another unit's status now, or queue it as event `type` (with `value`) when it is ahead of
+// the clock. 1 when it was applied.
+int32_t CMovementData_C::ApplyRemoteStatus(int32_t time, const CMovementStatus& status, int32_t type, float value) {
+    int32_t skew = 0;
+
+    if (!this->ApplyStatus(time, status, &skew, 0, 0)) {
+        this->QueueStatusEvent(skew + time, type, 0, 0, value, &status);
+        return 0;
+    }
+
+    return this->FinishRemoteStatus(status);
+}
+
+// ref: FUN_006eda60
+// The same for a facing change (event 0x13).
+int32_t CMovementData_C::ApplyRemoteFacingStatus(int32_t time, const CMovementStatus& status) {
+    int32_t skew = 0;
+
+    if (!this->ApplyStatus(time, status, &skew, 0, 0)) {
+        this->QueueStatusEvent(skew + time, 0x13, 0, 0, 0.0f, &status);
+        return 0;
+    }
+
+    return this->FinishRemoteStatus(status);
+}
+
+// ref: FUN_006ed8b0
+// The same for a knockback (event 0x22 with its direction and speeds).
+int32_t CMovementData_C::ApplyRemoteKnockbackStatus(int32_t time, const CMovementStatus& status, int32_t type,
+                                                    const C2Vector& direction, float horizontalSpeed,
+                                                    float verticalSpeed) {
+    int32_t skew = 0;
+
+    if (!this->ApplyStatus(time, status, &skew, 0, 0)) {
+        this->QueueKnockbackStatusEvent(skew + time, type, 0, 0, direction, horizontalSpeed, verticalSpeed, &status);
+        return 0;
+    }
+
+    return this->FinishRemoteStatus(status);
+}
+
+namespace {
+
+// The local-queue tail of the remote applies: a mover that is not on the list goes on it.
+void LinkIfIdle(CMovementData_C* move) {
+    if (!move->m_moverLink.IsLinked() && MovementGetGlobals()) {
+        MovementLinkMover(move);
+    }
+}
+
+} // namespace
+
+// ref: FUN_006f0cf0
+int32_t CMovementData_C::RemoteStartMove(int32_t time, const CMovementStatus& status, int32_t forward) {
+    if (this->ApplyRemoteStatus(time, status, forward == 0 ? 1 : 0, 0.0f) && this->SetMoveForward(forward, 0)) {
+        LinkIfIdle(this);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f0d60
+int32_t CMovementData_C::RemoteStartStrafe(int32_t time, const CMovementStatus& status, int32_t left) {
+    if (this->ApplyRemoteStatus(time, status, 4 - (left != 0 ? 1 : 0), 0.0f) && this->SetStrafe(left)) {
+        LinkIfIdle(this);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f0eb0
+int32_t CMovementData_C::RemoteStopMove(int32_t time, const CMovementStatus& status) {
+    uint32_t oldFlags = this->m_moveFlags;
+
+    if (this->ApplyRemoteStatus(time, status, 2, 0.0f) && this->StopMoveIfMoving(static_cast<uint8_t>(oldFlags))
+        && !(this->m_moveFlags & 0xc)) {
+        this->LeaveMoversIfIdle(1);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f0f10
+int32_t CMovementData_C::RemoteStopStrafe(int32_t time, const CMovementStatus& status) {
+    uint32_t oldFlags = this->m_moveFlags;
+
+    if (this->ApplyRemoteStatus(time, status, 5, 0.0f) && this->StopStrafeIfMoving(static_cast<uint8_t>(oldFlags))
+        && !(this->m_moveFlags & 0xc0000f)) {
+        this->LeaveMoversIfIdle(1);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f0dd0
+int32_t CMovementData_C::RemoteJump(int32_t time, const CMovementStatus& status) {
+    if (this->ApplyRemoteStatus(time, status, 10, 0.0f) && this->Jump(1)) {
+        LinkIfIdle(this);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f1010
+int32_t CMovementData_C::RemoteStartTurn(int32_t time, const CMovementStatus& status, int32_t left) {
+    if (this->ApplyRemoteStatus(time, status, 0xc - (left != 0 ? 1 : 0), 0.0f)) {
+        this->SetTurn(left);
+        LinkIfIdle(this);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f1080
+int32_t CMovementData_C::RemoteStopTurn(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0xd, 0.0f)) {
+        return 0;
+    }
+
+    int32_t stopped = this->StopTurn();
+    this->LeaveMoversIfIdle(1);
+
+    return stopped;
+}
+
+// ref: FUN_006eec30
+int32_t CMovementData_C::RemoteStartPitch(int32_t time, const CMovementStatus& status, int32_t up) {
+    if (this->ApplyRemoteStatus(time, status, 0xf - (up != 0 ? 1 : 0), 0.0f)) {
+        this->SetPitch(up);
+        LinkIfIdle(this);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006eed10
+int32_t CMovementData_C::RemoteStopPitch(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x10, 0.0f)) {
+        return 0;
+    }
+
+    int32_t stopped = this->StopPitch();
+
+    if (!(this->m_moveFlags & 0xc010ff) && !this->m_events.Head()) {
+        this->LeaveMoversIfIdle(1);
+    }
+
+    return stopped;
+}
+
+// ref: FUN_006f10d0
+int32_t CMovementData_C::RemoteSetRun(int32_t time, const CMovementStatus& status, int32_t run) {
+    if (this->ApplyRemoteStatus(time, status, 0x12 - (run != 0 ? 1 : 0), 0.0f)) {
+        this->SetRun(run);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006ef680
+// A heartbeat or a landing: only the status.
+int32_t CMovementData_C::RemoteHeartbeat(int32_t time, const CMovementStatus& status) {
+    return this->ApplyRemoteStatus(time, status, 0x2b, 0.0f);
+}
+
+// ref: FUN_006eeb80
+int32_t CMovementData_C::RemoteStartSwim(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x15, 0.0f)) {
+        return 0;
+    }
+
+    this->StartSwim();
+    this->ApplyDeferredMoves();
+    this->LeaveMoversIfIdle(1);
+
+    return 1;
+}
+
+// ref: FUN_006eebd0
+int32_t CMovementData_C::RemoteStopSwim(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x16, 0.0f)) {
+        return 0;
+    }
+
+    this->StopFly();
+    LinkIfIdle(this);
+
+    return 1;
+}
+
+// ref: FUN_006ee550
+int32_t CMovementData_C::RemoteSetFacing(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteFacingStatus(time, status)) {
+        return 0;
+    }
+
+    this->LeaveMoversIfIdle(1);
+
+    return 1;
+}
+
+// ref: FUN_006ee590
+int32_t CMovementData_C::RemoteSetPitch(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x14, status.float38)) {
+        return 0;
+    }
+
+    this->LeaveMoversIfIdle(1);
+
+    return 1;
+}
+
+// ref: FUN_006ee5d0
+int32_t CMovementData_C::RemoteRoot(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x29, 0.0f)) {
+        return 0;
+    }
+
+    this->Root();
+    this->LeaveMoversIfIdle(1);
+
+    return 1;
+}
+
+// ref: FUN_006ee620
+int32_t CMovementData_C::RemoteUnroot(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x2a, 0.0f)) {
+        return 0;
+    }
+
+    this->Unroot(1);
+
+    if (this->m_moveFlags & 0xc010ff) {
+        LinkIfIdle(this);
+    }
+
+    this->m_owner->ClearEffectFlag4000();
+
+    return 1;
+}
+
+// ref: FUN_006ee700
+// Gravity on (event 0x20) or off (0x21) as the status says.
+int32_t CMovementData_C::RemoteSetGravity(int32_t time, const CMovementStatus& status) {
+    int32_t type = static_cast<int32_t>(((status.moveFlags & 0x400) | 0x8000) >> 10);
+
+    if (!this->ApplyRemoteStatus(time, status, type, 0.0f)) {
+        return 0;
+    }
+
+    this->ResetAnchor(0);
+    this->OnGravityChanged();
+
+    return 1;
+}
+
+// ref: FUN_006eeec0
+int32_t CMovementData_C::RemoteFeatherFall(int32_t time, const CMovementStatus& status) {
+    return this->ApplyRemoteStatus(time, status, 0x24 - ((status.moveFlags & 0x20000000) != 0 ? 1 : 0), 0.0f);
+}
+
+// ref: FUN_006eede0
+int32_t CMovementData_C::RemoteWaterWalk(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x28 - ((status.moveFlags & 0x10000000) != 0 ? 1 : 0), 0.0f)) {
+        return 0;
+    }
+
+    if (!(this->m_moveFlags & 0x10000000) && this->FallIfUnsupported()) {
+        LinkIfIdle(this);
+    }
+
+    return 1;
+}
+
+// ref: FUN_006eef60
+int32_t CMovementData_C::RemoteHover(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x26 - ((status.moveFlags & 0x40000000) != 0 ? 1 : 0), 0.0f)) {
+        return 0;
+    }
+
+    uint32_t hover = this->m_moveFlags & 0x40000000;
+
+    if (!hover) {
+        this->FallIfUnsupported();
+    } else {
+        this->Jump(0);
+    }
+
+    LinkIfIdle(this);
+    this->SetHover(hover != 0 ? 1 : 0);
+
+    return 1;
+}
+
+// ref: FUN_006ef0d0
+int32_t CMovementData_C::RemoteCanFly(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x30 - ((status.moveFlags & 0x1000000) != 0 ? 1 : 0), 0.0f)) {
+        return 0;
+    }
+
+    if (status.moveFlags & 0x1000000) {
+        this->m_moveFlags |= 0x1000000;
+        return 1;
+    }
+
+    if (this->m_moveFlags & 0x2000000) {
+        this->StopFlyAndSwim();
+    }
+
+    this->m_moveFlags &= 0xfeffffff;
+
+    return 1;
+}
+
+// ref: FUN_006ef1c0
+// Whether the unit may pass between swimming and flying (move-flags-2 0x4000).
+int32_t CMovementData_C::RemoteSwimFlyTransition(int32_t time, const CMovementStatus& status) {
+    int32_t type = static_cast<int32_t>((~(status.uint14 >> 14) & 1) | 0x38);
+
+    if (!this->ApplyRemoteStatus(time, status, type, 0.0f)) {
+        return 0;
+    }
+
+    if (status.uint14 & 0x4000) {
+        this->m_moveFlags2 |= 0x4000;
+    } else {
+        this->m_moveFlags2 &= 0xbfff;
+    }
+
+    return 1;
+}
+
+// ref: FUN_006ef5c0
+int32_t CMovementData_C::RemoteStartAscend(int32_t time, const CMovementStatus& status, int32_t up) {
+    if (this->ApplyRemoteStatus(time, status, 7 - (up != 0 ? 1 : 0), 0.0f) && this->SetAscend(up)) {
+        LinkIfIdle(this);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006ef630
+int32_t CMovementData_C::RemoteStopAscend(int32_t time, const CMovementStatus& status) {
+    if (this->ApplyRemoteStatus(time, status, 8, 0.0f) && !(this->m_moveFlags & 0xf)) {
+        this->LeaveMoversIfIdle(1);
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006f0e30
+int32_t CMovementData_C::RemoteKnockback(int32_t time, const CMovementStatus& status, const C2Vector& direction,
+                                         float horizontalSpeed, float verticalSpeed) {
+    if (!this->ApplyRemoteKnockbackStatus(time, status, 0x22, direction, horizontalSpeed, verticalSpeed)) {
+        return 0;
+    }
+
+    this->Knockback(direction, horizontalSpeed, verticalSpeed);
+    LinkIfIdle(this);
+
+    return 1;
+}
+
+// ref: FUN_006f1120
+// Another unit teleported: to the status's position, in its transport's space when it has one.
+int32_t CMovementData_C::RemoteTeleport(int32_t time, const CMovementStatus& status) {
+    if (!this->ApplyRemoteStatus(time, status, 0x2c, 0.0f)) {
+        return 0;
+    }
+
+    if (status.transport) {
+        this->TeleportTo(status.transport, status.position18, status.facing24, 1, 0, status.byte16);
+    } else {
+        this->TeleportTo(0, status.position28, status.facing34, 1, 0, 0xff);
+    }
+
+    if ((this->m_moveFlags & 0xc0100f) && MovementGetGlobals()) {
+        this->ScheduleHeartbeat(static_cast<int32_t>(MovementGetGlobals()->m_stepTime));
+    }
+
+    return 1;
+}
+
+// ref: FUN_006ee810
+// Another unit's collision height (MSG_MOVE_SET_COLLISION_HGT). PARTIAL: the world update the
+// reference makes at the unit's position afterwards (FUN_00632050) is not identified.
+int32_t CMovementData_C::RemoteSetCollisionHeight(int32_t time, const CMovementStatus& status, float height) {
+    if (!this->ApplyRemoteStatus(time, status, 0x3a, height)) {
+        return 0;
+    }
+
+    this->m_collisionHeight = height;
+
+    return 1;
+}
+
+// ref: FUN_006edbe0, FUN_006edcd0, FUN_006eddc0, FUN_006edeb0, FUN_006edfa0, FUN_006ee090,
+// FUN_006ee180, FUN_006ee270, FUN_006ee360
+// Another unit's speed (event 0x17 .. 0x1f as the speed is, in that order: run, run back, walk,
+// swim, swim back, flight, flight back, turn rate, pitch rate).
+int32_t CMovementData_C::RemoteSetSpeed(int32_t time, const CMovementStatus& status, int32_t type, float speed) {
+    if (!this->ApplyRemoteStatus(time, status, type, speed)) {
+        return 0;
+    }
+
+    this->SetSpeedForEvent(type, speed);
+
+    return 1;
+}
+
+// The speed setter an event type 0x17 .. 0x1f stands for.
+int32_t CMovementData_C::SetSpeedForEvent(int32_t type, float speed) {
+    switch (type) {
+        case 0x17: return this->SetRunSpeed(speed);
+        case 0x18: return this->SetRunBackSpeed(speed);
+        case 0x19: return this->SetWalkSpeed(speed);
+        case 0x1a: return this->SetSwimSpeed(speed);
+        case 0x1b: return this->SetSwimBackSpeed(speed);
+        case 0x1c: return this->SetFlightSpeed(speed);
+        case 0x1d: return this->SetFlightBackSpeed(speed);
+        case 0x1e: return this->SetTurnRate(speed);
+        case 0x1f: return this->SetPitchRate(speed);
+        default: return 0;
+    }
+}
+
+// ref: FUN_006edb30, FUN_006edc20, FUN_006edd10, FUN_006ede00, FUN_006edef0, FUN_006edfe0,
+// FUN_006ee0d0, FUN_006ee1c0, FUN_006ee2b0, FUN_006ee760
+// The server changes a value of the local player's (a speed, the collision height): an event
+// carrying the value and the counter the acknowledgement echoes.
+void CMovementData_C::QueueForcedValue(int32_t time, int32_t type, uint32_t counter, float value) {
+    auto event = MoveEventAllocate(time, type);
+
+    if (!event) {
+        return;
+    }
+
+    event->value[0] = value;
+    event->counter = counter;
+    event->send = 1;
+
+    MoveEventQueueInsert(&this->m_events, event);
+    LinkIfIdle(this);
+}
+
+// ref: FUN_006edb80, FUN_006edc70, FUN_006edd60, FUN_006ede50, FUN_006edf40, FUN_006ee030,
+// FUN_006ee120, FUN_006ee210, FUN_006ee300, FUN_006ee7b0
+// The server's broadcast of a value the local player already took: applied without an answer.
+void CMovementData_C::QueueEchoedValue(int32_t time, int32_t type, float value) {
+    auto event = MoveEventAllocate(time, type);
+
+    if (!event) {
+        return;
+    }
+
+    event->value[0] = value;
+    event->send = 0;
+    event->counter = 0;
+
+    MoveEventQueueInsert(&this->m_events, event);
+    LinkIfIdle(this);
+}
+
+// ref: FUN_006ee690, FUN_006eed70, FUN_006eee50, FUN_006eeef0, FUN_006eeff0, FUN_006ef060,
+// FUN_006ef150
+// The server switches a state of the local player's (gravity, water walk, feather fall, hover,
+// root, can fly, swim-fly transition): an event to acknowledge with the counter.
+void CMovementData_C::QueueForcedState(int32_t time, int32_t type, uint32_t counter) {
+    this->QueueEvent(time, type, 1, counter, 0.0f, 0.0f, 0);
+}
+
+// ref: FUN_006ecc80
+// The server knocks the local player back.
+void CMovementData_C::QueueForcedKnockback(int32_t time, uint32_t counter, const C2Vector& direction,
+                                           float horizontalSpeed, float verticalSpeed) {
+    auto event = MoveEventAllocate(time, 0x22);
+
+    if (!event) {
+        return;
+    }
+
+    event->counter = counter;
+    event->send = 1;
+    event->value[0] = direction.x;
+    event->value[1] = direction.y;
+    event->value[2] = horizontalSpeed;
+    event->value[3] = verticalSpeed;
+
+    MoveEventQueueInsert(&this->m_events, event);
+    LinkIfIdle(this);
+}
+
+// ref: FUN_006eca00
+// The server teleports the local player (event 0x2c with the destination status). PARTIAL: a
+// destination seat (move-flags-2 0x2000) boards it through FUN_0074be10, the vehicle port's.
+void CMovementData_C::QueueTeleport(int32_t time, uint8_t send, uint32_t counter, const CMovementStatus& status) {
+    auto event = MoveEventAllocate(time, 0x2c);
+
+    if (!event) {
+        return;
+    }
+
+    event->send = send;
+    event->counter = counter;
+    event->pitch = status.float38;
+    event->transport = status.transport;
+    event->moveFlags = status.moveFlags;
+    event->moveFlags2 = status.uint14;
+
+    if (!status.transport) {
+        event->position = status.position28;
+        event->facing = status.facing34;
+    } else {
+        event->position = status.position18;
+        event->facing = status.facing24;
+        event->seat = status.byte16;
+    }
+
+    MoveEventQueueInsert(&this->m_events, event);
+    LinkIfIdle(this);
+}
+
+// ref: FUN_006ecf80
+// Put the unit at `position` (in `transport`'s space when it has one). PARTIAL: boarding the
+// transport (FUN_006ec400) goes through SetTransport, which does not board yet; the vehicle seat
+// moves (FUN_0074b380, FUN_0074b620) and the world update at the new position (FUN_00632050) are
+// the vehicle and world ports'.
+int32_t CMovementData_C::TeleportTo(WOWGUID transport, const C3Vector& position, float facing, int32_t clearSpline,
+                                    int32_t fromServer, uint8_t seat) {
+    if (this->m_moveFlags2 & 0x2000) {
+        this->m_owner->m_stateFlags |= 0x20000000;
+    } else {
+        this->m_owner->m_stateFlags &= 0xdfffffff;
+    }
+
+    int32_t result = this->SetTransport(transport, seat);
+    this->m_owner->m_stateFlags &= 0xdfffffff;
+
+    if (this->m_transportGUID == transport) {
+        this->Teleport(position, facing, clearSpline);
+        this->LeaveMoversIfIdle(1);
+
+        if ((!fromServer || this->m_owner->IsActiveMover()) && this->FallIfUnsupported()) {
+            LinkIfIdle(this);
+        }
+
+        this->m_moveFlags2 &= 0xe3ff;
+    }
+
+    return result;
+}
+
+// ref: FUN_006ed0f0
+// One queued server event, now: the value or state it carries, the acknowledgement, its status.
+// The flush (FlushEvents) runs the queue through this; ProcessEvents has its own copy of these
+// cases in the reference too.
+void CMovementData_C::RunServerEvent(CPlayerMoveEvent* event, int32_t clearSpline) {
+    uint32_t time = MovementGetGlobals() ? MovementGetGlobals()->m_stepTime : 0;
+    auto unit = this->m_owner;
+
+    this->m_events.UnlinkNode(event);
+
+    int32_t opcode = 0;
+    float value = 0.0f;
+    uint32_t counter = event->counter;
+    uint8_t send = event->send;
+    bool answer = true;
+
+    switch (event->type) {
+        case 0x11:
+            this->SetRun(1);
+            answer = false;
+            break;
+
+        case 0x12:
+            this->SetRun(0);
+            answer = false;
+            break;
+
+        case 0x17: case 0x18: case 0x19: case 0x1a: case 0x1b: case 0x1c: case 0x1d: case 0x1e: case 0x1f: {
+            static const int32_t s_acks[9] = { 0xe3, 0xe5, 0x2db, 0xe7, 0x2dd, 0x382, 0x384, 0x2df, 0x45d };
+            this->SetSpeedForEvent(event->type, event->value[0]);
+            value = event->value[0];
+            opcode = s_acks[event->type - 0x17];
+            break;
+        }
+
+        case 0x20:
+            this->SetGravity(1);
+            opcode = 0x4d1;
+            break;
+
+        case 0x21:
+            this->SetGravity(0);
+            opcode = 0x4cf;
+            break;
+
+        case 0x22:
+            this->Knockback({ event->value[0], event->value[1] }, event->value[2], event->value[3]);
+            opcode = 0xf0;
+            break;
+
+        case 0x23:
+        case 0x24:
+            this->SetSafeFall(event->type == 0x23 ? 1 : 0);
+            unit->SendMovement(time, 0x2cf, send, event->type == 0x23 ? 1.0f : 0.0f, counter, 0, 0xff);
+            this->RestartFall();
+            unit->UpdateFallAnimation();
+            answer = false;
+            break;
+
+        case 0x25:
+            this->SetHover(1);
+            value = 1.0f;
+            opcode = 0xf6;
+            break;
+
+        case 0x26:
+            this->SetHoverState(0, (!send || unit->IsActiveMover()) ? 1 : 0);
+            opcode = 0xf6;
+            break;
+
+        case 0x27:
+            this->SetWaterWalking(1);
+            value = 1.0f;
+            opcode = 0x2d0;
+            break;
+
+        case 0x28:
+            this->SetWaterWalking(0);
+
+            if (!send || unit->IsActiveMover()) {
+                this->FallIfUnsupported();
+            }
+
+            opcode = 0x2d0;
+            break;
+
+        case 0x29:
+            if (send && this->IsSplineActive()) {
+                this->FinishSplineAt(0);
+            }
+
+            this->Root();
+            opcode = 0xe9;
+            break;
+
+        case 0x2a:
+            this->Unroot((!send || unit->IsActiveMover()) ? 1 : 0);
+            opcode = 0xeb;
+            break;
+
+        case 0x2c:
+            this->m_moveFlags2 ^= (event->moveFlags2 ^ this->m_moveFlags2) & 0x2040;
+            this->TeleportTo(event->transport, event->position, event->facing, clearSpline, send, event->seat);
+            opcode = 199;
+            break;
+
+        case 0x2f:
+            this->m_moveFlags |= 0x1000000;
+            value = 1.0f;
+            opcode = 0x345;
+            break;
+
+        case 0x30:
+            if (this->m_moveFlags & 0x2000000) {
+                this->StopFlyAndSwim();
+            }
+
+            this->m_moveFlags &= 0xfeffffff;
+            opcode = 0x345;
+            break;
+
+        case 0x31:
+            if (this->m_moveFlags & 0x200) {
+                this->m_moveFlags &= 0xfffffdff;
+            }
+
+            MovementSendTimeSyncResponse(static_cast<uint32_t>(event->time), counter);
+            answer = false;
+            break;
+
+        case 0x38:
+            this->m_moveFlags2 |= 0x4000;
+            value = 1.0f;
+            opcode = 0x340;
+            break;
+
+        case 0x39:
+            this->m_moveFlags2 &= 0xbfff;
+            opcode = 0x340;
+            break;
+
+        case 0x3a:
+            this->SetCollisionHeight(event->value[0]);
+            value = event->value[0];
+            opcode = 0x517;
+            break;
+
+        default:
+            answer = false;
+            break;
+    }
+
+    if (answer) {
+        unit->SendMovement(time, opcode, send, value, counter, 0, 0xff);
+    }
+
+    if (event->hasStatus) {
+        this->ApplyEventStatus(event);
+    }
+
+    MoveEventFree(event);
+}
+
+// ref: FUN_006ed7e0
+// Before a spline takes the unit over: every queued event now, then everything the unit was doing
+// stops. PARTIAL: a passenger's seat is told first (FUN_00747910 / FUN_00748230), the vehicle
+// port's.
+void CMovementData_C::FlushEvents(int32_t clearSpline, int32_t stopAll) {
+    if (s_flushingEvents) {
+        return;
+    }
+
+    this->m_moveFlags2 &= 0xe3ff;
+    s_flushingEvents = 1;
+
+    while (auto event = this->m_events.Head()) {
+        this->RunServerEvent(event, clearSpline);
+    }
+
+    if (stopAll || !this->m_spline || (this->m_spline->flags & 0x400)) {
+        this->StopAllForTeleport();
+    }
+
+    s_flushingEvents = 0;
+}
+
+// ref: FUN_006eba20
+void CMovementData_C::SplineUnroot() {
+    this->Unroot(1);
+
+    if (this->m_moveFlags & 0xc010ff) {
+        LinkIfIdle(this);
+    }
+
+    this->m_owner->ClearEffectFlag4000();
+}
+
+// ref: FUN_006eb060
+void CMovementData_C::SplineSetHover(int32_t hover) {
+    if (!hover) {
+        this->FallIfUnsupported();
+    } else {
+        this->Jump(0);
+    }
+
+    LinkIfIdle(this);
+    this->SetHover(hover);
+}
+
+// ref: FUN_006eb9d0
+// Rooted where the spline ends.
+void CMovementData_C::SplineRoot() {
+    this->Root();
+
+    if (this->m_spline) {
+        this->SetPositionAndLand(this->m_spline->vector1F8, 0);
+        this->m_spline->uint28 = this->m_spline->uint2C;
+        this->m_spline->flags |= 0x100;
+    }
+
+    this->LeaveMoversIfIdle(1);
+}
+
+// ref: FUN_006ebf70
+void CMovementData_C::SplineStartSwim() {
+    this->StartSwim();
+    this->ApplyDeferredMoves();
+    this->LeaveMoversIfIdle(1);
+}
+
+// ref: FUN_006eb020
+void CMovementData_C::SplineStopSwim() {
+    this->StopFly();
+
+    if ((this->m_moveFlags & 0xc010ff) || this->m_events.Head()) {
+        LinkIfIdle(this);
+    }
+}
+
+// ref: FUN_006ebe50
+void CMovementData_C::SplineSetFlying(int32_t fly) {
+    if (!fly) {
+        this->StopFlyAndSwim();
+    } else if (this->StartFly()) {
+        this->ApplyDeferredMoves();
+    }
+}
+
+// ref: FUN_006ebc20
+int32_t CMovementData_C::SplineSetGravity(int32_t enable) {
+    if (!this->SetGravity(enable)) {
+        return 0;
+    }
+
+    this->OnGravityChanged();
+
+    return 1;
+}
