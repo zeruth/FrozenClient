@@ -44,8 +44,91 @@ void CalcWrapPoint(CGxFont* face, const char* currentText, float fontHeight, flo
     }
 }
 
+// ref: FUN_006c1ae0
+// A billboarded string does not wrap: the line runs to the next newline, its extent the steps
+// between its glyphs plus the last glyph's width, scaled from the font's pixel size to the
+// requested height. Whitespace after the line is skipped.
 void CalcWrapPointBillboarded(const char* currentText, uint32_t flags, CGxFont* face, float fontHeight, uint32_t* numBytes, float* extent, const char** nextText, float* a8, float scale) {
-    // TODO
+    if (fontHeight == 0.0f) {
+        *numBytes = 0;
+        *extent = 0.0f;
+        *nextText = nullptr;
+
+        if (a8) {
+            *a8 = 0.0f;
+        }
+
+        return;
+    }
+
+    float lastWidth = 0.0f;
+    float steps = 0.0f;
+    uint32_t prevCode = 0;
+
+    if (a8) {
+        *a8 = 0.0f;
+    }
+
+    auto startText = currentText;
+    int32_t advance = 0;
+
+    while (*currentText) {
+        uint32_t code;
+        QUOTEDCODE quotedCode = GxuDetermineQuotedCode(currentText, advance, 0, flags, code);
+
+        if (quotedCode == CODE_NEWLINE) {
+            break;
+        }
+
+        switch (quotedCode) {
+            case CODE_COLORON:
+            case CODE_COLORRESTORE:
+            case CODE_HYPERLINKSTART:
+            case CODE_HYPERLINKSTOP:
+            case CODE_TEXTURESTOP:
+                break;
+
+            case CODE_TEXTURESTART:
+                // TODO the embedded texture's parse (FUN_006c0e80, at the font height for a
+                // billboarded string): its width joins the steps and its height raises *a8.
+                // ParseEmbeddedTexture is still unported, as in CalcWrapPointNonBillboarded.
+                break;
+
+            default:
+                if (face->NewCodeDesc(code)) {
+                    float step = 0.0f;
+
+                    if (prevCode) {
+                        step = flags & 0x10
+                            ? face->ComputeStepFixedWidth(prevCode, code)
+                            : face->ComputeStep(prevCode, code);
+                    }
+
+                    steps += step;
+                    lastWidth = GetCharacterWidth(&currentText[advance], flags, code, face, fontHeight);
+                    prevCode = code;
+                }
+
+                break;
+        }
+
+        currentText += advance;
+    }
+
+    *numBytes = currentText - startText;
+    *extent = (fontHeight / static_cast<float>(face->GetPixelSize())) * (steps + lastWidth);
+
+    while (*currentText) {
+        auto code = SUniSGetUTF8(reinterpret_cast<const uint8_t*>(currentText), &advance);
+
+        if (!iswspace(code)) {
+            break;
+        }
+
+        currentText += advance;
+    }
+
+    *nextText = currentText;
 }
 
 void CalcWrapPointNonBillboarded(const char* currentText, CGxFont* face, float fontHeight, float blockWidth, uint32_t* numBytes, float* extent, const char** nextText, float a8, uint32_t flags, bool* a10, float* a11, float scale) {
