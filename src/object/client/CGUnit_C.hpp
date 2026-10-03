@@ -784,6 +784,26 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void UpdateModelColor();
         void UpdateWheels();
         void UpdateVisible(uint32_t time);
+        void UpdateRipples(int32_t splash);
+        float GetClearanceBelow();
+        void PlaySplashSound(const C3Vector& position);
+        void StartSwimming(int32_t time, int32_t fromSpline);
+        void StopSwimming(int32_t time, int32_t fromSpline);
+        void UpdateSwimming(int32_t time, int32_t fromSpline);
+        void UpdateFlying(int32_t time);
+        bool IsWading(const C3Vector* position);
+        int32_t GetFootstepSize() const;
+        void PlayFootstepEventSound(const C3Vector* position);
+        void GetFootprint(int32_t* texture, C2Vector* size);
+        void OnFootstep(const C3Vector* position, int32_t left);
+        void UpdateBreathState(uint32_t time);
+        void PlayFidgetSound(uint32_t index);
+        void OnFidgetEvent(uint32_t eventId);
+        void PlayEmoteStateSound(const C3Vector* position);
+        void SetMissileLaunchPoint(const C3Vector& point);
+        void OnAnimEvent(CM2Model* model, uint32_t eventId, uint32_t eventData, const C3Vector* position);
+        static void AnimEventCallback(CM2Model* model, uint32_t boneId, uint32_t eventId, uint32_t eventData,
+                                      const C3Vector* position, uint32_t a6, WOWGUID owner);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
@@ -1017,6 +1037,17 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
         uint32_t m_boneMask = 0;
         float m_boneValues[8] = {};
+        // +0x784: how deep the water was at the last step (the splash test), +0x8f0 the race's
+        // splash sound, +0xa40 the terrain type under the unit (-1 for none).
+        float m_lastLiquidDepth = 0.0f;
+        // +0x9bc: when the breath state is next checked (UpdateBreathState).
+        uint32_t m_breathCheckTime = 0;
+        // +0xaf0: where the unit's next missile flies from (SetMissileLaunchPoint).
+        C3Vector m_missileLaunchPoint = {};
+        int32_t m_splashSoundID = 0;
+        int32_t m_terrainType = -1;
+        // +0xa58: when the next ripple may spread (UpdateRipples), 0 for at once.
+        uint32_t m_nextRippleTime = 0;
         // +0xfa0: when the wheels last turned (UpdateWheels).
         uint32_t m_wheelTime = 0;
         // Byte 3 of UNIT_FIELD_BYTES_1: 0 ground, 1 swim, 2 hover, 3 fly. ResolveAnimation asks
@@ -1091,6 +1122,16 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0xa9c how much of the spring it takes; the spine and head turn the rest of the way.
         float m_lowerBodyFacing = 0.0f;
         float m_lowerBodyFacingStep = 0.0f;
+        // ref: FUN_00715270
+        // A transport change turns the frame the facings are kept in; both are carried by `delta`.
+        void AddFacingOffset(float delta);
+        // ref: FUN_00722010
+        // A click-to-move the active player is following moves with it into another space.
+        void CarryClickToMove(const C44Matrix& matrix, float facing);
+        // ref: FUN_0071c4d0
+        // The transport the camera should follow the unit onto: a vehicle seat's vehicle when it
+        // rides one (FUN_007599d0), otherwise its transport.
+        WOWGUID GetCameraTransportGUID();
         float m_lowerBodyBlend = 1.0f;
         // +0xaa8: the last four turns the facing average took, newest first; [0] == 0 starts over.
         float m_smoothFacingHistory[4] = {};

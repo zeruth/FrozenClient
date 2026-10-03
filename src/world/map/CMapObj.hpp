@@ -430,6 +430,10 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // Is a point (in this building's space) inside its MOHD bounds? False until the root
         // is parsed. ref: FUN_007ae810
         bool PointInBounds(const C3Vector& point);
+        // ref: FUN_007aea10
+        // Is a point (in this building's space) inside its convex volume (MCVP)? False until the
+        // root is parsed; true for a building without one.
+        bool PointInConvexVolume(const C3Vector& point);
         // A segment (in this building's space) against one loaded group's faces.
         // ref: FUN_007af200
         bool QuerySegmentGroup(const C3Vector& start, const C3Vector& end, float* t, uint32_t queryFlags,

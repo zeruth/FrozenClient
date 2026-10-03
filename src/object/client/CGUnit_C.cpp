@@ -1,4 +1,5 @@
 #include "object/client/CGUnit_C.hpp"
+#include "model/CM2ParticleEmitter.hpp"
 #include <new>
 #include <storm/Memory.hpp>
 #include "ui/game/CGGameUI.hpp"
@@ -416,6 +417,10 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
 
     this->UpdateCollisionBox(1, 1);
+
+    if (auto race = g_chrRacesDB.GetRecord(static_cast<uint8_t>(this->m_unit->bytes0))) {
+        this->m_splashSoundID = race->m_splashSoundID;
+    }
 
     this->UpdateShadowRadius();
     this->UpdateEffectAttachments();
@@ -5493,8 +5498,6 @@ void CGUnit_C::SetMountDisplay(int32_t displayID) {
 }
 
 // ref: FUN_0073d5d0
-// PHASE4(Unit_C): the reference gives the mount the unit's anim-event handler (FUN_00734a40,
-// which forwards to FUN_00732650); frozen has no unit anim-event handler yet.
 void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
     this->m_boneMask = 0;
 
@@ -5520,6 +5523,7 @@ void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
         }
 
         mount->SetSequenceDoneCallback(&CGUnit_C::OnSequenceDone, this->GetGUID());
+        mount->SetAnimEventCallback(&CGUnit_C::AnimEventCallback, this->GetGUID());
 
         C44Matrix placement = this->m_model->matrixB4;
         mount->m_flag8000 = 1;
@@ -7568,7 +7572,7 @@ void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport,
         move.FlushEvents(0, 0);
     }
 
-    move.SetSplineTransport(transport, seat);
+    move.SetSplineTransport(transport, seat, 1);
     this->m_stateFlags &= 0xdfffffff;
 
     if (move.m_transportGUID != transport) {
@@ -9638,6 +9642,18 @@ void CGUnit_C::UpdateModel(int32_t force) {
     this->m_animFlags &= ~0x8000000u;
 }
 
+// ref: FUN_00715270
+void CGUnit_C::AddFacingOffset(float delta) {
+    this->m_smoothFacing = NormalizeAngle(delta + this->m_smoothFacing);
+    this->m_lowerBodyFacing = NormalizeAngle(delta + this->m_lowerBodyFacing);
+}
+
+// ref: FUN_0071c4d0
+// PHASE4(Vehicle_C): a passenger's vehicle (FUN_007599d0) through its seat at +0xf64.
+WOWGUID CGUnit_C::GetCameraTransportGUID() {
+    return this->GetTransportGUID();
+}
+
 // ref: FUN_0073e840
 // PHASE4(Vehicle_C): a vehicle's or a passenger's seat follows the loaded model (FUN_00757d10,
 // FUN_00757e70, FUN_00748620).
@@ -10204,6 +10220,19 @@ void CGUnit_C::CancelClickToMove(int32_t face, int32_t stop) {
     }
 
     s_clickToMoveState = 13;
+}
+
+// ref: FUN_00722010
+// PARTIAL: click-to-move is not ported, so its state is always 13 and there is nothing to carry;
+// the move-to target (DAT_00ca1264, state 4) and the facing target (DAT_00ca11ec, states 2 and 8)
+// join it.
+void CGUnit_C::CarryClickToMove(const C44Matrix& matrix, float facing) {
+    (void)matrix;
+    (void)facing;
+
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer() || s_clickToMoveState == 13) {
+        return;
+    }
 }
 
 // ref: FUN_0072ea50
@@ -10912,15 +10941,22 @@ int32_t CGUnit_C::AcknowledgeLanding(uint32_t time, uint32_t oldFlags, uint16_t 
 }
 
 // ref: FUN_0073ab20
-// PARTIAL: the vehicle's own step (FUN_00758130), the area id from the world object
-// (FUN_0077f260, +0xa40), and the flight (FUN_0073a890) and swimming (FUN_00730d10) transitions
-// are the next movement items; the step's placement is ported.
-void CGUnit_C::OnMovementStep(uint32_t time, int32_t a2, int32_t a3) {
-    (void)time;
-    (void)a2;
-    (void)a3;
+// After each movement step: the world object follows the unit, the terrain type under it is
+// noted, and it may take off, land, or start or stop swimming.
+// PARTIAL: a vehicle's own step (FUN_00758130) is the vehicle port's.
+int32_t WorldObjectTerrainType(HWORLDOBJECT object, int32_t* terrainType);
+
+void CGUnit_C::OnMovementStep(uint32_t time, int32_t fromSpline, int32_t a3) {
+    (void)fromSpline;
 
     this->UpdateWorldObject(0);
+
+    if (!this->m_worldObject || !WorldObjectTerrainType(this->m_worldObject, &this->m_terrainType)) {
+        this->m_terrainType = -1;
+    }
+
+    this->UpdateFlying(static_cast<int32_t>(time));
+    this->UpdateSwimming(static_cast<int32_t>(time), a3);
 }
 
 int32_t CGUnit_C::GetFloorHeight(float* height) {
@@ -11866,16 +11902,23 @@ void CGUnit_C::UpdateWheels() {
 // at most and the head the rest), the turn-in-place shuffle, the wheels, and the regeneration
 // lock's model flag.
 //
-// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the floor check
-// every ten seconds (FUN_0071fa90), the target's name plate blink (FUN_00729740) and the name
+// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the target's name plate blink (FUN_00729740) and the name
 // plate step (FUN_007e6390), the scripted alpha timer (+0xb28), the missiles in flight
-// (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), the ripples
-// in water (FUN_0071cba0), a vehicle seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
+// (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), a vehicle
+// seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
 // kits (FUN_00728140, +0xf4c).
 void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
+    uint32_t now = CWorld::GetCurTimeMs();
+
+    if (static_cast<int32_t>(now - this->m_breathCheckTime) >= 0) {
+        this->UpdateBreathState(now);
+    }
+
     this->UpdateModelColor();
 
     this->CGObject_C::UpdateForFrame(frame);
+
+    this->UpdateRipples(0);
 
     float elapsed = CGWorldFrame::s_currentWorldFrame ? CGWorldFrame::s_currentWorldFrame->m_elapsed : 0.0f;
     uint32_t moveFlags = this->m_move->m_moveFlags;
@@ -12059,4 +12102,818 @@ void CGUnit_C::UpdateVisible(uint32_t time) {
         effect->Update();
         effect = next;
     }
+}
+
+// Which ripple kinds are a moving unit's wake (0x00adac00): standing 0, turning 1, moving 2, a
+// splash 3. A wake trails the unit's heading at a rate set by its speed; the rest ring outward at
+// a random angle every 400..450 ms.
+static const uint8_t s_rippleIsWake[4] = { 0, 0, 1, 0 };
+
+// ref: FUN_0071cba0
+// A unit standing in shallow water rings it: while the water at its feet is deeper than nothing
+// and shallower than its own collision height (twice it, or a yard at least), a ripple spreads
+// from where it stands, sized by its scale and faded toward the depth limit. `splash` is an
+// animation event's ripple (0xc9 is the splash kind) and restarts the timer.
+void CGUnit_C::UpdateRipples(int32_t splash) {
+    uint32_t fieldBC = 0;
+    float surface = 0.0f;
+    uint32_t unused = 0;
+
+    if (!CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        return;
+    }
+
+    uint32_t inLiquid = 0;
+    uint32_t liquidBit9 = 0;
+
+    if (!CWorld::GetObjectLiquidFlags(this->m_worldObject, &inLiquid, &liquidBit9) || !inLiquid) {
+        return;
+    }
+
+    int32_t kind = 0;
+    uint32_t moveFlags = this->m_move->m_moveFlags;
+
+    if (splash) {
+        this->m_nextRippleTime = 0;
+
+        if (splash == 0xC9) {
+            kind = 3;
+        }
+    } else if (moveFlags & 0xF) {
+        kind = 2;
+    } else if (moveFlags & 0x30) {
+        kind = 1;
+    }
+
+    float depthLimit = this->m_localMove.m_collisionHeight + this->m_localMove.m_collisionHeight;
+
+    if (!(1.0f < depthLimit)) {
+        depthLimit = 1.0f;
+    }
+
+    float halfLimit = depthLimit * 0.5f;
+    float depth = surface - this->GetPosition().z;
+
+    if (!(depth < depthLimit)) {
+        return;
+    }
+
+    uint32_t now = CWorld::GetCurTimeMs();
+
+    if (this->m_nextRippleTime != 0 && static_cast<int32_t>(now - this->m_nextRippleTime) < 0) {
+        return;
+    }
+
+    C3Vector at = this->GetPosition();
+    at.z = surface;
+
+    float spacing = 1.0f;
+    float speed = this->m_move->m_currentSpeed;
+
+    if (s_rippleIsWake[kind] && 0.0001f < speed) {
+        spacing = 2.5f / (20.0f <= speed ? 20.0f : speed);
+    }
+
+    float rate = 1.0f / spacing;
+    float facing = this->GetFacing();
+    auto& seed = ObjectRandomSeed();
+
+    float size = this->GetBaseScale() * 0.3333333432674408f;
+    size = ((M2ParticleRand01(seed) * 0.2f - 0.1f) + 1.0f) * size;
+
+    if (size < 0.3333333432674408f) {
+        size = 0.3333333432674408f;
+    } else if (1.6666666269302368f <= size) {
+        size = 1.6666666269302368f;
+    }
+
+    float alpha = (M2ParticleRand01(seed) * 0.1f - 0.05f) + 0.65f;
+    float grow = (M2ParticleRand01(seed) * 1.5f - 0.75f + 3.75f) * 12.0f * 0.02777777798473835f * rate;
+    float life = 0.1666666716337204f;
+    float fade = 1.0f;
+
+    // Deeper than half the limit, the ripple shrinks and fades toward the limit.
+    if (halfLimit < depth) {
+        fade = 0.5f + ((depthLimit - depth) / (depthLimit - halfLimit)) * 0.5f;
+        life = fade * 0.1666666716337204f;
+        alpha = fade * alpha;
+        size = fade * size;
+    }
+
+    if (kind == 0) {
+        life *= 0.8f;
+        grow *= 0.25f;
+        size *= 0.6f;
+    }
+
+    float angle;
+
+    if (!s_rippleIsWake[kind]) {
+        angle = M2ParticleRand01(seed) * 6.2831854820251465f;
+    } else {
+        angle = facing;
+
+        if (moveFlags & 0x4) {
+            angle += (moveFlags & 0x1) ? 0.7853981852531433f : (moveFlags & 0x2) ? 2.356194496154785f : 1.5707963705062866f;
+        } else if (moveFlags & 0x8) {
+            angle -= (moveFlags & 0x1) ? 0.7853981852531433f : (moveFlags & 0x2) ? 2.356194496154785f : 1.5707963705062866f;
+        } else if (moveFlags & 0x2) {
+            angle += 3.1415927410125732f;
+        }
+    }
+
+    CWorld::AddRipple(at, angle, size, alpha, life, grow, s_rippleIsWake[kind],
+                      this->GetGUID() == ClntObjMgrGetActivePlayer() ? 1 : 0);
+
+    if (s_rippleIsWake[kind]) {
+        this->m_nextRippleTime = now - static_cast<uint32_t>(static_cast<int64_t>(fade * spacing * 0.25f * -1000.0f));
+        return;
+    }
+
+    uint32_t jitter = static_cast<uint32_t>((static_cast<uint64_t>(CRandom::uint32(seed)) * 50) >> 32);
+    this->m_nextRippleTime = jitter + 400 + now;
+}
+
+namespace {
+
+// When the active player last took off (0x00ca1240), so it does not land at once.
+int32_t s_flyStartTime = 0;
+
+} // namespace
+
+// ------------------------------------------------------------------------------------------------
+// The movement step's world side: the ground a unit stands on, swimming, flying (Unit_C.cpp).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_004f53d0
+// Whether a unit with these UNIT_FIELD_FLAGS swims in deep water: not one flagged 0x4000, always
+// one flagged 0x8, 0x10 or 0x800, otherwise as flag 0x8000 says.
+bool UnitFlagsAllowSwimming(uint32_t flags) {
+    if (flags & 0x4000) {
+        return false;
+    }
+
+    if ((flags & 0x8) || (flags & 0x800) || (flags & 0x10)) {
+        return true;
+    }
+
+    return (flags >> 15) & 1;
+}
+
+// ref: FUN_00714b60
+// How much clear air is under the unit: a segment from a yard above to a yard below its feet,
+// and the part of it above whatever it hits (two yards when nothing is hit).
+float CGUnit_C::GetClearanceBelow() {
+    C3Vector at = this->GetPosition();
+    C3Vector top = { at.x, at.y, at.z + 1.0f };
+    C3Vector bottom = { at.x, at.y, at.z - 1.0f };
+    C3Vector hit = bottom;
+    float t = 1.0f;
+
+    WorldQuerySegment(top, bottom, &hit, &t, 0x100111, nullptr);
+
+    return top.z - hit.z;
+}
+
+// ref: FUN_00746720
+// The splash a unit makes entering or leaving water: its race's splash sound (+0x8f0) where it
+// is, or at the listener for the active player with the listener at the character.
+void CGUnit_C::PlaySplashSound(const C3Vector& position) {
+    static CVar* listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+
+    bool isActive = ClntObjMgrGetActivePlayer() == this->GetGUID();
+    bool atListener = isActive && listenerAtCharacter && listenerAtCharacter->GetInt() != 0;
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    if (isActive) {
+        properties.int20 = 0x6E;
+
+        if (atListener) {
+            properties.m_fadeOutTime = 0.6499999761581421f;
+        }
+    }
+
+    properties.m_type = 8;
+
+    SI2::PlaySoundKit(this->m_splashSoundID, atListener ? nullptr : &position, nullptr, &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_00721210
+// Start swimming: the active player through its move queue (and the swimming tutorial, the
+// tutorial frame's), another unit by the server's word unless a spline is driving it.
+void CGUnit_C::StartSwimming(int32_t time, int32_t fromSpline) {
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        this->m_localMove.QueueStartSwim(time);
+        return;
+    }
+
+    auto spline = this->m_localMove.m_spline;
+
+    if (!fromSpline && (!spline || (spline->flags & 0x400))) {
+        this->m_localMove.QueueRemoteStartSwim(time);
+        return;
+    }
+
+    this->m_localMove.SplineStartSwim();
+}
+
+// ref: FUN_00721290
+void CGUnit_C::StopSwimming(int32_t time, int32_t fromSpline) {
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        this->m_localMove.QueueStopSwim(time);
+        return;
+    }
+
+    auto spline = this->m_localMove.m_spline;
+
+    if (!fromSpline && (!spline || (spline->flags & 0x400))) {
+        this->m_localMove.QueueRemoteStopSwim(time);
+        return;
+    }
+
+    this->m_localMove.SplineStopSwim();
+}
+
+// ref: FUN_00730d10
+// After each step: in water deeper than three quarters of its height a unit that may swim starts
+// swimming, and stops when the water drops a few centimetres below that (or it leaves the
+// liquid); crossing two fifths of its height splashes. A swimmer that may leave the water near
+// the surface (0x400000) jumps out when the active mover.
+//
+// PARTIAL: the action bar refresh when the active player's in-water state changes (FUN_0053cf10)
+// is the UI port's.
+void CGUnit_C::UpdateSwimming(int32_t time, int32_t fromSpline) {
+    auto& move = this->m_localMove;
+
+    if (move.m_moveFlags2 & 0x4) {
+        return;
+    }
+
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+    float depth = 0.0f;
+    int32_t inLiquid = CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused);
+
+    if (inLiquid) {
+        depth = surface - this->GetPosition().z;
+    }
+
+    bool canSwim = UnitFlagsAllowSwimming(this->m_unit->flags) && this->GetTransportGUID() == 0;
+    float swimDepth = move.m_collisionHeight * 0.75f;
+    float leaveDepth = swimDepth - 0.02777777798473835f;
+
+    if (!(move.m_moveFlags & 0x200000)) {
+        if (swimDepth < depth && canSwim && !move.IsRising()) {
+            this->StartSwimming(time, fromSpline);
+        }
+
+        float splashDepth = move.m_collisionHeight * 0.4f;
+
+        if ((splashDepth < depth) != (splashDepth < this->m_lastLiquidDepth)) {
+            this->PlaySplashSound(this->GetPosition());
+            this->UpdateRipples(0xC9);
+        }
+
+        this->m_lastLiquidDepth = depth;
+    } else {
+        if ((move.m_moveFlags & 0x400000) && depth - swimDepth <= 0.3333333432674408f && this->IsActiveMover()) {
+            this->Jump(time);
+        }
+
+        if (!(move.m_moveFlags & 0x2000000) && (!inLiquid || depth < leaveDepth || !canSwim)) {
+            this->StopSwimming(time, fromSpline);
+        }
+    }
+
+    if ((move.m_moveFlags & 0x200000) || (swimDepth < depth && canSwim)) {
+        this->m_stateFlags |= 0x200000;
+    } else {
+        this->m_stateFlags &= 0xFFDFFFFF;
+    }
+}
+
+// ref: FUN_0073a890
+// A unit that may fly (0x1000000): falling a yard and a half clear of the ground while the active
+// mover takes off; flying, the active player settles back on its feet when it comes within a yard
+// and a half of the ground two seconds after taking off.
+//
+// PARTIAL: the flying unit's landing pose and sound near the ground (every two seconds, through
+// the low-detail terrain height FUN_0077f8b0 / FUN_007ad700, the map port's) is not ported.
+void CGUnit_C::UpdateFlying(int32_t time) {
+    auto& move = this->m_localMove;
+
+    if (!(move.m_moveFlags & 0x1000000)) {
+        return;
+    }
+
+    if (!(move.m_moveFlags & 0x2000000)) {
+        if (!move.IsRising() && (move.m_moveFlags & 0x1000) && this->IsActiveMover()
+            && 1.5f <= this->GetClearanceBelow()) {
+            move.QueueSetFlying(time, 1);
+            s_flyStartTime = time;
+        }
+
+        return;
+    }
+
+    if (2000u < static_cast<uint32_t>(time - s_flyStartTime) && this->GetGUID() == ClntObjMgrGetActivePlayer()
+        && this->GetClearanceBelow() < 1.5f) {
+        move.QueueSetFlying(time, 0);
+    }
+}
+
+// ref: FUN_0077f260
+// The terrain type under an entity (its +0xb8), -1 when there is none.
+int32_t WorldObjectTerrainType(HWORLDOBJECT object, int32_t* terrainType) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (entity && entity->m_groundType != -1) {
+        *terrainType = entity->m_groundType;
+        return 1;
+    }
+
+    return 0;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The unit's animation events: footsteps, breath, sounds and the weapon swaps the model's tracks
+// call for (Unit_C.cpp FUN_00734a40 / FUN_00732650, UnitSound_C.cpp).
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// The event ids are four characters, '$' first, read as a little-endian dword ("$FL0" is
+// 0x304c4624). The footstep family is "$" + one of B F R S W + L or R + a digit 0..3.
+bool IsFootstepEvent(uint32_t eventId, int32_t* left) {
+    if ((eventId & 0xFF) != '$') {
+        return false;
+    }
+
+    char kind = static_cast<char>((eventId >> 8) & 0xFF);
+    char side = static_cast<char>((eventId >> 16) & 0xFF);
+    char digit = static_cast<char>((eventId >> 24) & 0xFF);
+
+    if (kind != 'B' && kind != 'F' && kind != 'R' && kind != 'S' && kind != 'W') {
+        return false;
+    }
+
+    if ((side != 'L' && side != 'R') || digit < '0' || '3' < digit) {
+        return false;
+    }
+
+    *left = side == 'L' ? 1 : 0;
+
+    return true;
+}
+
+uint32_t EventId(const char* tag) {
+    return static_cast<uint32_t>(static_cast<uint8_t>(tag[0])) | (static_cast<uint32_t>(static_cast<uint8_t>(tag[1])) << 8)
+        | (static_cast<uint32_t>(static_cast<uint8_t>(tag[2])) << 16) | (static_cast<uint32_t>(static_cast<uint8_t>(tag[3])) << 24);
+}
+
+} // namespace
+
+// ref: FUN_004cf100
+// The footstep sound a creature footstep set makes on a terrain type, dry or in water.
+//
+// DIVERGED: the reference indexes a hash of FootstepTerrainLookup rows built once by FUN_004cf990
+// (keyed by the creature footstep id, an array per terrain sound); frozen reads the rows
+// directly, which answers the same question.
+int32_t FootstepSoundFor(int32_t footstepID, int32_t terrainType, int32_t wet) {
+    auto terrain = g_terrainTypeDB.GetRecord(terrainType);
+
+    if (!terrain) {
+        return 0;
+    }
+
+    for (int32_t i = 0; i < g_footstepTerrainLookupDB.GetNumRecords(); i++) {
+        auto row = g_footstepTerrainLookupDB.GetRecordByIndex(i);
+
+        if (row && row->m_creatureFootstepID == footstepID && row->m_terrainSoundID == terrain->m_soundID) {
+            return wet ? row->m_soundIDSplash : row->m_soundID;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_004cf170
+// A footstep's sound: the terrain's (or the default terrain's) for the creature's footstep set.
+// The active player's own play as the listener's when the listener is at the character.
+void PlayFootstepSound(int32_t footstepID, const C3Vector* position, int32_t terrainType, int32_t wet, int32_t large,
+                       CGUnit_C* unit) {
+    if (!unit) {
+        return;
+    }
+
+    static CVar* listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+
+    if (!listenerAtCharacter) {
+        return;
+    }
+
+    int32_t soundID = FootstepSoundFor(footstepID, terrainType, wet);
+
+    if (!soundID) {
+        soundID = FootstepSoundFor(footstepID, 0, wet);
+    }
+
+    if (!soundID) {
+        return;
+    }
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    bool activePlayer = unit->IsA(TYPE_PLAYER) && unit->GetGUID() == ClntObjMgrGetActivePlayer();
+
+    if (activePlayer && listenerAtCharacter->GetInt() != 0) {
+        properties.float2c = large ? 50.0f : 20.0f;
+        properties.m_fadeOutTime = 0.6499999761581421f;
+        properties.m_type = 0x11;
+        properties.int20 = 0x73;
+        SI2::PlaySoundKit(soundID, nullptr, nullptr, &properties, 0, nullptr, 1, 0);
+        return;
+    }
+
+    if (activePlayer) {
+        properties.m_type = 0x11;
+        properties.int20 = 0x73;
+        SI2::PlaySoundKit(soundID, position, nullptr, &properties, 0, nullptr, 1, 0);
+        return;
+    }
+
+    properties.m_type = 0xD;
+    properties.int30 = 0;
+    SI2::PlaySoundKit(soundID, position, nullptr, &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_0071a030
+// Whether a footstep at `position` falls in shallow liquid the unit wades in (not swims).
+bool CGUnit_C::IsWading(const C3Vector* position) {
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+
+    if (!CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        return false;
+    }
+
+    uint32_t bit8 = 0;
+    uint32_t bit9 = 0;
+    CWorld::GetObjectLiquidFlags(this->m_worldObject, &bit8, &bit9);
+
+    return bit9 && position->z < surface + 0.01f && !(this->m_move->m_moveFlags & 0x200000);
+}
+
+// ref: FUN_00754f40
+// The unit's footstep size class: the display's, or its model's when the display does not say.
+int32_t CGUnit_C::GetFootstepSize() const {
+    int32_t size = this->m_displayInfo ? this->m_displayInfo->m_sizeClass : -1;
+
+    if (size == -1 && this->m_modelData) {
+        size = this->m_modelData->m_sizeClass;
+    }
+
+    return size;
+}
+
+// ref: FUN_00747240
+// "$FSD": a footstep's sound, and the armour's foley, for a visible unit on its feet.
+void CGUnit_C::PlayFootstepEventSound(const C3Vector* position) {
+    if ((static_cast<uint8_t>(this->m_unit->bytes1 >> 16) & 0x2) || (this->m_move->m_moveFlags & 0x40000000)) {
+        return;
+    }
+
+    if (this->m_vehiclePassenger && this->m_vehiclePassenger->m_state != 0) {
+        return;
+    }
+
+    if (this->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(this)->Player()->flags & 0x10)) {
+        return;
+    }
+
+    this->PlayArmorFoley();
+
+    static CVar* footstepSounds = CVar::Lookup("FootstepSounds");
+    auto soundData = this->GetSoundData();
+
+    if (!soundData || !soundData->m_soundFootstepID || !footstepSounds || footstepSounds->GetInt() == 0) {
+        return;
+    }
+
+    int32_t large = 2 < this->GetFootstepSize() ? 1 : 0;
+
+    PlayFootstepSound(soundData->m_soundFootstepID, position, this->m_terrainType, this->IsWading(position) ? 1 : 0,
+                      large, this);
+}
+
+// ref: FUN_0071fb60
+// The footprint a step leaves: the mount's while mounted, the unit's own otherwise, scaled.
+void CGUnit_C::GetFootprint(int32_t* texture, C2Vector* size) {
+    float scale = this->GetScale();
+
+    if (this->m_unit->mountDisplayID < 1 || (this->m_stateFlags & 0x10000000) || !this->m_mountModel) {
+        *texture = this->m_footprintTexture;
+        size->x = this->m_footprintLength * scale;
+        size->y = scale * this->m_footprintWidth;
+        return;
+    }
+
+    *texture = this->m_mountFootprintTexture;
+    size->x = this->m_mountFootprintLength * scale;
+    size->y = scale * this->m_mountFootprintWidth;
+}
+
+// ref: FUN_00723a50
+// One footfall, within fifty yards of the camera, of a visible unit on its own feet (no pet
+// number, not stealthed, not on a transport, not a ghost): the footprint, the model's footstep
+// shake, and within twenty-five yards, walking or running forward, the terrain's spray -- or a
+// splash in water shallower than half the unit's height.
+//
+// PARTIAL: the footprint itself (FUN_0077f040 -> FUN_0079fa70, the map's decal list) is phase 2's
+// footprint port; with it unported nothing is laid down.
+void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
+    if (this->m_unit->petNumber != 0 || (this->m_move->m_moveFlags & 0x40000000)
+        || (static_cast<uint8_t>(this->m_unit->bytes1 >> 16) & 0x2) || this->GetTransportGUID() != 0) {
+        return;
+    }
+
+    if (this->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(this)->Player()->flags & 0x10)) {
+        return;
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (!camera) {
+        return;
+    }
+
+    const C3Vector& eye = camera->Position();
+    float dx = position->x - eye.x;
+    float dy = position->y - eye.y;
+    float dz = position->z - eye.z;
+    float distance = dz * dz + dy * dy + dx * dx;
+
+    if (2500.0f < distance) {
+        return;
+    }
+
+    (void)left;
+
+    auto modelData = this->m_modelData;
+
+    if (modelData && modelData->m_footstepShakeSize != 0) {
+        camera->AddShakeByID(modelData->m_footstepShakeSize, *position);
+    }
+
+    static CVar* footprintParticles = CVar::Lookup("showfootprintparticles");
+
+    if (625.0f < distance || (this->m_move->m_moveFlags & 0x2) || (modelData && (modelData->m_flags & 0x1))
+        || !footprintParticles || footprintParticles->GetInt() == 0) {
+        return;
+    }
+
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+
+    if (!CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        auto terrain = g_terrainTypeDB.GetRecord(this->m_terrainType);
+
+        if (!terrain) {
+            return;
+        }
+
+        auto spray = g_spellVisualEffectNameDB.GetRecord(this->IsMovingAtWalkPace() ? terrain->m_footstepSprayWalk
+                                                                                    : terrain->m_footstepSprayRun);
+
+        if (!spray) {
+            return;
+        }
+
+        C3Vector at = *position;
+
+        if (this->GetTransportGUID() != 0) {
+            C44Matrix transport;
+            MovementGetTransportMatrixChecked(this->GetTransportGUID(), transport, this->GetGUID(), ".\\Unit_C.cpp", 0xcce);
+            at = at * transport.AffineInverse();
+        }
+
+        void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+        auto effect = mem ? new (mem) CEffect() : nullptr;
+
+        if (effect) {
+            effect->InitializeAtPoint(at, static_cast<uint32_t>(OsGetAsyncTimeMs()), 0, nullptr, spray, this->GetGUID(),
+                                      0x220, &CGObject_C::KitEffectOneShot, 0, nullptr, this->GetTransportGUID());
+            effect->Release();
+        }
+
+        return;
+    }
+
+    uint32_t bit8 = 0;
+    uint32_t bit9 = 0;
+    CWorld::GetObjectLiquidFlags(this->m_worldObject, &bit8, &bit9);
+
+    if (!bit9) {
+        return;
+    }
+
+    float depth = surface - this->GetPosition().z;
+
+    if (!(depth < this->m_localMove.m_collisionHeight * 0.5f)) {
+        return;
+    }
+
+    C3Vector at = { position->x, position->y, depth + position->z };
+    void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+    auto effect = mem ? new (mem) CEffect() : nullptr;
+
+    if (effect) {
+        effect->InitializeHardcodedAt(this->IsMovingAtWalkPace() ? 0 : 1, at, this->GetGUID(), 0x220,
+                                      &CGObject_C::KitEffectOneShot);
+        effect->Release();
+    }
+}
+
+// ref: FUN_0071fa90
+// Every ten seconds: a unit deep under water (more than five yards past its own height) breathes
+// bubbles (state 0x20).
+//
+// PARTIAL: the cold-air breath (state 0x40, FUN_0078f1f0 over the area's WorldParam) is the
+// world parameters port's.
+void CGUnit_C::UpdateBreathState(uint32_t time) {
+    this->m_stateFlags &= 0xFFFFFF9F;
+
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+
+    if (CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused)) {
+        float height = this->m_height * this->m_scale;
+
+        if (height + 5.0f < surface - this->GetPosition().z) {
+            this->m_stateFlags |= 0x20;
+        }
+    }
+
+    this->m_breathCheckTime = time + 10000;
+}
+
+// ref: FUN_007462e0
+// One of the creature's fidget sounds, two yards above it.
+void CGUnit_C::PlayFidgetSound(uint32_t index) {
+    auto soundData = this->GetSoundData();
+
+    if (!soundData || 5 <= index || !soundData->m_soundFidget[index]) {
+        return;
+    }
+
+    C3Vector at = this->GetPosition();
+    at.z += 2.0f;
+
+    SI2::PlaySoundKit(soundData->m_soundFidget[index], &at, nullptr, nullptr, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_007471a0
+// "$FD1".."$FD5" the fidget sounds; "$FDX" another unit's fidget voice (unit sound 5).
+void CGUnit_C::OnFidgetEvent(uint32_t eventId) {
+    for (uint32_t i = 0; i < 5; i++) {
+        if (eventId == (EventId("$FD1") + (i << 24))) {
+            this->PlayFidgetSound(i);
+            return;
+        }
+    }
+
+    if (eventId == EventId("$FDX") && this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        this->PlayUnitSound(5, 0);
+    }
+}
+
+// ref: FUN_00746ad0
+// "$ESD": the sound of the emote state the unit holds, when that emote is a sound emote (2).
+void CGUnit_C::PlayEmoteStateSound(const C3Vector* position) {
+    auto emote = g_emotesDB.GetRecord(static_cast<int32_t>(this->m_unit->emoteState));
+
+    if (emote && emote->m_specProc == 2) {
+        SI2::PlaySoundKit(emote->m_soundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+    }
+}
+
+// ref: FUN_00715a50
+// Where the unit's next missile flies from (state 0x80000000 until the frame takes it).
+void CGUnit_C::SetMissileLaunchPoint(const C3Vector& point) {
+    this->m_stateFlags |= 0x80000000;
+    this->m_missileLaunchPoint = point;
+}
+
+// ref: FUN_00732650
+// The animation event dispatch.
+//
+// PARTIAL, each the subsystem's own port: the missile a bow or gun releases ("$BWR", "$CSL",
+// "$CSR", "$CST" with a held missile at +0x9ec), the combat events ("$AH#", "$CAH", "$DTH",
+// "$BWP", "$CPP", "$CSS", FUN_00756240, UnitCombat_C), the spell cast sound ("$CSD",
+// FUN_00746d60), the trade-skill event ("$TRD", FUN_00763570), and the vehicle's ("$VG#",
+// FUN_00757060; "$VT#", FUN_007570f0).
+void CGUnit_C::OnAnimEvent(CM2Model* model, uint32_t eventId, uint32_t eventData, const C3Vector* position) {
+    (void)model;
+    (void)eventData;
+
+    int32_t left = 0;
+
+    if (IsFootstepEvent(eventId, &left)) {
+        this->OnFootstep(position, left);
+        return;
+    }
+
+    if ((eventId & 0x00FFFFFF) == (EventId("$FD0") & 0x00FFFFFF) || eventId == EventId("$FDX")) {
+        this->OnFidgetEvent(eventId);
+        return;
+    }
+
+    if (eventId == EventId("$SHL")) {
+        this->ReturnSwingWeapon(position, 1, 0x200000);
+    } else if (eventId == EventId("$SHR")) {
+        this->ReturnSwingWeapon(position, 0, 0x100000);
+    } else if (eventId == EventId("$WGG")) {
+        this->PlayUnitSound(10, 0);
+    } else if (eventId == EventId("$WNG")) {
+        this->PlayUnitSound(7, 0);
+    } else if (eventId == EventId("$ESD")) {
+        this->PlayEmoteStateSound(position);
+    } else if (eventId == EventId("$FSD")) {
+        this->PlayFootstepEventSound(position);
+    } else if (eventId == EventId("$SMD")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_submergedSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$SMG")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_submergeSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$BRT")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_birthSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$SCD")) {
+        if (this->m_soundData) {
+            SI2::PlaySoundKit(this->m_soundData->m_spellCastDirectedSoundID, position, nullptr, nullptr, 0, nullptr, 1, 0);
+        }
+    } else if (eventId == EventId("$BTH")) {
+        // The breath: bubbles deep under water (hard-coded effect 2), fog in cold air (3), and a
+        // drunk player's (7, Player_C's drunkenness, not ported).
+        if (ClntObjMgrGetPlayerType() == PLAYER_BOT || !this->m_modelData || (this->m_modelData->m_flags & 0x2)) {
+            return;
+        }
+
+        int32_t index;
+
+        if (this->m_stateFlags & 0x20) {
+            index = 2;
+        } else if (this->m_stateFlags & 0x40) {
+            index = 3;
+        } else {
+            return;
+        }
+
+        void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+        auto effect = mem ? new (mem) CEffect() : nullptr;
+
+        if (effect) {
+            effect->InitializeHardcoded(index, this->GetGUID(), &CGObject_C::KitEffectOneShot);
+            effect->m_flags |= CEffect::EFFECT_NO_EXPIRE;
+            effect->Release();
+        }
+    } else if (eventId == EventId("$BWR")) {
+        if (this->GetGUID() == ClntObjMgrGetActivePlayer() && s_clickToMoveState == 0) {
+            this->CancelClickToMove(0, 1);
+        }
+
+        this->m_animFlags &= 0xFFFFBFFF;
+
+        if (this->m_rangedAmmoModel && this->m_rangedAmmoModel->m_attachParent) {
+            this->m_rangedAmmoModel->DetachFromParent();
+        }
+    }
+}
+
+// ref: FUN_00734a40
+// The unit model's anim-event hook: the owner by guid, then its dispatch. A position with a NaN
+// is reported (to the error log the reference keeps) and dispatched anyway.
+void CGUnit_C::AnimEventCallback(CM2Model* model, uint32_t boneId, uint32_t eventId, uint32_t eventData,
+                                 const C3Vector* position, uint32_t a6, WOWGUID owner) {
+    (void)boneId;
+    (void)a6;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(owner, TYPE_UNIT, ".\\Unit_C.cpp", 0x21b));
+
+    if (!unit || !position) {
+        return;
+    }
+
+    unit->OnAnimEvent(model, eventId, eventData, position);
 }

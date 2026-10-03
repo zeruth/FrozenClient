@@ -168,7 +168,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         virtual int32_t Virtual0E4() { return 1; }                              // 0x0e4
         virtual float GetFadeInAlpha() { return 1.0f; }                         // 0x0e8
         virtual bool Virtual0EC() { return false; }                             // 0x0ec
-        virtual int32_t Virtual0F0(int32_t a2) { return 0; }                    // 0x0f0
+        virtual int32_t Virtual0F0(const C3Vector* position) { return 0; }      // 0x0f0
         virtual int32_t Virtual0F4(CPassenger* passenger, int32_t mode) { return 1; } // 0x0f4
         virtual float Virtual0F8();                                             // 0x0f8
         // 0x0fc: after a kit has played, for the object's own steps (the unit's animation and

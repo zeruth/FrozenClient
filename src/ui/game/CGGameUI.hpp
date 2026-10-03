@@ -1,6 +1,8 @@
 #ifndef UI_GAME_C_G_GAME_UI_HPP
 #define UI_GAME_C_G_GAME_UI_HPP
 
+#include "event/CEvent.hpp"
+#include <tempest/Vector.hpp>
 #include "util/guid/Types.hpp"
 
 class CScriptObject;
@@ -64,6 +66,10 @@ class CGGameUI {
         static uint32_t GetCursorMoney();
         static WOWGUID& GetLockedTarget();
         static WOWGUID GetInteractTarget();
+        static uint32_t GetCursorHolding();
+        static void SetPreviousTarget(WOWGUID guid);
+        static void ClearTarget(WOWGUID guid, int32_t notify);
+        static void SetTarget(WOWGUID guid);
         // ref: FUN_005124d0
         // Whether an opening or in-game cinematic is playing.
         static int32_t InCinematic();
@@ -98,6 +104,8 @@ class CGGameUI {
         static uint32_t s_cursorMacro;
         static bool s_inWorld;
         static WOWGUID s_lockedTarget;
+        // ref: DAT_00bd07b8. The target before the current one (TargetLastTarget's).
+        static WOWGUID s_previousTarget;
         // ref: DAT_00bd07a8. The NPC or object the player has a gossip, vendor, trainer or other
         // interaction window open with; FUN_00512e60 closes whichever window it was. Nothing
         // opens one yet, so it stays zero.
@@ -113,5 +121,23 @@ int32_t GameUIMouseButtonCallback(CMouseEvent* evt);
 int32_t GameUIMouseRelativeCallback(CMouseEvent* evt);
 void GameUIEnterMouseLook();
 void GameUILeaveMouseLook();
+
+// A short click in the world, as the world frame hands it to GameUI: the object or surface's
+// owner, the point, the ray (for a click on nothing), and the button (1 left, 4 right).
+struct WORLDCLICK {
+    WOWGUID guid = 0;
+    C3Vector position = {};
+    C3Vector start = {};
+    C3Vector end = {};
+    int32_t button = 0;
+};
+
+void GameUIClearCursor(int32_t restore, int32_t signal);
+int32_t GameUIWorldRightPress(const CMouseEvent& evt);
+int32_t GameUITargetAndInteract(WOWGUID guid);
+int32_t GameUISelectObject(WOWGUID guid);
+int32_t GameUIClickObject(WOWGUID guid, int32_t button);
+int32_t GameUIClickSurface(const WORLDCLICK& click);
+int32_t GameUIClickNothing(const WORLDCLICK& click);
 
 #endif

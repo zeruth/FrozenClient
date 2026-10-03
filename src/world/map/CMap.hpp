@@ -74,6 +74,13 @@ struct CMapBspNodeCache {
     static uint32_t Bucket(const CAaBspNode* node);
 };
 
+class CM2Model;
+typedef void (*M2SequenceDoneCallback)(CM2Model* model, uint32_t boneId, uint32_t animId,
+                                       int32_t a4, int32_t a5, WOWGUID owner);
+typedef void (*M2AnimEventCallback)(CM2Model* model, uint32_t boneId, uint32_t eventId,
+                                    uint32_t eventData, const C3Vector* position, uint32_t a6,
+                                    WOWGUID owner);
+
 class CMap {
     public:
         // Static variables: the object heaps CMap::MapMemInitialize creates, in the reference's
@@ -153,6 +160,29 @@ class CMap {
         static int32_t CountPendingMapObjs(CMapChunk* chunk, float* progress, int32_t initial);
         // A placed entity pushes its box up into the chunk or building group that holds it.
         // ref: FUN_007b4fa0, FUN_007b55e0
+        // ref: FUN_007b6800
+        // A doodad linked into each of a building's groups that may hold doodads (and, with
+        // `intersect`, whose box it reaches).
+        static void LinkDoodadToDefGroups(CMapDoodadDef* doodad, CMapObjDef* def, int32_t intersect);
+        // ref: FUN_007b6ed0
+        // A doodad put back into every other loaded building its box reaches.
+        static void RelinkDoodadToDefs(CMapDoodadDef* doodad, CMapObjDef* except);
+        // ref: FUN_007b69c0
+        // Every particle emitter of a doodad set's models paused (0x400000) or let go.
+        static void SetDoodadSetEmittersPaused(CMapObjDef* def, int32_t paused, uint16_t set);
+        // ref: FUN_007b6f60
+        // A doodad set taken out of the scene (flags 0x120, its links to other buildings let go)
+        // or put back.
+        static void SetDoodadSetShown(CMapObjDef* def, int32_t shown, uint16_t set);
+        // ref: FUN_007b68a0
+        // A doodad set handed from one building to another, renumbered `newSet` there.
+        static int32_t MoveDoodadSet(CMapObjDef* from, uint16_t set, CMapObjDef* to, uint16_t newSet);
+        // ref: FUN_007b4170
+        static void SetGroupDoodadSequence(CMapObjDefGroup* group, uint32_t sequence, uint16_t set);
+        // ref: FUN_007b41f0
+        static void SetGroupDoodadSequenceDone(CMapObjDefGroup* group, M2SequenceDoneCallback callback, WOWGUID owner, uint16_t set);
+        // ref: FUN_007b4270
+        static void SetGroupDoodadAnimEvent(CMapObjDefGroup* group, M2AnimEventCallback callback, WOWGUID owner, uint16_t set);
         static void GrowParentBounds(CMapStaticEntity* entity, CMapBaseObj* parent);
         static void GrowParentsBounds(CMapStaticEntity* entity);
         static STORM_EXPLICIT_LIST(CMapBaseObjLink, refLink) s_mapObjDefLinkList;
@@ -354,6 +384,24 @@ class CMap {
         static void FreeMapObjDefGroup(CMapObjDefGroup* group);
         static CMapObjDef* AllocMapObjDef();
         static void FreeMapObjDef(CMapObjDef* def);
+
+        // The dynamic map objects a game object places (transports, map object game objects)
+        static CMapObjDef* CreateDynamicMapObjDef(const char* name, const C3Vector& position, float facing, int32_t wait,
+                                                  int32_t extraSetCount, const uint16_t* extraSets, const float* radius,
+                                                  uint32_t id);
+        static int32_t LoadDynamicDoodadModel(const char* name, CMapDoodadDef* def, int32_t wait, int32_t inBuilding);
+        static CMapDoodadDef* CreateDynamicDoodadDef(const char* name, const C3Vector& position, float facing, int32_t wait);
+        static void SnapDynamicPosition(CMapBaseObj* object, C3Vector& position, float facing);
+        static void PlaceGroupDoodad(CMapDoodadDef* def, const C44Matrix& defPlacement);
+        static void PlaceDefGroupContents(CMapObjDefGroup* defGroup, const C44Matrix& defPlacement);
+        static void UpdateMapObjDefPlacement(CMapObjDef* def);
+        static void PlaceDynamicMapObjDef(CMapObjDef* def, const C3Vector& position, float rotZ, float rotY, float rotX);
+        static void UpdateDoodadDefPlacement(CMapDoodadDef* def);
+        static void PlaceDynamicDoodadDef(CMapDoodadDef* def, const C3Vector& position, float facing);
+        static void ReleaseDynamicDefGroup(CMapObjDefGroup* defGroup);
+        static void ReleaseDynamicMapObjDef(CMapObjDef* def);
+        static void SetMapObjDefPlacement(CMapObjDef* def, const C44Matrix& placement);
+        static void SetDoodadDefPlacement(CMapDoodadDef* def, const C44Matrix& placement);
         static void UnlinkMapObjDef(CMapObjDef* def);
         static CChunkLiquid* AllocChunkLiquid();
         static void FreeChunkLiquid(CChunkLiquid* liquid);

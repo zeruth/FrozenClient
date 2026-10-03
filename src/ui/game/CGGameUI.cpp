@@ -3,6 +3,11 @@
 #include "ui/game/Types.hpp"
 #include "util/Lua.hpp"
 #include <storm/String.hpp>
+#include "object/client/ObjMgr.hpp"
+#include "sound/SI2.hpp"
+#include "ui/game/PlayerName.hpp"
+#include "ui/game/CGPetInfo.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "event/Input.hpp"
 #include "gx/Device.hpp"
 #include "ui/InputControl.hpp"
@@ -75,6 +80,7 @@ CScriptObject* CGGameUI::s_gameTooltip;
 bool CGGameUI::s_inWorld;
 WOWGUID CGGameUI::s_lockedTarget;
 WOWGUID CGGameUI::s_interactTarget;
+WOWGUID CGGameUI::s_previousTarget;
 CVar* CGGameUI::s_predictedHealthCvar;
 CVar* CGGameUI::s_predictedPowerCvar;
 int32_t CGGameUI::s_inCinematic;
@@ -249,6 +255,14 @@ WOWGUID& CGGameUI::GetLockedTarget() {
     return CGGameUI::s_lockedTarget;
 }
 
+uint32_t CGGameUI::GetCursorHolding() {
+    return CGGameUI::s_cursorHolding;
+}
+
+void CGGameUI::SetPreviousTarget(WOWGUID guid) {
+    CGGameUI::s_previousTarget = guid;
+}
+
 WOWGUID CGGameUI::GetInteractTarget() {
     return CGGameUI::s_interactTarget;
 }
@@ -257,12 +271,45 @@ static void GameUILoadProgress(float progress, void* param) {
     LoadingScreenSetProgress(progress);
 }
 
+// ref: FUN_006cefb0
+// Whether the player has an item use waiting for its target (Player_C's DAT_00c9ead0). That use is
+// the item port's; none waits yet.
+bool PlayerHasPendingItemTarget() {
+    return false;
+}
+
+// ref: FUN_0051fb00
+// The world frame's right press, before its binding: a spell waiting for its target is cancelled
+// (the spell cast port's, FUN_007fd7f0 .. FUN_00809a60), a pending item use put down, and the
+// cursor's interact mode (0x11) set back to the pointer.
+int32_t GameUIWorldRightPress(const CMouseEvent& evt) {
+    if (evt.button != 4) {
+        return 0;
+    }
+
+    if (PlayerHasPendingItemTarget()) {
+        GameUIClearCursor(1, 1);
+    }
+
+    if (GetCursorMode() == 0x11) {
+        SetCursorMode(1);
+        CursorSet(1);
+    }
+
+    return 0;
+}
+
 // ref: FUN_0051fa50
-// Mouse buttons nothing has captured. During a mouse look the cursor is gone and no frame is
-// under it, so the world frame takes the buttons. PARTIAL: a right press first cancels a
-// pending spell target, item drag or other cursor action (the DAT_00bd0758 .. 0x00bd07ec cursor
-// states, FUN_006cefb0, FUN_00519280); those are the cursor ports'.
+// Mouse buttons nothing has captured. A right press while the cursor holds something only puts it
+// down. During a mouse look the cursor is gone and no frame is under it, so the world frame takes
+// the buttons.
 int32_t GameUIMouseButtonCallback(CMouseEvent* evt) {
+    if (evt->id == 0x400500C8 && evt->button == 4
+        && (CGGameUI::GetCursorKind() != 0 || CGGameUI::GetCursorHolding() || PlayerHasPendingItemTarget())) {
+        GameUIClearCursor(1, 1);
+        return 1;
+    }
+
     if (evt->mode != MOUSE_MODE_RELATIVE) {
         return 0;
     }
@@ -290,6 +337,15 @@ int32_t GameUIMouseRelativeCallback(CMouseEvent* evt) {
 
     if (auto input = InputControlGetActive()) {
         input->OnMouseLook(*evt);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00512d00
+int32_t GameUIFocusCallback(const CFocusEvent& evt) {
+    if (auto input = InputControlGetActive()) {
+        input->OnFocusChanged(evt.focus);
     }
 
     return 1;
@@ -493,6 +549,7 @@ void CGGameUI::Initialize() {
     CGGameUI::s_simpleTop->m_mouseRelativeCallback = &GameUIMouseRelativeCallback;
     CGGameUI::s_simpleTop->m_protectedFunctionsAllowed = 1;
     CGGameUI::s_simpleTop->m_actionBlockedCallback = &GameUIActionBlocked;
+    CGGameUI::s_simpleTop->m_focusCallback = &GameUIFocusCallback;
 
     // TODO
 
@@ -893,4 +950,233 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("Sound_ChaosMode", "Testing to break sound engine", 0x0, "0", nullptr, SOUND);  // TODO callback FUN_004d0f20
     CVar::Register("SoundMemoryCache", "sound cache memory size (MB)", 0x2, "4", nullptr, SOUND);
     CVar::Register("realmList", "Address of realm list server", 0x0, "us.logon.worldofwarcraft.com:3724", nullptr, NET);
+}
+
+// ------------------------------------------------------------------------------------------------
+// The player's target and the world clicks that change it (GameUI.cpp 0x005241b0 .. 0x005278c0).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_005241b0
+// The target is dropped when it is `guid` (or for any guid 0): its highlight goes, the unit's
+// "is a target" interest flag (0x1000) clears, auto-attack and the pet's attack on it stop, and
+// with `notify` the server and the frames hear (CMSG_SET_SELECTION 0, PLAYER_TARGET_CHANGED).
+//
+// PARTIAL: auto-follow of the old target stopping (MovementStartPrologue when DAT_00bfa8d8 is the
+// target), the unit's interest list (FUN_00614300 behind FUN_00715900) and its name plate's
+// target arrow (FUN_00715b20 -> FUN_0098f040) are the follow, unit-interest and name plate ports';
+// the player's own auto-attack stop (FUN_006e1660) is Player_C's.
+void CGGameUI::ClearTarget(WOWGUID guid, int32_t notify) {
+    auto& target = CGGameUI::s_lockedTarget;
+
+    if (target == 0 || (guid != 0 && guid != target)) {
+        return;
+    }
+
+    bool inWorld = ClntObjMgrGetCurrent() != nullptr;
+
+    if (inWorld) {
+        auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(target, TYPE_OBJECT, ".\\GameUI.cpp", 0x2d5f));
+
+        if (object) {
+            object->Unhighlight(0);
+
+            if (object->IsA(TYPE_UNIT) && object->m_nameDesc) {
+                PlayerNameInvalidateReaction(object->m_nameDesc);
+            }
+        }
+    }
+
+    target = 0;
+
+    if (!inWorld) {
+        return;
+    }
+
+    if (ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__) && CGPetInfo::s_attacking) {
+        CGPetInfo::StopAttack();
+    }
+
+    if (notify) {
+        SendSetSelection(0);
+        FrameScript_SignalEvent(0x9D, nullptr);
+    }
+}
+
+// ref: FUN_00524bf0
+// The player targets `guid` (0 drops the target). A charmed player keeps its target; an object
+// that cannot be targetted, or the target already held, changes nothing; a guid with no object
+// plays the select sound and is still taken. The old target is dropped quietly, the new one sent
+// (CMSG_SET_SELECTION) and PLAYER_TARGET_CHANGED fired.
+//
+// PARTIAL, each the subsystem's own port: the spell waiting for a target taking it instead
+// (FUN_0080bc80), the selection highlight's cvar (DAT_00bd09dc), the new unit's interest flag and
+// cast bar (FUN_007158c0, FUN_007262e0, FUN_00720e50), the target tutorials (FUN_00530840),
+// remembering the last friendly and hostile target (DAT_00bd07c0 / DAT_00bd07c8), and the
+// auto-repeat spell and auto-attack follow-ups (FUN_00807560, FUN_006e4950).
+void CGGameUI::SetTarget(WOWGUID guid) {
+    if (guid == 0) {
+        if (CGGameUI::s_lockedTarget == 0) {
+            return;
+        }
+
+        CGGameUI::s_previousTarget = CGGameUI::s_lockedTarget;
+        CGGameUI::ClearTarget(CGGameUI::s_lockedTarget, 1);
+
+        return;
+    }
+
+    if (!ClntObjMgrGetCurrent()) {
+        return;
+    }
+
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+
+    if (player && player->Unit()->charmedBy != 0) {
+        return;
+    }
+
+    auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\GameUI.cpp", 0x2cfd));
+
+    if (!object) {
+        if (guid == CGGameUI::s_lockedTarget) {
+            return;
+        }
+
+        SI2::PlaySoundKit("igCharacterSelect", nullptr, nullptr, nullptr);
+    } else {
+        if (!object->CanBeTargetted() || guid == CGGameUI::s_lockedTarget) {
+            return;
+        }
+
+        if (object->IsA(TYPE_UNIT) && object->m_nameDesc) {
+            PlayerNameInvalidateReaction(object->m_nameDesc);
+        }
+    }
+
+    CGGameUI::s_previousTarget = CGGameUI::s_lockedTarget;
+    CGGameUI::ClearTarget(CGGameUI::s_lockedTarget, 0);
+    CGGameUI::s_lockedTarget = guid;
+
+    SendSetSelection(guid);
+    FrameScript_SignalEvent(0x9D, nullptr);
+}
+
+// ref: FUN_00519280
+// The cursor puts down what it holds.
+// PARTIAL: what each cursor kind returns to its place (the bag item, loot money, the action and
+// pet bars' grids, the guild bank slot) is the cursor port's; nothing in frozen picks anything up,
+// so the cursor never holds anything to put down.
+void GameUIClearCursor(int32_t restore, int32_t signal) {
+    (void)restore;
+    (void)signal;
+
+    if (CGGameUI::GetCursorKind() == 0) {
+        return;
+    }
+}
+
+// ref: FUN_005277b0
+// Target the object and interact with it (the object's slot 0xb0: talk, loot, use).
+//
+// PARTIAL: the unit's interaction (FUN_00731260: loot, skinning, gossip, vendors, attack) is
+// Player_C's; frozen's units have no slot 0xb0 of their own yet, game objects do.
+int32_t GameUITargetAndInteract(WOWGUID guid) {
+    if (!ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)) {
+        return 1;
+    }
+
+    auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\GameUI.cpp", 0x2b16));
+
+    if (!object) {
+        return 0;
+    }
+
+    CGGameUI::SetTarget(guid);
+    object->Virtual0B0();
+
+    return 1;
+}
+
+// ref: FUN_005274f0
+// The left click on an object: what the cursor holds goes to it (an item traded to a player, fed
+// to the pet, or applied to a game object), and the object becomes the target.
+//
+// PARTIAL: every cursor-item branch (trade FUN_00703cf0 / FUN_00586b50, the pet's food
+// FUN_0080dcf0, a game object's lock FUN_00524650) is the cursor and trade ports'; the cursor
+// never holds anything in frozen. The pet's sound on being clicked (FUN_0072a680, a unit's
+// clicked voice) is the unit sound port's.
+int32_t GameUISelectObject(WOWGUID guid) {
+    if (!ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__)) {
+        return 0;
+    }
+
+    if (!ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\GameUI.cpp", 0x2abc)) {
+        return 0;
+    }
+
+    CGGameUI::SetTarget(guid);
+
+    return 1;
+}
+
+// ref: FUN_00527870
+int32_t GameUIClickObject(WOWGUID guid, int32_t button) {
+    if (CGGameUI::GetCursorHolding()) {
+        GameUIClearCursor(1, 1);
+    }
+
+    if (button == 1) {
+        GameUISelectObject(guid);
+        return 1;
+    }
+
+    GameUITargetAndInteract(guid);
+
+    return 1;
+}
+
+// ref: FUN_00527830
+// A click on the ground or a building.
+// PARTIAL: what it does there (FUN_00527360: click-to-move to the point, a ground-targeted spell's
+// placement) is the click-to-move and spell cast ports'.
+int32_t GameUIClickSurface(const WORLDCLICK& click) {
+    if (click.button == 4 || CGGameUI::GetCursorHolding()) {
+        GameUIClearCursor(1, 1);
+    }
+
+    return 1;
+}
+
+// ref: FUN_005278c0
+// A click on nothing: the right button walks along the ray with click-to-move, the left one
+// drops the target when deselectOnClick is set and the cursor is empty.
+//
+// PARTIAL: the click-to-move walk (FUN_0072f040) is that port's; the cursor's held item dropped
+// with the left button (FUN_00524650) is the cursor port's.
+int32_t GameUIClickNothing(const WORLDCLICK& click) {
+    static CVar* deselectOnClick = CVar::Lookup("deselectOnClick");
+
+    bool emptyCursor = CGGameUI::GetCursorKind() == 0;
+    auto mover = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_PLAYER, ".\\GameUI.cpp", 0x2bc9));
+    C3Vector ray = click.end - click.start;
+    bool walk = emptyCursor && (ray.x * ray.x + ray.y * ray.y + ray.z * ray.z) != 0.0f && mover;
+
+    if (walk) {
+        static CVar* autoInteract = CVar::Lookup("autoInteract");
+        walk = 0 < mover->Unit()->health && autoInteract && autoInteract->GetInt() != 0;
+    }
+
+    if (walk && click.button == 4) {
+        return 1;
+    }
+
+    GameUIClearCursor(1, 1);
+
+    if (click.button == 1 && emptyCursor && deselectOnClick && deselectOnClick->GetInt() != 0
+        && CGGameUI::GetLockedTarget() != 0) {
+        CGGameUI::SetPreviousTarget(CGGameUI::GetLockedTarget());
+        CGGameUI::ClearTarget(CGGameUI::GetLockedTarget(), 1);
+    }
+
+    return 1;
 }

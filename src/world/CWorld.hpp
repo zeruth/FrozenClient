@@ -55,6 +55,14 @@ struct SWModelFadeout {
 struct SMOFog;
 class CMapObjDef;
 
+class CMapBaseObj;
+// As CM2Model.hpp declares it.
+typedef void (*M2SequenceDoneCallback)(CM2Model* model, uint32_t boneId, uint32_t animId,
+                                       int32_t a4, int32_t a5, WOWGUID owner);
+typedef void (*M2AnimEventCallback)(CM2Model* model, uint32_t boneId, uint32_t eventId,
+                                    uint32_t eventData, const C3Vector* position, uint32_t a6,
+                                    WOWGUID owner);
+
 class CWorld {
     public:
         enum Enables {
@@ -197,6 +205,31 @@ class CWorld {
         static bool QueryFacets(const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
         static void SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam);
         static int32_t GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4);
+
+        // A game object's own map object (World.cpp 0x0077fd10 .. 0x00783a60)
+        static CMapBaseObj* AddDynamicObject(const char* name, C3Vector& position, float facing, int32_t wait,
+                                             int32_t place, WOWGUID owner, int32_t extraSetCount,
+                                             const uint16_t* extraSets, const float* radius, uint32_t id);
+        static void RemoveDynamicObject(CMapBaseObj* object);
+        static void SetDynamicObjectShown(CMapBaseObj* object, int32_t shown);
+        static void SetDynamicObjectCollides(CMapBaseObj* object, int32_t collides);
+        static void SetDynamicObjectFlag1000(CMapBaseObj* object, int32_t set);
+        static bool DynamicObjectIsMapObj(CMapBaseObj* object);
+        static bool DynamicObjectIsLoaded(CMapBaseObj* object);
+        static void SetDynamicObjectPlacement(CMapBaseObj* object, const C44Matrix& placement);
+        static void SetDynamicObjectSequenceDone(CMapBaseObj* object, M2SequenceDoneCallback callback, WOWGUID owner, uint16_t set = 0);
+        static void SetDynamicObjectSequence(CMapBaseObj* object, uint32_t sequence, uint32_t a3, uint16_t set);
+        static bool DynamicObjectContains(CMapBaseObj* object, const C3Vector& position);
+        static void SetObjectHidden(HWORLDOBJECT object, int32_t hidden);
+        static void SetDynamicObjectPosition(CMapBaseObj* object, C3Vector& position, float rotZ, float rotY, float rotX, int32_t snap);
+        static void GetDynamicObjectBounds(CMapBaseObj* object, CAaBox& bounds);
+        static void SetDynamicObjectFlag2000(CMapBaseObj* object, int32_t set);
+        static void SetDynamicObjectEmittersPaused(CMapBaseObj* object, int32_t paused, uint16_t set);
+        static void SetDynamicObjectDoodadSetShown(CMapBaseObj* object, int32_t shown, uint16_t set);
+        static int32_t MoveDynamicObjectDoodadSet(CMapBaseObj* from, uint16_t set, CMapBaseObj* to, uint16_t newSet);
+        static void SetDynamicObjectAnimEvent(CMapBaseObj* object, M2AnimEventCallback callback, WOWGUID owner, uint16_t set);
+        static WOWGUID GetObjectBuildingOwner(HWORLDOBJECT object);
+        static int32_t GetObjectLiquidFlags(HWORLDOBJECT object, uint32_t* bit8, uint32_t* bit9);
         static void UpdateWindowAndMap(const C3Vector& targetPos);
         static uint32_t GetCurTimeMs();
         static float GetCurTimeSec();

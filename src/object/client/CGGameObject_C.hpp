@@ -9,6 +9,7 @@
 #include <tempest/Matrix.hpp>
 
 class CGGameObjectType;
+class CMapBaseObj;
 class CGUnit_C;
 class GameObjectStats_C;
 class LockRec;
@@ -51,7 +52,7 @@ class CGGameObject_C : public CGObject_C, public CGGameObject {
         int32_t Virtual0E4() override;                                          // 0x0e4
         float GetFadeInAlpha() override;                                        // 0x0e8
         bool Virtual0EC() override;                                             // 0x0ec
-        int32_t Virtual0F0(int32_t a2) override;                                // 0x0f0
+        int32_t Virtual0F0(const C3Vector* position) override;                  // 0x0f0
         int32_t Virtual0F4(CPassenger* passenger, int32_t mode) override;       // 0x0f4
         float Virtual0F8() override;                                            // 0x0f8
 
@@ -85,6 +86,10 @@ class CGGameObject_C : public CGObject_C, public CGGameObject {
         void SetAnimProgress(float progress);
         // The display's model, or null (with a complaint) when the display is missing.
         const char* GetDisplayModelName() const;
+        // ref: FUN_007110b0
+        // The display placed in the world as a dynamic object where the object stands, turned
+        // its way; `owner` is the guid it carries (what rides it knows its ride by it).
+        CMapBaseObj* AddMapObject(WOWGUID owner, int32_t wait, int32_t extraSetCount, const uint16_t* extraSets);
         int32_t GetData(int32_t meaning) const;
         const LockRec* GetLockRec() const;
         // Whether a lock entry's action may be performed in the object's state.
@@ -102,8 +107,11 @@ class CGGameObject_C : public CGObject_C, public CGGameObject {
         // Public member variables
         // +0xd8: where the object is, and on what transport.
         CPassenger m_passenger;
-        // TODO +0x108: twelve lists the destructor empties (FUN_005bd800), and the link at +0x198
-        // (FUN_0079f820 in Disable); what joins them is not identified.
+        // TODO +0x108: twelve lists the destructor empties (FUN_005bd800); what joins them is not
+        // identified.
+        // +0x198: the object's link in the moving transports the movement poll steps
+        // (MovementLinkTransport), while it is a transport whose building is in.
+        TSLink<CGGameObject_C> m_transportLink;
         CGGameObjectType* m_type = nullptr;                 // +0x1a0
         const GameObjectStats_C* m_stats = nullptr;         // +0x1a4
         C44Matrix m_worldMatrix;                            // +0x1a8

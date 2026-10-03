@@ -1,4 +1,5 @@
 #include "ui/game/CGPartyInfo.hpp"
+#include "db/Db.hpp"
 #include <storm/String.hpp>
 #include "ui/game/CGRaidInfo.hpp"
 
@@ -27,6 +28,7 @@ uint32_t CGPartyInfo::m_dungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_raidDifficulty = 0;
 uint32_t CGPartyInfo::m_ownDungeonDifficulty = 0;
 uint32_t CGPartyInfo::m_ownRaidDifficulty = 0;
+uint32_t CGPartyInfo::m_dynamicHeroic = 0;
 uint32_t CGPartyInfo::m_optOutOfLoot = 0;
 uint32_t CGPartyInfo::m_realMemberCount = 0;
 WOWGUID CGPartyInfo::m_realLeader = 0;
@@ -303,6 +305,36 @@ uint32_t CGPartyInfo::GetOwnDungeonDifficulty() {
 
 uint32_t CGPartyInfo::GetOwnRaidDifficulty() {
     return CGPartyInfo::m_ownRaidDifficulty;
+}
+
+// ref: FUN_005138d0
+uint32_t CGPartyInfo::GetEffectiveDungeonDifficulty() {
+    if (!CGPartyInfo::GetMember(1) || CGRaidInfo::NumMembers()) {
+        return CGPartyInfo::m_ownDungeonDifficulty;
+    }
+
+    return CGPartyInfo::m_dungeonDifficulty;
+}
+
+// ref: FUN_00513900
+uint32_t CGPartyInfo::GetEffectiveRaidDifficulty() {
+    if (!CGRaidInfo::NumMembers()) {
+        return CGPartyInfo::m_ownRaidDifficulty;
+    }
+
+    return CGPartyInfo::m_raidDifficulty;
+}
+
+// ref: FUN_00519680
+// The reference reads the current map from DAT_00bd088c; frozen's is the object manager's.
+uint32_t CGPartyInfo::GetEffectiveMapRaidDifficulty() {
+    auto map = g_mapDB.GetRecord(static_cast<int32_t>(ClntObjMgrGetMapID()));
+
+    if (map && (map->m_flags & 0x100)) {
+        return (CGPartyInfo::GetEffectiveRaidDifficulty() & 1) + CGPartyInfo::m_dynamicHeroic * 2;
+    }
+
+    return CGPartyInfo::GetEffectiveRaidDifficulty();
 }
 
 // ref: FUN_00525530

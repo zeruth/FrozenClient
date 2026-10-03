@@ -55,6 +55,20 @@ class CMovementShared : public CPassenger {
         const CMoveSpline* GetSpline() const { return this->m_spline; }
         float GetWalkSpeed() const { return this->m_walkSpeed; }
         void ClearSplineEnabled();
+        // ref: FUN_0098b850
+        // The movement's own state taken into another space by `matrix`: the fall heights, the
+        // anchor, its facing (turned by `facing`), the direction, and a running spline.
+        void TransformState(const C44Matrix& matrix, float facing, const C3Vector& position);
+        // ref: FUN_0098b770
+        void TransformSpline(const C44Matrix& matrix, float facing);
+        // ref: FUN_0098b9a0
+        float LeaveTransportState(const C44Matrix& matrix, float facing, const C3Vector& position);
+        // ref: FUN_0098c730
+        // Off the transport: the passenger and its movement back in the world's space.
+        float LeaveTransportSpace(C44Matrix& matrix);
+        // ref: FUN_0098ba20
+        // Onto `transport`: the passenger and its movement into its space, and the transport told.
+        float EnterTransportSpace(WOWGUID transport, C44Matrix& inverse, C44Matrix* matrix);
         void SetWaterWalking(int32_t enable);
         void SetSafeFall(int32_t enable);
         void SetHover(int32_t enable);

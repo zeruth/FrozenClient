@@ -1,4 +1,6 @@
 #include "ui/InputControl.hpp"
+#include "gx/Device.hpp"
+#include "gx/CGxDevice.hpp"
 #include "db/Db.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CMovement_C.hpp"
@@ -274,6 +276,66 @@ void CInputControl::RefreshMousePitch() {
     if (auto unit = InputActiveUnit(".\\InputControl.cpp", 0x9c7)) {
         InputControlSignalPitch(unit->GetMovementPitch());
     }
+}
+
+// ref: FUN_005fa890
+// Whether the cursor shows (m_unk58 bit 0x1): always with the window unfocused (0x20) or with
+// CinematicJoystick, a cursor-showing state (0x10) or a held reason (+0x5c); never while hidden by
+// 0x40; otherwise as the 0x2 / 0x4 reasons say. The device's cursor follows unless a mouse button
+// is steering (mouse look keeps it hidden).
+//
+// PARTIAL: confining the cursor to the window (FUN_005f9670 through FUN_008709e0, the
+// enableWowMouse path) is the OS layer's port.
+void CInputControl::UpdateCursorVisible(int32_t force) {
+    static CVar* cinematicJoystick = CVar::Lookup("CinematicJoystick");
+
+    uint32_t state = static_cast<uint32_t>(this->m_unk58);
+    uint32_t visible;
+
+    if (state & 0x20) {
+        visible = 1;
+    } else if (state & 0x40) {
+        visible = 0;
+    } else if ((cinematicJoystick && cinematicJoystick->GetInt() != 0) || (state & 0x10) || this->m_unk5C != 0) {
+        visible = 1;
+    } else {
+        visible = state & 0x6;
+    }
+
+    visible = visible ? 1 : 0;
+
+    if (!force && visible == (state & 0x1)) {
+        return;
+    }
+
+    if (!visible) {
+        this->m_unk58 = static_cast<int32_t>(state & 0xFFFFFFFE);
+        g_theGxDevicePtr->CursorSetVisible(0);
+        return;
+    }
+
+    this->m_unk58 = static_cast<int32_t>(state | 0x1);
+
+    if (!(this->m_unk04 & 0x3)) {
+        g_theGxDevicePtr->CursorSetVisible(1);
+    }
+}
+
+// ref: FUN_005fc960
+// The window lost the focus: the movement keys let go (the mouse buttons are left to their own
+// release), the movement re-runs, and the cursor shows; regaining it drops that reason.
+void CInputControl::OnFocusChanged(int32_t focus) {
+    if (focus == 0) {
+        this->m_unk04 &= 0xfffff00f;
+        this->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+
+        this->m_unk58 |= 0x20;
+        this->UpdateCursorVisible(0);
+        return;
+    }
+
+    this->m_unk58 &= ~0x20;
+    this->UpdateCursorVisible(0);
 }
 
 // ref: FUN_005f9600
@@ -579,8 +641,6 @@ int32_t CInputControl::SetControlBit(uint32_t bit, uint32_t time) {
 }
 
 // ref: FUN_005fa450
-// PARTIAL: the click a short press makes (FUN_004f7880, the world frame's select-or-interact) is
-// the world-frame port's.
 int32_t CInputControl::UnsetControlBit(uint32_t bit, uint32_t time, int32_t a3) {
     if (!(this->m_unk04 & bit)) {
         return 0;
@@ -629,6 +689,15 @@ int32_t CInputControl::UnsetControlBit(uint32_t bit, uint32_t time, int32_t a3) 
 
     if (!(old & 0x3) || (this->m_unk04 & 0x3)) {
         return 1;
+    }
+
+    // A short press is a click on what was picked when it went down: left 1, right 4.
+    if (!this->IsDrag(time) && CGWorldFrame::s_currentWorldFrame) {
+        if (this->m_unk18 == 1) {
+            CGWorldFrame::s_currentWorldFrame->OnWorldClick(1);
+        } else if (this->m_unk18 == 2) {
+            CGWorldFrame::s_currentWorldFrame->OnWorldClick(4);
+        }
     }
 
     this->m_unk18 = 0;
@@ -983,6 +1052,10 @@ int32_t InputStartButton(uint32_t bit, uint32_t click) {
 
     if (!(input->m_unk04 & 0x3)) {
         input->m_unk18 = click;
+
+        if (CGWorldFrame::s_currentWorldFrame) {
+            CGWorldFrame::s_currentWorldFrame->UpdateCursorPick();
+        }
     }
 
     if (input->SetControlBit(bit, time)) {

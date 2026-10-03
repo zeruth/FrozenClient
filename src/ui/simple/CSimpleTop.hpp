@@ -64,9 +64,9 @@ class CSimpleTop : public CLayoutFrame {
         // +0x123c: a relative move (mouse look) goes here first, before any frame.
         int32_t (*m_mouseRelativeCallback)(CMouseEvent*) = nullptr;
         int32_t (*m_displaySizeCallback)(const CSizeEvent&) = nullptr;
-        // +0x1244 and +0x1248 are two more input hooks the game UI installs (FUN_00512d00 and an
-        // unset one); not ported yet.
-        void* m_inputHook1244 = nullptr;
+        // +0x1244: told when the window gains or loses the focus.
+        int32_t (*m_focusCallback)(const CFocusEvent&) = nullptr;
+        // +0x1248: an input hook the game UI leaves unset; not ported yet.
         void* m_inputHook1248 = nullptr;
         // +0x124c: tainted code may call protected functions (the game UI clears it in combat)
         int32_t m_protectedFunctionsAllowed = 0;

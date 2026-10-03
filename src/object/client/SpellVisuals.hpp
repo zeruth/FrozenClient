@@ -171,6 +171,10 @@ class MountTransitionObject {
 
 // ref: FUN_007fc5a0
 void SpellVisualsInitialize();
+
+// The object effects' shared random stream (0x00b2fa30): spell shards, ripples, blood.
+class CRndSeed;
+CRndSeed& ObjectRandomSeed();
 // ref: FUN_007fcbc0
 void SpellVisualsShutdown();
 // ref: FUN_007fc9f0

@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_DOODAD_DEF_HPP
 #define WORLD_MAP_C_MAP_DOODAD_DEF_HPP
 
+#include "util/GUID.hpp"
 #include "world/map/CMapStaticEntity.hpp"
 #include "sound/SOUNDKITOBJECT.hpp"
 #include <storm/Hash.hpp>
@@ -59,6 +60,11 @@ class CMapDoodadDef : public CMapStaticEntity, public TSHashObject<CMapDoodadDef
         // The building doodad set this doodad belongs to when it came from one of the def's extra
         // sets; 0 for the default set and for tile doodads (+0x16c).
         uint16_t m_doodadSetIndex = 0;
+        // A building doodad's own placement inside the building (reference +0x148 and +0x118), so a
+        // moving building can place it again; and the game object a dynamic prop belongs to.
+        C3Vector m_localPosition = {};
+        C44Matrix m_localPlacement;
+        WOWGUID m_ownerGUID = 0;
 
         // Member functions
         // ref: FUN_007c21e0

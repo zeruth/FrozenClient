@@ -20,6 +20,10 @@
 #include <cstdlib>
 #include "model/CM2Model.hpp"
 #include "world/CWorld.hpp"
+#include "world/map/CMapObjGroup.hpp"
+#include "world/map/CMapObjDefGroup.hpp"
+#include "world/map/CMapDoodadDef.hpp"
+#include "world/map/CMapObjDef.hpp"
 #include "world/MapShadow.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/map/LiquidMaterialSettings.hpp"
@@ -267,6 +271,21 @@ int32_t CWorld::GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* he
         *height = entity->m_liquidHeight;
         *fieldBC = entity->m_fieldBC;
         *a4 = 0;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_0077f220
+// The two liquid bits of an entity standing in liquid (flags 0x100 and 0x200 under 0x20).
+int32_t CWorld::GetObjectLiquidFlags(HWORLDOBJECT object, uint32_t* bit8, uint32_t* bit9) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (entity && (entity->m_flags7c & 0x20)) {
+        *bit8 = (entity->m_flags7c >> 8) & 1;
+        *bit9 = (entity->m_flags7c >> 9) & 1;
 
         return 1;
     }
@@ -1797,4 +1816,411 @@ bool CWorld::QueryFacets(const CAaBox& sweep, const CAaBox& box, CFacetList& lis
 // ref: FUN_00783a40
 bool CWorld::QueryFacets(const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
     return CWorld::QueryFacets(box, box, list, flags, hitFlags);
+}
+
+// ------------------------------------------------------------------------------------------------
+// The world's dynamic objects: map objects a game object places and moves (World.cpp).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_00783500
+// A game object's map object: a building (a .wmo name) or a prop (anything else), turned by
+// `facing`, owned by `owner` (the def keeps the guid), and placed at once when `place` asks
+// (the position first moved onto the cell grid). A building also joins the map's own list.
+CMapBaseObj* CWorld::AddDynamicObject(const char* name, C3Vector& position, float facing, int32_t wait, int32_t place,
+                                      WOWGUID owner, int32_t extraSetCount, const uint16_t* extraSets,
+                                      const float* radius, uint32_t id) {
+    auto dot = SStrChrR(name, '.');
+
+    if (dot && !SStrCmpI(dot, ".wmo", STORM_MAX_STR)) {
+        auto def = CMap::CreateDynamicMapObjDef(name, position, facing, wait, extraSetCount, extraSets, radius, id);
+        def->m_ownerGUID = owner;
+
+        auto link = CMap::AllocBaseObjLink(def);
+        link->ref = nullptr;
+        CMap::s_mapObjDefLinkList.LinkToTail(link);
+
+        if (place) {
+            CMap::SnapDynamicPosition(def, position, facing);
+            CMap::PlaceDynamicMapObjDef(def, position, facing, 0.0f, 0.0f);
+        }
+
+        def->m_linkCount++;
+
+        return def;
+    }
+
+    auto def = CMap::CreateDynamicDoodadDef(name, position, facing, wait);
+
+    if (!def) {
+        return nullptr;
+    }
+
+    def->m_flags7c |= 0x2010;
+    def->m_ownerGUID = owner;
+
+    if (place) {
+        CMap::SnapDynamicPosition(def, position, facing);
+        CMap::PlaceDynamicDoodadDef(def, position, facing);
+    }
+
+    def->m_linkCount++;
+
+    return def;
+}
+
+// ref: FUN_00782680
+// A game object lets its map object go: the links it holds are freed, and the building or prop is
+// released once nothing else links it.
+void CWorld::RemoveDynamicObject(CMapBaseObj* object) {
+    while (auto link = object->m_parentLinkList.Head()) {
+        CMap::FreeBaseObjLink(link);
+    }
+
+    object->m_linkCount--;
+
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        CMap::ReleaseDynamicMapObjDef(static_cast<CMapObjDef*>(object));
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        CMap::ReleaseDoodadDef(static_cast<CMapDoodadDef*>(object));
+    }
+}
+
+// ref: FUN_00783a60
+// A dynamic object shown or hidden (flag 0x20). A building hidden lets go of the entities its
+// groups held, which go back to the map's own placement.
+void CWorld::SetDynamicObjectShown(CMapBaseObj* object, int32_t shown) {
+    if (shown) {
+        object->m_flags &= 0xFFFFFFDF;
+    } else {
+        object->m_flags |= 0x20;
+    }
+
+    if (!(object->m_type & CMapBaseObj::Type_MapObjDef)) {
+        return;
+    }
+
+    auto def = static_cast<CMapObjDef*>(object);
+
+    for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+        auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+        while (auto entityLink = defGroup->m_entityLinkList.Head()) {
+            auto entity = static_cast<CMapEntity*>(entityLink->owner);
+            CMap::FreeBaseObjLink(entityLink);
+            CMap::UpdateEntity(entity);
+        }
+    }
+}
+
+// ref: FUN_007801a0
+// Whether the dynamic object collides (flag 0x100 set while it does not).
+void CWorld::SetDynamicObjectCollides(CMapBaseObj* object, int32_t collides) {
+    if (collides) {
+        object->m_flags &= 0xFFFFFEFF;
+    } else {
+        object->m_flags |= 0x100;
+    }
+}
+
+// ref: FUN_0077fe00
+// The 0x1000 flag a transport's building carries (an elevator's, set by the transport type).
+void CWorld::SetDynamicObjectFlag1000(CMapBaseObj* object, int32_t set) {
+    if (set) {
+        object->m_flags |= 0x1000;
+    } else {
+        object->m_flags &= 0xFFFFEFFF;
+    }
+}
+
+// ref: FUN_00780190
+bool CWorld::DynamicObjectIsMapObj(CMapBaseObj* object) {
+    return (object->m_type & CMapBaseObj::Type_MapObjDef) != 0;
+}
+
+// ref: FUN_007b42f0
+// A group's doodads are in: the group has made them (flag 0x8) and each with a model is placed.
+static bool DefGroupDoodadsPlaced(CMapObjDefGroup* defGroup) {
+    if (!(defGroup->m_flags & 0x8)) {
+        return false;
+    }
+
+    for (auto link = defGroup->m_doodadDefLinkList.Head(); link; link = defGroup->m_doodadDefLinkList.Next(link)) {
+        auto doodad = static_cast<CMapDoodadDef*>(link->owner);
+
+        if (doodad->m_model && !(doodad->m_flags & 0x80)) {
+            // A streaming client pushes the model's read (FUN_00825150).
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_0077fd10
+// Whether a dynamic object has arrived: a building set up, its groups' doodads placed
+// (FUN_007b4760) and every group of its root in (FUN_007af740); a prop with its model loaded.
+bool CWorld::DynamicObjectIsLoaded(CMapBaseObj* object) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        auto def = static_cast<CMapObjDef*>(object);
+
+        if (!(def->m_flags & 0x80)) {
+            return false;
+        }
+
+        if (!(def->m_flags & 0x4000)) {
+            for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+                if (!DefGroupDoodadsPlaced(static_cast<CMapObjDefGroup*>(link->owner))) {
+                    return false;
+                }
+            }
+
+            def->m_flags |= 0x4000;
+        }
+
+        auto mapObj = def->m_mapObj;
+
+        if (!mapObj->m_rootLoaded) {
+            return false;
+        }
+
+        for (uint32_t i = 0; i < mapObj->m_groupCount; i++) {
+            auto group = mapObj->GetGroup(i, 1);
+
+            if (!group || !(group->m_state & 0x1)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        auto doodad = static_cast<CMapDoodadDef*>(object);
+        return !doodad->m_model || doodad->m_model->IsLoaded(0, 0);
+    }
+
+    return false;
+}
+
+// ref: FUN_0077fdd0
+void CWorld::SetDynamicObjectPlacement(CMapBaseObj* object, const C44Matrix& placement) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        CMap::SetMapObjDefPlacement(static_cast<CMapObjDef*>(object), placement);
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        CMap::SetDoodadDefPlacement(static_cast<CMapDoodadDef*>(object), placement);
+    }
+}
+
+// ref: FUN_0077fd60
+// A dynamic object moved (snapped to the cell grid first when asked): a building by three angles,
+// a prop by its facing.
+void CWorld::SetDynamicObjectPosition(CMapBaseObj* object, C3Vector& position, float rotZ, float rotY, float rotX, int32_t snap) {
+    if (snap) {
+        CMap::SnapDynamicPosition(object, position, rotZ);
+    }
+
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        CMap::PlaceDynamicMapObjDef(static_cast<CMapObjDef*>(object), position, rotZ, rotY, rotX);
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        CMap::PlaceDynamicDoodadDef(static_cast<CMapDoodadDef*>(object), position, rotZ);
+    }
+}
+
+// ref: FUN_00780130
+// A building's root bounds, or a prop's model's box.
+void CWorld::GetDynamicObjectBounds(CMapBaseObj* object, CAaBox& bounds) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        bounds = static_cast<CMapObjDef*>(object)->m_mapObj->m_bounds;
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        static_cast<CMapDoodadDef*>(object)->m_model->GetBoundingBox(bounds);
+    }
+}
+
+// ref: FUN_0077fe20
+void CWorld::SetDynamicObjectFlag2000(CMapBaseObj* object, int32_t set) {
+    if (set) {
+        object->m_flags |= 0x2000;
+    } else {
+        object->m_flags &= ~0x2000u;
+    }
+}
+
+// ref: FUN_0077fe80
+void CWorld::SetDynamicObjectEmittersPaused(CMapBaseObj* object, int32_t paused, uint16_t set) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        CMap::SetDoodadSetEmittersPaused(static_cast<CMapObjDef*>(object), paused, set);
+    }
+}
+
+// ref: FUN_0077fea0
+void CWorld::SetDynamicObjectDoodadSetShown(CMapBaseObj* object, int32_t shown, uint16_t set) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        CMap::SetDoodadSetShown(static_cast<CMapObjDef*>(object), shown, set);
+    }
+}
+
+// ref: FUN_0077fe40
+// Both must be loaded buildings.
+int32_t CWorld::MoveDynamicObjectDoodadSet(CMapBaseObj* from, uint16_t set, CMapBaseObj* to, uint16_t newSet) {
+    if (!(from->m_type & CMapBaseObj::Type_MapObjDef) || !(from->m_flags & 0x80)
+        || !(to->m_type & CMapBaseObj::Type_MapObjDef) || !(to->m_flags & 0x80)) {
+        return 0;
+    }
+
+    return CMap::MoveDoodadSet(static_cast<CMapObjDef*>(from), set, static_cast<CMapObjDef*>(to), newSet);
+}
+
+// ref: FUN_0077ff60
+// ref: FUN_007b46a0
+void CWorld::SetDynamicObjectAnimEvent(CMapBaseObj* object, M2AnimEventCallback callback, WOWGUID owner, uint16_t set) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        auto def = static_cast<CMapObjDef*>(object);
+
+        for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+            CMap::SetGroupDoodadAnimEvent(static_cast<CMapObjDefGroup*>(link->owner), callback, owner, set);
+        }
+
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        auto doodad = static_cast<CMapDoodadDef*>(object);
+
+        if (doodad->m_model) {
+            doodad->m_model->SetAnimEventCallback(callback, owner);
+        }
+    }
+}
+
+// ref: FUN_007819c0
+// The game object owning the dynamic building a world entity stands in: its first parent is one
+// of the building's groups, whose own first parent is the building.
+WOWGUID CWorld::GetObjectBuildingOwner(HWORLDOBJECT object) {
+    auto entity = reinterpret_cast<CMapBaseObj*>(object);
+    auto link = entity->m_parentLinkList.Head();
+
+    if (!link || !link->ref || !(link->ref->m_type & CMapBaseObj::Type_MapObjDefGroup)) {
+        return 0;
+    }
+
+    auto defLink = link->ref->m_parentLinkList.Head();
+
+    // The reference reads through the group's first parent unguarded; a group always has its
+    // building there.
+    if (!defLink || !defLink->ref) {
+        return 0;
+    }
+
+    return static_cast<CMapObjDef*>(defLink->ref)->m_ownerGUID;
+}
+
+// ref: FUN_0077f2f0
+// An entity taken out of the scene (state bit 0x4, which CMap::BucketEntities passes over) or put
+// back.
+void CWorld::SetObjectHidden(HWORLDOBJECT object, int32_t hidden) {
+    auto entity = reinterpret_cast<CMapStaticEntity*>(object);
+    entity->m_flags7c ^= (static_cast<uint32_t>(hidden) * 4 ^ entity->m_flags7c) & 0x4;
+}
+
+// ref: FUN_0077fec0
+// ref: FUN_007b45f0
+// The dynamic object plays `sequence`: a prop's model does; a building's doodads of `set` do.
+void CWorld::SetDynamicObjectSequence(CMapBaseObj* object, uint32_t sequence, uint32_t a3, uint16_t set) {
+    (void)a3;
+
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        auto def = static_cast<CMapObjDef*>(object);
+
+        for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+            CMap::SetGroupDoodadSequence(static_cast<CMapObjDefGroup*>(link->owner), sequence, set);
+        }
+
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        auto doodad = static_cast<CMapDoodadDef*>(object);
+
+        if (doodad->m_model) {
+            doodad->m_model->SetBoneSequence(-1, sequence, -1, 0, 1.0f, 1, 1);
+        }
+    }
+}
+
+// ref: FUN_0077ffb0
+// Whether a point in the object's own space is aboard it: inside a building's convex volume, or
+// inside a prop's collision box (its top raised by 1.64 + 1/72 yards, room for a passenger's
+// height). An object of neither kind holds everything; a prop not yet loaded holds nothing.
+bool CWorld::DynamicObjectContains(CMapBaseObj* object, const C3Vector& position) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        return static_cast<CMapObjDef*>(object)->m_mapObj->PointInConvexVolume(position);
+    }
+
+    if (!(object->m_type & CMapBaseObj::Type_DoodadDef)) {
+        return true;
+    }
+
+    auto model = static_cast<CMapDoodadDef*>(object)->m_model;
+
+    if (!model || !model->IsLoaded(0, 0)) {
+        return false;
+    }
+
+    if (!model->m_shared->m_m2DataLoaded) {
+        model->WaitForLoad(nullptr);
+    }
+
+    const CAaBox& box = model->m_shared->m_data->collisionBounds.extent;
+
+    const C4Plane planes[6] = {
+        { {  1.0f,  0.0f,  0.0f }, -box.t.x },
+        { {  0.0f,  1.0f,  0.0f }, -box.t.y },
+        { {  0.0f,  0.0f,  1.0f }, -box.t.z - 1.6404099f - 0.013888889f },
+        { { -1.0f,  0.0f,  0.0f },  box.b.x },
+        { {  0.0f, -1.0f,  0.0f },  box.b.y },
+        { {  0.0f,  0.0f, -1.0f },  box.b.z },
+    };
+
+    for (const auto& plane : planes) {
+        if (0.0f < plane.n.y * position.y + plane.n.z * position.z + plane.n.x * position.x + plane.d) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_0077ff10
+// ref: FUN_007b4640
+// The dynamic object's sequence-done hook: a prop's model's own; a building's doodads' of `set`.
+void CWorld::SetDynamicObjectSequenceDone(CMapBaseObj* object, M2SequenceDoneCallback callback, WOWGUID owner, uint16_t set) {
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        auto def = static_cast<CMapObjDef*>(object);
+
+        for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+            CMap::SetGroupDoodadSequenceDone(static_cast<CMapObjDefGroup*>(link->owner), callback, owner, set);
+        }
+
+        return;
+    }
+
+    if (object->m_type & CMapBaseObj::Type_DoodadDef) {
+        auto doodad = static_cast<CMapDoodadDef*>(object);
+
+        if (doodad->m_model) {
+            doodad->m_model->SetSequenceDoneCallback(callback, owner);
+        }
+    }
 }

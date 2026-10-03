@@ -57,6 +57,9 @@ class C3Spline {
         void Tangent(float t, C3Vector& out, int32_t byLength) const;
         void Frame(float t, C3SplineFrame& out, int32_t byLength) const;
         float SumSegmentLengths(uint32_t count) const;
+        // ref: FUN_004c3720
+        // The arc length from the start to point `point` (the segments before it).
+        float LengthToPoint(uint32_t point) const;
         void SegmentAtLength(float t, uint32_t segmentCount, uint32_t& segment, float& localT) const;
         void BlendCubic(uint32_t first, float t, const float* basis, C3Vector& out) const;
         void BlendQuadratic(uint32_t first, float t, const float* basis, C3Vector& out) const;

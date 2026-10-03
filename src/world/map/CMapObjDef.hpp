@@ -1,6 +1,7 @@
 #ifndef WORLD_MAP_C_MAP_OBJ_DEF_HPP
 #define WORLD_MAP_C_MAP_OBJ_DEF_HPP
 
+#include "util/GUID.hpp"
 #include "world/map/CMapBaseObj.hpp"
 #include <storm/Array.hpp>
 #include <storm/Hash.hpp>
@@ -82,6 +83,9 @@ class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_N
         TSGrowableArray<CMapLight*> m_lights;
         CImVector m_ambientColor;        // +0x144: the root's, copied so a def can override it
         uint32_t m_unk138 = 0;           // cleared on create, not read by anything ported
+        // +0x148: the game object a dynamic building belongs to (CWorld::AddDynamicObject), 0 for a
+        // tile's.
+        WOWGUID m_ownerGUID = 0;
 };
 
 #endif

@@ -863,6 +863,7 @@ uint32_t M2ParticleBlendToGx(uint8_t blendMode, uint32_t& flags);
 // 2.0, so one draw gives both magnitude and sign with no division. The 2.0 is the constant at
 // 0x00a4040c -- worth stating because 1.5 is the value that "looks right" there and would silently
 // halve every randomised quantity in the particle system.
+float M2ParticleRand01(CRndSeed& seed);
 float M2ParticleRandSigned(CRndSeed& seed);
 
 // The index of the key whose time brackets `t` from below, by binary search over a part track's

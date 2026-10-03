@@ -30,6 +30,10 @@ class CMouseEvent : public CEvent, public EVENT_DATA_MOUSE {
         CMouseEvent& operator=(const EVENT_DATA_MOUSE& data);
 };
 
+// 0x40040065: the window gained or lost the focus (+0x10, the EVENT_DATA_FOCUS).
+class CFocusEvent : public CEvent, public EVENT_DATA_FOCUS {
+};
+
 class CSizeEvent : public CEvent, public EVENT_DATA_SIZE {
     public:
         // Member functions
