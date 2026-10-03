@@ -1,10 +1,7 @@
 #ifndef FFX_EFFECT_DEATH_HPP
 #define FFX_EFFECT_DEATH_HPP
 
-class EffectDeath {
-    public:
-        // Member functions
-        EffectDeath();
-};
+// EffectDeath lives with the reference's other FFXEffects.cpp effects.
+#include "ffx/FFXEffects.hpp"
 
 #endif

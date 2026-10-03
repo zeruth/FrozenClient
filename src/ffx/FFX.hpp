@@ -6,6 +6,7 @@
 #include <tempest/Vector.hpp>
 #include <cstdint>
 
+class C44Matrix;
 class CGxBatch;
 class CGxShader;
 class CGxBuf;
@@ -55,8 +56,10 @@ extern CVar* s_ffxCvar;                     // DAT_00d45774: "ffx", all full-scr
 extern CVar* s_ffxRectangleCvar;            // DAT_00d45770: "ffxRectangle"
 extern CVar* s_gxMultisampleCvar;           // DAT_00d4576c
 extern uint16_t s_quadIndices[4];           // DAT_00d45778: { 0, 3, 1, 2 }
-extern C3Vector s_quadPositions[4];         // DAT_00d45848
-extern C2Vector s_quadTexCoords[4];         // DAT_00d459f8
+// The corners every pass builds its quad in, or the 36 points of a six-by-six grid
+// (DAT_00d45848, DAT_00d459f8: 0x1b0 and 0x120 bytes).
+extern C3Vector s_quadPositions[36];
+extern C2Vector s_quadTexCoords[36];
 
 class Effect;
 
@@ -125,6 +128,8 @@ void EndScene();
 void BeginPass(Target* target);
 // Put back what BeginPass changed. ref: FUN_008c1520
 void EndPass();
+// The view BeginPass last set aside. ref: FUN_008c0290
+const C44Matrix& SavedView();
 // The quad covering a target and its texture coordinates into a source, with the half-texel
 // shift each API needs. ref: FUN_008c0590
 void QuadCoords(const int32_t* targetSize, const int32_t* sourceSize, const int32_t* sourceTexSize,
@@ -137,6 +142,17 @@ void StreamQuad(const C3Vector* positions, uint32_t color, const C2Vector* texCo
 void QuadIndex();
 // The quad's batch: a four-index strip (DAT_00b24a80).
 CGxBatch* QuadBatch();
+// An n by n grid over a target in clip space, with its texture coordinates into a source (texels
+// for rectangle targets). ref: FUN_008c0740
+void GridCoords(const int32_t* targetSize, const int32_t* sourceSize, const int32_t* sourceTexSize,
+                C3Vector* positions, C2Vector* texCoords, int32_t n, bool flip);
+// Stream points with one texture coordinate and a grey taken from a value in -1..1, and bind
+// them. ref: FUN_008c0de0
+void StreamColored(uint32_t count, const C3Vector* positions, const C2Vector* texCoords, const float* values);
+// Bind the triangles of a columns-by-rows grid of points. ref: FUN_008c0f00
+void GridIndex(int32_t columns, int32_t rows);
+// The six-by-six grid's batch: 150 indices over 36 points (DAT_00b24a90).
+CGxBatch* GridBatch();
 
 }
 

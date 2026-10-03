@@ -8,6 +8,7 @@
 #include "world/CWorld.hpp"
 #include "ffx/FFX.hpp"
 #include "ffx/EffectGlow.hpp"
+#include "ffx/FFXEffects.hpp"
 #include "world/DayNightLight.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
@@ -137,10 +138,10 @@ CGWorldFrame::CGWorldFrame(CSimpleFrame* parent) : CSimpleFrame(parent) {
 
     CGWorldFrame::s_glowEffect = STORM_NEW(EffectGlow);
 
-    // TODO EffectDeath (FUN_007ea260), the nether effect (FUN_007ea470) and EffectSpecial
-    // (FUN_007ea5f0) are not FFX effects in frozen yet.
-    CGWorldFrame::s_deathEffect = nullptr;
-    CGWorldFrame::s_netherEffect = nullptr;
+    CGWorldFrame::s_deathEffect = STORM_NEW(EffectDeath);
+    CGWorldFrame::s_netherEffect = STORM_NEW(EffectNether);
+
+    // TODO EffectSpecial (FUN_007ea5f0).
     CGWorldFrame::s_specialEffect = nullptr;
 
     CGWorldFrame::UpdateScreenEffect();

@@ -1,5 +1,6 @@
 #include "ffx/FFX.hpp"
-#include "ffx/EffectDeath.hpp"
+#include "console/Console.hpp"
+#include <cstdlib>
 #include "console/CVar.hpp"
 #include "gx/Buffer.hpp"
 #include "gx/CGxDevice.hpp"
@@ -14,6 +15,21 @@
 #include <common/Handle.hpp>
 #include <tempest/Matrix.hpp>
 #include <tempest/Rect.hpp>
+#include <cmath>
+#include <cstring>
+
+// ref: FUN_008c02a0
+bool FFXDeathCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    if (atol(value)) {
+        ConsoleWrite("enabled", DEFAULT_COLOR);
+
+        return true;
+    }
+
+    ConsoleWrite("disabled", DEFAULT_COLOR);
+
+    return true;
+}
 
 namespace FFX {
 
@@ -23,8 +39,8 @@ CVar* s_ffxCvar;
 CVar* s_ffxRectangleCvar;
 CVar* s_gxMultisampleCvar;
 uint16_t s_quadIndices[4];
-C3Vector s_quadPositions[4];
-C2Vector s_quadTexCoords[4];
+C3Vector s_quadPositions[36];
+C2Vector s_quadTexCoords[36];
 Effect* s_activeEffect;
 
 // What BeginPass found in the device, put back by EndPass (DAT_00b24aa0 and DAT_00b24ae0).
@@ -33,6 +49,19 @@ static C44Matrix s_savedView;
 
 // The quad every pass draws: a four-index strip (DAT_00b24a80).
 static CGxBatch s_quadBatch = { GxPrim_TriangleStrip, 0, 4, 0, 3 };
+
+// The six-by-six grid: 25 cells of two triangles over 36 points (DAT_00b24a90).
+static CGxBatch s_gridBatch = { GxPrim_Triangles, 0, 150, 0, 35 };
+
+// The grid's indices, built in place before upload (DAT_00d45b18).
+static uint16_t s_gridIndices[6 * 6 * 6];
+
+// A position, a colour and a texture coordinate (DAT_00ad88c0).
+static CGxVertexAttrib s_coloredFormat[3] = {
+    { GxVA_Position,  4, 0x00, 0x18 },
+    { GxVA_Color0,    0, 0x0c, 0x18 },
+    { GxVA_TexCoord0, 3, 0x10, 0x18 },
+};
 
 // A position, a colour and four texture coordinates (DAT_00ad8940).
 static CGxVertexAttrib s_quadFormat[6] = {
@@ -393,6 +422,11 @@ void BeginPass(Target* target) {
     );
 }
 
+// ref: FUN_008c0290
+const C44Matrix& SavedView() {
+    return FFX::s_savedView;
+}
+
 // ref: FUN_008c1520
 void EndPass() {
     GxRsPop();
@@ -492,6 +526,131 @@ void QuadIndex() {
 // The quad's batch, for the passes' draws.
 CGxBatch* QuadBatch() {
     return &FFX::s_quadBatch;
+}
+
+CGxBatch* GridBatch() {
+    return &FFX::s_gridBatch;
+}
+
+// ref: FUN_008c0740
+void GridCoords(const int32_t* targetSize, const int32_t* sourceSize, const int32_t* sourceTexSize,
+                C3Vector* positions, C2Vector* texCoords, int32_t n, bool flip) {
+    float maxY = static_cast<float>(targetSize[1]);
+    float maxX = static_cast<float>(targetSize[0]);
+    float minX = 0.0f;
+    float minY;
+
+    float invWidth = 1.0f / std::fabs(static_cast<float>(targetSize[0]));
+    float invHeight = 1.0f / std::fabs(static_cast<float>(targetSize[1]));
+    float clipX = invWidth * 2.0f;
+    float clipY = invHeight * 2.0f;
+
+    EGxApi api = GxDevApi();
+
+    if (api == GxApi_OpenGl) {
+        minX = 0.5f;
+        float shifted = maxY - 0.5f;
+        maxX = maxX + 0.5f;
+        maxY = shifted;
+        minY = -0.5f;
+
+        if (flip) {
+            maxY = 1.0f - 0.5f;
+            minY = 1.0f + shifted;
+        }
+    } else if (api == GxApi_GLL) {
+        minX = 0.375f;
+        maxY = maxY - 0.375f;
+        maxX = maxX + 0.375f;
+        minY = -0.375f;
+    } else {
+        minY = 0.0f;
+    }
+
+    float u0 = (1.0f / static_cast<float>(sourceTexSize[0])) * 0.5f;
+    float v = (1.0f / static_cast<float>(sourceTexSize[1])) * (static_cast<float>(sourceSize[1]) + 0.5f);
+    float step = 1.0f / static_cast<float>(n - 1);
+    float dx = (maxX - minX) * step;
+    float dyTotal = maxY - minY;
+    float du = ((1.0f / static_cast<float>(sourceTexSize[0])) * (static_cast<float>(sourceSize[0]) + 0.5f) - u0) * step;
+    float dvTotal = (1.0f / static_cast<float>(sourceTexSize[1])) * 0.5f - v;
+
+    float y = minY;
+    int32_t index = 0;
+
+    for (int32_t row = 0; row < n; row++) {
+        float x = minX;
+        float u = u0;
+        float clipRow = 1.0f - y * clipY;
+
+        for (int32_t column = 0; column < n; column++, index++) {
+            positions[index] = { x * clipX - 1.0f, clipRow, 0.0f };
+
+            if (!FFX::s_useRectangle) {
+                texCoords[index] = { u, v };
+            } else {
+                texCoords[index] = {
+                    static_cast<float>(sourceTexSize[0]) * x * invWidth,
+                    (1.0f - y * invHeight) * static_cast<float>(sourceTexSize[1])
+                };
+            }
+
+            x += dx;
+            u += du;
+        }
+
+        y += dyTotal * step;
+        v += dvTotal * step;
+    }
+}
+
+// ref: FUN_008c0de0
+void StreamColored(uint32_t count, const C3Vector* positions, const C2Vector* texCoords, const float* values) {
+    CGxBuf* buf = g_theGxDevicePtr->BufStream(GxPoolTarget_Vertex, 0x18, count);
+    auto data = reinterpret_cast<uint8_t*>(g_theGxDevicePtr->BufLock(buf));
+
+    for (uint32_t i = 0; i < count; i++, data += 0x18) {
+        memcpy(data, &positions[i], sizeof(C3Vector));
+
+        uint8_t grey = static_cast<uint8_t>(lrintf((values[i] + 1.0f) * 127.5f));
+        data[0xc] = grey;
+        data[0xd] = grey;
+        data[0xe] = grey;
+        data[0xf] = grey;
+
+        memcpy(data + 0x10, &texCoords[i], sizeof(C2Vector));
+    }
+
+    g_theGxDevicePtr->BufUnlock(buf, 0);
+    buf->unk1C = 1;
+
+    g_theGxDevicePtr->PrimVertexFormat(buf, FFX::s_coloredFormat, 3);
+}
+
+// ref: FUN_008c0f00
+void GridIndex(int32_t columns, int32_t rows) {
+    int32_t cells = (columns - 1) * (rows - 1);
+    CGxBuf* buf = g_theGxDevicePtr->BufStream(GxPoolTarget_Index, 2, cells * 6);
+
+    int32_t index = 0;
+    int32_t base = 0;
+
+    for (int32_t row = 0; row < rows - 1; row++, base += columns) {
+        for (int32_t column = 0; column < columns - 1; column++, index += 6) {
+            auto corner = static_cast<uint16_t>(base + column);
+            auto below = static_cast<uint16_t>(base + columns + column);
+
+            FFX::s_gridIndices[index + 0] = corner;
+            FFX::s_gridIndices[index + 1] = static_cast<uint16_t>(below + 1);
+            FFX::s_gridIndices[index + 2] = below;
+            FFX::s_gridIndices[index + 3] = corner;
+            FFX::s_gridIndices[index + 4] = static_cast<uint16_t>(corner + 1);
+            FFX::s_gridIndices[index + 5] = static_cast<uint16_t>(below + 1);
+        }
+    }
+
+    GxBufData(buf, FFX::s_gridIndices, cells * 12, 0);
+    g_theGxDevicePtr->PrimIndexPtr(buf);
 }
 
 }

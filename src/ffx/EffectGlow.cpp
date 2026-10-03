@@ -1,5 +1,4 @@
 #include "ffx/EffectGlow.hpp"
-#include "ffx/EffectDeath.hpp"
 #include "console/CVar.hpp"
 #include "gx/Buffer.hpp"
 #include "gx/CGxDevice.hpp"

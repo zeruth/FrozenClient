@@ -413,6 +413,10 @@ class CGxDevice {
         virtual void ShaderConstantsSet(EGxShTarget, uint32_t, const float*, uint32_t);
         virtual void IShaderCreate(CGxShader*) = 0;
         virtual int32_t StereoEnabled(void) = 0;
+        virtual void StereoSetConvergence(float convergence) {};
+        virtual void StereoSetSeparation(float separation) {};
+        virtual float StereoGetConvergence() { return 0.0f; };
+        virtual float StereoGetSeparation() { return 0.0f; };
 
         // Member functions
         CGxDevice();
