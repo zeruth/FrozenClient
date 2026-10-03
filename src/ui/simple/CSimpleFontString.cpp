@@ -321,6 +321,7 @@ float CSimpleFontString::GetStringHeight() {
     return this->m_cachedHeight / this->m_layoutScale;
 }
 
+// ref: FUN_00483e80
 float CSimpleFontString::GetStringWidth() {
     if (this->m_cachedWidth == 0.0f && this->m_font) {
         float width = CLayoutFrame::GetWidth() * this->m_layoutScale;
@@ -353,6 +354,30 @@ const char* CSimpleFontString::GetText() {
     return this->m_text;
 }
 
+// ref: FUN_00482450
+// Where `text` would break into lines at maxWidth, in this string's font.
+uint32_t CSimpleFontString::GetWrapPoints(const char* text, float maxWidth, uint32_t* points, uint32_t maxPoints) {
+    if (!this->m_font) {
+        return 0;
+    }
+
+    float fontHeight = this->GetFontHeight(true);
+
+    return TextBlockGetWrapPoints(
+        this->m_font,
+        text,
+        fontHeight * this->m_layoutScale,
+        maxWidth * this->m_layoutScale,
+        points,
+        maxPoints,
+        this->m_shadowOffset.x * this->m_layoutScale,
+        this->m_layoutScale,
+        0.0f,
+        this->m_styleFlags
+    );
+}
+
+// ref: FUN_00482380
 float CSimpleFontString::GetTextWidth(const char* text, uint32_t textBytes) {
     if (!this->m_font) {
         return 0.0f;

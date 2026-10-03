@@ -25,184 +25,59 @@
 #include "util/Unimplemented.hpp"
 #include <cmath>
 
+#include "gx/Coordinate.hpp"
+#include "ui/Util.hpp"
+#include "ui/simple/CSimpleTexture.hpp"
+#include <tempest/Rect.hpp>
+
 namespace {
 
-// The tooltip's line font strings are declared in GameTooltipTemplate.xml as children named
-// <tooltip>TextLeft<n> and <tooltip>TextRight<n>, so a line is looked up by name.
-//
-// The template declares 8 of each. The reference creates more when a tooltip needs them; that is
-// not ported, so a line past the eighth exists only if AddFontStrings was handed a pair for it.
-// Asking for one that is not there returns null and the line is dropped rather than overwriting
-// line 8, which would silently corrupt a long tooltip instead of merely truncating it.
-const int32_t TOOLTIP_MAX_LINES = 8;
+// The colour a line takes when the caller names none, NORMAL_FONT_COLOR (DAT_00ad2d2c).
+const uint32_t TOOLTIP_DEFAULT_COLOR = 0xFFFFD200;
 
-// Lines the template declares, plus whatever pairs AddFontStrings has been handed.
-int32_t TooltipMaxLines(CGTooltip* tooltip) {
-    return TOOLTIP_MAX_LINES + static_cast<int32_t>(tooltip->m_extraLines.Count());
-}
+// The anchor names SetOwner and SetAnchorType take, in TOOLTIP_ANCHORPOINT order. A name not in
+// the list -- or no name -- is ANCHOR_LEFT, which is what both bindings fall back to.
+const char* const TOOLTIP_ANCHOR_NAMES[] = {
+    "ANCHOR_LEFT",
+    "ANCHOR_RIGHT",
+    "ANCHOR_BOTTOMLEFT",
+    "ANCHOR_BOTTOM",
+    "ANCHOR_BOTTOMRIGHT",
+    "ANCHOR_TOPLEFT",
+    "ANCHOR_TOP",
+    "ANCHOR_TOPRIGHT",
+    "ANCHOR_CURSOR",
+    "ANCHOR_NONE",
+    "ANCHOR_PRESERVE",
+    "ANCHOR_CURSOR_RIGHT",
+};
 
-CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right);
-static bool TooltipCreateLine(CGTooltip* tooltip);
-
-// The offsets the reference anchors new lines with, in UI units before the coordinate conversion:
-// each line sits two below the one above it, and the right column's right edge sits forty to the
-// right of its own line's left edge. Both read out of the image at 009e8d00 and 00a0ff3c.
-static const float TOOLTIP_LINE_ANCHOR_Y = -2.0f;
-static const float TOOLTIP_COLUMN_ANCHOR_X = 40.0f;
-
-// Makes the next line's pair of font strings and registers it, which is how a tooltip grows past
-// the eight lines GameTooltipTemplate.xml declares. The reference does this inside its shared
-// add-a-line helper (0061fec0); frozen keeps the template's lines and its own extras apart, so this
-// only ever appends to the extras.
-//
-// Anchoring is the reference's, and it is the same anchoring the template already uses for lines
-// 1..8: the left string hangs off the previous line's bottom-left, and the right string's RIGHT
-// edge attaches to its own line's LEFT edge.
-static bool TooltipCreateLine(CGTooltip* tooltip) {
-    auto name = tooltip->GetName();
-
-    if (!name) {
-        return false;
+TOOLTIP_ANCHORPOINT TooltipAnchorFromLua(lua_State* L, int32_t idx) {
+    if (!lua_isstring(L, idx)) {
+        return TOOLTIP_ANCHOR_LEFT;
     }
 
-    auto line = TOOLTIP_MAX_LINES + static_cast<int32_t>(tooltip->m_extraLines.Count()) + 1;
-    auto previousLeft = TooltipLine(tooltip, line - 1, false);
+    auto name = lua_tostring(L, idx);
 
-    if (!previousLeft) {
-        return false;
-    }
-
-    auto scale = CoordinateGetAspectCompensation() * 1024.0f;
-
-    auto leftMem = SMemAlloc(sizeof(CSimpleFontString), __FILE__, __LINE__, 0x0);
-    auto left = new (leftMem) CSimpleFontString(tooltip, DRAWLAYER_ARTWORK, 1);
-
-    auto rightMem = SMemAlloc(sizeof(CSimpleFontString), __FILE__, __LINE__, 0x0);
-    auto rightString = new (rightMem) CSimpleFontString(tooltip, DRAWLAYER_ARTWORK, 1);
-
-    char path[260];
-
-    SStrPrintf(path, sizeof(path), "%sTextLeft%d", name, line);
-    left->SetName(path);
-    left->SetFontObject(previousLeft->GetFontObject());
-    left->SetPoint(
-        FRAMEPOINT_TOPLEFT, previousLeft, FRAMEPOINT_BOTTOMLEFT,
-        0.0f, NDCToDDCWidth(TOOLTIP_LINE_ANCHOR_Y / scale), 0
-    );
-
-    SStrPrintf(path, sizeof(path), "%sTextRight%d", name, line);
-    rightString->SetName(path);
-    rightString->SetFontObject(previousLeft->GetFontObject());
-    rightString->SetPoint(
-        FRAMEPOINT_RIGHT, left, FRAMEPOINT_LEFT,
-        NDCToDDCWidth(TOOLTIP_COLUMN_ANCHOR_X / scale), 0.0f, 0
-    );
-
-    CGTooltip::TOOLTIPLINE pair;
-    pair.left = left;
-    pair.right = rightString;
-    tooltip->m_extraLines.Add(1, &pair);
-
-    return true;
-}
-
-CSimpleFontString* TooltipLine(CGTooltip* tooltip, int32_t line, bool right) {
-    if (line < 1) {
-        return nullptr;
-    }
-
-    // Past the template's lines the font strings are the ones AddFontStrings registered, in the
-    // order they arrived.
-    if (line > TOOLTIP_MAX_LINES) {
-        uint32_t extra = static_cast<uint32_t>(line - TOOLTIP_MAX_LINES - 1);
-
-        // One past the end is the line being added right now, so make it. Anything further is a
-        // caller reaching for a line that was never added, which still returns null.
-        //
-        // This accessor therefore has a side effect, which is worth being careful about because two
-        // loops in this file bound themselves on TooltipMaxLines -- and that grows when a line is
-        // created. Neither can run away, and the reason is arithmetic rather than luck: the bound
-        // is TOOLTIP_MAX_LINES + Count(), and the highest line it reaches maps to extra index
-        // Count() - 1, which already exists. The branch below needs index Count(), one further on.
-        // So a loop over every line never creates one, and only an add can.
-        if (extra == tooltip->m_extraLines.Count() && !TooltipCreateLine(tooltip)) {
-            return nullptr;
+    for (int32_t i = 0; i < 12; i++) {
+        if (!SStrCmpI(name, TOOLTIP_ANCHOR_NAMES[i], STORM_MAX_STR)) {
+            return static_cast<TOOLTIP_ANCHORPOINT>(i);
         }
-
-        if (extra >= tooltip->m_extraLines.Count()) {
-            return nullptr;
-        }
-
-        auto& pair = tooltip->m_extraLines[extra];
-
-        return right ? pair.right : pair.left;
     }
 
-    const char* name = tooltip->GetName();
-
-    if (!name) {
-        return nullptr;
-    }
-
-    char path[260];
-    SStrPrintf(path, sizeof(path), "%sText%s%d", name, right ? "Right" : "Left", line);
-
-    auto found = tooltip->GetLayoutFrameByName(path);
-
-    // CSimpleTop is the other CLayoutFrame subclass and is not a CScriptRegion, so casting one would
-    // adjust the pointer past a base it does not have -- the same trap as CScriptRegion_GetPoint.
-    if (!found || found == static_cast<CLayoutFrame*>(CSimpleTop::s_instance)) {
-        return nullptr;
-    }
-
-    auto region = static_cast<CScriptRegion*>(found);
-
-    // And the name could in principle belong to something that is not a font string.
-    if (!region->IsA(CSimpleFontString::GetObjectType())) {
-        return nullptr;
-    }
-
-    return static_cast<CSimpleFontString*>(region);
+    return TOOLTIP_ANCHOR_LEFT;
 }
 
-// Whether a line was added with wrapping asked for. Lines never marked do not wrap, which is the
-// reference's default too -- its helper reads the flag with a default of 0.
-bool TooltipLineWraps(CGTooltip* tooltip, int32_t line) {
-    auto index = static_cast<size_t>(line - 1);
-
-    return index < tooltip->m_lineWrap.size() && tooltip->m_lineWrap[index] != 0;
+// A Lua length in UI units as a layout length.
+float TooltipUIToDDC(float ui) {
+    return NDCToDDCWidth(ui / (CoordinateGetAspectCompensation() * 1024.0f));
 }
 
-void TooltipSetLineWrap(CGTooltip* tooltip, int32_t line, bool wrap) {
-    if (line < 1) {
-        return;
-    }
+CImVector TooltipDefaultColor() {
+    CImVector color;
+    color.value = TOOLTIP_DEFAULT_COLOR;
 
-    auto index = static_cast<size_t>(line - 1);
-
-    if (tooltip->m_lineWrap.size() <= index) {
-        tooltip->m_lineWrap.resize(index + 1, 0);
-    }
-
-    tooltip->m_lineWrap[index] = wrap ? 1 : 0;
-}
-
-void TooltipSetLine(CGTooltip* tooltip, int32_t line, bool right, const char* text) {
-    auto fontString = TooltipLine(tooltip, line, right);
-
-    if (!fontString) {
-        return;
-    }
-
-    // The reference passes 1 here, which runs the text through the language pass -- that is what
-    // resolves the |4 plural and gender escapes FrameXML puts in tooltip strings.
-    fontString->SetText(text ? text : "", 1);
-
-    if (text && *text) {
-        fontString->Show();
-    } else {
-        fontString->Hide();
-    }
+    return color;
 }
 
 // The GlobalStrings key for a creature's classification, from the reference's table at 00ad2e6c.
@@ -231,7 +106,7 @@ const char* const CLASSIFICATION_KEYS[] = {
 // so a hostile elite reads "Level 12 Beast (Elite)" and a player "Level 80 Human Paladin
 // (Player)". Written from the decompilation rather than from memory of the screen; if the wording
 // looks wrong, check it against FUN_00621070 before "fixing" it here.
-void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
+void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit) {
     auto data = unit->Unit();
 
     if (!data) {
@@ -251,8 +126,6 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
     // A corpse takes over the class slot and drops the race.
     bool isCorpse = data->health < 1 || (data->dynamicFlags & 0x20) != 0;
 
-    // --- level -------------------------------------------------------------------------------
-    //
     // "??" for a boss, for a level the client does not know, and for a hostile unit ten or more
     // levels above the player. That last one is the skull.
     char levelText[32];
@@ -273,7 +146,6 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
         SStrPrintf(levelText, sizeof(levelText), "%d", level);
     }
 
-    // --- race and class ----------------------------------------------------------------------
     const char* raceText = nullptr;
     const char* classText = nullptr;
 
@@ -290,11 +162,9 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
         }
     } else if (player) {
         // A creature names its type here, but only one the player could fight. Creature type 10 is
-        // "Not specified" and never prints.
-        //
-        // The second gate is a creature type flag frozen cannot name: the reference has a one-line
-        // accessor for bit 26 (FUN_00715df0) and uses it only here, to suppress the type. What the
-        // bit means has not been recovered -- only what it does.
+        // "Not specified" and never prints. The second gate is a creature type flag frozen cannot
+        // name: the reference reads bit 26 through a one-line accessor (FUN_00715df0) used only
+        // here, to suppress the type.
         bool suppressed = info && (info->m_typeFlags & 0x04000000) != 0;
         auto type = unit->GetCreatureType();
 
@@ -307,7 +177,6 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
         }
     }
 
-    // --- type --------------------------------------------------------------------------------
     const char* typeText = nullptr;
 
     if (isPlayer) {
@@ -323,8 +192,6 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
         }
     }
 
-    // --- pick the format ---------------------------------------------------------------------
-    //
     // Every one of these takes the level as %s, which is why it was printed into a buffer above
     // rather than passed as a number.
     bool hasRace = raceText && *raceText;
@@ -353,33 +220,13 @@ void TooltipUnitLevelLine(CGTooltip* tooltip, CGUnit_C* unit, int32_t line) {
                    levelText);
     }
 
-    TooltipSetLine(tooltip, line, false, text);
+    tooltip->AddLine(text, nullptr, 0);
 }
 
 CGTooltip* TooltipThis(lua_State* L) {
     auto type = CGTooltip::GetObjectType();
 
     return static_cast<CGTooltip*>(FrameScript_GetObjectThis(L, type));
-}
-
-// The template's line geometry, taken from GameTooltipTemplate.xml rather than guessed: TextLeft1
-// sits 10 in and 10 down from the tooltip's TOPLEFT, and every line after it hangs 2 below the one
-// above.
-const float TOOLTIP_INSET = 10.0f;
-const float TOOLTIP_LINE_GAP = 2.0f;
-
-// Space kept between a line's left and right text. This WAS Frozen's own guess at 12; the
-// reference's layout pass has since been read (FUN_0061caf0) and it uses 38.4, from 00a246cc.
-const float TOOLTIP_COLUMN_GAP = 38.4f;
-
-// How wide a wrapping line is allowed to get before it is broken. The reference's layout clamps to
-// this (00a246dc) and then fits the text inside it.
-const float TOOLTIP_WRAP_MAX_WIDTH = 230.4f;
-
-// Lua hands out lengths in UI units; frame widths and heights are layout units. Both of
-// CScriptRegion's size bindings convert with exactly this expression.
-float TooltipUIToLayout(float ui) {
-    return NDCToDDCWidth(ui / (CoordinateGetAspectCompensation() * 1024.0f));
 }
 
 // The name a unit tooltip is headed with. Resolved the way Script_UnitName does it -- the glue's
@@ -397,203 +244,17 @@ const char* TooltipUnitName(CGUnit_C* unit) {
     return unit->GetUnitName(nullptr, 1);
 }
 
-// Size the tooltip to the lines it is carrying.
-//
-// The reference does this in its own layout pass, which has not been decompiled; what is ported
-// here is only the template's geometry (above). Without it the frame keeps the zero size the
-// template gives it, which leaves the backdrop invisible and the text floating over the world.
-// A note corrected in place, because the first version of it was wrong. It claimed the reference
-// must re-anchor the right-hand column from C++ in a pass that had not been decompiled, and that
-// two-column lines therefore overlap here. That pass has since been found -- it is the reference's
-// on-demand line creation at 0061fec0 -- and it anchors the right region by its RIGHT to the same
-// line's LEFT region at point LEFT with x=40, which is exactly what GameTooltipTemplate.xml already
-// declares. So the reference and the template agree, and frozen's geometry for the eight
-// template-declared lines matches the reference without doing anything.
-//
-// What that leaves genuinely open is narrower: whether that anchoring visually overlaps, and what
-// the width term below is for if it does. Both are questions for a run, not for more decompiling.
-// The width term is kept because it is what the reference's own resize computes.
-// ref: the width half of FUN_0061caf0, the tooltip's layout pass.
-//
-// Two passes, and the order is the point. The tooltip's width is decided by the lines that do NOT
-// wrap; a wrapping line is then fitted into whatever width those settled on. Letting a long
-// wrapping line vote on the width first would just make the tooltip as wide as the line and there
-// would be nothing left to wrap.
-//
-// A wrapping line can still widen the tooltip, but only as far as TOOLTIP_WRAP_MAX_WIDTH. That cap
-// is why a long description becomes a paragraph instead of a single line running off the screen.
-//
-// NOT a complete port: the reference measures each broken segment and takes the widest, walking up
-// to thirty break points per line (FUN_00482450). This asks the font string for the wrapped height
-// at the chosen width instead and lets the text block do the breaking, so the width can come out
-// narrower than the reference would choose on a line whose longest word is wider than the cap.
-void TooltipResizeToFit(CGTooltip* tooltip) {
-    if (tooltip->m_lineCount < 1) {
-        return;
-    }
-
-    float inset = TooltipUIToLayout(TOOLTIP_INSET);
-    float columnGap = TooltipUIToLayout(TOOLTIP_COLUMN_GAP);
-    float wrapMax = TooltipUIToLayout(TOOLTIP_WRAP_MAX_WIDTH);
-
-    // The minimum width is a whole-tooltip measurement; the passes below work in text width.
-    float textWidth = TooltipUIToLayout(tooltip->m_minimumWidth) - inset - inset;
-
-    if (textWidth < 0.0f) {
-        textWidth = 0.0f;
-    }
-
-    // Pass 1 -- the lines that do not wrap.
-    //
-    // Every line's width is cleared first. A font string keeps whatever width it was last given,
-    // so without this a line that wrapped in the previous tooltip would still be measuring itself
-    // against that old width.
-    for (int32_t line = 1; line <= tooltip->m_lineCount; line++) {
-        auto left = TooltipLine(tooltip, line, false);
-        auto right = TooltipLine(tooltip, line, true);
-
-        if (left) {
-            left->SetWidth(0.0f);
-        }
-
-        if (right) {
-            right->SetWidth(0.0f);
-        }
-
-        if (TooltipLineWraps(tooltip, line)) {
-            continue;
-        }
-
-        const char* leftText = left ? left->GetText() : nullptr;
-        const char* rightText = right ? right->GetText() : nullptr;
-
-        float lineWidth = 0.0f;
-
-        if (leftText && *leftText) {
-            lineWidth += left->GetStringWidth();
-        }
-
-        if (rightText && *rightText) {
-            if (lineWidth > 0.0f) {
-                lineWidth += columnGap;
-            }
-
-            lineWidth += right->GetStringWidth();
-        }
-
-        if (lineWidth > textWidth) {
-            textWidth = lineWidth;
-        }
-    }
-
-    // Pass 2 -- a wrapping line may widen the tooltip, but not past the cap.
-    for (int32_t line = 1; line <= tooltip->m_lineCount; line++) {
-        if (!TooltipLineWraps(tooltip, line)) {
-            continue;
-        }
-
-        auto left = TooltipLine(tooltip, line, false);
-        const char* leftText = left ? left->GetText() : nullptr;
-
-        if (!leftText || !*leftText) {
-            continue;
-        }
-
-        // Measured with no width set, so this is the natural single-line extent.
-        float natural = left->GetStringWidth();
-        float target = natural > wrapMax ? wrapMax : natural;
-
-        if (target > textWidth) {
-            textWidth = target;
-        }
-    }
-
-    // Give every wrapping line the final width so it breaks against it, then measure heights. This
-    // has to follow both passes: the width is not known until they are done.
-    float textHeight = 0.0f;
-
-    for (int32_t line = 1; line <= tooltip->m_lineCount; line++) {
-        auto left = TooltipLine(tooltip, line, false);
-        auto right = TooltipLine(tooltip, line, true);
-
-        if (TooltipLineWraps(tooltip, line) && left) {
-            left->SetWidth(textWidth);
-        }
-
-        const char* leftText = left ? left->GetText() : nullptr;
-        const char* rightText = right ? right->GetText() : nullptr;
-
-        float lineHeight = 0.0f;
-
-        if (leftText && *leftText) {
-            lineHeight = left->GetStringHeight();
-        }
-
-        if (rightText && *rightText) {
-            float rightHeight = right->GetStringHeight();
-            lineHeight = lineHeight > rightHeight ? lineHeight : rightHeight;
-        }
-
-        if (line > 1) {
-            textHeight += TooltipUIToLayout(TOOLTIP_LINE_GAP);
-        }
-
-        textHeight += lineHeight;
-    }
-
-    float width = textWidth + inset + inset;
-
-    // The padding FrameXML sets aside at the bottom for the money frames it parents to the tooltip.
-    float height = textHeight + inset + inset + TooltipUIToLayout(tooltip->m_padding);
-
-    tooltip->SetSize(width, height);
-}
-
-// What the reference's tooltip fillers end with: FUN_006205c0 (SetTotem) clears, adds its two lines
-// and tail-calls FUN_0048f660. That is why FrameXML never calls GameTooltip:Show() after
-// GameTooltip:SetAction or :SetUnit -- the C++ side shows the tooltip itself.
-void TooltipShow(CGTooltip* tooltip) {
-    TooltipResizeToFit(tooltip);
-    tooltip->Show();
-}
-
-// Empty every line and drop what the tooltip was filled from. The reference's fillers all start
-// here (FUN_0061c620).
-void TooltipClear(CGTooltip* tooltip) {
-    for (int32_t line = 1; line <= TooltipMaxLines(tooltip); line++) {
-        TooltipSetLine(tooltip, line, false, nullptr);
-        TooltipSetLine(tooltip, line, true, nullptr);
-    }
-
-    tooltip->m_lineCount = 0;
-    tooltip->m_unitGUID = 0;
-    tooltip->m_spellID = 0;
-    tooltip->m_lineWrap.clear();
-
-    // FrameXML hangs the money-line and decoration resets off this.
-    tooltip->RunOnTooltipClearedScript();
-}
-
-// Fill the tooltip for a spell: its name on the first line, rank on the right of it. Costs, cast
-// time, range and the description are Spell.dbc columns not read yet, so the tooltip stops there.
+// Fill the tooltip for a spell: its name, and its rank on the right. A stand-in for the
+// reference's spell filler (FUN_006238a0), which is ported with the spell tooltips.
 int32_t TooltipSetSpellRec(lua_State* L, CGTooltip* tooltip, const SpellRec* spell) {
     if (!spell || !spell->m_name || !*spell->m_name) {
         return 0;
     }
 
-    TooltipClear(tooltip);
-
-    tooltip->m_lineCount = 1;
+    tooltip->ClearTooltip();
     tooltip->m_spellID = spell->m_ID;
-
-    if (spell->m_rank && *spell->m_rank) {
-        TooltipSetLine(tooltip, 1, false, spell->m_name);
-        TooltipSetLine(tooltip, 1, true, spell->m_rank);
-    } else {
-        TooltipSetLine(tooltip, 1, false, spell->m_name);
-    }
-
-    TooltipShow(tooltip);
+    tooltip->AddLine(spell->m_name, spell->m_rank, 0);
+    tooltip->Show();
 
     return 0;
 }
@@ -606,8 +267,8 @@ int32_t CGTooltip_AddFontStrings(lua_State* L) {
 
     for (int32_t index = 0; index < 2; index++) {
         if (lua_type(L, index + 2) != LUA_TTABLE) {
-            return luaL_error(L, "Usage: %s:AddFontStrings(leftstring, rightstring)",
-                              tooltip->GetDisplayName());
+            luaL_error(L, "Usage: %s:AddFontStrings(leftstring, rightstring)", tooltip->GetDisplayName());
+            continue;
         }
 
         lua_rawgeti(L, index + 2, 0);
@@ -632,38 +293,56 @@ int32_t CGTooltip_AddFontStrings(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0061d040
 int32_t CGTooltip_SetMinimumWidth(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    if (lua_isnumber(L, 2)) {
-        tooltip->m_minimumWidth = static_cast<float>(lua_tonumber(L, 2));
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: %s:SetMinimumWidth(width [,force])", tooltip->GetDisplayName());
+        return 0;
     }
+
+    auto force = StringToBOOL(L, 3, 0);
+
+    tooltip->m_minimumWidth = static_cast<float>(lua_tonumber(L, 2));
+    tooltip->m_minimumWidthForced = force;
 
     return 0;
 }
 
+// ref: FUN_0061d0d0
 int32_t CGTooltip_GetMinimumWidth(lua_State* L) {
-    lua_pushnumber(L, TooltipThis(L)->m_minimumWidth);
+    auto tooltip = TooltipThis(L);
 
-    return 1;
+    lua_pushnumber(L, tooltip->m_minimumWidth);
+
+    if (tooltip->m_minimumWidthForced) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 2;
 }
 
+// ref: FUN_0061d150
 int32_t CGTooltip_SetPadding(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    if (lua_isnumber(L, 2)) {
-        tooltip->m_padding = static_cast<float>(lua_tonumber(L, 2));
-    }
+    tooltip->m_padding = TooltipUIToDDC(static_cast<float>(lua_tonumber(L, 2)));
 
     return 0;
 }
 
+// ref: FUN_0061d1c0
+// The padding comes back in the layout units it is kept in, not converted back.
 int32_t CGTooltip_GetPadding(lua_State* L) {
     lua_pushnumber(L, TooltipThis(L)->m_padding);
 
     return 1;
 }
 
+// ref: FUN_0061d210
 int32_t CGTooltip_IsOwned(lua_State* L) {
     auto type = CGTooltip::GetObjectType();
     auto tooltip = static_cast<CGTooltip*>(FrameScript_GetObjectThis(L, type));
@@ -696,6 +375,7 @@ int32_t CGTooltip_IsOwned(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_0061d350
 int32_t CGTooltip_GetOwner(lua_State* L) {
     auto type = CGTooltip::GetObjectType();
     auto tooltip = static_cast<CGTooltip*>(FrameScript_GetObjectThis(L, type));
@@ -718,182 +398,230 @@ int32_t CGTooltip_GetOwner(lua_State* L) {
 }
 
 // ref: FUN_0061eb40
+// The tooltip hides, then takes the owner, the anchor (ANCHOR_LEFT when none is named) and the
+// offsets, which clears it.
 int32_t CGTooltip_SetOwner(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    // Every OnEnter handler calls this first; while it was a stub, IsOwned answered false for every
-    // frame and no tooltip could ever be shown.
+    tooltip->Hide();
+
     if (lua_type(L, 2) != LUA_TTABLE) {
-        return luaL_error(L, "Usage: %s:SetOwner(frame)", tooltip->GetDisplayName());
+        luaL_error(L, "Usage: %s:SetOwner(frame)", tooltip->GetDisplayName());
+        return 0;
     }
 
     lua_rawgeti(L, 2, 0);
     auto owner = static_cast<CSimpleFrame*>(lua_touserdata(L, -1));
     lua_settop(L, -2);
 
-    // Three checks the reference makes and this did not. Each one used to fail silently: a table
-    // that is not a frame object left the tooltip owned by garbage, and a tooltip set to own itself
-    // anchors to its own moving edge. FrameXML passes whatever an add-on hands it, so these are the
-    // errors an add-on author is meant to see.
     if (!owner) {
-        return luaL_error(L, "%s:SetOwner(): Couldn't find 'this' in frame object",
-                          tooltip->GetDisplayName());
+        luaL_error(L, "%s:SetOwner(): Couldn't find 'this' in frame object", tooltip->GetDisplayName());
+        return 0;
     }
 
     if (!owner->IsA(CSimpleFrame::GetObjectType())) {
-        return luaL_error(L, "%s:SetOwner(): Wrong object type, expected frame",
-                          tooltip->GetDisplayName());
+        luaL_error(L, "%s:SetOwner(): Wrong object type, expected frame", tooltip->GetDisplayName());
+        return 0;
     }
 
     if (static_cast<void*>(owner) == static_cast<void*>(tooltip)) {
-        return luaL_error(L, "%s:SetOwner(): Can't set owner to self", tooltip->GetDisplayName());
+        luaL_error(L, "%s:SetOwner(): Can't set owner to self", tooltip->GetDisplayName());
+        return 0;
     }
 
-    tooltip->m_owner = owner;
-    tooltip->m_anchorPoint = TOOLTIP_ANCHOR_TOPLEFT;
+    auto anchor = TooltipAnchorFromLua(L, 3);
 
-    TOOLTIP_ANCHORPOINT anchor;
+    float x = 0.0f;
 
-    if (lua_isstring(L, 3) && StringToTooltipAnchor(lua_tostring(L, 3), anchor)) {
-        tooltip->m_anchorPoint = anchor;
+    if (lua_isnumber(L, 4)) {
+        x = TooltipUIToDDC(static_cast<float>(lua_tonumber(L, 4)));
     }
 
-    tooltip->m_offset.x = lua_isnumber(L, 4) ? static_cast<float>(lua_tonumber(L, 4)) : 0.0f;
-    tooltip->m_offset.y = lua_isnumber(L, 5) ? static_cast<float>(lua_tonumber(L, 5)) : 0.0f;
+    float y = 0.0f;
+
+    if (lua_isnumber(L, 5)) {
+        y = TooltipUIToDDC(static_cast<float>(lua_tonumber(L, 5)));
+    }
+
+    tooltip->SetOwner(owner, anchor, x, y);
 
     return 0;
 }
 
+// ref: FUN_0061d650
 int32_t CGTooltip_GetAnchorType(lua_State* L) {
     auto tooltip = TooltipThis(L);
-    const char* name = TooltipAnchorToString(tooltip->m_anchorPoint);
+    auto anchor = static_cast<uint32_t>(tooltip->m_anchorType);
 
-    if (name) {
-        lua_pushstring(L, name);
-    } else {
-        lua_pushnil(L);
-    }
+    lua_pushstring(L, anchor < 12 ? TOOLTIP_ANCHOR_NAMES[anchor] : "ANCHOR_NONE");
 
     return 1;
 }
 
+// ref: FUN_0061d3d0
+// The offsets always change; the anchor only while the tooltip has an owner.
 int32_t CGTooltip_SetAnchorType(lua_State* L) {
-    auto tooltip = TooltipThis(L);
-    TOOLTIP_ANCHORPOINT anchor;
-
-    if (lua_isstring(L, 2) && StringToTooltipAnchor(lua_tostring(L, 2), anchor)) {
-        tooltip->m_anchorPoint = anchor;
-    }
-
-    if (lua_isnumber(L, 3)) {
-        tooltip->m_offset.x = static_cast<float>(lua_tonumber(L, 3));
-    }
-
-    if (lua_isnumber(L, 4)) {
-        tooltip->m_offset.y = static_cast<float>(lua_tonumber(L, 4));
-    }
-
-    return 0;
-}
-
-int32_t CGTooltip_ClearLines(lua_State* L) {
-    TooltipClear(TooltipThis(L));
-
-    return 0;
-}
-
-int32_t CGTooltip_AddLine(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: %s:SetAnchorType( anchorType [,Xoffset] [,Yoffset] )", tooltip->GetDisplayName());
         return 0;
     }
 
-    // Full means full only if another line cannot be made. TooltipMaxLines counts the template's
-    // eight plus whatever has been created so far, so without this the tooltip could never grow:
-    // nothing would ask for line nine, so line nine would never be created, so the limit would stay
-    // at eight forever.
-    //
-    // There is deliberately no ceiling here. The reference does not impose one either -- its own
-    // growth is bounded only by the caller running out of lines to add -- so a runaway caller can
-    // allocate font strings without limit in both. Matching that rather than inventing a cap.
-    if (tooltip->m_lineCount >= TooltipMaxLines(tooltip) && !TooltipCreateLine(tooltip)) {
-        return 0;
+    auto anchor = TooltipAnchorFromLua(L, 2);
+
+    float x = 0.0f;
+
+    if (lua_isnumber(L, 3)) {
+        x = TooltipUIToDDC(static_cast<float>(lua_tonumber(L, 3)));
     }
 
-    tooltip->m_lineCount++;
+    float y = 0.0f;
 
-    // AddLine(text, r, g, b, wrapText) -- argument 6, confirmed against FUN_00620340, which reads
-    // it with a default of 0.
-    TooltipSetLineWrap(tooltip, tooltip->m_lineCount, lua_toboolean(L, 6) != 0);
-    TooltipSetLine(tooltip, tooltip->m_lineCount, false, lua_tostring(L, 2));
-    TooltipResizeToFit(tooltip);
+    if (lua_isnumber(L, 4)) {
+        y = TooltipUIToDDC(static_cast<float>(lua_tonumber(L, 4)));
+    }
+
+    tooltip->m_anchorOffset.x = x;
+    tooltip->m_anchorOffset.y = y;
+
+    if (tooltip->m_owner) {
+        tooltip->m_anchorType = anchor;
+    }
+
+    tooltip->SetAnchor(1);
 
     return 0;
 }
 
+// ref: FUN_0061d7d0
+int32_t CGTooltip_ClearLines(lua_State* L) {
+    TooltipThis(L)->ClearTooltip();
+
+    return 0;
+}
+
+// ref: FUN_00620340
+// AddLine(text [, r, g, b [, wrap]]). The layout waits for the tooltip's Show.
+int32_t CGTooltip_AddLine(lua_State* L) {
+    auto tooltip = TooltipThis(L);
+
+    const char* text = nullptr;
+    auto color = TooltipDefaultColor();
+
+    if (lua_isstring(L, 2)) {
+        text = lua_tostring(L, 2);
+    }
+
+    if (lua_isnumber(L, 3)) {
+        FrameScript_GetColorNoAlpha(L, 3, color);
+    }
+
+    auto wrap = StringToBOOL(L, 6, 0);
+
+    tooltip->AddLine(text, nullptr, color, color, wrap);
+
+    return 0;
+}
+
+// ref: FUN_006203f0
+// AddDoubleLine(left, right [, lr, lg, lb [, rr, rg, rb [, wrap]]]).
 int32_t CGTooltip_AddDoubleLine(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    if (!lua_isstring(L, 2) || !lua_isstring(L, 3)) {
-        return 0;
+    const char* left = nullptr;
+    const char* right = nullptr;
+    auto leftColor = TooltipDefaultColor();
+    auto rightColor = TooltipDefaultColor();
+
+    if (lua_isstring(L, 2)) {
+        left = lua_tostring(L, 2);
     }
 
-    // Full means full only if another line cannot be made. TooltipMaxLines counts the template's
-    // eight plus whatever has been created so far, so without this the tooltip could never grow:
-    // nothing would ask for line nine, so line nine would never be created, so the limit would stay
-    // at eight forever.
-    //
-    // There is deliberately no ceiling here. The reference does not impose one either -- its own
-    // growth is bounded only by the caller running out of lines to add -- so a runaway caller can
-    // allocate font strings without limit in both. Matching that rather than inventing a cap.
-    if (tooltip->m_lineCount >= TooltipMaxLines(tooltip) && !TooltipCreateLine(tooltip)) {
-        return 0;
+    if (lua_isstring(L, 3)) {
+        right = lua_tostring(L, 3);
     }
 
-    tooltip->m_lineCount++;
+    if (lua_isnumber(L, 4)) {
+        FrameScript_GetColorNoAlpha(L, 4, leftColor);
+    }
 
-    // Never wraps: the reference's helper clears the flag as soon as there is right-hand text.
-    TooltipSetLineWrap(tooltip, tooltip->m_lineCount, false);
-    TooltipSetLine(tooltip, tooltip->m_lineCount, false, lua_tostring(L, 2));
-    TooltipSetLine(tooltip, tooltip->m_lineCount, true, lua_tostring(L, 3));
-    TooltipResizeToFit(tooltip);
+    if (lua_isnumber(L, 7)) {
+        FrameScript_GetColorNoAlpha(L, 7, rightColor);
+    }
+
+    auto wrap = StringToBOOL(L, 10, 0);
+
+    tooltip->AddLine(left, right, leftColor, rightColor, wrap);
 
     return 0;
 }
 
+// ref: FUN_0061d810
+// AddTexture(file [, minx, maxx, miny, maxy]): all four coordinates or none.
 int32_t CGTooltip_AddTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    const char* fileName = nullptr;
+
+    if (lua_isstring(L, 2)) {
+        fileName = lua_tostring(L, 2);
+    }
+
+    CImVector color;
+    color.value = 0xFFFFFFFF;
+
+    if (lua_isnumber(L, 3)) {
+        if (!lua_isnumber(L, 4) || !lua_isnumber(L, 5) || !lua_isnumber(L, 6)) {
+            luaL_error(L, "Usage: %s:AddTexture(\"filename\" [, minx, maxx, miny, maxy])", tooltip->GetDisplayName());
+            return 0;
+        }
+
+        // ref: FUN_0061a150
+        CRect texCoords;
+        texCoords.minX = static_cast<float>(lua_tonumber(L, 3));
+        texCoords.maxX = static_cast<float>(lua_tonumber(L, 4));
+        texCoords.minY = static_cast<float>(lua_tonumber(L, 5));
+        texCoords.maxY = static_cast<float>(lua_tonumber(L, 6));
+
+        tooltip->AddTexture(fileName, texCoords, color);
+
+        return 0;
+    }
+
+    CRect texCoords;
+    texCoords.minY = 0.0f;
+    texCoords.minX = 0.0f;
+    texCoords.maxY = 1.0f;
+    texCoords.maxX = 1.0f;
+
+    tooltip->AddTexture(fileName, texCoords, color);
+
+    return 0;
 }
 
 // ref: FUN_006204e0
-//
-// SetText RESETS the tooltip to one line. The reference is three calls -- clear (FUN_0061c620,
-// the same clear every filler starts with, ported as TooltipClear), add one line, then show --
-// and the clear is the whole point of it.
-//
-// This used to rewrite line 1 and keep the old line count, which reads as correct and is not:
-// the stale lines stay on screen and the next AddLine appends after them. Hovering the same
-// thing twice showed its text twice, three times on the third hover, because FrameXML's usual
-// shape is SetText followed by AddLine. Seen in game before it was traced back here.
+// SetText(text [, r, g, b [, a [, wrap]]]): the tooltip is emptied, takes the one line and shows.
 int32_t CGTooltip_SetText(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isstring(L, 2)) {
-        return luaL_error(L, "Usage: %s:SetText(\"text\" [, color])", tooltip->GetDisplayName());
+        luaL_error(L, "Usage: %s:SetText(\"text\" [, color])", tooltip->GetDisplayName());
+        return 0;
     }
 
-    TooltipClear(tooltip);
+    auto text = lua_tostring(L, 2);
+    auto color = TooltipDefaultColor();
 
-    tooltip->m_lineCount = 1;
+    if (lua_isnumber(L, 3)) {
+        FrameScript_GetColor(L, 3, color);
+    }
 
-    // SetText(text, r, g, b, alpha, textWrap) -- argument 7, which is where FUN_006204e0 reads it.
-    TooltipSetLineWrap(tooltip, 1, lua_toboolean(L, 7) != 0);
-    TooltipSetLine(tooltip, 1, false, lua_tostring(L, 2));
+    auto wrap = StringToBOOL(L, 7, 0);
 
-    // The reference tail-calls its show here, which is why FrameXML never calls GameTooltip:Show()
-    // after SetText either.
-    TooltipShow(tooltip);
+    tooltip->ClearTooltip();
+    tooltip->AddLine(text, nullptr, color, color, wrap);
+    tooltip->Show();
 
     return 0;
 }
@@ -903,42 +631,18 @@ int32_t CGTooltip_AppendText(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isstring(L, 2)) {
-        return luaL_error(L, "Usage: %s:AppendText(\"text\")", tooltip->GetDisplayName());
-    }
-
-    // The reference hands the text to CGTooltip::AppendText (FUN_0061eab0), which puts it after
-    // what the last line already carries -- MainMenuBarBagButtons.lua appends the key binding to
-    // the bag name that way.
-    auto fontString = TooltipLine(tooltip, tooltip->m_lineCount, false);
-
-    if (!fontString) {
+        luaL_error(L, "Usage: %s:AppendText(\"text\")", tooltip->GetDisplayName());
         return 0;
     }
 
-    const char* existing = fontString->GetText();
-
-    char text[1024];
-    SStrPrintf(text, sizeof(text), "%s%s", existing ? existing : "", lua_tostring(L, 2));
-
-    fontString->SetText(text, 0);
-    fontString->Show();
-
-    TooltipResizeToFit(tooltip);
+    tooltip->AppendText(lua_tostring(L, 2));
 
     return 0;
 }
 
 // ref: FUN_0061d940
 int32_t CGTooltip_FadeOut(lua_State* L) {
-    auto tooltip = TooltipThis(L);
-
-    // Deliberate divergence. The reference hides at once only for two of its own states and
-    // otherwise starts a timed fade -- it stores a flag and the current time, and its update pass
-    // takes the tooltip down later. Neither that pass nor the state it tests has been decompiled,
-    // so this ends where the reference ends, hidden, rather than inventing a duration. It cannot be
-    // left as a no-op: UnitFrame_OnLeave is the one FrameXML caller, so a tooltip that never hid
-    // would sit over the world for the rest of the session.
-    tooltip->Hide();
+    TooltipThis(L)->FadeOut();
 
     return 0;
 }
@@ -1079,13 +783,9 @@ int32_t CGTooltip_SetPossession(lua_State* L) {
 int32_t CGTooltip_SetTracking(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    TooltipClear(tooltip);
-
-    tooltip->m_lineCount = 1;
-    TooltipSetLine(tooltip, 1, false,
-                   FrameScript_GetText("MINIMAP_TRACKING_TOOLTIP_NONE", -1, GENDER_NOT_APPLICABLE));
-
-    TooltipShow(tooltip);
+    tooltip->ClearTooltip();
+    tooltip->AddLine(FrameScript_GetText("MINIMAP_TRACKING_TOOLTIP_NONE", -1, GENDER_NOT_APPLICABLE), nullptr, 0);
+    tooltip->Show();
 
     return 0;
 }
@@ -1187,9 +887,8 @@ static const int32_t ITEM_CLASS_REAGENT = 5;
 static const int32_t ITEM_CLASS_PROJECTILE = 6;
 
 void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t durability, int32_t maxDurability) {
-    TooltipClear(tooltip);
+    tooltip->ClearTooltip();
 
-    int32_t line = 1;
     char text[512];
 
     // The name carries the quality colour as an escape rather than through a colour call: the
@@ -1202,7 +901,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
     auto quality = (info->quality >= 0 && info->quality <= 7) ? info->quality : 1;
 
     SStrPrintf(text, sizeof(text), "|cff%06x%s|r", s_qualityColors[quality], info->name.c_str());
-    TooltipSetLine(tooltip, line++, false, text);
+    tooltip->AddLine(text, nullptr, 0);
 
     // The equip slot on the left, the item's subtype on the right -- "Chest" / "Plate".
     //
@@ -1231,13 +930,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
         }
 
         if ((left && *left) || right) {
-            TooltipSetLine(tooltip, line, false, left ? left : "");
-
-            if (right) {
-                TooltipSetLine(tooltip, line, true, right);
-            }
-
-            line++;
+            tooltip->AddLine(left, right, 0);
         }
     }
 
@@ -1256,20 +949,20 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
                        FrameScript_GetText("DAMAGE_TEMPLATE", -1, GENDER_NOT_APPLICABLE), low, high);
         }
 
-        TooltipSetLine(tooltip, line, false, text);
+        const char* speedText = nullptr;
+        char speed[64];
 
         // Speed and damage-per-second are WEAPON lines, not damage lines: the reference gates both
         // on itemClass == 2. A thrown potion or a wand-less caster offhand can carry a damage band
         // without being a weapon, and showing it a speed would be wrong.
         if (info->itemClass == ITEM_CLASS_WEAPON) {
-            char speed[64];
             SStrPrintf(speed, sizeof(speed), "%s %.2f",
                        FrameScript_GetText("SPEED", -1, GENDER_NOT_APPLICABLE),
                        info->delay * DELAY_TO_SECONDS);
-            TooltipSetLine(tooltip, line, true, speed);
+            speedText = speed;
         }
 
-        line++;
+        tooltip->AddLine(text, speedText, 0);
 
         if (info->itemClass == ITEM_CLASS_WEAPON) {
             // The reference accumulates (min + max) * 0.5 across every damage band and divides the
@@ -1284,20 +977,20 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
             SStrPrintf(text, sizeof(text),
                        FrameScript_GetText("DPS_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
                        total / (info->delay * DELAY_TO_SECONDS));
-            TooltipSetLine(tooltip, line++, false, text);
+            tooltip->AddLine(text, nullptr, 0);
         }
     }
 
     if (info->armor) {
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("ARMOR_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->armor);
-        TooltipSetLine(tooltip, line++, false, text);
+        tooltip->AddLine(text, nullptr, 0);
     }
 
     if (info->block) {
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("SHIELD_BLOCK_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->block);
-        TooltipSetLine(tooltip, line++, false, text);
+        tooltip->AddLine(text, nullptr, 0);
     }
 
     // The stat block.
@@ -1332,9 +1025,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
                     SStrPrintf(text, sizeof(text), format,
                                value < 1 ? '-' : '+',
                                value < 0 ? -value : value);
-                    TooltipSetLine(tooltip, line, false, text);
-                    TooltipSetLineWrap(tooltip, line, true);
-                    line++;
+                    tooltip->AddLine(text, nullptr, 1);
                 }
 
                 break;
@@ -1368,7 +1059,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
                            FrameScript_GetText("ITEM_RESIST_ALL", -1, GENDER_NOT_APPLICABLE),
                            value < 1 ? '-' : '+',
                            value < 0 ? -value : value);
-                TooltipSetLine(tooltip, line++, false, text);
+                tooltip->AddLine(text, nullptr, 0);
             }
         } else {
             for (int32_t school = 2; school < 7; school++) {
@@ -1386,7 +1077,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
                            value < 1 ? '-' : '+',
                            value < 0 ? -value : value,
                            FrameScript_GetText(schoolKey, -1, GENDER_NOT_APPLICABLE));
-                TooltipSetLine(tooltip, line++, false, text);
+                tooltip->AddLine(text, nullptr, 0);
             }
         }
     }
@@ -1397,7 +1088,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("DURABILITY_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
                    durability, maxDurability);
-        TooltipSetLine(tooltip, line++, false, text);
+        tooltip->AddLine(text, nullptr, 0);
     }
 
     // "Requires Level N". The test is > 1, not > 0: an item anyone can use from the first level
@@ -1406,7 +1097,7 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("ITEM_MIN_LEVEL", -1, GENDER_NOT_APPLICABLE),
                    info->requiredLevel);
-        TooltipSetLine(tooltip, line++, false, text);
+        tooltip->AddLine(text, nullptr, 0);
     }
 
     // "Item Level N" is off by default and is not shown for every item even when it is on: the
@@ -1421,20 +1112,16 @@ void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t dur
             || info->itemClass == ITEM_CLASS_PROJECTILE)) {
         SStrPrintf(text, sizeof(text),
                    FrameScript_GetText("ITEM_LEVEL", -1, GENDER_NOT_APPLICABLE), info->itemLevel);
-        TooltipSetLine(tooltip, line++, false, text);
+        tooltip->AddLine(text, nullptr, 0);
     }
 
     if (!info->description.empty()) {
         // The reference shows the flavour text in quotes and lets it wrap.
         SStrPrintf(text, sizeof(text), "\"%s\"", info->description.c_str());
-        TooltipSetLine(tooltip, line, false, text);
-        TooltipSetLineWrap(tooltip, line, true);
-        line++;
+        tooltip->AddLine(text, nullptr, 1);
     }
 
-    tooltip->m_lineCount = line - 1;
-
-    TooltipShow(tooltip);
+    tooltip->Show();
 }
 
 // ref: FUN_0062e050
@@ -1598,28 +1285,28 @@ int32_t CGTooltip_SetUnit(lua_State* L) {
     // the faction line, the colourblind faction-standing line, the PvP and offline lines, and the
     // status bars. hideStatus (argument 3) suppresses the health bar, which frozen's tooltip does
     // not have, so nothing is done with it yet.
-    TooltipClear(tooltip);
+    tooltip->ClearTooltip();
 
     tooltip->m_unitGUID = guid;
 
-    int32_t line = 1;
-    TooltipSetLine(tooltip, line, false, TooltipUnitName(unit));
+    tooltip->AddLine(TooltipUnitName(unit), nullptr, 0);
 
     // The title sits between the name and the level line -- "Innkeeper" under "Amy Davenport".
     auto subName = unit->GetSubName();
 
     if (subName && *subName) {
-        TooltipSetLine(tooltip, ++line, false, subName);
+        tooltip->AddLine(subName, nullptr, 0);
     }
 
-    TooltipUnitLevelLine(tooltip, unit, ++line);
-
-    tooltip->m_lineCount = line;
+    TooltipUnitLevelLine(tooltip, unit);
 
     // UnitFrame_UpdateTooltip colours TextLeft1 by reaction right after this, and FrameXML's
     // OnTooltipSetUnit handlers add their own lines, so the layout is taken afterwards.
-    tooltip->RunOnTooltipSetUnitScript();
-    TooltipShow(tooltip);
+    if (tooltip->m_onTooltipSetUnit.luaRef) {
+        tooltip->RunScript(tooltip->m_onTooltipSetUnit, 0, nullptr);
+    }
+
+    tooltip->Show();
 
     lua_pushnumber(L, 1.0);
 
@@ -1725,8 +1412,9 @@ int32_t CGTooltip_SetAuctionItem(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_0061d9c0
 int32_t CGTooltip_NumLines(lua_State* L) {
-    lua_pushnumber(L, TooltipThis(L)->m_lineCount);
+    lua_pushnumber(L, TooltipThis(L)->m_numLines);
 
     return 1;
 }

@@ -573,6 +573,69 @@ float GxuFontGetWrappedTextHeight(CGxFont* font, const char* text, float a3, flo
     return (v18 / v22 + v23 * (float)(numLines - 1) + (float)numLines * a3);
 }
 
+// ref: FUN_006bdb10
+// Where each wrapped line of `text` starts, as byte offsets, writing at most maxPoints of them and
+// answering how many lines there are. A text ending in a newline has one more, empty, line.
+uint32_t GxuFontGetWrapPoints(CGxFont* font, const char* text, uint32_t numBytes, float fontHeight, float maxWidth, uint32_t* points, uint32_t maxPoints, float a8, float scale, float a10, uint32_t flags) {
+    if (!text || !*text || !numBytes || fontHeight == 0.0f || maxWidth == 0.0f) {
+        return 0;
+    }
+
+    if (flags & 0x04) {
+        fontHeight = GxuFontGetOneToOneHeight(font);
+    }
+
+    auto end = text + numBytes;
+    auto current = text;
+    bool firstLine = true;
+    uint32_t count = 0;
+
+    while (current < end) {
+        if ((flags & 0x2000) && count == 1) {
+            maxWidth -= g_indentNormWidth;
+        }
+
+        if (count < maxPoints) {
+            points[count] = static_cast<uint32_t>(current - text);
+        }
+
+        count++;
+
+        int32_t advance;
+        uint32_t code;
+
+        if (GxuDetermineQuotedCode(current, advance, nullptr, flags, code) == CODE_NEWLINE) {
+            current += advance;
+        } else {
+            uint32_t lineBytes;
+            float extent;
+            const char* next = nullptr;
+
+            CalcWrapPoint(font, current, fontHeight, maxWidth, &lineBytes, &extent, &next, a8, flags, &firstLine, nullptr, scale);
+
+            if (current == next) {
+                break;
+            }
+
+            current = next;
+        }
+
+        if (!current) {
+            break;
+        }
+    }
+
+    if (end[-1] == '\n') {
+        if (count < maxPoints) {
+            points[count] = numBytes;
+        }
+
+        count++;
+    }
+
+    return count;
+}
+
 void GxuFontInitialize() {
     g_theGxDevicePtr->ShaderCreate(g_fontVertexShader, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
     g_theGxDevicePtr->ShaderCreate(g_fontPixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);

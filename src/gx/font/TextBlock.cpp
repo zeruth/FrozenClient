@@ -280,6 +280,28 @@ void TextBlockGetTextExtent(HTEXTFONT fontHandle, const char* text, uint32_t num
     NDCToDDC(*extent, 0.0f, extent, nullptr);
 }
 
+// ref: FUN_004be040
+uint32_t TextBlockGetWrapPoints(HTEXTFONT fontHandle, const char* text, float fontHeight, float maxWidth, uint32_t* points, uint32_t maxPoints, float a7, float scale, float a9, uint32_t flags) {
+    if (!fontHandle || !text || !TextBlockGetFontPtr(fontHandle)) {
+        SErrSetLastError(0x57);
+        return 0;
+    }
+
+    return GxuFontGetWrapPoints(
+        TextBlockGetFontPtr(fontHandle),
+        text,
+        SStrLen(text),
+        DDCToNDCHeight(fontHeight),
+        DDCToNDCWidth(maxWidth),
+        points,
+        maxPoints,
+        DDCToNDCWidth(a7),
+        scale,
+        DDCToNDCWidth(a9),
+        ConvertStringFlags(flags)
+    );
+}
+
 float TextBlockGetWrappedTextHeight(HTEXTFONT fontHandle, const char* text, float a3, float a4, const C2Vector& a5, float a6, float a7, uint32_t flags) {
     STORM_ASSERT(fontHandle);
     STORM_ASSERT(text);

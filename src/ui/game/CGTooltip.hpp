@@ -2,24 +2,22 @@
 #define UI_GAME_C_G_TOOLTIP_HPP
 
 #include "ui/simple/CSimpleFrame.hpp"
-#include <vector>
+#include "ui/Types.hpp"
 #include "util/guid/Types.hpp"
 #include <storm/Array.hpp>
+#include <tempest/Vector.hpp>
 
+class CImVector;
+class CRect;
 class CSimpleFontString;
+class CSimpleStatusBar;
+class CSimpleTexture;
 
+// GameTooltip (Tooltip.cpp). The members are in the reference's order; the offsets beside them are
+// the reference's, from the constructor (FUN_0061dee0), the destructor (FUN_0061e160) and the
+// functions that read them. Gaps not yet recovered are noted where they fall.
 class CGTooltip : public CSimpleFrame {
     public:
-        // Structs
-
-        // The pair of font strings that make up one tooltip line. The template declares
-        // TextLeft1..8 / TextRight1..8 as named children, so those are found by name; a pair handed
-        // over by AddFontStrings extends the tooltip past them.
-        struct TOOLTIPLINE {
-            CSimpleFontString* left = nullptr;
-            CSimpleFontString* right = nullptr;
-        };
-
         // Static variables
         static int32_t s_metatable;
         static int32_t s_objectType;
@@ -31,67 +29,84 @@ class CGTooltip : public CSimpleFrame {
         static void RegisterScriptMethods(lua_State* L);
 
         // Member variables
-        CSimpleFrame* m_owner = nullptr;
-        TOOLTIP_ANCHORPOINT m_anchorPoint;
-        // TODO
-        C2Vector m_offset;
-        // TODO
-
-        // How many lines are currently in use. The line font strings themselves are not owned here:
-        // GameTooltipTemplate.xml declares <name>TextLeft1..8 / TextRight1..8 as children, so a line
-        // is found by name rather than created. The reference makes more on demand when a tooltip
-        // needs more than the template declares; that is not done yet, so a line past the last
-        // declared one exists only if AddFontStrings was handed a pair for it, and is otherwise
-        // dropped rather than silently overwriting line 8.
-        int32_t m_lineCount = 0;
-
-        // Lines beyond the ones the template declares, in the order AddFontStrings registered them.
-        TSGrowableArray<TOOLTIPLINE> m_extraLines;
-
-        // Whether each line may be broken across several lines, indexed the same way m_lineCount
-        // counts. The reference keeps exactly this: a per-line array (its +0x2cc) written by the
-        // add-a-line helper and read by the layout pass, which is what decides a line's width.
-        // A line carrying right-hand text never wraps -- the reference clears the flag rather than
-        // trying to wrap around a second column.
-        std::vector<uint8_t> m_lineWrap;
-
-        // The spell the tooltip was last filled from, which is what GetSpell reports. The reference
-        // keeps two spell slots (+0x364 and +0x370) and returns name/rank/id for each; only the
-        // first is tracked here, so GetSpell returns three values rather than up to six.
-        int32_t m_spellID = 0;
-        float m_minimumWidth = 0.0f;
-        float m_padding = 0.0f;
-        WOWGUID m_unitGUID = 0;
-
-        // The tooltip's own script elements. FrameXML declares all of these on GameTooltip,
-        // WorldMapTooltip and ItemRefTooltip, and without them the interface load reports five
-        // "Unknown script element" warnings per tooltip and the handlers never run -- so nothing
-        // that hooks tooltip construction (money lines, unit and item decoration, the default
-        // anchor) fires at all.
-        ScriptIx m_onTooltipSetDefaultAnchor;
-        ScriptIx m_onTooltipAddMoney;
-        ScriptIx m_onTooltipCleared;
-        ScriptIx m_onTooltipSetUnit;
-        ScriptIx m_onTooltipSetItem;
-        ScriptIx m_onTooltipSetSpell;
-        ScriptIx m_onTooltipSetQuest;
-        ScriptIx m_onTooltipSetAchievement;
+        CSimpleFrame* m_owner = nullptr;                    // +0x29c
+        TOOLTIP_ANCHORPOINT m_anchorType = TOOLTIP_ANCHOR_LEFT; // +0x2a0
+        // The lines in use, then every line there is: the template's TextLeft/TextRight pairs that
+        // PostLoadXML found, and the ones AddLine and AddFontStrings have added since.
+        uint32_t m_numLines = 0;                            // +0x2a4
+        uint32_t m_maxLines = 0;                            // +0x2a8
+        TSFixedArray<CSimpleFontString*> m_leftStrings;     // +0x2ac
+        TSFixedArray<CSimpleFontString*> m_rightStrings;    // +0x2b8
+        // Whether each line may wrap; a line with right-hand text never does.
+        TSFixedArray<int32_t> m_wrapLine;                   // +0x2c4
+        CSimpleStatusBar* m_statusBar = nullptr;            // +0x2d0 the template's <name>StatusBar
+        // The template's <name>Texture1..10, handed out by AddTexture in order, and the line each
+        // one sits on.
+        CSimpleTexture* m_textures[10] = {};                // +0x2d4
+        uint32_t m_textureLine[10] = {};                    // +0x2fc
+        uint32_t m_numTextures = 0;                         // +0x324
+        // What the tooltip was filled from. The refresh callbacks (FUN_0061dce0..FUN_0061de50) fill
+        // it again from these when the data they wait on arrives.
+        WOWGUID m_unitGUID = 0;                             // +0x328
+        WOWGUID m_guid330 = 0;                              // +0x330 refreshed by FUN_00626720
+        WOWGUID m_guid338 = 0;                              // +0x338
+        WOWGUID m_itemGUID = 0;                             // +0x340 kept across a clear
+        WOWGUID m_guid348 = 0;                              // +0x348 refreshed by FUN_00622410
+        WOWGUID m_guid350 = 0;                              // +0x350
+        // The unit whose health the status bar follows, through an object update callback.
+        WOWGUID m_statusUnitGUID = 0;                       // +0x358
+        int32_t m_itemID = 0;                               // +0x360
+        int32_t m_spellID = 0;                              // +0x364
+        int32_t m_questID = 0;                              // +0x368
+        int32_t m_achievementID = 0;                        // +0x36c
+        int32_t m_spellID2 = 0;                             // +0x370
+        // +0x374 .. +0x3c4: the achievement criteria and the rest, recovered with their fillers.
+        // A spell tooltip waiting on data counts down here before it is filled again (FUN_0061dd60).
+        int32_t m_spellRefresh = 0;                         // +0x3c8
+        // FadeOut starts this: the alpha falls over m_fadeTime seconds and the tooltip hides.
+        int32_t m_fading = 0;                               // +0x3cc
+        float m_fadeTime = 0.0f;                            // +0x3d0
+        float m_padding = 0.0f;                             // +0x3d4
+        float m_minimumWidth = 0.0f;                        // +0x3d8
+        int32_t m_minimumWidthForced = 0;                   // +0x3dc
+        C2Vector m_anchorOffset;                            // +0x3e0
+        // +0x3e8 .. +0x4d0: the item link the tooltip was filled from, recovered with the item fillers.
+        ScriptIx m_onTooltipSetDefaultAnchor;               // +0x4d4
+        ScriptIx m_onTooltipCleared;                        // +0x4dc
+        ScriptIx m_onTooltipAddMoney;                       // +0x4e4
+        ScriptIx m_onTooltipSetUnit;                        // +0x4ec
+        ScriptIx m_onTooltipSetItem;                        // +0x4f4
+        ScriptIx m_onTooltipSetSpell;                       // +0x4fc
+        ScriptIx m_onTooltipSetQuest;                       // +0x504
+        ScriptIx m_onTooltipSetAchievement;                 // +0x50c
+        ScriptIx m_onTooltipSetEquipmentSet;                // +0x514
+        ScriptIx m_onTooltipSetFrameStack;                  // +0x51c
 
         // Virtual member functions
-        virtual bool IsA(int32_t type);
-        virtual int32_t GetScriptMetaTable();
+        virtual ~CGTooltip();
         virtual ScriptIx* GetScriptByName(const char* name, ScriptData& data);
-
-        // Member functions
-        void AddFontStrings(CSimpleFontString* left, CSimpleFontString* right);
-        void RunOnTooltipSetDefaultAnchorScript();
-        void RunOnTooltipAddMoneyScript(int32_t money);
-        void RunOnTooltipClearedScript();
-        void RunOnTooltipSetUnitScript();
-        void RunOnTooltipSetItemScript();
+        virtual bool IsA(int32_t type);
+        virtual bool IsA(const char* typeName);
+        virtual const char* GetObjectTypeName();
+        virtual int32_t GetScriptMetaTable();
+        virtual void OnLayerShow();
+        virtual void OnLayerUpdate(float elapsedSec);
+        virtual void PostLoadXML(const XMLNode* node, CStatus* status);
+        virtual int32_t HideThis();
 
         // Member functions
         CGTooltip(CSimpleFrame* parent);
+        void AddFontStrings(CSimpleFontString* left, CSimpleFontString* right);
+        void AddLine(const char* left, const char* right, const CImVector& leftColor, const CImVector& rightColor, int32_t wrap);
+        void AddLine(const char* left, const char* right, int32_t wrap);
+        void AddTexture(const char* fileName, const CRect& texCoords, const CImVector& color);
+        void AppendText(const char* text);
+        void CalculateSize();
+        void ClearTooltip();
+        void FadeOut();
+        void RunOnTooltipAddMoneyScript(int32_t cost, int32_t maxCost);
+        void SetAnchor(int32_t force);
+        void SetOwner(CSimpleFrame* owner, TOOLTIP_ANCHORPOINT anchorType, float offsetX, float offsetY);
 };
 
 class ItemStats_C;

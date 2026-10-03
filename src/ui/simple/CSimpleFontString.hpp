@@ -77,6 +77,7 @@ class CSimpleFontString : public CSimpleRegion, public CSimpleFontable {
         float GetStringWidth();
         const char* GetText();
         float GetTextWidth(const char* text, uint32_t textBytes);
+        uint32_t GetWrapPoints(const char* text, float maxWidth, uint32_t* points, uint32_t maxPoints);
         void PostLoadXML(const XMLNode* node, CStatus* status);
         void RefreshEmbeddedTextures();
         void RemoveShadow();

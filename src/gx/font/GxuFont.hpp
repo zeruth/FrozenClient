@@ -54,6 +54,8 @@ float GxuFontGetOneToOneHeight(CGxFont*);
 
 void GxuFontGetTextExtent(CGxFont* font, const char* text, uint32_t numBytes, float height, float* extent, float a6, float scale, float a8, uint32_t flags);
 
+uint32_t GxuFontGetWrapPoints(CGxFont* font, const char* text, uint32_t numBytes, float fontHeight, float maxWidth, uint32_t* points, uint32_t maxPoints, float a8, float scale, float a10, uint32_t flags);
+
 float GxuFontGetWrappedTextHeight(CGxFont*, const char*, float, float, const C2Vector&, float, float, uint32_t);
 
 void GxuFontInitialize();

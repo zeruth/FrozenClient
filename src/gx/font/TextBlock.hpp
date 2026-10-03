@@ -46,6 +46,8 @@ CGxString* TextBlockGetStringPtr(HTEXTBLOCK);
 
 void TextBlockGetTextExtent(HTEXTFONT, const char*, uint32_t, float, float*, float, float, float, uint32_t);
 
+uint32_t TextBlockGetWrapPoints(HTEXTFONT fontHandle, const char* text, float fontHeight, float maxWidth, uint32_t* points, uint32_t maxPoints, float a7, float scale, float a9, uint32_t flags);
+
 float TextBlockGetWrappedTextHeight(HTEXTFONT, const char*, float, float, const C2Vector&, float, float, uint32_t);
 
 // ref: FUN_004bdc50
