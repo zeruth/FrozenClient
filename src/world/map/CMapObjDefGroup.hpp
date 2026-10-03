@@ -18,6 +18,12 @@ class CMapObjDefGroup;
 
 class CMapObjDefGroup : public CMapBaseObj {
     public:
+        // ref: FUN_007b3de0 (the type bit, 0x007b3ed7; the rest is the members' initializers)
+        // Without the bit nothing recognised a group as one: every test of a link's target for
+        // Type_MapObjDefGroup failed, so entities in buildings took terrain light, their
+        // ground type and their parent bounds were wrong.
+        CMapObjDefGroup() { this->m_type |= CMapBaseObj::Type_MapObjDefGroup; }
+
         // Member variables
         CAaBox m_bounds;                     // +0x24: the group's box, placed into world space
         C3Vector m_center;                   // +0x3c: its bounding sphere, likewise

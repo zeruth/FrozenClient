@@ -36,6 +36,9 @@ static_assert(sizeof(SMODF) == 0x40, "SMODF is 64 bytes");
 // each hold a link to it; the uniqueId hash keeps two tiles from placing the same building twice.
 class CMapObjDef : public CMapBaseObj, public TSHashObject<CMapObjDef, HASHKEY_NONE> {
     public:
+        // ref: FUN_007b4350 (the type bit, 0x007b44ca; the rest is the members' initializers)
+        CMapObjDef() { this->m_type |= CMapBaseObj::Type_MapObjDef; }
+
         // Static variables
         // Every placed WMO by its MODF uniqueId (DAT_00d25434), so the tile that loads second
         // finds the building the first one already placed
