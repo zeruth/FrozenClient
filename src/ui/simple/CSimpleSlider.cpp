@@ -261,6 +261,29 @@ void CSimpleSlider::SetOrientation(ORIENTATION orientation) {
 }
 
 // ref: FUN_0096bd90
+// ref: FUN_0096bfe0
+int32_t CSimpleSlider::SetThumbTexture(const char* texFile) {
+    if (this->m_thumbTexture) {
+        this->m_thumbTexture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI);
+
+        return 1;
+    }
+
+    // TODO auto m = CDataAllocator::GetData(CSimpleTexture::s_allocator, 0, __FILE__, __LINE__);
+    auto m = SMemAlloc(sizeof(CSimpleTexture), __FILE__, __LINE__, 0x0);
+    auto texture = new (m) CSimpleTexture(nullptr, DRAWLAYER_ARTWORK, 1);
+
+    if (!texture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI)) {
+        delete texture;
+
+        return 0;
+    }
+
+    this->SetThumbTexture(texture, DRAWLAYER_ARTWORK_OVERLAY);
+
+    return 1;
+}
+
 void CSimpleSlider::SetThumbTexture(CSimpleTexture* texture, int32_t drawLayer) {
     if (this->m_thumbTexture == texture) {
         return;

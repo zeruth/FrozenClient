@@ -40,6 +40,7 @@ class CSimpleStatusBar : public CSimpleFrame {
         void RunOnMinMaxChangedScript();
         void RunOnValueChangedScript();
         void SetBarTexture(CSimpleTexture* texture, int32_t drawlayer);
+        int32_t SetBarTexture(const char* texFile, int32_t drawlayer);
         void SetMinMaxValues(float min, float max);
         void SetOrientation(ORIENTATION orientation);
         void SetRotatesTexture(int32_t enabled);

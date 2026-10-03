@@ -100,6 +100,56 @@ void CSimpleCheckbox::SetChecked(int32_t checked, int32_t force) {
 }
 
 // ref: FUN_009623f0
+// ref: FUN_00962660
+int32_t CSimpleCheckbox::SetCheckedTexture(const char* texFile) {
+    if (this->m_checkedTexture) {
+        this->m_checkedTexture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI);
+
+        return 1;
+    }
+
+    // TODO auto m = CDataAllocator::GetData(CSimpleTexture::s_allocator, 0, __FILE__, __LINE__);
+    auto m = SMemAlloc(sizeof(CSimpleTexture), __FILE__, __LINE__, 0x0);
+    auto texture = new (m) CSimpleTexture(nullptr, DRAWLAYER_ARTWORK, 1);
+
+    if (!texture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI)) {
+        delete texture;
+
+        return 0;
+    }
+
+    texture->SetAllPoints(this, 1);
+    texture->SetBlendMode(GxBlend_Add);
+    this->SetCheckedTexture(texture);
+
+    return 1;
+}
+
+// ref: FUN_00962720
+int32_t CSimpleCheckbox::SetDisabledCheckedTexture(const char* texFile) {
+    if (this->m_disabledTexture) {
+        this->m_disabledTexture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI);
+
+        return 1;
+    }
+
+    // TODO auto m = CDataAllocator::GetData(CSimpleTexture::s_allocator, 0, __FILE__, __LINE__);
+    auto m = SMemAlloc(sizeof(CSimpleTexture), __FILE__, __LINE__, 0x0);
+    auto texture = new (m) CSimpleTexture(nullptr, DRAWLAYER_ARTWORK, 1);
+
+    if (!texture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI)) {
+        delete texture;
+
+        return 0;
+    }
+
+    texture->SetAllPoints(this, 1);
+    texture->SetBlendMode(GxBlend_Add);
+    this->SetDisabledCheckedTexture(texture);
+
+    return 1;
+}
+
 void CSimpleCheckbox::SetCheckedTexture(CSimpleTexture* texture) {
     if (texture == this->m_checkedTexture) {
         return;

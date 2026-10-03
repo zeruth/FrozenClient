@@ -33,6 +33,8 @@ class CSimpleCheckbox : public CSimpleButton {
         void SetChecked(int32_t checked, int32_t force);
         void SetCheckedTexture(CSimpleTexture* texture);
         void SetDisabledCheckedTexture(CSimpleTexture* texture);
+        int32_t SetCheckedTexture(const char* texFile);
+        int32_t SetDisabledCheckedTexture(const char* texFile);
 };
 
 #endif

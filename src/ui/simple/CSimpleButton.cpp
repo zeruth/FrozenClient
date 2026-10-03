@@ -480,6 +480,7 @@ int32_t CSimpleButton::SetHighlight(const char* texFile, EGxBlend blendMode) {
     return 1;
 }
 
+// ref: FUN_0096f7b0
 void CSimpleButton::SetFontString(CSimpleFontString* text) {
     if (this->m_text == text) {
         return;

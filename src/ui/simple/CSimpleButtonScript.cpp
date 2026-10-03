@@ -277,8 +277,33 @@ int32_t CSimpleButton_GetHighlightFontObject(lua_State* L) {
     return ButtonFontObject(button->m_highlightFont, L);
 }
 
+// ref: FUN_009777c0
 int32_t CSimpleButton_SetFontString(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleButton::GetObjectType();
+    auto button = static_cast<CSimpleButton*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_type(L, 2) != LUA_TTABLE) {
+        luaL_error(L, "Usage: %s:SetFontString(fontstring)", button->GetDisplayName());
+        return 0;
+    }
+
+    lua_rawgeti(L, 2, 0);
+    auto string = static_cast<CSimpleFontString*>(lua_touserdata(L, -1));
+    lua_settop(L, -2);
+
+    if (!string) {
+        luaL_error(L, "%s:SetFontString(): Couldn't find 'this' in fontstring", button->GetDisplayName());
+        return 0;
+    }
+
+    if (!string->IsA(CSimpleFontString::GetObjectType())) {
+        luaL_error(L, "%s:SetFontString(): Wrong object type, expected fontstring", button->GetDisplayName());
+        return 0;
+    }
+
+    button->SetFontString(string);
+
+    return 0;
 }
 
 int32_t CSimpleButton_GetFontString(lua_State* L) {

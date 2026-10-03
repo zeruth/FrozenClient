@@ -56,6 +56,7 @@ class CSimpleSlider : public CSimpleFrame {
         void SetMinMaxValues(float min, float max);
         void SetOrientation(ORIENTATION orientation);
         void SetThumbTexture(CSimpleTexture* texture, int32_t drawLayer);
+        int32_t SetThumbTexture(const char* texFile);
         void SetValue(float value);
         void SetValueStep(float valueStep);
         float StepValue(float value);

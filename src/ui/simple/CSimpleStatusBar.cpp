@@ -217,6 +217,30 @@ void CSimpleStatusBar::RunOnValueChangedScript() {
     this->RunScript(this->m_onValueChanged, 1, nullptr);
 }
 
+// ref: FUN_00961ac0
+int32_t CSimpleStatusBar::SetBarTexture(const char* texFile, int32_t drawlayer) {
+    auto texture = this->m_barTexture;
+
+    if (texture) {
+        // An existing bar keeps its tiling.
+        texture->SetTexture(texFile, texture->m_horizTile, texture->m_vertTile, CSimpleTexture::s_textureFilterMode, ImageMode_UI);
+    } else {
+        // TODO auto m = CDataAllocator::GetData(CSimpleTexture::s_allocator, 0, __FILE__, __LINE__);
+        auto m = SMemAlloc(sizeof(CSimpleTexture), __FILE__, __LINE__, 0x0);
+        texture = new (m) CSimpleTexture(nullptr, DRAWLAYER_ARTWORK, 1);
+
+        if (!texture->SetTexture(texFile, false, false, CSimpleTexture::s_textureFilterMode, ImageMode_UI)) {
+            delete texture;
+
+            return 0;
+        }
+    }
+
+    this->SetBarTexture(texture, drawlayer);
+
+    return 1;
+}
+
 // ref: FUN_00961720
 void CSimpleStatusBar::SetBarTexture(CSimpleTexture* texture, int32_t drawlayer) {
     // No change

@@ -127,8 +127,47 @@ int32_t CSimpleStatusBar_GetStatusBarTexture(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00971650
 int32_t CSimpleStatusBar_SetStatusBarTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleStatusBar::GetObjectType();
+    auto object = static_cast<CSimpleStatusBar*>(FrameScript_GetObjectThis(L, type));
+
+    int32_t drawlayer = DRAWLAYER_ARTWORK;
+    if (lua_isstring(L, 3)) {
+        StringToDrawLayer(lua_tostring(L, 3), drawlayer);
+    }
+    if (lua_type(L, 2) != LUA_TTABLE) {
+        if (lua_isstring(L, 2)) {
+            object->SetBarTexture(lua_tostring(L, 2), drawlayer);
+            return 0;
+        }
+
+        if (lua_type(L, 2) == LUA_TNIL) {
+            object->SetBarTexture(static_cast<CSimpleTexture*>(nullptr), DRAWLAYER_ARTWORK);
+            return 0;
+        }
+
+        luaL_error(L, "Usage: %s:SetStatusBarTexture(texture or \"texture\" or nil [, \"layer\"])", object->GetDisplayName());
+        return 0;
+    }
+
+    lua_rawgeti(L, 2, 0);
+    auto texture = static_cast<CSimpleTexture*>(lua_touserdata(L, -1));
+    lua_settop(L, -2);
+
+    if (!texture) {
+        luaL_error(L, "%s:SetCheckedTexture(): Couldn't find 'this' in texture", object->GetDisplayName());
+        return 0;
+    }
+
+    if (!texture->IsA(CSimpleTexture::GetObjectType())) {
+        luaL_error(L, "%s:SetCheckedTexture(): Wrong object type, expected texture", object->GetDisplayName());
+        return 0;
+    }
+
+    object->SetBarTexture(texture, drawlayer);
+
+    return 0;
 }
 
 // ref: FUN_00971800

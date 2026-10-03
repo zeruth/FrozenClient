@@ -27,8 +27,43 @@ int32_t CSimpleSlider_GetThumbTexture(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00971b10
 int32_t CSimpleSlider_SetThumbTexture(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleSlider::GetObjectType();
+    auto object = static_cast<CSimpleSlider*>(FrameScript_GetObjectThis(L, type));
+
+    if (lua_type(L, 2) != LUA_TTABLE) {
+        if (lua_isstring(L, 2)) {
+            object->SetThumbTexture(lua_tostring(L, 2));
+            return 0;
+        }
+
+        if (lua_type(L, 2) == LUA_TNIL) {
+            object->SetThumbTexture(static_cast<CSimpleTexture*>(nullptr), DRAWLAYER_ARTWORK_OVERLAY);
+            return 0;
+        }
+
+        luaL_error(L, "Usage: %s:SetThumbTexture(texture or \"texture\" or nil)", object->GetDisplayName());
+        return 0;
+    }
+
+    lua_rawgeti(L, 2, 0);
+    auto texture = static_cast<CSimpleTexture*>(lua_touserdata(L, -1));
+    lua_settop(L, -2);
+
+    if (!texture) {
+        luaL_error(L, "%s:SetThumbTexture(): Couldn't find 'this' in texture", object->GetDisplayName());
+        return 0;
+    }
+
+    if (!texture->IsA(CSimpleTexture::GetObjectType())) {
+        luaL_error(L, "%s:SetThumbTexture(): Wrong object type, expected texture", object->GetDisplayName());
+        return 0;
+    }
+
+    object->SetThumbTexture(texture, DRAWLAYER_ARTWORK_OVERLAY);
+
+    return 0;
 }
 
 // ref: FUN_00971c70
