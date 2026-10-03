@@ -55,7 +55,7 @@ Remaining work by area (unlinked):
 |---|---|---:|---|
 | entities (`Unit_C`, `Player_C`, `GameObject_C`, `Movement`, effects, missiles, spell visuals) | 4 | ~1,800 | well over half of what is left |
 | world layer and map (see the phase 2 table) | 2 | ~700 | the tail: fidelity and leaves |
-| textures and full-screen effects (`blp`, `tga`, `FFXEffects`, glow, `Lightning`) | 3 | ~300 | `Texture.cpp` landed |
+| textures and full-screen effects (`blp`, `tga`, `FFXEffects`, glow) | 3 | not measured | all ported 2026-10-03, not run; `Lightning` moved to phase 4 |
 | D3D9Ex and OpenGL devices | out of scope | ~130 | not used on Windows |
 | models and particles | 1 | ~10 | each blocked, see below |
 
@@ -209,21 +209,55 @@ Still open, in order -- phase 2 is not done until every item here is:
 3. **The collision debug overlay's second feeder**, `FUN_007d8840`.
 
 
-## Phase 3: textures and effects (~300 unlinked)
+## Phase 3: textures and effects (ported, NOT verified)
 
-- **Textures:** `Texture.cpp` is in (105/122). Left: `blp` 40/94 and `tga` 46/82 to 100%,
-  `TextureAllocGxTex` at 62%, `AsyncFileReadWait` at 67%, the `TextureCache` mirror.
-- **Full-screen effects:** `FFXEffects` 81/171, `EffectGlow` 2/38, `PassGlow` 0/26,
-  `Lightning` 0/7; the world-frame glow calls (`FUN_004f8770`, `FUN_008c1770`, `FUN_008c1010`)
-  are where it enters the frame.
-- **What the D3D9 census left:** a read of `GxPrimVertexPtr` (0x682400) and `IRsSendToHw`
-  (0x6a4c30) for a verdict, the zero fill at +0x3ae0 in the constructor (0x68fd50), vtable slot 21
-  (0x6a1950), the base constructor recorded as diverged until `CGxCaps` is layout-faithful, and
-  the money, object and spell item cursors (`FUN_00616510`, `FUN_00616630`, `FUN_00616720`).
-- **Live stubs to zero:** 17 on this platform from `livestubs.py`, each ported or recorded as a
-  deliberate divergence. The 17 in the GL backends belong to the Android port.
+Everything this phase listed has a port, and none of it has been run. Not measured since either:
+the recomp measurement was stopped for low memory on 2026-10-03, so this section has no numbers.
+The next `clangparse.py` + `recomp.py --pdb` gives them.
 
-Exit: every texture and effect module at 100% linked, no stubs.
+| commit | what |
+|---|---|
+| 93b727d9 | **the full-screen effect system** (`src/ffx/FFX.cpp`): the seven shared targets, the scene copied from the back buffer (`GxTexCopyFromTarget` `FUN_006814d0`), passes, effects, the quad and grid batches; **the world glow** (`EffectGlow` `FUN_008bfe80`: box, gauss, glow and wave passes). `OnWorldRender` brackets the frame with `FFX::BeginScene` / `EndScene` (`FUN_008c1770`, `FUN_008c1010`) |
+| c7ac22bc, 1574c59b | the death and nether effects, the fog propagate passes, `EffectSpecial`; the noise tables |
+| 0d14c881 | screen effects: `SetScreenEffect` `FUN_004f7020`, `UpdateScreenEffect` `FUN_004f88b0` (from `AuraCache`), `UpdateGlowParams` `FUN_004f8770`, drunkenness; `ScreenEffect.dbc` |
+| b17eca5b | `blp`: the inlined helpers as the reference's own (`HeaderValid`, the mip sizes, `DecompPalARGB8888`); `DecompPal` and `Lock2` in its shape |
+| d1375b5f | the texture cache releases component textures; its untagged ports tagged |
+| 4d65e308 | the money, item and icon cursors (`FUN_00616510`, `FUN_00616630`, `FUN_00616720`) |
+| 5d6ca3a5, 0a9bb469, 9bd3546a, c536b5c3 | **the live stubs**: glyph eviction, fixed-width steps, window focus, the deferred draw lists, the weather caps, `CGxString::SetGradient`, `CalcWrapPointBillboarded`; `CClientEnvironment::AddRef` removed (the reference has no such slot) |
+| 04fbbdb8 | `tga`: the writer (`FUN_006aa950`..`FUN_006aade0`); screenshots go through it as `ScreenshotRequest` does: 32-bit top-down, alpha dropped, RLE, TGA 2.0 footer |
+| cba5b06d | `tga`: the remaining blit converters, every `InitBlit` slot decoded against the table base 0x00c60930 |
+| 9da3b448 | `tga`: the DXT blitters split into the reference's aligned and general walkers, block writers on row pointers and a clip rect, cube faces. Checked numerically against the old code (byte for byte except the two cube shapes) |
+| 466f87b3 | the D3D9 census leftovers, below |
+
+What the census left is closed:
+
+- **Vtable slot 21** (`FUN_006a1950`) is `ICaptureReadBlank`, named by behaviour: the clipped
+  rect's pixels, zeroed. No caller in either binary.
+- **The constructor's zero fill at +0x3ae0** is `m_d3dVertexDecl[14]`, which frozen zeroes with an
+  initialiser.
+- **`GxPrimVertexPtr`** (0x682400): the format selection did not match, and now does. The
+  reference falls back to PN for argument combinations it has no case for; no live caller passes
+  one.
+- **`IRsSendToHw`** (0x6a4c30) at 64%: every reference call has a frozen counterpart. The three
+  the diff lists as missing (`ISetTexture`, `IShaderBindVertex`, `IShaderBindPixel`) are there in a
+  different switch-case order, and `operator!=` is inlined. It is a layout artifact; no work is
+  owed.
+
+Still open in this phase:
+
+- The base `CGxDevice` constructor stays diverged until `CGxCaps` is layout-faithful.
+- `LoadingScreenInitialize` (`FUN_0040b2b0`) creates the UI shaders now. Its state table
+  `FUN_0040b0b0` and the tile grid `FUN_00407c50` are TODOs at the code.
+- Live empty functions: the 17 are ported except five whose reference bodies are empty too
+  (`M2Init(char)`, the generic `M2BlendValue`, `GxPrimUnlockVertexPtrs`, `ValidateDraw`,
+  `TextureLodBiasSet`). `livestubs.py` has not been re-run since. The 17 in the GL backends
+  belong to the Android port, and on GL `GxCapsWindowHasFocus` reads 0 until something there sets
+  the focus field.
+- **`Lightning`** (~45 functions) moves to phase 4. It is driven by spell-visual chain effects
+  (`FUN_007fca30` -> `FUN_007fae90` -> `FUN_009aafb0`) and has nothing to draw until they exist.
+
+Exit, unchanged: every texture and effect module at 100% linked, no stubs. Confirm it with the
+next measurement.
 
 ## Phase 4: entities (~1,800 unlinked)
 
@@ -245,7 +279,8 @@ matchers lean on. Top down:
   and `FUN_006fdfb0` from `OnWorldRender`) and `Missile_C` (3/53).
 - **Game objects and players:** `GameObject_C` (23/285; its `UpdateWorldObject` override
   `FUN_0070cbe0` needs the rotation quaternion), `Player_C` (54/479), `Unit_C` (98/643).
-- **Spell visuals:** `SpellVisuals` (0/65).
+- **Spell visuals:** `SpellVisuals` (0/65), and with them `Lightning` (~45, from phase 3): the
+  chain effects `FUN_007fca30` -> `FUN_007fae90` -> `FUN_009aafb0` are what feed it.
 
 Exit: the entity row at 100% linked and faithful. With it, criteria 1 to 3 are met.
 
@@ -266,6 +301,9 @@ Started when phases 1 to 4 are practically done, in one block:
    - the camera beyond the default view, now that the segment query exists for its collision;
    - projected textures on something that projects; the liquid bank and buffer pool at a water
      line; units standing in water or a building;
+   - from phase 3: the world glow (`ffxGlow 1`), the death effect while a ghost, an aura with a
+     `ScreenEffect.dbc` entry; a screenshot (now RLE TGA) opening in an image viewer; the
+     money, item and icon cursors; text fading through `SetGradient`;
    - from phase 3a: the device cursor, resize and alt-tab, the QPC timer, the 200/30 FPS caps,
      fixed-function combiners; from phase 1: doodads at a water line, one-bone doodads, DXT
      textures with their smallest mips.
