@@ -277,38 +277,41 @@ void GxPrimVertexPtr(CGxBuf* buf, EGxVertexBufferFormat format) {
 
 // ref: FUN_00682400
 void GxPrimVertexPtr(uint32_t vertexCount, const C3Vector* pos, uint32_t posStride, const C3Vector* normal, uint32_t normalStride, const CImVector* color, uint32_t colorStride, const C2Vector* tex0, uint32_t tex0Stride, const C2Vector* tex1, uint32_t tex1Stride) {
-    // Select vertex buffer format based on given parameters
-    auto format = GxVBF_P;
+    // The reference's decision table, transcribed. It starts from PN and only overwrites it for
+    // the combinations it names, so the ones it has no case for -- no position at all, or a second
+    // texture coordinate without a first -- come out PN. That is the reference's answer for them,
+    // not a default chosen here.
+    auto format = GxVBF_PN;
 
-    if (pos && normal && color) {
-        format = GxVBF_PNC;
-
-        if (tex0 && tex1) {
-            format = GxVBF_PNCT2;
-        } else if (tex0) {
-            format = GxVBF_PNCT;
-        }
-    } else if (pos && normal) {
-        format = GxVBF_PN;
-
-        if (tex0 && tex1) {
-            format = GxVBF_PNT2;
-        } else if (tex0) {
-            format = GxVBF_PNT;
-        }
-    } else if (pos && color) {
-        format = GxVBF_PC;
-
-        if (tex0 && tex1) {
-            format = GxVBF_PCT2;
-        } else if (tex0) {
-            format = GxVBF_PCT;
-        }
-    } else if (pos) {
-        if (tex0 && tex1) {
-            format = GxVBF_PT2;
-        } else if (tex0) {
-            format = GxVBF_PT;
+    if (pos) {
+        if (!normal) {
+            if (!color) {
+                if (tex0) {
+                    format = tex1 ? GxVBF_PT2 : GxVBF_PT;
+                } else if (!tex1) {
+                    format = GxVBF_P;
+                }
+            } else if (tex0) {
+                format = tex1 ? GxVBF_PCT2 : GxVBF_PCT;
+            } else if (!tex1) {
+                format = GxVBF_PC;
+            }
+        } else if (!color) {
+            if (!tex0 && !tex1) {
+                format = GxVBF_PN;
+            } else if (tex0 && !tex1) {
+                format = GxVBF_PNT;
+            } else if (tex0 && tex1) {
+                format = GxVBF_PNT2;
+            }
+        } else {
+            if (!tex0 && !tex1) {
+                format = GxVBF_PNC;
+            } else if (tex0 && !tex1) {
+                format = GxVBF_PNCT;
+            } else if (tex0 && tex1) {
+                format = GxVBF_PNCT2;
+            }
         }
     }
 

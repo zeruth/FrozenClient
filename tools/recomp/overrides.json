@@ -3694,8 +3694,9 @@
     "note": "REJECTED sticky link to FrameXML_SetProgressCallback. This is an SFile existence check: it hands the name and a flag to FUN_00424780 with a 260-byte scratch path and answers whether the file resolves. TextureLoadTgaMips (FUN_004b5a00) calls it per _mip%d.tga file; frozen reaches the same question through SFile::FileExists, whose StormLib-backed SFile is not the reference's."
   },
   "006a1950": {
-    "status": "unlinked",
-    "note": "Identified 2026-10-01, not ported: device vtable slot 21 (+0x54) in both the D3D9 and D3D9Ex vtables, beside ICaptureRead at slot 20. Clips a rect to the window, grows a TSGrowableArray<uint32_t> to the rect's pixel count (rounded up to the array's granularity) and zero-fills it. No direct or vtable caller was found in the reference, so nothing in frozen needs it yet."
+    "frozen": "CGxDeviceD3d::ICaptureReadBlank",
+    "status": "ported",
+    "note": "Device vtable slot 21 (+0x54) in both the D3D9 and D3D9Ex vtables, beside ICaptureRead at slot 20. Clips a rect to the window, grows a TSGrowableArray<uint32_t> to the rect's pixel count (rounded up to the array's granularity) and zero-fills it. Ported 2026-10-03 as a base CGxDevice virtual in the same slot order with the D3D override; the original name is unknown, so it is named by behaviour. No direct or vtable caller was found in the reference, so nothing calls it in frozen either. Built, not run."
   },
   "00681cb0": {
     "status": "faithful",

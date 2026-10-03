@@ -241,6 +241,9 @@ class CGxDeviceD3d : public CGxDevice {
         bool Matches(const D3DVERTEXELEMENT9* elements, uint32_t count) const;
     };
 
+    // Reference +0x3ae0: one declaration per fixed vertex format, made on first use by
+    // ICreateD3dVertexDecl (FUN_006a5540, which bounds the index at 14). The constructor's
+    // 0x38-byte zero fill at 0x0068fe23 is this array; the initialiser is that fill.
     LPDIRECT3DVERTEXDECLARATION9 m_d3dVertexDecl[GxVertexBufferFormats_Last] = { 0 };
     // Reference +0x3ad0: the declarations made for the other layouts, searched before a new one
     // is made.
@@ -345,6 +348,7 @@ class CGxDeviceD3d : public CGxDevice {
     virtual int32_t TexCopyFromTarget(CGxTex* dst, const C2iVector& dstPos, const C2iVector& srcPos, const C2iVector& size, uint32_t level, uint32_t plane);
     virtual int32_t TexCopyFromTargetRect(CGxTex* dst, const CiRect* dstRect, const CiRect* srcRect, uint32_t level, uint32_t plane);
     virtual void ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits);
+    virtual void ICaptureReadBlank(const CiRect& rect, TSGrowableArray<uint32_t>& bits);
     virtual int32_t IDebugReadTexture(CGxTex* tex, TSGrowableArray<float>& texels, uint32_t& width, uint32_t& height);
     void IEnsureCaptureTarget();
     void IEnsureTargetDepth(uint32_t width, uint32_t height);

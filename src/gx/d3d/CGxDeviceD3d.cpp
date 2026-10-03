@@ -557,6 +557,8 @@ CGxDeviceD3d::CGxDeviceD3d() : CGxDevice() {
 
     // TODO
 
+    // (The reference's 0x38-byte zero fill at +0x3ae0 is m_d3dVertexDecl, zeroed by its
+    // initialiser.)
     memset(this->m_deviceStates, 0xFF, sizeof(this->m_deviceStates));
 
     // TODO
@@ -4354,9 +4356,6 @@ void CGxDeviceD3d::IEnsureCaptureTarget() {
         format, D3DMULTISAMPLE_NONE, 0, TRUE, &this->m_captureSurface, nullptr);
 }
 
-// ref: FUN_0068fed0
-// Reads the back buffer, clipped to the window, into `bits` as 32-bit ARGB: X8R8G8B8 and A8R8G8B8
-// row for row, R5G6B5 and X1R5G5B5 / A1R5G5B5 widened, anything else white.
 // FROZEN-ONLY debug readback, for the shadow-map dump. GetRenderTargetData copies a render
 // target's top level into a system-memory twin, which can then be locked. Depth formats cannot be
 // read this way in D3D9, which is why the dump runs with hardware PCF off.
@@ -4419,6 +4418,9 @@ int32_t CGxDeviceD3d::IDebugReadTexture(CGxTex* tex, TSGrowableArray<float>& tex
     return ok;
 }
 
+// ref: FUN_0068fed0
+// Reads the back buffer, clipped to the window, into `bits` as 32-bit ARGB: X8R8G8B8 and A8R8G8B8
+// row for row, R5G6B5 and X1R5G5B5 / A1R5G5B5 widened, anything else white.
 void CGxDeviceD3d::ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {
     CiRect clipped = rect;
     this->IClipToWindow(clipped);
@@ -4514,6 +4516,20 @@ void CGxDeviceD3d::ICaptureRead(const CiRect& rect, TSGrowableArray<uint32_t>& b
     }
 
     surface->Release();
+}
+
+// ref: FUN_006a1950
+// Slot 21, in both the D3D9 and D3D9Ex vtables: clip the rect to the window and hand back that
+// many pixels, zeroed. The reference grows the array to the pixel count rounded up to its
+// granularity before setting the count; SetCount does the growing here.
+void CGxDeviceD3d::ICaptureReadBlank(const CiRect& rect, TSGrowableArray<uint32_t>& bits) {
+    CiRect clipped = rect;
+    this->IClipToWindow(clipped);
+
+    uint32_t count = (clipped.maxY - clipped.minY) * (clipped.maxX - clipped.minX);
+
+    bits.SetCount(count);
+    memset(bits.Ptr(), 0, count * sizeof(uint32_t));
 }
 
 // ref: FUN_006a5680
