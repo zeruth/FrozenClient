@@ -450,8 +450,7 @@ void CGxString::InitializeTextLine(const char* currentText, uint32_t numBytes, C
 
         if (prevCode) {
             if (this->m_flags & EGxStringFlags_FixedSpacing) {
-                // TODO
-                // stepGlyph = this->m_currentFace->ComputeStepFixedWidth(prevCode, code);
+                stepGlyph = this->m_currentFace->ComputeStepFixedWidth(prevCode, code);
             } else {
                 stepGlyph = this->m_currentFace->ComputeStep(prevCode, code);
             }
@@ -646,6 +645,13 @@ void CGxString::SetColor(const CImVector& color) {
 
     if (!(this->m_flags & EGxStringFlags_FixedColor) || this->m_flags & EGxStringFlags_Flag20 || this->m_intD4) {
         this->ClearInstanceData();
+    }
+}
+
+// ref: FUN_006c5e70
+void CGxString::NoteTextureEvicted(uint32_t textureNumber) {
+    if (this->m_texturePagesUsed & (1u << textureNumber)) {
+        this->m_textureEvicted = 1;
     }
 }
 

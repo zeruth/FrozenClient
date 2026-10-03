@@ -132,6 +132,7 @@ class CGxFont : public TSLinkedNode<CGxFont> {
         void ClearGlyphs(void);
         float ComputeStep(uint32_t, uint32_t);
         float ComputeStepFixedWidth(uint32_t, uint32_t);
+        float GlyphAdvance(uint32_t code);
         float GetGlyphBearing(const CHARCODEDESC*, bool, float);
         int32_t GetGlyphData(GLYPHBITMAPDATA*, uint32_t);
         const char* GetName(void) const;

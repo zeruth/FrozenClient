@@ -500,11 +500,6 @@ static void Begin(int32_t isLogin) {
     s_progress[2] = 0.0f;
     s_isLogin = isLogin;
 
-    if (!s_pixelShader && g_theGxDevicePtr) {
-        g_theGxDevicePtr->ShaderCreate(s_vertexShaders, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
-        g_theGxDevicePtr->ShaderCreate(&s_pixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);
-    }
-
     if (!s_layer) {
         for (int32_t i = 0; i < LOADING_SCREEN_NUM_BAR_TEXTURES; ++i) {
             if (!s_barTextures[i]) {
@@ -558,8 +553,15 @@ void LoadingScreenFinish() {
     s_widescreen = 0;
 }
 
+// ref: FUN_0040b2b0
+// The UI shaders the screen draws through, made once at client start.
 void LoadingScreenInitialize() {
-    // TODO
+    g_theGxDevicePtr->ShaderCreate(s_vertexShaders, GxSh_Vertex, "Shaders\\Vertex", "UI", 2);
+    g_theGxDevicePtr->ShaderCreate(&s_pixelShader, GxSh_Pixel, "Shaders\\Pixel", "UI", 1);
+
+    // TODO FUN_0040b0b0 over the table at DAT_00ad4bc8 (a compiled render-state list for the
+    // screen's draws) and FUN_00407c50, the background cut into a 4x3 grid of 256-texel tiles
+    // (DAT_00b2ff00): frozen draws the background as one quad (DrawTexturedQuad).
 }
 
 // 0x40AF90 in the original

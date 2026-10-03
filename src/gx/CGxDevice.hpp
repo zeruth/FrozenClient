@@ -404,6 +404,9 @@ class CGxDevice {
         virtual int32_t IDebugReadTexture(CGxTex* tex, TSGrowableArray<float>& texels, uint32_t& width, uint32_t& height) { return 0; };
         void ICapture();
         void IClipToWindow(CiRect& rect);
+        // Whether the window has the focus (+0xf64); a value of 0 or more sets it first.
+        // ref: FUN_00682df0
+        int32_t CapsWindowHasFocus(int32_t focus);
         virtual void QueryCreate(CGxQuery*& query, uint32_t type);
         virtual void QueryDestroy(CGxQuery*& query);
         virtual int32_t QueryBegin(CGxQuery* query) { return 0; };

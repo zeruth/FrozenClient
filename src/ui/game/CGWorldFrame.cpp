@@ -545,8 +545,11 @@ void CGWorldFrame::OnWorldRender() {
     }
 
     // TODO FUN_004f8a40(0x200122) while the cursor mode (DAT_00ac79a4) is below 2: the spell
-    // target's ground decal. Then the two deferred device lists, sorted from the camera and drawn
-    // (FUN_00681ba0(0, 1), FUN_00682960(0)).
+    // target's ground decal.
+
+    // The first deferred device list, by state key, then drawn.
+    GxuSortDrawList(GxuCat_0, 1, CWorldScene::s_cameraPos);
+    GxuFlushDrawList(GxuCat_0, CWorldScene::s_cameraPos);
 
     CWorldScene::RenderDetailDoodads();
 
@@ -596,7 +599,9 @@ void CGWorldFrame::OnWorldRender() {
         GxRsSet(GxRs_Fog, 0);
     }
 
-    // TODO the second pair of deferred device lists (FUN_00681ba0(1, 0), FUN_00682960(1)).
+    // The second deferred device list, back to front, then drawn.
+    GxuSortDrawList(GxuCat_1, 0, CWorldScene::s_cameraPos);
+    GxuFlushDrawList(GxuCat_1, CWorldScene::s_cameraPos);
 
     // The sun's and the moon's glare over everything (FUN_007f0870, 0x004f9213), inside the push.
     DayNightGlareRender();

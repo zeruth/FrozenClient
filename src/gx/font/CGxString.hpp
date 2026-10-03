@@ -81,6 +81,7 @@ class CGxString : public TSLinkedNode<CGxString> {
         void Recycle();
         void SetColor(const CImVector& color);
         int32_t SetGradient(int32_t startCharacter, int32_t length);
+        void NoteTextureEvicted(uint32_t textureNumber);
         void SetStringPosition(const C3Vector& position);
         void Tick();
         void WriteGeometry(CGxVertexPCT* buffer, int32_t lineIndex, int32_t vertexOffset, int32_t vertexCount);

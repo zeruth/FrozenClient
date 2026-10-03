@@ -39,8 +39,7 @@ const CGxCaps& GxCaps() {
 }
 
 bool GxCapsWindowHasFocus(int32_t a1) {
-    // TODO
-    return true;
+    return g_theGxDevicePtr->CapsWindowHasFocus(a1) != 0;
 }
 
 // ref: FUN_00493bf0

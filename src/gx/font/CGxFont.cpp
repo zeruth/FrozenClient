@@ -160,8 +160,47 @@ CHARCODEDESC* TEXTURECACHEROW::CreateNewDesc(GLYPHBITMAPDATA* data, uint32_t row
     return newCode;
 }
 
+// ref: FUN_006c4f80
+// Make room in this row for a glyph as wide as `desc`'s cell: free `desc` and the glyphs after
+// it until that much is free, counting each glyph's own width and the gap after it, and if the
+// end of the row comes first, free from the start of the row too. Then the widest free run is
+// measured again.
 void TEXTURECACHEROW::EvictGlyph(CHARCODEDESC* desc) {
-    // TODO
+    uint32_t needed = desc->bitmapData.m_glyphCellWidth;
+    uint32_t freed = 0;
+
+    for (auto code = desc; code && freed < needed; ) {
+        auto next = this->glyphList.Link(code)->Next();
+
+        freed += code->GapToNextTexture() + (code->glyphEndPixel - code->glyphStartPixel) + 1;
+
+        code->~CHARCODEDESC();
+        SMemFree(code, __FILE__, __LINE__, 0x0);
+
+        code = next;
+    }
+
+    for (auto code = this->glyphList.Head(); code && freed < needed; ) {
+        auto next = this->glyphList.Link(code)->Next();
+
+        freed += code->GapToPreviousTexture() + (code->glyphEndPixel - code->glyphStartPixel) + 1;
+
+        code->~CHARCODEDESC();
+        SMemFree(code, __FILE__, __LINE__, 0x0);
+
+        code = next;
+    }
+
+    auto head = this->glyphList.Head();
+    this->widestFreeSlot = head ? head->GapToPreviousTexture() : 0;
+
+    for (auto code = head; code; code = this->glyphList.Link(code)->Next()) {
+        uint32_t gap = code->GapToNextTexture();
+
+        if (this->widestFreeSlot < gap) {
+            this->widestFreeSlot = gap;
+        }
+    }
 }
 
 void TEXTURECACHE::TextureCallback(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d, uint32_t mipLevel, void* userArg, uint32_t& texelStrideInBytes, const void*& texels) {
@@ -874,6 +913,7 @@ void CGxFont::ClearGlyphs() {
     this->m_kernInfo.Clear();
 }
 
+// ref: FUN_006c3d40
 float CGxFont::ComputeStep(uint32_t currentCode, uint32_t nextCode) {
     KERNINGHASHKEY kernKey = { nextCode | (currentCode << 16) };
     KERNNODE* kern = this->m_kernInfo.Ptr(currentCode, kernKey);
@@ -917,12 +957,73 @@ float CGxFont::ComputeStep(uint32_t currentCode, uint32_t nextCode) {
     return kern->proporportionalSpacing;
 }
 
+// ref: FUN_006c2a00
+// A glyph's advance, a pixel wider for an outlined font; 0 for a glyph not in the cache.
+float CGxFont::GlyphAdvance(uint32_t code) {
+    HASHKEY_NONE charKey = {};
+    auto activeChar = this->m_activeCharacters.Ptr(code, charKey);
+
+    if (!activeChar) {
+        return 0.0f;
+    }
+
+    float advance = activeChar->bitmapData.m_glyphAdvance;
+
+    if (this->m_flags & 0x08) {
+        advance += 1.0f;
+    }
+
+    return advance;
+}
+
+// ref: FUN_006c3e80
+// Fixed-width text sets each glyph in a square cell the font's height across: a glyph narrower
+// than the cell is centred in it, so the step to the next is the cell less half of this glyph's
+// slack and plus half of the next one's. Only a glyph that is not in the cache is remembered, as
+// a step of nothing.
 float CGxFont::ComputeStepFixedWidth(uint32_t currentCode, uint32_t nextCode) {
-    // Three live call sites, but all three sit behind `flags & 0x10`, which only
-    // ConvertStringFlags sets and only from its own 0x800 -- and nothing passes that today. So
-    // returning 0 collapses no text in practice. It would the moment a caller asks for a
-    // fixed-width string, which is why this is worth porting before that happens.
-    // TODO
+    KERNINGHASHKEY kernKey = { nextCode | (currentCode << 16) };
+    KERNNODE* kern = this->m_kernInfo.Ptr(currentCode, kernKey);
+
+    if (kern && kern->flags & 0x01) {
+        return kern->fixedWidthSpacing;
+    }
+
+    HASHKEY_NONE charKey = {};
+    auto activeChar = this->m_activeCharacters.Ptr(currentCode, charKey);
+
+    if (activeChar) {
+        uint32_t cell = this->m_cellHeight;
+        uint32_t step = cell;
+        auto width = static_cast<uint32_t>(lrintf(this->GlyphAdvance(currentCode)));
+
+        if (width < cell) {
+            uint32_t slack = cell - width;
+
+            if (slack & 1) {
+                slack--;
+            }
+
+            step = cell - (slack >> 1);
+
+            auto nextWidth = static_cast<uint32_t>(lrintf(this->GlyphAdvance(nextCode)));
+
+            if (nextWidth < cell) {
+                uint32_t nextSlack = cell - nextWidth;
+                step += (nextSlack & 1) ? (nextSlack - 1) >> 1 : nextSlack >> 1;
+            }
+        }
+
+        return static_cast<float>(step);
+    }
+
+    if (!kern) {
+        kern = this->m_kernInfo.New(currentCode, kernKey, 0, 0);
+    }
+
+    kern->flags |= 0x01;
+    kern->fixedWidthSpacing = 0.0f;
+
     return 0.0f;
 }
 
@@ -1060,8 +1161,12 @@ const CHARCODEDESC* CGxFont::NewCodeDesc(uint32_t code) {
     return charDesc;
 }
 
-void CGxFont::RegisterEvictNotice(uint32_t a2) {
-    // TODO
+// ref: FUN_006c2600
+// Every string drawn from the evicted texture page has to rebuild its glyphs.
+void CGxFont::RegisterEvictNotice(uint32_t textureNumber) {
+    for (auto string = this->m_strings.Head(); string; string = this->m_strings.Next(string)) {
+        string->NoteTextureEvicted(textureNumber);
+    }
 }
 
 int32_t CGxFont::UpdateDimensions() {

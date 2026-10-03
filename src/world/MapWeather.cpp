@@ -1,4 +1,5 @@
 #include "world/MapWeather.hpp"
+#include "gx/Gx.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
 #include "world/map/CMap.hpp"
@@ -152,19 +153,19 @@ void GxShaderRelease(CGxShader*& shader) {
     g_theGxDevicePtr->ShaderDestroy(&shader);
 }
 
-// CGxCaps +0x104, +0x108 and +0x10c, which frozen's CGxCaps does not carry (see the note there):
-// whether the sand shader may run, the largest point size, and point sprite support. The empty
-// answer turns the point-sprite paths off, and snow and sand draw on the CPU.
+// The three caps the weather passes test, by the reference's offsets: +0x104 gates the sand
+// shader (0x0078d086), +0x108 is the largest point size (0x0078b02b) and +0x10c gates the
+// point-sprite snow (0x0078cef5). CGxDeviceD3d::ISetCaps fills all three from MaxPointSize.
 int32_t CapsSandShader() {
-    return 0;
+    return GxCaps().m_pointSprites;
 }
 
 float CapsMaxPointSize() {
-    return 0.0f;
+    return GxCaps().m_maxPointSize;
 }
 
 int32_t CapsPointSprites() {
-    return 0;
+    return GxCaps().m_pointScale;
 }
 
 // The active player's movement (CMovement_C +0x64 direction, +0x8c speed): CMovementShared does

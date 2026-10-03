@@ -712,6 +712,17 @@ void CGxDevice::ICapture() {
     this->ICaptureRead(rect, this->m_captureBits);
 }
 
+// ref: FUN_00682df0
+int32_t CGxDevice::CapsWindowHasFocus(int32_t focus) {
+    if (focus >= 0) {
+        this->intF64 = focus > 0 ? 1 : 0;
+
+        return this->intF64;
+    }
+
+    return this->intF64;
+}
+
 // ref: FUN_00683ce0
 void CGxDevice::IClipToWindow(CiRect& rect) {
     CiRect window;
