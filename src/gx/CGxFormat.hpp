@@ -56,6 +56,7 @@ class CGxFormat {
         C2iVector pos;
 
         CGxFormat();
+        CGxFormat(bool window, const C2iVector& size, Format colorFormat, Format depthFormat, uint32_t refreshRate, uint32_t vsync, bool hwTnL, int8_t fixLag, int8_t cursor, int8_t aspect, int32_t maximize);
 };
 
 int32_t AdapterFormatSort(const void* a, const void* b);

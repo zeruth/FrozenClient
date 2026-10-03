@@ -163,6 +163,7 @@ class CGxDevice {
         static uint32_t TexFormatStride(EGxTexFormat format, uint32_t width, uint32_t height);
 
         // Static functions
+        static int32_t AdapterDesktopMode(CGxMonitorMode& mode);
         static int32_t AdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats);
         static int32_t AdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes);
 #if defined(WHOA_SYSTEM_WIN)

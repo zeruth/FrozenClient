@@ -40,3 +40,7 @@ float OsGuiGetMouseSpeed() {
 void OsGuiSetMouseSpeed(float speed) {
     s_mouseSpeed = static_cast<int32_t>(speed);
 }
+
+void OsGuiSetWindowTitle(void* window, const char* title) {
+    // TODO
+}

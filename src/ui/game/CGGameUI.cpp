@@ -53,6 +53,8 @@
 #include "util/Filesystem.hpp"
 #include "util/Log.hpp"
 #include <common/MD5.hpp>
+#include "ui/game/PortraitButton.hpp"
+#include "world/CWorld.hpp"
 
 WOWGUID CGGameUI::s_currentObjectTrack;
 CVar* CGGameUI::s_currencyTokensUnused1Cvar;
@@ -448,6 +450,17 @@ int32_t CGGameUI::CanPerformAction(int32_t action) {
     }
 
     return 1;
+}
+
+// ref: FUN_00512900
+// Before the device is replaced: the world's fade-outs hold models on the old device, and every
+// portrait has to be drawn again on the new one.
+void CGGameUI::OnGxRestart() {
+    if (CGWorldFrame::s_currentWorldFrame) {
+        CWorld::ClearFadeouts();
+    }
+
+    PortraitButtonInvalidateAll();
 }
 
 // ref: FUN_00524600

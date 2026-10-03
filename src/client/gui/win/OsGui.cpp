@@ -1,5 +1,6 @@
 #include "client/gui/OsGui.hpp"
 #include <windows.h>
+#include <malloc.h>
 
 static void* s_GxDevWindow;  // ref: DAT_00d41620
 
@@ -27,8 +28,24 @@ int32_t OsGuiProcessMessage(void* message) {
     return 0;
 }
 
+// ref: FUN_0086c6d0
 void OsGuiSetGxWindow(void* window) {
     s_GxDevWindow = window;
+}
+
+// ref: FUN_0086c650
+// The title is UTF-8; the window takes it wide.
+void OsGuiSetWindowTitle(void* window, const char* title) {
+    auto length = MultiByteToWideChar(CP_UTF8, 0, title, -1, nullptr, 0);
+
+    if (length <= 0) {
+        return;
+    }
+
+    auto wide = static_cast<wchar_t*>(_alloca(length * sizeof(wchar_t)));
+    MultiByteToWideChar(CP_UTF8, 0, title, -1, wide, length);
+
+    SetWindowTextW(static_cast<HWND>(window), wide);
 }
 
 static int32_t s_windowResizeLock;

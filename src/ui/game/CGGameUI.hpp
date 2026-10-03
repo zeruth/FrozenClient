@@ -75,6 +75,7 @@ class CGGameUI {
         static int32_t CanPerformAction(int32_t action);
         static void ReportBlockedAction(FrameScript_Object* object, int32_t kind);
         static void SetProtectedFunctionsAllowed(int32_t allowed);
+        static void OnGxRestart();
         static void InitializeGame();
         static bool IsLoggingIn();
         static bool IsInWorld();

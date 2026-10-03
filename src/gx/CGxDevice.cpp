@@ -162,6 +162,38 @@ uint32_t CGxDevice::s_texFormatBytesPerBlock[] = {
     4       // GxTex_D24X8
 };
 
+// ref: FUN_00689f20
+// The mode the primary display is in now.
+int32_t CGxDevice::AdapterDesktopMode(CGxMonitorMode& mode) {
+#if defined(WHOA_SYSTEM_WIN)
+
+    DISPLAY_DEVICE device;
+
+    if (!FindDisplayDevice(&device, DISPLAY_DEVICE_ATTACHED_TO_DESKTOP | DISPLAY_DEVICE_PRIMARY_DEVICE)) {
+        return 0;
+    }
+
+    DEVMODE devMode = {};
+    devMode.dmSize = sizeof(devMode);
+
+    if (!EnumDisplaySettings(device.DeviceName, ENUM_CURRENT_SETTINGS, &devMode)) {
+        return 0;
+    }
+
+    mode.size.x = devMode.dmPelsWidth;
+    mode.size.y = devMode.dmPelsHeight;
+    mode.refreshRate = devMode.dmDisplayFrequency;
+    mode.bpp = devMode.dmBitsPerPel;
+
+    return 1;
+
+#else
+
+    return 0;
+
+#endif
+}
+
 int32_t CGxDevice::AdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats) {
     adapterFormats.SetCount(0);
     adapterFormats.Reserve(256, 1);

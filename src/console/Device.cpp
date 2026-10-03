@@ -13,6 +13,10 @@
 #include "gx/Device.hpp"
 #include <storm/Array.hpp>
 #include <cstring>
+#include "console/Command.hpp"
+#include "gx/CGxDevice.hpp"
+#include "gx/Texture.hpp"
+#include "ui/game/CGGameUI.hpp"
 
 static CGxDevice* s_device;
 static CVar* s_cvGxAspect;
@@ -44,6 +48,16 @@ static TSGrowableArray<CGxMonitorMode> s_gxMonitorModes;
 static bool s_hwDetect;
 static bool s_hwChanged;
 static CGxFormat s_requestedFormat;
+// The last format a device was made with, what gxRestart falls back to first (DAT_00cabe00).
+static CGxFormat s_lastGoodFormat;
+// Then 800x600 in 32 bits, then 640x480 in 16 (DAT_00cabd40, DAT_00cabda8).
+static CGxFormat s_fallbackFormat(false, C2iVector(800, 600), CGxFormat::Fmt_ArgbX888, CGxFormat::Fmt_Ds24X, 60, 1, true, 0, 1, 1, 0);
+static CGxFormat s_defaultFormat(false, C2iVector(640, 480), CGxFormat::Fmt_Rgb565, CGxFormat::Fmt_Ds160, 60, 1, true, 0, 1, 1, 0);
+// The window title ConsoleDeviceInitialize was given (DAT_00cabbb8).
+static char s_windowTitle[256];
+
+void SetGxCVars(const CGxFormat& format);
+void UpdateGxCVars();
 static bool s_requestedStereoEnabled;
 static bool s_gxOverrideSet[9];      // gxOverride: which slots were given (reference DAT_00cabac8)
 static int32_t s_gxOverrideValue[9]; // and their values (DAT_00cabb7c)  // gxStereoEnabled, the reference's DAT_00cabd0c beside the format
@@ -741,6 +755,139 @@ void RegisterGxCVars() {
     );
 }
 
+// ref: FUN_00769e10
+// Fits a format to the monitor. A full-screen size the monitor has no mode for steps down the
+// standard sizes until one it has; a window larger than the desktop does the same. Then the
+// refresh rate: kept when the monitor offers it at this size and depth, otherwise the lowest it
+// does offer, otherwise 60.
+static void ValidateFormatMonitor(CGxFormat& format) {
+    static const C2iVector s_standardSizes[] = {
+        { 1600, 1200 }, { 1280, 1024 }, { 1280, 960 }, { 1152, 864 }, { 1024, 768 }, { 800, 600 }, { 640, 480 }
+    };
+
+    // The monitor depth of each colour format (DAT_00adbe0c).
+    static const uint32_t s_formatToMonitorBits[] = { 16, 32, 32, 32 };
+
+    auto bpp = s_formatToMonitorBits[format.colorFormat];
+    auto width = format.size.x;
+    auto height = format.size.y;
+
+    bool fit = !format.window;
+
+    if (format.window) {
+        CGxMonitorMode desktop;
+        desktop.size.x = 0;
+        desktop.size.y = 0;
+
+        if (!GxAdapterDesktopMode(desktop) || desktop.size.x < format.size.x || desktop.size.y < format.size.y) {
+            fit = true;
+        }
+    }
+
+    if (fit) {
+        uint32_t standard = 0xFFFFFFFF;
+
+        do {
+            bool found = false;
+
+            for (uint32_t i = 0; i < s_gxMonitorModes.Count(); i++) {
+                if (s_gxMonitorModes[i].size.x == width && s_gxMonitorModes[i].size.y == height) {
+                    format.size.x = width;
+                    format.size.y = height;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                break;
+            }
+
+            do {
+                standard++;
+            } while (standard <= 6 && (width <= s_standardSizes[standard].x || height <= s_standardSizes[standard].y));
+
+            if (standard > 6) {
+                break;
+            }
+
+            width = s_standardSizes[standard].x;
+            height = s_standardSizes[standard].y;
+        } while (standard < 7);
+    }
+
+    uint32_t lowest = 9999;
+
+    for (uint32_t i = 0; i < s_gxMonitorModes.Count(); i++) {
+        auto& mode = s_gxMonitorModes[i];
+
+        if (mode.size.x == format.size.x && mode.size.y == format.size.y && mode.bpp == bpp) {
+            if (mode.refreshRate < lowest) {
+                lowest = mode.refreshRate;
+            }
+
+            if (format.refreshRate == mode.refreshRate) {
+                return;
+            }
+        }
+    }
+
+    if (lowest == 9999) {
+        lowest = 60;
+        CGxDevice::Log("ValidateFormatMonitor(): unable to find monitor refresh");
+    }
+
+    CGxDevice::Log("ValidateFormatMonitor(): invalid refresh rate %d, set to %d", format.refreshRate, lowest);
+    format.refreshRate = lowest;
+}
+
+// ref: FUN_00769ff0
+// Remakes the device with the requested format. When the device will not take it, the last
+// format that worked is tried, then 800x600, then 640x480, and the CVars are set to whatever was
+// taken.
+int32_t CCGxRestart(const char* command, const char* arguments) {
+    CGGameUI::OnGxRestart();
+
+    ValidateFormatMonitor(s_requestedFormat);
+
+    if (s_device->DeviceSetFormat(s_requestedFormat)) {
+        s_lastGoodFormat = s_requestedFormat;
+        UpdateGxCVars();
+    } else {
+        ConsoleWrite("unable to set requested display mode", DEFAULT_COLOR);
+        s_requestedFormat = s_lastGoodFormat;
+
+        bool set = true;
+
+        if (!s_device->DeviceSetFormat(s_requestedFormat)) {
+            ConsoleWrite("unable to set last good mode", DEFAULT_COLOR);
+            s_requestedFormat = s_fallbackFormat;
+
+            if (!s_device->DeviceSetFormat(s_requestedFormat)) {
+                ConsoleWrite("unable to set default format", DEFAULT_COLOR);
+                s_requestedFormat = s_defaultFormat;
+
+                set = s_device->DeviceSetFormat(s_requestedFormat) != 0;
+            }
+
+            if (set) {
+                s_lastGoodFormat = s_requestedFormat;
+            }
+        }
+
+        if (set) {
+            SetGxCVars(s_requestedFormat);
+        }
+    }
+
+    OsGuiSetGxWindow(s_device->DeviceWindow());
+    OsGuiSetWindowTitle(s_device->DeviceWindow(), s_windowTitle);
+
+    TextureReloadAtlases();
+
+    return 1;
+}
+
 // ref: FUN_007698b0
 void UpdateGxCVars() {
     s_cvGxColorBits->Update();
@@ -847,9 +994,10 @@ void ConsoleDeviceInitialize(const char* title) {
 
     RegisterGxCVars();
 
-    // TODO ConsoleCommandRegister("gxRestart", &CCGxRestart, 1, nullptr);
+    ConsoleCommandRegister("gxRestart", &CCGxRestart, GRAPHICS, nullptr);
 
     GxAdapterMonitorModes(s_gxMonitorModes);
+    ValidateFormatMonitor(s_defaultFormat);
 
     // TODO
 
@@ -904,10 +1052,19 @@ void ConsoleDeviceInitialize(const char* title) {
 
     s_device = GxDevCreate(api, OsWindowProc, format);
 
+    // The format the device was made with is the first good one (0x0076af46).
+    s_lastGoodFormat = s_requestedFormat;
+
     // TODO
 
     auto gxWindow = GxDevWindow();
     OsGuiSetGxWindow(gxWindow);
+
+    SStrCopy(s_windowTitle, title ? title : "", sizeof(s_windowTitle));
+
+    if (gxWindow) {
+        OsGuiSetWindowTitle(gxWindow, s_windowTitle);
+    }
 
     // TODO
 

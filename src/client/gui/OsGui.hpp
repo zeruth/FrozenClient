@@ -11,6 +11,8 @@ int32_t OsGuiProcessMessage(void* message);
 
 void OsGuiSetGxWindow(void* window);
 
+void OsGuiSetWindowTitle(void* window, const char* title);
+
 // windowResizeLock CVar (reference DAT_00d41580)
 void OsGuiSetWindowResizeLock(int32_t lock);
 

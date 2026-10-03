@@ -62,3 +62,10 @@ if(WHOA_SYSTEM_ANDROID)
     # Catch2 writes through the Android log
     target_link_libraries(FrozenTest PRIVATE log)
 endif()
+
+if(WHOA_SYSTEM_WIN)
+    # The client libraries reach the sound module, so the test needs FMOD beside it to load
+    add_custom_command(TARGET FrozenTest POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:fmod> $<TARGET_FILE_DIR:FrozenTest>
+    )
+endif()

@@ -7,6 +7,8 @@
 #include <storm/Array.hpp>
 #include <cstdint>
 
+int32_t GxAdapterDesktopMode(CGxMonitorMode& mode);
+
 int32_t GxAdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats);
 
 int32_t GxAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes);
