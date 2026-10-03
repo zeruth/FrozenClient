@@ -462,7 +462,7 @@ class CWorldScene {
         static void TraverseRowEntities(Row* row);
 
         // What the frame could not see: still animated, never drawn (DAT_00cdb0a4).
-        static STORM_EXPLICIT_LIST(CMapEntity, m_hiddenLink) s_hiddenEntities;
+        static STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) s_hiddenEntities;
         static int32_t DistanceBand(float distance);
         static uint32_t BoxOccluded(const CAaBox& box, uint32_t flags);
         static uint32_t SphereOccluded(const C3Vector& center, float radius, uint32_t flags);

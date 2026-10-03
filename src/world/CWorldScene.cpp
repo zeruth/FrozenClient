@@ -119,7 +119,7 @@ STORM_EXPLICIT_LIST(CMapObjDefGroup, m_renderLink) CWorldScene::s_visibleMapObjG
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_liquidQueueLink) CWorldScene::s_pendingLiquidGroups;
 CMapObjDef* CWorldScene::s_visibleCallbackDef;
 STORM_EXPLICIT_LIST(CMapObjDefGroup, m_rowLink) CWorldScene::s_mapObjDefGroupCandidates;
-STORM_EXPLICIT_LIST(CMapEntity, m_hiddenLink) CWorldScene::s_hiddenEntities;
+STORM_EXPLICIT_LIST(CMapEntity, m_entityRowLink) CWorldScene::s_hiddenEntities;
 const int32_t CWorldScene::s_quadrantVertex[4] = { 0, 8, 0x88, 0x90 };
 
 // The reference record is 0xfc bytes: 0xf4 of data and an 8-byte link. The link is
@@ -3613,7 +3613,11 @@ void CWorldScene::VisitVisibleGroupContents() {
 
 // ref: FUN_00793450
 void CWorldScene::FinishHiddenEntities() {
-    for (auto entity = CWorldScene::s_hiddenEntities.Head(); entity; entity = CWorldScene::s_hiddenEntities.Next(entity)) {
+    // The list drains as it is walked, so the next entity is read before this one is unlinked,
+    // as the reference does (0x00793488).
+    for (auto entity = CWorldScene::s_hiddenEntities.Head(); entity; ) {
+        auto next = CWorldScene::s_hiddenEntities.Next(entity);
+
         entity->m_entityRowLink.Unlink();
 
         uint32_t close = 0;
@@ -3658,6 +3662,8 @@ void CWorldScene::FinishHiddenEntities() {
             handler(entity->m_handlerParam, static_cast<int32_t>(unreached | close),
                     static_cast<uint32_t>(entity->m_param64), static_cast<uint32_t>(entity->m_param64 >> 32), entity->m_param32);
         }
+
+        entity = next;
     }
 }
 

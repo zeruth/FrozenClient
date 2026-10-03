@@ -44,10 +44,16 @@ class CMapEntity : public CMapStaticEntity {
         uint16_t m_fieldBC = 0;
         // TODO
 
-        // Its place in the distance row the traversal put it in (+0xc8), and in the frame's
-        // hidden list when nothing could see it.
+        // Its place in the distance row the traversal put it in (+0xc8). The SAME link carries it
+        // in the frame's hidden list and the frame entity list: an entity is on exactly one of the
+        // three at a time, which is what lets every walk take it off with one Unlink. The
+        // reference's hidden pass (FUN_00793450) unlinks through +0xc8.
+        //
+        // Frozen had a second link for the hidden list. Every Unlink meant to remove an entity
+        // from it unlinked this one instead, so nothing ever left the hidden list, and the hidden
+        // pass cleared the draw bits of every unit that had once been out of view, each frame,
+        // after the traversal had set them. Look at the sky once and every unit was gone for good.
         TSLink<CMapEntity> m_entityRowLink;
-        TSLink<CMapEntity> m_hiddenLink;
 
         // Member functions
         CMapEntity();
