@@ -710,12 +710,6 @@ uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance) {
             // the reference's 0xffffff at 0x007d3c2b. Frozen used the zeroed cell colour, which
             // the fixed-function path never showed (its material diffuse was white) but the
             // module's shader multiplies by -- every chunk without MCCV drew its grass black.
-            //
-            // TODO the baked-shadow step that follows in the reference (chunk +0x128, MCSH): a
-            // placement whose shadow bit is set keeps alpha 0, which the shader's 0.3a + 0.7
-            // ramp turns into 70% brightness. Indexed by (position + cell origin) * 1.92 at
-            // 0x007d3c5c; the origin comes from locals the triangle loop leaves behind and
-            // has not been pinned, so every placement is unshadowed (alpha 0xff) for now.
             auto entry = s_models[kind];
             bool plain = !chunk->m_vertexColors || (entry && entry->m_rec && (entry->m_rec->m_flags & 0x2));
 
@@ -725,6 +719,19 @@ uint32_t Scatter(CMapChunk* chunk, CDetailDoodadData* instance) {
                     | (static_cast<uint32_t>(c[2] + ROUND_BIAS) << 16)
                     | (static_cast<uint32_t>(c[1] + ROUND_BIAS) << 8)
                     | static_cast<uint32_t>(c[0] + ROUND_BIAS);
+
+            // In the chunk's baked shadow (MCSH, 64x64 bits, a row of eight bytes per 64 cells
+            // of the 33.3-yard chunk: 1.92 per yard) the alpha drops to 0, which the vertex
+            // ramp (0.3a + 0.7) turns into 70% brightness. 0x007d3c68: each axis is the jitter
+            // within the cell plus the cell's own origin, 4.1667 a cell.
+            if (chunk->m_shadow) {
+                int32_t sx = static_cast<int32_t>(lrintf((ox + static_cast<float>(col) * CELL_SIZE_POS) * 1.92f - 0.5f));
+                int32_t sy = static_cast<int32_t>(lrintf((oy + static_cast<float>(row) * CELL_SIZE_POS) * 1.92f - 0.5f));
+
+                if (chunk->m_shadow[(sx >> 3) + sy * 8] & (1 << (sx & 7))) {
+                    color &= 0x00ffffffu;
+                }
+            }
 
             AddPlacement(instance, kind, position, rotation, scale, plane.n,
                          static_cast<uint16_t>(col + row * 8), color);
