@@ -73,7 +73,6 @@ class CGCamera : public CSimpleCamera {
         CGCamera();
 
         // The frozen world frame's wheel hook; it feeds the reference ZoomIn / ZoomOut.
-        void Zoom(float deltaDistance);
 
         const WOWGUID& GetTarget() const;
         void SetTarget(const WOWGUID& target);

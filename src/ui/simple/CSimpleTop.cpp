@@ -77,9 +77,22 @@ int32_t CSimpleTop::OnDisplaySizeChanged(const EVENT_DATA_SIZE* pSizeData, void*
     return 1;
 }
 
+// ref: FUN_00494970
+// The window's focus moved: the game's focus hook hears it as event 0x40040065.
 int32_t CSimpleTop::OnFocusChanged(const void* a1, void* a2) {
-    // TODO
-    return 0;
+    auto top = static_cast<CSimpleTop*>(a2);
+    auto data = static_cast<const EVENT_DATA_FOCUS*>(a1);
+
+    if (top && data && top->m_focusCallback) {
+        CFocusEvent evt;
+        evt.id = 0x40040065;
+        evt.param = nullptr;
+        evt.focus = data->focus;
+
+        top->m_focusCallback(evt);
+    }
+
+    return 1;
 }
 
 int32_t CSimpleTop::OnIme(const void* a1, void* a2) {

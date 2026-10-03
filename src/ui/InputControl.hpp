@@ -59,6 +59,8 @@ class CInputControl {
 
         // Member functions
         CInputControl();
+        void UpdateCursorVisible(int32_t force);
+        void OnFocusChanged(int32_t focus);
         void ClearFlagBits12And16();
         void ClearFlagBits16To19();
         int32_t IsIdle();

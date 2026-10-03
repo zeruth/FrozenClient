@@ -1,6 +1,7 @@
 #ifndef UI_GAME_C_G_GAME_UI_HPP
 #define UI_GAME_C_G_GAME_UI_HPP
 
+#include "event/CEvent.hpp"
 #include <tempest/Vector.hpp>
 #include "util/guid/Types.hpp"
 
@@ -124,6 +125,7 @@ struct WORLDCLICK {
 };
 
 void GameUIClearCursor(int32_t restore, int32_t signal);
+int32_t GameUIWorldRightPress(const CMouseEvent& evt);
 int32_t GameUITargetAndInteract(WOWGUID guid);
 int32_t GameUISelectObject(WOWGUID guid);
 int32_t GameUIClickObject(WOWGUID guid, int32_t button);

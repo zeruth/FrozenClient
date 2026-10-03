@@ -265,12 +265,45 @@ static void GameUILoadProgress(float progress, void* param) {
     LoadingScreenSetProgress(progress);
 }
 
+// ref: FUN_006cefb0
+// Whether the player has an item use waiting for its target (Player_C's DAT_00c9ead0). That use is
+// the item port's; none waits yet.
+bool PlayerHasPendingItemTarget() {
+    return false;
+}
+
+// ref: FUN_0051fb00
+// The world frame's right press, before its binding: a spell waiting for its target is cancelled
+// (the spell cast port's, FUN_007fd7f0 .. FUN_00809a60), a pending item use put down, and the
+// cursor's interact mode (0x11) set back to the pointer.
+int32_t GameUIWorldRightPress(const CMouseEvent& evt) {
+    if (evt.button != 4) {
+        return 0;
+    }
+
+    if (PlayerHasPendingItemTarget()) {
+        GameUIClearCursor(1, 1);
+    }
+
+    if (GetCursorMode() == 0x11) {
+        SetCursorMode(1);
+        CursorSet(1);
+    }
+
+    return 0;
+}
+
 // ref: FUN_0051fa50
-// Mouse buttons nothing has captured. During a mouse look the cursor is gone and no frame is
-// under it, so the world frame takes the buttons. PARTIAL: a right press first cancels a
-// pending spell target, item drag or other cursor action (the DAT_00bd0758 .. 0x00bd07ec cursor
-// states, FUN_006cefb0, FUN_00519280); those are the cursor ports'.
+// Mouse buttons nothing has captured. A right press while the cursor holds something only puts it
+// down. During a mouse look the cursor is gone and no frame is under it, so the world frame takes
+// the buttons.
 int32_t GameUIMouseButtonCallback(CMouseEvent* evt) {
+    if (evt->id == 0x400500C8 && evt->button == 4
+        && (CGGameUI::GetCursorKind() != 0 || CGGameUI::GetCursorHolding() || PlayerHasPendingItemTarget())) {
+        GameUIClearCursor(1, 1);
+        return 1;
+    }
+
     if (evt->mode != MOUSE_MODE_RELATIVE) {
         return 0;
     }
@@ -298,6 +331,15 @@ int32_t GameUIMouseRelativeCallback(CMouseEvent* evt) {
 
     if (auto input = InputControlGetActive()) {
         input->OnMouseLook(*evt);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00512d00
+int32_t GameUIFocusCallback(const CFocusEvent& evt) {
+    if (auto input = InputControlGetActive()) {
+        input->OnFocusChanged(evt.focus);
     }
 
     return 1;
@@ -347,6 +389,7 @@ void CGGameUI::Initialize() {
     CGGameUI::s_simpleTop = STORM_NEW(CSimpleTop);
     CGGameUI::s_simpleTop->m_mouseButtonCallback = &GameUIMouseButtonCallback;
     CGGameUI::s_simpleTop->m_mouseRelativeCallback = &GameUIMouseRelativeCallback;
+    CGGameUI::s_simpleTop->m_focusCallback = &GameUIFocusCallback;
 
     // TODO
 

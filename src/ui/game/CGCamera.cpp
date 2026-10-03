@@ -4557,15 +4557,6 @@ CGCamera::~CGCamera() {
 // The world frame's input hooks
 // ------------------------------------------------------------------------------------------------
 
-// The mouse wheel from frozen's world frame, as CameraZoomIn / CameraZoomOut.
-void CGCamera::Zoom(float deltaDistance) {
-    if (deltaDistance < 0.0f) {
-        this->ZoomIn(-deltaDistance, EventTime(), 0.0f);
-    } else {
-        this->ZoomOut(deltaDistance, EventTime(), 0.0f);
-    }
-}
-
 const WOWGUID& CGCamera::GetTarget() const {
     return this->m_target;
 }

@@ -539,12 +539,13 @@ int32_t CGWorldFrame::OnLayerKeyUp(const CKeyEvent& evt) {
 // ref: FUN_004f6c10
 // A mouse button over the world runs its binding (BUTTON1 CAMERAORSELECTORMOVE, BUTTON2
 // TURNORACTION by default), as a key does; the binding string is kept per button so the release
-// runs the same one. PARTIAL: the cursor-mode work the reference does first for a right press
-// (FUN_0051fb00) is the cursor port's.
+// runs the same one. A right press first settles the cursor (FUN_0051fb00).
 int32_t CGWorldFrame::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) {
     if (this->CSimpleFrame::OnLayerMouseDown(evt, btn)) {
         return 1;
     }
+
+    GameUIWorldRightPress(evt);
 
     auto& binding = this->m_mouseBindings[WorldFrameMouseButtonIndex(evt.button)];
 
@@ -582,14 +583,21 @@ int32_t CGWorldFrame::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
     return result;
 }
 
+// ref: FUN_004f5c80
+// The wheel over the world is a binding (MOUSEWHEELUP / MOUSEWHEELDOWN, CAMERAZOOMIN / OUT by
+// default), pressed and released at once.
 int32_t CGWorldFrame::OnLayerMouseWheel(const CMouseEvent& evt) {
-
-    if (this->m_camera) {
-        // One wheel notch is a couple of yards
-        this->m_camera->Zoom(evt.wheelDistance * -2.0f);
+    if (this->CSimpleFrame::OnLayerMouseWheel(evt) || evt.wheelDistance == 0) {
+        return 1;
     }
 
-    return 1;
+    char binding[32];
+
+    if (!WorldFrameMouseBindingString(evt, binding, sizeof(binding))) {
+        return 0;
+    }
+
+    return UIBindingsDispatchKey(binding, 1) + UIBindingsDispatchKey(binding, 0);
 }
 
 CGWorldFrame* CGWorldFrame::s_currentWorldFrame = nullptr;

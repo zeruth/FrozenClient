@@ -64,6 +64,8 @@ class CSimpleTop : public CLayoutFrame {
         // +0x123c: a relative move (mouse look) goes here first, before any frame.
         int32_t (*m_mouseRelativeCallback)(CMouseEvent*) = nullptr;
         int32_t (*m_displaySizeCallback)(const CSizeEvent&) = nullptr;
+        // +0x1244: told when the window gains or loses the focus.
+        int32_t (*m_focusCallback)(const CFocusEvent&) = nullptr;
 
         // Virtual member functions
         virtual ~CSimpleTop();
