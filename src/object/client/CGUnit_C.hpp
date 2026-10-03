@@ -754,6 +754,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // IsAttacking, or the unit's pet is in combat (UNIT_FIELD_FLAGS 0x800).
         bool IsAttackingOrPetInCombat() const;
         void PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t animID);
+        void UpdateSmoothFacing(const float* seatOffset);
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
         int32_t GetCastVisualAnimation() const;
 
@@ -1034,6 +1035,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         CVehiclePassenger_C* m_vehiclePassenger = nullptr;
         // TODO
         float m_smoothFacing;
+        // +0xaa4: the smoothing step the turn is taking (0 when it is not smoothing).
+        float m_smoothFacingStep = 0.0f;
+        // +0xabc: when the active player last stood still with nothing steering it.
+        uint32_t m_turnStillTime = 0;
         // TODO
 };
 

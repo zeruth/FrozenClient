@@ -69,8 +69,9 @@ int32_t UnitConvertFacingToRaw(CGUnit_C* unit, float* facing) {
 }
 
 void UnitUpdateSmoothFacing(CGUnit_C* unit, int32_t immediate) {
-    // TODO port FUN_00735f60 (CGUnit_C's smoothed facing step); frozen keeps the smooth facing
-    // equal to the raw one.
+    (void)immediate;
+
+    unit->UpdateSmoothFacing(nullptr);
 }
 
 float PlayerGetSwimDepth(CGPlayer_C* player) {

@@ -4361,6 +4361,45 @@ void CGUnit_C::PlayFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t a
     this->UpdateAnimation(0x10, 0xffffffff);
 }
 
+// ref: FUN_00735f60
+// The facing the camera and the model follow. The active player's is its movement facing as it
+// stands, with two bits on the animation flags saying whether it is turning or being steered by
+// the mouse (0x1) and turning or being dragged (0x2), and the time it last stood still.
+//
+// PARTIAL: every other unit's is smoothed toward where it is going in the reference -- facing its
+// target or its charmer when standing, a four-sample average of the turn otherwise, a stand
+// state's own turn rate -- and none of that is ported yet, so theirs is set to the raw facing as
+// it stands. A vehicle seat's facing (FUN_00735ef0) is the vehicle port's.
+void CGUnit_C::UpdateSmoothFacing(const float* seatOffset) {
+    (void)seatOffset;
+
+    float facing = this->m_localMove.m_facing;
+
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        this->m_smoothFacing = CMath::normalizeangle0to2pi(facing);
+        return;
+    }
+
+    this->m_smoothFacing = facing;
+    this->m_smoothFacingStep = 0.0f;
+
+    auto input = InputControlGetActive();
+    bool turning = (this->m_localMove.m_moveFlags & 0x30) != 0;
+
+    if (turning || (input && input->CanSetFacing())) {
+        this->m_animFlags |= 0x1;
+    } else {
+        this->m_animFlags &= 0xfffffffe;
+        this->m_turnStillTime = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    }
+
+    if (turning || (input && input->IsDrag(static_cast<uint32_t>(OsGetAsyncTimeMs())))) {
+        this->m_animFlags |= 0x2;
+    } else {
+        this->m_animFlags &= 0xfffffffd;
+    }
+}
+
 // ref: FUN_0073c090
 // The unit's own model reports a sequence done. A unit gone from the object manager still has its
 // non-root bones let go of a sequence that ran out.

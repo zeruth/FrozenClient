@@ -144,8 +144,26 @@ void PostMouseDown(EvtContext* context, MOUSEBUTTON button, int32_t x, int32_t y
     IEvtQueueDispatch(context, EVENT_ID_MOUSEDOWN, &data);
 }
 
+// ref: FUN_0047fac0
+// The mode is recorded here and nowhere else. It never was, so leaving relative mode compared
+// NORMAL against NORMAL, did nothing, and the cursor stayed held at the window's middle; and the
+// button events never carried the relative mode the game UI routes them by.
 void PostMouseModeChanged(EvtContext* context, MOUSEMODE mode) {
-    // TODO
+    EVENT_DATA_MOUSE data;
+
+    Input::s_mouseMode = mode;
+
+    data.mode = mode;
+    data.button = MOUSE_BUTTON_NONE;
+    data.buttonState = Input::s_buttonState;
+    data.metaKeyState = Input::s_metaKeyState;
+    data.flags = mode == MOUSE_MODE_RELATIVE ? 0x2 : 0x0;
+    data.x = 0.0f;
+    data.y = 0.0f;
+    data.wheelDistance = 0;
+    data.time = 0;
+
+    IEvtQueueDispatch(context, EVENT_ID_MOUSEMODE_CHANGED, &data);
 }
 
 void PostMouseMove(EvtContext* context, int32_t x, int32_t y, int32_t time) {
