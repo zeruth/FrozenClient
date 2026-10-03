@@ -257,6 +257,55 @@ static int sort (lua_State *L) {
 /* }====================================================== */
 
 
+/*
+** removemulti(t [, pos [, count]]): removes `count' elements starting at `pos' (default: the
+** last one), returning them, and closes the gap. A client addition.
+*/
+/* ref: FUN_00851b20 */
+static int tremovemulti (lua_State *L) {
+  int e, pos, count, i;
+  luaL_checktype(L, 1, LUA_TTABLE);
+  e = (int)lua_objlen(L, 1);
+  pos = luaL_optint(L, 2, e);
+  count = luaL_optint(L, 3, 1);
+  if (e == 0) return 0;  /* table is `empty' */
+  if (pos < 1 || count < 0 || pos > e || pos + count - 1 > e) {
+    luaL_error(L, "parameters out of bounds");
+    return 0;
+  }
+  lua_checkstack(L, count);
+  for (i = pos; i < pos + count; i++)
+    lua_rawgeti(L, 1, i);  /* results */
+  for (i = pos; i < e; i++) {
+    lua_rawgeti(L, 1, i + count);
+    lua_rawseti(L, 1, i);  /* t[i] = t[i+count] */
+  }
+  for (; i < e + count; i++) {
+    lua_pushnil(L);
+    lua_rawseti(L, 1, i);
+  }
+  return count;
+}
+
+
+/*
+** wipe(t): removes every key from `t' and returns it. A client addition.
+*/
+/* ref: FUN_00852180 */
+static int twipe (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  luaL_checkstack(L, 3, "");
+  lua_pushnil(L);
+  while (lua_next(L, -2)) {
+    lua_settop(L, -2);  /* drop the value, keep the key */
+    lua_pushvalue(L, -1);
+    lua_pushnil(L);
+    lua_rawset(L, 1);
+  }
+  return 1;
+}
+
+
 static const luaL_Reg tab_funcs[] = {
   {"concat", tconcat},
   {"foreach", foreach},
@@ -265,8 +314,10 @@ static const luaL_Reg tab_funcs[] = {
   {"maxn", maxn},
   {"insert", tinsert},
   {"remove", tremove},
+  {"removemulti", tremovemulti},
   {"setn", setn},
   {"sort", sort},
+  {"wipe", twipe},
   {NULL, NULL}
 };
 

@@ -610,9 +610,16 @@ static const char *getS (lua_State *L, void *ud, size_t *size) {
 }
 
 
+/* ref: FUN_0084f860 */
 LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,
                                 const char *name) {
   LoadS ls;
+  /* skip a UTF-8 byte order mark */
+  if (size > 2 && (unsigned char)buff[0] == 0xEF && (unsigned char)buff[1] == 0xBB &&
+      (unsigned char)buff[2] == 0xBF) {
+    buff += 3;
+    size -= 3;
+  }
   ls.s = buff;
   ls.size = size;
   return lua_load(L, getS, &ls, name);

@@ -104,8 +104,48 @@ TEST_CASE("Lua VM basics", "[lua]") {
     }
 
     SECTION("the bit library the client adds") {
-        CHECK(lua.Run("band = bit.band(12, 10); bor = bit.bor(12, 10)") == "");
+        CHECK(lua.Run(R"(
+            band = bit.band(12, 10, 8); bor = bit.bor(12, 10); bxor = bit.bxor(12, 10)
+            bnot = bit.bnot(0); lshift = bit.lshift(1, 31); rshift = bit.rshift(-1, 28)
+            arshift = bit.arshift(-16, 2); mod = bit.mod(-7, 3); modzero = bit.mod(7, 0.5)
+            trunc = bit.band(2.9, 7)
+        )") == "");
         CHECK(lua.Number("band") == 8);
         CHECK(lua.Number("bor") == 14);
+        CHECK(lua.Number("bxor") == 6);
+        CHECK(lua.Number("bnot") == 4294967295.0);  // unsigned
+        CHECK(lua.Number("lshift") == 2147483648.0);  // unsigned
+        CHECK(lua.Number("rshift") == 15);  // logical
+        CHECK(lua.Number("arshift") == -4);  // signed
+        CHECK(lua.Number("mod") == -1);  // C's truncating %
+        CHECK(lua.Number("modzero") == 2);  // 1 / 0.5: the divisor truncated to zero
+        CHECK(lua.Number("trunc") == 2);
+    }
+
+    SECTION("the table additions: wipe and removemulti") {
+        CHECK(lua.Run(R"(
+            local t = { a = 1, b = 2, 1, 2, 3 }
+            assert(table.wipe(t) == t and next(t) == nil)
+            local r = { 10, 20, 30, 40, 50 }
+            local x, y = table.removemulti(r, 2, 2)
+            removed = x + y
+            remaining = table.concat(r, ",")
+        )") == "");
+        CHECK(lua.String("remaining") == "10,40,50");
+        CHECK(lua.Number("removed") == 50);
+    }
+
+    SECTION("only the libraries the client has") {
+        CHECK(lua.Run("assert(io == nil and os == nil and package == nil and debug == nil)") == "");
+        CHECK(lua.Run("assert(print == nil and dofile == nil and loadfile == nil and load == nil)") == "");
+        CHECK(lua.Run("assert(math.mod == nil and math.randomseed == nil and math.fmod ~= nil)") == "");
+        CHECK(lua.Run("string.gfind('a', 'a')") != "");
+        CHECK(lua.Run("local function f(...) return arg end assert(f(1) == nil)") == "");
+    }
+
+    SECTION("source details: a UTF-8 BOM is skipped, strings stop at 16 MB") {
+        CHECK(lua.Run("\xEF\xBB\xBF" "bom = 1") == "");
+        CHECK(lua.Number("bom") == 1);
+        CHECK(lua.Run("local s = string.rep('x', 0x800000) local t = s .. s") != "");
     }
 }

@@ -178,10 +178,13 @@ static int math_max (lua_State *L) {
 }
 
 
+/* ref: FUN_00851640 */
 static int math_random (lua_State *L) {
   /* the `%' avoids the (rare) case of r==1, and is needed also because on
      some systems (SunOS!) `rand()' may return a value larger than RAND_MAX */
-  lua_Number r = (lua_Number)(rand()%RAND_MAX) / (lua_Number)RAND_MAX;
+  /* the client's CRT has RAND_MAX 0x7fff; the range is fixed to it here so every platform
+     draws from the same interval (the generator itself is still the platform's rand) */
+  lua_Number r = (lua_Number)(rand()%0x7fff) * (1.0/0x7fff);
   switch (lua_gettop(L)) {  /* check number of arguments */
     case 0: {  /* no arguments */
       lua_pushnumber(L, r);  /* Number between 0 and 1 */
@@ -203,12 +206,6 @@ static int math_random (lua_State *L) {
     default: return luaL_error(L, "wrong number of arguments");
   }
   return 1;
-}
-
-
-static int math_randomseed (lua_State *L) {
-  srand(luaL_checkint(L, 1));
-  return 0;
 }
 
 
@@ -235,7 +232,6 @@ static const luaL_Reg mathlib[] = {
   {"pow",   math_pow},
   {"rad",   math_rad},
   {"random",     math_random},
-  {"randomseed", math_randomseed},
   {"sinh",   math_sinh},
   {"sin",   math_sin},
   {"sqrt",  math_sqrt},

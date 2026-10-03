@@ -1,152 +1,133 @@
 /*
-** Lua BitOp -- a bit operations library for Lua 5.1.
-** http://bitop.luajit.org/
+** The client's bit library (`bit'), ported from the reference (FUN_00850cc0..FUN_00851010).
 **
-** Copyright (C) 2008 Mike Pall. All rights reserved.
-**
-** Permission is hereby granted, free of charge, to any person obtaining
-** a copy of this software and associated documentation files (the
-** "Software"), to deal in the Software without restriction, including
-** without limitation the rights to use, copy, modify, merge, publish,
-** distribute, sublicense, and/or sell copies of the Software, and to
-** permit persons to whom the Software is furnished to do so, subject to
-** the following conditions:
-**
-** The above copyright notice and this permission notice shall be
-** included in all copies or substantial portions of the Software.
-**
-** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-** IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-** CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-** SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-**
-** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
+** Operands are numbers truncated toward zero to 64 bits and cut to their low 32 (the
+** reference's _ftol2); results come back as unsigned 32-bit values, except `arshift' and `mod',
+** which are signed.
 */
 
-#define LUA_BITOP_VERSION	"1.0.0"
+#define bit_c
+#define LUA_LIB
 
 #include "lua.h"
+
 #include "lauxlib.h"
+#include "lualib.h"
 
-#ifdef _MSC_VER
-/* MSVC is stuck in the last century and doesn't have C99's stdint.h. */
-typedef __int32 int32_t;
-typedef unsigned __int32 uint32_t;
-typedef unsigned __int64 uint64_t;
-#else
-#include <stdint.h>
-#endif
 
-typedef int32_t SBits;
-typedef uint32_t UBits;
+typedef unsigned int UBits;
+typedef int SBits;
 
-typedef union {
-  lua_Number n;
-#ifdef LUA_NUMBER_DOUBLE
-  uint64_t b;
-#else
-  UBits b;
-#endif
-} BitNum;
 
-/* Convert argument to bit type. */
-static UBits barg(lua_State *L, int idx)
-{
-  BitNum bn;
-  UBits b;
-  bn.n = lua_tonumber(L, idx);
-#if defined(LUA_NUMBER_DOUBLE)
-  bn.n += 6755399441055744.0;  /* 2^52+2^51 */
-#ifdef SWAPPED_DOUBLE
-  b = (UBits)(bn.b >> 32);
-#else
-  b = (UBits)bn.b;
-#endif
-#elif defined(LUA_NUMBER_INT) || defined(LUA_NUMBER_LONG) || \
-      defined(LUA_NUMBER_LONGLONG) || defined(LUA_NUMBER_LONG_LONG) || \
-      defined(LUA_NUMBER_LLONG)
-  if (sizeof(UBits) == sizeof(lua_Number))
-    b = bn.b;
-  else
-    b = (UBits)(SBits)bn.n;
-#elif defined(LUA_NUMBER_FLOAT)
-#error "A 'float' lua_Number type is incompatible with this library"
-#else
-#error "Unknown number type, check LUA_NUMBER_* in luaconf.h"
-#endif
-  if (b == 0 && !lua_isnumber(L, idx))
-    luaL_typerror(L, idx, "number");
-  return b;
+static UBits checkbits (lua_State *L, int narg) {
+  return (UBits)(long long)luaL_checknumber(L, narg);
 }
 
-/* Return bit type. */
-#define BRET(b)  lua_pushnumber(L, (lua_Number)(SBits)(b)); return 1;
 
-static int bit_tobit(lua_State *L) { BRET(barg(L, 1)) }
-static int bit_bnot(lua_State *L) { BRET(~barg(L, 1)) }
-
-#define BIT_OP(func, opr) \
-  static int func(lua_State *L) { int i; UBits b = barg(L, 1); \
-    for (i = lua_gettop(L); i > 1; i--) b opr barg(L, i); BRET(b) }
-BIT_OP(bit_band, &=)
-BIT_OP(bit_bor, |=)
-BIT_OP(bit_bxor, ^=)
-
-#define bshl(b, n)  (b << n)
-#define bshr(b, n)  (b >> n)
-#define bsar(b, n)  ((SBits)b >> n)
-#define brol(b, n)  ((b << n) | (b >> (32-n)))
-#define bror(b, n)  ((b << (32-n)) | (b >> n))
-#define BIT_SH(func, fn) \
-  static int func(lua_State *L) { \
-    UBits b = barg(L, 1); UBits n = barg(L, 2) & 31; BRET(fn(b, n)) }
-BIT_SH(bit_lshift, bshl)
-BIT_SH(bit_rshift, bshr)
-BIT_SH(bit_arshift, bsar)
-BIT_SH(bit_rol, brol)
-BIT_SH(bit_ror, bror)
-
-static int bit_bswap(lua_State *L)
-{
-  UBits b = barg(L, 1);
-  b = (b >> 24) | ((b >> 8) & 0xff00) | ((b & 0xff00) << 8) | (b << 24);
-  BRET(b)
+static void pushunsigned (lua_State *L, UBits b) {
+  lua_pushnumber(L, (lua_Number)b);
 }
 
-static const struct luaL_Reg bit_funcs[] = {
-  { "tobit",	bit_tobit },
-  { "bnot",	bit_bnot },
-  { "band",	bit_band },
-  { "bor",	bit_bor },
-  { "bxor",	bit_bxor },
-  { "lshift",	bit_lshift },
-  { "rshift",	bit_rshift },
-  { "arshift",	bit_arshift },
-  { "rol",	bit_rol },
-  { "ror",	bit_ror },
-  { "bswap",	bit_bswap },
-  { NULL, NULL }
-};
 
-LUALIB_API int luaopen_bit(lua_State *L)
-{
-  UBits b;
-  lua_pushnumber(L, (lua_Number)1437217655L);
-  b = barg(L, -1);
-  if (b != (UBits)1437217655L) {  /* Perform a simple self-test. */
-    const char *msg = "compiled with incompatible luaconf.h";
-#ifdef LUA_NUMBER_DOUBLE
-    if (b == (UBits)1610612736L)
-      msg = "use D3DCREATE_FPU_PRESERVE with DirectX";
-    if (b == (UBits)1127743488L)
-      msg = "not compiled with SWAPPED_DOUBLE";
-#endif
-    luaL_error(L, "bit library self-test failed (%s)", msg);
-  }
-  luaL_register(L, "bit", bit_funcs);
+/* ref: FUN_00850cc0 */
+static int bit_bnot (lua_State *L) {
+  pushunsigned(L, ~checkbits(L, 1));
   return 1;
 }
 
+
+/* ref: FUN_00850d00 */
+static int bit_band (lua_State *L) {
+  int n = lua_gettop(L);
+  UBits b = checkbits(L, 1);
+  int i;
+  for (i = 2; i <= n; i++)
+    b &= checkbits(L, i);
+  pushunsigned(L, b);
+  return 1;
+}
+
+
+/* ref: FUN_00850d80 */
+static int bit_bor (lua_State *L) {
+  int n = lua_gettop(L);
+  UBits b = checkbits(L, 1);
+  int i;
+  for (i = 2; i <= n; i++)
+    b |= checkbits(L, i);
+  pushunsigned(L, b);
+  return 1;
+}
+
+
+/* ref: FUN_00850e00 */
+static int bit_bxor (lua_State *L) {
+  int n = lua_gettop(L);
+  UBits b = checkbits(L, 1);
+  int i;
+  for (i = 2; i <= n; i++)
+    b ^= checkbits(L, i);
+  pushunsigned(L, b);
+  return 1;
+}
+
+
+/* ref: FUN_00850e80 */
+static int bit_lshift (lua_State *L) {
+  UBits n = checkbits(L, 2);
+  UBits b = checkbits(L, 1);
+  pushunsigned(L, b << (n & 31));
+  return 1;
+}
+
+
+/* ref: FUN_00850ee0 */
+static int bit_rshift (lua_State *L) {
+  UBits n = checkbits(L, 2);
+  UBits b = checkbits(L, 1);
+  pushunsigned(L, b >> (n & 31));
+  return 1;
+}
+
+
+/* ref: FUN_00850f40 */
+static int bit_arshift (lua_State *L) {
+  UBits n = checkbits(L, 2);
+  SBits b = (SBits)checkbits(L, 1);
+  lua_pushnumber(L, (lua_Number)(b >> (n & 31)));
+  return 1;
+}
+
+
+/* ref: FUN_00850f90 */
+static int bit_mod (lua_State *L) {
+  SBits d = (SBits)checkbits(L, 2);
+  if (d == 0) {
+    /* a divisor that truncates to zero divides as a number instead */
+    lua_pushnumber(L, 1 / lua_tonumber(L, 2));
+    return 1;
+  }
+  d = (SBits)checkbits(L, 2);
+  lua_pushnumber(L, (lua_Number)((SBits)checkbits(L, 1) % d));
+  return 1;
+}
+
+
+static const struct luaL_Reg bitlib[] = {
+  {"bnot", bit_bnot},
+  {"band", bit_band},
+  {"bor", bit_bor},
+  {"bxor", bit_bxor},
+  {"lshift", bit_lshift},
+  {"rshift", bit_rshift},
+  {"arshift", bit_arshift},
+  {"mod", bit_mod},
+  {NULL, NULL}
+};
+
+
+/* ref: FUN_00851010 */
+LUALIB_API int luaopen_bit (lua_State *L) {
+  luaL_openlib(L, LUA_BITLIBNAME, bitlib, 0);
+  return 1;
+}
