@@ -1,4 +1,8 @@
 #include "ui/game/Cursor.hpp"
+#include "object/client/CGItem_C.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "ui/game/ContainerFrameScript.hpp"
+#include "ui/game/GameScript.hpp"
 #include "gx/Device.hpp"
 #include "gx/Texture.hpp"
 #include "ui/FrameScript.hpp"
@@ -267,6 +271,80 @@ void CursorSetItemTexture(const char* path) {
     }
 
     s_itemCursorType = 3;
+    CursorApplyItemImage();
+}
+
+// The icon directory, which the reference reads from row 3 of a table through FUN_00634910; the
+// same recorded divergence GameScript.cpp and ContainerFrameScript.cpp carry.
+static const char* const CURSOR_ICON_DIRECTORY = "Interface\\Icons";
+
+static void FreeItemImage() {
+    if (s_itemImage) {
+        TextureFreeMem(s_itemImage);
+        s_itemImage = nullptr;
+        s_itemImageWidth = 0;
+        s_itemImageHeight = 0;
+    }
+}
+
+static void LoadItemImage(const char* path) {
+    PIXEL_FORMAT format = PIXEL_ARGB8888;
+    s_itemImage = TextureLoadImage(path, &s_itemImageWidth, &s_itemImageHeight, &format, nullptr, nullptr, nullptr, 0);
+}
+
+// ref: FUN_00616510
+// Money in hand: the coin icon its amount calls for.
+void CursorSetMoney(int32_t amount) {
+    FreeItemImage();
+
+    char path[260];
+    CoinIconFormat(amount, path, sizeof(path));
+    LoadItemImage(path);
+
+    s_itemCursorType = 2;
+    CursorApplyItemImage();
+}
+
+// ref: FUN_00616630
+// An item in hand: its inventory icon, if the object is there to ask.
+void CursorSetItem(WOWGUID guid) {
+    FreeItemImage();
+
+    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
+
+    if (item) {
+        const char* directory = CURSOR_ICON_DIRECTORY;
+        const char* icon = ItemDisplayIcon(item);
+        const char* separator = directory && *directory && icon && *icon ? "\\" : "";
+
+        char path[260];
+        SStrPrintf(path, sizeof(path), "%s%s%s", directory, separator, icon);
+        LoadItemImage(path);
+    }
+
+    s_itemCursorType = 1;
+    CursorApplyItemImage();
+}
+
+// ref: FUN_00616720
+// Anything else in hand that names an icon -- a spell, a macro.
+//
+// DIVERGENCE: the reference passes the name through FUN_0070a910, its cache of which icon files
+// exist; frozen has no such cache and uses the name as given, which is the same path whenever the
+// file is present under it (GameScript.cpp's Script_GetItemIcon carries the same note).
+void CursorSetIcon(const char* icon) {
+    FreeItemImage();
+
+    if (icon) {
+        const char* directory = CURSOR_ICON_DIRECTORY;
+        const char* separator = *directory ? "\\" : "";
+
+        char path[260];
+        SStrPrintf(path, sizeof(path), "%s%s%s", directory, separator, icon);
+        LoadItemImage(path);
+    }
+
+    s_itemCursorType = 1;
     CursorApplyItemImage();
 }
 

@@ -40,12 +40,16 @@ static const char* ICON_DIRECTORY = "Interface\\Icons";
 // such pointer, so it goes entry -> item cache -> ItemDisplayInfo and lands on the same row. The
 // visible difference is timing: before the item cache answers for an entry, frozen returns empty
 // where the reference would already have the icon.
-static const char* ItemDisplayIcon(CGItem_C* item) {
+} // namespace
+
+const char* ItemDisplayIcon(CGItem_C* item) {
     auto info = item ? ItemCacheGet(item->GetEntryID()) : nullptr;
     auto rec = info ? g_itemDisplayInfoDB.GetRecord(info->displayInfoID) : nullptr;
 
     return (rec && rec->m_inventoryIcon[0]) ? rec->m_inventoryIcon[0] : "";
 }
+
+namespace {
 
 // The backpack is not a container object -- it lives in the player's own inventory, straight after
 // the equipped slots and the four bag slots. The reference stores all three runs in one array and

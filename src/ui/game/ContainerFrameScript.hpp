@@ -20,4 +20,9 @@ void ContainerSignalBagUpdateCooldown();
 // A bag's guid by 0-based index: 0-3 the worn bags, 4-10 the bank bags. 0 out of range.
 WOWGUID ContainerGetBagGuid(uint32_t index);
 
+class CGItem_C;
+
+// An item's inventory icon name, without directory or extension. ref: FUN_0070aa00
+const char* ItemDisplayIcon(CGItem_C* item);
+
 #endif

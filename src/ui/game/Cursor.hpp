@@ -1,6 +1,7 @@
 #ifndef UI_GAME_CURSOR_HPP
 #define UI_GAME_CURSOR_HPP
 
+#include "util/guid/Types.hpp"
 #include <cstdint>
 
 // The game cursor (the reference's Cursor.cpp): which cursor is showing, and the 32x32 image it
@@ -32,6 +33,12 @@ bool CursorSetCustom(const char* path);
 
 // Show an item's icon under the Item cursor, from a texture path.
 void CursorSetItemTexture(const char* path);
+
+// What the item cursor shows while something is picked up. ref: FUN_00616510, FUN_00616630,
+// FUN_00616720
+void CursorSetMoney(int32_t amount);
+void CursorSetItem(WOWGUID guid);
+void CursorSetIcon(const char* icon);
 
 void CursorClearItem();
 

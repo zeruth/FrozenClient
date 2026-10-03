@@ -57,4 +57,7 @@ void SetBoundTradeableItem(WOWGUID item);
 
 void SetBoundTradeableValue(uint32_t value);
 
+// The coin icon for an amount of copper, with its directory. ref: FUN_007e7cc0
+void CoinIconFormat(int32_t amount, char* icon, size_t iconSize);
+
 #endif
