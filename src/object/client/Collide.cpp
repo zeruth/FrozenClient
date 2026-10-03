@@ -34,6 +34,10 @@ CFacetList s_waterFacets;
 // The box s_facets was gathered for; a sweep inside it reuses the list.
 CAaBox s_facetBox;
 
+// The hull planes one sweep can touch at once: the pyramid's four faces, two column sides and
+// the top (the reference's contact buffers are 0x70 bytes).
+const uint32_t COLLIDE_MAX_CONTACTS = 7;
+
 const float COLLIDE_EPSILON = 0.0013888889225199819f;      // 0x00a37f14, 1/720
 const float COLLIDE_NEG_EPSILON = -0.0013888889225199819f; // 0x00a37f18
 const float COLLIDE_FACING = -9.999999747378752e-06f;       // 0x00a34eec
@@ -1457,7 +1461,7 @@ static int32_t CollideFallSweep(CMovementData_C* move, float elapsed, C3Vector* 
     C3Vector dir = { delta->x * inv, delta->y * inv, inv * delta->z };
 
     uint32_t hit;
-    C4Plane contact[4];
+    C4Plane contact[COLLIDE_MAX_CONTACTS];
     uint32_t contactCount;
 
     if (!CollideSweep(move, s_facets, dir, length, &hit, contact, &contactCount, dist, nullptr)) {
@@ -2006,7 +2010,7 @@ int32_t CMovementData_C::QueryHoverHeight(float* height, int32_t* noFloor, WOWGU
     }
 
     uint32_t hit = s_facets.facets.Count();
-    C4Plane contact[4];
+    C4Plane contact[COLLIDE_MAX_CONTACTS];
     uint32_t contactCount = 0;
 
     CollideSweepPyramid(s_facets, down, probe, swept, hull, points, &hit, contact, &contactCount, height);
@@ -2087,7 +2091,7 @@ static int32_t CollideStepUp(CMovementData_C* move, C2Vector* dir, const C3Vecto
     }
 
     uint32_t hit;
-    C4Plane contact[4];
+    C4Plane contact[COLLIDE_MAX_CONTACTS];
     uint32_t contactCount;
     float moved;
 
@@ -2216,7 +2220,7 @@ static uint32_t CollideWalk(CMovementData_C* move, int32_t time, uint32_t ms, fl
         return move->StartFall(0.0f) ? 0 : ms;
     }
 
-    C4Plane contact[4];
+    C4Plane contact[COLLIDE_MAX_CONTACTS];
     uint32_t contactCount;
     float total = static_cast<float>(ms);
     float msLeft = total;
@@ -2501,7 +2505,7 @@ static uint32_t CollideHover(CMovementData_C* move, int32_t time, uint32_t ms, f
         return ms;
     }
 
-    C4Plane contact[7];
+    C4Plane contact[COLLIDE_MAX_CONTACTS];
     uint32_t contactCount;
     uint32_t stalls = 0;
     float used = 0.0f;
@@ -2608,7 +2612,7 @@ static uint32_t CollideSwim(CMovementData_C* move, int32_t time, uint32_t ms, fl
         return ms;
     }
 
-    C4Plane contact[4];
+    C4Plane contact[COLLIDE_MAX_CONTACTS];
     uint32_t contactCount;
     float msTotal = static_cast<float>(ms);
     float used = 0.0f;
