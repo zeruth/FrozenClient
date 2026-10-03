@@ -4557,18 +4557,6 @@ CGCamera::~CGCamera() {
 // The world frame's input hooks
 // ------------------------------------------------------------------------------------------------
 
-// Mouse-drag look from frozen's world frame: the reference reaches MouseLook through its own input
-// handler with the cursor motion in device units.
-// The angles are turned back into the device-unit motion MouseLook expects, so its NDC conversion
-// and speed scaling land on the same angles the world frame asked for.
-void CGCamera::Rotate(float deltaYaw, float deltaPitch) {
-    float x = -deltaYaw / (0.0012499999720603228f * Float(s_yawMoveSpeed) * CMath::DEG2RAD);
-    float y = deltaPitch / (0.0016666667070239782f * CMath::DEG2RAD * Float(s_pitchMoveSpeed));
-    NDCToDDC(x, y, &x, &y);
-
-    this->MouseLook(x, y, nullptr);
-}
-
 // The mouse wheel from frozen's world frame, as CameraZoomIn / CameraZoomOut.
 void CGCamera::Zoom(float deltaDistance) {
     if (deltaDistance < 0.0f) {

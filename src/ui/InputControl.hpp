@@ -9,8 +9,8 @@ struct lua_State;
 
 // The control bits at +0x04, as the movement input reads them.
 enum INPUTCONTROLBITS : uint32_t {
-    INPUT_CONTROL_LEFT_BUTTON   = 0x1,      // CameraOrSelectOrMove
-    INPUT_CONTROL_RIGHT_BUTTON  = 0x2,      // TurnOrAction
+    INPUT_CONTROL_RIGHT_BUTTON  = 0x1,      // TurnOrAction (0x005fc610 sets bit 0x1)
+    INPUT_CONTROL_LEFT_BUTTON   = 0x2,      // CameraOrSelectOrMove (0x005fc6c0 sets bit 0x2)
     INPUT_CONTROL_FORWARD       = 0x10,
     INPUT_CONTROL_BACKWARD      = 0x20,
     INPUT_CONTROL_STRAFE_LEFT   = 0x40,
@@ -32,6 +32,8 @@ enum INPUTCONTROLBITS : uint32_t {
 
 // The reference's uiutil/InputControl.h singleton (0x70 bytes). Field names follow their use
 // where it has been seen; the rest carry their offsets until the code that reads them is ported.
+class CMouseEvent;
+
 class CInputControl {
     public:
         // Member variables
@@ -44,9 +46,9 @@ class CInputControl {
         uint32_t m_unk18 = 0;           // +0x18 the click the press will make (1 left, 2 right)
         uint8_t m_unk1C[0x28] = {};    // +0x1c a TSHashTable, constructed by FUN_005fcd70 (12 slots)
         uint32_t m_unk44 = 0;           // +0x44 the camera's yaw is locked to the player
-        uint32_t m_unk48 = 0;
-        uint32_t m_unk4C = 0;
-        uint32_t m_unk50 = 0;
+        float m_unk48 = 0.0f;           // +0x48 the facing a full-speed turn was last sent to
+        uint32_t m_unk4C = 0;           // +0x4c a full-speed pitch has been sent
+        float m_unk50 = 0.0f;           // +0x50 the pitch it was sent to
         uint32_t m_unk54 = 0;           // +0x54 both buttons steer: the player faces the camera
         int32_t m_unk58 = 3;
         uint32_t m_unk5C = 0;
@@ -65,6 +67,12 @@ class CInputControl {
         // ref: FUN_005fa170
         // Set a control bit; false when it was already set. Starting a mouse look, a steer or a
         // track updates the camera to match.
+        int32_t CanSetFacing();
+        int32_t CanSetPitch();
+        void SetFacing(uint32_t time, float facing);
+        void SetPitch(uint32_t time, float pitch);
+        void ApplyPitch(CGUnit_C* unit, uint32_t time, float pitch);
+        void OnMouseLook(const CMouseEvent& evt);
         int32_t SetControlBit(uint32_t bit, uint32_t time);
 
         // ref: FUN_005fa450

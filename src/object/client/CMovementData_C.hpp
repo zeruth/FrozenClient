@@ -86,6 +86,8 @@ class CMovementData_C : public CMovementShared {
                         float pitch, uint16_t moveFlags2);
         // ref: FUN_006ef3d0
         void QueueTurnTo(int32_t time, float facing);
+        void QueueSetFacing(int32_t time, float facing);
+        void QueueSetPitch(int32_t time, float pitch);
         // ref: FUN_006ef490
         void QueuePitchTo(int32_t time, float pitch);
         // ref: FUN_006f0f70

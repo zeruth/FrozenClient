@@ -5,6 +5,8 @@
 #include "object/client/ObjMgr.hpp"
 #include "object/client/Spell_C.hpp"
 #include "ui/game/CGCamera.hpp"
+#include "ui/game/CGGameUI.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "util/Lua.hpp"
 #include "console/Console.hpp"
@@ -12,6 +14,7 @@
 #include <common/Time.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
+#include <cmath>
 #include <new>
 
 CInputControl* s_inputControl;              // reference DAT_00c24954
@@ -295,8 +298,200 @@ int32_t CInputControl::IsDrag(uint32_t time) {
     return held - 200 >= 0;
 }
 
+// ref: FUN_006de980
+// A commentator (player flags 0x80000 with 0x400000) flies a free camera, and the input's
+// facing and pitch go to it instead of to the player. PARTIAL: the reference also counts a
+// commentator whose camera-mode record (DAT_00bd088c) is of type 4; the commentator camera is not
+// ported, so the flag pair alone decides.
+static int32_t InputIsCommentator(CGUnit_C* unit) {
+    if (!unit || !unit->IsA(TYPE_PLAYER)) {
+        return 0;
+    }
+
+    uint32_t flags = static_cast<CGPlayer_C*>(unit)->Player()->flags;
+
+    return (flags & 0x80000) && (flags & 0x400000) ? 1 : 0;
+}
+
+// ref: FUN_005fa6b0
+// The camera may turn the player: a living one the camera follows, not stunned or on a spline,
+// with a button or mouse steer down. PARTIAL: the vehicle that steers its passenger
+// (FUN_0074ba40) and the unit's virtual 0x138 state are the vehicle port's and never stop it here.
+int32_t CInputControl::CanSetFacing() {
+    auto unit = InputActiveUnit(".\\InputControl.cpp", 0x8d6);
+
+    if (!unit) {
+        return 0;
+    }
+
+    auto camera = InputCamera();
+
+    if (!camera) {
+        return 0;
+    }
+
+    if (!InputIsCommentator(unit)) {
+        if (unit->Unit()->health < 1 || unit->m_localMove.IsSplineActive()
+            || (unit->Unit()->flags & 0x40000) || camera->m_target != unit->GetGUID()) {
+            return 0;
+        }
+    }
+
+    if (!(camera->m_flags & 0x1)) {
+        return 0;
+    }
+
+    return (this->m_unk04 & 0x2000001) ? 1 : 0;
+}
+
+// ref: FUN_005fa790
+// The camera may tilt the player. One that may always pitch (move-flags-2 0x20) but is neither
+// swimming nor flying needs a vehicle that allows it. PARTIAL: as CanSetFacing.
+int32_t CInputControl::CanSetPitch() {
+    auto unit = InputActiveUnit(".\\InputControl.cpp", 0x8f7);
+
+    if (!unit) {
+        return 0;
+    }
+
+    auto camera = InputCamera();
+
+    if (InputIsCommentator(unit)) {
+        return 1;
+    }
+
+    if (unit->Unit()->health < 1 || unit->m_localMove.IsSplineActive() || (unit->Unit()->flags & 0x40000)) {
+        return 0;
+    }
+
+    if ((unit->m_localMove.m_moveFlags2 & 0x20) && !(unit->m_localMove.m_moveFlags & 0x2200000)) {
+        // CGUnit_C::GetVehicleRec: no vehicle, so no vehicle that allows it.
+        return 0;
+    }
+
+    return camera && camera->m_target == unit->GetGUID() ? 1 : 0;
+}
+
+// ref: FUN_005fb260
+// The camera's yaw becomes the player's facing. A unit that turns at full speed turns to it,
+// once per new facing, with the camera's yaw locked to it meanwhile. PARTIAL: the vehicle seat's
+// clamp (FUN_0074c550) and its turret aim (FUN_00747b00) are the vehicle port's.
+void CInputControl::SetFacing(uint32_t time, float facing) {
+    if (!this->CanSetFacing()) {
+        return;
+    }
+
+    auto unit = InputActiveUnit(".\\InputControl.cpp", 0x91c);
+
+    if (!unit) {
+        return;
+    }
+
+    if (InputIsCommentator(unit)) {
+        // DAT_00ace4a8: the commentator camera's facing, the commentator port's.
+        return;
+    }
+
+    if (!(unit->m_localMove.m_moveFlags2 & 0x8)) {
+        unit->SetFacingTo(static_cast<int32_t>(time), facing);
+    } else {
+        if (!this->m_unk44 || this->m_unk48 != facing) {
+            unit->TurnTo(static_cast<int32_t>(time), facing);
+            this->m_unk48 = facing;
+        }
+
+        if (!this->m_unk44) {
+            if (auto camera = InputCamera()) {
+                camera->LockYaw();
+            }
+
+            this->m_unk04 &= 0xfffbffff;
+            this->m_unk44 = 1;
+
+            return;
+        }
+    }
+
+    this->m_unk04 &= 0xfffbffff;
+}
+
+// ref: FUN_005fb3a0
+// Send a pitch: at once, or as a pitch-to for a unit that pitches at full speed (move-flags-2
+// 0x10), once per new pitch. PARTIAL: the seat's pitch range and its aim signal are the vehicle
+// port's; the flag the reference raises last (DAT_00ca0ab4) has no reader in frozen.
+void CInputControl::ApplyPitch(CGUnit_C* unit, uint32_t time, float pitch) {
+    if (!(unit->m_localMove.m_moveFlags2 & 0x10)) {
+        unit->SetPitchTo(static_cast<int32_t>(time), pitch);
+        return;
+    }
+
+    if (this->m_unk4C && this->m_unk50 == pitch) {
+        this->m_unk4C = 1;
+        return;
+    }
+
+    unit->PitchTo(static_cast<int32_t>(time), pitch);
+    this->m_unk50 = pitch;
+    this->m_unk4C = 1;
+}
+
+// ref: FUN_005fbe70
+// The camera's pitch becomes the player's, negated (the camera looks down where the player
+// pitches up). PARTIAL: the seat's pitch offset is the vehicle port's.
+void CInputControl::SetPitch(uint32_t time, float pitch) {
+    if (!this->CanSetPitch()) {
+        return;
+    }
+
+    auto unit = InputActiveUnit(".\\InputControl.cpp", 0x947);
+
+    if (!unit) {
+        return;
+    }
+
+    if (InputIsCommentator(unit)) {
+        // DAT_00ace4ac: the commentator camera's pitch.
+        return;
+    }
+
+    this->ApplyPitch(unit, time, -pitch);
+    this->m_unk04 &= 0xfff7ffff;
+}
+
+// ref: FUN_005fba60
+// The mouse moved while a button holds the mouse look: the camera turns by the motion, the
+// travel counts toward telling a drag from a click, and a player the buttons steer faces the
+// camera. PARTIAL: the motion time (the device's +0xf68, into +0x10), the commentator's speed
+// scale (FUN_00568560) and a vehicle seat that takes the pitch (FUN_00756f00) are not ported.
+void CInputControl::OnMouseLook(const CMouseEvent& evt) {
+    if (!this->m_unk04) {
+        return;
+    }
+
+    float dx = evt.x;
+    float dy = evt.y;
+
+    auto unit = InputActiveUnit(".\\InputControl.cpp", 0x606);
+
+    this->m_unk08 = std::fabs(dx) + this->m_unk08;
+    this->m_unk0C = std::fabs(dy) + this->m_unk0C;
+
+    int32_t steer = unit ? this->CanMouseSteer(unit) : 0;
+
+    auto camera = InputCamera();
+
+    if (!camera) {
+        return;
+    }
+
+    camera->MouseLook(dx, dy, nullptr);
+
+    if (steer) {
+        camera->SyncPlayerFacing();
+    }
+}
+
 // ref: FUN_005fa170
-// PARTIAL: hiding the cursor for a mouse look (FUN_00512d60) is the cursor port's.
 int32_t CInputControl::SetControlBit(uint32_t bit, uint32_t time) {
     if (this->m_unk04 & bit) {
         return 0;
@@ -319,6 +514,11 @@ int32_t CInputControl::SetControlBit(uint32_t bit, uint32_t time) {
         if (camera) {
             camera->BeginFreeLookIfAllowed();
         }
+    }
+
+    // A button going down starts the mouse look: the cursor hides and the mouse goes relative.
+    if (!(old & 0x3) && (this->m_unk04 & 0x3)) {
+        GameUIEnterMouseLook();
     }
 
     if (!bothButtons && InputBothButtons(this->m_unk04)) {
@@ -383,8 +583,8 @@ int32_t CInputControl::SetControlBit(uint32_t bit, uint32_t time) {
 }
 
 // ref: FUN_005fa450
-// PARTIAL: showing the cursor again (FUN_00512dc0) and the click a short press makes
-// (FUN_004f7880, the world frame's select-or-interact) are the cursor and world-frame ports'.
+// PARTIAL: the click a short press makes (FUN_004f7880, the world frame's select-or-interact) is
+// the world-frame port's.
 int32_t CInputControl::UnsetControlBit(uint32_t bit, uint32_t time, int32_t a3) {
     if (!(this->m_unk04 & bit)) {
         return 0;
@@ -405,6 +605,11 @@ int32_t CInputControl::UnsetControlBit(uint32_t bit, uint32_t time, int32_t a3) 
         if (this->m_unk44 && (this->m_unk04 & 0x300)) {
             this->OnTurnStarted();
         }
+    }
+
+    // The last button up ends the mouse look.
+    if ((old & 0x3) && !(this->m_unk04 & 0x3)) {
+        GameUILeaveMouseLook();
     }
 
     if (camera) {
@@ -990,18 +1195,21 @@ int32_t Script_ToggleRun(lua_State* L) {
 }
 
 // ref: FUN_005fc610
+// The right button is control bit 0x1 and makes click 2. These two had the bits swapped, which
+// made the right button look around and the left one steer.
 int32_t Script_TurnOrActionStart(lua_State* L) {
-    return InputStartButton(0x2, 2);
+    return InputStartButton(0x1, 2);
 }
 
 // ref: FUN_005fc680
 int32_t Script_TurnOrActionStop(lua_State* L) {
-    return InputStopBit(0x2);
+    return InputStopBit(0x1);
 }
 
 // ref: FUN_005fc6c0
+// The left button is control bit 0x2 and makes click 1.
 int32_t Script_CameraOrSelectOrMoveStart(lua_State* L) {
-    return InputStartButton(0x1, 1);
+    return InputStartButton(0x2, 1);
 }
 
 // ref: FUN_005fc730
@@ -1016,7 +1224,7 @@ int32_t Script_CameraOrSelectOrMoveStop(lua_State* L) {
     uint32_t time = InputControlEventTime();
     int32_t sticky = lua_toboolean(L, 1);
 
-    if (input->UnsetControlBit(0x1, time, sticky)) {
+    if (input->UnsetControlBit(0x2, time, sticky)) {
         input->UpdatePlayerMovement(time, 1);
     }
 
@@ -1024,9 +1232,10 @@ int32_t Script_CameraOrSelectOrMoveStop(lua_State* L) {
 }
 
 // ref: FUN_005fc780
+// Both buttons at once: the left one's bit (click 1), then the right one's (click 2).
 int32_t Script_MoveAndSteerStart(lua_State* L) {
-    InputStartButton(0x1, 1);
-    InputStartButton(0x2, 2);
+    InputStartButton(0x2, 1);
+    InputStartButton(0x1, 2);
 
     return 0;
 }

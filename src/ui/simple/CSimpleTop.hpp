@@ -61,6 +61,8 @@ class CSimpleTop : public CLayoutFrame {
         EVENT_DATA_MOUSE m_mousePosition = {};
         int32_t (*m_mouseButtonCallback)(CMouseEvent*) = nullptr;
         int32_t (*m_mousePositionCallback)(CMouseEvent*) = nullptr;
+        // +0x123c: a relative move (mouse look) goes here first, before any frame.
+        int32_t (*m_mouseRelativeCallback)(CMouseEvent*) = nullptr;
         int32_t (*m_displaySizeCallback)(const CSizeEvent&) = nullptr;
 
         // Virtual member functions
@@ -72,6 +74,7 @@ class CSimpleTop : public CLayoutFrame {
         void DisableEvents();
         void EnableEvents();
         void HideFrame(CSimpleFrame* frame, int32_t a4);
+        void SetMouseFocus(CSimpleFrame* frame);
         void MoveOrResizeFrame(const CMouseEvent& evt);
         void NotifyFrameLayerChanged(CSimpleFrame* frame, uint32_t layer);
         void NotifyFrameMovedOrResized(CSimpleFrame* frame);

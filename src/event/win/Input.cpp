@@ -1,26 +1,130 @@
 #include <windowsx.h>
 #include "event/Input.hpp"
 #include "client/Gui.hpp"
+#include "client/gui/OsGui.hpp"
 #include <storm/Error.hpp>
 #include <windows.h>
 
 static RECT s_defaultWindowRect;
 static int32_t s_savedResize;
 
-void CenterMouse() {
-    // TODO
-}
-
-void RestoreMouse() {
-    // TODO
-}
-
 // Where the mouse was last seen in normal mode (reference 0x00d413f8, 0x00d413fc, 0x00d413f4),
 // so leaving relative mode can put it back.
 static POINT s_savedMousePos;
 static HWND s_savedMouseWindow;
 
+// The point relative mode holds the cursor at (0x00d413ec, 0x00d413f0).
+static POINT s_centerMousePos;
+
+typedef BOOL(WINAPI* CURSORPOSFUNC)(LPPOINT);
+typedef BOOL(WINAPI* SETCURSORPOSFUNC)(int, int);
+
+// ref: FUN_00868c10
+// The cursor in physical (unscaled) screen pixels where the system has it, else GetCursorPos.
+static void GetPhysicalMouse(POINT* point) {
+    static CURSORPOSFUNC s_get = nullptr;
+
+    if (!s_get) {
+        auto user32 = LoadLibraryA("user32.dll");
+
+        if (user32) {
+            s_get = reinterpret_cast<CURSORPOSFUNC>(GetProcAddress(user32, "GetPhysicalCursorPos"));
+
+            if (!s_get) {
+                s_get = reinterpret_cast<CURSORPOSFUNC>(GetProcAddress(user32, "GetCursorPos"));
+            }
+
+            FreeLibrary(user32);
+        }
+
+        if (!s_get) {
+            return;
+        }
+    }
+
+    s_get(point);
+}
+
+// ref: FUN_00868c70
+static void SetPhysicalMouse(int32_t x, int32_t y) {
+    static SETCURSORPOSFUNC s_set = nullptr;
+
+    if (!s_set) {
+        auto user32 = LoadLibraryA("user32.dll");
+
+        if (user32) {
+            s_set = reinterpret_cast<SETCURSORPOSFUNC>(GetProcAddress(user32, "SetPhysicalCursorPos"));
+
+            if (!s_set) {
+                s_set = reinterpret_cast<SETCURSORPOSFUNC>(GetProcAddress(user32, "SetCursorPos"));
+            }
+
+            FreeLibrary(user32);
+        }
+
+        if (!s_set) {
+            return;
+        }
+    }
+
+    s_set(x, y);
+}
+
+typedef BOOL(WINAPI* LOGICALTOPHYSICALFUNC)(HWND, LPPOINT);
+
+static BOOL WINAPI LogicalToPhysicalIdentity(HWND, LPPOINT) {
+    return TRUE;
+}
+
+// ref: FUN_00868ce0
+static void LogicalToPhysical(HWND hwnd, POINT* point) {
+    static LOGICALTOPHYSICALFUNC s_convert = nullptr;
+
+    if (!s_convert) {
+        auto user32 = LoadLibraryA("user32.dll");
+
+        if (user32) {
+            s_convert = reinterpret_cast<LOGICALTOPHYSICALFUNC>(GetProcAddress(user32, "LogicalToPhysicalPoint"));
+            FreeLibrary(user32);
+        }
+
+        if (!s_convert) {
+            s_convert = &LogicalToPhysicalIdentity;
+        }
+    }
+
+    s_convert(hwnd, point);
+}
+
+// ref: FUN_00869db0
+// Hold the cursor at the middle of the window. The reference halves the window rect's right and
+// bottom edges -- the screen position of the middle only for a window at the screen's origin --
+// and so does this.
+void CenterMouse() {
+    RECT rect;
+    GetWindowRect(static_cast<HWND>(OsGuiGetWindow(0)), &rect);
+
+    s_centerMousePos.y = rect.bottom / 2;
+    s_centerMousePos.x = rect.right / 2;
+
+    SetPhysicalMouse(s_centerMousePos.x, s_centerMousePos.y);
+}
+
+// ref: FUN_008695b0
+// Put the cursor back where relative mode took it from.
+void RestoreMouse() {
+    POINT point = s_savedMousePos;
+    ClientToScreen(s_savedMouseWindow, &point);
+    LogicalToPhysical(s_savedMouseWindow, &point);
+    SetPhysicalMouse(point.x, point.y);
+}
+
+// ref: FUN_00869600
 void SaveMouse(POINT mousePos, HWND hwnd) {
+    if (Input::s_osMouseMode == OS_MOUSE_MODE_RELATIVE) {
+        return;
+    }
+
     s_savedMousePos = mousePos;
     s_savedMouseWindow = hwnd;
 }
@@ -275,8 +379,9 @@ int32_t ConvertKeyCode(uint32_t vkey, KEY* key) {
 bool ProcessMouseEvent(MOUSEBUTTON button, uint32_t message, HWND hwnd, OSINPUT id) {
     POINT mousePos;
 
+    // ref: FUN_008697e0: in relative mode a button reports where the cursor was held from.
     if (Input::s_osMouseMode == OS_MOUSE_MODE_RELATIVE) {
-        // TODO
+        mousePos = s_savedMousePos;
     } else {
         GetCursorPos(&mousePos);
         ScreenToClient(hwnd, &mousePos);
@@ -572,6 +677,13 @@ int32_t OsWindowProc(void* window, uint32_t message, uintptr_t wparam, intptr_t 
         // position is in screen coordinates and must be converted to client
         int32_t notches = GET_WHEEL_DELTA_WPARAM(wparam) / WHEEL_DELTA;
         POINT wheelPos = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+
+        // In relative mode the wheel, like the buttons, reports the held-from position.
+        if (Input::s_osMouseMode == OS_MOUSE_MODE_RELATIVE) {
+            wheelPos = s_savedMousePos;
+            ClientToScreen(hwnd, &wheelPos);
+        }
+
         ScreenToClient(hwnd, &wheelPos);
         OsQueuePut(OS_INPUT_MOUSE_WHEEL, notches, wheelPos.x, wheelPos.y, 0);
         break;
@@ -580,8 +692,17 @@ int32_t OsWindowProc(void* window, uint32_t message, uintptr_t wparam, intptr_t 
     case WM_MOUSEMOVE: {
         // TODO
 
+        // ref: FUN_0086a210 (WM_MOUSEMOVE): relative mode reports how far the cursor got from the
+        // middle and puts it back there.
         if (Input::s_osMouseMode == OS_MOUSE_MODE_RELATIVE) {
-            // TODO
+            POINT mousePos;
+            GetPhysicalMouse(&mousePos);
+
+            if (mousePos.x != s_centerMousePos.x || mousePos.y != s_centerMousePos.y) {
+                OsQueuePut(OS_INPUT_MOUSE_MOVE_RELATIVE, 0, mousePos.x - s_centerMousePos.x,
+                           mousePos.y - s_centerMousePos.y, 0);
+                CenterMouse();
+            }
         } else {
             POINT mousePos;
             GetCursorPos(&mousePos);

@@ -399,6 +399,71 @@ bool WorldFrameBindingString(const CKeyEvent& evt, char* buffer, size_t bufferBy
     return true;
 }
 
+// ref: FUN_0055df30
+// A mouse button's slot in the world frame's binding table: its bit's position, except that the
+// right button is 2 and the middle one 3, as their binding names go.
+int32_t WorldFrameMouseButtonIndex(uint32_t button) {
+    switch (button) {
+        case 0x1:
+            return 1;
+        case 0x2:
+            return 3;
+        case 0x4:
+            return 2;
+        default:
+            break;
+    }
+
+    for (int32_t bit = 3; bit < 31; bit++) {
+        if (button == (1u << bit)) {
+            return bit + 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_0055e340
+// The binding string for a mouse event: the modifier prefix, then BUTTON1 (left), BUTTON2
+// (right), BUTTON3 (middle), BUTTON4 and up, or MOUSEWHEELUP / MOUSEWHEELDOWN.
+bool WorldFrameMouseBindingString(const CMouseEvent& evt, char* buffer, size_t bufferBytes) {
+    char prefix[64] = "";
+    UIBindingsModifierPrefix(evt.metaKeyState, prefix, sizeof(prefix));
+
+    char name[32] = "";
+
+    if (evt.id == 0x400500C8 || evt.id == 0x400500C9) {
+        switch (evt.button) {
+            case 0x1:
+                SStrCopy(name, "BUTTON1", sizeof(name));
+                break;
+            case 0x2:
+                SStrCopy(name, "BUTTON3", sizeof(name));
+                break;
+            case 0x4:
+                SStrCopy(name, "BUTTON2", sizeof(name));
+                break;
+            default:
+                for (int32_t i = 4; i < 32; i++) {
+                    if (evt.button == (1u << (i - 1))) {
+                        SStrPrintf(name, sizeof(name), "BUTTON%d", i);
+                        break;
+                    }
+                }
+                break;
+        }
+    } else if (evt.id == 0x400500CD) {
+        SStrCopy(name, evt.wheelDistance < 0 ? "MOUSEWHEELDOWN" : "MOUSEWHEELUP", sizeof(name));
+    } else {
+        return false;
+    }
+
+    SStrCopy(buffer, prefix, bufferBytes);
+    SStrPack(buffer, name, bufferBytes);
+
+    return true;
+}
+
 } // namespace
 
 // ref: FUN_004f6ae0
@@ -465,40 +530,50 @@ int32_t CGWorldFrame::OnLayerKeyUp(const CKeyEvent& evt) {
     return result;
 }
 
+// ref: FUN_004f6c10
+// A mouse button over the world runs its binding (BUTTON1 CAMERAORSELECTORMOVE, BUTTON2
+// TURNORACTION by default), as a key does; the binding string is kept per button so the release
+// runs the same one. PARTIAL: the cursor-mode work the reference does first for a right press
+// (FUN_0051fb00) is the cursor port's.
 int32_t CGWorldFrame::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) {
-    if (btn) {
-        return this->CSimpleFrame::OnLayerMouseDown(evt, btn);
+    if (this->CSimpleFrame::OnLayerMouseDown(evt, btn)) {
+        return 1;
     }
 
-    this->m_cameraDragging = 1;
-    this->m_dragLastX = evt.x;
-    this->m_dragLastY = evt.y;
+    auto& binding = this->m_mouseBindings[WorldFrameMouseButtonIndex(evt.button)];
 
-    return this->CSimpleFrame::OnLayerMouseDown(evt, btn);
+    if (!WorldFrameMouseBindingString(evt, binding.name, sizeof(binding.name))) {
+        return 0;
+    }
+
+    binding.modifiers = evt.metaKeyState;
+
+    return UIBindingsDispatchKey(binding.name, 1);
 }
 
+// ref: FUN_004f6c90
 int32_t CGWorldFrame::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
-
-    this->m_cameraDragging = 0;
-
-    return this->CSimpleFrame::OnLayerMouseUp(evt, btn);
-}
-
-int32_t CGWorldFrame::OnLayerTrackUpdate(const CMouseEvent& evt) {
-
-    if (this->m_cameraDragging && this->m_camera) {
-        // The event position is normalized to the window; a full sweep turns roughly one turn
-        float deltaX = evt.x - this->m_dragLastX;
-        float deltaY = evt.y - this->m_dragLastY;
-
-        this->m_dragLastX = evt.x;
-        this->m_dragLastY = evt.y;
-
-        // Screen y runs bottom to top, so dragging up should pitch the view up
-        this->m_camera->Rotate(-deltaX * 6.28318f, deltaY * 3.14159f);
+    if (this->CSimpleFrame::OnLayerMouseUp(evt, btn)) {
+        return 1;
     }
 
-    return this->CSimpleFrame::OnLayerTrackUpdate(evt);
+    auto& binding = this->m_mouseBindings[WorldFrameMouseButtonIndex(evt.button)];
+
+    if (!binding.name[0]) {
+        binding.modifiers = 0;
+        WorldFrameMouseBindingString(evt, binding.name, sizeof(binding.name));
+
+        if (!binding.name[0]) {
+            return 0;
+        }
+    }
+
+    binding.modifiers |= evt.metaKeyState;
+
+    int32_t result = UIBindingsDispatchKey(binding.name, 0);
+    binding.name[0] = '\0';
+
+    return result;
 }
 
 int32_t CGWorldFrame::OnLayerMouseWheel(const CMouseEvent& evt) {

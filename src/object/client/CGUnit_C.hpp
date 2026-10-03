@@ -811,6 +811,10 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void Jump(int32_t time);
         // ref: FUN_007272c0
         void CancelClickToMove(int32_t face, int32_t stop);
+        void SetFacingTo(int32_t time, float facing);
+        void SetPitchTo(int32_t time, float pitch);
+        void TurnTo(int32_t time, float facing);
+        void PitchTo(int32_t time, float pitch);
 
         // ref: FUN_007413f0
         // Report a movement change: the packet (deferred for turns and pitches the server lets the

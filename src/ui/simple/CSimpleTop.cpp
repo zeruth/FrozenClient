@@ -304,9 +304,23 @@ int32_t CSimpleTop::OnMouseMove(const EVENT_DATA_MOUSE* pMouseData, void* param)
     return nextFocus == nullptr;
 }
 
+// ref: FUN_00494730
 int32_t CSimpleTop::OnMouseMoveRelative(const EVENT_DATA_MOUSE* pMouseData, void* param) {
-    // TODO
-    return 0;
+    CSimpleTop* top = static_cast<CSimpleTop*>(param);
+
+    CMouseEvent mouseEvent;
+    mouseEvent = *pMouseData;
+    mouseEvent.id = 0x400500CB;
+
+    CSimpleTop::m_eventTime = pMouseData->time;
+
+    auto callback = top->m_mouseRelativeCallback;
+
+    if (callback && callback(&mouseEvent)) {
+        return 0;
+    }
+
+    return 1;
 }
 
 int32_t CSimpleTop::OnMouseUp(const EVENT_DATA_MOUSE* pMouseData, void* param) {
@@ -329,10 +343,12 @@ int32_t CSimpleTop::OnMouseUp(const EVENT_DATA_MOUSE* pMouseData, void* param) {
         return 0;
     }
 
-    // TODO
-    // if (v11 && !top->m_mouseCapture && v11(mouseEvent)) {
-    //     return 0;
-    // }
+    // ref: FUN_004947a0: the button callback sees a release nothing has captured.
+    auto mouseButtonCallback = top->m_mouseButtonCallback;
+
+    if (mouseButtonCallback && !top->m_mouseCapture && mouseButtonCallback(&mouseEvent)) {
+        return 0;
+    }
 
     if (!top->m_mouseCapture) {
         return 1;
@@ -469,6 +485,36 @@ void CSimpleTop::EnableEvents() {
     EventRegisterEx(EVENT_ID_MOUSEWHEEL, reinterpret_cast<EVENTHANDLERFUNC>(CSimpleTop::OnMouseWheel), this, 1.0);
     EventRegisterEx(EVENT_ID_SIZE, reinterpret_cast<EVENTHANDLERFUNC>(CSimpleTop::OnDisplaySizeChanged), this, 1.0);
     EventRegisterEx(EVENT_ID_FOCUS, reinterpret_cast<EVENTHANDLERFUNC>(CSimpleTop::OnFocusChanged), this, 1.0);
+}
+
+// ref: FUN_00493fb0
+// The mouse belongs to `frame` now: the old focus is left and the new one entered, and a frame
+// that had captured the mouse is released with a button-up where the mouse last was.
+void CSimpleTop::SetMouseFocus(CSimpleFrame* frame) {
+    auto last = this->m_mouseFocus;
+
+    if (frame != last) {
+        this->m_mouseFocus = frame;
+
+        if (last) {
+            last->OnLayerCursorExit(0, 0);
+        }
+
+        if (frame) {
+            frame->OnLayerCursorEnter(0);
+        }
+    }
+
+    if (this->m_mouseCapture && this->m_mouseCapture != frame) {
+        CMouseEvent mouseEvent;
+        mouseEvent = this->m_mousePosition;
+        mouseEvent.x = 0.0f;
+        mouseEvent.y = 0.0f;
+        mouseEvent.id = 0x400500C9;
+
+        this->m_mouseCapture->OnLayerMouseUp(mouseEvent, nullptr);
+        this->m_mouseCapture = nullptr;
+    }
 }
 
 void CSimpleTop::HideFrame(CSimpleFrame* frame, int32_t a4) {

@@ -92,4 +92,11 @@ class CGGameUI {
         static bool s_loggingIn;
 };
 
+class CMouseEvent;
+
+int32_t GameUIMouseButtonCallback(CMouseEvent* evt);
+int32_t GameUIMouseRelativeCallback(CMouseEvent* evt);
+void GameUIEnterMouseLook();
+void GameUILeaveMouseLook();
+
 #endif

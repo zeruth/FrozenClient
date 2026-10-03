@@ -1,4 +1,7 @@
 #include "ui/game/CGGameUI.hpp"
+#include "event/Input.hpp"
+#include "gx/Device.hpp"
+#include "ui/InputControl.hpp"
 #include "ui/game/Cursor.hpp"
 #include <storm/String.hpp>
 #include "ui/FrameScript.hpp"
@@ -241,6 +244,77 @@ static void GameUILoadProgress(float progress, void* param) {
     LoadingScreenSetProgress(progress);
 }
 
+// ref: FUN_0051fa50
+// Mouse buttons nothing has captured. During a mouse look the cursor is gone and no frame is
+// under it, so the world frame takes the buttons. PARTIAL: a right press first cancels a
+// pending spell target, item drag or other cursor action (the DAT_00bd0758 .. 0x00bd07ec cursor
+// states, FUN_006cefb0, FUN_00519280); those are the cursor ports'.
+int32_t GameUIMouseButtonCallback(CMouseEvent* evt) {
+    if (evt->mode != MOUSE_MODE_RELATIVE) {
+        return 0;
+    }
+
+    auto frame = CGWorldFrame::s_currentWorldFrame;
+
+    if (!frame) {
+        return 0;
+    }
+
+    if (evt->id == 0x400500C8) {
+        frame->OnLayerMouseDown(*evt, nullptr);
+    } else {
+        frame->OnLayerMouseUp(*evt, nullptr);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00512cd0
+int32_t GameUIMouseRelativeCallback(CMouseEvent* evt) {
+    if (evt->id != 0x400500CB) {
+        return 0;
+    }
+
+    if (auto input = InputControlGetActive()) {
+        input->OnMouseLook(*evt);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00512d60
+// A mouse button held over the world: the world frame owns the mouse, the cursor hides and the
+// mouse goes relative. PARTIAL: the world frame's mouse-look flag and the mouseover it drops
+// (FUN_004f5d30, +0x31c and +0x2c8) are the world-frame port's.
+void GameUIEnterMouseLook() {
+    auto frame = CGWorldFrame::s_currentWorldFrame;
+
+    if (!frame || !CGGameUI::s_simpleTop) {
+        return;
+    }
+
+    CGGameUI::s_simpleTop->SetMouseFocus(frame);
+    g_theGxDevicePtr->CursorSetVisible(0);
+    EventSetMouseMode(MOUSE_MODE_RELATIVE, 0);
+}
+
+// ref: FUN_00512dc0
+void GameUILeaveMouseLook() {
+    if (!CGWorldFrame::s_currentWorldFrame || !CGGameUI::s_simpleTop) {
+        return;
+    }
+
+    CGGameUI::s_simpleTop->m_checkFocus = 1;
+
+    auto input = InputControlGetActive();
+
+    if (input && (input->m_unk58 & 0x1)) {
+        g_theGxDevicePtr->CursorSetVisible(1);
+    }
+
+    EventSetMouseMode(MOUSE_MODE_NORMAL, 0);
+}
+
 // ref: FUN_0052a980
 void CGGameUI::Initialize() {
     // TODO
@@ -250,6 +324,8 @@ void CGGameUI::Initialize() {
     // TODO
 
     CGGameUI::s_simpleTop = STORM_NEW(CSimpleTop);
+    CGGameUI::s_simpleTop->m_mouseButtonCallback = &GameUIMouseButtonCallback;
+    CGGameUI::s_simpleTop->m_mouseRelativeCallback = &GameUIMouseRelativeCallback;
 
     // TODO
 

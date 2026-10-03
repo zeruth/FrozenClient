@@ -253,6 +253,41 @@ void CMovementData_C::QueueTurnTo(int32_t time, float facing) {
     }
 }
 
+// ref: FUN_006ee3a0
+// The facing the mouse turned the player to (event 0x13, MSG_MOVE_SET_FACING), inside the seat's
+// facing range when it rides one.
+void CMovementData_C::QueueSetFacing(int32_t time, float facing) {
+    float lo;
+    float hi;
+
+    if (this->GetSeatFacingLimits(&lo, &hi)) {
+        MovementWrapAngle(&facing, lo, hi);
+
+        if (facing < lo) {
+            facing = lo;
+        } else if (hi <= facing) {
+            facing = hi;
+        }
+    }
+
+    auto event = QueueSimple(this, time, 0x13, 1);
+
+    if (event) {
+        event->facing = facing;
+    }
+}
+
+// ref: FUN_006ee460
+// The pitch the mouse tilted the player to (event 0x14, MSG_MOVE_SET_PITCH). The reference clamps
+// it to the seat's pitch range (seat flag 0x40) first; frozen has no seats.
+void CMovementData_C::QueueSetPitch(int32_t time, float pitch) {
+    auto event = QueueSimple(this, time, 0x14, 1);
+
+    if (event) {
+        event->pitch = pitch;
+    }
+}
+
 // ref: FUN_006ef490
 // The vehicle seat's pitch limits clamp `pitch` first in the reference; frozen has no seats.
 void CMovementData_C::QueuePitchTo(int32_t time, float pitch) {

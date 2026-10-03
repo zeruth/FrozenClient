@@ -163,6 +163,24 @@ void PostMouseMove(EvtContext* context, int32_t x, int32_t y, int32_t time) {
     IEvtQueueDispatch(context, EVENT_ID_MOUSEMOVE, &data);
 }
 
+// ref: FUN_0047fa60
+// A relative move carries the motion itself, in pixels, where an absolute one carries a position.
+void PostMouseMoveRelative(EvtContext* context, int32_t dx, int32_t dy, int32_t time) {
+    EVENT_DATA_MOUSE data;
+
+    data.mode = Input::s_mouseMode;
+    data.button = MOUSE_BUTTON_NONE;
+    data.buttonState = Input::s_buttonState;
+    data.metaKeyState = Input::s_metaKeyState;
+    data.flags = GenerateMouseFlags();
+    data.time = time;
+    data.x = static_cast<float>(dx);
+    data.y = static_cast<float>(dy);
+    data.wheelDistance = 0;
+
+    IEvtQueueDispatch(context, EVENT_ID_MOUSEMOVE_RELATIVE, &data);
+}
+
 void PostMouseWheel(EvtContext* context, int32_t wheel, int32_t x, int32_t y, int32_t time) {
     EVENT_DATA_MOUSE data;
     data.mode = Input::s_mouseMode;
@@ -308,7 +326,8 @@ void ProcessInput(const int32_t param[], OSINPUT id, int32_t* shutdown, EvtConte
             break;
 
         case OS_INPUT_MOUSE_MOVE_RELATIVE:
-            // TODO
+            PostMouseMoveRelative(context, param[1], param[2], param[3]);
+
             break;
 
         case OS_INPUT_MOUSE_UP:

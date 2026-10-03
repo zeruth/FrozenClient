@@ -83,11 +83,15 @@ void WorldFrameSetPlayerAlpha(uint8_t alpha) {
 }
 
 void InputControlSetFacing(CInputControl* input, int32_t time, float facing) {
-    // TODO port FUN_005fb260 (turns the active mover through the movement system)
+    if (input) {
+        input->SetFacing(static_cast<uint32_t>(time), facing);
+    }
 }
 
 void InputControlSetPitch(CInputControl* input, int32_t time, float pitch) {
-    // TODO port FUN_005fbe70
+    if (input) {
+        input->SetPitch(static_cast<uint32_t>(time), pitch);
+    }
 }
 
 uint32_t InputControlGetFlags(CInputControl* input) {

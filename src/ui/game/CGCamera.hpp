@@ -72,9 +72,7 @@ class CGCamera : public CSimpleCamera {
         // Member functions
         CGCamera();
 
-        // The frozen world frame's input hooks: mouse-drag look and the wheel. They feed the
-        // reference functions that do the work (MouseLook, ZoomIn / ZoomOut).
-        void Rotate(float deltaYaw, float deltaPitch);
+        // The frozen world frame's wheel hook; it feeds the reference ZoomIn / ZoomOut.
         void Zoom(float deltaDistance);
 
         const WOWGUID& GetTarget() const;

@@ -73,7 +73,6 @@ class CGWorldFrame : public CSimpleFrame {
         virtual int32_t OnLayerKeyUp(const CKeyEvent& evt);
         virtual int32_t OnLayerMouseDown(const CMouseEvent& evt, const char* btn);
         virtual int32_t OnLayerMouseUp(const CMouseEvent& evt, const char* btn);
-        virtual int32_t OnLayerTrackUpdate(const CMouseEvent& evt);
         virtual int32_t OnLayerMouseWheel(const CMouseEvent& evt);
 
         // Member functions
@@ -113,9 +112,6 @@ class CGWorldFrame : public CSimpleFrame {
         // Private member variables
         // TODO
         CRect m_screenRect;
-        int32_t m_cameraDragging = 0;
-        float m_dragLastX = 0.0f;
-        float m_dragLastY = 0.0f;
         CRect m_viewport;
 
     public:
@@ -128,6 +124,9 @@ class CGWorldFrame : public CSimpleFrame {
         };
 
         KeyBinding m_keyBindings[0x313] = {};
+
+        // +0x79c4: the same per mouse button, indexed as FUN_0055df30 numbers them.
+        KeyBinding m_mouseBindings[0x20] = {};
 
         // The world's viewport rect (NDC). The world text pass runs after OnWorldRender has
         // restored the UI viewport, so it needs this to place screen-space text correctly when the

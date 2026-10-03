@@ -7713,6 +7713,50 @@ void CGUnit_C::CancelClickToMove(int32_t face, int32_t stop) {
     s_clickToMoveState = 13;
 }
 
+// ref: FUN_0072ea50
+// The mouse turns the unit: it stops a click-to-move first. PARTIAL: the reference then, for a
+// player whose virtual 0x138 answers 3, calls FUN_006dcb40(0); that state belongs to an unported
+// subsystem and is never 3 here.
+void CGUnit_C::SetFacingTo(int32_t time, float facing) {
+    if (this->IsActiveMover()) {
+        this->CancelClickToMove(0, 1);
+    }
+
+    this->m_localMove.QueueSetFacing(time, facing);
+}
+
+// ref: FUN_0072ead0
+// PARTIAL: the active player looting closes the loot window here (FUN_00523640); the loot frame
+// is the loot port's.
+void CGUnit_C::SetPitchTo(int32_t time, float pitch) {
+    if (this->IsActiveMover()) {
+        this->CancelClickToMove(0, 1);
+    }
+
+    this->m_localMove.QueueSetPitch(time, pitch);
+}
+
+// ref: FUN_0072d3f0
+// A unit that turns at full speed (move-flags-2 0x8) turns to the facing over time instead.
+// PARTIAL: as SetFacingTo, the virtual 0x138 state.
+void CGUnit_C::TurnTo(int32_t time, float facing) {
+    if (this->IsActiveMover()) {
+        this->CancelClickToMove(0, 1);
+    }
+
+    this->m_localMove.QueueTurnTo(time, facing);
+}
+
+// ref: FUN_0072d470
+// PARTIAL: as SetFacingTo, the virtual 0x138 state.
+void CGUnit_C::PitchTo(int32_t time, float pitch) {
+    if (this->IsActiveMover()) {
+        this->CancelClickToMove(0, 1);
+    }
+
+    this->m_localMove.QueuePitchTo(time, pitch);
+}
+
 // ref: FUN_0072e5d0
 void CGUnit_C::StartMove(int32_t time, int32_t forward) {
     MovementStartPrologue(this);
