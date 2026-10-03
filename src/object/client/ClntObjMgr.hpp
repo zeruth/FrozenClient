@@ -21,6 +21,8 @@ class ClntObjMgr {
         PLAYER_TYPE m_type;
         uint32_t m_mapID = 0;
         ClientConnection* m_net = nullptr;
+        // ref +0xd4: the movement globals (MovementInitialize).
+        struct CMovementGlobals* m_movementGlobals = nullptr;
 
         // Member functions
         ClntObjMgr(PLAYER_TYPE type) : m_type(type) {};

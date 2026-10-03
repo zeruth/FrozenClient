@@ -206,7 +206,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         float GetModelScale() const;
         float GetRawSmoothFacing() const;
         void PostInit(uint32_t time, const CClientObjCreate& init, bool a4);
-        void PostMovementUpdate(const CClientMoveUpdate& move, int32_t activeMover);
+        void PostMovementUpdate(const CClientObjCreate& init, int32_t activeMover);
         void SetStorage(uint32_t* storage, uint32_t* saved);
 
 
@@ -562,6 +562,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The AnimationData id the model is playing: the upper-body bone's when the unit has one
         // and it is playing something, else the whole model's. -1 when there is no loaded model.
         uint32_t GetCurrentAnimationId() const;
+        int32_t IsAnimationRooting() const;
 
         // ref: FUN_007176f0
         // `animID` turned into an id `model` (or this unit's own model) can play. Tries the id at
@@ -786,6 +787,89 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // this on each sequence it is about to apply to a unit that is hovering or unsupported, so
         // it does not stand in mid-air.
         bool ReplaceIdleWithHover(M2BoneSequenceState* state) const;
+
+
+        // ---- movement (Unit_C.cpp) --------------------------------------------------------
+
+        // ref: FUN_0072e5d0, FUN_0072e680, FUN_0072e730, FUN_0072e7e0, FUN_0072e900, FUN_0072e9b0
+        // The input's movement starts: each cancels click-to-move and closes the loot window for
+        // the local player, then queues the event on the movement.
+        void StartMove(int32_t time, int32_t forward);
+        void StartStrafe(int32_t time, int32_t left);
+        void StartAscend(int32_t time, int32_t up);
+        void StartTurn(int32_t time, int32_t left);
+        void StartPitch(int32_t time, int32_t up);
+        void StopPitch(int32_t time);
+        // ref: FUN_0071ae10, FUN_0071ae20, FUN_0071ae30, FUN_0071ae40
+        void StopMove(int32_t time);
+        void StopStrafe(int32_t time);
+        void StopAscend(int32_t time);
+        void StopTurn(int32_t time);
+        // ref: FUN_00718860
+        void SetFlying(int32_t time, int32_t fly);
+        // ref: FUN_0072eb80
+        void Jump(int32_t time);
+        // ref: FUN_007272c0
+        void CancelClickToMove(int32_t face, int32_t stop);
+
+        // ref: FUN_007413f0
+        // Report a movement change: the packet (deferred for turns and pitches the server lets the
+        // client batch), then the animation and input it implies.
+        int32_t SendMovement(uint32_t time, int32_t opcode, uint8_t send, float value, uint32_t counter,
+                             WOWGUID guid, uint8_t seat);
+        // ref: FUN_0071f0c0
+        // The movement packet itself: header, status, the extras some opcodes carry, and send.
+        int32_t SendMovementStatus(uint32_t time, int32_t opcode, float value, uint32_t counter,
+                                   WOWGUID guid, uint8_t seat);
+        // ref: FUN_0071ef80
+        int32_t WriteMovementHeader(uint32_t time, int32_t opcode, CDataStore& msg, float value, uint32_t counter);
+        // ref: FUN_00717d90
+        void SendTimeSkipped(uint32_t ms);
+        // ref: FUN_0071f210
+        void SendSplineDone(uint32_t time, uint32_t id);
+        // ref: FUN_00721b90
+        // Send a turn or pitch report that has waited long enough.
+        void SendDeferredMovement(uint32_t time);
+        // ref: FUN_00721c20
+        int32_t FlushDeferredMovement(uint32_t time);
+        // ref: FUN_007219f0
+        int32_t DeferTurn(uint32_t time, int32_t opcode);
+        // ref: FUN_00721ac0
+        int32_t DeferPitch(uint32_t time, int32_t opcode);
+        // ref: FUN_0071ae80
+        // The facing (and, swimming or flying, the pitch) is within 0.1 of what was last sent.
+        int32_t IsOrientationUnchanged();
+        // ref: FUN_00721300
+        void UpdateMovementEffects();
+        // ref: FUN_0073ed10
+        void OnMovementPacketSent(int32_t opcode);
+        // ref: FUN_0073ad00
+        void UpdateFallAnimation();
+        // ref: FUN_0073d2b0
+        void PlayLandingAnimation(uint32_t oldFlags, uint32_t jumping);
+        // ref: FUN_0073d3d0
+        void OnLanded(uint32_t oldFlags, uint32_t jumping);
+        // ref: FUN_0073d4a0
+        int32_t AcknowledgeLanding(uint32_t time, uint32_t oldFlags, uint16_t oldFlags2, uint32_t jumping);
+        // ref: FUN_0073ab20
+        void OnMovementStep(uint32_t time, int32_t a2, int32_t a3);
+        // The liquid surface under the unit (CWorld::GetObjectFloor on its world object).
+        int32_t GetFloorHeight(float* height);
+
+        // ref: FUN_00717c50
+        // Make `guid` the unit the input moves, and tell the server.
+        static void SetActiveMover(WOWGUID guid);
+
+        // Movement members. +0x948 / +0x94c: when a turn and a pitch report were deferred, +0x950 /
+        // +0x954 their opcodes; +0x9bc the last teleport acknowledgement; +0xa50 / +0xa54 the
+        // facing and pitch last sent.
+        uint32_t m_deferredTurnTime = 0;
+        uint32_t m_deferredPitchTime = 0;
+        int32_t m_deferredTurnOpcode = 0;
+        int32_t m_deferredPitchOpcode = 0;
+        uint32_t m_teleportAckTime = 0;
+        float m_sentFacing = 0.0f;
+        float m_sentPitch = 0.0f;
 
     protected:
         // Protected member functions

@@ -31,6 +31,10 @@
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
+#include "ui/InputControl.hpp"
+#include "object/client/Spell_C.hpp"
+#include "object/movement/CMovementStatus.hpp"
+#include "util/DataStore.hpp"
 #include "ui/game/CGCamera.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "ui/game/CGPartyInfo.hpp"
@@ -240,6 +244,9 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 
     this->RefreshDataPointers();
 
+    // FUN_0073c330: the movement the create block carries.
+    this->PostMovementUpdate(objCreate, 0);
+
     // TODO
 }
 
@@ -448,8 +455,30 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     // TODO
 }
 
-void CGUnit_C::PostMovementUpdate(const CClientMoveUpdate& move, int32_t activeMover) {
-    // TODO
+// ref: FUN_0073c260
+// A movement block from the server: the create's, or SMSG_MOVE_UPDATE's for a unit someone else
+// moves. The active mover keeps its own prediction and takes nothing from it.
+// NOT PORTED: FUN_0098e560 (the block's guid at +0x2b8 copied into a target the decompiler lost),
+// the vehicle start for update flag 0x80 (FUN_0074c750, UnitVehicle_C), and the active player's
+// position copied into DAT_00cd7544 +0x17c for update flag 1.
+void CGUnit_C::PostMovementUpdate(const CClientObjCreate& init, int32_t activeMover) {
+    if (activeMover) {
+        return;
+    }
+
+    this->m_localMove.InitFromCreate(static_cast<int32_t>(OsGetAsyncTimeMs()), init.move, init.flags & 0x1);
+
+    if (this->m_localMove.m_moveFlags & 0x2000) {
+        this->UpdateFallAnimation();
+    }
+
+    if (init.flags & 0x1) {
+        this->m_stateFlags |= 0x80;
+    }
+
+    if (init.flags & 0x400) {
+        this->m_stateFlags |= 0x40000000;
+    }
 }
 
 // The half-extent of the CURRENT animation's authored box, which is what the blob shadow uses as
@@ -2072,6 +2101,20 @@ uint32_t CGUnit_C::GetCurrentAnimationId() const {
     }
 
     return this->m_model->GetBoneUint90(0xFFFFFFFF);
+}
+
+// ref: FUN_0071b000
+// The animation playing holds the unit in place (AnimationData flag 0x80).
+int32_t CGUnit_C::IsAnimationRooting() const {
+    uint32_t animID = this->GetCurrentAnimationId();
+
+    if (0x1fa <= animID) {
+        return 0;
+    }
+
+    auto rec = g_animationDataDB.GetRecord(static_cast<int32_t>(animID));
+
+    return rec && (rec->m_flags & 0x80) ? 1 : 0;
 }
 
 // ref: FUN_00717600
@@ -7636,4 +7679,724 @@ int32_t CGPlayer_C::ApplyVisibleItems() {
     }
 
     return 1;
+}
+
+// ---- movement (Unit_C.cpp) ------------------------------------------------------------------
+
+namespace {
+
+// The click-to-move state (DAT_00ca11f4), 13 when nothing is driving the player. Click-to-move
+// itself is not ported, so it never leaves 13 -- CGCamera's copy of the same query reads the same.
+int32_t s_clickToMoveState = 13;
+
+// The movement prologue the start functions share: a click-to-move cancel, and the loot window's
+// close (FUN_00523640, the loot UI's, not ported) while the player loots.
+void MovementStartPrologue(CGUnit_C* unit) {
+    if (unit->GetGUID() == ClntObjMgrGetActivePlayer() && s_clickToMoveState != 13) {
+        unit->CancelClickToMove(0, 1);
+    }
+}
+
+} // namespace
+
+// ref: FUN_007272c0
+// PARTIAL: with click-to-move unported its state is always 13, so this returns at once; the
+// interaction the move was walking toward, and the CTM stop signals, are click-to-move's.
+void CGUnit_C::CancelClickToMove(int32_t face, int32_t stop) {
+    (void)face;
+    (void)stop;
+
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer() || s_clickToMoveState == 13) {
+        return;
+    }
+
+    s_clickToMoveState = 13;
+}
+
+// ref: FUN_0072e5d0
+void CGUnit_C::StartMove(int32_t time, int32_t forward) {
+    MovementStartPrologue(this);
+    this->m_localMove.QueueStartMove(time, forward);
+}
+
+// ref: FUN_0072e680
+void CGUnit_C::StartStrafe(int32_t time, int32_t left) {
+    MovementStartPrologue(this);
+    this->m_localMove.QueueStartStrafe(time, left);
+}
+
+// ref: FUN_0072e730
+void CGUnit_C::StartAscend(int32_t time, int32_t up) {
+    MovementStartPrologue(this);
+    this->m_localMove.QueueStartAscend(time, up);
+}
+
+// ref: FUN_0072e7e0
+// A channelled spell that breaks on turning (attributes 0x10, interrupt flag 0x4000) is
+// cancelled when click-to-move drives the turn.
+void CGUnit_C::StartTurn(int32_t time, int32_t left) {
+    MovementStartPrologue(this);
+    this->m_localMove.QueueStartTurn(time, left);
+}
+
+// ref: FUN_0072e900
+void CGUnit_C::StartPitch(int32_t time, int32_t up) {
+    MovementStartPrologue(this);
+    this->m_localMove.QueueStartPitch(time, up);
+}
+
+// ref: FUN_0072e9b0
+void CGUnit_C::StopPitch(int32_t time) {
+    MovementStartPrologue(this);
+    this->m_localMove.QueueStopPitch(time);
+}
+
+// ref: FUN_0071ae10
+void CGUnit_C::StopMove(int32_t time) {
+    this->m_localMove.QueueStopMove(time);
+}
+
+// ref: FUN_0071ae20
+void CGUnit_C::StopStrafe(int32_t time) {
+    this->m_localMove.QueueStopStrafe(time);
+}
+
+// ref: FUN_0071ae30
+void CGUnit_C::StopAscend(int32_t time) {
+    this->m_localMove.QueueStopAscend(time);
+}
+
+// ref: FUN_0071ae40
+void CGUnit_C::StopTurn(int32_t time) {
+    this->m_localMove.QueueStopTurn(time);
+}
+
+// ref: FUN_00718860
+// DAT_00ca1240, the time flying was last asked for, gates the automatic landing.
+void CGUnit_C::SetFlying(int32_t time, int32_t fly) {
+    this->m_localMove.QueueSetFlying(time, fly);
+}
+
+// ref: FUN_0072eb80
+// A mounted unit standing still rears its mount (CMSG_MOUNT_SPECIAL_ANIM) instead of jumping,
+// unless the mount's model jumps (creature model flag 0x400), it can fly, or it is in water deep
+// enough to swim (FUN_00718a20).
+void CGUnit_C::Jump(int32_t time) {
+    MovementStartPrologue(this);
+
+    auto& move = this->m_localMove;
+    bool mountJumps = false;
+
+    if (auto display = g_creatureDisplayInfoDB.GetRecord(this->m_mountDisplayID)) {
+        if (auto model = g_creatureModelDataDB.GetRecord(display->m_modelID)) {
+            mountJumps = (model->m_flags & 0x400) != 0;
+        }
+    }
+
+    if (mountJumps || this->m_mountDisplayID < 1 || (this->m_stateFlags & 0x10000000)
+        || (move.m_moveFlags & 0x1000000) || ((move.m_moveFlags & 0xf) && !move.IsHeldOffGround())) {
+        move.QueueJump(time);
+        return;
+    }
+
+    if (move.m_moveFlags & 0x30) {
+        return;
+    }
+
+    float floor;
+
+    if (this->GetFloorHeight(&floor) && move.m_collisionHeight * 0.5f < floor - this->GetPosition().z) {
+        return;
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        this->Virtual098();
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_MOUNT_SPECIAL_ANIM));
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_0071ae80
+int32_t CGUnit_C::IsOrientationUnchanged() {
+    if (0.1f <= std::fabs(this->GetRawFacing() - this->m_sentFacing)) {
+        return 0;
+    }
+
+    auto& move = this->m_localMove;
+
+    if (((move.m_moveFlags & 0x2200000) || (move.m_moveFlags2 & 0x20))
+        && 0.1f <= std::fabs(this->GetMovementPitch() - this->m_sentPitch)) {
+        return 0;
+    }
+
+    return 1;
+}
+
+// ref: FUN_007219f0
+int32_t CGUnit_C::DeferTurn(uint32_t time, int32_t opcode) {
+    if (opcode != MSG_MOVE_STOP_TURN) {
+        this->m_deferredTurnOpcode = opcode;
+        this->m_deferredTurnTime = time;
+        return 0;
+    }
+
+    if (this->m_deferredTurnOpcode && !(this->m_stateFlags & 0x4000000)) {
+        // The turn never reached the server: one facing report replaces start and stop.
+        if (this->IsOrientationUnchanged()) {
+            this->m_deferredTurnOpcode = 0;
+            return 0;
+        }
+
+        this->SendMovementStatus(time, MSG_MOVE_SET_FACING, 0.0f, 0, 0, 0xff);
+        this->m_deferredTurnOpcode = 0;
+        return 1;
+    }
+
+    this->SendMovementStatus(time, MSG_MOVE_STOP_TURN, 0.0f, 0, 0, 0xff);
+    this->m_stateFlags &= 0xfbffffff;
+    this->m_deferredTurnOpcode = 0;
+
+    return 1;
+}
+
+// ref: FUN_00721ac0
+int32_t CGUnit_C::DeferPitch(uint32_t time, int32_t opcode) {
+    if (opcode != MSG_MOVE_STOP_PITCH) {
+        this->m_deferredPitchOpcode = opcode;
+        this->m_deferredPitchTime = time;
+        return 0;
+    }
+
+    if (this->m_deferredPitchOpcode && !(this->m_stateFlags & 0x8000000)) {
+        if (this->IsOrientationUnchanged()) {
+            this->m_deferredPitchOpcode = 0;
+            return 0;
+        }
+
+        this->SendMovementStatus(time, MSG_MOVE_SET_PITCH, 0.0f, 0, 0, 0xff);
+        this->m_deferredPitchOpcode = 0;
+        return 1;
+    }
+
+    this->SendMovementStatus(time, MSG_MOVE_STOP_PITCH, 0.0f, 0, 0, 0xff);
+    this->m_stateFlags &= 0xf7ffffff;
+    this->m_deferredPitchOpcode = 0;
+
+    return 1;
+}
+
+// ref: FUN_00721c20
+int32_t CGUnit_C::FlushDeferredMovement(uint32_t time) {
+    int32_t sent = 0;
+
+    if (this->m_deferredTurnOpcode) {
+        sent = this->SendMovementStatus(time, this->m_deferredTurnOpcode, 0.0f, 0, 0, 0xff) != 0;
+        this->m_deferredTurnOpcode = 0;
+    }
+
+    if (this->m_deferredPitchOpcode) {
+        if (this->SendMovementStatus(time, this->m_deferredPitchOpcode, 0.0f, 0, 0, 0xff)) {
+            sent = 1;
+        }
+
+        this->m_deferredPitchOpcode = 0;
+    }
+
+    return sent;
+}
+
+// ref: FUN_00721b90
+void CGUnit_C::SendDeferredMovement(uint32_t time) {
+    if (this->m_deferredTurnOpcode && 100 < time - this->m_deferredTurnTime) {
+        this->SendMovementStatus(time, this->m_deferredTurnOpcode, 0.0f, 0, 0, 0xff);
+        this->m_deferredTurnOpcode = 0;
+    }
+
+    if (this->m_deferredPitchOpcode && 100 < time - this->m_deferredPitchTime) {
+        this->SendMovementStatus(time, this->m_deferredPitchOpcode, 0.0f, 0, 0, 0xff);
+        this->m_deferredPitchOpcode = 0;
+    }
+}
+
+// ref: FUN_0071ef80
+// The guid, then for an acknowledgement its counter, then the status, then for an
+// acknowledgement with a value the value. A remote unit's status is not the client's to report:
+// only acknowledgements and the active mover's own state go out.
+int32_t CGUnit_C::WriteMovementHeader(uint32_t time, int32_t opcode, CDataStore& msg, float value, uint32_t counter) {
+    msg.Put(static_cast<uint32_t>(opcode));
+
+    SmartGUID guid;
+    guid = this->GetGUID();
+    msg << guid;
+
+    if (IsMovementAckOpcode(opcode)) {
+        msg.Put(counter);
+    }
+
+    if (!IsMovementAckOrNotActiveMoverOpcode(opcode)) {
+        // FUN_0071ef20: the active player's own report, which on a running spline only the
+        // swim and fly state opcodes may make.
+        if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+            return 0;
+        }
+
+        if (this->m_localMove.IsSplineActive() && !IsMovementStateOpcode(opcode)) {
+            return 0;
+        }
+    }
+
+    // FUN_007164b0: a teleport acknowledgement carries only the time.
+    if (opcode == MSG_MOVE_TELEPORT_ACK) {
+        msg.Put(time);
+    } else {
+        CMovementStatus status;
+        status.moveFlags = this->m_localMove.m_moveFlags & 0x77fffdff;
+        this->m_localMove.BuildStatus(opcode, time, status);
+        msg << status;
+    }
+
+    if (IsMovementAckWithValueOpcode(opcode)) {
+        msg.Put(value);
+    }
+
+    if (!(this->m_localMove.m_moveFlags & 0x200)) {
+        if (this->m_localMove.m_moveFlags & 0x1000) {
+            this->m_stateFlags |= 0x80;
+        } else {
+            this->m_stateFlags &= 0xffffff7f;
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_0071f0c0
+int32_t CGUnit_C::SendMovementStatus(uint32_t time, int32_t opcode, float value, uint32_t counter,
+                                     WOWGUID guid, uint8_t seat) {
+    this->m_sentFacing = this->GetRawFacing();
+
+    auto& move = this->m_localMove;
+
+    if ((move.m_moveFlags & 0x2200000) || (move.m_moveFlags2 & 0x20)) {
+        this->m_sentPitch = this->GetMovementPitch();
+    }
+
+    CDataStore msg;
+
+    if (!this->WriteMovementHeader(time, opcode, msg, value, counter)) {
+        return 0;
+    }
+
+    if (opcode == CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE) {
+        SmartGUID seatGuid;
+        seatGuid = guid;
+        msg << seatGuid;
+        msg.Put(seat);
+    }
+
+    if (move.m_moveFlags & 0x30) {
+        this->m_stateFlags |= 0x4000000;
+    }
+
+    if (move.m_moveFlags & 0xc0) {
+        this->m_stateFlags |= 0x8000000;
+    }
+
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    this->m_localMove.ScheduleHeartbeat(static_cast<int32_t>(time));
+
+    return 1;
+}
+
+// ref: FUN_00717d90
+void CGUnit_C::SendTimeSkipped(uint32_t ms) {
+    if (this->m_localMove.IsSplineActive() || (this->m_localMove.m_moveFlags & 0x200)) {
+        return;
+    }
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_MOVE_TIME_SKIPPED));
+
+    SmartGUID guid;
+    guid = this->GetGUID();
+    msg << guid;
+    msg.Put(ms);
+
+    msg.Finalize();
+    ClientServices::Send(&msg);
+}
+
+// ref: FUN_0071f210
+void CGUnit_C::SendSplineDone(uint32_t time, uint32_t id) {
+    CDataStore msg;
+
+    this->WriteMovementHeader(time, CMSG_MOVE_SPLINE_DONE, msg, 0.0f, 0);
+    msg.Put(id);
+
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    this->m_localMove.ScheduleHeartbeat(static_cast<int32_t>(time));
+
+    if (auto input = InputControlGetActive()) {
+        input->ClearFlagBits16To19();
+        input->UpdatePlayerMovement(time, 1);
+    }
+}
+
+// ref: FUN_007413f0
+int32_t CGUnit_C::SendMovement(uint32_t time, int32_t opcode, uint8_t send, float value, uint32_t counter,
+                               WOWGUID guid, uint8_t seat) {
+    this->UpdateMovementEffects();
+
+    bool standCheck;
+
+    switch (opcode) {
+        case MSG_MOVE_STOP:
+        case MSG_MOVE_STOP_STRAFE:
+        case MSG_MOVE_START_TURN_LEFT:
+        case MSG_MOVE_START_TURN_RIGHT:
+        case MSG_MOVE_STOP_TURN:
+        case MSG_MOVE_SET_RUN_MODE:
+        case MSG_MOVE_SET_WALK_MODE:
+        case 0xd7:
+        case 0xd8:
+        case 0xd9:
+        case MSG_MOVE_SET_FACING:
+        case 0x45a:
+        case 0x45b:
+            standCheck = false;
+            break;
+
+        case MSG_MOVE_START_PITCH_UP:
+        case MSG_MOVE_START_PITCH_DOWN:
+        case MSG_MOVE_STOP_PITCH:
+        case MSG_MOVE_SET_PITCH:
+            // A pitch report is only meaningful swimming or flying.
+            if (!(this->m_localMove.m_moveFlags & 0x2200000) && !(this->m_localMove.m_moveFlags2 & 0x20)) {
+                return 0;
+            }
+
+            standCheck = false;
+            break;
+
+        default:
+            standCheck = true;
+            break;
+    }
+
+    if (standCheck && !IsMovementAckOrNotActiveMoverOpcode(opcode) && this->GetStandStateByte()
+        && this->IsA(TYPE_PLAYER)) {
+        // FUN_006dcb40, Player_C's stand-up: moving stands a sitting player up. The player's
+        // stand-state request is the Player_C port's.
+    }
+
+    int32_t sent = 0;
+
+    if (send) {
+        switch (opcode) {
+            case MSG_MOVE_START_TURN_LEFT:
+            case MSG_MOVE_START_TURN_RIGHT:
+            case MSG_MOVE_STOP_TURN:
+                if (this->m_localMove.m_moveFlags2 & 0x8) {
+                    sent = this->DeferTurn(time, opcode);
+                    goto posted;
+                }
+                break;
+
+            case MSG_MOVE_START_PITCH_UP:
+            case MSG_MOVE_START_PITCH_DOWN:
+            case MSG_MOVE_STOP_PITCH:
+                if (this->m_localMove.m_moveFlags2 & 0x10) {
+                    sent = this->DeferPitch(time, opcode);
+                    goto posted;
+                }
+                break;
+
+            case MSG_MOVE_SET_FACING:
+            case MSG_MOVE_SET_PITCH:
+                if (this->IsOrientationUnchanged()) {
+                    goto posted;
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        if (this->SendMovementStatus(time, opcode, value, counter, guid, seat)) {
+            sent = 1;
+        }
+
+        if (this->FlushDeferredMovement(time)) {
+            sent = 1;
+        }
+    }
+
+posted:
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        auto input = InputControlGetActive();
+
+        switch (opcode) {
+            case MSG_MOVE_TELEPORT_ACK:
+                if (input) {
+                    input->ClearFlagBits16To19();
+                    input->UpdatePlayerMovement(time, 1);
+                }
+
+                this->m_teleportAckTime = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+                // The camera's reset on the player after a teleport (FUN_005186a0) is the camera
+                // port's.
+                this->OnMovementPacketSent(opcode);
+
+                return sent;
+
+            case CMSG_MOVE_SET_FLY:
+                if (input) {
+                    input->UpdatePlayerMovement(time, 1);
+                }
+
+                this->OnMovementPacketSent(opcode);
+
+                return sent;
+
+            case CMSG_FORCE_MOVE_ROOT_ACK:
+            case CMSG_FORCE_MOVE_UNROOT_ACK:
+                if (input) {
+                    input->UpdatePlayerMovement(time, 1);
+                }
+
+                [[fallthrough]];
+
+            case MSG_MOVE_STOP:
+            case MSG_MOVE_STOP_STRAFE:
+                // FUN_0071b1e0: the interaction the player walked toward runs when it stops; it
+                // is click-to-move's and the interaction port's.
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    this->OnMovementPacketSent(opcode);
+
+    return sent;
+}
+
+// ref: FUN_00721300
+// NOT PORTED: the ObjectEffect movement states (FUN_006f7270 / FUN_006f61d0 switch states 0x25 ..
+// 0x42 on and off by how the unit moves). ObjectEffect.cpp is not ported, so there is nothing for
+// the states to drive yet.
+void CGUnit_C::UpdateMovementEffects() {
+}
+
+// ref: FUN_0073ed10
+// PARTIAL: the fly-mount takeoff and landing poses (0x345, 0x346) wait on the mount port; every
+// opcode that only re-chooses the animation is handled.
+void CGUnit_C::OnMovementPacketSent(int32_t opcode) {
+    switch (opcode) {
+        case MSG_MOVE_START_FORWARD:
+        case MSG_MOVE_START_BACKWARD:
+        case MSG_MOVE_START_STRAFE_LEFT:
+        case MSG_MOVE_START_STRAFE_RIGHT:
+        case MSG_MOVE_START_SWIM:
+        case MSG_MOVE_START_ASCEND:
+        case MSG_MOVE_START_DESCEND:
+        case 0x341:
+            // FUN_0072afe0: a move ends click-to-move's pose and an emote's attachment.
+            this->m_animFlags &= 0xffffbfff;
+            this->UpdateAnimation(0, 0xffffffff);
+            return;
+
+        case MSG_MOVE_STOP:
+        case MSG_MOVE_STOP_STRAFE:
+        case MSG_MOVE_START_TURN_LEFT:
+        case MSG_MOVE_START_TURN_RIGHT:
+        case MSG_MOVE_STOP_TURN:
+        case MSG_MOVE_TELEPORT:
+        case MSG_MOVE_TELEPORT_ACK:
+        case MSG_MOVE_STOP_SWIM:
+        case 0xd9:
+        case 0xe9:
+        case 0xec:
+        case 0x31a:
+        case 0x342:
+        case MSG_MOVE_STOP_ASCEND:
+        case 0x3ad:
+        case CMSG_MOVE_GRAVITY_DISABLE_ACK:
+            this->UpdateAnimation(0, 0xffffffff);
+            return;
+
+        case MSG_MOVE_JUMP:
+            this->m_animFlags &= 0xffffbfff;
+            this->PlayUnitSound(0xb, 1);
+
+            if (this->m_vehicle && this->m_vehicle->ControlsPassengerAnimation()) {
+                return;
+            }
+
+            this->SetAnimation(0x25, 0);
+            return;
+
+        case MSG_MOVE_SET_RUN_MODE:
+        case MSG_MOVE_SET_WALK_MODE:
+        case 0xe3:
+        case 0xe5:
+        case 0xe7:
+        case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:
+        case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:
+            if (this->m_localMove.m_moveFlags & 0xc0100f) {
+                this->UpdateAnimation(0, 0xffffffff);
+            }
+            return;
+
+        case 0xf0:
+            if (this->m_vehicle && this->m_vehicle->ControlsPassengerAnimation()) {
+                return;
+            }
+
+            this->SetAnimation(0x28, 0);
+            return;
+
+        default:
+            return;
+    }
+}
+
+// ref: FUN_0073ad00
+// The fall pose (40, Fall) for a living unit falling far, unless the vehicle it rides or the
+// seat it sits in poses it.
+void CGUnit_C::UpdateFallAnimation() {
+    if (!(this->m_localMove.m_moveFlags & 0x2000) || this->m_unit->health < 1) {
+        return;
+    }
+
+    if (this->m_vehicle && this->m_vehicle->ControlsPassengerAnimation()) {
+        return;
+    }
+
+    this->SetAnimation(0x28, 0);
+}
+
+// ref: FUN_0073d2b0
+// PARTIAL: a vehicle seat's own landing (FUN_007571c0) and the passenger states 4 and 5 are the
+// vehicle port's.
+void CGUnit_C::PlayLandingAnimation(uint32_t oldFlags, uint32_t jumping) {
+    uint32_t heldPose = this->m_animFlags & 0x1000000;
+    this->m_animFlags &= 0xfeffffff;
+
+    if (this->m_animFlags & 0x4000000) {
+        this->SetAnimation(0x1d4, 0);
+        return;
+    }
+
+    if (jumping || (oldFlags & 0x2000) || heldPose) {
+        if (this->m_localMove.m_moveFlags & 0x2200000) {
+            this->UpdateAnimation(0, 0xffffffff);
+            return;
+        }
+
+        uint32_t moveFlags = this->m_localMove.m_moveFlags;
+
+        if (!(moveFlags & 0xf)) {
+            this->PlayUnitSound(0xc, 1);
+            this->SetAnimation(0x27, 0);
+            return;
+        }
+
+        if ((moveFlags & 0x2) || (moveFlags & 0x100)) {
+            this->UpdateAnimation(0, 0xffffffff);
+            return;
+        }
+
+        this->UpdateAnimation(0, 0xffffffff);
+        return;
+    }
+
+    if ((this->m_localMove.m_moveFlags ^ oldFlags) & 0x40f) {
+        this->UpdateAnimation(0, 0xffffffff);
+    }
+}
+
+// ref: FUN_0073d3d0
+// PARTIAL: the long-fall landing sound and camera shake (FUN_00755270 kind 2) come after the
+// pose in the reference; the camera-shake port carries them.
+void CGUnit_C::OnLanded(uint32_t oldFlags, uint32_t jumping) {
+    this->PlayLandingAnimation(oldFlags, jumping);
+}
+
+// ref: FUN_0073d4a0
+// MSG_MOVE_FALL_LAND, when the fall was the client's or long enough to matter.
+int32_t CGUnit_C::AcknowledgeLanding(uint32_t time, uint32_t oldFlags, uint16_t oldFlags2, uint32_t jumping) {
+    (void)oldFlags2;
+
+    this->OnLanded(oldFlags, jumping);
+
+    int32_t sent = 0;
+
+    if ((this->m_stateFlags & 0x80) || 1.8493989706039429f < this->m_localMove.GetLandingFallHeight()) {
+        if (this->SendMovementStatus(time, MSG_MOVE_FALL_LAND, 0.0f, 0, 0, 0xff)) {
+            sent = 1;
+        }
+    }
+
+    if (this->m_stateFlags & 0x100000) {
+        this->m_stateFlags &= 0xffefffff;
+        // FUN_006d2950(1): the player's deferred stand-state change.
+    }
+
+    return sent;
+}
+
+// ref: FUN_0073ab20
+// PARTIAL: the vehicle's own step (FUN_00758130), the area id from the world object
+// (FUN_0077f260, +0xa40), and the flight (FUN_0073a890) and swimming (FUN_00730d10) transitions
+// are the next movement items; the step's placement is ported.
+void CGUnit_C::OnMovementStep(uint32_t time, int32_t a2, int32_t a3) {
+    (void)time;
+    (void)a2;
+    (void)a3;
+
+    this->UpdateWorldObject(0);
+}
+
+int32_t CGUnit_C::GetFloorHeight(float* height) {
+    uint32_t fieldBC;
+    uint32_t a4;
+
+    return CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, height, &a4);
+}
+
+// ref: FUN_00717c50
+// PARTIAL: a transport's own movement hook (FUN_006e8f70, through the transport game object's
+// type slot 0xa8) and the vehicle's (FUN_00747f40) are the transport and vehicle ports'.
+void CGUnit_C::SetActiveMover(WOWGUID guid) {
+    CGUnit_C::s_activeMover = guid;
+
+    CDataStore msg;
+    msg.Put(static_cast<uint32_t>(CMSG_SET_ACTIVE_MOVER));
+    msg.Put(guid);
+    msg.Finalize();
+    ClientServices::Send(&msg);
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    if (auto input = InputControlGetActive()) {
+        input->UpdatePlayerMovement(now, 1);
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x1f68));
+
+    if (unit && (unit->m_localMove.m_moveFlags & 0xc0100f)) {
+        unit->m_localMove.ScheduleHeartbeat(static_cast<int32_t>(now));
+    }
 }

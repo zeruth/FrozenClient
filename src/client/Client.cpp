@@ -14,6 +14,8 @@
 #include "object/client/CEffect.hpp"
 #include "object/client/DBCacheInstances.hpp"
 #include "client/Client.hpp"
+#include "object/client/CMovement_C.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include <storm/Log.hpp>
 #include "ui/InputControl.hpp"
@@ -274,6 +276,8 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     UnitInitialize();
     // The game object module's start (FUN_007140a0 at 0x00405630).
     GameObjectInitialize();
+    // The player module's start (FUN_006e8ee0 at 0x00405635).
+    PlayerInitialize();
 
     // TODO
 
@@ -285,6 +289,9 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
 
     EventRegister(EVENT_ID_IDLE, ClientIdle);
     ClientInitializeGameTime();
+
+    // The movement globals and the per-frame movement update (FUN_00401520 at 0x00405662).
+    MovementStartWorld();
 
     // TODO
 

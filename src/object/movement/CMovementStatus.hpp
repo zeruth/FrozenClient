@@ -26,7 +26,8 @@ struct CMovementStatus {
     float float4C = 0.0f;
     float float50 = 0.0f;
     uint32_t uint54 = 0;
-    // TODO
+    // ref +0x58: the second transport time, present when move-flags-2 0x400 is set.
+    uint32_t uint58 = 0;
 
     CMovementStatus();
 
@@ -34,5 +35,8 @@ struct CMovementStatus {
 };
 
 CDataStore& operator>>(CDataStore& msg, CMovementStatus& move);
+
+// ref: FUN_004f4ed0
+CDataStore& operator<<(CDataStore& msg, const CMovementStatus& move);
 
 #endif

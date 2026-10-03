@@ -247,4 +247,7 @@ const CreatureModelDataRec* Player_C_GetModelName(uint32_t race, uint32_t sex);
 // 0x40 keyring (86..117), 0x200 currency tokens (118..149).
 bool InventorySlotInLocations(uint32_t slot, uint32_t mask);
 
+// ref: FUN_006e8ee0
+void PlayerInitialize();
+
 #endif

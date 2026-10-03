@@ -12,6 +12,7 @@
 #include "util/Log.hpp"
 #include "world/CWFrustum.hpp"
 #include "world/WorldFacets.hpp"
+#include "world/map/CMapCollide.hpp"
 #include "console/Console.hpp"
 #include "console/Command.hpp"
 #include "world/Shadow.hpp"
@@ -1758,4 +1759,42 @@ void CWorld::UpdateDayNight(int32_t force, const C3Vector* cameraPos) {
 
 float CWorld::GetHorizonDistance() {
     return CWorld::s_horizonFarClipScale * CWorld::s_farClip;
+}
+
+// ref: FUN_00783910
+bool CWorld::QueryFacets(const CAaBox& sweep, const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
+    list.facets.SetCount(0);
+    list.owners.SetCount(0);
+
+    if (hitFlags) {
+        *hitFlags = 0;
+    }
+
+    if (!(flags & 0x4000)) {
+        return MapQueryBoxFacets(sweep, box, list, flags, hitFlags);
+    }
+
+    // The walkable-only form gathers into a list of its own (0x00cd8500) and keeps what faces up.
+    static CFacetList s_walkable;
+    s_walkable.facets.SetCount(0);
+    s_walkable.owners.SetCount(0);
+
+    if (!MapQueryBoxFacets(sweep, box, s_walkable, flags, hitFlags)) {
+        return false;
+    }
+
+    for (uint32_t i = 0; i < s_walkable.facets.Count(); i++) {
+        // 0x00a37f0c: cos 50 degrees.
+        if (0.6427876353263855f <= s_walkable.facets[i].plane.n.z) {
+            *list.facets.New() = s_walkable.facets[i];
+            *list.owners.New() = s_walkable.owners[i];
+        }
+    }
+
+    return true;
+}
+
+// ref: FUN_00783a40
+bool CWorld::QueryFacets(const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags) {
+    return CWorld::QueryFacets(box, box, list, flags, hitFlags);
 }

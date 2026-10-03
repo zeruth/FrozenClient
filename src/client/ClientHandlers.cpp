@@ -2,6 +2,7 @@
 #include "object/client/SpellVisuals.hpp"
 #include "object/client/CEffect.hpp"
 #include "client/ClientHandlers.hpp"
+#include "object/client/CMovement_C.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include "Client.hpp"
@@ -47,7 +48,13 @@ void LoadNewWorld(const void* eventData, void* param) {
 
     // TODO
 
+    // The old world's movement update goes (0x00403b8c).
+    EventUnregister(EVENT_ID_IDLE, &MovementPoll);
+
     ClntObjMgrInitializeStd(s_newZoneID);
+
+    // The new manager's movement (FUN_00401520 at 0x00403bfe).
+    MovementStartWorld();
 
     // TODO
 

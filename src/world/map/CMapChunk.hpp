@@ -168,6 +168,8 @@ class CMapChunk : public CMapBaseObj {
         // frustum (already in the chunk's own space) does not reject, appended to the list in
         // world space. ref: FUN_007d8e00
         void GatherFacets(const CiRect& cells, const CWFrustum& frustum, CFacetList& list);
+        // ref: FUN_007d8840
+        void GatherBoxFacets(const CiRect& cells, const CAaBox& box, CFacetList& list);
         // The surface height of the first of the chunk's liquid layers that covers the
         // cell point `cells` (map cells, from y then from x). ref: FUN_007c55d0
         bool GetLiquidHeight(const float* cells, float* height);

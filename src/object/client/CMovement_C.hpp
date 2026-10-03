@@ -31,6 +31,56 @@ class CPassenger;
 // false when the transport is not there.
 int32_t MovementNotifyTransport(CPassenger* passenger, WOWGUID transport, int32_t mode);
 
+// The movement globals, one per object manager (the reference reaches them through the TLS object
+// manager, +0xd4; 0x140 bytes, allocated in Movement.cpp line 0x399).
+struct CMovementGlobals {
+    char m_logName[0x104];          // ref +0x0, the movement log's file name
+    void* m_logFile = nullptr;      // ref +0x104
+    uint32_t m_uint108 = 0;
+    uint32_t m_uint110 = 0;
+    uint32_t m_uint114 = 0;
+    // ref +0x118: the units with movement to integrate (link at CMovementShared +0x30).
+    STORM_EXPLICIT_LIST(CMovementShared, m_moverLink) m_movers;
+    uint32_t m_flags = 0;           // ref +0x124, bit 0: the clock below is valid
+    uint32_t m_lastTime = 0;        // ref +0x128, the time the movers were last brought up to
+    uint32_t m_stepTime = 0;        // ref +0x12c, the time of the step being integrated
+    uint32_t m_transportTime = 0;   // ref +0x130
+    int32_t m_transportTimeLatched = 0; // ref +0x134
+    uint32_t m_transportTime2 = 0;  // ref +0x138
+    uint32_t m_nextHeartbeat = 0;   // ref +0x13c, when the local player sends its next heartbeat
+};
+
+// ref: FUN_0074b330
+// The current object manager's movement globals.
+CMovementGlobals* MovementGetGlobals();
+
+// ref: FUN_006e8f90
+// The movers' clock, when it is valid.
+int32_t MovementGetLastTime(uint32_t* time);
+
+// ref: FUN_006ec2c0
+// Make the movement globals for the current object manager and start their clock.
+void MovementInitialize(const char* logName);
+
+// ref: FUN_00401520
+// The world's movement start: the log name from the registry, the globals, and the per-frame
+// update on the poll event.
+void MovementStartWorld();
+
+// ref: FUN_006f1490
+// The per-frame update, on the poll event: bring every mover up to now.
+int32_t MovementPoll(const void* data, void* param);
+
+// ref: FUN_006f13e0
+void MovementUpdateMovers(uint32_t now, uint32_t last);
+
+// ref: FUN_007b5020
+// Put a movement on the movers list, at the tail.
+void MovementLinkMover(CMovementShared* move);
+
+// Return an event to the free list (the tail of FUN_006ef860's loop, and FUN_006eb4e0).
+void MoveEventFree(CPlayerMoveEvent* event);
+
 class CMovement_C : public CMovementData_C {
     public:
         // Public member functions
@@ -38,29 +88,6 @@ class CMovement_C : public CMovementData_C {
             : CMovementData_C(position, facing, guid, unit) {};
 };
 
-// A queued movement event, 0x58 bytes in the reference. Only the fields the ported code reads are
-// named; the rest of the block is not identified yet.
-struct CPlayerMoveEvent {
-    TSLink<CPlayerMoveEvent> link;  // ref +0x0
-    int32_t time;                   // ref +0x8, the queue's sort key
-    int32_t type;                   // ref +0xc
-    // ref +0x10, +0x14, +0x18. The allocator zeroes these three explicitly on a fresh event and
-    // leaves them alone on a recycled one, so they are named here even though what they carry is
-    // not established -- the zeroing is the only thing anything does with them so far.
-    float float10;
-    float float14;
-    float float18;
-    // ref +0x50, one byte, cleared on EVERY event the allocator hands out, recycled or not.
-    uint8_t byte50;
-    // TODO the rest of the 0x58 bytes
-};
-
-// THE REFERENCE'S RECORD IS 0x58 BYTES AND FROZEN'S IS NOT, and it cannot be: TSLink holds two
-// pointers, which are eight bytes each here and four there, so every offset past the link is
-// shifted and no amount of padding recovers the original layout. The reference offsets above are
-// therefore documentation of where a field came FROM, not a claim about where it sits now.
-
-typedef STORM_EXPLICIT_LIST(CPlayerMoveEvent, link) CPlayerMoveEventList;
 
 // ref: FUN_006ebc70
 // Take an event off the free list, or make one, and stamp it with a time and a type.

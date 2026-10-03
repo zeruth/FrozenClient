@@ -20,6 +20,7 @@ CMovementStatus::CMovementStatus() {
     this->float4C = 0.0f;
     this->float50 = 0.0f;
     this->uint54 = 0;
+    this->uint58 = 0;
 }
 
 uint32_t CMovementStatus::Skip(CDataStore* msg) {
@@ -72,11 +73,29 @@ CDataStore& operator>>(CDataStore& msg, CMovementStatus& move) {
     msg >> move.position28;
     msg.Get(move.facing34);
 
+    // The transport block, in the order the writer (FUN_004f4ed0) puts it.
     if (move.moveFlags & 0x200) {
-        // TODO
+        SmartGUID transport;
+        msg >> transport;
+        move.transport = transport;
+
+        msg >> move.position18;
+        msg.Get(move.facing24);
+        msg.Get(move.uint54);
+        msg.Get(move.byte16);
+
+        if (move.uint14 & 0x400) {
+            msg.Get(move.uint58);
+        } else {
+            move.uint58 = 0;
+        }
     } else {
         move.transport = 0;
-        // TODO
+        move.position18 = { 0.0f, 0.0f, 0.0f };
+        move.facing24 = 0.0f;
+        move.uint54 = 0;
+        move.uint58 = 0;
+        move.byte16 = 0xFF;
     }
 
     if ((move.moveFlags & (0x200000 | 0x2000000)) || (move.uint14 & 0x20)) {
@@ -96,6 +115,53 @@ CDataStore& operator>>(CDataStore& msg, CMovementStatus& move) {
 
     if (move.moveFlags & 0x4000000) {
         msg.Get(move.float50);
+    }
+
+    return msg;
+}
+
+// ref: FUN_004f4ed0
+CDataStore& operator<<(CDataStore& msg, const CMovementStatus& move) {
+    msg.Put(move.moveFlags);
+    msg.Put(move.uint14);
+    msg.Put(move.uint0);
+    msg.Put(move.position28.x);
+    msg.Put(move.position28.y);
+    msg.Put(move.position28.z);
+    msg.Put(move.facing34);
+
+    if (move.moveFlags & 0x200) {
+        SmartGUID transport;
+        transport = move.transport;
+        msg << transport;
+
+        msg.Put(move.position18.x);
+        msg.Put(move.position18.y);
+        msg.Put(move.position18.z);
+        msg.Put(move.facing24);
+        msg.Put(move.uint54);
+        msg.Put(move.byte16);
+
+        if (move.uint14 & 0x400) {
+            msg.Put(move.uint58);
+        }
+    }
+
+    if ((move.moveFlags & 0x2200000) || (move.uint14 & 0x20)) {
+        msg.Put(move.float38);
+    }
+
+    msg.Put(move.uint3C);
+
+    if (move.moveFlags & 0x1000) {
+        msg.Put(move.float40);
+        msg.Put(move.float44);
+        msg.Put(move.float48);
+        msg.Put(move.float4C);
+    }
+
+    if (move.moveFlags & 0x4000000) {
+        msg.Put(move.float50);
     }
 
     return msg;

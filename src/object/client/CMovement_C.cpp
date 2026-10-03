@@ -1,6 +1,11 @@
 #include "object/client/CGObject_C.hpp"
+#include "object/client/CGUnit_C.hpp"
+#include "object/client/ClntObjMgr.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CMovement_C.hpp"
+#include "event/Event.hpp"
+#include <common/Time.hpp>
+#include <storm/String.hpp>
 #include "client/ClientServices.hpp"
 #include "net/Types.hpp"
 #include <common/DataStore.hpp>
@@ -48,16 +53,14 @@ CPlayerMoveEvent* MoveEventAllocate(int32_t time, int32_t type) {
 
         // Already zero from the allocation flag; the reference stores them anyway and so does
         // this, because the flag is the thing most likely to be changed by a later reader.
-        event->float10 = 0.0f;
-        event->float14 = 0.0f;
-        event->float18 = 0.0f;
+        event->position = { 0.0f, 0.0f, 0.0f };
 
         new (&event->link) TSLink<CPlayerMoveEvent>();
     }
 
     event->time = time;
     event->type = type;
-    event->byte50 = 0;
+    event->hasStatus = 0;
 
     return event;
 }
@@ -192,4 +195,140 @@ float MovementGetTransportFacing(WOWGUID transport) {
     }
 
     return object->GetFacing();
+}
+
+// ref: FUN_0074b330
+CMovementGlobals* MovementGetGlobals() {
+    auto mgr = ClntObjMgrGetCurrent();
+
+    return mgr ? mgr->m_movementGlobals : nullptr;
+}
+
+// ref: FUN_006e8f90
+int32_t MovementGetLastTime(uint32_t* time) {
+    auto globals = MovementGetGlobals();
+
+    if (globals && (globals->m_flags & 0x1)) {
+        *time = globals->m_lastTime;
+        return 1;
+    }
+
+    return 0;
+}
+
+// ref: FUN_006ec2c0
+// The reference also registers the "SplineOpt" CVar here ("toggles use of spline coll
+// optimization"), which only the spline collision reads.
+void MovementInitialize(const char* logName) {
+    auto m = SMemAlloc(sizeof(CMovementGlobals), ".\\Movement.cpp", 0x399, 0x0);
+    auto globals = m ? new (m) CMovementGlobals() : nullptr;
+
+    if (auto mgr = ClntObjMgrGetCurrent()) {
+        mgr->m_movementGlobals = globals;
+    }
+
+    globals = MovementGetGlobals();
+
+    if (!globals) {
+        return;
+    }
+
+    SStrCopy(globals->m_logName, logName ? logName : "", sizeof(globals->m_logName));
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    globals->m_flags |= 0x1;
+    globals->m_stepTime = now;
+    globals->m_lastTime = now;
+}
+
+// ref: FUN_00401520
+// DIVERGENCE: the reference names the movement log from a registry value (FUN_00770720, with a
+// numbered "%04d.txt" fallback). The log is a debug aid nothing reads back, so frozen starts the
+// globals with an empty name.
+void MovementStartWorld() {
+    MovementInitialize("");
+
+    // 0x004015be: the poll's priority is the 2.0 at 0x00a4040c.
+    EventRegisterEx(EVENT_ID_IDLE, &MovementPoll, nullptr, 2.0f);
+}
+
+// ref: FUN_006f13e0
+// A unit whose server spline is enabled (0x8000000) is carried by it; the local player only
+// tells the server how much time went by.
+void MovementUpdateMovers(uint32_t now, uint32_t last) {
+    auto globals = MovementGetGlobals();
+
+    if (!globals) {
+        return;
+    }
+
+    auto move = globals->m_movers.Head();
+
+    while (move) {
+        auto next = globals->m_movers.Next(move);
+        auto data = static_cast<CMovementData_C*>(move);
+
+        if (!(move->m_moveFlags & 0x8000000)) {
+            data->Update(now, last);
+        } else if (data->IsActivePlayer()) {
+            data->m_owner->SendTimeSkipped(now - last);
+            globals->m_nextHeartbeat += now - last;
+        }
+
+        move = next;
+    }
+}
+
+// ref: FUN_006f1490
+// PARTIAL: the transports' own update (FUN_0074b6e0, the transport list at 0x00adb74c) comes
+// before the movers in the reference; frozen has no transport list yet.
+int32_t MovementPoll(const void* data, void* param) {
+    (void)data;
+    (void)param;
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    auto globals = MovementGetGlobals();
+
+    if (!globals) {
+        return 1;
+    }
+
+    int32_t elapsed = static_cast<int32_t>(now - globals->m_lastTime);
+
+    if (elapsed > 0) {
+        if (globals->m_movers.Head()) {
+            MovementUpdateMovers(now, globals->m_lastTime);
+        }
+
+        // The active mover's deferred turn and pitch reports.
+        auto mover = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, ".\\Movement.cpp", 0x37f));
+
+        if (mover) {
+            mover->SendDeferredMovement(now);
+        }
+
+        globals->m_stepTime = now;
+        globals->m_lastTime = now;
+    }
+
+    return 1;
+}
+
+// ref: FUN_007b5020
+void MovementLinkMover(CMovementShared* move) {
+    auto globals = MovementGetGlobals();
+
+    if (!globals) {
+        return;
+    }
+
+    globals->m_movers.LinkToTail(move);
+}
+
+void MoveEventFree(CPlayerMoveEvent* event) {
+    if (event->link.IsLinked()) {
+        event->link.Unlink();
+    }
+
+    s_moveEventFreeList.LinkToTail(event);
 }

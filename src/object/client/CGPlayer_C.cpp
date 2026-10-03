@@ -2,6 +2,7 @@
 #include "component/ComponentData.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include <common/Time.hpp>
 #include "db/Db.hpp"
 #include "object/Types.hpp"
 #include "object/client/ObjMgr.hpp"
@@ -613,7 +614,11 @@ void CGPlayer_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) 
     // TODO
 }
 
+// ref: FUN_006e7f50
 void CGPlayer_C::PostInitActivePlayer() {
+    // The player stands still until the server's first time sync (event 0x31 clears it).
+    this->m_localMove.m_moveFlags |= 0x200;
+
     // TODO
 
     if (ClntObjMgrGetPlayerType() == PLAYER_NORMAL) {
@@ -625,6 +630,12 @@ void CGPlayer_C::PostInitActivePlayer() {
     // TODO
 
     if (ClntObjMgrGetPlayerType() == PLAYER_NORMAL) {
+        // TODO
+
+        // FUN_00513880: the player is the active mover -- or the vehicle it controls, which the
+        // vehicle port brings in.
+        CGUnit_C::SetActiveMover(this->GetGUID());
+
         // TODO
 
         CGGameUI::EnterWorld();
@@ -704,4 +715,31 @@ bool InventorySlotInLocations(uint32_t slot, uint32_t mask) {
     }
 
     return true;
+}
+
+// ref: FUN_006dc010
+// SMSG_TIME_SYNC_REQUEST: the counter, answered through the player's movement queue so the answer
+// carries the time the movement had reached.
+int32_t PlayerTimeSyncRequestHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    (void)param;
+    (void)msgId;
+    (void)time;
+
+    uint32_t counter = 0;
+    msg->Get(counter);
+
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.cpp", 0xa0));
+
+    if (player) {
+        player->m_localMove.QueueTimeSync(static_cast<int32_t>(OsGetAsyncTimeMs()), counter);
+    }
+
+    return 1;
+}
+
+// ref: FUN_006e8ee0
+// PARTIAL: the reference registers some ninety Player_C message handlers here (FUN_006e83b0);
+// the time sync is the one movement needs.
+void PlayerInitialize() {
+    ClientServices::SetMessageHandler(SMSG_TIME_SYNC_REQUEST, PlayerTimeSyncRequestHandler, nullptr);
 }

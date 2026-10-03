@@ -27,3 +27,24 @@ CDataStore& operator>>(CDataStore& msg, SmartGUID& guid) {
 
     return msg;
 }
+
+// ref: FUN_0076dd00
+CDataStore& operator<<(CDataStore& msg, const SmartGUID& guid) {
+    uint32_t maskPos = msg.Size();
+    uint8_t mask = 0;
+
+    msg.Put(static_cast<uint8_t>(0));
+
+    for (int32_t i = 0; i < 8; i++) {
+        auto byte = static_cast<uint8_t>(guid.guid >> (i * 8));
+
+        if (byte) {
+            mask |= static_cast<uint8_t>(1 << i);
+            msg.Put(byte);
+        }
+    }
+
+    msg.Set(maskPos, mask);
+
+    return msg;
+}

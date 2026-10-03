@@ -189,6 +189,12 @@ class CWorld {
         // Every face in the hit-record pool as a world-space facet, with the owner pair beside
         // each one added. ref: FUN_00782740
         static void AddHitFacets(CFacetList& list, uint32_t owner0, uint32_t owner1);
+        // ref: FUN_00783910
+        // The collision triangles in `box` (MapQueryBoxFacets). Mask 0x4000 keeps only the
+        // walkable ones (normal z of at least cos 50 degrees) and their owners.
+        static bool QueryFacets(const CAaBox& sweep, const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
+        // ref: FUN_00783a40
+        static bool QueryFacets(const CAaBox& box, CFacetList& list, uint32_t flags, uint32_t* hitFlags);
         static void SetObjectHandler(HWORLDOBJECT object, void* handler, void* handlerParam);
         static int32_t GetObjectFloor(HWORLDOBJECT object, uint32_t* fieldBC, float* height, uint32_t* a4);
         static void UpdateWindowAndMap(const C3Vector& targetPos);

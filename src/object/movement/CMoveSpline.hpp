@@ -17,7 +17,8 @@ struct CMoveSpline {
     uint32_t start;
     // TODO
     uint32_t uint20 = 0;
-    // TODO
+    uint32_t uint24 = 0;
+    uint32_t uint28 = 0;  // the time along the spline
     uint32_t uint2C;
     uint32_t uint30;
     C3Spline_CatmullRom spline;

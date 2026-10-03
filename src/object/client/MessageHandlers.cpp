@@ -128,8 +128,8 @@ void PostMovementUpdate(CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
 
-    CClientMoveUpdate move;
-    *msg >> move;
+    CClientObjCreate init;
+    *msg >> init.move;
 
     if (guid == CGUnit_C::s_activeMover) {
         return;
@@ -142,7 +142,7 @@ void PostMovementUpdate(CDataStore* msg) {
         return;
     }
 
-    unit->PostMovementUpdate(move, unit->GetGUID() == CGUnit_C::s_activeMover);
+    unit->PostMovementUpdate(init, unit->GetGUID() == CGUnit_C::s_activeMover);
 
     if (reenable) {
         unit->Reenable();
