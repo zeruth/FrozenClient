@@ -118,6 +118,9 @@ LUA_API const char *lua_taintcreate;  /* taint new objects take while the code i
 #define LUA_TAINTLOG_READ	2
 LUA_API void (*lua_taintloghook) (lua_State *L, int access, const char *name, const char *taint);
 
+/* stamp the value at `idx' with a taint (securecall gives its results the caller's) */
+LUA_API void (lua_settaint) (lua_State *L, int idx, const char *taint);
+
 
 /*
 ** state manipulation

@@ -18,6 +18,7 @@ int32_t issecurevariable(lua_State*);
 int32_t forceinsecure(lua_State*);
 int32_t securecall(lua_State*);
 int32_t hooksecurefunc(lua_State*);
+int32_t FrameScript_HookFunction(lua_State*);
 int32_t debugload(lua_State*);
 int32_t debuginfo(lua_State*);
 int32_t debugprint(lua_State*);

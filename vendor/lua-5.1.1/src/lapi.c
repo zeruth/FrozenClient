@@ -1105,6 +1105,12 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud) {
 }
 
 
+/* ref: FUN_0084f0d0 */
+LUA_API void lua_settaint (lua_State *L, int idx, const char *taint) {
+  index2adr(L, idx)->taint = taint;
+}
+
+
 /* ref: FUN_0084f0f0 */
 LUA_API void *lua_newuserdata (lua_State *L, size_t size) {
   Udata *u;

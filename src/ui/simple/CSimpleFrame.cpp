@@ -1037,7 +1037,7 @@ void CSimpleFrame::LoadXML_Scripts(const XMLNode* root, CStatus* status) {
                 script->luaRef = 0;
             }
 
-            script->unk = nullptr;
+            script->taint = nullptr;
 
 
             if (!SStrCmpI(node->GetName(), "OnChar", 0x7FFFFFFFu) && !(this->m_eventmask & 1)) {

@@ -13,7 +13,7 @@ class FrameScript_Object {
 
         struct ScriptIx {
             int32_t luaRef = 0;
-            const char* unk = nullptr;
+            const char* taint = nullptr;  // the taint the handler was set under
             ~ScriptIx();
         };
 
@@ -50,6 +50,7 @@ class FrameScript_Object {
         void RegisterScriptObject(const char* name);
         void RunScript(ScriptIx const& script, int32_t argCount, const char* a4);
         int32_t SetScript(lua_State* L);
+        int32_t HookScript(lua_State* L);
         void UnregisterScriptEvent(const char* name);
         void UnregisterScriptObject(const char* name);
 };

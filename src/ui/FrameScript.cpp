@@ -165,15 +165,14 @@ void FrameScript_Destroy() {
     // TODO
 }
 
-void FrameScript_Execute(const char* source, const char* filename, const char* a3) {
-    /* TODO taint tracking
-    v3 = lua_taintexpected++ == -1;
-    v8 = *(_DWORD *)lua_tainted;
-
-    if (!v3 && !lua_taintedclosure) {
-        *(_DWORD *)lua_tainted = a3;
+// ref: FUN_00819210
+// Runs a chunk of source under `taint'.
+void FrameScript_Execute(const char* source, const char* filename, const char* taint) {
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = taint;
     }
-    */
 
     lua_State* L = FrameScript::s_context;
     size_t len = SStrLen(source);
@@ -190,26 +189,36 @@ void FrameScript_Execute(const char* source, const char* filename, const char* a
         lua_settop(L, -2);
     }
 
-    /* TODO taint tracking
     if (lua_taintexpected && !lua_taintedclosure) {
-        *(_DWORD *)lua_tainted = v8;
+        lua_tainted = savedTaint;
     }
-
-    v7 = lua_taintexpected - 1;
-    lua_taintexpected = v7;
-
-    if (v7 <= 0) {
+    if (--lua_taintexpected <= 0) {
         lua_taintexpected = 0;
     }
-    */
 }
 
 // ref: FUN_00819ea0
-void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32_t argCount, const char* a4, FrameScript_EventObject* event) {
+// Runs a script handler: the globals this, event and arg1..argN are set (secure, outside any
+// taint) for the old-style handlers, the function runs under the taint it was set under, and the
+// globals are put back. With script profiling on, the time is charged to the event and the total.
+void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32_t argCount, const char* taint, FrameScript_EventObject* event) {
     lua_State* L = FrameScript::s_context;
 
-    int32_t v20 = 1 - argCount + lua_gettop(L);
-    int32_t v19 = argCount;
+    int64_t started = 0;
+    if (FrameScript::s_scriptProfileEnabled) {
+        started = OsGetAsyncClocks();
+    }
+
+    int32_t firstArgIndex = 1 - argCount + lua_gettop(L);
+    int32_t callArgs = argCount;
+
+    // setting the globals is secure work, whatever is running
+    auto savedExpected = lua_taintexpected;
+    auto savedTaint = lua_tainted;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
+    lua_taintexpected = 0;
 
     lua_checkstack(L, argCount + 2);
 
@@ -220,17 +229,16 @@ void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32
             name = "<unnamed>";
         }
 
-        // TODO
-        // v6 = alloca(SStrLen(name) + 5);
-        // v17 = (char *)&v14;
-        // SStrCopy((char *)&v14, "DBG:", 0x7FFFFFFF);
-        // SStrCopy(v17 + 4, name, 0x7FFFFFFF);
+        // "DBG:<name>": built on the stack by the reference and never used
+        auto debugName = static_cast<char*>(alloca(SStrLen(name) + 5));
+        SStrCopy(debugName, "DBG:", STORM_MAX_STR);
+        SStrCopy(debugName + 4, name, STORM_MAX_STR);
 
         lua_pushstring(L, "this");
         lua_rawget(L, LUA_GLOBALSINDEX);
 
         if (!objectThis->lua_registered) {
-            objectThis->RegisterScriptObject(0);
+            objectThis->RegisterScriptObject(nullptr);
         }
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, objectThis->lua_objectRef);
@@ -242,7 +250,7 @@ void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32
     if (event) {
         lua_pushstring(L, "event");
         lua_rawget(L, LUA_GLOBALSINDEX);
-        lua_pushvalue(L, v20);
+        lua_pushvalue(L, firstArgIndex);
         lua_pushstring(L, "event");
         lua_insert(L, -2);
         lua_rawset(L, LUA_GLOBALSINDEX);
@@ -250,27 +258,35 @@ void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32
 
     static char argName[] = { 'a', 'r', 'g', '0', 0, 0, 0 };
 
-    int32_t firstArg = event ? 1 : 0;
     int32_t argId = 0;
 
-    if (firstArg < argCount) {
-        for (int32_t i = firstArg; i < argCount; i++) {
-            argId++;
+    for (int32_t i = event ? 1 : 0; i < argCount; i++) {
+        argId++;
 
-            if (argId >= 10) {
-                SStrPrintf(&argName[3], 3, "%d", argId);
-            } else {
-                argName[3] = '0' + argId;
-                argName[4] = 0;
-            }
-
-            lua_pushstring(L, argName);
-            lua_rawget(L, LUA_GLOBALSINDEX);
-            lua_pushvalue(L, v20 + i);
-            lua_pushstring(L, argName);
-            lua_insert(L, -2);
-            lua_rawset(L, LUA_GLOBALSINDEX);
+        if (argId < 10) {
+            argName[3] = '0' + argId;
+            argName[4] = 0;
+        } else {
+            SStrPrintf(&argName[3], 3, "%d", argId);
         }
+
+        lua_pushstring(L, argName);
+        lua_rawget(L, LUA_GLOBALSINDEX);
+        lua_pushvalue(L, firstArgIndex + i);
+        lua_pushstring(L, argName);
+        lua_insert(L, -2);
+        lua_rawset(L, LUA_GLOBALSINDEX);
+    }
+
+    if (savedExpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+
+    // the handler runs under its own taint
+    auto callerTaint = lua_tainted;
+    lua_taintexpected = savedExpected + 1;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = taint;
     }
 
     lua_checkstack(L, argCount + 3);
@@ -280,29 +296,35 @@ void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32
 
     if (objectThis) {
         if (!objectThis->lua_registered) {
-            objectThis->RegisterScriptObject(0);
+            objectThis->RegisterScriptObject(nullptr);
         }
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, objectThis->lua_objectRef);
-        v19 = argCount + 1;
+        callArgs = argCount + 1;
     }
 
-    for (int32_t i = 0; i < argCount; ++i) {
-        lua_pushvalue(L, v20 + i);
+    for (int32_t i = 0; i < argCount; i++) {
+        lua_pushvalue(L, firstArgIndex + i);
     }
 
-    if (lua_pcall(L, v19, 0, -2 - v19)) {
+    if (lua_pcall(L, callArgs, 0, -2 - callArgs)) {
         lua_settop(L, -2);
     }
 
     lua_settop(L, -2);
 
+    // restoring the globals is secure work again
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = callerTaint;
+    }
+    lua_taintexpected = 0;
+
     for (int32_t i = argId; i > 0; i--) {
-        if (i >= 10) {
-            SStrPrintf(&argName[3], 3, "%d", i);
-        } else {
+        if (i < 10) {
             argName[3] = '0' + i;
             argName[4] = 0;
+        } else {
+            SStrPrintf(&argName[3], 3, "%d", i);
         }
 
         lua_pushstring(L, argName);
@@ -322,7 +344,19 @@ void FrameScript_Execute(int32_t function, FrameScript_Object* objectThis, int32
         lua_rawset(L, LUA_GLOBALSINDEX);
     }
 
+    lua_taintexpected = savedExpected;
+
     lua_settop(L, -1 - argCount);
+
+    if (FrameScript::s_scriptProfileEnabled) {
+        int64_t elapsed = OsGetAsyncClocks() - started;
+
+        if (event) {
+            event->timeUsed += elapsed;
+        }
+
+        FrameScript::s_scriptTimeUsed += elapsed;
+    }
 }
 
 int32_t FrameScript_ExecuteBuffer(const char* buffer, size_t bufferBytes, const char* bufferName, CStatus* status, const char* a5) {
@@ -901,7 +935,7 @@ void FrameScript_SignalEvent(uint32_t index, lua_State* L, int32_t argCount) {
                 lua_pushvalue(L, -argCount);
             }
 
-            FrameScript_Execute(script->luaRef, node->listener, argCount, script->unk, event);
+            FrameScript_Execute(script->luaRef, node->listener, argCount, script->taint, event);
         }
 
         node = node->Next();
@@ -932,12 +966,12 @@ void FrameScript_SignalEvent(uint32_t index, const char* format, ...) {
     va_list args;
     va_start(args, format);
 
-    // TODO
-    // v6 = lua_taintexpected++ == -1;
-    // v18 = lua_tainted;
-    // if (!v6 && !lua_taintedclosure) {
-    //     lua_tainted = 0;
-    // }
+    // an event's arguments are secure values
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
 
     FrameScript_PushEventName(index);
 
@@ -948,13 +982,12 @@ void FrameScript_SignalEvent(uint32_t index, const char* format, ...) {
 
     lua_settop(FrameScript::s_context, -1 - argCount);
 
-    // TODO
-    // if (lua_taintexpected && !lua_taintedclosure) {
-    //     lua_tainted = v18;
-    // }
-    // if (--lua_taintexpected <= 0) {
-    //     lua_taintexpected = 0;
-    // }
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
 
     va_end(args);
 }

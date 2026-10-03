@@ -363,8 +363,12 @@ int32_t CSimpleAnim_SetScript(lua_State* L) {
 // TODO HookScript, which chains a second handler in front of the stored one. Frozen has no
 // chaining helper yet and every other widget class here leaves it unimplemented for the same
 // reason, so this matches them rather than inventing a local mechanism.
+// ref: FUN_004a5df0
 int32_t CSimpleAnim_HookScript(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleAnim::GetObjectType();
+    auto object = static_cast<CSimpleAnim*>(FrameScript_GetObjectThis(L, type));
+
+    return object->HookScript(L);
 }
 
 // ---------------------------------------------------------------------------- AnimationGroup
@@ -574,8 +578,12 @@ int32_t CSimpleAnimGroup_SetScript(lua_State* L) {
 }
 
 // TODO see CSimpleAnim_HookScript.
+// ref: FUN_004a7780
 int32_t CSimpleAnimGroup_HookScript(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleAnimGroup::GetObjectType();
+    auto object = static_cast<CSimpleAnimGroup*>(FrameScript_GetObjectThis(L, type));
+
+    return object->HookScript(L);
 }
 
 int32_t CSimpleAnimGroup_GetObjectType(lua_State* L) {

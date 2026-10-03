@@ -1,5 +1,6 @@
 #include "ui/FrameScript_Object.hpp"
 #include "util/Lua.hpp"
+#include "ui/LuaExtraFuncs.hpp"
 #include <cstdint>
 #include <storm/String.hpp>
 
@@ -66,7 +67,10 @@ int32_t FrameScript_Object::GetScript(lua_State* L) {
         return 0;
     }
 
-    // TODO taint management
+    // reading a handler reads the taint it was set under
+    if (script->taint && lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = script->taint;
+    }
 
     if (script->luaRef > 0) {
         lua_rawgeti(L, LUA_REGISTRYINDEX, script->luaRef);
@@ -126,16 +130,16 @@ int32_t FrameScript_Object::RegisterScriptEvent(const char* name) {
     return 1;
 }
 
+// ref: FUN_00819880
 void FrameScript_Object::RegisterScriptObject(const char* name) {
     auto L = FrameScript_GetContext();
 
     if (!this->lua_registered) {
-        // TODO
-        // v4 = lua_taintexpected++ == -1;
-        // v5 = lua_tainted;
-        // if (!v4 && !lua_taintedclosure) {
-        //     lua_tainted = 0;
-        // }
+        auto savedTaint = lua_tainted;
+        lua_taintexpected++;
+        if (lua_taintexpected && !lua_taintedclosure) {
+            lua_tainted = nullptr;
+        }
 
         lua_createtable(L, 0, 0);
         lua_pushnumber(L, 0.0);
@@ -148,13 +152,12 @@ void FrameScript_Object::RegisterScriptObject(const char* name) {
 
         this->lua_objectRef = luaL_ref(L, LUA_REGISTRYINDEX);
 
-        // TODO
-        // if (lua_taintexpected && !lua_taintedclosure) {
-        //     lua_tainted = v5;
-        // }
-        // if (--lua_taintexpected <= 0) {
-        //     lua_taintexpected = 0;
-        // }
+        if (lua_taintexpected && !lua_taintedclosure) {
+            lua_tainted = savedTaint;
+        }
+        if (--lua_taintexpected <= 0) {
+            lua_taintexpected = 0;
+        }
     }
 
     this->lua_registered++;
@@ -182,7 +185,7 @@ void FrameScript_Object::RegisterScriptObject(const char* name) {
 
 // ref: FUN_0081a2c0
 void FrameScript_Object::RunScript(ScriptIx const& script, int32_t argCount, const char* a4) {
-    FrameScript_Execute(script.luaRef, this, argCount, a4 ? a4 : script.unk, nullptr);
+    FrameScript_Execute(script.luaRef, this, argCount, a4 ? a4 : script.taint, nullptr);
 }
 
 int32_t FrameScript_Object::SetScript(lua_State* L) {
@@ -203,8 +206,77 @@ int32_t FrameScript_Object::SetScript(lua_State* L) {
 
     auto luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
     script->luaRef = luaRef <= 0 ? 0 : luaRef;
+    script->taint = lua_tainted;
 
-    // TODO taint tracking
+    return 0;
+}
+
+// ref: FUN_0049edb0 (CSimpleFrame_HookScript; FUN_004a5df0 and FUN_004a7780 are the same body for
+// animations and animation groups)
+// HookScript(type, function): with no handler set, the function becomes the handler; otherwise
+// the handler becomes a closure calling the old handler and then the hook, both under their own
+// taints (see FrameScript_HookFunction).
+int32_t FrameScript_Object::HookScript(lua_State* L) {
+    if (!lua_isstring(L, 2) || lua_type(L, 3) != LUA_TFUNCTION) {
+        luaL_error(L, "Usage: %s:HookScript(\"type\", function)", this->GetDisplayName());
+        return 0;
+    }
+
+    ScriptData data;
+    auto script = this->GetScriptByName(lua_tostring(L, 2), data);
+
+    if (!script) {
+        luaL_error(L, "%s doesn't have a \"%s\" script", this->GetDisplayName(), lua_tostring(L, 2));
+        return 0;
+    }
+
+    if (!script->luaRef) {
+        auto luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
+        script->luaRef = luaRef <= 0 ? 0 : luaRef;
+        script->taint = lua_tainted;
+        return 0;
+    }
+
+    lua_remove(L, 2);
+
+    // the hook is pushed under the handler's taint, and the closure built from both is secure
+    auto hookTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, script->luaRef);
+    luaL_unref(L, LUA_REGISTRYINDEX, script->luaRef);
+
+    auto handlerTaint = script->taint;
+    lua_taintexpected++;
+    auto closureTaint = lua_tainted;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = handlerTaint;
+    }
+
+    lua_insert(L, 2);
+    lua_settaint(L, 2, handlerTaint);
+    lua_settaint(L, 3, hookTaint);
+    lua_pushcclosure(L, FrameScript_HookFunction, 2);
+    lua_settaint(L, 2, handlerTaint);
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = closureTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
+
+    script->luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = hookTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
 
     return 0;
 }

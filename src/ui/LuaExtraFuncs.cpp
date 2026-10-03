@@ -2,6 +2,7 @@
 #include "ui/FrameScript.hpp"
 #include "ui/FrameScriptInternal.hpp"
 #include "util/Lua.hpp"
+#include <common/Time.hpp>
 #include "util/Unimplemented.hpp"
 #include <cstdint>
 #include <cstring>
@@ -274,29 +275,83 @@ int32_t strlenutf8(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00816da0
+// 1 while the running code is secure, nil once it is tainted.
 int32_t issecure(lua_State* L) {
-    // TODO taint check
+    if (!lua_tainted) {
+        lua_pushnumber(L, 1.0);
+        return 1;
+    }
 
-    lua_pushnumber(L, 1.0);
-
+    lua_pushnil(L);
     return 1;
 }
 
+// ref: FUN_00816de0
+// issecurevariable([table,] "name"): 1, nil when the value is secure; nil and the taint that
+// wrote it otherwise. Reading it does not taint the caller.
 int32_t issecurevariable(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_type(L, 1) != LUA_TTABLE) {
+        lua_pushvalue(L, LUA_GLOBALSINDEX);
+        lua_insert(L, 1);
+    }
+
+    if (!lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: issecurevariable([table,] \"variable\")");
+        return 0;
+    }
+
+    auto name = lua_tostring(L, 2);
+
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
+
+    lua_pushstring(L, name);
+    lua_gettable(L, 1);
+    auto taint = lua_tainted;
+    lua_settop(L, -3);
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
+
+    if (!taint) {
+        lua_pushnumber(L, 1.0);
+        lua_pushstring(L, nullptr);
+        return 2;
+    }
+
+    lua_pushnil(L);
+    lua_pushstring(L, taint);
+    return 2;
 }
 
+// ref: FUN_00816f00
+// Taints the running code if it is still secure.
 int32_t forceinsecure(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (!lua_tainted && lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = "*** TaintForced ***";
+    }
+
+    return 0;
 }
 
+// ref: FUN_00816f30
+// securecall(function or "name", ...): calls the function and hands its results back with the
+// caller's taint, so a tainted callee cannot taint the caller.
 int32_t securecall(lua_State* L) {
-    // TODO taint checks and management
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
 
-    // If string is provided, resolve to actual function
     if (lua_isstring(L, 1)) {
-        auto fnName = lua_tostring(L, 1);
-        lua_pushstring(L, fnName);
+        auto name = lua_tostring(L, 1);
+        lua_pushstring(L, name);
         lua_rawget(L, LUA_GLOBALSINDEX);
         lua_remove(L, 1);
         lua_insert(L, 1);
@@ -306,13 +361,10 @@ int32_t securecall(lua_State* L) {
         lua_pushnil(L);
     }
 
-    // Set up error handler
     lua_rawgeti(L, LUA_REGISTRYINDEX, FrameScript::s_errorHandlerRef);
     lua_insert(L, 1);
 
-    // Make function call
-    auto nargs = lua_gettop(L) - 2;
-    if (lua_pcall(L, nargs, -1, 1)) {
+    if (lua_pcall(L, lua_gettop(L) - 2, LUA_MULTRET, 1)) {
         lua_settop(L, -3);
     } else {
         lua_remove(L, 1);
@@ -320,47 +372,189 @@ int32_t securecall(lua_State* L) {
 
     auto top = lua_gettop(L);
 
+    for (int32_t i = 1; i <= top; i++) {
+        lua_settaint(L, i, savedTaint);
+    }
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
+
     return top;
 }
 
+// ref: FUN_00817050
+// The closure hooksecurefunc and HookScript install: upvalue 1 is the original function, upvalue
+// 2 the hook. The original runs with the arguments and its results are returned; the hook then
+// runs with the same arguments in a protected call, and whatever it does is kept away from the
+// caller's taint.
+int32_t FrameScript_HookFunction(lua_State* L) {
+    auto argCount = lua_gettop(L);
+
+    for (int32_t i = 1; i <= argCount; i++) {
+        lua_pushvalue(L, i);
+    }
+
+    lua_pushvalue(L, lua_upvalueindex(1));
+    lua_insert(L, argCount + 1);
+    lua_call(L, argCount, LUA_MULTRET);
+
+    auto resultCount = lua_gettop(L) - argCount;
+
+    for (auto n = resultCount; n > 0; n--) {
+        lua_insert(L, 1);
+    }
+
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
+
+    lua_pushvalue(L, lua_upvalueindex(2));
+    lua_insert(L, resultCount + 1);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, FrameScript::s_errorHandlerRef);
+    lua_insert(L, resultCount + 1);
+
+    if (lua_pcall(L, argCount, 0, resultCount + 1)) {
+        lua_settop(L, -3);
+    } else {
+        lua_settop(L, -2);
+    }
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
+
+    return resultCount;
+}
+
+// ref: FUN_00817170
+// hooksecurefunc([table,] "name", hook): replaces table[name] with a closure that calls the
+// original and then the hook. The original keeps its taint, so hooking a secure function does
+// not taint the code that calls it.
 int32_t hooksecurefunc(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    if (lua_type(L, 1) != LUA_TTABLE) {
+        lua_pushvalue(L, LUA_GLOBALSINDEX);
+        lua_insert(L, 1);
+    }
+
+    if (!lua_isstring(L, 2) || lua_type(L, 3) != LUA_TFUNCTION) {
+        luaL_error(L, "Usage: hooksecurefunc([table,] \"function\", hookfunc)");
+        return 0;
+    }
+
+    lua_settop(L, 3);
+    auto name = lua_tostring(L, 2);
+    lua_remove(L, 2);
+
+    auto hookTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
+
+    lua_pushstring(L, name);
+    lua_gettable(L, 1);
+
+    auto originalTaint = lua_tainted;
+    bool hooked;
+
+    if (lua_type(L, -1) == LUA_TFUNCTION) {
+        lua_taintexpected++;
+        lua_insert(L, 2);
+        lua_settaint(L, 2, originalTaint);
+        lua_settaint(L, 3, hookTaint);
+        lua_pushcclosure(L, FrameScript_HookFunction, 2);
+        lua_settaint(L, 2, originalTaint);
+
+        if (lua_taintexpected && !lua_taintedclosure) {
+            lua_tainted = originalTaint;
+        }
+        if (--lua_taintexpected <= 0) {
+            lua_taintexpected = 0;
+        }
+
+        lua_pushstring(L, name);
+        lua_insert(L, 2);
+        lua_rawset(L, 1);
+        hooked = true;
+    } else {
+        lua_settop(L, -3);
+        hooked = false;
+    }
+
+    lua_settop(L, -2);
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = hookTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
+
+    if (!hooked) {
+        luaL_error(L, "hooksecurefunc(): %s is not a function", name);
+    }
+
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debugload(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debuginfo(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debugprint(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debugdump(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debugbreak(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debughook(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+// ref: FUN_008e5250 (shared: every debug builtin but the profile pair does nothing in this build)
 int32_t debugtimestamp(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    return 0;
 }
 
+namespace {
+    // ref: 0x00d3f770
+    int64_t s_debugProfileStart;
+}
+
+// ref: FUN_00817350
 int32_t debugprofilestart(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    s_debugProfileStart = OsGetAsyncClocks();
+    return 0;
 }
 
+// ref: FUN_00817370
+// Milliseconds since debugprofilestart.
 int32_t debugprofilestop(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto elapsed = static_cast<int64_t>(OsGetAsyncClocks()) - s_debugProfileStart;
+    lua_pushnumber(L, static_cast<double>(elapsed) * FrameScript::s_scriptTimeDivisor);
+    return 1;
 }
 
 // ref: FUN_008173c0

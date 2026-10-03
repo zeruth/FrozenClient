@@ -395,8 +395,12 @@ int32_t CSimpleFrame_SetScript(lua_State* L) {
     return frame->SetScript(L);
 }
 
+// ref: FUN_0049edb0
 int32_t CSimpleFrame_HookScript(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto object = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    return object->HookScript(L);
 }
 
 int32_t CSimpleFrame_RegisterEvent(lua_State* L) {
