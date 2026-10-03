@@ -46,6 +46,9 @@ class CWorldParam {
         static CVar* cvar_worldPoolUsage;
 
         // Static functions
+        static void SetDefaults(int32_t type);
+        static void SetParticleDensityDefault();
+        static void SetProjectedTexturesDefault();
         static bool BaseMipCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool BSPCacheCallback(CVar* var, const char* oldValue, const char* value, void* arg);
         static bool EnvironmentDetailCallback(CVar* var, const char* oldValue, const char* value, void* arg);

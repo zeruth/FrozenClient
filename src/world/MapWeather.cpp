@@ -32,6 +32,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstring>
+#include "util/Registry.hpp"
 
 static const float CHUNK_SIZE = 33.33333206176758f;       // DAT_00a3e554
 
@@ -137,13 +138,6 @@ int32_t WorldGroundHeight(const C3Vector& position, float range, float* height) 
     return CMap::QueryGroundHeight(position, range, height) ? 1 : 0;
 }
 
-// FUN_00770840: a value from the registry. frozen reads none; the key is absent.
-int32_t RegistryReadInt(const char* section, const char* key, uint32_t* value) {
-    (void)section;
-    (void)key;
-    (void)value;
-    return 0;
-}
 
 // The device's ShaderDestroy (vtable +0x114), as the effect destructors call it.
 void GxShaderRelease(CGxShader*& shader) {
@@ -2023,7 +2017,7 @@ Weather::Weather() {
 
     uint32_t forced = 0;
 
-    if (RegistryReadInt("Internal", "force-weather-type-on", &forced)
+    if (RegistryReadInt("Internal", "force-weather-type-on", 0, &forced)
         && 0 < static_cast<int32_t>(forced)
         && static_cast<int32_t>(forced) < 4
     ) {

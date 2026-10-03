@@ -25,6 +25,7 @@
 #include <cstring>
 #include <limits>
 #include <new>
+#include <cctype>
 
 #if defined(WHOA_SYSTEM_WIN)
     #include "gx/d3d/CGxDeviceD3d.hpp"
@@ -190,6 +191,149 @@ int32_t CGxDevice::AdapterDesktopMode(CGxMonitorMode& mode) {
 #else
 
     return 0;
+
+#endif
+}
+
+#if defined(WHOA_SYSTEM_WIN)
+
+// ref: FUN_00689b90
+// The value of `count` hex digits.
+static uint16_t AdapterParseHex(const char* text, int32_t count) {
+    uint16_t value = 0;
+
+    while (count) {
+        auto c = *text++;
+        count--;
+        value <<= 4;
+
+        if (isxdigit(c)) {
+            if (isdigit(c)) {
+                value += c - '0';
+            } else {
+                value += toupper(c) - 'A' + 10;
+            }
+        }
+    }
+
+    return value;
+}
+
+#endif
+
+// ref: FUN_00689c10
+// The primary adapter's PCI vendor and device: read from its device ID ("PCI\VEN_xxxx&DEV_xxxx")
+// when that names them, otherwise asked of Direct3D, which also gives the driver version.
+int32_t CGxDevice::AdapterID(uint16_t* vendorID, uint16_t* deviceID, uint32_t* driverVersionHi, uint32_t* driverVersionLo) {
+    *vendorID = 0xFFFF;
+    *deviceID = 0xFFFF;
+    *driverVersionHi = 0;
+    *driverVersionLo = 0;
+
+    int32_t result = 0;
+
+#if defined(WHOA_SYSTEM_WIN)
+
+    DISPLAY_DEVICEA device = {};
+    device.cb = sizeof(device);
+
+    bool found = false;
+
+    for (DWORD i = 0; EnumDisplayDevicesA(nullptr, i, &device, 0); i++) {
+        if (device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found && strlen(device.DeviceID) > 20) {
+        auto vendor = AdapterParseHex(&device.DeviceID[8], 4);
+        auto product = AdapterParseHex(&device.DeviceID[17], 4);
+
+        if (vendor && product) {
+            *vendorID = vendor;
+            *deviceID = product;
+            result = 1;
+        }
+    }
+
+    if (!result) {
+        HINSTANCE d3dLib = nullptr;
+        LPDIRECT3D9 d3d = nullptr;
+
+        if (CGxDeviceD3d::ILoadD3dLib(d3dLib, d3d)) {
+            D3DADAPTER_IDENTIFIER9 identifier;
+
+            if (SUCCEEDED(d3d->GetAdapterIdentifier(0, 0, &identifier))) {
+                *vendorID = identifier.VendorId;
+                *deviceID = identifier.DeviceId;
+                *driverVersionHi = identifier.DriverVersion.HighPart;
+                *driverVersionLo = identifier.DriverVersion.LowPart;
+                result = 1;
+            }
+
+            CGxDeviceD3d::IUnloadD3dLib(d3dLib, d3d);
+        }
+    }
+
+#endif
+
+    CGxDevice::Log("CGxDevice::DeviceAdapterID(): RET: %d, VID: %x, DID: %x, DVER: %x.%x", result, *vendorID, *deviceID, *driverVersionHi, *driverVersionLo);
+
+    return result;
+}
+
+// ref: FUN_00689db0
+// The class of an adapter the hardware table does not know, from what Direct3D says it can do:
+// 3 with transform and lighting, three textures and pixel shader 2.0; 2 with shader 1.1; 1 with
+// transform and lighting and two textures; 0 otherwise.
+//
+// DIVERGED: off Windows there is no Direct3D to ask. The GL ES devices frozen runs on all have
+// programmable shading, so they are reported as class 3 rather than leaving the detection to end
+// the program for want of an adapter.
+int32_t CGxDevice::AdapterInfer(uint16_t* deviceID) {
+    *deviceID = 0;
+
+#if defined(WHOA_SYSTEM_WIN)
+
+    HINSTANCE d3dLib = nullptr;
+    LPDIRECT3D9 d3d = nullptr;
+
+    if (!CGxDeviceD3d::ILoadD3dLib(d3dLib, d3d)) {
+        return 0;
+    }
+
+    int32_t result = 0;
+    D3DCAPS9 caps;
+
+    if (SUCCEEDED(d3d->GetDeviceCaps(0, D3DDEVTYPE_HAL, &caps))) {
+        bool hwTnL = (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) != 0;
+        auto pixelShader = static_cast<uint16_t>(caps.PixelShaderVersion);
+
+        if (hwTnL && caps.MaxSimultaneousTextures >= 3 && pixelShader >= 0x200) {
+            *deviceID = 3;
+        } else if (hwTnL && caps.MaxSimultaneousTextures >= 3 && pixelShader >= 0x101) {
+            *deviceID = 2;
+        } else if (hwTnL && caps.MaxSimultaneousTextures >= 2) {
+            *deviceID = 1;
+        } else {
+            *deviceID = 0;
+        }
+
+        result = 1;
+    }
+
+    CGxDeviceD3d::IUnloadD3dLib(d3dLib, d3d);
+
+    CGxDevice::Log("CGxDevice::DeviceAdapterInfer(): RET: %d, DID: %x", result, *deviceID);
+
+    return result;
+
+#else
+
+    *deviceID = 3;
+
+    return 1;
 
 #endif
 }

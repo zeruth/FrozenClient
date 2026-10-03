@@ -390,6 +390,41 @@ void CVar::InternalSet(const char* value, bool setValue, bool setReset, bool set
     }
 }
 
+// ref: FUN_00766a20
+// Puts the default value back (the reset value when there is no default), through the callback
+// and leaving a read-only CVar alone.
+void CVar::Reset() {
+    auto value = this->m_defaultValue.GetString();
+
+    if (!value) {
+        value = this->m_resetValue.GetString();
+    }
+
+    if (!value) {
+        return;
+    }
+
+    if (this->m_callback && !this->m_callback(this, this->m_stringValue.GetString(), value, this->m_arg)) {
+        return;
+    }
+
+    if (this->m_flags & 0x4) {
+        return;
+    }
+
+    auto current = this->m_stringValue.GetString();
+
+    if (current && !SStrCmpI(value, current, 0x7FFFFFFF)) {
+        return;
+    }
+
+    this->m_stringValue.Copy(value);
+    this->m_intValue = SStrToInt(value);
+    this->m_floatValue = SStrToFloat(value);
+
+    CVar::m_needsSave = 1;
+}
+
 bool CVar::Set(const char* value, bool setValue, bool setReset, bool setDefault, bool a6) {
     if (setValue) {
         if (this->m_callback) {

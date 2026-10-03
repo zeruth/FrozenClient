@@ -875,7 +875,6 @@ void CGGameUI::RegisterGameCVars() {
     // shadowLOD is NOT registered here any more. ShadowInit owns it, which is where the reference
     // registers it and the only place its callback can generate the two fade ramps.
     CVar::Register("showfootprintparticles", "toggles rendering of footprint particles", 0x1, "1", nullptr, GRAPHICS);
-    CVar::Register("hwDetect", "do hardware detection", 0x1, "1", nullptr, GRAPHICS);
     CVar::Register("ffxNetherWorld", "full screen nether world effect (for invisibility)", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_008c02a0
     CVar::Register("ffxRectangle", "use rectangle texture for full screen effects", 0x1, "1", nullptr, GRAPHICS);  // TODO callback FUN_008c02a0
     // shadowCull, shadowInstancing and shadowScissor are registered by MapShadowInitialize, with

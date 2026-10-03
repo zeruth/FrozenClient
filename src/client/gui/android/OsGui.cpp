@@ -44,3 +44,8 @@ void OsGuiSetMouseSpeed(float speed) {
 void OsGuiSetWindowTitle(void* window, const char* title) {
     // TODO
 }
+
+int32_t OsGuiMessageBox(void* parent, int32_t type, const char* text, const char* caption) {
+    // TODO
+    return 2;
+}

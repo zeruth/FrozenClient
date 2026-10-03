@@ -28,6 +28,53 @@ int32_t OsGuiProcessMessage(void* message) {
     return 0;
 }
 
+// ref: FUN_0086c6e0
+int32_t OsGuiMessageBox(void* parent, int32_t type, const char* text, const char* caption) {
+    auto textLength = MultiByteToWideChar(CP_UTF8, 0, text, -1, nullptr, 0);
+    auto wideText = static_cast<wchar_t*>(_alloca(textLength * sizeof(wchar_t)));
+    MultiByteToWideChar(CP_UTF8, 0, text, -1, wideText, textLength);
+
+    if (!caption) {
+        caption = "";
+    }
+
+    auto captionLength = MultiByteToWideChar(CP_UTF8, 0, caption, -1, nullptr, 0);
+    auto wideCaption = static_cast<wchar_t*>(_alloca(captionLength * sizeof(wchar_t)));
+    MultiByteToWideChar(CP_UTF8, 0, caption, -1, wideCaption, captionLength);
+
+    UINT style = 0;
+
+    switch (type) {
+        case 0:
+            style = MB_OK;
+            break;
+
+        case 1:
+            style = MB_OKCANCEL;
+            break;
+
+        case 2:
+            style = MB_YESNO;
+            break;
+
+        case 3:
+            style = MB_YESNOCANCEL;
+            break;
+    }
+
+    switch (MessageBoxW(static_cast<HWND>(parent), wideText, wideCaption, style)) {
+        case IDOK:
+        case IDYES:
+            return 0;
+
+        case IDNO:
+            return 1;
+
+        default:
+            return 2;
+    }
+}
+
 // ref: FUN_0086c6d0
 void OsGuiSetGxWindow(void* window) {
     s_GxDevWindow = window;

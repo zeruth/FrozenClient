@@ -40,6 +40,10 @@ uint32_t OsGetCpuInfo(uint32_t* vendor);
 
 uint32_t OsGetCpuFeatures();
 
+uint64_t OsGetCpuSpeed();
+
+bool OsIsRemoteSession();
+
 void OsEnableCpuLog();
 
 #endif

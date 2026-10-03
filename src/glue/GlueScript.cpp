@@ -995,18 +995,6 @@ int32_t Script_RestartGx(lua_State* L) {
     return 0;
 }
 
-int32_t Script_RestoreVideoResolutionDefaults(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
-
-int32_t Script_RestoreVideoEffectsDefaults(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
-
-int32_t Script_RestoreVideoStereoDefaults(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
-
 int32_t Script_IsStreamingMode(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
@@ -1168,9 +1156,9 @@ static FrameScript_Method s_ScriptFunctions[NUM_SCRIPT_FUNCTIONS_GLUE_SCRIPT_EVE
     { "StopAllSFX",                 &Script_StopAllSFX },
     { "SetClearConfigData",         &Script_SetClearConfigData },
     { "RestartGx",                  &Script_RestartGx },
-    { "RestoreVideoResolutionDefaults", &Script_RestoreVideoResolutionDefaults }, // guessed name
-    { "RestoreVideoEffectsDefaults", &Script_RestoreVideoEffectsDefaults }, // guessed name
-    { "RestoreVideoStereoDefaults", &Script_RestoreVideoStereoDefaults }, // guessed name
+    { "RestoreVideoResolutionDefaults", &Script_RestoreVideoResolutionDefaults },
+    { "RestoreVideoEffectsDefaults", &Script_RestoreVideoEffectsDefaults },
+    { "RestoreVideoStereoDefaults", &Script_RestoreVideoStereoDefaults },
     { "IsStreamingMode",            &Script_IsStreamingMode },
     { "IsStreamingTrial",           &Script_IsStreamingTrial },
     { "IsConsoleActive",            &Script_IsConsoleActive },

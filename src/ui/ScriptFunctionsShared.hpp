@@ -12,4 +12,10 @@ int32_t Script_IsMacClient(lua_State* L);
 
 int32_t Script_IsWindowsClient(lua_State* L);
 
+int32_t Script_RestoreVideoEffectsDefaults(lua_State* L);
+
+int32_t Script_RestoreVideoResolutionDefaults(lua_State* L);
+
+int32_t Script_RestoreVideoStereoDefaults(lua_State* L);
+
 #endif

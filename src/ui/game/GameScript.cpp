@@ -2123,18 +2123,6 @@ int32_t Script_RestartGx(lua_State* L) {
     return 0;
 }
 
-int32_t Script_RestoreVideoResolutionDefaults(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
-
-int32_t Script_RestoreVideoEffectsDefaults(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
-
-int32_t Script_RestoreVideoStereoDefaults(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
-}
-
 // ref: FUN_00516b20
 // The bind point's area name, falling back to the localized HOME_INN string when the area is not
 // in the table -- which is what an unbound character gets.

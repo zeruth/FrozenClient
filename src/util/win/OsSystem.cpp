@@ -424,3 +424,19 @@ uint32_t OsGetCpuFeatures() {
     uint32_t vendor;
     return OsGetCpuInfo(&vendor);
 }
+
+// ref: FUN_0086bba0
+// Clocks per second, worked out by OsGetCpuInfo the first time it is asked for.
+uint64_t OsGetCpuSpeed() {
+    if (!s_cpuSpeed) {
+        uint32_t vendor;
+        OsGetCpuInfo(&vendor);
+    }
+
+    return s_cpuSpeed;
+}
+
+// ref: FUN_0086b780
+bool OsIsRemoteSession() {
+    return GetSystemMetrics(SM_REMOTESESSION) != 0;
+}

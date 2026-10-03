@@ -18,6 +18,7 @@
 #include "client/Client.hpp"
 #include "ui/game/PortraitButton.hpp"
 #include <cstdio>
+#include "console/Device.hpp"
 
 CVar* CWorldParam::cvar_baseMip;
 CVar* CWorldParam::cvar_bspCache;
@@ -763,8 +764,135 @@ void CWorldParam::Initialize() {
         false
     );
 
-    // TODO the video options callback list (FUN_0076aab0 / FUN_0078e1a0) and the hardware-class
-    // defaults for groundEffectDensity and terrain shadows (FUN_0078dd40 / FUN_0078ddf0)
+    AddConsoleDeviceDefaultCallback(&CWorldParam::SetDefaults);
+
+    if (ConsoleDeviceHardwareChanged()) {
+        for (int32_t type = 0; type < 3; type++) {
+            CWorldParam::SetDefaults(type);
+        }
+    }
+
+    // Video options from before version 2 take the shader-dependent defaults (0x0078e928).
+    auto version = CVar::Lookup("videoOptionsVersion");
+
+    if (!version || version->GetInt() < 2) {
+        CWorldParam::SetParticleDensityDefault();
+        CWorldParam::SetProjectedTexturesDefault();
+    }
+}
+
+// ref: FUN_0078dd40
+// The particle density the pixel shader profile can carry.
+void CWorldParam::SetParticleDensityDefault() {
+    switch (GxCaps().m_shaderTargets[GxSh_Pixel]) {
+        case 0:
+        case 1:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+            CWorldParam::cvar_particleDensity->Set("0.1", true, false, false, true);
+            break;
+
+        case 2:
+            CWorldParam::cvar_particleDensity->Set("0.4", true, false, false, true);
+            break;
+
+        case 3:
+            CWorldParam::cvar_particleDensity->Set("0.7", true, false, false, true);
+            break;
+
+        default:
+            CWorldParam::cvar_particleDensity->Set("1.0", true, false, false, true);
+            break;
+    }
+}
+
+// ref: FUN_0078ddf0
+// Projected textures only where the pixel shader profile is past 2.0.
+void CWorldParam::SetProjectedTexturesDefault() {
+    switch (GxCaps().m_shaderTargets[GxSh_Pixel]) {
+        case 0:
+        case 1:
+        case 2:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+            CWorldParam::cvar_projectedTextures->Set("0", true, false, false, true);
+            break;
+
+        default:
+            CWorldParam::cvar_projectedTextures->Set("1", true, false, false, true);
+            break;
+    }
+}
+
+// ref: FUN_0078e1a0
+// The world's half of restoring the effects options: the hardware's defaults for the world CVars,
+// the rest back to their own defaults.
+void CWorldParam::SetDefaults(int32_t type) {
+    auto defaults = ConsoleDeviceGetDefaults();
+
+    if (type != 1) {
+        return;
+    }
+
+    char value[32];
+
+    if (CWorldParam::cvar_farClip) {
+        SStrPrintf(value, sizeof(value), "%f", defaults->farClip);
+        CWorldParam::cvar_farClip->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_shadowLevel) {
+        SStrPrintf(value, sizeof(value), "%d", defaults->shadowLevel);
+        CWorldParam::cvar_shadowLevel->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_maxLights) {
+        SStrPrintf(value, sizeof(value), "%d", defaults->maxLights);
+        CWorldParam::cvar_maxLights->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_specular) {
+        SStrPrintf(value, sizeof(value), defaults->specular ? "1" : "0");
+        CWorldParam::cvar_specular->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_waterLOD) {
+        SStrPrintf(value, sizeof(value), "%d", defaults->waterLOD);
+        CWorldParam::cvar_waterLOD->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_particleDensity) {
+        SStrPrintf(value, sizeof(value), "%f", defaults->particleDensity);
+        CWorldParam::cvar_particleDensity->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_baseMip) {
+        SStrPrintf(value, sizeof(value), "%d", defaults->baseMip);
+        CWorldParam::cvar_baseMip->Set(value, true, false, false, true);
+    }
+
+    if (CWorldParam::cvar_groundEffectDensity) {
+        SStrPrintf(value, sizeof(value), "%d", defaults->groundEffectDensity);
+        CWorldParam::cvar_groundEffectDensity->Set(value, true, false, false, true);
+    }
+
+    CWorldParam::cvar_environmentDetail->Reset();
+    CWorldParam::cvar_groundEffectDist->Set("70.0", true, false, false, true);
+
+    for (auto name : { "weatherDensity", "extShadowQuality", "ffxDeath", "ffxGlow" }) {
+        auto var = CVar::Lookup(name);
+
+        if (var) {
+            var->Reset();
+        }
+    }
+
+    CWorldParam::SetParticleDensityDefault();
+    CWorldParam::SetProjectedTexturesDefault();
 }
 
 // ref: FUN_0078d610

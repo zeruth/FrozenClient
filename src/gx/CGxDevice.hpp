@@ -165,6 +165,8 @@ class CGxDevice {
         // Static functions
         static int32_t AdapterDesktopMode(CGxMonitorMode& mode);
         static int32_t AdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats);
+        static int32_t AdapterID(uint16_t* vendorID, uint16_t* deviceID, uint32_t* driverVersionHi, uint32_t* driverVersionLo);
+        static int32_t AdapterInfer(uint16_t* deviceID);
         static int32_t AdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes);
 #if defined(WHOA_SYSTEM_WIN)
         static void D3dAdapterFormats(TSGrowableArray<CGxFormat>& formats);

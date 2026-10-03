@@ -9,6 +9,10 @@
 
 int32_t GxAdapterDesktopMode(CGxMonitorMode& mode);
 
+int32_t GxAdapterID(uint16_t* vendorID, uint16_t* deviceID, uint32_t* driverVersionHi, uint32_t* driverVersionLo);
+
+int32_t GxAdapterInfer(uint16_t* deviceID);
+
 int32_t GxAdapterFormats(EGxApi api, TSGrowableArray<CGxFormat>& adapterFormats);
 
 int32_t GxAdapterMonitorModes(TSGrowableArray<CGxMonitorMode>& monitorModes);

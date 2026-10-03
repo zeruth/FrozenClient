@@ -17,6 +17,7 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/Texture.hpp"
 #include "ui/game/CGGameUI.hpp"
+#include "console/Detect.hpp"
 
 static CGxDevice* s_device;
 static CVar* s_cvGxAspect;
@@ -43,7 +44,15 @@ static CVar* s_cvGxWindow;
 static CVar* s_cvVideoOptionsVersion;
 static CVar* s_cvFixedFunction;
 static CVar* s_cvWindowResizeLock;
+static CVar* s_cvHwDetect;
 static DefaultSettings s_defaults;
+static HardwareInfo s_hardware;
+// ConsoleDetectDetectHardware has run (DAT_00cabcbc).
+static bool s_hardwareDetected;
+// Read by AddConsoleDeviceDefaultCallback and written nowhere (DAT_00cabcc0).
+static int32_t s_setDefaultsOnAdd;
+// Every module that sets video defaults, run when the options are restored (DAT_00cabd30).
+static TSGrowableArray<void (*)(int32_t)> s_defaultCallbacks;
 static TSGrowableArray<CGxMonitorMode> s_gxMonitorModes;
 static bool s_hwDetect;
 static bool s_hwChanged;
@@ -58,6 +67,7 @@ static char s_windowTitle[256];
 
 void SetGxCVars(const CGxFormat& format);
 void UpdateGxCVars();
+int32_t CCGxRestart(const char* command, const char* arguments);
 static bool s_requestedStereoEnabled;
 static bool s_gxOverrideSet[9];      // gxOverride: which slots were given (reference DAT_00cabac8)
 static int32_t s_gxOverrideValue[9]; // and their values (DAT_00cabb7c)  // gxStereoEnabled, the reference's DAT_00cabd0c beside the format
@@ -467,7 +477,7 @@ bool CVWindowResizeLockCallback(CVar*, const char*, const char* value, void*) {
 }
 
 void RegisterGxCVars() {
-    auto& format = s_defaults.format;
+    auto& format = *s_defaults.format;
 
     // TODO CURRENT_LANGUAGE check?
     auto v1 = true;
@@ -755,6 +765,16 @@ void RegisterGxCVars() {
     );
 }
 
+// ref: FUN_00769d10
+int32_t ConsoleDeviceHardwareChanged() {
+    return s_hwDetect || s_hwChanged;
+}
+
+// ref: FUN_00769d30
+const DefaultSettings* ConsoleDeviceGetDefaults() {
+    return &s_defaults;
+}
+
 // ref: FUN_00769e10
 // Fits a format to the monitor. A full-screen size the monitor has no mode for steps down the
 // standard sizes until one it has; a window larger than the desktop does the same. Then the
@@ -888,6 +908,48 @@ int32_t CCGxRestart(const char* command, const char* arguments) {
     return 1;
 }
 
+// ref: FUN_0076a130
+// Restores one group of video options to what the hardware calls for: 0 the display mode, 1 the
+// effects, 2 stereo. The display mode is applied at once; every module's callback then sets its
+// own CVars for the group.
+void ConsoleDeviceSetDefaults(int32_t type) {
+    ConsoleDetectSetDefaults(&s_defaults, &s_hardware);
+    s_cvFixedFunction->Set("0", true, false, false, true);
+
+    if (type == 0) {
+        s_requestedFormat = *s_defaults.format;
+        SetGxCVars(s_requestedFormat);
+        CCGxRestart(nullptr, nullptr);
+    }
+
+    for (uint32_t i = 0; i < s_defaultCallbacks.Count(); i++) {
+        s_defaultCallbacks[i](type);
+    }
+}
+
+// ref: FUN_0076aab0
+// A module joins the defaults. The reference would also run it for every group at once when
+// DAT_00cabcc0 is set, but nothing in the client ever sets that.
+void AddConsoleDeviceDefaultCallback(void (*callback)(int32_t type)) {
+    s_defaultCallbacks.Add(1, &callback);
+
+    if (s_setDefaultsOnAdd) {
+        for (int32_t type = 0; type < 3; type++) {
+            callback(type);
+        }
+    }
+}
+
+// ref: FUN_0076aaf0
+void RemoveConsoleDeviceDefaultCallback(void (*callback)(int32_t type)) {
+    for (uint32_t i = 0; i < s_defaultCallbacks.Count(); i++) {
+        if (s_defaultCallbacks[i] == callback) {
+            s_defaultCallbacks[i] = s_defaultCallbacks[s_defaultCallbacks.Count() - 1];
+            s_defaultCallbacks.SetCount(s_defaultCallbacks.Count() - 1);
+        }
+    }
+}
+
 // ref: FUN_007698b0
 void UpdateGxCVars() {
     s_cvGxColorBits->Update();
@@ -984,8 +1046,20 @@ void ConsoleDeviceInitialize(const char* title) {
 
     // TODO
 
-    // TODO proper logic
-    s_hwDetect = true;
+    s_cvHwDetect = CVar::Register("hwDetect", "do hardware detection", 0x1, "1", nullptr, GRAPHICS);
+
+    ConsoleDetectDetectHardware(&s_hardware, &s_hwChanged);
+    s_hardwareDetected = true;
+
+    // TODO CmdLineGetBool(0x24) == 1 also asks for detection
+    if (s_cvHwDetect->GetInt()) {
+        s_hwDetect = true;
+        s_cvHwDetect->Set("0", true, false, false, true);
+    } else {
+        s_hwDetect = false;
+    }
+
+    ConsoleDetectSetDefaultsFormat(&s_defaults, &s_hardware);
 
     // TODO ConsoleAccessSetEnabled(CmdLineGetBool(35));
     ConsoleAccessSetEnabled(1);
@@ -1019,15 +1093,12 @@ void ConsoleDeviceInitialize(const char* title) {
     s_requestedFormat.depthFormat = CGxFormat::Fmt_Ds248;
 
     if (s_hwDetect || s_hwChanged) {
-        // TODO Sub76B3F0(&UnkCABAF0, &UnkCABB38);
-        // TODO s_cvFixedFunction->Set("0", 1, 0, 0, 1);
-        // TODO memcpy(&s_requestedFormat, &s_defaults.format, sizeof(s_requestedFormat));
+        ConsoleDetectSetDefaults(&s_defaults, &s_hardware);
+        s_cvFixedFunction->Set("0", true, false, false, true);
+        s_requestedFormat = *s_defaults.format;
 
         s_requestedFormat.window = s_cvGxWindow->GetInt() != 0;
         s_requestedFormat.maximize = s_cvGxMaximize->GetInt() != 0;
-
-        // TODO temporary override
-        s_requestedFormat.maximize = 0;
 
         SetGxCVars(s_requestedFormat);
     }

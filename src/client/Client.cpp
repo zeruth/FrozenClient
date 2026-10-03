@@ -130,6 +130,43 @@ bool GammaCallback(CVar* var, const char* oldValue, const char* value, void* arg
     return true;
 }
 
+// ref: FUN_00402530
+// The client's half of restoring the video options: gamma and the window lock with the display
+// mode, texture filtering with the effects, the stereo CVars with stereo.
+static void SetDefaults(int32_t type) {
+    auto defaults = ConsoleDeviceGetDefaults();
+
+    if (type == 0) {
+        if (s_desktopGammaCvar) {
+            s_desktopGammaCvar->Set("0", true, false, false, true);
+            s_desktopGammaCvar->Update();
+        }
+
+        if (s_gammaCvar) {
+            s_gammaCvar->Set("1.0", true, false, false, true);
+            s_gammaCvar->Update();
+        }
+
+        auto resizeLock = CVar::Lookup("windowResizeLock");
+
+        if (resizeLock) {
+            resizeLock->Set(resizeLock->GetDefaultValue(), true, false, false, true);
+        }
+    } else if (type == 1) {
+        if (s_textureFilteringModeCvar) {
+            s_textureFilteringModeCvar->Set(defaults->trilinear ? "1" : "0", true, false, false, true);
+        }
+    } else if (type == 2) {
+        for (auto name : { "gxStereoEnabled", "gxStereoConvergence", "gxStereoSeparation" }) {
+            auto var = CVar::Lookup(name);
+
+            if (var) {
+                var->Set(var->GetDefaultValue(), true, false, false, true);
+            }
+        }
+    }
+}
+
 // ref: FUN_00402320
 // The released-texture cache's budget, in megabytes, up to what this machine allows.
 bool TextureCacheSizeCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
@@ -511,6 +548,9 @@ void ClientPostClose(int32_t a1) {
 }
 
 int32_t DestroyEngineCallback(const void* a1, void* a2) {
+    RemoveConsoleDeviceDefaultCallback(&SetDefaults);
+    ClientDestroyGame(0, 0, 0);
+
     // TODO
 
     WowClientDestroy();
@@ -577,17 +617,15 @@ int32_t InitializeEngineCallback(const void* a1, void* a2) {
 
     TextureSetCacheSize(s_textureCacheSizeCvar->m_intValue << 20);
 
-    // AddConsoleDeviceDefaultCallback(SetDefaults);
-
-    // if (ConsoleDeviceHardwareChanged()) {
-    //     v3 = 0;
-
-    //     do {
-    //         SetDefaults(v3++);
-    //     } while (v3 < 3);
-    // }
-
     auto m2Flags = M2RegisterCVars();
+
+    AddConsoleDeviceDefaultCallback(&SetDefaults);
+
+    if (ConsoleDeviceHardwareChanged()) {
+        for (int32_t type = 0; type < 3; type++) {
+            SetDefaults(type);
+        }
+    }
     M2Initialize(m2Flags, 0);
 
     // The texture filtering mode picks a filter and an anisotropy from the reference's two tables

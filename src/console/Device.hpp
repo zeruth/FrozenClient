@@ -3,9 +3,17 @@
 
 #include "gx/CGxFormat.hpp"
 
-struct DefaultSettings {
-    CGxFormat format;
-};
+#include "console/Detect.hpp"
+
+const DefaultSettings* ConsoleDeviceGetDefaults();
+
+int32_t ConsoleDeviceHardwareChanged();
+
+void ConsoleDeviceSetDefaults(int32_t type);
+
+void AddConsoleDeviceDefaultCallback(void (*callback)(int32_t type));
+
+void RemoveConsoleDeviceDefaultCallback(void (*callback)(int32_t type));
 
 void ConsoleDeviceInitialize(const char* title);
 
