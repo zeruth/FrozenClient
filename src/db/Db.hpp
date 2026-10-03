@@ -57,6 +57,7 @@
 #include "db/rec/ItemRec.hpp"
 #include "db/rec/ItemVisualsRec.hpp"
 #include "db/rec/LoadingScreensRec.hpp"
+#include "db/rec/ScreenEffectRec.hpp"
 #include "db/rec/MapRec.hpp"
 #include "db/rec/NameGenRec.hpp"
 #include "db/rec/NamesProfanityRec.hpp"
@@ -121,6 +122,7 @@ extern WowClientDB<ItemSubClassRec> g_itemSubClassDB;
 extern WowClientDB<ItemRec> g_itemDB;
 extern WowClientDB<ItemVisualsRec> g_itemVisualsDB;
 extern WowClientDB<LoadingScreensRec> g_loadingScreensDB;
+extern WowClientDB<ScreenEffectRec> g_screenEffectDB;
 extern WowClientDB<MapRec> g_mapDB;
 extern WowClientDB<NameGenRec> g_nameGenDB;
 extern WowClientDB<NamesProfanityRec> g_namesProfanityDB;

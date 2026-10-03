@@ -56,6 +56,7 @@ WowClientDB<ItemSubClassRec> g_itemSubClassDB;
 WowClientDB<ItemRec> g_itemDB;
 WowClientDB<ItemVisualsRec> g_itemVisualsDB;
 WowClientDB<LoadingScreensRec> g_loadingScreensDB;
+WowClientDB<ScreenEffectRec> g_screenEffectDB;
 WowClientDB<MapRec> g_mapDB;
 WowClientDB<NameGenRec> g_nameGenDB;
 WowClientDB<NamesProfanityRec> g_namesProfanityDB;
@@ -125,6 +126,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_itemDB, __FILE__, __LINE__);
     loadFn(&g_itemVisualsDB, __FILE__, __LINE__);
     loadFn(&g_loadingScreensDB, __FILE__, __LINE__);
+    loadFn(&g_screenEffectDB, __FILE__, __LINE__);
     loadFn(&g_mapDB, __FILE__, __LINE__);
     loadFn(&g_nameGenDB, __FILE__, __LINE__);
     loadFn(&g_namesProfanityDB, __FILE__, __LINE__);

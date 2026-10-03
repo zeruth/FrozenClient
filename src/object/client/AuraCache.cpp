@@ -1,4 +1,5 @@
 #include "object/client/AuraCache.hpp"
+#include "ui/game/CGWorldFrame.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
 #include "ui/game/Types.hpp"
@@ -199,6 +200,12 @@ int32_t ReceiveAuraUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataSto
 
     SignalAuraChange(target);
 
+    // FROZEN-ONLY: the reference re-picks the screen effect where it applies and removes the
+    // player's own auras (FUN_0071e930, FUN_00724820); frozen's arrive here.
+    if (target == ClntObjMgrGetActivePlayer()) {
+        CGWorldFrame::UpdateScreenEffect();
+    }
+
     return 1;
 }
 
@@ -224,6 +231,12 @@ int32_t ReceiveAuraUpdateAll(void* param, NETMESSAGE msgId, uint32_t time, CData
     }
 
     SignalAuraChange(target);
+
+    // FROZEN-ONLY: the reference re-picks the screen effect where it applies and removes the
+    // player's own auras (FUN_0071e930, FUN_00724820); frozen's arrive here.
+    if (target == ClntObjMgrGetActivePlayer()) {
+        CGWorldFrame::UpdateScreenEffect();
+    }
 
     return 1;
 }

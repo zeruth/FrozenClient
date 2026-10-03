@@ -7,6 +7,8 @@
 #include "object/client/ClntObjMgr.hpp"
 #include "world/CWorld.hpp"
 #include "ffx/FFX.hpp"
+#include "console/CVar.hpp"
+#include "object/client/AuraCache.hpp"
 #include "ffx/EffectGlow.hpp"
 #include "ffx/FFXEffects.hpp"
 #include "world/DayNightLight.hpp"
@@ -155,29 +157,144 @@ FFX::Effect* CGWorldFrame::s_specialEffect;
 
 // ref: FUN_004f7020
 void CGWorldFrame::SetScreenEffect(int32_t id) {
-    // TODO the ScreenEffect.dbc record (DAT_00ad4510): its type picks the glow (0), death (1),
-    // nether with a fog override (2) or the special effect with the record's parameters (3),
-    // then forces its light parameters and its ambience and music. Frozen has no ScreenEffect
-    // table, so every id takes the reference's no-record arm.
-    (void)id;
+    // FROZEN-ONLY: frozen's aura handlers can ask before the world frame has made its effects.
+    if (!CGWorldFrame::s_glowEffect) {
+        return;
+    }
 
-    DayNightEndFogOverride();
-    FFX::SetEffect(CGWorldFrame::s_glowEffect);
-    DayNightClearForcedParams();
+    auto record = g_screenEffectDB.GetRecord(id);
 
-    // TODO FUN_004c8fa0(0, 0): clear the screen effect's ambience and music.
+    if (!record) {
+        DayNightEndFogOverride();
+        FFX::SetEffect(CGWorldFrame::s_glowEffect);
+        DayNightClearForcedParams();
+
+        // TODO FUN_004c8fa0(0, 0): clear the screen effect's ambience and music.
+        return;
+    }
+
+    switch (record->m_effect) {
+    case 0:
+        DayNightEndFogOverride();
+        FFX::SetEffect(CGWorldFrame::s_glowEffect);
+        break;
+
+    case 1:
+        DayNightEndFogOverride();
+        FFX::SetEffect(CGWorldFrame::s_deathEffect);
+        break;
+
+    case 2: {
+        // The nether closes the fog in to 150 yards, white when the full-screen effects can tint
+        // it and a dark blue-grey when they cannot.
+        CImVector color;
+        color.value = FFX::s_ffxCvar->m_intValue ? 0xffffffff : 0xff4c4c63;
+
+        DayNightBeginFogOverride(0.7f, 150.0f, color, 0);
+        FFX::SetEffect(CGWorldFrame::s_netherEffect);
+        break;
+    }
+
+    case 3:
+        // The special effect has no GL path; GL takes the glow.
+        if (GxDevApi() == GxApi_OpenGl) {
+            DayNightEndFogOverride();
+            FFX::SetEffect(CGWorldFrame::s_glowEffect);
+            break;
+        }
+
+        DayNightEndFogOverride();
+        FFXFieldRestored();
+        CGWorldFrame::s_specialEffect->SetParams(3, record->m_params);
+        FFX::SetEffect(CGWorldFrame::s_specialEffect);
+        break;
+
+    default:
+        break;
+    }
+
+    DayNightSetForcedParams(record->m_lightParamsID);
+
+    // TODO FUN_004c8fa0(record->m_soundAmbienceID, record->m_zoneMusicID): the effect's ambience
+    // and music.
 }
 
 // ref: FUN_004f88b0
+// The last aura whose spell carries a screen-effect aura (260) names the effect. Without one, a
+// ghost outside an arena's closing state sees the death effect and a player glowing from
+// invisibility the nether; anyone else the glow.
 void CGWorldFrame::UpdateScreenEffect() {
-    auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
 
-    // TODO with a player, the reference walks its auras from the last back for one whose spell
-    // carries a screen-effect aura and uses that effect's id; frozen keeps no client aura list,
-    // so it takes the no-aura arm.
-    (void)player;
+    if (!player) {
+        CGWorldFrame::SetScreenEffect(0);
+        return;
+    }
+
+    // DIVERGED: the reference walks the player's own aura table (+0xc38, or the overflow block at
+    // +0xc58 past its inline slots); frozen keeps the auras the server sends in the aura cache
+    // instead, in the same slot order.
+    WOWGUID guid = player->GetGUID();
+
+    for (int32_t i = AuraCacheCount(guid, 0, 0) - 1; i >= 0; i--) {
+        auto aura = AuraCacheGet(guid, i, 0, 0);
+
+        if (!aura || !aura->spellID) {
+            continue;
+        }
+
+        auto spell = g_spellDB.GetRecord(aura->spellID);
+
+        if (!spell) {
+            continue;
+        }
+
+        for (uint32_t effect = 0; effect < 3; effect++) {
+            if (spell->m_effectAura[effect] == 0x104) {
+                CGWorldFrame::SetScreenEffect(spell->m_effectMiscValue[effect]);
+                return;
+            }
+        }
+    }
+
+    auto data = player->Player();
+
+    // TODO the battlefield status (DAT_00bea570, BattlefieldInfo.cpp): a ghost sees no death
+    // effect while it is 4. Frozen keeps no battlefield state, so the status is never 4.
+    int32_t battlefieldStatus = 0;
+
+    if ((data->flags & 0x10) && battlefieldStatus != 4) {
+        CGWorldFrame::SetScreenEffect(1);
+        return;
+    }
+
+    if (data->field_bytes_2_4 & 0x40) {
+        CGWorldFrame::SetScreenEffect(0x51);
+        return;
+    }
 
     CGWorldFrame::SetScreenEffect(0);
+}
+
+// ref: FUN_004f7290
+// How drunk the player is, 0 to 1: the larger of the server's drunk state and the faked one,
+// capped at a hundred.
+static float PlayerDrunkenness(CGPlayer_C* player) {
+    auto data = player->Player();
+
+    uint32_t drunk = data->bytes_3_2;
+    uint32_t fake = static_cast<uint32_t>(data->fakeInebriation);
+    uint32_t larger = static_cast<int32_t>(drunk) <= static_cast<int32_t>(fake) ? fake : drunk;
+
+    if (static_cast<int32_t>(larger) < 100) {
+        if (static_cast<int32_t>(fake) < static_cast<int32_t>(drunk)) {
+            return static_cast<float>(drunk) * 0.01f;
+        }
+    } else {
+        fake = 100;
+    }
+
+    return static_cast<float>(fake & 0xff) * 0.01f;
 }
 
 // ref: FUN_004f8770
@@ -193,13 +310,10 @@ void CGWorldFrame::UpdateGlowParams() {
     uint8_t grey = 0;
 
     if (ClntObjMgrGetCurrent()) {
-        auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
+        auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
 
         if (player) {
-            // TODO FUN_004f7290 on the player's info block (+0x1008): its drunkenness, 0 to 1,
-            // from the larger of the descriptor's drunk byte and the local one. Frozen keeps
-            // neither yet, so the player is sober.
-            uint8_t drunk = static_cast<uint8_t>(static_cast<int32_t>(0.0f * 255.0f));
+            uint8_t drunk = static_cast<uint8_t>(static_cast<int32_t>(PlayerDrunkenness(player) * 255.0f));
 
             if (CWorldScene::s_cameraLiquidType) {
                 grey = 0x54;

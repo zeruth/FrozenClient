@@ -551,7 +551,7 @@ static int32_t s_fieldLost;
 static uint32_t* s_noiseTexels;
 
 // ref: FUN_007e7fe0
-static void FieldRestoredCallback() {
+void FFXFieldRestored() {
     s_fieldLost = 1;
 }
 
@@ -586,12 +586,12 @@ static void NoiseTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height,
 PassFogSource::PassFogSource(FFX::Target* const* inputs, uint32_t inputCount, FFX::Target* target, uint32_t blend, bool flip)
     : FFX::Pass(inputs, inputCount, target, blend, flip) {
     s_fieldLost = 1;
-    g_theGxDevicePtr->CallbackAddRestored(&FieldRestoredCallback);
+    g_theGxDevicePtr->CallbackAddRestored(&FFXFieldRestored);
 }
 
 // ref: FUN_007e9260
 PassFogSource::~PassFogSource() {
-    g_theGxDevicePtr->CallbackRemoveRestored(&FieldRestoredCallback);
+    g_theGxDevicePtr->CallbackRemoveRestored(&FFXFieldRestored);
 }
 
 // The source has nothing to load (FUN_008a1420, a shared return-true).

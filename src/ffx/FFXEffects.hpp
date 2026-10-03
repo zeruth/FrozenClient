@@ -85,6 +85,10 @@ class PassNetherCombine : public FFX::Pass {
 class CGxBuf;
 class CGxPool;
 
+// The special effect's field is cleared the next time its source draws: on device restore, and
+// when a screen effect puts the special effect up. ref: FUN_007e7fe0
+void FFXFieldRestored();
+
 // The special effect's source: one row of its noise texture drawn across the bottom of the fog
 // field each frame, tinted by the screen effect's colour, the row advancing frame by frame.
 class PassFogSource : public FFX::Pass {
