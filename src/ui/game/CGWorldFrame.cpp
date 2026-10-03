@@ -512,13 +512,6 @@ void CGWorldFrame::OnWorldRender() {
     // FUN_007153a0 / FUN_007153c0(0), and when the frame's +0xb10 bit 1 is set FUN_00615890(0)
     // and FUN_00725890 -- phase 4.
 
-    // FROZEN-ONLY: the blob-shadow caster pass. It drains the frame's entity list, which is
-    // what decides who casts; the reference reaches its casters from the M2 scene's projection
-    // callback instead.
-    if (ClntObjMgrGetCurrent()) {
-        CWorldScene::DrawEntityShadows();
-    }
-
     // DIVERGED: the reference wraps everything from here to the viewport restore, GxRsPop
     // included, in one test of the world scene, and so would leave the push unbalanced without
     // one. Frozen guards each scene draw instead; the world scene exists for the whole session.

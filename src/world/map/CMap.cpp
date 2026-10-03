@@ -1997,6 +1997,11 @@ void CMap::Render(const C3Vector& cameraPos, float dt) {
             DayNightSkyRender(CRect(w.minX, w.minY, w.maxX, w.maxY));
         }
     }
+
+    // The frame's entity shadows, at 0x0079acc4: both the failed window test and the under-liquid
+    // skip above jump here, so the walk runs every frame, after the sky.
+    CWorldScene::DrawEntityShadows();
+
     // The procedural liquid textures' one-time upload, in the reference's own position: between
     // CWorldScene::DrawEntityShadows and BuildPendingMapObjSurfaces, at 0x0079acc9. Each of the
     // three latches after its first upload, so this costs three compares a frame thereafter.
