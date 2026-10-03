@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 #include "world/map/CMap.hpp"
+#include "world/map/CMapStaticEntity.hpp"
 #include <cstdio>
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/ObjMgr.hpp"
@@ -4502,3 +4503,425 @@ int32_t CMap::QueryCameraFog(SMOFog* fog, CMapObjDef** def, uint8_t* inside, TSG
 
     return 1;
 }
+
+// ------------------------------------------------------------------------------------------------
+// Dynamic map objects: the buildings and props a game object places and moves (transports, map
+// object game objects). They live beside the tile's own in the def hashes and draw through the
+// same updates; their owner places them (MapLoad.cpp 0x007beb40 / 0x007bf120, Map.cpp 0x007b4a50
+// .. 0x007b66e0, MapMem.cpp 0x007c3150 / 0x007c3250).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_007bf120
+// A building placed by a game object: filed under `id` (or the next of the map's countdown ids),
+// its root read (and waited for), turned by `facing` about Z, and bounded by the root when it is
+// in, by `radius` about the point, or by the point alone. Extra doodad sets come from the object.
+CMapObjDef* CMap::CreateDynamicMapObjDef(const char* name, const C3Vector& position, float facing, int32_t wait,
+                                         int32_t extraSetCount, const uint16_t* extraSets, const float* radius,
+                                         uint32_t id) {
+    if (id == 0) {
+        id = static_cast<uint32_t>(CMap::s_globalMapObjId);
+        CMap::s_globalMapObjId--;
+    }
+
+    // FUN_007bddf0: the hash is asked for the id first; the reference does not use the answer.
+    CMapObjDef::s_uniqueIds.Ptr(id, HASHKEY_NONE());
+
+    auto def = CMap::AllocMapObjDef();
+    CMapObjDef::s_uniqueIds.Insert(def, id, HASHKEY_NONE());
+
+    auto mapObj = CMapObj::Create(name);
+    def->m_mapObj = mapObj;
+
+    if (wait && !mapObj->m_rootLoaded) {
+        mapObj->WaitForRoot();
+    }
+
+    def->m_flags = extraSetCount ? 0x10000 : 0;
+    def->m_nameId = 0;
+    def->m_doodadSet = 0;
+    def->m_nameSet = 0;
+    def->m_position = position;
+    def->m_ownerGUID = 0;
+
+    for (int32_t i = 0; i < 3; i++) {
+        def->m_extraDoodadSets[i] = i < extraSetCount ? extraSets[i] : 0;
+    }
+
+    C44Matrix placement;
+    placement.d0 = position.x;
+    placement.d1 = position.y;
+    placement.d2 = position.z;
+    placement.RotateAroundZ(facing);
+
+    def->m_placement = placement;
+    def->m_inversePlacement = placement.AffineInverse();
+
+    if (mapObj->m_rootLoaded) {
+        C3Vector center;
+        float sphereRadius;
+        mapObj->BoundingSphere(&center, &sphereRadius);
+        TransformPointInPlace(def->m_center, center, def->m_placement);
+        def->m_radius = sphereRadius;
+
+        CAaBox bounds;
+        mapObj->Bounds(&bounds);
+        def->m_bounds = TransformBox(bounds, def->m_placement);
+
+        def->m_unk138 = 0;
+
+        return def;
+    }
+
+    float r = 0.0f;
+
+    if (radius) {
+        r = *radius;
+        CAaBox box = { { -r, -r, -r }, { r, r, r } };
+        def->m_bounds = TransformBox(box, def->m_placement);
+    } else {
+        def->m_bounds.b = position;
+        def->m_bounds.t = position;
+    }
+
+    def->m_center = position;
+    def->m_radius = r;
+    def->m_unk138 = 0;
+
+    return def;
+}
+
+// ref: FUN_007bda70
+// A dynamic prop's model: created (asynchronously unless `wait`), placed by the def's matrix,
+// lit by the world and started on its first sequence.
+int32_t CMap::LoadDynamicDoodadModel(const char* name, CMapDoodadDef* def, int32_t wait, int32_t inBuilding) {
+    auto scene = CWorld::GetM2Scene();
+    auto model = scene ? scene->CreateModel(name, inBuilding ? 0x20 : 0) : nullptr;
+
+    def->m_model = model;
+
+    if (!model) {
+        return 0;
+    }
+
+    model->m_flag8000 = 1;
+    model->matrixB4 = def->m_placement;
+
+    // TODO(World): the doodad's sound-event callback (FUN_007bd5a0), as the tile's doodads.
+    model->SetLightingCallback(&CWorld::LightingCallback, static_cast<CMapBaseObj*>(def));
+    model->SetBoneSequence(-1, 0, -1, 0, 1.0f, 1, 1);
+
+    if (wait) {
+        model->IsLoaded(1, 0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_007beb40
+// A prop placed by a game object: filed under the next countdown id, placed at `position` turned
+// by `facing`, its model started, and left for the pending list to place once the model is in.
+CMapDoodadDef* CMap::CreateDynamicDoodadDef(const char* name, const C3Vector& position, float facing, int32_t wait) {
+    int32_t id = CMap::s_globalMapObjId;
+    CMap::s_globalMapObjId--;
+
+    HASHKEY_DOODADDEF key;
+    key.m_key = 0;
+
+    // FUN_007bdd80: the hash is asked first; the answer is not used.
+    CMap::s_doodadUniqueIds.Ptr(static_cast<uint32_t>(id), key);
+
+    auto def = CMap::AllocDoodadDef();
+
+    if (!def) {
+        return nullptr;
+    }
+
+    CMap::s_doodadUniqueIds.Insert(def, static_cast<uint32_t>(id), key);
+
+    def->m_position = position;
+    def->m_scale = 1.0f;
+    def->m_sphere.c = position;
+    def->m_sphere.r = 0.0f;
+    def->m_bounds.b = position;
+    def->m_bounds.t = position;
+
+    def->m_placement.Identity();
+    def->m_placement.Translate(position);
+    def->m_placement.RotateAroundZ(facing);
+    def->m_inversePlacement.Identity();
+
+    def->m_flags = 0x1;
+    def->m_model = nullptr;
+
+    CMap::LoadDynamicDoodadModel(name, def, wait, 0);
+
+    CMap::s_pendingEntityList.LinkToTail(def);
+
+    return def;
+}
+
+// ref: FUN_007b4a50
+// A dynamic object's position moved so its turned box's far corner lies on the map's cell grid.
+void CMap::SnapDynamicPosition(CMapBaseObj* object, C3Vector& position, float facing) {
+    C44Matrix rotation = C44Matrix::RotationAroundZ(facing);
+    CAaBox box = {};
+
+    if (object->m_type & CMapBaseObj::Type_MapObjDef) {
+        static_cast<CMapObjDef*>(object)->m_mapObj->Bounds(&box);
+    } else {
+        auto doodad = static_cast<CMapDoodadDef*>(object);
+
+        if (doodad->m_model) {
+            doodad->m_model->GetBoundingBox(box);
+        }
+    }
+
+    C3Vector mid = { (box.t.x + box.b.x) * 0.5f, (box.t.y + box.b.y) * 0.5f, (box.t.z + box.b.z) * 0.5f };
+    box.b = box.b - mid;
+    box.t = box.t - mid;
+
+    CAaBox turned = TransformBox(box, rotation);
+
+    const float cell = 4.166666507720947f;
+    float x = position.x + turned.t.x;
+    float y = position.y + turned.t.y;
+    int32_t cellX = static_cast<int32_t>(std::nearbyint((x + cell) * 0.24f - 0.5f));
+    int32_t cellY = static_cast<int32_t>(std::nearbyint((y + cell) * 0.24f - 0.5f));
+
+    position.x = position.x - (x - static_cast<float>(cellX) * cell);
+    position.y = position.y - (y - static_cast<float>(cellY) * cell);
+}
+
+// ref: FUN_007c1380
+// One of a moving building's doodads, re-placed: its local placement under the building's new
+// matrix, its model's matrix with it, and its bounds from the model (or the model's global box
+// while it loads).
+void CMap::PlaceGroupDoodad(CMapDoodadDef* def, const C44Matrix& defPlacement) {
+    if (!def->m_model) {
+        return;
+    }
+
+    def->m_flags |= 0x1;
+    def->m_position = def->m_localPosition;
+
+    C3Vector world;
+    TransformPointInPlace(world, def->m_localPosition, defPlacement);
+
+    def->m_placement = def->m_localPlacement * defPlacement;
+    def->m_model->matrixB4 = def->m_placement;
+
+    if (def->m_model->IsLoaded(0, 0)) {
+        def->Place(def->m_placement);
+    } else {
+        def->m_sphere.c = world;
+        def->m_bounds.b = world;
+        def->m_bounds.t = world;
+    }
+}
+
+// ref: FUN_007b40f0
+// A moved group: its doodads re-placed, and its entities marked for their next update.
+void CMap::PlaceDefGroupContents(CMapObjDefGroup* defGroup, const C44Matrix& defPlacement) {
+    defGroup->m_flags |= 0x1;
+
+    for (auto link = defGroup->m_doodadDefLinkList.Head(); link; link = defGroup->m_doodadDefLinkList.Next(link)) {
+        CMap::PlaceGroupDoodad(static_cast<CMapDoodadDef*>(link->owner), defPlacement);
+    }
+
+    for (auto link = defGroup->m_entityLinkList.Head(); link; link = defGroup->m_entityLinkList.Next(link)) {
+        static_cast<CMapBaseObj*>(link->owner)->m_flags |= 0x1;
+    }
+}
+
+// ref: FUN_007b64f0
+// A building whose placement moved: bounds and sphere again from the root, and each group's,
+// with the group's lights and doodads following. A root not in yet sits on its point.
+void CMap::UpdateMapObjDefPlacement(CMapObjDef* def) {
+    def->m_flags |= 0x400;
+
+    auto mapObj = def->m_mapObj;
+
+    if (!mapObj->m_rootLoaded) {
+        def->m_radius = 0.0f;
+        def->m_center = def->m_position;
+        def->m_bounds.b = def->m_position;
+        def->m_bounds.t = def->m_position;
+        return;
+    }
+
+    C3Vector center;
+    float radius;
+    mapObj->BoundingSphere(&center, &radius);
+    TransformPointInPlace(def->m_center, center, def->m_placement);
+    def->m_radius = radius;
+
+    CAaBox bounds;
+    mapObj->Bounds(&bounds);
+    def->m_bounds = TransformBox(bounds, def->m_placement);
+
+    for (auto link = def->m_defGroupLinkList.Head(); link; link = def->m_defGroupLinkList.Next(link)) {
+        auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+
+        // The group's MOLT lights move with it (CM2Light::SetPosition, CMapLight::Link). frozen
+        // creates none of a def's lights yet (SetupMapObjDef leaves them null), so none moves.
+
+        C3Vector groupCenter;
+        float groupRadius;
+        mapObj->GroupBoundingSphere(defGroup->m_groupIndex, &groupCenter, &groupRadius);
+        TransformPointInPlace(defGroup->m_center, groupCenter, def->m_placement);
+        defGroup->m_radius = groupRadius;
+
+        CAaBox groupBounds;
+        mapObj->GroupBounds(defGroup->m_groupIndex, &groupBounds);
+        defGroup->m_bounds = TransformBox(groupBounds, def->m_placement);
+
+        CMap::PlaceDefGroupContents(defGroup, def->m_placement);
+    }
+}
+
+// ref: FUN_007b66e0
+// A building moved to `position`, turned by the three angles (Z, then Y, then X).
+void CMap::PlaceDynamicMapObjDef(CMapObjDef* def, const C3Vector& position, float rotZ, float rotY, float rotX) {
+    def->m_position = position;
+
+    C44Matrix placement;
+    placement.d0 = position.x;
+    placement.d1 = position.y;
+    placement.d2 = position.z;
+    placement.RotateAroundZ(rotZ);
+    placement.RotateAroundY(rotY);
+    placement.RotateAroundX(rotX);
+
+    def->m_placement = placement;
+    def->m_inversePlacement = placement.AffineInverse();
+
+    CMap::UpdateMapObjDefPlacement(def);
+}
+
+// ref: FUN_007b5740
+// A prop whose placement moved: placed for real once its model is in (bit 0x80 then), or given its
+// model's global box about the point until then; relinked into the chunks it now reaches.
+void CMap::UpdateDoodadDefPlacement(CMapDoodadDef* def) {
+    def->m_flags |= 0x1;
+
+    if (def->m_model) {
+        if (!def->m_model->IsLoaded(0, 0)) {
+            CAaBox box;
+            def->m_model->GetBoundingBox(box);
+
+            def->m_bounds.b = box.b + def->m_position;
+            def->m_bounds.t = box.t + def->m_position;
+            def->m_sphere.c = def->m_position;
+
+            C3Vector span = def->m_bounds.t - def->m_bounds.b;
+            def->m_sphere.r = std::sqrt(span.z * span.z + span.y * span.y + span.x * span.x);
+        } else {
+            def->Place(def->m_placement);
+            def->m_flags |= 0x80;
+        }
+
+        def->m_model->m_flag8000 = 1;
+        def->m_model->matrixB4 = def->m_placement;
+    }
+
+    def->m_flags7c &= 0xFFFFFFFE;
+    def->m_flags = (def->m_flags & 0xFFFFFFF9) | 0x1;
+
+    RelinkEntity(def);
+    CMap::GrowParentsBounds(def);
+}
+
+// ref: FUN_007b58c0
+// A prop moved to `position`, turned by `facing` about Z.
+void CMap::PlaceDynamicDoodadDef(CMapDoodadDef* def, const C3Vector& position, float facing) {
+    def->m_position = position;
+    def->m_scale = 1.0f;
+
+    def->m_placement.Identity();
+    def->m_placement.Translate(position);
+    def->m_placement.RotateAroundZ(facing);
+
+    CMap::UpdateDoodadDefPlacement(def);
+}
+
+// ref: FUN_007c3150
+// A dynamic building's group let go: its doodads (those the group owns) released, its links freed.
+void CMap::ReleaseDynamicDefGroup(CMapObjDefGroup* defGroup) {
+    while (auto link = defGroup->m_doodadDefLinkList.Head()) {
+        auto doodad = static_cast<CMapDoodadDef*>(link->owner);
+        CMap::FreeBaseObjLink(link);
+
+        if (!(doodad->m_type & 0x200)) {
+            CMap::ReleaseDoodadDef(doodad);
+        }
+    }
+
+    while (auto link = defGroup->m_entityLinkList.Head()) {
+        CMap::FreeBaseObjLink(link);
+    }
+
+    CMap::FreeMapObjDefGroup(defGroup);
+}
+
+// ref: FUN_007c3250
+// A dynamic building with nothing linking it any more: its groups and lights go, its root loses a
+// user, and the def is freed (dropping out of the camera's building if it was there).
+void CMap::ReleaseDynamicMapObjDef(CMapObjDef* def) {
+    if (def->m_linkCount != 0) {
+        return;
+    }
+
+    while (auto link = def->m_defGroupLinkList.Head()) {
+        auto defGroup = static_cast<CMapObjDefGroup*>(link->owner);
+        CMap::FreeBaseObjLink(link);
+        CMap::ReleaseDynamicDefGroup(defGroup);
+    }
+
+    def->m_defGroups.SetCount(0);
+
+    for (uint32_t i = 0; i < def->m_lights.Count(); i++) {
+        if (def->m_lights[i]) {
+            // FUN_007d9d70
+            CMap::FreeLight(def->m_lights[i]);
+        }
+    }
+
+    def->m_lights.SetCount(0);
+
+    // FUN_007ae030
+    if (def->m_mapObj) {
+        def->m_mapObj->m_refCount--;
+
+        if (def->m_mapObj->m_refCount < 1) {
+            def->m_mapObj->m_idleTime = 0.0f;
+        }
+    }
+
+    def->m_mapObj = nullptr;
+
+    if (CWorldScene::s_cameraDef == def) {
+        CWorldScene::s_cameraDef = nullptr;
+    }
+
+    CMap::FreeMapObjDef(def);
+}
+// ref: FUN_007b67b0
+// A building placed by a whole matrix (a transport's, every step).
+void CMap::SetMapObjDefPlacement(CMapObjDef* def, const C44Matrix& placement) {
+    def->m_position = { placement.d0, placement.d1, placement.d2 };
+    def->m_placement = placement;
+    def->m_inversePlacement = placement.AffineInverse();
+
+    CMap::UpdateMapObjDefPlacement(def);
+}
+
+// ref: FUN_007b5870
+// A prop placed by a whole matrix: its scale is the matrix's first row's length.
+void CMap::SetDoodadDefPlacement(CMapDoodadDef* def, const C44Matrix& placement) {
+    def->m_position = { placement.d0, placement.d1, placement.d2 };
+    def->m_scale = std::sqrt(placement.a0 * placement.a0 + placement.a1 * placement.a1 + placement.a2 * placement.a2);
+    def->m_placement = placement;
+
+    CMap::UpdateDoodadDefPlacement(def);
+}
+

@@ -354,6 +354,24 @@ class CMap {
         static void FreeMapObjDefGroup(CMapObjDefGroup* group);
         static CMapObjDef* AllocMapObjDef();
         static void FreeMapObjDef(CMapObjDef* def);
+
+        // The dynamic map objects a game object places (transports, map object game objects)
+        static CMapObjDef* CreateDynamicMapObjDef(const char* name, const C3Vector& position, float facing, int32_t wait,
+                                                  int32_t extraSetCount, const uint16_t* extraSets, const float* radius,
+                                                  uint32_t id);
+        static int32_t LoadDynamicDoodadModel(const char* name, CMapDoodadDef* def, int32_t wait, int32_t inBuilding);
+        static CMapDoodadDef* CreateDynamicDoodadDef(const char* name, const C3Vector& position, float facing, int32_t wait);
+        static void SnapDynamicPosition(CMapBaseObj* object, C3Vector& position, float facing);
+        static void PlaceGroupDoodad(CMapDoodadDef* def, const C44Matrix& defPlacement);
+        static void PlaceDefGroupContents(CMapObjDefGroup* defGroup, const C44Matrix& defPlacement);
+        static void UpdateMapObjDefPlacement(CMapObjDef* def);
+        static void PlaceDynamicMapObjDef(CMapObjDef* def, const C3Vector& position, float rotZ, float rotY, float rotX);
+        static void UpdateDoodadDefPlacement(CMapDoodadDef* def);
+        static void PlaceDynamicDoodadDef(CMapDoodadDef* def, const C3Vector& position, float facing);
+        static void ReleaseDynamicDefGroup(CMapObjDefGroup* defGroup);
+        static void ReleaseDynamicMapObjDef(CMapObjDef* def);
+        static void SetMapObjDefPlacement(CMapObjDef* def, const C44Matrix& placement);
+        static void SetDoodadDefPlacement(CMapDoodadDef* def, const C44Matrix& placement);
         static void UnlinkMapObjDef(CMapObjDef* def);
         static CChunkLiquid* AllocChunkLiquid();
         static void FreeChunkLiquid(CChunkLiquid* liquid);

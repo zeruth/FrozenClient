@@ -295,6 +295,8 @@ CMapDoodadDef* CMap::CreateMapObjDoodad(uint32_t index, const uint8_t* modd, con
     def->m_placement.Translate(local);
     def->m_placement.Rotate(rotation);
     def->m_placement.Scale(def->m_scale);
+    def->m_localPosition = local;
+    def->m_localPlacement = def->m_placement;
     def->m_placement = def->m_placement * defPlacement;
 
     def->m_inversePlacement.Identity();
