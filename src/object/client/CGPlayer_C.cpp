@@ -12,6 +12,7 @@
 #include <common/DataStore.hpp>
 #include <storm/Error.hpp>
 #include "net/Connection.hpp"
+#include "object/client/Spell_C.hpp"
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
 uint32_t CGPlayer_C::s_itemProficiency[17];  // ref: DAT_00c9d4f0
@@ -646,6 +647,9 @@ void CGPlayer_C::PostInitActivePlayer() {
         // The character login is done and the character is in the world (0x006e8199).
         ClientServices::Connection()->SetInWorld(1);
     }
+
+    // The player's class decides which spells take the spell modifiers (0x006e81e3).
+    SpellSetClassSet((this->m_unit->bytes0 >> 8) & 0xFF);
 
     // TODO
 }

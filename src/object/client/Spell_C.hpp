@@ -4,7 +4,12 @@
 #include "util/guid/Types.hpp"
 #include <storm/List.hpp>
 #include <cstdint>
+#include "net/Types.hpp"
 
+class CDataStore;
+class CGObject_C;
+class CGPlayer_C;
+class CGUnit_C;
 class ItemSubClassRec;
 class SkillLineAbilityRec;
 class SpellRec;
@@ -124,5 +129,56 @@ bool Spell_C_IsTargeting();
 // ref: FUN_007fd760
 // Whether the pending target flags include 0x10 (an item) or 0x4000.
 bool Spell_C_TargetingWantsItem();
+
+// ref: FUN_007fdc60
+int32_t ReceiveSpellModifier(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+
+// ref: FUN_008007a0
+void SpellSetClassSet(int32_t classID);
+
+// ref: FUN_007fd970
+bool SpellGetModifier(const SpellRec* spell, int32_t op, int32_t* flat, int32_t* pct);
+
+// ref: FUN_007fdb50
+void SpellApplyModifier(const SpellRec* spell, int32_t* value, int32_t op);
+
+// ref: FUN_007fdba0
+void SpellApplyModifier(const SpellRec* spell, float* value, int32_t op);
+
+// ref: FUN_00800770
+bool SpellHasModifier(const SpellRec* spell, int32_t op);
+
+// ref: FUN_007fde00
+int32_t SpellPowerDivisor(int32_t powerType);
+
+// ref: FUN_007ff070
+int32_t SpellGetCasterLevel(const SpellRec* spell, int32_t pet, int32_t inspect);
+
+// ref: FUN_007ff100
+int32_t SpellGetPowerCostPerTime(const SpellRec* spell, CGUnit_C* caster);
+
+// ref: FUN_007ff180
+int32_t SpellGetCastTime(const SpellRec* spell, int32_t pet, int32_t inspect, int32_t allowNegative);
+
+// ref: FUN_007ff380
+bool SpellRangeIsMelee(const SpellRec* spell);
+
+// ref: FUN_007ff3c0
+bool SpellRangeUsesCombatReach(const SpellRec* spell);
+
+// ref: FUN_007ff400
+void SpellGetDisplayMinRange(const SpellRec* spell, float* minRange);
+
+// ref: FUN_007ff480
+void SpellGetRange(CGUnit_C* caster, const SpellRec* spell, float* minRange, float* maxRange, int32_t friendly, CGObject_C* target);
+
+// ref: FUN_007fef60
+void SpellApplyCooldownModifiers(int32_t* cooldown, const SpellRec* spell, int32_t categoryOnly);
+
+// ref: FUN_00800d60
+bool SpellIgnoresReagents(CGPlayer_C* player, const SpellRec* spell);
+
+// ref: FUN_008012f0
+int32_t SpellGetPowerCost(const SpellRec* spell, CGUnit_C* caster);
 
 #endif

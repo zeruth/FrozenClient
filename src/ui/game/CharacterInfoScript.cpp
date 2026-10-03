@@ -13,6 +13,8 @@
 #include "util/Lua.hpp"
 #include "util/Unimplemented.hpp"
 
+WOWGUID s_inspectGUID = 0;              // ref: DAT_00c24220
+
 namespace {
 
 int32_t Script_GetInventorySlotInfo(lua_State* L) {
@@ -308,7 +310,6 @@ uint32_t s_inspectTodayHonor = 0;       // ref: DAT_00c24210
 uint16_t s_inspectYesterdayHK = 0;      // ref: DAT_00c24214
 uint16_t s_inspectLifetimeRank = 0;     // ref: DAT_00c24216
 uint16_t s_inspectTodayHK = 0;          // ref: DAT_00c24218
-WOWGUID s_inspectGUID = 0;              // ref: DAT_00c24220
 
 // ref: FUN_005e7780
 int32_t Script_HasInspectHonorData(lua_State* L) {

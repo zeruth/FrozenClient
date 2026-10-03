@@ -1,0 +1,29 @@
+#ifndef DB_REC_SPELL_RANGE_REC_HPP
+#define DB_REC_SPELL_RANGE_REC_HPP
+
+#include <cstdint>
+
+class SFile;
+
+// SpellRange.dbc: the hostile and friendly ranges of a spell and their names.
+class SpellRangeRec {
+    public:
+        static const int32_t COLUMN_COUNT = 40;
+
+        int32_t m_ID;
+        float m_rangeMin[2];
+        float m_rangeMax[2];
+        uint32_t m_flags;
+        const char* m_displayName;
+        const char* m_displayNameShort;
+
+        static const char* GetFilename();
+        static uint32_t GetNumColumns();
+        static uint32_t GetRowSize();
+        static bool NeedIDAssigned();
+        int32_t GetID();
+        void SetID(int32_t id);
+        bool Read(SFile* f, const char* stringBuffer);
+};
+
+#endif

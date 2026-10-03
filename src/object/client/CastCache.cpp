@@ -6,6 +6,7 @@
 #include <common/DataStore.hpp>
 #include <common/Time.hpp>
 #include <map>
+#include "object/client/Spell_C.hpp"
 
 namespace {
 
@@ -252,4 +253,8 @@ void CastCacheRegisterHandlers() {
     ClientServices::SetMessageHandler(SMSG_SPELL_FAILED_OTHER, &ReceiveSpellFailure, nullptr);
     ClientServices::SetMessageHandler(MSG_CHANNEL_START, &ReceiveChannelStart, nullptr);
     ClientServices::SetMessageHandler(MSG_CHANNEL_UPDATE, &ReceiveChannelUpdate, nullptr);
+
+    // From the spell module's start (FUN_008100e0): the modifier handlers.
+    ClientServices::SetMessageHandler(SMSG_SET_FLAT_SPELL_MODIFIER, &ReceiveSpellModifier, nullptr);
+    ClientServices::SetMessageHandler(SMSG_SET_PCT_SPELL_MODIFIER, &ReceiveSpellModifier, nullptr);
 }
