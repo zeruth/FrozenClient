@@ -167,7 +167,7 @@ Lessons from these, kept because they change how the next one is done:
   `FUN_009a81f0`) is never added to anywhere in the binary, and the barrier draw's four models
   (DAT_00cd85f8) are never created. Both are noted at their call sites.
 
-## Phase 2: closed out (2026-10-02 evening)
+## Phase 2: the environment (current, NOT closed)
 
 The environment systems are all ported and drawing. The evening's run of fixes, each seen on screen
 unless marked:
@@ -194,7 +194,7 @@ What the per-module tables still list is, read function by function, mostly not 
 - **Blocked on phase 4.** Footprints (the footstep event `FUN_00723a50`), missile trajectories
   `FUN_006fda20`, the blob-shadow unit box `FUN_0071ed80`.
 
-Carried forward, in order:
+Still open, in order -- phase 2 is not done until every item here is:
 
 1. **Shadows.** No silhouettes reach the ground, from anything. The binds match the reference.
    Next: one noon run with the dump --
