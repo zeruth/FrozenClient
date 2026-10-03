@@ -1,4 +1,5 @@
 #include "world/MapWeather.hpp"
+#include "world/DayNightLight.hpp"
 #include "gx/Gx.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
@@ -110,15 +111,11 @@ void ImVectorToDevice(CImVector& color) {
     }
 }
 
-// The DayNight block's fog colour (DAT_00d38b8c). frozen keeps no DayNight block; the fog colour
-// CWorld derives from Light.dbc is the value the block would hold.
+// The DayNight block's fog colour (DAT_00d38b8c, the plain one at +0x8c), opaque.
 CImVector DayNightFogColor() {
-    const C3Vector& fog = CWorld::GetFogColor();
-    CImVector color;
-    color.b = CM2Lighting::FogColorByte(fog.z);
-    color.g = CM2Lighting::FogColorByte(fog.y);
-    color.r = CM2Lighting::FogColorByte(fog.x);
+    CImVector color = DayNightGetBlock()->fogColor;
     color.a = 0xFF;
+
     return color;
 }
 

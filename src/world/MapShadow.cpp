@@ -1,4 +1,5 @@
 #include "world/MapShadow.hpp"
+#include "world/DayNightLight.hpp"
 #include "console/CVar.hpp"
 #include "gx/CGxDevice.hpp"
 #include "gx/Device.hpp"
@@ -103,7 +104,7 @@ float Dot(const C3Vector& a, const C3Vector& b) {
 
 // The reference's exaggeration and clamp operate on the direction the light TRAVELS, which
 // points downward, so the vector has to be flipped into that convention BEFORE the rule is
-// applied. frozen stores the direction TOWARD the light (see CWorld::s_outdoorDirection), whose z
+// applied. The block stores the direction AWAY from the light, whose z
 // is positive, and the clamp is one-sided: applied to a positive z it never engages at all.
 //
 // That was the bug. The clamp is what holds the light near 52 degrees of elevation; without it
@@ -120,8 +121,9 @@ float Dot(const C3Vector& a, const C3Vector& b) {
 // It lives here rather than inside MapShadowSetup because the reference stores the direction into
 // the shadow map module BEFORE it picks a focus, and the order is worth keeping.
 C3Vector MapShadowLightDirection() {
-    C3Vector lit = CWorld::GetOutdoorDirection();
-    C3Vector dir = { -lit.x, -lit.y, -lit.z * 5.0f };
+    // The block's direction points AWAY from the light, which is what this wants.
+    const C3Vector& away = DayNightGetBlock()->direction;
+    C3Vector dir = { away.x, away.y, away.z * 5.0f };
 
     if (dir.z < -1.2f) {
         dir.z = -1.2f;

@@ -527,7 +527,9 @@ void CGWorldFrame::OnWorldRender() {
 
     // FROZEN-ONLY: fog the models with the same data-driven fog the terrain and WMOs use; the
     // guard keeps clear zones unfogged.
-    bool useFog = CWorld::GetFogEnd() > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
+    auto dnBlock = DayNightGetBlock();
+    float dnFogStart = dnBlock->fogStart < 0.0f ? 0.0f : dnBlock->fogStart;
+    bool useFog = dnBlock->fogEnd > 1.0f && dnFogStart < CWorld::GetFarClip();
 
     if (useFog) {
         GxRsSet(GxRs_Fog, 1);

@@ -1,4 +1,5 @@
 #include "world/map/CMapObj.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/CWFrustum.hpp"
 #include <cfloat>
 #include "world/map/CMap.hpp"
@@ -1068,7 +1069,8 @@ void CMapObjGroup::FreeBuffers() {
 // The self-illuminated materials of a root track the day: each keeps its authored colour and
 // draws it scaled by how bright the sun is now.
 void CMapObj::UpdateMaterialColors() {
-    int32_t scale = static_cast<int32_t>(roundf(CWorld::GetSidnScale() * 255.0f - 0.5f));
+    // The block's +0x1dc (0x007a855f), which DayNight rolls with the sun.
+    int32_t scale = static_cast<int32_t>(roundf(DayNightGetBlock()->bodyBandA * 255.0f - 0.5f));
 
     for (uint32_t i = 0; i < this->m_materialCount; i++) {
         auto material = &this->m_materials[i];

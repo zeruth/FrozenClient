@@ -3023,7 +3023,11 @@ void CMap::UpdateEntity(CMapEntity* entity) {
             return static_cast<uint8_t>(lrintf(value < 1.0f ? value * 255.0f + 0.5f : 255.0f));
         };
 
-        const C3Vector& ambient = CWorld::GetOutdoorAmbient();
+        // The outdoor light's ambient (0x00ce04a8 + 0x58, its colour at +0x88), which UpdateDayNight
+        // fills from the block each frame.
+        C3Vector ambient = CMap::s_outdoorLight
+            ? CMap::s_outdoorLight->m_light.m_ambColor
+            : DNColorVector(DayNightGetBlock()->ambient);
         entity->m_ambientTarget.b = channel(ambient.z);
         entity->m_ambientTarget.g = channel(ambient.y);
         entity->m_ambientTarget.r = channel(ambient.x);

@@ -1,4 +1,5 @@
 #include "world/map/LiquidMaterialSettings.hpp"
+#include "world/DayNightLight.hpp"
 #include "db/Db.hpp"
 #include "gx/CGxCaps.hpp"
 #include "gx/Device.hpp"
@@ -118,6 +119,18 @@ uint32_t PackBandColor(const C3Vector& c) {
          | (static_cast<uint32_t>(BandByte(c.x)) << 16);
 }
 
+// A liquid band colour as the generators read it: the DayNight slot's bytes, blue low, alpha clear.
+// Ocean is slots 14 and 15, river 16 and 17 (FUN_008a2bf0 reads base + 0x10c + type * 8).
+static uint32_t LiquidBandColor(int32_t slot) {
+    return DayNightGetBlock()->info.color[slot].value & 0x00FFFFFF;
+}
+
+// The matching alphas, LightParams columns 5..8 as the block carries them: river shallow and deep,
+// then ocean shallow and deep.
+static uint8_t LiquidBandAlpha(int32_t oceanic, int32_t deep) {
+    return BandByte(DayNightGetBlock()->info.liquidAlpha[(oceanic ? 2 : 0) + (deep ? 1 : 0)]);
+}
+
 // ref: FUN_008a2bf0
 // The two DEPTH textures, river and ocean, told apart by the user argument -- 1 is the river.
 //
@@ -149,11 +162,11 @@ void DepthGradientGenerate(EGxTexCommand command, uint32_t width, uint32_t heigh
     bool river = reinterpret_cast<intptr_t>(userArg) != 0;
     int32_t oceanic = river ? 0 : 1;
 
-    uint32_t shallow = PackBandColor(CWorld::GetLiquidShallow(oceanic));
-    uint32_t deep = PackBandColor(CWorld::GetLiquidDeep(oceanic));
+    uint32_t shallow = LiquidBandColor(oceanic ? 14 : 16);
+    uint32_t deep = LiquidBandColor(oceanic ? 15 : 17);
 
-    uint8_t alphaClose = BandByte(CWorld::GetLiquidAlpha(oceanic, 0));
-    uint8_t alphaFar = BandByte(CWorld::GetLiquidAlpha(oceanic, 1));
+    uint8_t alphaClose = LiquidBandAlpha(oceanic, 0);
+    uint8_t alphaFar = LiquidBandAlpha(oceanic, 1);
 
     int32_t b = static_cast<int32_t>(shallow & 0xff) << 8;
     int32_t g = static_cast<int32_t>((shallow >> 8) & 0xff) << 8;
@@ -227,10 +240,10 @@ void WmoWaterGenerate(EGxTexCommand command, uint32_t width, uint32_t height, ui
         return;
     }
 
-    uint32_t tint = PackBandColor(CWorld::GetLiquidDeep(0));
+    uint32_t tint = LiquidBandColor(17);
 
-    uint8_t alphaClose = BandByte(CWorld::GetLiquidAlpha(0, 0));
-    uint8_t alphaFar = BandByte(CWorld::GetLiquidAlpha(0, 1));
+    uint8_t alphaClose = LiquidBandAlpha(0, 0);
+    uint8_t alphaFar = LiquidBandAlpha(0, 1);
 
     int32_t a = static_cast<int32_t>(alphaClose) << 8;
     int32_t da = ((static_cast<int32_t>(alphaFar)

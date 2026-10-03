@@ -161,7 +161,7 @@ static void ImVectorToFloats(float* out, const CImVector& color) {
 
 // The fog colour as the fixed-function state takes it
 static CImVector FogColorImVector() {
-    const C3Vector& fog = CWorld::GetFogColor();
+    C3Vector fog = DNColorVector(DayNightGetBlock()->finalFogColor);
     CImVector color;
     color.b = CM2Lighting::FogColorByte(fog.z);
     color.g = CM2Lighting::FogColorByte(fog.y);
@@ -1569,11 +1569,11 @@ void CWorldScene::RenderMapObjs() {
             // thing that lifts a building whose baked colours are zero -- and plenty are.
             //
             // Diverged: the reference takes it from the day/night block (+0x1ac) when the def's
-            // two fog ids match the world's, and frozen has neither field. The zone's own
-            // ambient stands in, so a building picks up the same colour cast as the terrain
+            // two fog ids match the world's, and frozen has neither field, so the block's ambient
+            // is taken unconditionally: a building picks up the same colour cast as the terrain
             // around it; the building's declared ambient is a fixed colour and leaves it
             // looking untinted.
-            const C3Vector& zone = CWorld::GetOutdoorAmbient();
+            C3Vector zone = DNColorVector(DayNightGetBlock()->ambient);
 
             CMapObj::s_instanceColor.b = static_cast<uint8_t>(zone.z * 255.0f);
             CMapObj::s_instanceColor.g = static_cast<uint8_t>(zone.y * 255.0f);
@@ -2852,13 +2852,12 @@ void CWorldScene::ComplementPortalViews() {
 // Fill a list of screen regions at the far plane in the fog colour, with identity view and
 // projection: rectangles as two triangles, outlines as fans. The rectangles are converted to clip
 // space in place. `portal` picks the DayNight block's blended fog colour (+0xa0) over its plain
-// one (+0x8c); frozen's stand-in light model keeps one fog colour, so both read it.
+// one (+0x8c).
 void CWorldScene::FillViewWindows(TSGrowableArray<ViewWindow>& views, int32_t portal) {
     if (!views.Count()) {
         return;
     }
 
-    (void)portal;
 
     C44Matrix savedProjection;
     C44Matrix savedView;
@@ -2874,11 +2873,8 @@ void CWorldScene::FillViewWindows(TSGrowableArray<ViewWindow>& views, int32_t po
     GxRsSet(GxRs_DepthWrite, 1);
     GxRsSet(GxRs_DepthTest, 1);
 
-    const C3Vector& fog = CWorld::GetFogColor();
-    CImVector color;
-    color.r = static_cast<uint8_t>(fog.x * 255.0f);
-    color.g = static_cast<uint8_t>(fog.y * 255.0f);
-    color.b = static_cast<uint8_t>(fog.z * 255.0f);
+    auto block = DayNightGetBlock();
+    CImVector color = portal ? block->finalFogColor : block->fogColor;
     color.a = 0xFF;
     GxFormatColor(color);
 
@@ -3170,8 +3166,9 @@ void CWorldScene::UpdateWorldView() {
     // Data-driven fog: enable it whenever the fog begins within the view distance, so geometry
     // between the fog start and the far plane is hazed even when the fog end lies beyond the far
     // clip (linear fog handles the partial factor). Colours and distances come from Light.dbc.
-    float fogEnd = CWorld::GetFogEnd();
-    CWorldScene::s_fogActive = fogEnd > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
+    auto block = DayNightGetBlock();
+    float fogStart = block->fogStart < 0.0f ? 0.0f : block->fogStart;
+    CWorldScene::s_fogActive = block->fogEnd > 1.0f && fogStart < CWorld::GetFarClip();
 
     // The fog RENDER STATES are not set here any more. CMap::Render already calls
     // CWorld::SetupFogRenderStates, and this block ran afterwards and overwrote its work with a

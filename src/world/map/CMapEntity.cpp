@@ -1,4 +1,5 @@
 #include "world/map/CMapEntity.hpp"
+#include "world/DayNightLight.hpp"
 #include "world/map/CMapObjDef.hpp"
 #include "world/map/CMapObjDefGroup.hpp"
 #include "world/map/CMapObj.hpp"
@@ -103,8 +104,8 @@ bool CMapEntity::ApplyFloorLight(const CImVector& color, uint8_t exteriorBlend, 
 
     if (exteriorBlend) {
         // DayNight's current outdoor diffuse (+0x1a8) and ambient (+0x1ac), as bytes
-        const C3Vector& dif = CWorld::GetOutdoorDiffuse();
-        const C3Vector& amb = CWorld::GetOutdoorAmbient();
+        C3Vector dif = DNColorVector(DayNightGetBlock()->diffuse);
+        C3Vector amb = DNColorVector(DayNightGetBlock()->ambient);
         CImVector dayDiffuse;
         CImVector dayAmbient;
         dayDiffuse.Set(1.0f, dif.x, dif.y, dif.z);

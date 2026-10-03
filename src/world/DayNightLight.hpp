@@ -60,6 +60,15 @@ struct DNSkyModel : TSHashObject<DNSkyModel, HASHKEY_STRI> {
 };
 
 // The block at 0x00d38b00. Offsets are the reference's.
+struct DayNightBlock;
+
+// One of the block's byte colours as a 0..1 vector, for the readers that work in floats.
+inline C3Vector DNColorVector(const CImVector& c) {
+    const float k = 1.0f / 255.0f;
+
+    return C3Vector { c.r * k, c.g * k, c.b * k };
+}
+
 struct DayNightBlock {
     int32_t minutes;                // +0x00, the game clock in minutes of the day
     float timeOfDay;                // +0x04, 0..1
