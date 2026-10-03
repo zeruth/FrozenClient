@@ -102,7 +102,10 @@ class CWorld {
             Enable_Particulates = 0x2000000,
             Enable_LowDetail = 0x4000000,
             Enable_8000000 = 0x8000000,
-            Enable_PixelShader = 0x10000000
+            Enable_PixelShader = 0x10000000,
+            // The world frame brackets its render with DeviceOverride(8, 0) and (8, 1) while this
+            // is set (0x004f8f7c, 0x004f9228).
+            Enable_20000000 = 0x20000000
         };
 
         enum Enables2 {
@@ -282,6 +285,9 @@ class CWorld {
         static void SetUpdateTime(float tickTimeSec, uint32_t curTimeMs);
         static void Update(const C3Vector& cameraPos, const C3Vector& cameraTarget, const C3Vector& targetPos);
         static void RenderWeather();
+        // The map's own render, then the client's periodic integrity report (FUN_00403fc0, not
+        // ported: it hashes and sends, and draws nothing). ref: FUN_0077eff0
+        static void RenderMap(const C3Vector& cameraPos, float dt);
         // The underwater motes, when the camera is in a liquid that takes them. ref: FUN_0077f9d0
         static void RenderParticulates();
         // Where the load barriers measure their reach from. ref: FUN_0077f9a0

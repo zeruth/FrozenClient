@@ -23,6 +23,9 @@
 #include "gx/shader/CShaderEffect.hpp"
 #include "gx/Screen.hpp"
 #include "gx/Draw.hpp"
+#include "gx/RenderTarget.hpp"
+#include "gx/Device.hpp"
+#include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "gx/Coordinate.hpp"
@@ -219,210 +222,197 @@ CGCamera* CGWorldFrame::GetActiveCamera() {
         : nullptr;
 }
 
+// ref: FUN_004f8ea0
+// The world's draw for one frame, in the reference's order: the frame's rectangle of the screen
+// as the viewport (flipped when drawing into a target), the map, the opaque models, the detail
+// doodads, the transparent block in the order the camera's side of the water decides, the
+// underwater motes, the glare, and the viewport given back. What the reference does here that
+// frozen does not have yet is marked in place.
 void CGWorldFrame::OnWorldRender() {
-    // The reference (FUN_004f8ea0) pushes the device viewport and sets the frame's own rect for the
-    // world; the world therefore only ever draws inside the WorldFrame, and the UI's viewport is
-    // restored afterwards.
-    float savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ;
-    GxXformViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
-    //
-    // The depth range is the saved minimum to 0.94 (DAT_00adeee4, pushed at 0x004f9019), not the
-    // whole buffer: everything past 0.94 is held for what draws behind the world -- the
-    // low-detail horizon at [0.998, 0.999] and the sky at [0.999, 1.0]. With the world on [0, 1]
-    // its far terrain wrote depth above 0.998 and the horizon's mesh won the test against it,
-    // drawing a fog-coloured ring along the ground at the far clip.
-    GxXformSetViewport(this->m_viewport.minX, this->m_viewport.maxX, this->m_viewport.minY, this->m_viewport.maxY, savedMinZ, 0.94f);
+    CRect window;
+    g_theGxDevicePtr->CapsWindowSize(window);
 
-    // The reference brackets the whole world render in a render-state push and turns multisampling
-    // on inside it: `calll 0x409670` (GxRsPush) then `push $0x1; push $0x13; calll 0x408bf0`
-    // (GxRsSet) at 0x004f8f2a, with the matching GxRsPop in its post stage. 0x13 is 19, which is
-    // GxRs_Multisample, so the world is drawn antialiased and the UI is not.
-    //
-    // docs/world-render-inventory.md carried this as "missing (GxRsSet 0x13)" on the viewport row,
-    // together with a note that frozen had no push/pop around the world render. Both halves land
-    // here; the state itself only reached the device once IRsSendToHw learned to send it, which is
-    // in the same change.
+    if (window.maxY - window.minY == 0.0f || window.maxX - window.minX == 0.0f) {
+        return;
+    }
+
+    if (!(this->m_viewport.minY < this->m_viewport.maxY && this->m_viewport.minX < this->m_viewport.maxX)) {
+        return;
+    }
+
+    // The whole world render sits in a render-state push with multisampling on (0x004f8f2a), so
+    // the world is drawn antialiased and the UI is not.
     GxRsPush();
     GxRsSet(GxRs_Multisample, 1);
 
-    // THE REFERENCE'S ORDER, read off FUN_004f8ea0's call sites on 2026-09-26 rather than inferred.
-    // This is queue item 11's target; every line is what the reference does, in this sequence, with
-    // the thunks at 0x0077exxx/0x0077fxxx resolved to what they jump to:
-    //
-    //   FUN_004f8770                         (pre)
-    //   FUN_008c1770
-    //   FUN_004f5d90
-    //   GxRsPush; GxRsSet(GxRs_Multisample, 1)
-    //   GxSceneClear
-    //   GxXformViewport / RenderTargetGet / GxXformSetViewport
-    //   FUN_004e6f80, FUN_007e5120, FUN_00715380
-    //   CShaderEffect::UpdateProjMatrix
-    //   CWorld::RenderMap        (0x0077eff0) -> CMap::Render, then FUN_00403fc0
-    //   FUN_0079fcc0             (0x0077f070)  a 1181-byte map pass, unported and unreached
-    //   ClntObjMgrEnumVisibleObjects
-    //   FUN_00715380 / 007153a0 / 007153c0, FUN_00615890, FUN_00725890, FUN_0081ca10
-    //   CM2Scene::Draw(M2PASS_0)
-    //   FUN_004f8a40
-    //   camera pos / FUN_00681ba0 / camera pos / FUN_00682960
-    //   CWorldScene::RenderDetailDoodads   (0x0077f010)
-    //   CWorld::GetCameraLiquid  (0x00780620)  and then the branch below
-    //   ... the transparent block ...
-    //   FUN_004f8a40, FUN_007fca30, FUN_007f9ec0, FUN_006fdfb0, FUN_004f6f90
-    //   the particulates pass    (0x0077f9d0, behind CWorld enable 0x2000000)
-    //   FUN_005eeb70, camera pos / FUN_00681ba0 / camera pos / FUN_00682960
-    //   FUN_007f0870, FUN_007e5580, FUN_00401260
-    //   GxRsPop
-    //   FUN_00615890, FUN_0056c7a0, GxXformSetViewport (restore)
-    //   FUN_008c1010, FUN_00747ae0, FUN_006d7ba0, CM2Model::Release
-    //
-    // The transparent block is an if/else on GetCameraLiquid with a SHARED TAIL -- the above-water
-    // arm jumps to the other's last draw at 0x004f91b7, which is why the two read as mirror images:
-    //
-    //   above water:  Draw(2), liquid bucket 1, weather, FUN_00794b50, Draw(1)
-    //   under water:  FUN_00794b50, Draw(1), weather, liquid bucket 1, Draw(2)
-    //
-    // frozen's version of that block below is in this order. FUN_00794b50 is the load barriers
-    // (CWorldScene::RenderBarriers), reached through the wrapper at 0x0077f980 with the float at
-    // frame+0xb14.
-    //
-    // So OnWorldRender's low fidelity is NOT an ordering defect: what is missing is the content of
-    // the passes, and they are tracked with their own items.
+    // TODO FUN_004f8770 (the sound system's underwater environment) and FUN_008c1770 (the
+    // capture object's viewport); neither draws.
 
-    // Clear the below-horizon backdrop to the distance-fog colour when fog is active, so far terrain
-    // (which fades to that same fog colour) blends seamlessly into the horizon instead of ending on a
-    // sky-coloured seam. With no fog, fall back to the horizon sky colour. The sky dome covers the
-    // whole upper hemisphere, so this clear only shows at and below the horizon, like the reference.
-    // The reference clears to BLACK under an open sky and only uses a colour when there is no sky
-    // to draw, when an interior lighting override is active, or when the camera is under liquid
-    // (CMap::Render's clear). The sky dome is then ADDED over that black, so the dome's own colour
-    // is the sky; clearing to the sky colour as well would double it.
-    // The clear, the projection refresh and the terrain chunks are CMap::Render's now (the clear
-    // colour logic above lives there); the map objects and liquids still come from the stand-in
-    // the view state, and the sky follows them as in the reference.
-    CMap::Render(this->m_camera->Position(), CWorld::GetTickTimeSec());
+    // A world frame that does not cover the screen clears its own rectangle first.
+    CRect fullScreen = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-    // The frame's view-projection and fog flag, which the sky, the weather, the overhead icons and
-    // the particle passes all read. Built after CMap::Render so it sees this frame's transforms.
+    if (this->m_viewport != fullScreen) {
+        GxSceneClear(3, { 0, 0, 0, 0xff });
+    }
+
+    if (CWorld::s_enables & CWorld::Enable_20000000) {
+        g_theGxDevicePtr->DeviceOverride(8, 0);
+    }
+
+    // The frame's rectangle within the current viewport, upside down when drawing into a
+    // target. The depth range is the saved minimum to 0.94 (DAT_00adeee4): everything past it is
+    // held for the low-detail horizon at [0.998, 0.999] and the sky at [0.999, 1.0]. With the
+    // world on [0, 1] its far terrain wrote depth above 0.998 and the horizon's mesh won the
+    // test against it, drawing a fog-coloured ring along the ground at the far clip.
+    float savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ;
+    GxXformViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
+
+    CGxTex* target = nullptr;
+    GxRenderTargetGet(GxBuffers_Color, target);
+
+    float bottom;
+    float top;
+
+    if (!target) {
+        bottom = this->m_viewport.maxY;
+        top = this->m_viewport.minY;
+    } else {
+        bottom = 1.0f - this->m_viewport.minY;
+        top = 1.0f - this->m_viewport.maxY;
+    }
+
+    GxXformSetViewport(
+        savedMinX + this->m_viewport.minX * (savedMaxX - savedMinX),
+        this->m_viewport.maxX * (savedMaxX - savedMinX) + savedMinX,
+        savedMinY + top * (savedMaxY - savedMinY),
+        bottom * (savedMaxY - savedMinY) + savedMinY,
+        savedMinZ,
+        0.94f
+    );
+
+    // TODO FUN_004f2db0 (clears a character-component counter, DAT_00b6ba50), FUN_007e5120 (the
+    // projected-texture frame stamp), and FUN_00715380(1) when the frame's +0xb10 bit 2 is set.
+
+    CShaderEffect::UpdateProjMatrix();
+
+    CWorld::RenderMap(this->m_camera->Position(), CWorld::GetTickTimeSec());
+
+    // FROZEN-ONLY: the frame's view-projection and fog flag, which the sky, the weather, the
+    // overhead icons and the particle passes all read. Built after the map so it sees this
+    // frame's transforms.
     if (!CWorldScene::s_viewUpdated) {
         CWorldScene::UpdateWorldView();
     }
 
     CWorldScene::s_viewUpdated = false;
 
-    // Which models draw is the map traversal's answer (CWorldScene::VisitStaticEntity and the
-    // unseen-entity pass), made inside CMap::Render before the scene animates. Frozen used to
-    // cull every visible object against the frustum here as well, after the fact.
-    auto objMgr = ClntObjMgrGetCurrent();
+    // TODO FUN_0079fcc0 (a map pass with no other caller), then the per-unit visitor
+    // ClntObjMgrEnumVisibleObjects(FUN_004f6a40) and the unit flag resets FUN_00715380 /
+    // FUN_007153a0 / FUN_007153c0(0), and when the frame's +0xb10 bit 1 is set FUN_00615890(0)
+    // and FUN_00725890 -- phase 4.
 
-    if (objMgr) {
-        // The blob decal pass is gone, and with it the whole stand-in that backed it. It could no
-        // longer put a decal on anything, for the same reason the WMO half could not (cf7768ff):
-        // the decal re-draws the receiver's own triangles and selects with a depth-EQUAL test, so it
-        // lands only where its re-draw reproduces the receiver's depth bit for bit -- and the
-        // receiver's base pass is CMapRenderChunk's now, which disagrees with it three ways over.
-        //
-        //   program   the reference pass binds CMap::GetTerrainVertexShader(lights, layers,
-        //             specular, colour, chunkSpecular, shadow), a .bls permutation; the decal bound
-        //             frozen's own embedded s_terrainVS
-        //   constants the reference uploads the whole TerrainConstants block at GxSh_Vertex 0
-        //             (view, viewTransposed, proj, three lights, texture scales); the decal wrote a
-        //             single 4-register matrix over the same registers, which that shader reads as
-        //             its `view` field
-        //   streams   the reference streams position + normal (+ MCCV colour) through a device
-        //             vertex format; the decal locked position + colour + texcoord
-        //
-        // Any one of those is enough for the depths to differ, so every pixel failed the test.
-        //
-        // The way back is the reference's own method, which is not this one: FUN_007e4480 builds a
-        // texture PROJECTION matrix and lets the receiver draw itself with an extra stage, which is
-        // how it shadows a receiver of any shader without needing to reproduce its depth. That is
-        // already the recorded divergence on FUN_007e4480 in overrides.json.
-
-        // The caster enumeration itself is the reference's own pass and stays: it drains the
-        // frame's entity list, which is what decides who casts.
+    // FROZEN-ONLY: the blob-shadow caster pass. It drains the frame's entity list, which is
+    // what decides who casts; the reference reaches its casters from the M2 scene's projection
+    // callback instead.
+    if (ClntObjMgrGetCurrent()) {
         CWorldScene::DrawEntityShadows();
     }
 
-    // NOTE: only the M2 scene draws may sit behind this guard. Detail doodads, liquids, weather,
-    // particles, blob shadows and the underwater overlay are all independent of the model scene,
-    // and having them inside it meant a null scene silently dropped half the world.
+    // DIVERGED: the reference wraps everything from here to the viewport restore, GxRsPop
+    // included, in one test of the world scene, and so would leave the push unbalanced without
+    // one. Frozen guards each scene draw instead; the world scene exists for the whole session.
     auto scene = CWorld::GetM2Scene();
 
-    {
-        // Fog the models with the same data-driven fog the terrain and WMOs use (UpdateWorldView has
-        // already set the fog colour/distances); the guard keeps clear zones unfogged.
-        bool useFog = CWorld::GetFogEnd() > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
+    // FROZEN-ONLY: fog the models with the same data-driven fog the terrain and WMOs use; the
+    // guard keeps clear zones unfogged.
+    bool useFog = CWorld::GetFogEnd() > 1.0f && CWorld::GetFogStart() < CWorld::GetFarClip();
 
-        if (useFog) {
-            GxRsSet(GxRs_Fog, 1);
-        }
+    if (useFog) {
+        GxRsSet(GxRs_Fog, 1);
+    }
 
-        // The scene's AdvanceTime and Animate, the map shadow render and the particle step all
-        // happen inside CMap::Render now, at the reference's position (0x0079ac0f).
+    if (scene) {
+        // FUN_0081ca10(-DAT_00cd7758) stores a float at the scene's +0x18 here; DAT_00cd7758 has
+        // no writer anywhere in the binary, so it is always -0.0, and frozen's +0x18 is not that
+        // float. Not ported.
 
-        // Reference (CGWorldFrame::OnWorldRender FUN_004f8ea0): opaque pass 0 after the map, then
-        // the transparent block draws pass 2 before pass 1 with the camera above liquid (the order
-        // flips underwater, which is not ported yet). Pass 2 was never drawn before.
-        if (scene) {
-            // Which passes the scene may run. The reference does this assignment here too, one
-            // instruction before its own Draw (0x004f9117), rather than at scene creation -- so a
-            // scene that is never drawn through this frame keeps its constructor's zero.
-            scene->m_passMask = CWorld::s_m2PassMask;
+        // Which passes the scene may run, set one instruction before the draw (0x004f9117).
+        scene->m_passMask = CWorld::s_m2PassMask;
 
-            scene->Draw(M2PASS_0);
-        }
+        scene->Draw(M2PASS_0);
+    }
 
-        // Detail doodads after the opaque models (reference FUN_007984a0)
-        CWorldScene::RenderDetailDoodads();
+    // TODO FUN_004f8a40(0x200122) while the cursor mode (DAT_00ac79a4) is below 2: the spell
+    // target's ground decal. Then the two deferred device lists, sorted from the camera and drawn
+    // (FUN_00681ba0(0, 1), FUN_00682960(0)).
 
-        // Transparent block (FUN_004f8ea0): above liquid it is pass 2, liquid, weather, barriers,
-        // pass 1; under liquid the reference reverses it so the water surface is composited last:
-        // barriers, pass 1, weather, liquid, pass 2. This order is confirmed against the
-        // disassembly -- see the table at the top of this function, including that the two arms
-        // share their final draw.
-        //
-        // Liquid bucket 1 IS drawn here, and this comment used to say the opposite of the code it sits
-        // above -- it claimed CMap::Render drains bucket 1 and that calling DrawLiquidPass here would
-        // draw every surface twice, while the call below has been there all along. CMap.cpp's comment
-        // at its own Liquid::Draw says the other thing, correctly. The code is right and always was:
-        // CMap::Render drains bucket 0 and DrawLiquidPass drains bucket 1, each exactly once, so
-        // nothing is drawn twice. Corrected rather than deleted because a note that inverts the truth
-        // invites someone to remove a call the renderer needs.
-        if (CWorld::IsCameraUnderLiquid()) {
-            CWorld::RenderBarriers(CWorld::GetTickTimeSec());
-            if (scene) { scene->Draw(M2PASS_1); }
-            CWorld::RenderWeather();
-            CWorldScene::DrawLiquidPass();
-            if (scene) { scene->Draw(M2PASS_2); }
-            ParticleFxRender();
-            OverheadIconsRender();
-        } else {
-            if (scene) { scene->Draw(M2PASS_2); }
-            ParticleFxRender();
-            OverheadIconsRender(); // the emitters' quads belong with pass 2 in the reference
-            CWorldScene::DrawLiquidPass();
-            CWorld::RenderWeather();
-            CWorld::RenderBarriers(CWorld::GetTickTimeSec());
-            if (scene) { scene->Draw(M2PASS_1); }
-        }
+    CWorldScene::RenderDetailDoodads();
 
-        ParticleFxEndFrame();
+    // The transparent block, ordered by the camera's side of the water. The two arms share their
+    // last draw (0x004f91b7), which is why they read as mirror images.
+    uint32_t lastPass;
 
-        // The underwater motes last in the world (FUN_0077f9d0 -> FUN_0079ca70)
-        CWorld::RenderParticulates();
+    if (!CWorld::IsCameraUnderLiquid()) {
+        if (scene) { scene->Draw(M2PASS_2); }
 
-        if (useFog) {
-            GxRsSet(GxRs_Fog, 0);
-        }
+        // FROZEN-ONLY: the particle emitters' quads, which belong with pass 2 in the reference,
+        // and the overhead icons.
+        ParticleFxRender();
+        OverheadIconsRender();
+
+        CWorldScene::DrawLiquidPass();
+        CWorld::RenderWeather();
+        CWorld::RenderBarriers(CWorld::GetTickTimeSec());
+        lastPass = M2PASS_1;
+    } else {
+        CWorld::RenderBarriers(CWorld::GetTickTimeSec());
+        if (scene) { scene->Draw(M2PASS_1); }
+        CWorld::RenderWeather();
+        CWorldScene::DrawLiquidPass();
+        lastPass = M2PASS_2;
+    }
+
+    if (scene) { scene->Draw(static_cast<M2PASS>(lastPass)); }
+
+    if (CWorld::IsCameraUnderLiquid()) {
+        // FROZEN-ONLY: as above, after the last pass under water.
+        ParticleFxRender();
+        OverheadIconsRender();
+    }
+
+    // FROZEN-ONLY
+    ParticleFxEndFrame();
+
+    // TODO FUN_004f8a40(0x20000) under the same cursor test, FUN_007fca30 (mount transitions),
+    // FUN_007f9ec0 (a camera-centred pass), FUN_006fdfb0 (missile trajectories) and FUN_004f6f90
+    // (the frame's two held objects) -- phase 3 and 4.
+
+    // The underwater motes last in the world (FUN_0077f9d0 -> FUN_0079ca70).
+    CWorld::RenderParticulates();
+
+    if (useFog) {
+        GxRsSet(GxRs_Fog, 0);
+    }
+
+    // TODO the second pair of deferred device lists (FUN_00681ba0(1, 0), FUN_00682960(1)).
+
+    // The sun's and the moon's glare over everything (FUN_007f0870, 0x004f9213), inside the push.
+    DayNightGlareRender();
+
+    // TODO FUN_007e5580: release the projected textures nothing used this frame.
+
+    if (CWorld::s_enables & CWorld::Enable_20000000) {
+        g_theGxDevicePtr->DeviceOverride(8, 1);
     }
 
     GxRsPop();
 
-    // The sun's and the moon's glare over everything (FUN_007f0870, at 0x004f9213, just after the
-    // draw lists are flushed).
-    DayNightGlareRender();
+    // TODO FUN_00615890(1) (empty deferred list 1) and FUN_0056c7a0 (the UI's pending layout).
 
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
+
+    // TODO FUN_008c1010 (the capture object's read-back) and FUN_00747ae0 (clear the units'
+    // 0x1000 flag).
 }
 
 // ref: FUN_004f6970

@@ -1266,6 +1266,11 @@ void CWorld::LightingCallback(CM2Model* model, CM2Lighting* lighting, void* arg)
     lighting->m_flags &= ~0x8u;
 }
 
+// ref: FUN_0077eff0
+void CWorld::RenderMap(const C3Vector& cameraPos, float dt) {
+    CMap::Render(cameraPos, dt);
+}
+
 // ref: FUN_0077f8f0
 void CWorld::SetUpdateCallback(void (*callback)()) {
     CWorld::s_updateCallback = callback;

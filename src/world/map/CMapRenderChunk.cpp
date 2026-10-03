@@ -785,7 +785,8 @@ void CMapRenderChunk::DrawLocal() {
 
     C44Matrix layerMatrix;
     C44Matrix alphaMatrix;
-    const C3Vector& cameraPos = CWorld::GetCameraPos();
+    // The scene's camera (DAT_00cd8f5c), which UpdateCamera keeps.
+    const C3Vector& cameraPos = CWorldScene::s_cameraPos;
     C3Vector offset = {
         cameraPos.x - this->m_position.x,
         cameraPos.y - this->m_position.y,
