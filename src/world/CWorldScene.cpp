@@ -718,7 +718,8 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
 
     CWorldScene::s_viewMatrix = g_theGxDevicePtr->m_xforms[GxXform_View].m_mtx[g_theGxDevicePtr->m_xforms[GxXform_View].m_level];
     CWorldScene::s_projMatrix = g_theGxDevicePtr->m_projection;
-    // TODO the device viewport copy at DAT_00cd8fb0
+    // The device viewport copied to DAT_00cd8fb0 here is never read back anywhere in the binary,
+    // so it is not kept.
 
     FrustumCorners(CWorldScene::s_viewMatrix, CWorldScene::s_projMatrix, CWorldScene::s_frustumCorners);
 
@@ -730,8 +731,11 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
 
     CWorldScene::s_frustums[0].SetCorners(CWorldScene::s_frustumCorners);
 
-    // The reference translates a matrix by -cameraPos here whose identity the decompilation
-    // loses; the products below read the view and projection copies directly
+    // The view copy taken back out to world space (the translate's this is DAT_00adf5e8, the view
+    // copy, at 0x0079585e), and the world-space view-projection built from it.
+    C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
+    CWorldScene::s_viewMatrix.Translate(back);
+
     CWorldScene::s_viewProjMatrix = CWorldScene::s_viewMatrix * CWorldScene::s_projMatrix;
     CWorldScene::s_viewProjW[0] = CWorldScene::s_viewProjMatrix.a3;
     CWorldScene::s_viewProjW[1] = CWorldScene::s_viewProjMatrix.b3;
@@ -793,7 +797,6 @@ void CWorldScene::UpdateCamera(const C3Vector& cameraPos, const C3Vector& camera
         C44Matrix flattened;
         MatrixLookAt(flattened, eye, target, up);
 
-        C3Vector back = { -cameraPos.x, -cameraPos.y, -cameraPos.z };
         flattened.Translate(back);
 
         CWorldScene::s_occlusionMatrix = flattened * CWorldScene::s_projMatrix;
