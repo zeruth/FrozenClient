@@ -163,11 +163,13 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             break;
 
         case 15:
+            behaviour = STORM_NEW(CGGameObjectMOTransport)(object);
+            break;
+
         case 31:
         case 33:
         case 35:
-            // TODO(World): MO transports (FUN_007141d0, the ShipPath subsystem), dungeon
-            // difficulty portals (FUN_00712820), destructible buildings (FUN_007128d0) and trap
+            // TODO(World): dungeon difficulty portals (FUN_00712820), destructible buildings (FUN_007128d0) and trap
             // doors (FUN_00713790) still get the root behaviour.
             behaviour = STORM_NEW(CGGameObjectType)(object, 5.0f);
             break;

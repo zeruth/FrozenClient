@@ -1,6 +1,7 @@
 #ifndef OBJECT_CLIENT_GAME_OBJECT_TYPES_HPP
 #define OBJECT_CLIENT_GAME_OBJECT_TYPES_HPP
 
+#include "object/client/ShipPath.hpp"
 #include "object/movement/CPassenger.hpp"
 #include "sound/SOUNDKITOBJECT.hpp"
 #include "util/GUID.hpp"
@@ -359,6 +360,9 @@ class CGGameObjectTransportBase : public CGGameObjectMapObject {
         // ref: FUN_00959d00
         int32_t Virtual0A8() override { return static_cast<int32_t>(this->m_adjustedTime); } // 0xa8
 
+        float StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction = nullptr);
+        void MovePassengers(int32_t* cameraRides);
+
         // +0x14: the passengers riding it, threaded through CPassenger::m_transportLink.
         STORM_EXPLICIT_LIST(CPassenger, m_transportLink) m_passengers;
         C3Vector m_position = {};           // +0x20
@@ -392,9 +396,7 @@ class CGGameObjectTransport : public CGGameObjectTransportBase {
         void Evaluate(uint32_t time, C3Vector* offset, C4Quaternion* rotation);
         C3Vector EvaluatePosition(uint32_t time);
         C4Quaternion EvaluateRotation(uint32_t time);
-        float StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction);
         C44Matrix* UpdateWorldMatrix();
-        void MovePassengers(int32_t* cameraRides);
 
         uint32_t m_animFirst = 0;           // +0x40, the first TransportAnimation row
         uint32_t m_animCount = 0;           // +0x44
@@ -405,6 +407,32 @@ class CGGameObjectTransport : public CGGameObjectTransportBase {
         uint32_t m_sequence = 0x1FA;        // +0x58, the sequence its key plays
         uint32_t m_pathStart = 0;           // +0x5c, when the path began for the current state
         uint32_t m_pathOffset = 0;          // +0x60, how far into the path a reversal started
+};
+
+// A ship or zeppelin (type 15, 0x00a348c0): it follows its TaxiPath (ShipPath, +0x40) at the
+// object's speed and acceleration, rocked by its TransportPhysics row, playing the start, moving and
+// stopping sequences as it goes. +0x38 holds the sequence playing (-1 before the first step).
+class CGGameObjectMOTransport : public CGGameObjectTransportBase {
+    public:
+        // ref: FUN_007141d0
+        CGGameObjectMOTransport(CGGameObject_C* owner) : CGGameObjectTransportBase(owner) {}
+
+        void OnStateChanged(int32_t from, int32_t to) override;                         // 0x30
+        void OnStatsLoaded() override;                                                   // 0x78
+        void OnPostReenable() override;                                                  // 0x84
+        // ref: FUN_00714230
+        void* GetTransportAnimation() override { return &this->m_path; }                // 0x88
+        void UpdateTransport(uint32_t time, int32_t elapsed) override;                   // 0x8c
+        // ref: FUN_00714240
+        uint32_t AdjustTime(uint32_t time) override { return this->m_path.GetPathTime(time); } // 0xa4
+
+        // ref: FUN_007100d0
+        // The path brought to the server's word: the progress round it, and whether it is to stop
+        // (state 1) or has stopped (dynamic flag 0x10); then a step to now.
+        void SyncPath();
+
+        ShipPath m_path;                    // +0x40
+        uint32_t m_leg = 0;                 // +0x80, the leg the last step was on
 };
 
 // The sound a GameObjectDisplayInfo record carries in slot `index`, played at `position` --

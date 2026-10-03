@@ -778,7 +778,7 @@ void CGGameObjectTransport::OnPostReenable() {
 // the speed it implies.
 //
 // PARTIAL: a change of speed tells the owner's effects (FUN_006f3910, the ObjectEffect port's).
-float CGGameObjectTransport::StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction) {
+float CGGameObjectTransportBase::StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction) {
     float dx = to.x - this->m_position.x;
     float dy = to.y - this->m_position.y;
     float dz = to.z - this->m_position.z;
@@ -800,7 +800,7 @@ float CGGameObjectTransport::StepTo(uint32_t elapsed, const C3Vector& to, C3Vect
 // `cameraRides` reports whether the camera's target is aboard.
 //
 // PHASE4(Vehicle_C): a vehicle riding it carries its own passengers along (FUN_00757be0).
-void CGGameObjectTransport::MovePassengers(int32_t* cameraRides) {
+void CGGameObjectTransportBase::MovePassengers(int32_t* cameraRides) {
     *cameraRides = 0;
 
     auto owner = this->m_owner;
@@ -911,6 +911,169 @@ void CGGameObjectTransport::UpdateTransport(uint32_t time, int32_t elapsed) {
 
     if (this->m_mapObject) {
         CWorld::SetDynamicObjectPlacement(this->m_mapObject, *world);
+    }
+}
+
+// ---- type 15 ------------------------------------------------------------------------------------
+
+// GameObjectDataIndex meanings a ship carries (s_dataMOTransport).
+static const int32_t GO_DATA_TAXI_PATH = 0x23;
+static const int32_t GO_DATA_MOVE_SPEED = 0x24;
+static const int32_t GO_DATA_ACCEL_RATE = 0x2b;
+static const int32_t GO_DATA_TRANSPORT_PHYSICS = 99;
+static const int32_t GO_DATA_ALLOW_STOPPING = 0x80;
+
+// ref: FUN_007101c0
+// A ship that may stop is told to by state 1 and set off by any other.
+void CGGameObjectMOTransport::OnStateChanged(int32_t from, int32_t to) {
+    if (this->GetData(GO_DATA_ALLOW_STOPPING) == 0) {
+        return;
+    }
+
+    if (from == to) {
+        this->m_path.SetStopped(this->m_time, to != 1);
+    }
+
+    this->m_path.SetStopped(this->m_time, to == 1);
+}
+
+// ref: FUN_00711b50
+// Its stats are in: the building, the moving transports, the path built from the object's data and
+// the server's period, the path synced, and the building placed.
+void CGGameObjectMOTransport::OnStatsLoaded() {
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+
+    auto physics = g_transportPhysicsDB.GetRecord(this->GetData(GO_DATA_TRANSPORT_PHYSICS));
+    int32_t accel = this->GetData(GO_DATA_ACCEL_RATE);
+    int32_t speed = this->GetData(GO_DATA_MOVE_SPEED);
+    int32_t path = this->GetData(GO_DATA_TAXI_PATH);
+
+    this->m_path.Initialize(path, static_cast<float>(speed), static_cast<float>(accel), physics);
+    this->m_path.SetLength(static_cast<uint32_t>(this->m_owner->GameObject()->level));
+    this->SyncPath();
+
+    if (this->m_mapObject) {
+        C44Matrix world;
+        this->m_owner->GetWorldMatrix(world);
+        CWorld::SetDynamicObjectPlacement(this->m_mapObject, world);
+    }
+}
+
+// ref: FUN_00710190
+void CGGameObjectMOTransport::OnPostReenable() {
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+
+    this->SyncPath();
+}
+
+// ref: FUN_007100d0
+void CGGameObjectMOTransport::SyncPath() {
+    auto now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    auto owner = this->m_owner;
+
+    if (this->GetData(GO_DATA_ALLOW_STOPPING) != 0) {
+        uint32_t time = static_cast<uint32_t>(owner->m_timeOffset) + now;
+        auto data = owner->GameObject();
+
+        this->m_path.SetProgress(time, static_cast<float>(data->animProgress) * 1.52590219e-05f);
+
+        if (!(data->dynamicFlags & 0x10)) {
+            this->m_path.SetStopped(time, data->state == 1);
+        } else {
+            this->m_path.StopNow(time);
+        }
+    }
+
+    this->UpdateTransport(now, 0);
+}
+
+// ref: FUN_007134a0
+// One movement poll: the path evaluated at the server's time; on another map only the active
+// player's path time is kept. Otherwise the ship is placed by the path's point, heading, pitch and
+// roll, its building follows (and once in, answers its sequences and plays the path's), and its
+// passengers are carried.
+//
+// PARTIAL: the sequence's effect kit (FUN_0070b390, the ObjectEffect port's); and when the camera
+// rides it onto another leg, the reference shows the path's loading screen (FUN_0040ae30) and
+// reloads the world round the camera's target (FUN_00781500 -> FUN_007bd9f0, CWorld's synchronous
+// reload), neither ported.
+void CGGameObjectMOTransport::UpdateTransport(uint32_t time, int32_t elapsed) {
+    auto owner = this->m_owner;
+    bool first = this->m_animState == -1;
+
+    C3Vector position = { 0.0f, 0.0f, 0.0f };
+    int32_t mapID = -1;
+    uint32_t sequence = 0;
+    float facing = 0.0f;
+    uint32_t leg = 0;
+    float roll = 0.0f;
+    float pitch = 0.0f;
+    uint32_t at = static_cast<uint32_t>(owner->m_timeOffset) + time;
+
+    this->m_path.Evaluate(at, static_cast<uint32_t>(elapsed), &mapID, &sequence, &position, &facing, &leg, &roll, &pitch, 0);
+
+    if (static_cast<uint32_t>(mapID) != ClntObjMgrGetMapID()) {
+        auto player = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_UNIT, ".\\GameObject_C.cpp", 0x75c));
+
+        if (!player) {
+            return;
+        }
+
+        if (player->GetTransportGUID() == owner->GetGUID()) {
+            MovementSetTransportTime(this->m_adjustedTime);
+        }
+
+        return;
+    }
+
+    this->m_time = at;
+    this->m_adjustedTime = this->AdjustTime(at);
+    this->StepTo(static_cast<uint32_t>(elapsed), position);
+    this->m_position = position;
+
+    auto& world = owner->m_worldMatrix;
+    world = C44Matrix();
+    world.d0 = this->m_position.x;
+    world.d1 = this->m_position.y;
+    world.d2 = this->m_position.z;
+    world.RotateAroundZ(facing);
+    world.RotateAroundY(pitch);
+    world.RotateAroundX(roll);
+
+    owner->m_passenger.SetPackedRotation(C4Quaternion(world));
+    owner->m_passenger.m_passengerFlags |= 0x2;
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectPlacement(this->m_mapObject, world);
+
+        if (!this->m_arrived && CWorld::DynamicObjectIsLoaded(this->m_mapObject)) {
+            CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &TransportSequenceDone, 0);
+            this->m_arrived = 1;
+        }
+
+        if (this->m_arrived && static_cast<uint32_t>(this->m_animState) != sequence) {
+            CWorld::SetDynamicObjectSequence(this->m_mapObject, sequence, 0, 0);
+            this->m_animState = static_cast<int32_t>(sequence);
+        }
+    }
+
+    int32_t cameraRides = 0;
+    this->MovePassengers(&cameraRides);
+
+    if (this->m_leg != leg) {
+        this->m_leg = leg;
+
+        if (cameraRides && !first) {
+            // The leg change's loading screen and world reload (see above).
+        }
     }
 }
 

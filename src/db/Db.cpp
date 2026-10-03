@@ -57,6 +57,8 @@ WowClientDB<TerrainTypeRec> g_terrainTypeDB;
 WowClientDB<FootstepTerrainLookupRec> g_footstepTerrainLookupDB;
 WowClientDB<TransportAnimationRec> g_transportAnimationDB;
 WowClientDB<TransportRotationRec> g_transportRotationDB;
+WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
+WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
 WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 WowClientDB<FactionGroupRec> g_factionGroupDB;
@@ -141,6 +143,8 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_footstepTerrainLookupDB, __FILE__, __LINE__);
     loadFn(&g_transportAnimationDB, __FILE__, __LINE__);
     loadFn(&g_transportRotationDB, __FILE__, __LINE__);
+    loadFn(&g_taxiPathNodeDB, __FILE__, __LINE__);
+    loadFn(&g_transportPhysicsDB, __FILE__, __LINE__);
     loadFn(&g_currencyTypesDB, __FILE__, __LINE__);
     loadFn(&g_spellShapeshiftFormDB, __FILE__, __LINE__);
     loadFn(&g_factionGroupDB, __FILE__, __LINE__);

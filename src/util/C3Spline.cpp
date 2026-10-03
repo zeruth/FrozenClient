@@ -118,6 +118,21 @@ float C3Spline::SumSegmentLengths(uint32_t count) const {
     return sum;
 }
 
+// ref: FUN_004c3720
+float C3Spline::LengthToPoint(uint32_t point) const {
+    float sum = 0.0f;
+
+    if (point == 0) {
+        return sum;
+    }
+
+    for (uint32_t i = 0; i < point - 1; i++) {
+        sum += this->SegmentLength(i);
+    }
+
+    return sum;
+}
+
 // ref: FUN_004c3bd0
 // Which segment `t` of the way along lies in, and how far into it.
 void C3Spline::SegmentAtLength(float t, uint32_t segmentCount, uint32_t& segment, float& localT) const {
