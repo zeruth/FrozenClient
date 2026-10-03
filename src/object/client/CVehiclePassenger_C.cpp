@@ -85,6 +85,38 @@ int32_t CVehiclePassenger_C::GetSeatUpperAnimation(const VehicleSeatRec* seat) c
     return 0x1FA;
 }
 
+// ref: FUN_007484e0
+// A sequence ended on the rider's model: while the seat drives an upper-body animation, the bone
+// it ended on says which start has now played (0x4 the upper body, 0x2 the body); otherwise both
+// are marked played.
+void CVehiclePassenger_C::OnRiderSequenceDone(uint32_t boneId) {
+    auto seat = this->m_seat;
+
+    if (this->GetSeatAnimation(seat) != 0x1FA && seat && this->m_state == 3 && (seat->m_flags & 0x4)) {
+        int32_t upper = -1;
+
+        if (!(this->m_flags & 0x4)) {
+            upper = seat->m_rideUpperAnimStart;
+        }
+
+        if (upper == -1) {
+            upper = seat->m_rideUpperAnimLoop;
+        }
+
+        if (upper != -1 && upper != 0x1FA) {
+            if (boneId != 0xFFFFFFFF && boneId != 0x1A) {
+                this->m_flags |= 0x4;
+            } else {
+                this->m_flags |= 0x2;
+            }
+
+            return;
+        }
+    }
+
+    this->m_flags |= 0x6;
+}
+
 // ref: FUN_00748560
 bool CVehiclePassenger_C::GetRideAnimation(uint32_t allow, int32_t* out) const {
     if (((this->m_state != 0 && this->m_state != 3)

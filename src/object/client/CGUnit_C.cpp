@@ -1,4 +1,6 @@
 #include "object/client/CGUnit_C.hpp"
+#include <new>
+#include <storm/Memory.hpp>
 #include "ui/game/CGGameUI.hpp"
 #include "util/Zlib.hpp"
 #include "ui/game/ScriptEvents.hpp"
@@ -4623,10 +4625,13 @@ void CGUnit_C::OnModelSequenceDone(CM2Model* model, uint32_t boneId, uint32_t an
 // animations, the death time, the "playing X" bits -- then, for the root or the body bone and a
 // sequence that ran out, the follow-up (FUN_0073b510) with the permission bits handed back.
 //
-// PARTIAL, each the subsystem's own port: the passenger's sequence hook (FUN_007484e0), the death
-// effect (FUN_00717ba0, the CEffect list), the swing trail a replaced attack drops (FUN_00732500, behaviours 0x59/0x5a),
-// and the player's queued emote steps (FUN_006e2e10, Player_C +0x1944, which frozen does not keep).
+// PARTIAL: the player's queued dance steps (FUN_006e2e10, Player_C +0x1944, the dance studio's
+// CMSG_SYNC_DANCE chain, which frozen does not keep) are the Player_C port's.
 void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted) {
+    if (this->m_vehiclePassenger && this->m_vehiclePassenger->m_state != 0) {
+        this->m_vehiclePassenger->OnRiderSequenceDone(boneId);
+    }
+
     if (this->m_deferredAnimID == animID) {
         this->m_deferredAnimID = -1;
     }
@@ -4638,6 +4643,8 @@ void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_
         if (this->m_deathTime == 0) {
             this->m_deathTime = CWorld::GetCurTimeMs();
         }
+
+        this->ShowLootSparkle();
     }
 
     if (animID == this->GetCastVisualAnimation()) {
@@ -4693,8 +4700,20 @@ void CGUnit_C::OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_
                 this->m_animFlags &= 0xffbfffff;
                 break;
 
+            case 0x59:
+            case 0x5A: {
+                C3Vector position = this->GetPosition();
+
+                if (boneId == 3) {
+                    this->ReturnSwingWeapon(&position, 0, 0x100000);
+                } else {
+                    this->ReturnSwingWeapon(&position, 1, 0x200000);
+                }
+
+                break;
+            }
+
             default:
-                // 0x59 / 0x5a: the swing trail, see above.
                 break;
         }
 
@@ -4814,6 +4833,111 @@ void CGUnit_C::PlayBoneFollowUpAnimation(CM2Model* model, uint32_t boneId, int32
     this->SetBoneSequence(model, boneId, out.uint90, out.uint94, static_cast<uint32_t>(out.currentTime), out.speed,
                           1, 1, 0);
     this->UpdateObjectEffects();
+}
+
+// ref: FUN_00717ba0
+// A unit that died lootable (dynamic flag 0x1) shows the loot sparkle, once: nothing is added
+// while one is already on its effect list.
+//
+// DIVERGED: the reference releases the effect after InitializeLootArt even when that freed it
+// (its model failed to load); frozen checks that the effect was linked before releasing it.
+void CGUnit_C::ShowLootSparkle() {
+    if (!(this->m_unit->dynamicFlags & 0x1)) {
+        return;
+    }
+
+    for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+        if (effect->m_flags & CEffect::EFFECT_LOOT_ART) {
+            return;
+        }
+    }
+
+    void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+
+    if (!mem) {
+        return;
+    }
+
+    auto effect = new (mem) CEffect();
+    effect->InitializeLootArt(this, nullptr);
+
+    if (this->m_effects == effect) {
+        effect->Release();
+    }
+}
+
+// ref: FUN_004d07b0
+// The sound a weapon of this material makes going into its sheath or coming out of it, two yards
+// above `position`; the active player's own is played as the listener's.
+void PlaySheathSound(const UNIT_WEAPON_INFO* info, int32_t toSheath, const C3Vector* position, int32_t isActivePlayer) {
+    if (!info) {
+        return;
+    }
+
+    auto material = g_materialDB.GetRecord(info->m_material);
+
+    if (!material) {
+        return;
+    }
+
+    C3Vector at = { position->x, position->y, position->z + 2.0f };
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    if (isActivePlayer) {
+        properties.int20 = 0x6E;
+    }
+
+    SI2::PlaySoundKit(toSheath == 0 ? material->m_unsheatheSoundID : material->m_sheatheSoundID, &at, nullptr,
+                      &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_00732500
+// A swing is over: the hand's weapon goes back where the sheath state wants it -- the state the
+// swing temporarily drew (+0xb5c), or the one before it when the `drawnBit` animation flag is clear
+// -- and makes its sound. A ranged weapon held the wrong way round for the hand stays put.
+void CGUnit_C::ReturnSwingWeapon(const C3Vector* position, int32_t hand, uint32_t drawnBit) {
+    auto handInfo = this->GetWeaponInfo(hand, 0);
+    auto ranged = this->GetWeaponInfo(2, 0);
+    int32_t state;
+    int32_t toSheath;
+
+    if ((this->m_animFlags & drawnBit) && this->m_sheathState != 0) {
+        state = this->m_sheathState;
+        toSheath = 0;
+    } else {
+        state = this->m_previousSheathState;
+        toSheath = 1;
+    }
+
+    bool isActive = this->GetGUID() == ClntObjMgrGetActivePlayer();
+
+    if (state == 2) {
+        bool keep = false;
+
+        if (ranged) {
+            if (ranged->m_inventoryType == 0xF) {
+                keep = hand == 0;
+            } else if (static_cast<uint8_t>(ranged->m_inventoryType - 0x19) < 2) {
+                keep = hand == 1;
+            }
+        }
+
+        if (!keep) {
+            this->AttachRangedWeapon(toSheath, nullptr);
+            PlaySheathSound(ranged, toSheath, position, isActive ? 1 : 0);
+        }
+    } else {
+        this->MoveHandItem(hand, toSheath);
+        PlaySheathSound(handInfo, toSheath, position, isActive ? 1 : 0);
+    }
+
+    if (this->m_previousSheathState == 2) {
+        this->AttachHandItem(0);
+    }
+
+    PortraitRefresh(this->GetGUID(), 1);
 }
 
 // ref: FUN_007228b0

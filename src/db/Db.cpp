@@ -52,6 +52,7 @@ WowClientDB<CreatureSoundDataRec> g_creatureSoundDataDB;
 WowClientDB<CreatureFamilyRec> g_creatureFamilyDB;
 WowClientDB<CreatureTypeRec> g_creatureTypeDB;
 WowClientDB<CreatureMovementInfoRec> g_creatureMovementInfoDB;
+WowClientDB<MaterialRec> g_materialDB;
 WowClientDB<CurrencyTypesRec> g_currencyTypesDB;
 WowClientDB<SpellShapeshiftFormRec> g_spellShapeshiftFormDB;
 WowClientDB<FactionGroupRec> g_factionGroupDB;
@@ -131,6 +132,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_creatureFamilyDB, __FILE__, __LINE__);
     loadFn(&g_creatureTypeDB, __FILE__, __LINE__);
     loadFn(&g_creatureMovementInfoDB, __FILE__, __LINE__);
+    loadFn(&g_materialDB, __FILE__, __LINE__);
     loadFn(&g_currencyTypesDB, __FILE__, __LINE__);
     loadFn(&g_spellShapeshiftFormDB, __FILE__, __LINE__);
     loadFn(&g_factionGroupDB, __FILE__, __LINE__);

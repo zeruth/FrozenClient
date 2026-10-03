@@ -37,6 +37,7 @@ class CVehiclePassenger_C {
         // ref: FUN_00747bd0
         // As GetSeatAnimation, for the rider's upper body, which only the aboard phase has.
         int32_t GetSeatUpperAnimation(const VehicleSeatRec* seat) const;
+        void OnRiderSequenceDone(uint32_t boneId);
 
         // ref: FUN_00748560
         // Candidate for the animation chooser: the seat's animation, while the ride is starting or
