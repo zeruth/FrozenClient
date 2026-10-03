@@ -1091,6 +1091,13 @@ void CMapObj::UpdateMaterialColors() {
 // not drawn for five seconds gives its buffers back, and a root no def references any more is
 // dropped ten seconds later.
 void CMapObj::UpdateAll() {
+    // A new frame for the portal walk: every doorway is measured afresh, no building has been
+    // walked yet, and the projected outlines of the last frame are dropped.
+    CMapObj::s_portalStamp++;
+    CMapObj::s_walkDef = nullptr;
+    CMapObj::s_lastWalkDef = nullptr;
+    CMapObj::s_portalPoints.SetCount(0);
+
     CWorldScene::s_visibleCallbackDef = nullptr;
 
     // TODO the reference picks its two WMO draw entry points here by the shader level, which is
@@ -1142,9 +1149,12 @@ uint32_t* CMapObj::s_occlusionHeap;
 // The names are the ones MapObj.wfx and MapObjU.wfx register, and the order is the order
 // the MOMT shader field numbers them.
 void CMapObj::Initialize() {
-    // TODO the reference also reserves 0x400 more entries in the interior walk's frustum
-    // record array (the object at 0x00d1bee8, grown by FUN_004c46c0) and clears its
-    // high-water marks. frozen has no portal walk yet, so there is no array to reserve.
+    // Room for 0x400 projected outline points, so the exterior views pointing into the list
+    // stay put while a frame fills it, and the walk's frame stamp and buildings cleared.
+    CMapObj::s_portalPoints.Reserve(0x400, 1);
+    CMapObj::s_portalStamp = 0;
+    CMapObj::s_walkDef = nullptr;
+    CMapObj::s_lastWalkDef = nullptr;
 
     CMapObj::s_effects[0] = CShaderEffectManager::GetEffect("MapObjDiffuse");
     CMapObj::s_effects[1] = CShaderEffectManager::GetEffect("MapObjSpecular");

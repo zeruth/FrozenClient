@@ -271,6 +271,23 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         // (DAT_00cd8620).
         static int32_t s_insideBuilding;
         static int32_t s_sawExterior;
+        // Set by the first SetupPortalContext and never cleared (DAT_00cfbebc). The walk from
+        // outside only collects exterior candidates once it is set.
+        static int32_t s_portalContextReady;
+        // The projected outlines the exterior candidates point into, emptied once a frame by
+        // UpdateAll (DAT_00d1bee8).
+        static TSGrowableArray<C3Vector> s_portalPoints;
+
+        // How far the farthest corner of a doorway lies along the view, never less than zero.
+        // ref: FUN_007a70d0
+        float PortalDepth(const SMOPortal* portal);
+
+        // Looking out of a building through a doorway onto a group the walk will not step into:
+        // the doorway, nudged a hundredth off its plane, is projected once a frame, kept as a
+        // portal view and merged into the scene's window -- and into the portal window as well
+        // when what lies beyond is outdoors. ref: FUN_007a8f20
+        void AddInteriorPortalView(const SMOPortal* portal, const SMOPortalRef* ref,
+                                   PortalRect* rect, uint32_t outdoor);
 
         // Step through every doorway of one group that is still in view, marking each room it
         // reaches and narrowing the view by the doorway it came through. `fromGroup` is where

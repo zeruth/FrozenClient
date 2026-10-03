@@ -33,6 +33,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 // The state the draw only touches when it changes. The reference keeps them as MapObj.cpp
 // file statics; every one is reset to its "nothing set" value when a pass starts.
@@ -1087,8 +1088,11 @@ void CMapObj::SetupPortalContext(const C44Matrix& placement, const C44Matrix& in
                                   + dir.z * CMapObj::s_localCameraPos.z);
 
     // TODO FUN_00682130(&DAT_00adfe90) and the second matrix block after it: the projection
-    // the walk measures a portal's screen rectangle with. The rectangle itself
-    // (FUN_007a9090 -> FUN_007a85e0) is not ported either, so neither is used yet.
+    // the walk measures a portal's screen rectangle with; frozen's ProjectPortal reads the
+    // device's view and projection directly. Also the root's count of indoor groups (+0x1e4),
+    // worked out here the first time.
+
+    CMapObj::s_portalContextReady = 1;
 }
 
 // ref: FUN_007a7210
@@ -1266,12 +1270,139 @@ void CMapObj::MeasurePortal(CMapObj* mapObj, const SMOPortal* portal, PortalRect
 C44Matrix CMapObj::s_portalPlacement;
 int32_t CMapObj::s_portalStamp;
 
+int32_t CMapObj::s_portalContextReady;
+TSGrowableArray<C3Vector> CMapObj::s_portalPoints;
+
+// ref: FUN_007a70d0
+float CMapObj::PortalDepth(const SMOPortal* portal) {
+    const C4Plane& view = CMapObj::s_localViewPlane;
+    auto vertices = &this->m_mopv[portal->startVertex];
+
+    float depth = 0.0f;
+
+    for (uint32_t i = 0; i < portal->count; i++) {
+        float d = vertices[i].x * view.n.x + vertices[i].y * view.n.y + vertices[i].z * view.n.z + view.d;
+
+        if (depth < d) {
+            depth = d;
+        }
+    }
+
+    return depth;
+}
+
+// The doorway's outline nudged a hundredth along its own normal, to the side away from the group
+// it leads to, so the anti-portal outline is never coplanar with the doorway itself.
+static C3Vector PortalNudge(const SMOPortal* portal, const SMOPortalRef* ref) {
+    C3Vector offset = {
+        portal->plane.n.x * 0.01f,
+        portal->plane.n.y * 0.01f,
+        portal->plane.n.z * 0.01f
+    };
+
+    if (0 < ref->side) {
+        offset.x = -offset.x;
+        offset.y = -offset.y;
+        offset.z = -offset.z;
+    }
+
+    return offset;
+}
+
+// ref: FUN_007a8f20
+void CMapObj::AddInteriorPortalView(const SMOPortal* portal, const SMOPortalRef* ref,
+                                    PortalRect* rect, uint32_t outdoor) {
+    if (rect->flags & 0x4) {
+        return;
+    }
+
+    rect->flags |= 0x4;
+
+    C3Vector screen[CLIP_POLYGON_MAX];
+    uint32_t count = CMapObj::ProjectPortal(portal, &this->m_mopv[portal->startVertex],
+                                            PortalNudge(portal, ref), CMapObj::s_portalPlacement, screen);
+
+    if (count < 3) {
+        rect->flags |= 0x1;
+        return;
+    }
+
+    PortalRect bounds;
+    CMapObj::ScreenBounds(&bounds, screen, count);
+
+    CWorldScene::ViewWindow window;
+    window.minX = (bounds.minY + 1.0f) * 0.5f;
+    window.minY = (bounds.minX + 1.0f) * 0.5f;
+    window.maxX = (bounds.maxY + 1.0f) * 0.5f;
+    window.maxY = (bounds.maxX + 1.0f) * 0.5f;
+    window.depth = this->PortalDepth(portal);
+    window.points = nullptr;
+    window.pointCount = 0;
+
+    CWorldScene::AddPortalView(window);
+    CWorldScene::ViewWindowMerge(CWorldScene::s_window, window);
+
+    if (outdoor) {
+        CWorldScene::ViewWindowMerge(CWorldScene::s_portalWindow, window);
+    }
+}
+
+// ref: FUN_007a9200
+// Looking into a building from outside, through a doorway of the group the camera sees, onto an
+// indoor group: the doorway's nudged outline is projected once a frame, copied into the frame's
+// point list, and kept as a candidate exterior view with that outline.
+static void AddExteriorCandidate(CMapObj* mapObj, const SMOPortal* portal, const SMOPortalRef* ref,
+                                 CMapObj::PortalRect* rect,
+                                 TSGrowableArray<CWorldScene::ViewWindow>* candidates) {
+    if (rect->flags & 0xc) {
+        return;
+    }
+
+    C3Vector screen[CLIP_POLYGON_MAX];
+    uint32_t count = CMapObj::ProjectPortal(portal, &mapObj->m_mopv[portal->startVertex],
+                                            PortalNudge(portal, ref), CMapObj::s_portalPlacement, screen);
+
+    if (count < 3) {
+        rect->flags |= 0x1;
+    } else {
+        CMapObj::PortalRect bounds;
+        CMapObj::ScreenBounds(&bounds, screen, count);
+
+        // The reference takes the destination before growing the list; frozen takes it after,
+        // so a grow that moves the storage cannot leave it pointing at the old block.
+        uint32_t first = CMapObj::s_portalPoints.Count();
+        CMapObj::s_portalPoints.SetCount(first + count);
+        memcpy(&CMapObj::s_portalPoints[first], screen, count * sizeof(C3Vector));
+
+        CWorldScene::ViewWindow window;
+        window.minX = (bounds.minY + 1.0f) * 0.5f;
+        window.minY = (bounds.minX + 1.0f) * 0.5f;
+        window.maxX = (bounds.maxY + 1.0f) * 0.5f;
+        window.maxY = (bounds.maxX + 1.0f) * 0.5f;
+        window.depth = -1.0f;
+        window.points = &CMapObj::s_portalPoints[first];
+        window.pointCount = count;
+
+        *candidates->New() = window;
+    }
+
+    rect->flags |= 0x8;
+}
+
 // ref: FUN_007ac060
 // One room, then every room its doorways open onto. A doorway facing away from the camera is
 // skipped, one covering none of the remaining view is skipped, and what is left narrows the
-// view for the room beyond it.
+// view for the room beyond it. From inside, a doorway onto daylight or an always-drawn group
+// becomes a portal view instead of a step; from outside, the root group's doorways into indoor
+// rooms are collected, and once the walk is back at the top each one that no backward-facing
+// doorway covers becomes an exterior view.
 void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* window,
                           uint32_t depth, int32_t interior) {
+    // The candidate exterior views and the screen the backward-facing doorways cover, kept across
+    // the recursion as the reference keeps them, in function statics.
+    static TSGrowableArray<CWorldScene::ViewWindow> s_candidates;     // DAT_00d1c3c0
+    static TSGrowableArray<CWorldScene::ViewRect> s_covered;          // DAT_00d1c3b0
+
     if (depth > CMapObj::PORTAL_DEPTH_MAX) {
         return;
     }
@@ -1292,11 +1423,11 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         interior = 0;
     }
 
-    CMapObj::s_interiorFog = interior;
-
     if (CMapObj::s_insideBuilding && (group->m_flags & 0x40000)) {
         CWorldScene::s_mapObjSkybox = this->m_mosb;
     }
+
+    CMapObj::s_interiorFog = interior;
 
     if (CMapObj::s_visibleCallback) {
         CMapObj::s_visibleCallback(groupIndex, CMapObj::s_visibleCallbackArg);
@@ -1306,8 +1437,9 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         return;
     }
 
-    if (CWorldScene::s_frustumDepth + 1 >= static_cast<int32_t>(CWorldScene::FRUSTUM_DEPTH_MAX)) {
-        return;
+    if (!CMapObj::s_insideBuilding && depth == 0) {
+        s_candidates.SetCount(0);
+        s_covered.SetCount(0);
     }
 
     for (uint32_t i = 0; i < group->m_portalCount; i++) {
@@ -1324,12 +1456,12 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         auto portal = &this->m_mopt[ref->portalIndex];
         auto rect = &this->m_portalRects[ref->portalIndex];
 
+        uint32_t targetFlags = this->GroupFlags(ref->groupIndex);
+
         // Measured at most once a frame: a doorway reached twice covers the same rectangle.
         if (rect->stamp != CMapObj::s_portalStamp) {
             rect->stamp = CMapObj::s_portalStamp;
             rect->flags = 0;
-
-            uint32_t targetFlags = this->GroupFlags(ref->groupIndex);
 
             // Crossing between lit and unlit is marked so the room beyond knows.
             if (!(targetFlags & 0x8) && !(group->m_flags & 0x8)) {
@@ -1339,7 +1471,7 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
             CMapObj::MeasurePortal(this, portal, rect, CMapObj::s_portalPlacement);
         }
 
-        // Which face of the doorway the camera is on; a doorway seen from behind leads nowhere.
+        // Which face of the doorway the camera is on.
         const C4Plane& plane = portal->plane;
         const C3Vector& camera = CMapObj::s_localCameraPos;
 
@@ -1350,6 +1482,13 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         }
 
         if (side < 0.0f) {
+            // Seen from behind it leads nowhere; from outside, at the top, it hides whatever
+            // the exterior candidates would show, so the whole screen is marked covered.
+            if (!CMapObj::s_insideBuilding && depth == 0) {
+                CWorldScene::ViewRect whole = { 0.0f, 0.0f, 1.0f, 1.0f };
+                *s_covered.New() = whole;
+            }
+
             continue;
         }
 
@@ -1360,10 +1499,7 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
 
         // Overlap with the window, both ordered vertical-first ({minY, minX, maxY, maxX}): the
         // reference tests +8 against window[3], window[1] against +0x10, +4 against window[2]
-        // and window[0] against +0xc (0x007ac2f0). This used to compare each rect edge with the
-        // window edge of the OTHER axis, so a doorway was dropped whenever its vertical span
-        // missed the window's horizontal one -- which rooms showed through a door depended on
-        // the view angle.
+        // and window[0] against +0xc (0x007ac2f0).
         if (rect->minX > window[3] || window[1] > rect->maxX
             || rect->minY > window[2] || window[0] > rect->maxY) {
             continue;
@@ -1373,35 +1509,83 @@ void CMapObj::WalkPortals(uint32_t groupIndex, uint32_t fromGroup, const float* 
         // four edges and repeats one of them instead of clamping the fourth; kept, because a
         // doorway is measured against this same window on the way in, so the unclamped edge
         // cannot exceed it in practice.
-        float sub[4];
-        sub[0] = rect->minY < window[0] ? window[0] : rect->minY;
-        sub[1] = rect->minX < window[1] ? window[1] : rect->minX;
-        sub[2] = rect->maxY;
-        sub[3] = window[3] < rect->maxX ? window[3] : rect->maxX;
+        float narrowed[4];
+        narrowed[0] = rect->minY < window[0] ? window[0] : rect->minY;
+        narrowed[1] = rect->minX < window[1] ? window[1] : rect->minX;
+        narrowed[2] = rect->maxY;
+        narrowed[3] = window[3] < rect->maxX ? window[3] : rect->maxX;
 
         // A doorway edge-on covers no area and leads nowhere.
-        if (NearlyEqual(sub[1], sub[3], 0.001f) || NearlyEqual(sub[0], sub[2], 0.001f)) {
+        if (NearlyEqual(narrowed[1], narrowed[3], 0.001f) || NearlyEqual(narrowed[0], narrowed[2], 0.001f)) {
             continue;
         }
 
+        if (!CMapObj::s_insideBuilding) {
+            // From outside, a doorway onto daylight leads nowhere new.
+            if (targetFlags & 0x10008) {
+                continue;
+            }
+
+            if (depth == 0 && CMapObj::s_portalContextReady && !(targetFlags & 0x140)) {
+                AddExteriorCandidate(this, portal, ref, rect, &s_candidates);
+            }
+        } else if (targetFlags & 0x50148) {
+            // From inside, a doorway onto daylight or an always-drawn group becomes a view of
+            // its own; only the indoor ones among them are still stepped through.
+            this->AddInteriorPortalView(portal, ref, rect, targetFlags & 0x10008);
+
+            if (targetFlags & 0x10008) {
+                continue;
+            }
+        }
+
         // The traversal's windows run 0 to 1; a projected rectangle runs -1 to 1.
-        CWorldScene::ViewWindow narrowed;
-        narrowed.minX = (sub[0] + 1.0f) * 0.5f;
-        narrowed.minY = (sub[1] + 1.0f) * 0.5f;
-        narrowed.maxX = (sub[2] + 1.0f) * 0.5f;
-        narrowed.maxY = (sub[3] + 1.0f) * 0.5f;
-        narrowed.depth = -1.0f;
-        narrowed.points = nullptr;
-        narrowed.pointCount = 0;
+        static const float one[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        static const float two[4] = { 2.0f, 2.0f, 2.0f, 2.0f };
 
-        CWorldScene::s_frustumDepth++;
-        CWorldScene::s_frustums[CWorldScene::s_frustumDepth] =
-            CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
-        CWorldScene::SubFrustum(CWorldScene::s_frustumCorners, &narrowed);
+        float shifted[4];
+        CMapObj::RectAdd(shifted, narrowed, one);
 
-        this->WalkPortals(ref->groupIndex, groupIndex, sub, depth + 1, interior);
+        CWorldScene::ViewWindow view;
+        CMapObj::RectDivide(&view.minX, shifted, two);
+        view.depth = -1.0f;
+        view.points = nullptr;
+        view.pointCount = 0;
 
-        CWorldScene::s_frustumDepth--;
+        if (!CWorldScene::PushFrustum()) {
+            continue;
+        }
+
+        CWorldScene::SubFrustum(CWorldScene::s_frustumCorners, &view);
+
+        this->WalkPortals(ref->groupIndex, groupIndex, narrowed, depth + 1, interior);
+
+        CWorldScene::PopFrustum();
+    }
+
+    // Back at the top: each candidate no backward-facing doorway overlaps is an exterior view.
+    if (depth == 0 && s_candidates.Count()) {
+        for (uint32_t i = 0; i < s_candidates.Count(); i++) {
+            const CWorldScene::ViewWindow& candidate = s_candidates[i];
+            const float* c = &candidate.minX;
+
+            uint32_t k = 0;
+
+            for (; k < s_covered.Count(); k++) {
+                const float* r = s_covered[k].v;
+
+                if (r[1] <= c[3] && r[0] <= c[2] && c[1] <= r[3] && c[0] <= r[2]) {
+                    break;
+                }
+            }
+
+            if (k >= s_covered.Count()) {
+                CWorldScene::AddExteriorView(candidate);
+            }
+        }
+
+        s_candidates.SetCount(0);
+        s_covered.SetCount(0);
     }
 }
 

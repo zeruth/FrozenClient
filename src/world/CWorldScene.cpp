@@ -2725,6 +2725,24 @@ void CWorldScene::ViewWindowMerge(ViewWindow& window, const ViewWindow& other) {
     window.pointCount = 0;
 }
 
+// ref: FUN_00791950
+bool CWorldScene::PushFrustum() {
+    if (CWorldScene::s_frustumDepth + 1 >= static_cast<int32_t>(CWorldScene::FRUSTUM_DEPTH_MAX)) {
+        return false;
+    }
+
+    CWorldScene::s_frustumDepth++;
+    CWorldScene::s_frustums[CWorldScene::s_frustumDepth] =
+        CWorldScene::s_frustums[CWorldScene::s_frustumDepth - 1];
+
+    return true;
+}
+
+// ref: FUN_0078fb50
+void CWorldScene::PopFrustum() {
+    CWorldScene::s_frustumDepth--;
+}
+
 // ref: FUN_00795d00
 void CWorldScene::AddPortalView(const ViewWindow& window) {
     *CWorldScene::s_portalViews.New() = window;

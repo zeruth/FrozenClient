@@ -121,6 +121,11 @@ class CWorldScene {
             uint32_t pointCount;
         };
 
+        // A bare screen rectangle, 0 to 1, in the ViewWindow's field order.
+        struct ViewRect {
+            float v[4];
+        };
+
         static const uint32_t TERRAIN_CONSTANT_COUNT = 37;
         static const uint32_t TERRAIN_CONSTANT_LAYER_SCROLL = 13;
 
@@ -467,6 +472,11 @@ class CWorldScene {
         static float ViewPlane2dDistance(const C3Vector& point);
         static void BucketChunk(CMapChunk* chunk, const C3Vector& point);
         static void SubFrustum(const C3Vector* corners, const ViewWindow* window);
+        // One level deeper into the portal frustum stack, starting as a copy of the level above.
+        // FROZEN-ONLY: returns false rather than run off the end of the stack. ref: FUN_00791950
+        static bool PushFrustum();
+        // ref: FUN_0078fb50
+        static void PopFrustum();
         static void TraverseRowMapObjDefs(Row* row, const ViewWindow* window, int32_t portal);
         static void BucketMapObjDefGroup(CMapObjDef* def, CMapObjDefGroup* defGroup);
         static void BucketMapObjDefGroups();
