@@ -139,13 +139,9 @@ CGUnit_C* InputActiveUnit(const char* file, int32_t line) {
     return static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, file, line));
 }
 
-// The protected-action gate (FUN_005191c0, GameUI.cpp): movement from tainted Lua is refused
-// with ADDON_ACTION_BLOCKED. Frozen does not track taint yet, so nothing is tainted and every
-// request passes, which is what the reference does for untainted code.
+// The protected-action gate (FUN_005191c0): movement from tainted Lua is refused.
 int32_t InputActionAllowed(int32_t action) {
-    (void)action;
-
-    return 1;
+    return CGGameUI::CanPerformAction(action);
 }
 
 // The bit tests SetControlBit and UnsetControlBit both take before changing anything.

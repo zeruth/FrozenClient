@@ -308,6 +308,7 @@ void CSimpleButton::OnLayerHide() {
     CSimpleFrame::OnLayerHide();
 }
 
+// ref: FUN_0096fa80
 int32_t CSimpleButton::OnLayerMouseDown(const CMouseEvent& evt, const char* btn) {
     if (CSimpleFrame::OnLayerMouseDown(evt, btn)) {
         return 1;
@@ -323,13 +324,11 @@ int32_t CSimpleButton::OnLayerMouseDown(const CMouseEvent& evt, const char* btn)
                 btn = GetButtonName(evt.button);
             }
 
-            // TODO
-            // this->m_top->m_int1241 = 1;
+            this->m_top->m_hardwareEvent = 1;
 
             this->OnClick(btn, 1);
 
-            // TODO
-            // this->m_top->m_int1241 = 0;
+            this->m_top->m_hardwareEvent = 0;
         }
 
         if (!this->m_stateLocked && this->m_state != BUTTONSTATE_DISABLED) {
@@ -342,6 +341,7 @@ int32_t CSimpleButton::OnLayerMouseDown(const CMouseEvent& evt, const char* btn)
     return 0;
 }
 
+// ref: FUN_0096fb60
 int32_t CSimpleButton::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
     if (CSimpleFrame::OnLayerMouseUp(evt, btn)) {
         return 1;
@@ -361,8 +361,7 @@ int32_t CSimpleButton::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
                 btn = GetButtonName(evt.button);
             }
 
-            // TODO
-            // this->m_top->m_int1241 = 1;
+            this->m_top->m_hardwareEvent = 1;
 
             uint32_t currentTime = OsGetAsyncTimeMs();
 
@@ -374,8 +373,7 @@ int32_t CSimpleButton::OnLayerMouseUp(const CMouseEvent& evt, const char* btn) {
                 this->m_doubleClickTime = currentTime;
             }
 
-            // TODO
-            // this->m_top->m_int1241 = 0;
+            this->m_top->m_hardwareEvent = 0;
         }
     }
 

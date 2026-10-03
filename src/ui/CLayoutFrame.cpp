@@ -938,6 +938,52 @@ int32_t CLayoutFrame::Sub488E40(const FRAMEPOINT* const pointarray, int32_t elem
     return 1;
 }
 
+// A plain layout frame has no children to protect it.
+int32_t CLayoutFrame::IsChildProtected(int32_t* pending) {
+    return 0;
+}
+
+// ref: FUN_00489b50
+// Protected because a frame anchored to it is: walks the frames whose layout depends on this one.
+// One still being evaluated (0x800) leaves the answer pending rather than looping.
+int32_t CLayoutFrame::IsAnchorProtected(int32_t* pending) {
+    for (auto node = this->m_resizeList.Head(); node; node = this->m_resizeList.Link(node)->Next()) {
+        auto frame = static_cast<CLayoutFrame*>(node->frame);
+
+        if (frame->m_flags & 0x800) {
+            *pending = 1;
+        } else if (frame->IsProtected()) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_00489bb0
+// 0x100 when the frame is protected itself, 0x200 when it is protected through its children or
+// the frames anchored to it. 0x400 marks the second answer as stale; it is worked out here (0x800
+// guards the walk) and kept stale only while part of it is still pending elsewhere.
+uint32_t CLayoutFrame::IsProtected() {
+    if (this->m_flags & 0x400) {
+        this->m_flags |= 0x800;
+
+        int32_t pending = 0;
+
+        if (this->IsChildProtected(&pending) || this->IsAnchorProtected(&pending)) {
+            this->m_flags |= 0x200;
+        }
+
+        this->m_flags &= ~0x800;
+
+        if (!pending || (this->m_flags & 0x200)) {
+            this->m_flags &= ~0x400;
+        }
+    }
+
+    return this->m_flags & 0x300;
+}
+
 void CLayoutFrame::Sub489190(uint32_t flag) {
     for (int32_t i = 0; i < FRAMEPOINT_NUMPOINTS; i++) {
         auto point = this->m_points[i];

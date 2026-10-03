@@ -859,13 +859,9 @@ int32_t CSimpleEditBox::OnLayerKeyDown(const CKeyEvent& evt) {
 
         case KEY_ENTER: {
             if (!this->m_multiline || this->m_onEnterPressed.luaRef) {
-                // TODO
-                // this->m_top->m_int1250 = 1;
-
+                this->m_top->m_hardwareEvent = 1;
                 this->OnEnterPressed();
-
-                // TODO
-                // this->m_top->m_int1250 = 0;
+                this->m_top->m_hardwareEvent = 0;
             } else {
                 this->Insert("\n", 0, 1, 0, 0);
             }

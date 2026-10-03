@@ -334,6 +334,31 @@ void CSimpleScrollFrame::RunOnVerticalScrollScript() {
     this->RunScript(this->m_onVerticalScroll, 1, nullptr);
 }
 
+// ref: FUN_0096af10
+void CSimpleScrollFrame::RunOnHorizontalScrollScript() {
+    if (!this->m_onHorizontalScroll.luaRef) {
+        return;
+    }
+
+    auto L = FrameScript_GetContext();
+
+    auto offsetX = this->m_scrollOffset.x;
+    auto ddcOffsetX = CoordinateGetAspectCompensation() * 1024.0f * offsetX;
+    auto ndcOffsetX = DDCToNDCWidth(ddcOffsetX);
+    lua_pushnumber(L, ndcOffsetX);
+
+    this->RunScript(this->m_onHorizontalScroll, 1, nullptr);
+}
+
+// ref: FUN_0096b440
+void CSimpleScrollFrame::SetHorizontalScroll(float offset) {
+    if (fabs(offset - this->m_scrollOffset.x) >= 0.00000095367432) {
+        this->m_scrollOffset.x = offset;
+        this->UpdateScrollChild();
+        this->RunOnHorizontalScrollScript();
+    }
+}
+
 void CSimpleScrollFrame::SetScrollChild(CSimpleFrame* frame) {
     if (this->m_scrollChild) {
         this->m_scrollChild->SetBeingScrolled(0, 0);

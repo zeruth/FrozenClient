@@ -64,6 +64,17 @@ class CSimpleTop : public CLayoutFrame {
         // +0x123c: a relative move (mouse look) goes here first, before any frame.
         int32_t (*m_mouseRelativeCallback)(CMouseEvent*) = nullptr;
         int32_t (*m_displaySizeCallback)(const CSizeEvent&) = nullptr;
+        // +0x1244 and +0x1248 are two more input hooks the game UI installs (FUN_00512d00 and an
+        // unset one); not ported yet.
+        void* m_inputHook1244 = nullptr;
+        void* m_inputHook1248 = nullptr;
+        // +0x124c: tainted code may call protected functions (the game UI clears it in combat)
+        int32_t m_protectedFunctionsAllowed = 0;
+        // +0x1250: a hardware event -- a click, a key binding, Enter in an edit box -- is being
+        // handled, which some protected actions require
+        int32_t m_hardwareEvent = 0;
+        // +0x1254: told when tainted code is refused a protected function
+        void (*m_actionBlockedCallback)(FrameScript_Object* object) = nullptr;
 
         // Virtual member functions
         virtual ~CSimpleTop();

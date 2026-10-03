@@ -14,12 +14,40 @@
 #include <cstdint>
 #include <tempest/Rect.hpp>
 
+// ref: FUN_0049cad0
+// IsProtected(): whether the region is protected at all, and whether explicitly.
 int32_t CScriptRegion_IsProtected(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsProtected()) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    if (region->CLayoutFrame::m_flags & 0x100) {
+        lua_pushnumber(L, 1.0);
+        return 2;
+    }
+
+    lua_pushnil(L);
+    return 2;
 }
 
+// ref: FUN_0049cb60
+// nil while a protected region cannot be changed by tainted code (in combat).
 int32_t CScriptRegion_CanChangeProtectedState(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CScriptRegion::GetObjectType();
+    auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
+
+    if (region->IsProtected() && !CSimpleTop::s_instance->m_protectedFunctionsAllowed) {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    lua_pushnumber(L, 1.0);
+    return 1;
 }
 
 int32_t CScriptRegion_SetParent(lua_State* L) {
@@ -27,7 +55,9 @@ int32_t CScriptRegion_SetParent(lua_State* L) {
     auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
 
     if (!region->ProtectedFunctionsAllowed()) {
-        // TODO
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
 
         return 0;
     }
@@ -247,8 +277,9 @@ int32_t CScriptRegion_SetWidth(lua_State* L) {
     auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
 
     if (!region->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
 
         return 0;
     }
@@ -296,8 +327,9 @@ int32_t CScriptRegion_SetHeight(lua_State* L) {
     auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
 
     if (!region->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
 
         return 0;
     }
@@ -320,7 +352,10 @@ int32_t CScriptRegion_SetSize(lua_State* L) {
     auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
 
     if (!region->ProtectedFunctionsAllowed()) {
-        // TODO disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
+
         return 0;
     }
 
@@ -467,8 +502,9 @@ int32_t CScriptRegion_SetPoint(lua_State* L) {
     auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
 
     if (!region->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
 
         return 0;
     }
@@ -582,8 +618,9 @@ int32_t CScriptRegion_SetAllPoints(lua_State* L) {
     auto region = static_cast<CScriptRegion*>(FrameScript_GetObjectThis(L, type));
 
     if (!region->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
 
         return 0;
     }
@@ -629,12 +666,9 @@ int32_t CScriptRegion_ClearAllPoints(lua_State* L) {
     if (region->ProtectedFunctionsAllowed()) {
         region->ClearAllPoints();
     } else {
-        // TODO
-        // void* v3 = CSimpleTop::s_instance->Function4692;
-
-        // if (v3) {
-        //     v3(object);
-        // }
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(region);
+        }
     }
 
     return 0;

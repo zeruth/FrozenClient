@@ -152,8 +152,12 @@ void CScriptRegion::OnLayerUpdate(float elapsedSec) {
     }
 }
 
+// ref: FUN_00488540
+// A protected region refuses tainted callers unless the game UI allows it (out of combat).
 bool CScriptRegion::ProtectedFunctionsAllowed() {
-    // TODO
+    if (this->IsProtected() && lua_tainted) {
+        return CSimpleTop::s_instance->m_protectedFunctionsAllowed != 0;
+    }
 
     return true;
 }

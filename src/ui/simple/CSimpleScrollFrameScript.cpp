@@ -1,4 +1,5 @@
 #include "ui/simple/CSimpleScrollFrameScript.hpp"
+#include "ui/simple/CSimpleTop.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/simple/CSimpleScrollFrame.hpp"
 #include "util/Lua.hpp"
@@ -8,53 +9,55 @@
 // ref: FUN_00972210
 // GetScrollChild was implemented while this was a stub, so every scroll frame in the interface
 // could be asked what it was scrolling and none could be told.
+// ref: FUN_00972210
 int32_t CSimpleScrollFrame_SetScrollChild(lua_State* L) {
     auto type = CSimpleScrollFrame::GetObjectType();
     auto scrollFrame = static_cast<CSimpleScrollFrame*>(FrameScript_GetObjectThis(L, type));
 
-    // Nil detaches whatever is there. The reference takes this path before any other check.
+    // nil detaches whatever is there, before any other check
     if (lua_type(L, 2) == LUA_TNIL) {
         scrollFrame->SetScrollChild(nullptr);
+        return 0;
+    }
+
+    CSimpleFrame* child = nullptr;
+
+    if (lua_isstring(L, 2)) {
+        child = static_cast<CSimpleFrame*>(CScriptObject::GetScriptObjectByName(lua_tostring(L, 2), CSimpleFrame::GetObjectType()));
+    } else if (lua_type(L, 2) == LUA_TTABLE) {
+        lua_rawgeti(L, 2, 0);
+        child = static_cast<CSimpleFrame*>(lua_touserdata(L, -1));
+        lua_settop(L, -2);
+
+        if (!child) {
+            luaL_error(L, "%s:SetScrollChild(): Couldn't find 'this' in child object", scrollFrame->GetDisplayName());
+            return 0;
+        }
+
+        if (!child->IsA(CSimpleFrame::GetObjectType())) {
+            luaL_error(L, "%s:SetScrollChild(): Wrong child object type, expected frame", child->GetDisplayName());
+            return 0;
+        }
+    }
+
+    if (!child) {
+        luaL_error(L, "%s:SetScrollChild(): Couldn't find frame named '%s'", scrollFrame->GetDisplayName(), lua_tostring(L, 2));
+        return 0;
+    }
+
+    if (!scrollFrame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(scrollFrame);
+        }
 
         return 0;
     }
 
-    if (lua_isstring(L, 2)) {
-        // The reference looks the name up in its frame-name registry and, when that misses, says
-        // so. Frozen keeps no such registry -- frames are reached through their Lua objects -- so
-        // every name takes the miss path. FrameXML passes the frame itself everywhere it calls
-        // this, so nothing shipped depends on the name form.
-        return luaL_error(L, "%s:SetScrollChild(): Couldn't find frame named '%s'",
-                          scrollFrame->GetDisplayName(), lua_tostring(L, 2));
-    }
-
-    if (lua_type(L, 2) != LUA_TTABLE) {
-        return luaL_error(L, "%s:SetScrollChild(): Couldn't find frame named '%s'",
-                          scrollFrame->GetDisplayName(), lua_tostring(L, 2));
-    }
-
-    lua_rawgeti(L, 2, 0);
-    auto child = static_cast<CSimpleFrame*>(lua_touserdata(L, -1));
-    lua_settop(L, -2);
-
-    if (!child) {
-        return luaL_error(L, "%s:SetScrollChild(): Couldn't find 'this' in child object",
-                          scrollFrame->GetDisplayName());
-    }
-
-    if (!child->IsA(CSimpleFrame::GetObjectType())) {
-        return luaL_error(L, "%s:SetScrollChild(): Wrong child object type, expected frame",
-                          scrollFrame->GetDisplayName());
-    }
-
-    // Walking up from the scroll frame, the prospective child must not already be an ancestor.
-    // Without this a frame can be made to scroll one of its own parents, and the layout pass then
-    // recurses until the stack runs out.
-    for (auto ancestor = static_cast<CSimpleFrame*>(scrollFrame); ancestor;
-         ancestor = ancestor->m_parent) {
+    // the child must not already be the scroll frame or one of its ancestors
+    for (auto ancestor = static_cast<CSimpleFrame*>(scrollFrame); ancestor; ancestor = ancestor->m_parent) {
         if (ancestor == child) {
-            return luaL_error(L, "%s:SetScrollChild(): Would create a loop adding child %s",
-                              scrollFrame->GetDisplayName(), child->GetDisplayName());
+            luaL_error(L, "%s:SetScrollChild(): Would create a loop adding child %s", scrollFrame->GetDisplayName(), child->GetDisplayName());
+            return 0;
         }
     }
 
@@ -84,8 +87,30 @@ int32_t CSimpleScrollFrame_GetScrollChild(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_00972490
 int32_t CSimpleScrollFrame_SetHorizontalScroll(lua_State* L) {
-    // TODO horizontal scrolling; nothing in the shipped interface scrolls sideways
+    auto type = CSimpleScrollFrame::GetObjectType();
+    auto scrollFrame = static_cast<CSimpleScrollFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!scrollFrame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(scrollFrame);
+        }
+
+        return 0;
+    }
+
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: %s:SetHorizontalScroll(offset)", scrollFrame->GetDisplayName());
+        return 0;
+    }
+
+    float offset = lua_tonumber(L, 2);
+    float ndcOffset = offset / (CoordinateGetAspectCompensation() * 1024.0f);
+    float ddcOffset = NDCToDDCWidth(ndcOffset);
+
+    scrollFrame->SetHorizontalScroll(ddcOffset);
+
     return 0;
 }
 
@@ -94,7 +119,9 @@ int32_t CSimpleScrollFrame_SetVerticalScroll(lua_State* L) {
     auto scrollFrame = static_cast<CSimpleScrollFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!scrollFrame->ProtectedFunctionsAllowed()) {
-        // TODO handle check
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(scrollFrame);
+        }
 
         return 0;
     }

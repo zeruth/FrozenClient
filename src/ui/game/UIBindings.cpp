@@ -13,6 +13,7 @@
 #include <common/xml/XMLTree.hpp>
 #include <storm/String.hpp>
 #include <vector>
+#include "ui/simple/CSimpleTop.hpp"
 
 namespace {
 
@@ -525,10 +526,20 @@ int32_t UIBindingsDispatchKey(const char* key, int32_t down) {
         return 0;
     }
 
+    // a key binding is a hardware event for as long as it runs
+    auto top = CSimpleTop::s_instance;
+    top->m_hardwareEvent = 1;
+
+    int32_t handled;
+
     if (!SStrCmpI(command, "SPELL ", 6) || !SStrCmpI(command, "ITEM ", 5)
         || !SStrCmpI(command, "MACRO ", 6) || !SStrCmpI(command, "CLICK ", 6)) {
-        return 1;
+        handled = 1;
+    } else {
+        handled = UIBindingsRunCommand(command, down != 0) ? 1 : 0;
     }
 
-    return UIBindingsRunCommand(command, down != 0) ? 1 : 0;
+    top->m_hardwareEvent = 0;
+
+    return handled;
 }

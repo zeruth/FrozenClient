@@ -58,6 +58,7 @@ class CLayoutFrame {
         virtual CLayoutFrame* GetLayoutFrameByName(const char* name);
         virtual int32_t IsObjectLoaded();
         virtual void OnFrameSizeChanged(const CRect& rect);
+        virtual int32_t IsChildProtected(int32_t* pending);
 
         // Member functions
         CLayoutFrame();
@@ -91,6 +92,8 @@ class CLayoutFrame {
         int32_t Sub488DB0(const FRAMEPOINT* const pointarray, int32_t elements, float& x);
         int32_t Sub488E40(const FRAMEPOINT* const pointarray, int32_t elements, float& y);
         void Sub489190(uint32_t flag);
+        uint32_t IsProtected();
+        int32_t IsAnchorProtected(int32_t* pending);
         float Top();
         void UnflattenFrame(CLayoutFrame* frame);
         void UnregisterResize(CLayoutFrame* frame, uint32_t dep);

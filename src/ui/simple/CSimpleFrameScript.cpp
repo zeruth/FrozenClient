@@ -305,14 +305,24 @@ int32_t CSimpleFrame_SetFrameStrata(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
+    if (!frame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
+
+        return 0;
+    }
+
     if (!lua_isstring(L, 2)) {
-        return luaL_error(L, "Usage: %s:SetFrameStrata(\"strata\")", frame->GetDisplayName());
+        luaL_error(L, "Usage: %s:SetFrameStrata(level)", frame->GetDisplayName());
+        return 0;
     }
 
     FRAME_STRATA strata;
 
     if (!StringToFrameStrata(lua_tostring(L, 2), strata)) {
-        return luaL_error(L, "%s:SetFrameStrata(): Unknown strata %s", frame->GetDisplayName(), lua_tostring(L, 2));
+        luaL_error(L, "%s:SetFrameStrata(): Unknown frame strata: %s", frame->GetDisplayName(), lua_tostring(L, 2));
+        return 0;
     }
 
     frame->SetFrameStrata(strata);
@@ -334,8 +344,9 @@ int32_t CSimpleFrame_SetFrameLevel(lua_State* L) {
     CSimpleFrame* frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }
@@ -677,12 +688,15 @@ int32_t CSimpleFrame_GetAttribute(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0049f610
 int32_t CSimpleFrame_SetAttribute(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed() && !frame->AttributeChangesAllowed()) {
-        // TODO disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }
@@ -701,11 +715,22 @@ int32_t CSimpleFrame_SetAttribute(lua_State* L) {
         luaL_unref(L, LUA_REGISTRYINDEX, luaRef);
     }
 
-    // TODO taint management
+    // the value is stored secure, whoever set it: secure templates trust their attributes
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
 
+    lua_settaint(L, 3, nullptr);
     luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
 
-    // TODO taint management
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
 
     frame->SetAttribute(attrName, luaRef);
 
@@ -737,8 +762,9 @@ int32_t CSimpleFrame_SetScale(lua_State* L) {
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }
@@ -811,8 +837,9 @@ int32_t CSimpleFrame_SetID(lua_State* L) {
     CSimpleFrame* frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }
@@ -829,6 +856,14 @@ int32_t CSimpleFrame_SetID(lua_State* L) {
 int32_t CSimpleFrame_SetToplevel(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
+
+        return 0;
+    }
 
     frame->SetFrameFlag(FRAME_FLAG_TOPLEVEL, StringToBOOL(L, 2, 1));
 
@@ -881,8 +916,9 @@ int32_t CSimpleFrame_Show(lua_State* L) {
     if (frame->ProtectedFunctionsAllowed()) {
         frame->Show();
     } else {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
     }
 
     return 0;
@@ -895,8 +931,9 @@ int32_t CSimpleFrame_Hide(lua_State* L) {
     if (frame->ProtectedFunctionsAllowed()) {
         frame->Hide();
     } else {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
     }
 
     return 0;
@@ -933,8 +970,9 @@ int32_t CSimpleFrame_Raise(lua_State* L) {
     CSimpleFrame* frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed()) {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }
@@ -944,8 +982,22 @@ int32_t CSimpleFrame_Raise(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_0049ff50
 int32_t CSimpleFrame_Lower(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto type = CSimpleFrame::GetObjectType();
+    auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
+
+        return 0;
+    }
+
+    frame->Lower();
+
+    return 0;
 }
 
 // ref: FUN_0049ffb0
@@ -968,6 +1020,14 @@ int32_t CSimpleFrame_GetHitRectInsets(lua_State* L) {
 int32_t CSimpleFrame_SetHitRectInsets(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
+
+    if (!frame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
+
+        return 0;
+    }
 
     if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3) || !lua_isnumber(L, 4) || !lua_isnumber(L, 5)) {
         return luaL_error(L, "Usage: %s:SetHitRectInsets(left, right, top, bottom)", frame->GetDisplayName());
@@ -1239,15 +1299,29 @@ int32_t CSimpleFrame_RegisterForDrag(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_004a0ec0
+// Keys and characters both: a frame that takes the keyboard takes typing too. No argument means
+// enable.
 int32_t CSimpleFrame_EnableKeyboard(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
-    if (lua_toboolean(L, 2)) {
-        frame->EnableEvent(SIMPLE_EVENT_KEY, -1);
-    } else {
-        frame->DisableEvent(SIMPLE_EVENT_KEY);
+    if (!frame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
+
+        return 0;
     }
+
+    if (StringToBOOL(L, 2, 1)) {
+        frame->EnableEvent(SIMPLE_EVENT_KEY, -1);
+        frame->EnableEvent(SIMPLE_EVENT_CHAR, -1);
+        return 0;
+    }
+
+    frame->DisableEvent(SIMPLE_EVENT_KEY);
+    frame->DisableEvent(SIMPLE_EVENT_CHAR);
 
     return 0;
 }
@@ -1266,7 +1340,9 @@ int32_t CSimpleFrame_EnableMouse(lua_State* L) {
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed()) {
-        // TODO disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }
@@ -1289,15 +1365,25 @@ int32_t CSimpleFrame_IsMouseEnabled(lua_State* L) {
     return 1;
 }
 
+// ref: FUN_004a10d0
 int32_t CSimpleFrame_EnableMouseWheel(lua_State* L) {
     auto type = CSimpleFrame::GetObjectType();
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
-    if (lua_toboolean(L, 2)) {
-        frame->EnableEvent(SIMPLE_EVENT_MOUSEWHEEL, -1);
-    } else {
-        frame->DisableEvent(SIMPLE_EVENT_MOUSEWHEEL);
+    if (!frame->ProtectedFunctionsAllowed()) {
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
+
+        return 0;
     }
+
+    if (StringToBOOL(L, 2, 1)) {
+        frame->EnableEvent(SIMPLE_EVENT_MOUSEWHEEL, -1);
+        return 0;
+    }
+
+    frame->DisableEvent(SIMPLE_EVENT_MOUSEWHEEL);
 
     return 0;
 }
@@ -1317,7 +1403,9 @@ int32_t CSimpleFrame_EnableJoystick(lua_State* L) {
     auto frame = static_cast<CSimpleFrame*>(FrameScript_GetObjectThis(L, type));
 
     if (!frame->ProtectedFunctionsAllowed()) {
-        // TODO the top's disallowed-protected-call callback
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(frame);
+        }
 
         return 0;
     }

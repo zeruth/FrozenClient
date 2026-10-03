@@ -35,6 +35,10 @@ enum {
     FRAME_FLAG_MOVABLE     = 0x0100,
     FRAME_FLAG_RESIZABLE   = 0x0200,
     FRAME_FLAG_DISABLED    = 0x0400,
+    // A child with this bit leaves its parent's protection pending (the walk in
+    // CSimpleFrame::IsChildProtected, FUN_00491350, is the only reader; no writer was found in
+    // 12340).
+    FRAME_FLAG_PROTECT_PENDING = 0x0800,
     FRAME_FLAG_USER_PLACED = 0x1000,
     // Suppresses the depth queries: GetDepth (FUN_004a1cc0) and GetEffectiveDepth (FUN_004a1d20)
     // both test frame + 0xb4 against this bit and return nothing at all while it is set. Nothing in
@@ -156,6 +160,7 @@ class CSimpleFrame : public CScriptRegion {
         virtual void UpdateDepth(bool a2);
         virtual void ParentFrame(CSimpleFrame* frame);
         virtual void OnFrameSizeChanged(const CRect& rect);
+        virtual int32_t IsChildProtected(int32_t* pending);
 
         // Member functions
         CSimpleFrame(CSimpleFrame* parent);
@@ -176,6 +181,7 @@ class CSimpleFrame : public CScriptRegion {
         void NotifyScrollParent();
         void PostLoadXML_Frames(const XMLNode* node, CStatus* status);
         void Raise();
+        void Lower();
         void RegisterForEvents(int32_t a2);
         void RegisterRegion(CSimpleRegion* region);
         void RemoveFrameRegion(CSimpleRegion* region, uint32_t drawlayer);

@@ -42,6 +42,8 @@ class CSimpleScrollFrame : public CSimpleFrame {
         CSimpleScrollFrame(CSimpleFrame* parent);
         void RunOnScrollRangeChangedScript();
         void RunOnVerticalScrollScript();
+        void RunOnHorizontalScrollScript();
+        void SetHorizontalScroll(float offset);
         void SetScrollChild(CSimpleFrame* frame);
         void SetVerticalScroll(float offset);
         void UpdateScrollChild();

@@ -418,6 +418,11 @@ void CSimpleFrame::PostLoadXML(const XMLNode* node, CStatus* status) {
     }
 }
 
+// ref: FUN_0048e9b0
+// Lowering a frame does nothing in this build (the call ends in FUN_004899f0, a bare return).
+void CSimpleFrame::Lower() {
+}
+
 void CSimpleFrame::Raise() {
     this->m_top->RaiseFrame(this, 1);
 }
@@ -431,6 +436,7 @@ void CSimpleFrame::RegisterForEvents(int32_t a2) {
     }
 }
 
+// ref: FUN_0048ec10
 void CSimpleFrame::RunOnAttributeChangedScript(const char* name, int32_t luaRef) {
     if (!this->m_onAttributeChange.luaRef) {
         return;
@@ -438,7 +444,12 @@ void CSimpleFrame::RunOnAttributeChangedScript(const char* name, int32_t luaRef)
 
     auto L = FrameScript_GetContext();
 
-    // TODO taint management
+    // OnAttributeChanged runs secure
+    auto savedTaint = lua_tainted;
+    lua_taintexpected++;
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = nullptr;
+    }
 
     // Attribute name
     auto nameLower = static_cast<char*>(alloca(SStrLen(name) + 1));
@@ -450,6 +461,13 @@ void CSimpleFrame::RunOnAttributeChangedScript(const char* name, int32_t luaRef)
     lua_rawgeti(L, LUA_REGISTRYINDEX, luaRef);
 
     this->RunScript(this->m_onAttributeChange, 2, nullptr);
+
+    if (lua_taintexpected && !lua_taintedclosure) {
+        lua_tainted = savedTaint;
+    }
+    if (--lua_taintexpected <= 0) {
+        lua_taintexpected = 0;
+    }
 
     // TODO taint management
 }
@@ -791,12 +809,9 @@ void CSimpleFrame::Hide() {
         this->m_shown = 0;
         this->HideThis();
     } else {
-        // TODO
-        // auto v2 = this->m_top->unk5[8];
-
-        // if (v2) {
-        //     v2(0);
-        // }
+        if (this->m_top->m_actionBlockedCallback) {
+            this->m_top->m_actionBlockedCallback(nullptr);
+        }
     }
 }
 
@@ -1570,6 +1585,19 @@ void CSimpleFrame::SetDepth(float depth, int32_t force) {
     this->UpdateDepth(force != 0);
 }
 
+// ref: FUN_00491350
+int32_t CSimpleFrame::IsChildProtected(int32_t* pending) {
+    for (auto child = this->m_children.Head(); child; child = this->m_children.Link(child)->Next()) {
+        if (child->frame->m_flags & FRAME_FLAG_PROTECT_PENDING) {
+            *pending = 1;
+        } else if (child->frame->IsProtected()) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 // ref: FUN_00489690
 // The reference's +0x40 dword: clear bits 17-18, set bit 16 -- CLayoutFrame::m_flags 0x600 / 0x100
 // -- then the protect flag 0x200 on this frame (a virtual at vtable+0xc in the reference; frozen's
@@ -1742,12 +1770,9 @@ void CSimpleFrame::Show() {
         this->m_shown = 1;
         this->ShowThis();
     } else {
-        // TODO
-        // auto v2 = this->m_top->unk5[8];
-
-        // if (v2) {
-        //     v2(0);
-        // }
+        if (this->m_top->m_actionBlockedCallback) {
+            this->m_top->m_actionBlockedCallback(nullptr);
+        }
     }
 }
 

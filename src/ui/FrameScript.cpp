@@ -992,6 +992,65 @@ void FrameScript_SignalEvent(uint32_t index, const char* format, ...) {
     va_end(args);
 }
 
+// ref: FUN_00817de0
+// The name of the object a running function at `level' was called on: for a method call, or a
+// FrameXML handler (chunk names starting with '*'), its first local is self, whose [0] is the
+// object. Null when there is no such object.
+const char* FrameScript_GetObjectName(lua_State* L, int32_t level) {
+    lua_Debug ar;
+
+    if (!lua_getstack(L, level, &ar)) {
+        return nullptr;
+    }
+
+    lua_getinfo(L, "Sln", &ar);
+
+    if ((*ar.source != '*' && SStrCmp(ar.namewhat, "method", STORM_MAX_STR)) || !lua_getlocal(L, &ar, 1)) {
+        return nullptr;
+    }
+
+    if (lua_type(L, -1) == LUA_TTABLE) {
+        lua_rawgeti(L, -1, 0);
+        auto object = static_cast<FrameScript_Object*>(lua_touserdata(L, -1));
+        lua_settop(L, -2);
+
+        if (object) {
+            auto name = object->GetName();
+            lua_settop(L, -2);
+            return name ? name : "<unnamed>";
+        }
+    }
+
+    lua_settop(L, -2);
+    return nullptr;
+}
+
+// ref: FUN_00817ee0
+// The running function as "Object:function", or the bare name, for the action-blocked events.
+const char* FrameScript_GetFunctionName(lua_State* L, char* buffer, uint32_t bufferLen) {
+    lua_Debug ar;
+    memset(&ar, 0, sizeof(ar));
+
+    if (lua_getstack(L, 0, &ar)) {
+        lua_getinfo(L, "n", &ar);
+    }
+
+    if (ar.name) {
+        auto object = FrameScript_GetObjectName(L, 0);
+
+        if (object) {
+            SStrPrintf(buffer, bufferLen, "%s:%s", object, ar.name);
+        } else {
+            SStrPrintf(buffer, bufferLen, "%s", ar.name);
+        }
+
+        return buffer;
+    }
+
+    SStrCopy(buffer, "UNKNOWN", bufferLen);
+    return buffer;
+}
+
 const char* FrameScript_Sprintf(lua_State* L, int32_t idx, char buffer[], uint32_t bufferLen) {
     auto write = buffer;
     auto availableBytes = bufferLen;

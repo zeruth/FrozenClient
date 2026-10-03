@@ -7,6 +7,8 @@ class CScriptObject;
 class CVar;
 class CSimpleTop;
 
+class FrameScript_Object;
+
 class CGGameUI {
     public:
         // What the mouse is carrying: a spell on its way to the hotbar, an item between bags, a
@@ -68,6 +70,11 @@ class CGGameUI {
         static void DisplayError(uint32_t errorCode, ...);
         static char s_lastError[3000];  // the last formatted error text (reference DAT_00bcfb90)
         static void Initialize();
+        // Protected actions (secure execution): the gate script functions call, the report when
+        // tainted code is refused, and the combat lockdown that withdraws the permission.
+        static int32_t CanPerformAction(int32_t action);
+        static void ReportBlockedAction(FrameScript_Object* object, int32_t kind);
+        static void SetProtectedFunctionsAllowed(int32_t allowed);
         static void InitializeGame();
         static bool IsLoggingIn();
         static bool IsInWorld();

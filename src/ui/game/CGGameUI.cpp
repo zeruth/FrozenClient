@@ -1,4 +1,8 @@
 #include "ui/game/CGGameUI.hpp"
+#include "ui/FrameScript.hpp"
+#include "ui/game/Types.hpp"
+#include "util/Lua.hpp"
+#include <storm/String.hpp>
 #include "event/Input.hpp"
 #include "gx/Device.hpp"
 #include "ui/InputControl.hpp"
@@ -322,6 +326,147 @@ void GameUILeaveMouseLook() {
     EventSetMouseMode(MOUSE_MODE_NORMAL, 0);
 }
 
+namespace {
+
+// ref: 0x00bd0c68
+// Set while a refused action is being reported, so a handler of the report cannot report again.
+int32_t s_reportingBlockedAction;
+
+// ref: FUN_00513640
+// CSimpleTop's action-blocked callback: a protected frame method refused to tainted code.
+void GameUIActionBlocked(FrameScript_Object* object) {
+    CGGameUI::ReportBlockedAction(object, 2);
+}
+
+}
+
+// ref: 0x00ac804c
+// The taint macros run under. It is compared by identity: a refusal under it is reported as the
+// macro's rather than an AddOn's.
+const char* const g_macroTaint = "";
+
+// ref: FUN_00513530
+// Tells the interface that the running tainted code was refused: FORBIDDEN (kind 0) for actions
+// tainted code may never take, BLOCKED otherwise (1: it needed a hardware event, 2: it needed to
+// be out of combat). The event carries the function, and for an AddOn the taint that names it;
+// the taint log hears about it too.
+void CGGameUI::ReportBlockedAction(FrameScript_Object* object, int32_t kind) {
+    if (s_reportingBlockedAction) {
+        return;
+    }
+
+    s_reportingBlockedAction = 1;
+
+    auto L = FrameScript_GetContext();
+    char function[1024];
+    FrameScript_GetFunctionName(L, function, sizeof(function));
+    SStrPack(function, "()", sizeof(function));
+
+    if (kind == 0) {
+        if (lua_tainted == g_macroTaint) {
+            FrameScript_SignalEvent(SCRIPT_MACRO_ACTION_FORBIDDEN, "%s", function);
+        } else {
+            FrameScript_SignalEvent(SCRIPT_ADDON_ACTION_FORBIDDEN, "%s%s", lua_tainted, function);
+        }
+    } else {
+        if (lua_tainted == g_macroTaint) {
+            FrameScript_SignalEvent(SCRIPT_MACRO_ACTION_BLOCKED, "%s", function);
+        } else {
+            FrameScript_SignalEvent(SCRIPT_ADDON_ACTION_BLOCKED, "%s%s", lua_tainted, function);
+        }
+    }
+
+    if (lua_taintloghook) {
+        lua_taintloghook(L, kind == 2 ? 4 : 3, nullptr, lua_tainted);
+    }
+
+    s_reportingBlockedAction = 0;
+}
+
+// ref: FUN_005191c0
+// May the running code take protected action `action'? Secure code always may. Tainted code is
+// refused outright for some actions, needs a hardware event (a click, a key) for others, and must
+// be out of combat for the rest. Action 0 also consumes the hardware event.
+int32_t CGGameUI::CanPerformAction(int32_t action) {
+    if (lua_tainted) {
+        switch (action) {
+            case 0x00:
+            case 0x01:
+            case 0x02:
+            case 0x03:
+            case 0x04:
+            case 0x05:
+            case 0x10:
+            case 0x11:
+                CGGameUI::ReportBlockedAction(nullptr, 0);
+                return 0;
+
+            case 0x06:
+            case 0x07:
+            case 0x08:
+            case 0x09:
+            case 0x0F:
+            case 0x12:
+            case 0x13:
+            case 0x14:
+            case 0x15:
+            case 0x17:
+                if (!CGGameUI::s_simpleTop) {
+                    return 1;
+                }
+
+                if (!CGGameUI::s_simpleTop->m_hardwareEvent) {
+                    CGGameUI::ReportBlockedAction(nullptr, 1);
+                    return 0;
+                }
+
+                break;
+
+            case 0x0B:
+            case 0x0C:
+            case 0x0D:
+            case 0x0E:
+            case 0x16:
+                if (!CGGameUI::s_simpleTop) {
+                    return 1;
+                }
+
+                if (!CGGameUI::s_simpleTop->m_protectedFunctionsAllowed) {
+                    CGGameUI::ReportBlockedAction(nullptr, 2);
+                    return 0;
+                }
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    if (CGGameUI::s_simpleTop && action == 0) {
+        CGGameUI::s_simpleTop->m_hardwareEvent = 0;
+    }
+
+    return 1;
+}
+
+// ref: FUN_00524600
+// Leaving combat (1) gives tainted code its protected functions back; entering it (0) takes them
+// away. The active player's UNIT_FLAG_IN_COMBAT drives it (FUN_00728f70).
+//
+// PARTIAL: both arms then refresh the combat binding mode (FUN_005206e0 -> FUN_0055e550 on the key
+// binding manager at 0x00beadd8, which raises UPDATE_BINDINGS); that manager is not ported yet.
+void CGGameUI::SetProtectedFunctionsAllowed(int32_t allowed) {
+    if (allowed) {
+        CGGameUI::s_simpleTop->m_protectedFunctionsAllowed = 1;
+        FrameScript_SignalEvent(SCRIPT_PLAYER_REGEN_ENABLED, nullptr);
+        return;
+    }
+
+    FrameScript_SignalEvent(SCRIPT_PLAYER_REGEN_DISABLED, nullptr);
+    CGGameUI::s_simpleTop->m_protectedFunctionsAllowed = 0;
+}
+
 // ref: FUN_0052a980
 void CGGameUI::Initialize() {
     // TODO
@@ -333,6 +478,8 @@ void CGGameUI::Initialize() {
     CGGameUI::s_simpleTop = STORM_NEW(CSimpleTop);
     CGGameUI::s_simpleTop->m_mouseButtonCallback = &GameUIMouseButtonCallback;
     CGGameUI::s_simpleTop->m_mouseRelativeCallback = &GameUIMouseRelativeCallback;
+    CGGameUI::s_simpleTop->m_protectedFunctionsAllowed = 1;
+    CGGameUI::s_simpleTop->m_actionBlockedCallback = &GameUIActionBlocked;
 
     // TODO
 

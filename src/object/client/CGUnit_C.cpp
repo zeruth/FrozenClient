@@ -11204,6 +11204,11 @@ void CGUnit_C::OnActivePlayerFlagsChanged(uint32_t changed) {
         }
     }
 
+    if (changed & 0x80000) {
+        // UNIT_FLAG_IN_COMBAT
+        CGGameUI::SetProtectedFunctionsAllowed(!(this->m_unit->flags & 0x80000));
+    }
+
     if ((changed & 0x100000) && (this->m_unit->flags & 0x100000)) {
         this->CancelClickToMove(0, 1);
     }

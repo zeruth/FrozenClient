@@ -1,4 +1,5 @@
 #include <storm/String.hpp>
+#include "ui/simple/CSimpleTop.hpp"
 #include "ui/simple/CSimpleButtonScript.hpp"
 #include "gx/Coordinate.hpp"
 #include "ui/Util.hpp"
@@ -72,8 +73,9 @@ int32_t CSimpleButton_Enable(lua_State* L) {
     if (button->ProtectedFunctionsAllowed()) {
         button->Enable(1);
     } else {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(button);
+        }
     }
 
     return 0;
@@ -86,8 +88,9 @@ int32_t CSimpleButton_Disable(lua_State* L) {
     if (button->ProtectedFunctionsAllowed()) {
         button->Enable(0);
     } else {
-        // TODO
-        // - disallowed logic
+        if (CSimpleTop::s_instance->m_actionBlockedCallback) {
+            CSimpleTop::s_instance->m_actionBlockedCallback(button);
+        }
     }
 
     return 0;
