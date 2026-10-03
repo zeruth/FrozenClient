@@ -245,8 +245,9 @@ void CGWorldFrame::OnWorldRender() {
     GxRsPush();
     GxRsSet(GxRs_Multisample, 1);
 
-    // TODO FUN_004f8770 (the sound system's underwater environment) and FUN_008c1770 (the
-    // capture object's viewport); neither draws.
+    // TODO the full-screen glow's entry (phase 3): FUN_004f8770 hands the active effect its
+    // parameters from the day/night block and the camera's liquid, and FUN_008c1770 shrinks the
+    // viewport to the glow target's size while the effect is on.
 
     // A world frame that does not cover the screen clears its own rectangle first.
     CRect fullScreen = { 0.0f, 0.0f, 1.0f, 1.0f };
@@ -411,8 +412,8 @@ void CGWorldFrame::OnWorldRender() {
 
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 
-    // TODO FUN_008c1010 (the capture object's read-back) and FUN_00747ae0 (clear the units'
-    // 0x1000 flag).
+    // TODO FUN_008c1010, the glow's composite (the target read back and drawn full screen,
+    // phase 3), and FUN_00747ae0 (clear the units' 0x1000 flag, phase 4).
 }
 
 // ref: FUN_004f6970

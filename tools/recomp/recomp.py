@@ -283,6 +283,15 @@ MODULE_RANGES = [
     # 0x00847610 pcre_exec; 0x00847c20 is Minigame_C.cpp's first function. Vendored, so its
     # functions are excluded in overrides.json like the CRT's.
     (0x0083dec0, 0x00847c20, 'pcre.c'),
+    # The FULL-SCREEN EFFECT passes below the module's first assert. FFXEffects.cpp's own
+    # anchors start at 0x007e8e40, so the twenty functions under it went to the nearest anchor
+    # below, WorldText.cpp, and the render surface was counting fog propagation, the death
+    # effect and the nether blur as world text. Every one of them is an FFX pass: 0x007e7ff0
+    # holds the .?AVPass@FFX@@ vtable, and the passes after it load the FFXPropagateFog,
+    # FFXFogCombine, FFXDeath, FFXDeath_nvts_rect, FFXDeath_nvrc, FFXNetherBlur and
+    # FFXNetherCombine shaders by name. The lower boundary is that vtable function; below it
+    # are the coin-format helpers (CoinTextureFormat and the symbol formatters).
+    (0x007e7ff0, 0x007e8e40, 'FFXEffects.cpp'),
 ]
 
 # The next candidate, left out deliberately rather than forgotten: 0x008a65d0..0x008bfe80 is the DBC
