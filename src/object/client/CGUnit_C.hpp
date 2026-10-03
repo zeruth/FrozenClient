@@ -785,6 +785,12 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void UpdateWheels();
         void UpdateVisible(uint32_t time);
         void UpdateRipples(int32_t splash);
+        float GetClearanceBelow();
+        void PlaySplashSound(const C3Vector& position);
+        void StartSwimming(int32_t time, int32_t fromSpline);
+        void StopSwimming(int32_t time, int32_t fromSpline);
+        void UpdateSwimming(int32_t time, int32_t fromSpline);
+        void UpdateFlying(int32_t time);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
@@ -1018,6 +1024,11 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
         uint32_t m_boneMask = 0;
         float m_boneValues[8] = {};
+        // +0x784: how deep the water was at the last step (the splash test), +0x8f0 the race's
+        // splash sound, +0xa40 the terrain type under the unit (-1 for none).
+        float m_lastLiquidDepth = 0.0f;
+        int32_t m_splashSoundID = 0;
+        int32_t m_terrainType = -1;
         // +0xa58: when the next ripple may spread (UpdateRipples), 0 for at once.
         uint32_t m_nextRippleTime = 0;
         // +0xfa0: when the wheels last turned (UpdateWheels).

@@ -418,6 +418,10 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
 
     this->UpdateCollisionBox(1, 1);
 
+    if (auto race = g_chrRacesDB.GetRecord(static_cast<uint8_t>(this->m_unit->bytes0))) {
+        this->m_splashSoundID = race->m_splashSoundID;
+    }
+
     this->UpdateShadowRadius();
     this->UpdateEffectAttachments();
 
@@ -10913,15 +10917,22 @@ int32_t CGUnit_C::AcknowledgeLanding(uint32_t time, uint32_t oldFlags, uint16_t 
 }
 
 // ref: FUN_0073ab20
-// PARTIAL: the vehicle's own step (FUN_00758130), the area id from the world object
-// (FUN_0077f260, +0xa40), and the flight (FUN_0073a890) and swimming (FUN_00730d10) transitions
-// are the next movement items; the step's placement is ported.
-void CGUnit_C::OnMovementStep(uint32_t time, int32_t a2, int32_t a3) {
-    (void)time;
-    (void)a2;
-    (void)a3;
+// After each movement step: the world object follows the unit, the terrain type under it is
+// noted, and it may take off, land, or start or stop swimming.
+// PARTIAL: a vehicle's own step (FUN_00758130) is the vehicle port's.
+int32_t WorldObjectTerrainType(HWORLDOBJECT object, int32_t* terrainType);
+
+void CGUnit_C::OnMovementStep(uint32_t time, int32_t fromSpline, int32_t a3) {
+    (void)fromSpline;
 
     this->UpdateWorldObject(0);
+
+    if (!this->m_worldObject || !WorldObjectTerrainType(this->m_worldObject, &this->m_terrainType)) {
+        this->m_terrainType = -1;
+    }
+
+    this->UpdateFlying(static_cast<int32_t>(time));
+    this->UpdateSwimming(static_cast<int32_t>(time), a3);
 }
 
 int32_t CGUnit_C::GetFloorHeight(float* height) {
@@ -12187,4 +12198,208 @@ void CGUnit_C::UpdateRipples(int32_t splash) {
 
     uint32_t jitter = static_cast<uint32_t>((static_cast<uint64_t>(CRandom::uint32(seed)) * 50) >> 32);
     this->m_nextRippleTime = jitter + 400 + now;
+}
+
+namespace {
+
+// When the active player last took off (0x00ca1240), so it does not land at once.
+int32_t s_flyStartTime = 0;
+
+} // namespace
+
+// ------------------------------------------------------------------------------------------------
+// The movement step's world side: the ground a unit stands on, swimming, flying (Unit_C.cpp).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_004f53d0
+// Whether a unit with these UNIT_FIELD_FLAGS swims in deep water: not one flagged 0x4000, always
+// one flagged 0x8, 0x10 or 0x800, otherwise as flag 0x8000 says.
+bool UnitFlagsAllowSwimming(uint32_t flags) {
+    if (flags & 0x4000) {
+        return false;
+    }
+
+    if ((flags & 0x8) || (flags & 0x800) || (flags & 0x10)) {
+        return true;
+    }
+
+    return (flags >> 15) & 1;
+}
+
+// ref: FUN_00714b60
+// How much clear air is under the unit: a segment from a yard above to a yard below its feet,
+// and the part of it above whatever it hits (two yards when nothing is hit).
+float CGUnit_C::GetClearanceBelow() {
+    C3Vector at = this->GetPosition();
+    C3Vector top = { at.x, at.y, at.z + 1.0f };
+    C3Vector bottom = { at.x, at.y, at.z - 1.0f };
+    C3Vector hit = bottom;
+    float t = 1.0f;
+
+    WorldQuerySegment(top, bottom, &hit, &t, 0x100111, nullptr);
+
+    return top.z - hit.z;
+}
+
+// ref: FUN_00746720
+// The splash a unit makes entering or leaving water: its race's splash sound (+0x8f0) where it
+// is, or at the listener for the active player with the listener at the character.
+void CGUnit_C::PlaySplashSound(const C3Vector& position) {
+    static CVar* listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+
+    bool isActive = ClntObjMgrGetActivePlayer() == this->GetGUID();
+    bool atListener = isActive && listenerAtCharacter && listenerAtCharacter->GetInt() != 0;
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    if (isActive) {
+        properties.int20 = 0x6E;
+
+        if (atListener) {
+            properties.m_fadeOutTime = 0.6499999761581421f;
+        }
+    }
+
+    properties.m_type = 8;
+
+    SI2::PlaySoundKit(this->m_splashSoundID, atListener ? nullptr : &position, nullptr, &properties, 0, nullptr, 1, 0);
+}
+
+// ref: FUN_00721210
+// Start swimming: the active player through its move queue (and the swimming tutorial, the
+// tutorial frame's), another unit by the server's word unless a spline is driving it.
+void CGUnit_C::StartSwimming(int32_t time, int32_t fromSpline) {
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        this->m_localMove.QueueStartSwim(time);
+        return;
+    }
+
+    auto spline = this->m_localMove.m_spline;
+
+    if (!fromSpline && (!spline || (spline->flags & 0x400))) {
+        this->m_localMove.QueueRemoteStartSwim(time);
+        return;
+    }
+
+    this->m_localMove.SplineStartSwim();
+}
+
+// ref: FUN_00721290
+void CGUnit_C::StopSwimming(int32_t time, int32_t fromSpline) {
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        this->m_localMove.QueueStopSwim(time);
+        return;
+    }
+
+    auto spline = this->m_localMove.m_spline;
+
+    if (!fromSpline && (!spline || (spline->flags & 0x400))) {
+        this->m_localMove.QueueRemoteStopSwim(time);
+        return;
+    }
+
+    this->m_localMove.SplineStopSwim();
+}
+
+// ref: FUN_00730d10
+// After each step: in water deeper than three quarters of its height a unit that may swim starts
+// swimming, and stops when the water drops a few centimetres below that (or it leaves the
+// liquid); crossing two fifths of its height splashes. A swimmer that may leave the water near
+// the surface (0x400000) jumps out when the active mover.
+//
+// PARTIAL: the action bar refresh when the active player's in-water state changes (FUN_0053cf10)
+// is the UI port's.
+void CGUnit_C::UpdateSwimming(int32_t time, int32_t fromSpline) {
+    auto& move = this->m_localMove;
+
+    if (move.m_moveFlags2 & 0x4) {
+        return;
+    }
+
+    uint32_t fieldBC = 0;
+    uint32_t unused = 0;
+    float surface = 0.0f;
+    float depth = 0.0f;
+    int32_t inLiquid = CWorld::GetObjectFloor(this->m_worldObject, &fieldBC, &surface, &unused);
+
+    if (inLiquid) {
+        depth = surface - this->GetPosition().z;
+    }
+
+    bool canSwim = UnitFlagsAllowSwimming(this->m_unit->flags) && this->GetTransportGUID() == 0;
+    float swimDepth = move.m_collisionHeight * 0.75f;
+    float leaveDepth = swimDepth - 0.02777777798473835f;
+
+    if (!(move.m_moveFlags & 0x200000)) {
+        if (swimDepth < depth && canSwim && !move.IsRising()) {
+            this->StartSwimming(time, fromSpline);
+        }
+
+        float splashDepth = move.m_collisionHeight * 0.4f;
+
+        if ((splashDepth < depth) != (splashDepth < this->m_lastLiquidDepth)) {
+            this->PlaySplashSound(this->GetPosition());
+            this->UpdateRipples(0xC9);
+        }
+
+        this->m_lastLiquidDepth = depth;
+    } else {
+        if ((move.m_moveFlags & 0x400000) && depth - swimDepth <= 0.3333333432674408f && this->IsActiveMover()) {
+            this->Jump(time);
+        }
+
+        if (!(move.m_moveFlags & 0x2000000) && (!inLiquid || depth < leaveDepth || !canSwim)) {
+            this->StopSwimming(time, fromSpline);
+        }
+    }
+
+    if ((move.m_moveFlags & 0x200000) || (swimDepth < depth && canSwim)) {
+        this->m_stateFlags |= 0x200000;
+    } else {
+        this->m_stateFlags &= 0xFFDFFFFF;
+    }
+}
+
+// ref: FUN_0073a890
+// A unit that may fly (0x1000000): falling a yard and a half clear of the ground while the active
+// mover takes off; flying, the active player settles back on its feet when it comes within a yard
+// and a half of the ground two seconds after taking off.
+//
+// PARTIAL: the flying unit's landing pose and sound near the ground (every two seconds, through
+// the low-detail terrain height FUN_0077f8b0 / FUN_007ad700, the map port's) is not ported.
+void CGUnit_C::UpdateFlying(int32_t time) {
+    auto& move = this->m_localMove;
+
+    if (!(move.m_moveFlags & 0x1000000)) {
+        return;
+    }
+
+    if (!(move.m_moveFlags & 0x2000000)) {
+        if (!move.IsRising() && (move.m_moveFlags & 0x1000) && this->IsActiveMover()
+            && 1.5f <= this->GetClearanceBelow()) {
+            move.QueueSetFlying(time, 1);
+            s_flyStartTime = time;
+        }
+
+        return;
+    }
+
+    if (2000u < static_cast<uint32_t>(time - s_flyStartTime) && this->GetGUID() == ClntObjMgrGetActivePlayer()
+        && this->GetClearanceBelow() < 1.5f) {
+        move.QueueSetFlying(time, 0);
+    }
+}
+
+// ref: FUN_0077f260
+// The terrain type under an entity (its +0xb8), -1 when there is none.
+int32_t WorldObjectTerrainType(HWORLDOBJECT object, int32_t* terrainType) {
+    auto entity = reinterpret_cast<CMapEntity*>(object);
+
+    if (entity && entity->m_groundType != -1) {
+        *terrainType = entity->m_groundType;
+        return 1;
+    }
+
+    return 0;
 }

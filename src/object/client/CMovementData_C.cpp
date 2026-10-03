@@ -2913,6 +2913,48 @@ void CMovementData_C::SplineRoot() {
     this->LeaveMoversIfIdle(1);
 }
 
+// ref: FUN_006ee940
+// The active player starts swimming: queued (event 0x15) unless a spline is driving it, when it
+// happens at once and is sent.
+void CMovementData_C::QueueStartSwim(int32_t time) {
+    if (!this->m_spline || (this->m_spline->flags & 0x400)) {
+        QueueSimple(this, time, 0x15, 1);
+        return;
+    }
+
+    this->StartSwim();
+    this->ApplyDeferredMoves();
+    this->LeaveMoversIfIdle(1);
+    this->m_owner->SendMovement(static_cast<uint32_t>(time), MSG_MOVE_START_SWIM, 1, 0.0f, 0, 0, 0xff);
+}
+
+// ref: FUN_006ee9f0
+// Another unit starts swimming (event 0x15, not sent).
+void CMovementData_C::QueueRemoteStartSwim(int32_t time) {
+    QueueSimple(this, time, 0x15, 0);
+}
+
+// ref: FUN_006eea50
+void CMovementData_C::QueueStopSwim(int32_t time) {
+    if (!this->m_spline || (this->m_spline->flags & 0x400)) {
+        QueueSimple(this, time, 0x16, 1);
+        return;
+    }
+
+    this->StopFly();
+
+    if ((this->m_moveFlags & 0xc010ff) || this->m_events.Head()) {
+        LinkIfIdle(this);
+    }
+
+    this->m_owner->SendMovement(static_cast<uint32_t>(time), MSG_MOVE_STOP_SWIM, 1, 0.0f, 0, 0, 0xff);
+}
+
+// ref: FUN_006eeb20
+void CMovementData_C::QueueRemoteStopSwim(int32_t time) {
+    QueueSimple(this, time, 0x16, 0);
+}
+
 // ref: FUN_006ebf70
 void CMovementData_C::SplineStartSwim() {
     this->StartSwim();

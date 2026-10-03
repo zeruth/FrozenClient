@@ -204,6 +204,10 @@ class CMovementData_C : public CMovementShared {
         void SplineSetHover(int32_t hover);
         void SplineRoot();
         void SplineStartSwim();
+        void QueueStartSwim(int32_t time);
+        void QueueRemoteStartSwim(int32_t time);
+        void QueueStopSwim(int32_t time);
+        void QueueRemoteStopSwim(int32_t time);
         void SplineStopSwim();
         void SplineSetFlying(int32_t fly);
         int32_t StartSpline(const C3Vector* points, uint32_t count, uint32_t duration, uint32_t flags, uint32_t id);
