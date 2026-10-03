@@ -139,6 +139,10 @@ class CEffect {
         uint32_t m_scaleResetTime = 0;                      // +0xd0
         uint32_t m_heldBody = 0;                            // +0xd4
         uint32_t m_heldMount = 0;                           // +0xd8
+        // +0xe8: a transparency effect's alpha (char proc 14), and +0xec a colour effect's colour
+        // (char proc 1), as 0xAARRGGBB.
+        float m_alpha = 1.0f;
+        uint32_t m_color = 0;
         HWORLDOBJECT m_worldObject = 0;               // +0xf0
         uint32_t m_refCount = 1;                            // +0xf4
         // +0xf8: the uses a lightning object holds; ReleaseUse finishes the effect at zero.

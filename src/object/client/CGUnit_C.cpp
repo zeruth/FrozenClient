@@ -8,6 +8,7 @@
 #include "sound/SOUNDKITOBJECT.hpp"
 #include "sound/SoundKitProperties.hpp"
 #include "ui/game/PlayerName.hpp"
+#include "ui/game/CGMinimapFrame.hpp"
 #include "world/CWorld.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
@@ -3059,7 +3060,7 @@ void CGUnit_C::SetAnimation(uint32_t animID, uint32_t flags) {
             if ((IsEmoteAnimation(targetAnimID) && targetAnimID != 0x45)
                 || (!holding && !IsCombatOrReadyAnimation(currentAnimID)
                     && !IsSpellCastOrReadySpellAnimation(currentAnimID)
-                    && this->m_attackPhase != 2)) {
+                    && this->m_sheathState != 2)) {
                 upperOut = target;
                 upperSkip = 0;
                 applyUpper = 1;
@@ -3719,7 +3720,7 @@ bool CGUnit_C::GetTurnAnimation(uint32_t allow, int32_t* out) {
 
 // ref: FUN_00714f90
 bool CGUnit_C::GetRangedReadyAnimation(uint32_t allow, int32_t* out) {
-    if (this->m_attackPhase != 2 || !(this->m_animFlags & 0x200)) {
+    if (this->m_sheathState != 2 || !(this->m_animFlags & 0x200)) {
         return (allow & 0xFFFFFF00) == 0;
     }
 
@@ -5107,4 +5108,645 @@ int32_t CGUnit_C::PlaceModel(float elapsed) {
     }
 
     return 1;
+}
+
+// ------------------------------------------------------------------------------------------------
+// Auras
+// ------------------------------------------------------------------------------------------------
+
+namespace {
+
+// The companion kinds COMPANION_UPDATE names (0x00acccc4).
+const char* const s_companionTypes[2] = { "CRITTER", "MOUNT" };
+
+// ref: FUN_0053b440
+void SignalCompanionUpdate(int32_t type) {
+    if (type == 2) {
+        FrameScript_SignalEvent(0x260, nullptr);
+
+        return;
+    }
+
+    FrameScript_SignalEvent(0x260, "%s", s_companionTypes[type]);
+}
+
+// ref: FUN_007fe3e0
+// The aura vision a player needs to see a spell's aura: its RequiredAuraVision level as a bit,
+// 0x20 for a stealth-detect effect and 0x40 for an invisibility-detect one of type 0 or 10.
+uint32_t SpellAuraVisionMask(const SpellRec* spell) {
+    uint32_t mask = spell->m_requiredAuraVision < 1 ? 0 : 1u << (spell->m_requiredAuraVision - 1);
+
+    for (int32_t i = 0; i < 3; i++) {
+        if (spell->m_effectAura[i] == 0x11) {
+            mask |= 0x20;
+        }
+
+        if (spell->m_effectAura[i] == 0x13 && (spell->m_effectMiscValue[i] == 0 || spell->m_effectMiscValue[i] == 10)) {
+            mask |= 0x40;
+        }
+    }
+
+    return mask;
+}
+
+// The party slot the guid fills (FUN_006cf670), for whether its auras matter to the party frames.
+bool IsPartyMember(WOWGUID guid) {
+    for (uint32_t i = 0; i < 4; i++) {
+        if (CGPartyInfo::GetMemberGuid(i) == guid) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const SpellVisualKitRec* GetStateKit(const SpellVisualRec* visual, int32_t done) {
+    if (!visual) {
+        return nullptr;
+    }
+
+    return g_spellVisualKitDB.GetRecord(done ? visual->m_stateDoneKit : visual->m_stateKit);
+}
+
+} // namespace
+
+const SpellVisualRec* GetSpellVisual(const SpellRec* spell);
+
+// ref: FUN_00716510
+void CAuraState::Read(const CGUnit_C* unit, uint32_t now, CDataStore* msg) {
+    msg->Get(reinterpret_cast<uint32_t&>(this->m_spellID));
+
+    if (this->m_spellID == 0) {
+        return;
+    }
+
+    msg->Get(this->m_flags);
+    msg->Get(this->m_level);
+    msg->Get(this->m_stacks);
+
+    if ((this->m_flags & 0x8) == 0) {
+        SmartGUID caster;
+        *msg >> caster;
+        this->m_caster = caster;
+    } else {
+        this->m_caster = unit->GetGUID();
+    }
+
+    if ((this->m_flags & 0x20) == 0) {
+        this->m_maxDuration = 0;
+        this->m_expireTime = 0;
+
+        return;
+    }
+
+    uint32_t remaining;
+    msg->Get(reinterpret_cast<uint32_t&>(this->m_maxDuration));
+    msg->Get(remaining);
+
+    this->m_expireTime = remaining + now;
+
+    if (this->m_expireTime == 0) {
+        this->m_expireTime = 1;
+    }
+}
+
+// ref: FUN_007300a0
+int32_t ReceiveAuraUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID packed;
+    *msg >> packed;
+    WOWGUID guid = packed;
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x4a3));
+
+    if (unit) {
+        unit->UpdateAuras(msg, msgId == SMSG_AURA_UPDATE_ALL);
+
+        return 1;
+    }
+
+    // The rest of the message is skipped.
+    msg->Seek(msg->Size());
+
+    return 0;
+}
+
+// ref: FUN_0072f360
+void CGUnit_C::GrowAuras(uint32_t slot) {
+    uint32_t count = this->m_auras.Count();
+
+    if (slot < count) {
+        return;
+    }
+
+    this->m_auras.SetCount(slot + 1);
+
+    for (uint32_t i = count; i <= slot; i++) {
+        this->m_auras[i].m_spellID = 0;
+    }
+
+    for (auto& states : this->m_auraSlotStates) {
+        uint32_t from = states.Count();
+        states.SetCount(slot + 1);
+
+        for (uint32_t i = from; i <= slot; i++) {
+            states[i] = CAuraSlotState();
+        }
+    }
+
+    uint32_t from = this->m_auraVisualSpells.Count();
+    this->m_auraVisualSpells.SetCount(slot + 1);
+
+    for (uint32_t i = from; i <= slot; i++) {
+        this->m_auraVisualSpells[i] = 0;
+    }
+}
+
+// ref: FUN_00556e10
+const CAuraState* CGUnit_C::GetAura(uint32_t slot) const {
+    if (slot >= this->m_auras.Count()) {
+        return nullptr;
+    }
+
+    return &this->m_auras[slot];
+}
+
+// ref: FUN_005a1120
+bool CGUnit_C::HasAuraType(uint32_t auraType) const {
+    return (this->m_auraTypeMask[auraType >> 3] >> (auraType & 7)) & 1;
+}
+
+// ref: FUN_00727e70
+void CGUnit_C::RebuildAuraTypeMask() {
+    memset(this->m_auraTypeMask, 0, sizeof(this->m_auraTypeMask));
+
+    for (uint32_t i = 0; i < this->m_auras.Count(); i++) {
+        const CAuraState& aura = this->m_auras[i];
+        auto spell = g_spellDB.GetRecord(aura.m_spellID);
+
+        if (!spell) {
+            continue;
+        }
+
+        for (int32_t effect = 0; effect < 3; effect++) {
+            if (aura.m_flags & (1 << effect)) {
+                uint32_t type = static_cast<uint32_t>(spell->m_effectAura[effect]);
+
+                if (type < sizeof(this->m_auraTypeMask) * 8) {
+                    this->m_auraTypeMask[type >> 3] |= 1 << (type & 7);
+                }
+            }
+        }
+    }
+}
+
+// ref: FUN_0072f5d0
+// TODO(SpellBookFrame): an aura change on the player, its pet or charm, its target or focus, or a
+// party member refreshes the spell book (FUN_0053cf10); for the target and focus the reference
+// also re-tests the cast in progress against the player's detection (FUN_007262e0) and, when that
+// flips, refreshes the cast bar (FUN_00720e50) and signals UNIT_SPELLCAST_(NOT_)INTERRUPTIBLE.
+// TODO(UnitCombatLog_C): a stack change (FUN_00752860) and a refresh (FUN_00752ba0) are logged.
+void CGUnit_C::UpdateAuras(CDataStore* msg, int32_t all) {
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+
+    uint32_t oldCount = this->m_auras.Count();
+    TSGrowableArray<CAuraState> old;
+    old.SetCount(oldCount);
+
+    for (uint32_t i = 0; i < oldCount; i++) {
+        old[i] = this->m_auras[i];
+    }
+
+    uint8_t touched[256];
+
+    if (!all) {
+        memset(touched, 0, sizeof(touched));
+    } else {
+        for (uint32_t i = 0; i < oldCount; i++) {
+            this->m_auras[i] = CAuraState();
+        }
+
+        memset(touched, 1, sizeof(touched));
+    }
+
+    while (!msg->IsRead()) {
+        uint8_t slot;
+        msg->Get(slot);
+
+        touched[slot] = 1;
+
+        this->GrowAuras(slot);
+        this->m_auras[slot].Read(this, now, msg);
+    }
+
+    this->m_stateFlags &= ~0x40000u;
+    this->RebuildAuraTypeMask();
+
+    bool changed = false;
+
+    // What went: a slot that had an applied aura and now has nothing, or something else.
+    for (uint32_t i = 0; i < oldCount; i++) {
+        if (!touched[i]) {
+            continue;
+        }
+
+        const CAuraState& was = old[i];
+        int32_t newSpell = this->m_auras[i].m_spellID;
+
+        bool wasActive = was.m_spellID != 0 && (was.m_flags & 7) != 0;
+        bool stillActive = was.m_spellID == newSpell && (this->m_auras[i].m_flags & 7) != 0;
+
+        if ((wasActive && !stillActive) || newSpell == 0) {
+            if (!all) {
+                this->OnAuraRemoved(i, was.m_flags >> 7, &was, was.m_spellID);
+                changed = true;
+            } else if (auto spell = g_spellDB.GetRecord(was.m_spellID)) {
+                this->RemoveAuraVisual(i, spell);
+            }
+        }
+    }
+
+    // What came.
+    for (uint32_t i = 0; i < this->m_auras.Count(); i++) {
+        if (!touched[i]) {
+            continue;
+        }
+
+        bool inOld = i < oldCount;
+        int32_t oldSpell = inOld ? old[i].m_spellID : 0;
+        bool oldActive = inOld && (old[i].m_flags & 7) != 0;
+
+        const CAuraState& aura = this->m_auras[i];
+        bool same = oldSpell == aura.m_spellID && oldActive;
+
+        if (aura.m_spellID == 0 || (aura.m_flags & 7) == 0) {
+            continue;
+        }
+
+        if (all) {
+            if (auto spell = g_spellDB.GetRecord(aura.m_spellID)) {
+                this->AddAuraVisual(i, spell);
+            }
+
+            if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+                // TODO(ActionBarFrame): FUN_005aab10 refreshes the action buttons of the spell.
+                if (CGMinimapFrame::HasTrackingSpell(aura.m_spellID)) {
+                    CGMinimapFrame::SetTrackingSpell(aura.m_spellID);
+                }
+            }
+
+            continue;
+        }
+
+        if (!same) {
+            this->OnAuraApplied(i, aura.m_flags >> 7, &aura, aura.m_spellID);
+            changed = true;
+        }
+    }
+
+    (void)changed;
+    (void)IsPartyMember;
+
+    // UNIT_AURA, once for the update, through the unit event queue (0x0072fded).
+    WOWGUID guid = this->GetGUID();
+    ScriptEventsQueueUnitEvent(guid, SCRIPT_UNIT_AURA);
+}
+
+// ref: FUN_00727760
+// TODO(UnitCombatLog_C): FUN_00752710 logs the gain.
+// TODO(ActionBarFrame): FUN_005aab10 refreshes the action buttons of the spell.
+void CGUnit_C::OnAuraApplied(uint32_t slot, int32_t negative, const CAuraState* aura, int32_t spellID) {
+    auto spell = g_spellDB.GetRecord(spellID);
+
+    if (spell) {
+        this->AddAuraVisual(slot, spell);
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        if (static_cast<uint32_t>(spellID) != CGMinimapFrame::s_trackingSpell && CGMinimapFrame::HasTrackingSpell(spellID)) {
+            CGMinimapFrame::SetTrackingSpell(spellID);
+        }
+
+        // TODO(ShapeshiftBar): a spell of the shapeshift bar (FUN_0053bd40) without a 0x24 effect
+        // signals UPDATE_SHAPESHIFT_FORMS (0x179).
+    }
+}
+
+// ref: FUN_00722090
+// TODO(UnitCombatLog_C): FUN_00752710 logs the fade.
+// TODO(ActionBarFrame) and TODO(ShapeshiftBar): as in OnAuraApplied.
+void CGUnit_C::OnAuraRemoved(uint32_t slot, int32_t negative, const CAuraState* aura, int32_t spellID) {
+    auto spell = g_spellDB.GetRecord(spellID);
+
+    if (spell) {
+        this->RemoveAuraVisual(slot, spell);
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        if (CGMinimapFrame::HasTrackingSpell(spellID)) {
+            CGMinimapFrame::SetTrackingSpell(0);
+        }
+    }
+}
+
+// ref: FUN_00724820
+// TODO(Player_C): effect 0xe9 (every humanoid's model, FUN_006d73b0) and 0x111 (FUN_006d7490) walk
+// the visible players with a kit; TODO(SpellBookFrame): effects 0x106 and 0x113 refresh the spell
+// book; TODO(Spell_C): a periodic client trigger (effect 0x30) is registered (FUN_0080df10).
+// PHASE4(Missile_C): a spell with a missile shows its state kit when the missile lands; the
+// reference skips it while one of the unit's missiles (+0x9ec) is still in flight.
+void CGUnit_C::AddAuraVisual(uint32_t slot, const SpellRec* spell) {
+    if (slot >= this->m_auraVisualSpells.Count()) {
+        return;
+    }
+
+    int32_t auraSpell = this->m_auras[slot].m_spellID;
+
+    if (this->m_auraVisualSpells[slot] != 0) {
+        if (!spell) {
+            this->m_auraVisualSpells[slot] = auraSpell;
+
+            return;
+        }
+
+        if (this->m_auraVisualSpells[slot] == spell->m_ID) {
+            return;
+        }
+
+        auto showing = g_spellDB.GetRecord(this->m_auraVisualSpells[slot]);
+
+        if (showing && spell->m_spellPriority < showing->m_spellPriority) {
+            return;
+        }
+    }
+
+    if (spell) {
+        uint32_t vision = SpellAuraVisionMask(spell);
+
+        if (vision) {
+            auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__));
+
+            if (!player || (player->Player()->field_bytes_2_4 & vision) == 0) {
+                return;
+            }
+        }
+    }
+
+    this->m_auraVisualSpells[slot] = auraSpell;
+
+    if (!spell) {
+        return;
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        for (int32_t i = 0; i < 3; i++) {
+            switch (spell->m_effectAura[i]) {
+                case 0x4C: {
+                    auto camera = CGWorldFrame::GetActiveCamera();
+
+                    if (camera) {
+                        camera->SetFirstPersonLook(static_cast<float>(spell->m_effectMiscValue[i]));
+                    }
+
+                    break;
+                }
+
+                case 0x104:
+                    CGWorldFrame::UpdateScreenEffect();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    for (int32_t i = 0; i < 3; i++) {
+        if (spell->m_effectAura[i] == 0x4E) {
+            SignalCompanionUpdate(1);
+
+            // The rider's pose on this mount: the state kit's animation.
+            auto visual = spell->m_spellVisualID[0] ? g_spellVisualDB.GetRecord(spell->m_spellVisualID[0]) : nullptr;
+            auto kit = GetStateKit(visual, 0);
+
+            if (kit && 0 <= kit->m_animID) {
+                this->m_mountedAnimID = kit->m_animID;
+            }
+        } else if (spell->m_effectAura[i] == 0x117) {
+            // FUN_00512b00
+            ScriptEventsSignalUnitEvent(this->GetGUID(), SCRIPT_UNIT_NAME_UPDATE);
+        }
+    }
+
+    auto visual = GetSpellVisual(spell);
+
+    if (!visual) {
+        return;
+    }
+
+    auto kit = GetStateKit(visual, 0);
+
+    if (kit) {
+        for (int32_t i = 0; i < 4; i++) {
+            if (kit->m_charProc[i] == 0xB && (!this->m_model || !this->m_model->IsLoaded(0, 0))) {
+                this->m_pendingStateKitSpell = spell->m_ID;
+
+                goto played;
+            }
+        }
+
+        {
+            SPELLVISUALKITPARAMS params;
+            params.m_spell = spell;
+            params.m_kit = kit;
+            params.m_kitType = 2;
+            params.m_stateParam = 1;
+            params.m_param9 = -1;
+            params.m_target = this->m_auras[slot].m_caster;
+
+            this->PlayKit(params);
+        }
+    }
+
+played:
+    if (visual->m_flags & 0x8) {
+        this->UpdateSheathedAuraVisuals(1, 1);
+    }
+}
+
+// ref: FUN_0071e930
+// TODO(Player_C) / TODO(SpellBookFrame) / TODO(Spell_C): as in AddAuraVisual, and effect 0x124
+// clears the pending auction query (FUN_005a0f10).
+void CGUnit_C::RemoveAuraVisual(uint32_t slot, const SpellRec* spell) {
+    if (slot >= this->m_auraVisualSpells.Count()) {
+        return;
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        for (int32_t i = 0; i < 3; i++) {
+            switch (spell->m_effectAura[i]) {
+                case 0x4C: {
+                    auto camera = CGWorldFrame::GetActiveCamera();
+
+                    if (camera) {
+                        camera->SetFirstPersonLook(0.0f);
+                    }
+
+                    break;
+                }
+
+                case 0x4E: {
+                    SignalCompanionUpdate(1);
+
+                    auto visual = spell->m_spellVisualID[0] ? g_spellVisualDB.GetRecord(spell->m_spellVisualID[0]) : nullptr;
+                    auto kit = GetStateKit(visual, 0);
+
+                    if (kit && 0 <= kit->m_animID && this->m_mountedAnimID == kit->m_animID) {
+                        this->m_mountedAnimID = 0x5B;
+                    }
+
+                    break;
+                }
+
+                case 0x104:
+                    CGWorldFrame::UpdateScreenEffect();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    for (int32_t i = 0; i < 3; i++) {
+        if (spell->m_effectAura[i] == 0x117) {
+            // FUN_00512b00
+            ScriptEventsSignalUnitEvent(this->GetGUID(), SCRIPT_UNIT_NAME_UPDATE);
+        }
+    }
+
+    int32_t showing = this->m_auraVisualSpells[slot];
+
+    if (showing == 0) {
+        return;
+    }
+
+    this->RemoveAlphaEffects(showing);
+    this->ApplyAlphaEffects();
+
+    for (auto effect = this->m_colorEffects; effect; ) {
+        auto next = effect->m_linkNext;
+
+        if (effect->m_spellID == showing) {
+            effect->Release();
+        }
+
+        effect = next;
+    }
+
+    this->StopEffects(showing, 1);
+
+    auto kit = GetStateKit(GetSpellVisual(spell), 1);
+
+    if (kit) {
+        SPELLVISUALKITPARAMS params;
+        params.m_kit = kit;
+        params.m_kitType = 8;
+        params.m_stateParam = 1;
+        params.m_param9 = -1;
+
+        this->PlayKit(params);
+    }
+
+    this->m_auraVisualSpells[slot] = 0;
+}
+
+// ref: FUN_00720400
+void CGUnit_C::UpdateSheathedAuraVisuals(int32_t show, int32_t force) {
+    uint32_t state = this->m_stateFlags;
+    uint32_t visible = show & (state >> 16) & 1 & (this->m_sheathState == 0 ? 1 : 0) & (this->m_castSpellID == 0 ? 1 : 0);
+
+    if (!force && (static_cast<uint32_t>(visible) == ((state >> 14) & 1) || (state & 0x2000) == 0)) {
+        return;
+    }
+
+    this->m_stateFlags = state & ~0x2000u;
+
+    for (uint32_t slot = 0; slot < this->m_auraVisualSpells.Count(); slot++) {
+        int32_t spellID = this->m_auraVisualSpells[slot];
+
+        if (spellID == 0) {
+            continue;
+        }
+
+        auto spell = g_spellDB.GetRecord(spellID);
+
+        if (!spell) {
+            continue;
+        }
+
+        auto visual = this->GetSpellVisualRec(spell);
+        auto kit = visual ? g_spellVisualKitDB.GetRecord(visual->m_stateKit) : nullptr;
+
+        if (!visual || !visual->m_stateKit || (visual->m_flags & 0x8) == 0 || !kit) {
+            continue;
+        }
+
+        if (!visible) {
+            this->m_stateFlags &= ~0x4000u;
+            this->StopEffects(this->m_auraVisualSpells[slot], 1);
+        } else if ((this->m_stateFlags & 0x4000) == 0) {
+            SPELLVISUALKITPARAMS params;
+            params.m_spell = spell;
+            params.m_kit = kit;
+            params.m_kitType = 2;
+
+            this->PlayKit(params);
+            this->m_stateFlags |= 0x4000;
+        }
+
+        this->m_stateFlags |= 0x2000;
+    }
+}
+
+// ref: FUN_0071ab80
+void CGUnit_C::RemoveAlphaEffects(int32_t spellID) {
+    for (auto effect = this->m_alphaEffects; effect; ) {
+        auto next = effect->m_linkNext;
+
+        if (effect->m_spellID == spellID) {
+            this->m_alphaHidesShadow = effect->m_kit && (effect->m_kit->m_flags & 0x400) ? 1 : 0;
+            effect->Release();
+        }
+
+        effect = next;
+    }
+}
+
+// ref: FUN_0071abe0
+void CGUnit_C::ApplyAlphaEffects() {
+    float alpha = this->GetFadeInAlpha();
+    uint32_t duration = 1000;
+
+    if (auto effect = this->m_alphaEffects) {
+        alpha *= effect->m_alpha;
+
+        if (effect->m_param) {
+            duration = effect->m_param;
+        }
+    }
+
+    this->SetAlpha(alpha, duration);
+}
+
+// ref: FUN_007178e0
+void CGUnit_C::RemoveColorEffects(int32_t spellID) {
+    for (auto effect = this->m_colorEffects; effect; ) {
+        auto next = effect->m_linkNext;
+
+        if (effect->m_spellID == spellID) {
+            effect->Release();
+        }
+
+        effect = next;
+    }
 }

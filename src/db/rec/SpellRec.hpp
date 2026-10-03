@@ -50,6 +50,8 @@ class SpellRec {
         static const int32_t COLUMN_EFFECT_SPELL_CLASS_MASK = 122;  // +0x1e8, 3 x 3 columns
         static const int32_t COLUMN_SCHOOL_MASK = 225;              // +0x284
         static const int32_t COLUMN_SPELL_MISSILE = 227;            // +0x28c
+        static const int32_t COLUMN_SPELL_PRIORITY = 135;           // +0x21c
+        static const int32_t COLUMN_REQUIRED_AURA_VISION = 221;     // +0x274
 
         static const int32_t COLUMN_ICON = 133;
         static const int32_t COLUMN_ACTIVE_ICON = 134;  // immediately after the normal icon
@@ -93,6 +95,11 @@ class SpellRec {
         uint32_t m_schoolMask;
         // SpellMissile.dbc row the spell's projectile flies by, 0 for none.
         int32_t m_spellMissileID;
+        // Which of two auras on the same slot shows its visual: the higher one keeps it.
+        int32_t m_spellPriority;
+        // The aura vision level a player needs to see the aura's visual (PLAYER_FIELD_BYTES2
+        // byte 3), 0 for none.
+        int32_t m_requiredAuraVision;
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

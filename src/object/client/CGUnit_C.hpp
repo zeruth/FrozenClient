@@ -8,10 +8,13 @@
 #include "object/client/CMovement_C.hpp"
 #include "object/Types.hpp"
 #include "util/GUID.hpp"
+#include <storm/Array.hpp>
 #include <tempest/Box.hpp>
 
 class CCharacterComponent;
 class CEffect;
+class SpellRec;
+class CDataStore;
 class SOUNDKITOBJECT;
 class MountTransitionObject;
 class ChrClassesRec;
@@ -30,6 +33,29 @@ class CVehiclePassenger_C;
 class VehicleRec;
 class VehicleSeatRec;
 struct M2BoneSequenceState;
+
+// One aura slot on a unit, as SMSG_AURA_UPDATE describes it (0x18 bytes in the reference, read
+// by CAuraState::Read, FUN_00716510).
+struct CAuraState {
+    WOWGUID m_caster = 0;           // +0x00
+    int32_t m_spellID = 0;          // +0x08, 0 for an empty slot
+    uint8_t m_flags = 0;            // +0x0c: 0x1..0x4 the effects applied, 0x8 self-cast, 0x20 timed, 0x80 negative
+    uint8_t m_level = 0;            // +0x0d
+    uint8_t m_stacks = 0;           // +0x0e
+    uint8_t m_pad0f = 0;
+    int32_t m_maxDuration = 0;      // +0x10, ms
+    uint32_t m_expireTime = 0;      // +0x14, the async clock when it runs out; 0 when it does not
+
+    // ref: FUN_00716510
+    void Read(const CGUnit_C* unit, uint32_t now, CDataStore* msg);
+};
+
+// A pair the reference keeps per aura slot, twice (+0xdd8 and +0xe5c), initialised to
+// {0x100, 0}. Its readers are elsewhere in Unit_C.cpp and not yet traced.
+struct CAuraSlotState {
+    uint32_t m_value = 0x100;
+    uint32_t m_extra = 0;
+};
 
 class CGUnit_C : public CGObject_C, public CGUnit {
     // Vehicle_C.cpp reads the owner unit's animation state inline (m_animFlags and the pending flag
@@ -289,6 +315,61 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_0071e5b0
         // The unit's ObjectEffect package follows the three sequences it is playing.
         void UpdateObjectEffects();
+
+        // The aura layer.
+
+        // ref: FUN_0072f5d0
+        // An aura update for the unit: every slot when `all` (SMSG_AURA_UPDATE_ALL), else the
+        // slots the message names. Auras that went are removed and auras that came are applied,
+        // each with its visuals, then UNIT_AURA is queued.
+        void UpdateAuras(CDataStore* msg, int32_t all);
+
+        // ref: FUN_0072f360
+        // Grow the aura arrays to hold `slot`.
+        void GrowAuras(uint32_t slot);
+
+        // ref: FUN_00727e70
+        // Which aura types the unit carries, one bit per type over every applied effect.
+        void RebuildAuraTypeMask();
+
+        // ref: FUN_005a1120
+        bool HasAuraType(uint32_t auraType) const;
+
+        // ref: FUN_00556e10
+        // The aura in `slot`, or null past the end.
+        const CAuraState* GetAura(uint32_t slot) const;
+
+        // ref: FUN_00727760 / FUN_00722090
+        // An aura was applied to or removed from `slot`: its visual, the minimap tracking spell
+        // and the shapeshift bar follow.
+        void OnAuraApplied(uint32_t slot, int32_t negative, const CAuraState* aura, int32_t spellID);
+        void OnAuraRemoved(uint32_t slot, int32_t negative, const CAuraState* aura, int32_t spellID);
+
+        // ref: FUN_00724820
+        // The aura in `slot` shows: its spell's state kit plays on the unit, and its effects that
+        // concern the active player take hold (first-person look, screen effect, mount pose).
+        void AddAuraVisual(uint32_t slot, const SpellRec* spell);
+
+        // ref: FUN_0071e930
+        // The aura in `slot` stops showing: its effects stop and its state-done kit plays.
+        void RemoveAuraVisual(uint32_t slot, const SpellRec* spell);
+
+        // ref: FUN_00720400
+        // The auras whose visual is hidden while the unit is sheathed and idle (SpellVisual flag
+        // 0x8) show or stop as that changes.
+        void UpdateSheathedAuraVisuals(int32_t show, int32_t force);
+
+        // ref: FUN_0071ab80
+        // Release the transparency effects a spell gave the unit.
+        void RemoveAlphaEffects(int32_t spellID);
+
+        // ref: FUN_0071abe0
+        // The unit fades to its display's alpha times the strongest transparency effect's.
+        void ApplyAlphaEffects();
+
+        // ref: FUN_007178e0
+        // Release the colour effects a spell gave the unit.
+        void RemoveColorEffects(int32_t spellID);
 
         // ref: FUN_0071a3f0
         // The CreatureSoundData row the unit's sounds come from: its mount's while it rides, a
@@ -610,6 +691,21 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         C3Vector m_tiltAxis = { 0.0f, 0.0f, 1.0f };
         // +0xb0c: the blob shadow's radius (UpdateShadowRadius).
         float m_shadowRadius = 0.0f;
+        // +0x984: the transparency effects on the unit (char proc 14), and +0xafc the colour
+        // effects (char proc 1), linked through CEffect::m_linkNext.
+        CEffect* m_alphaEffects = nullptr;
+        CEffect* m_colorEffects = nullptr;
+        // +0x994: the strongest transparency effect hides the unit's shadow as well.
+        uint8_t m_alphaHidesShadow = 0;
+        // +0xa8c: a spell whose state kit waits for the model to load (a kit with char proc 11).
+        int32_t m_pendingStateKitSpell = 0;
+        // +0xc50: the unit's aura slots; +0xdd8 / +0xe5c a pair of per-slot arrays; +0xedc the spell
+        // whose visual each slot is showing; +0xf20 one bit per aura type the unit carries. The
+        // reference keeps sixteen of each inline and moves to the heap past that.
+        TSGrowableArray<CAuraState> m_auras;
+        TSGrowableArray<CAuraSlotState> m_auraSlotStates[2];
+        TSGrowableArray<int32_t> m_auraVisualSpells;
+        uint8_t m_auraTypeMask[40] = {};
         // +0xf7c: which of bones 0x1b..0x22 the model carries, and a value per bone (+0xf80).
         uint32_t m_boneMask = 0;
         uint32_t m_boneValues[8] = {};
@@ -648,11 +744,12 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // up instead. -1 is nothing held.
         int32_t m_heldAnimID = -1;
         // The animation a rider holds while mounted (reference +0xb7c), applied when the mount model
-        // is built. Nothing writes it yet, so it reads 0 (Stand).
+        // is built; a mount aura's state kit sets it (AddAuraVisual).
         int32_t m_mountedAnimID = 0;
-        // Where the unit is in its attack cycle (reference +0xb5c); the selector only tests it
-        // against 2, and Unit_C.cpp's trail code against 1 and 2. Nothing ported writes it.
-        int32_t m_attackPhase = 0;
+        // The unit's sheath state (reference +0xb5c): 0 sheathed, 1 melee drawn, 2 ranged drawn,
+        // and +0xb58 the state before it. The sheath setter (FUN_00736d30) writes both; it was
+        // named for an attack cycle until that writer was read.
+        int32_t m_sheathState = 0;
         // ref +0xfa4, not identified: the reference tests it against -1 as a "something is pending"
         // flag, alongside m_animFlags 0x400, when deciding whether a vehicle's owner is driving the
         // pose. Nothing ported writes it, so it stays -1 and the term reads false.
@@ -674,6 +771,11 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 };
 
 int32_t ReceiveEmote(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+
+// ref: FUN_007300a0
+// SMSG_AURA_UPDATE_ALL (0x495) and SMSG_AURA_UPDATE (0x496): the unit named by the packed guid
+// takes the update; one that is not in view drops it.
+int32_t ReceiveAuraUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 
 // ref: FUN_00747860
 // The unit sound module's start: the FootstepSounds CVar and the dismount sound.

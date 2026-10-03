@@ -20,7 +20,6 @@
 #include <common/Time.hpp>
 #include <cstdio>
 #include "object/client/QuestStatusCache.hpp"
-#include "object/client/UnitVisuals.hpp"
 #include "world/MapShadow.hpp"
 #include "world/ShadowMap.hpp"
 #include "world/ParticleFx.hpp"
@@ -752,8 +751,6 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
             // spawn-time pose. UpdateIdleAnimation only re-issues the sequence on a change.
             static_cast<CGUnit_C*>(object)->UpdateIdleAnimation();
 
-            // Keep the unit's aura visuals (spell state kits) attached to match its auras.
-            UnitVisualsUpdate(static_cast<CGUnit_C*>(object));
         }
 
         // The model itself is placed by the frame's object handler (CGWorldFrame::AddVisibleObject
