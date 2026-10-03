@@ -167,10 +167,15 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             break;
 
         case 31:
-        case 33:
+            behaviour = STORM_NEW(CGGameObjectDungeonDifficulty)(object);
+            break;
+
         case 35:
-            // TODO(World): dungeon difficulty portals (FUN_00712820), destructible buildings (FUN_007128d0) and trap
-            // doors (FUN_00713790) still get the root behaviour.
+            behaviour = STORM_NEW(CGGameObjectTrapDoor)(object);
+            break;
+
+        case 33:
+            // TODO(World): destructible buildings (FUN_007128d0) still get the root behaviour.
             behaviour = STORM_NEW(CGGameObjectType)(object, 5.0f);
             break;
 

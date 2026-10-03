@@ -1077,6 +1077,193 @@ void CGGameObjectMOTransport::UpdateTransport(uint32_t time, int32_t elapsed) {
     }
 }
 
+// ---- type 35 ------------------------------------------------------------------------------------
+
+// ref: FUN_00710460
+// Open for any state but 0; shut, it lets go of the camera's target and drops the active player.
+void CGGameObjectTrapDoor::OnStateChanged(int32_t from, int32_t to) {
+    (void)from;
+
+    if (!this->m_mapObject) {
+        return;
+    }
+
+    auto owner = this->m_owner;
+
+    if (to != 0) {
+        CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x92, 0, 0);
+        owner->m_collidable = 1;
+        CWorld::SetDynamicObjectCollides(this->m_mapObject, 1);
+        return;
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    for (auto passenger = this->m_passengers.Head(); passenger;) {
+        auto next = this->m_passengers.Next(passenger);
+
+        if (camera->GetTarget() == passenger->m_guid) {
+            camera->SetRelativeTo(0);
+        }
+
+        if (passenger->m_guid == ClntObjMgrGetActivePlayer()) {
+            auto move = static_cast<CMovementData_C*>(passenger);
+            move->QueueFallIfUnsupported(static_cast<int32_t>(OsGetAsyncTimeMs()));
+            move->SetSplineTransport(0, 0xff, 0);
+        }
+
+        passenger = next;
+    }
+
+    CWorld::SetDynamicObjectSequence(this->m_mapObject, 0x94, 0, 0);
+    owner->m_collidable = 0;
+    CWorld::SetDynamicObjectCollides(this->m_mapObject, 0);
+}
+
+// ref: FUN_0070d980
+// Its stats are in: the building made, placed by the object's rotation at the transport's place,
+// its sequences answering their ends, and shut unless the object's state says open.
+void CGGameObjectTrapDoor::OnStatsLoaded() {
+    this->CreateMapObject();
+
+    if (!this->m_mapObject) {
+        return;
+    }
+
+    MovementLinkTransport(this->m_owner);
+
+    auto owner = this->m_owner;
+    owner->m_worldMatrix = C44Matrix(owner->GetRotation());
+    owner->m_worldMatrix.d0 = this->m_position.x;
+    owner->m_worldMatrix.d1 = this->m_position.y;
+    owner->m_worldMatrix.d2 = this->m_position.z;
+
+    CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &TransportSequenceDone, 0);
+
+    C44Matrix world;
+    owner->GetWorldMatrix(world);
+    CWorld::SetDynamicObjectPlacement(this->m_mapObject, world);
+
+    if (owner->GameObject()->state != 1) {
+        this->OnStateChanged(1, 0);
+    }
+}
+
+// ref: FUN_0070b580
+void CGGameObjectTrapDoor::OnPostReenable() {
+    this->CreateMapObject();
+
+    if (this->m_mapObject) {
+        MovementLinkTransport(this->m_owner);
+    }
+
+    if (this->m_mapObject) {
+        CWorld::SetDynamicObjectSequenceDone(this->m_mapObject, &TransportSequenceDone, 0);
+    }
+}
+
+// ref: FUN_007137b0
+// It does not move: once the building is in its passengers are placed on it once; before that it
+// is kept at the object's place.
+void CGGameObjectTrapDoor::UpdateTransport(uint32_t time, int32_t elapsed) {
+    (void)time;
+    (void)elapsed;
+
+    if (!this->m_mapObject) {
+        return;
+    }
+
+    if (!this->m_arrived && CWorld::DynamicObjectIsLoaded(this->m_mapObject)) {
+        this->m_arrived = 1;
+
+        int32_t cameraRides = 0;
+        this->MovePassengers(&cameraRides);
+        return;
+    }
+
+    C44Matrix world;
+    this->m_owner->GetWorldMatrix(world);
+    CWorld::SetDynamicObjectPlacement(this->m_mapObject, world);
+}
+
+// ---- type 31 ------------------------------------------------------------------------------------
+
+static const int32_t GO_DATA_DIFFICULTY_MAP = 0x57;
+static const int32_t GO_DATA_DIFFICULTY = 0x58;
+
+// ref: FUN_00712820
+CGGameObjectDungeonDifficulty::CGGameObjectDungeonDifficulty(CGGameObject_C* owner) : CGGameObjectType(owner, 5.0f) {
+    this->m_sound = STORM_NEW(SOUNDKITOBJECT);
+}
+
+// ref: FUN_00712870
+CGGameObjectDungeonDifficulty::~CGGameObjectDungeonDifficulty() {
+    if (this->m_sound) {
+        SI2::StopOrFadeOut(this->m_sound, 0, -1.0f, 1);
+        this->m_sound->~SOUNDKITOBJECT();
+        STORM_FREE(this->m_sound);
+        this->m_sound = nullptr;
+    }
+}
+
+// ref: FUN_0070dd50
+// Half faded until the object is flagged lit (dynamic flag 0x2).
+float CGGameObjectDungeonDifficulty::GetFadeInAlpha() {
+    return (this->m_owner->GameObject()->dynamicFlags & 0x2) ? 1.0f : 0.5f;
+}
+
+// ref: FUN_0070dd70
+// The model's events sound only while the object shows.
+void CGGameObjectDungeonDifficulty::OnAnimEvent(uint32_t eventId, uint32_t data, const C3Vector* position, uint32_t a6) {
+    (void)a6;
+
+    int32_t hidden = 0;
+    int32_t hiddenOther = 0;
+    this->GetHidden(0, &hidden, &hiddenOther);
+
+    if (hiddenOther == 0) {
+        GameObjectHandleAnimEvent(eventId, data, position, this->m_sound, this->m_owner->GameObject()->displayID);
+    }
+}
+
+// ref: FUN_00710a50
+// Shown only at its own difficulty: a raid map's against the raid difficulty in force (on a map
+// with dynamic difficulty, the map's form of it; otherwise also a heroic raid falling back to its
+// normal size when the map has no heroic row), anything else against the dungeon difficulty.
+void CGGameObjectDungeonDifficulty::UpdateFrame(uint32_t time) {
+    (void)time;
+
+    int32_t hide = 1;
+    int32_t mapID = this->GetData(GO_DATA_DIFFICULTY_MAP);
+    int32_t difficulty = this->GetData(GO_DATA_DIFFICULTY);
+    auto map = mapID ? g_mapDB.GetRecord(mapID) : nullptr;
+
+    if (map && map->m_instanceType == 2) {
+        if (map->m_flags & 0x100) {
+            if (static_cast<int32_t>(CGPartyInfo::GetEffectiveMapRaidDifficulty()) == difficulty) {
+                hide = 0;
+            }
+        } else {
+            auto raid = static_cast<int32_t>(CGPartyInfo::GetEffectiveRaidDifficulty());
+
+            if (raid == difficulty) {
+                hide = 0;
+            } else if (2 <= static_cast<uint32_t>(raid) && raid - 2 == difficulty
+                       && !MapDifficultyFind(mapID, raid, nullptr)) {
+                hide = 0;
+            }
+        }
+    } else if (static_cast<int32_t>(CGPartyInfo::GetEffectiveDungeonDifficulty()) == difficulty) {
+        hide = 0;
+    }
+
+    CWorld::SetObjectHidden(this->m_owner->m_worldObject, hide);
+
+    if (hide && SI2::IsPlaying(this->m_sound)) {
+        SI2::StopOrFadeOut(this->m_sound, 0, -1.0f, 1);
+    }
+}
+
 // ref: FUN_0070bf70
 void GameObjectPlayDisplaySound(int32_t displayID, int32_t index, const C3Vector* position, SOUNDKITOBJECT* sound) {
     if (index == -1) {

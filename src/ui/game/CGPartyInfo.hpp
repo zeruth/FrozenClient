@@ -116,6 +116,18 @@ class CGPartyInfo {
         static uint32_t GetOwnDungeonDifficulty();
         static uint32_t GetOwnRaidDifficulty();
 
+        // ref: FUN_005138d0
+        // The dungeon difficulty in force: the group's in a party that is not a raid, the
+        // player's own otherwise.
+        static uint32_t GetEffectiveDungeonDifficulty();
+        // ref: FUN_00513900
+        // The raid difficulty in force: the group's in a raid, the player's own otherwise.
+        static uint32_t GetEffectiveRaidDifficulty();
+        // ref: FUN_00519680
+        // The raid difficulty in force on the current map: on a map with dynamic difficulty (Map
+        // flag 0x100) the size bit of it plus the heroic setting.
+        static uint32_t GetEffectiveMapRaidDifficulty();
+
         // ref: FUN_00525530 / FUN_005255a0
         // The message carries the value plus two flags saying which of the two settings it
         // applies to, so one packet can change either or both.
@@ -170,6 +182,9 @@ class CGPartyInfo {
         static uint32_t m_raidDifficulty;
         static uint32_t m_ownDungeonDifficulty;
         static uint32_t m_ownRaidDifficulty;
+        // DAT_00bd1980: a dynamic-difficulty raid's heroic setting. Its writers (the raid
+        // difficulty messages near FUN_00526bcd and FUN_0052c49a) are not ported, so it stays 0.
+        static uint32_t m_dynamicHeroic;
         static uint32_t m_optOutOfLoot;  // ref: DAT_00bd19a0
         static uint32_t m_realMemberCount;
         static WOWGUID m_realLeader;

@@ -435,6 +435,35 @@ class CGGameObjectMOTransport : public CGGameObjectTransportBase {
         uint32_t m_leg = 0;                 // +0x80, the leg the last step was on
 };
 
+// A trap door (type 35, 0x00a34750): a building on the transport base that opens (sequence
+// 0x92, collidable) for any state but 0 and shuts (0x94) for 0, dropping the active player
+// through it.
+class CGGameObjectTrapDoor : public CGGameObjectTransportBase {
+    public:
+        // ref: FUN_00713790
+        CGGameObjectTrapDoor(CGGameObject_C* owner) : CGGameObjectTransportBase(owner) {}
+
+        void OnStateChanged(int32_t from, int32_t to) override;                         // 0x30
+        void OnStatsLoaded() override;                                                   // 0x78
+        void OnPostReenable() override;                                                  // 0x84
+        void UpdateTransport(uint32_t time, int32_t elapsed) override;                   // 0x8c
+};
+
+// A dungeon difficulty marker (type 31, 0x00a34420): a model shown only while the difficulty in
+// force matches the one its data names for its map.
+class CGGameObjectDungeonDifficulty : public CGGameObjectType {
+    public:
+        CGGameObjectDungeonDifficulty(CGGameObject_C* owner);
+        ~CGGameObjectDungeonDifficulty() override;
+
+        bool CanUse() override { return false; }                                        // 0x18
+        float GetFadeInAlpha() override;                                                 // 0x3c
+        void OnAnimEvent(uint32_t eventId, uint32_t data, const C3Vector* position, uint32_t a6) override; // 0x40
+        void UpdateFrame(uint32_t time) override;                                        // 0x90
+
+        SOUNDKITOBJECT* m_sound = nullptr;  // +0x10
+};
+
 // The sound a GameObjectDisplayInfo record carries in slot `index`, played at `position` --
 // following the object through `sound` when the kit says it loops (FUN_0070bf70).
 void GameObjectPlayDisplaySound(int32_t displayID, int32_t index, const C3Vector* position, SOUNDKITOBJECT* sound);

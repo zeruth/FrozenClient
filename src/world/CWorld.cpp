@@ -2017,6 +2017,14 @@ void CWorld::SetDynamicObjectPlacement(CMapBaseObj* object, const C44Matrix& pla
     }
 }
 
+// ref: FUN_0077f2f0
+// An entity taken out of the scene (state bit 0x4, which CMap::BucketEntities passes over) or put
+// back.
+void CWorld::SetObjectHidden(HWORLDOBJECT object, int32_t hidden) {
+    auto entity = reinterpret_cast<CMapStaticEntity*>(object);
+    entity->m_flags7c ^= (static_cast<uint32_t>(hidden) * 4 ^ entity->m_flags7c) & 0x4;
+}
+
 // ref: FUN_0077fec0
 // The dynamic object plays `sequence`: a prop's model does; a building's animated doodads do.
 // PARTIAL: a building's doodads taking it (FUN_007b45f0 -> FUN_007b4170) waits on the group doodad
