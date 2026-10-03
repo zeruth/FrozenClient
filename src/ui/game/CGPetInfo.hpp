@@ -58,6 +58,7 @@ class CGPetInfo {
         // ref: FUN_005d4650
         // CMSG_PET_STOP_ATTACK for the first pet, only while it is attacking.
         static void StopAttack();
+        static void SetAttacking(int32_t attacking);
 
         // ref: FUN_005d4a00
         // CMSG_PET_RENAME for the first pet. declined, when given, is five 0x60-byte names.

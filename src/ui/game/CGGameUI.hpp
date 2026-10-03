@@ -51,6 +51,8 @@ class CGGameUI {
         static CVar* s_currencyTokensUnused2Cvar;   // ref: DAT_00bd09f8
         static CVar* s_currencyTokensBackpack1Cvar; // ref: DAT_00bd09fc
         static CVar* s_currencyTokensBackpack2Cvar; // ref: DAT_00bd0a00
+        static CVar* s_predictedHealthCvar;         // ref: DAT_00bd0a04
+        static CVar* s_predictedPowerCvar;          // ref: DAT_00bd0a08
         static CScriptObject* s_gameTooltip;
         static CSimpleTop* s_simpleTop;
 

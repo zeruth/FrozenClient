@@ -444,6 +444,21 @@ uint32_t CMovementData_C::GetPredictedAnchorTime(uint32_t ms) {
     return this->m_anchorTime;
 }
 
+// ref: FUN_006e9570
+// The collision box from a model's width and height at `scale` (the model's own scale times the
+// object's): half the scaled width is the radius, and the step height follows the object's share
+// of the scale. A unit the player controls keeps its height unless `force`.
+//
+// PARTIAL: the world update at the unit's position afterwards (FUN_00632050) is not identified.
+void CMovementData_C::SetCollisionBox(float width, float height, float scale, float modelScale, int32_t force) {
+    this->m_stepHeightScale = std::fabs(modelScale) < 2.38419e-07f ? 1.0f : scale / modelScale;
+    this->m_collisionRadius = width * scale * 0.5f;
+
+    if (force || !this->m_owner->IsPlayerControlled()) {
+        this->m_collisionHeight = scale * height;
+    }
+}
+
 // ref: FUN_006e9600
 void CMovementData_C::SetCollisionHeight(float height) {
     this->m_collisionHeight = height;

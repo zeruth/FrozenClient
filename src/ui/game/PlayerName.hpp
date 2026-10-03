@@ -20,6 +20,9 @@ struct PLAYERNAMEDESC {
 // ref: FUN_007e5130
 void PlayerNameInvalidate(void* desc);
 
+// ref: FUN_007e50f0
+void PlayerNameInvalidateReaction(void* desc);
+
 // ref: FUN_007e5150
 bool PlayerNameIsHighlighted(void* desc);
 

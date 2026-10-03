@@ -86,6 +86,13 @@ uint8_t CGPetInfo::GetComboPoints(WOWGUID target) {
     return 0;
 }
 
+// ref: FUN_005d30a0
+// The pet started or stopped attacking: PET_ATTACK_START (0x140) or PET_ATTACK_STOP (0x141).
+void CGPetInfo::SetAttacking(int32_t attacking) {
+    FrameScript_SignalEvent(attacking ? 0x140 : 0x141, nullptr);
+    CGPetInfo::s_attacking = static_cast<uint32_t>(attacking);
+}
+
 // ref: FUN_005d4650
 void CGPetInfo::StopAttack() {
     if (!CGPetInfo::s_attacking) {

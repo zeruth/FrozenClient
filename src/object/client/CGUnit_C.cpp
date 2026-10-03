@@ -23,6 +23,7 @@
 #include "ui/game/PlayerName.hpp"
 #include "ui/game/CGMinimapFrame.hpp"
 #include "world/CWorld.hpp"
+#include "world/map/CMap.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "db/Db.hpp"
 #include "model/Model2.hpp"
@@ -407,12 +408,13 @@ WOWGUID CGUnit_C::GetTransportGUID() const {
 }
 
 // ref: FUN_0073fcc0
-// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the collision box
-// (FUN_00725f50), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
+// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
 // party and raid slots (FUN_005139b0, FUN_0054d1c0), the vehicle and passenger starts and the
 // ObjectEffect package (FUN_00725df0) are the Movement, PlayerName, party and ObjectEffect ports'.
 void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
+
+    this->UpdateCollisionBox(1, 1);
 
     this->UpdateShadowRadius();
     this->UpdateEffectAttachments();
@@ -5111,9 +5113,9 @@ void CGUnit_C::OnNameArrived(uint32_t id, const WOWGUID* guid, void* param, bool
 }
 
 // ref: FUN_0072cde0
-// PHASE4: the reference also re-runs the unit's scale (FUN_0072cbb0, when the template has a
-// family) and its combat reach (FUN_00725f50) against the template, and does the name plate and
-// party slot steps OnNameArrived lists. Those are the Unit_C port's.
+// The template arrived: the unit takes it, a creature of a family re-runs its scale, and the
+// collision box is rebuilt against it. PARTIAL: the name plate's removal (FUN_00725840) and the
+// party slot (FUN_005139b0) are the name plate and party ports'.
 void CGUnit_C::OnCreatureStatsArrived(uint32_t id, const WOWGUID* guid, void* param, bool found) {
     auto stats = g_creatureCache.Peek(DBCACHEKEY32(id));
 
@@ -5125,6 +5127,12 @@ void CGUnit_C::OnCreatureStatsArrived(uint32_t id, const WOWGUID* guid, void* pa
 
     if (unit) {
         unit->m_creatureStats = stats;
+
+        if (stats->m_family != 0) {
+            unit->UpdateDisplayScale(0);
+        }
+
+        unit->UpdateCollisionBox(1, 0);
     }
 
     // FUN_00512b00, then FUN_0060bf10 with event 0x94.
@@ -5577,8 +5585,6 @@ void CGUnit_C::SetMountDisplay(int32_t displayID) {
 // ref: FUN_0073d5d0
 // PHASE4(Unit_C): the reference gives the mount the unit's anim-event handler (FUN_00734a40,
 // which forwards to FUN_00732650); frozen has no unit anim-event handler yet.
-// PHASE4(Player_C): a player mounting where the mount does not fit (FUN_006d7720 against the
-// model data's mount height) dismounts at once.
 void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
     this->m_boneMask = 0;
 
@@ -5649,8 +5655,12 @@ void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
         this->m_model->m_baseDiffuse = { 1.0f, 1.0f, 1.0f };
         this->m_model->m_baseEmissive = { 0.0f, 0.0f, 0.0f };
 
-        (void)displayID;
-        (void)checkCollision;
+        // A player mounting where the mount does not fit gets off again. The reference hands the
+        // first argument on as the fit test's skip flag.
+        if (this->IsA(TYPE_PLAYER) && checkCollision
+            && !this->UpdateMountedCollision(modelData->m_mountHeight, displayID)) {
+            this->RequestDismount();
+        }
     }
 
     if (this->m_mountTransitionEffect && (this->m_mountTransitionEffect->m_flags & 0x100) == 0) {
@@ -5666,7 +5676,6 @@ void CGUnit_C::Mount(int32_t displayID, int32_t checkCollision) {
 }
 
 // ref: FUN_0073d940
-// PHASE4(Movement): `restoreCollision` re-runs the unit's collision box (FUN_00725f50).
 void CGUnit_C::Dismount(int32_t restoreCollision) {
     if (!this->m_mountModel) {
         return;
@@ -5703,7 +5712,9 @@ void CGUnit_C::Dismount(int32_t restoreCollision) {
 
     this->PlayDismountSound();
 
-    (void)restoreCollision;
+    if (restoreCollision) {
+        this->UpdateCollisionBox(1, 0);
+    }
 
     if (this->GetObjectModel()->IsLoaded(0, 0)) {
         this->UpdateBoneMask();
@@ -6638,7 +6649,7 @@ int32_t OnMountDisplayChanged(WOWGUID guid, uint32_t offset, uint32_t size, cons
 
 // ref: FUN_0073f4b0
 // UNIT_DYNAMIC_FLAGS.
-int32_t OnDynamicFlagsChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+int32_t OnEmoteStateChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
     auto unit = HandlerUnit(guid, 0x3eb);
 
     if (unit) {
@@ -6648,27 +6659,386 @@ int32_t OnDynamicFlagsChanged(WOWGUID guid, uint32_t offset, uint32_t size, cons
     return 1;
 }
 
+
+// ref: FUN_00730050
+int32_t OnLevelFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    int32_t was = *static_cast<const int32_t*>(old);
+    auto unit = HandlerUnit(guid, 0x2a0);
+
+    if (unit && unit->Unit()->level != was) {
+        unit->OnLevelChanged();
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072ceb0
+// OBJECT_FIELD_ENTRY moved: the creature template is looked up again, and once it is in the cache
+// the unit takes it and its name event fires.
+//
+// PARTIAL: the name plate's removal (FUN_00725840), the party slot (FUN_005139b0) and the target
+// frame (FUN_00512b00) are the name plate, party and UI ports'.
+int32_t OnEntryChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x2b4);
+
+    if (unit) {
+        WOWGUID key = guid;
+        auto stats = g_creatureCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(unit->GetEntryID())), &key,
+                                               &CGUnit_C::OnCreatureStatsArrived, nullptr, false);
+
+        if (stats) {
+            unit->m_creatureStats = stats;
+            ScriptEventsSignalUnitEvent(guid, 0x94);
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f330
+// UNIT_FIELD_HEALTH moved: the reported health follows it, a bleeding unit (one with blood) under
+// a fifth of its health is marked (state 0x2), and crossing zero is a death or a revival -- the
+// active player's movement re-runs first.
+//
+// PARTIAL: the name plate's health (FUN_0098e5b0) and the unit frames (FUN_0053cf10) are the name
+// plate and UI ports'; the blood row (+0x97c, UnitBlood.dbc through the display) is not loaded, so
+// no unit is marked bleeding.
+int32_t OnHealthChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x2d4);
+
+    if (!unit) {
+        return 1;
+    }
+
+    auto data = unit->Unit();
+    unit->m_reportedHealth = static_cast<uint32_t>(data->health);
+
+    if (0.2f <= static_cast<float>(data->health) / static_cast<float>(data->maxHealth) || unit->IsDead()) {
+        unit->m_stateFlags &= 0xFFFFFFFD;
+    }
+
+    int32_t was = *static_cast<const int32_t*>(old);
+    bool isActive = guid == ClntObjMgrGetActivePlayer();
+
+    if (data->health < 1) {
+        if (0 < was) {
+            if (isActive) {
+                if (auto input = InputControlGetActive()) {
+                    input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+                }
+            }
+
+            unit->OnDeath();
+        }
+    } else if (was <= 0) {
+        if (isActive) {
+            if (auto input = InputControlGetActive()) {
+                input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+            }
+        }
+
+        unit->OnResurrect(0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_007234d0
+// UNIT_FIELD_POWERn (or health, index -2) moved. The player's and its pet's power, while the
+// predicted-power option is on, only goes up through here (the prediction already took it down).
+int32_t OnPowerChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x306);
+    int32_t index = static_cast<int32_t>((offset - 0x4C) >> 2);
+
+    if (!unit) {
+        return 1;
+    }
+
+    auto data = unit->Unit();
+    int32_t value = index == -2 ? data->health : data->power[index];
+
+    if (CGGameUI::s_predictedPowerCvar && CGGameUI::s_predictedPowerCvar->GetInt() && (guid == ClntObjMgrGetActivePlayer() || guid == CGPetInfo::GetPet(0))) {
+        int32_t reported = index == -2 ? static_cast<int32_t>(unit->m_reportedHealth) : unit->m_reportedPower[index];
+
+        if (value <= reported) {
+            return 1;
+        }
+    }
+
+    unit->SetReportedPower(index, value);
+
+    return 1;
+}
+
+// ref: FUN_007235c0
+int32_t OnMaxPowerChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x326);
+    int32_t index = static_cast<int32_t>((offset - 0x6C) >> 2);
+
+    if (unit) {
+        unit->SetReportedPower(index, index == -2 ? unit->Unit()->health : unit->Unit()->power[index]);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00723620
+// UNIT_FIELD_BYTES_0 byte 3 (the power type) moved.
+int32_t OnPowerTypeChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x342);
+
+    if (unit) {
+        int32_t type = static_cast<uint8_t>(unit->Unit()->bytes0 >> 24);
+        unit->SetReportedPower(type, unit->Unit()->power[type]);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716810
+// UNIT_FIELD_AURASTATE moved for the player or its target: the action bars re-check usability.
+// PARTIAL: the bars' refresh (FUN_0053cf10) is the UI port's; the event is sent.
+int32_t OnAuraStateChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    if (guid == ClntObjMgrGetActivePlayer()) {
+        FrameScript_SignalEvent(0x15E, nullptr);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f270
+int32_t OnFlagsFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x239);
+
+    if (unit) {
+        unit->OnFlagsChanged(*static_cast<const uint32_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f2b0
+int32_t OnFlags2FieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x249);
+
+    if (unit) {
+        unit->OnFlags2Changed(*static_cast<const uint32_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f2f0
+int32_t OnVisibilityFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x259);
+
+    if (unit) {
+        unit->OnVisibilityChanged(*static_cast<const uint8_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_00728d20
+int32_t OnPvpFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x26a);
+
+    if (unit) {
+        unit->OnPvpFlagsChanged(*static_cast<const uint8_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_00723680
+int32_t OnFactionChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x36c);
+
+    if (unit) {
+        unit->UpdateReaction(0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00728d60
+// UNIT_FIELD_CHARM / _SUMMON moved: the name is redrawn and the reaction re-checked, and the
+// charm's "possessed" state bit (0x1000) is dropped.
+//
+// PARTIAL: the pet frame and the possess bar (FUN_0080dfe0 for the player's own, FUN_00728880 for
+// its pet) and the name plate (FUN_0098e580) are the UI and name plate ports'.
+int32_t OnCharmChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x37f);
+
+    if (unit) {
+        if (unit->m_nameDesc) {
+            PlayerNameInvalidate(unit->m_nameDesc);
+        }
+
+        unit->UpdateReaction(0);
+        unit->m_stateFlags &= 0xFFFFEFFF;
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f460
+// UNIT_FIELD_BYTES_1 byte 0 (the stand state) moved for a unit other than the player (the player's
+// own arrives as SMSG_STANDSTATE_UPDATE).
+int32_t OnStandStateFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    if (guid == ClntObjMgrGetActivePlayer()) {
+        return 1;
+    }
+
+    auto unit = HandlerUnit(guid, 0x3c6);
+
+    if (unit) {
+        unit->OnStandStateUpdate(static_cast<uint8_t>(unit->Unit()->bytes1));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0071c9d0
+int32_t OnNpcFlagsFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x3d9);
+
+    if (unit) {
+        unit->OnNpcFlagsChanged(*static_cast<const uint32_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072cf70
+// UNIT_FIELD_PET_NAME_TIMESTAMP moved: the pet's name is asked for again, and the player's own
+// pet's frame hears it (UNIT_PET 0x13d).
+int32_t OnPetNameTimestampChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x3f6);
+
+    if (unit) {
+        unit->GetUnitName(nullptr, 1);
+
+        auto data = unit->Unit();
+        const WOWGUID& owner = data->charm != 0 ? data->charm : data->summon;
+
+        if (owner == ClntObjMgrGetActivePlayer()) {
+            FrameScript_SignalEvent(0x13D, nullptr);
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00741a00
+int32_t OnDynamicFlagsFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x40e);
+
+    if (unit) {
+        unit->OnDynamicFlagsUpdate(*static_cast<const uint32_t*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0073f4f0
+// UNIT_FIELD_CHANNEL_OBJECT and _SPELL (twelve bytes, the old values given).
+int32_t OnChannelChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x421);
+
+    if (unit) {
+        auto was = static_cast<const uint32_t*>(old);
+        WOWGUID object = static_cast<WOWGUID>(was[0]) | (static_cast<WOWGUID>(was[1]) << 32);
+        int32_t spell = static_cast<int32_t>(was[2]);
+
+        unit->OnChannelObjectChanged(object, spell);
+        unit->OnChannelSpellChanged(spell);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072cff0
+// UNIT_FIELD_PETNUMBER moved: the name and the display scale are re-run.
+// PARTIAL: the name plate's removal (FUN_00725840) is the name plate port's.
+int32_t OnPetNumberChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x437);
+
+    if (unit) {
+        unit->GetUnitName(nullptr, 1);
+        unit->UpdateDisplayScale(0);
+    }
+
+    ScriptEventsSignalUnitEvent(guid, 0x94);
+
+    if (guid == CGPetInfo::GetPet(0)) {
+        FrameScript_SignalEvent(0x1A5, nullptr);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072d070
+int32_t OnScaleFieldChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x455);
+
+    if (unit) {
+        unit->OnScaleChanged(*static_cast<const float*>(old));
+    }
+
+    return 1;
+}
+
+// ref: FUN_0071ca10
+// UNIT_FIELD_HOVERHEIGHT: the movement keeps the unit at the new height.
+int32_t OnHoverHeightChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto unit = HandlerUnit(guid, 0x48f);
+
+    if (unit) {
+        unit->m_localMove.m_hoverHeight = unit->Unit()->hoverHeight;
+    }
+
+    return 1;
+}
+
 // ref: FUN_00741d00
-// PARTIAL: the reference registers 30 handlers here; each joins as its body is ported. Still to
-// come: level (0xc0, FUN_00730050), entry (object 0xc,
-// FUN_0072ceb0), health (0x48, FUN_0073f330), power and max power (0x4c/0x6c, FUN_007234d0 /
-// FUN_007235c0), power type (0x47, FUN_00723620), aura state (0xdc, FUN_00716810), flags and flags 2
-// (0xd4/0xd8, FUN_0073f270 / FUN_0073f2b0), visibility (0x112, FUN_0073f2f0), PvP (0x1d1,
-// FUN_00728d20), faction (0xc4, FUN_00723680), charm and summon (0x18, FUN_00728d60), stand state
-// (0x110, FUN_0073f460), NPC flags (0x130, FUN_0071c9d0), pet name
-// timestamp (0x118, FUN_0072cf70), 0x124 (FUN_00741a00), channel (0x38, FUN_0073f4f0), pet number
-// (0x114, FUN_0072cff0), scale (object 0x10, FUN_0072d070) and hover height (0x230, FUN_0071ca10).
+// The unit's descriptor handlers, in the reference's order.
 void RegisterUnitFieldHandlers() {
     for (uint32_t offset = 0xC8; offset < 0xD4; offset += 4) {
         MirrorRegisterHandler(ID_UNIT, offset, 4, &OnVirtualItemChanged, nullptr, 0, 0);
     }
 
-    MirrorRegisterHandler(ID_UNIT, 0xF4, 4, &OnDisplayChanged, nullptr, 1, 0);
-    MirrorRegisterHandler(ID_UNIT, 0x1D0, 1, &OnSheathChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xC0, 4, &OnLevelFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_OBJECT, 0xC, 4, &OnEntryChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x48, 4, &OnHealthChanged, nullptr, 0, 0);
+
+    for (uint32_t offset = 0x6C; offset < 0x88; offset += 4) {
+        MirrorRegisterHandler(ID_UNIT, offset - 0x20, 4, &OnPowerChanged, nullptr, 0, 0);
+        MirrorRegisterHandler(ID_UNIT, offset, 4, &OnMaxPowerChanged, nullptr, 0, 0);
+    }
+
+    MirrorRegisterHandler(ID_UNIT, 0x47, 1, &OnPowerTypeChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xDC, 4, &OnAuraStateChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xD4, 4, &OnFlagsFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xD8, 4, &OnFlags2FieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x112, 1, &OnVisibilityFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x1D1, 1, &OnPvpFieldChanged, nullptr, 0, 0);
     MirrorRegisterHandler(ID_UNIT, 0x113, 1, &OnAnimTierChanged, nullptr, 0, 0);
     MirrorRegisterHandler(ID_UNIT, 0xFC, 4, &OnMountDisplayChanged, nullptr, 0, 0);
-    MirrorRegisterHandler(ID_UNIT, 0x134, 4, &OnDynamicFlagsChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xC4, 4, &OnFactionChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x18, 0x10, &OnCharmChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0xF4, 4, &OnDisplayChanged, nullptr, 1, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x110, 1, &OnStandStateFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x130, 4, &OnNpcFlagsFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x134, 4, &OnEmoteStateChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x118, 4, &OnPetNameTimestampChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x124, 4, &OnDynamicFlagsFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x38, 0xC, &OnChannelChanged, nullptr, 0, 1);
+    MirrorRegisterHandler(ID_UNIT, 0x114, 4, &OnPetNumberChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_OBJECT, 0x10, 4, &OnScaleFieldChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x1D0, 1, &OnSheathChanged, nullptr, 0, 0);
     MirrorRegisterHandler(ID_UNIT, 0x30, 8, &OnTargetChanged, nullptr, 0, 0);
+    MirrorRegisterHandler(ID_UNIT, 0x230, 4, &OnHoverHeightChanged, nullptr, 0, 0);
 }
 
 } // namespace
@@ -9118,35 +9488,7 @@ float CGUnit_C::GetDisplayScale(int32_t displayID) {
         return 1.0f;
     }
 
-    // FUN_0071c110: a creature of a family (a pet) grows with its level between the family's
-    // two scales, and takes that scale when it is the larger, or always when it is a pet.
-    float scale = GetNativeRaceModelScale(display) * display->m_creatureModelScale * modelData->m_modelScale;
-
-    if (!(0.0f < scale)) {
-        scale = 1.0f;
-    }
-
-    auto family = this->m_creatureStats ? g_creatureFamilyDB.GetRecord(this->m_creatureStats->m_family) : nullptr;
-
-    if (!family) {
-        return scale;
-    }
-
-    int32_t span = family->m_maxScaleLevel - family->m_minScaleLevel;
-    int32_t into = this->m_unit->level < family->m_minScaleLevel ? 0 : this->m_unit->level - family->m_minScaleLevel;
-
-    if (span < into) {
-        into = span;
-    }
-
-    float fraction = span != 0 ? static_cast<float>(into) / static_cast<float>(span) : 0.0f;
-    float grown = (family->m_maxScale - family->m_minScale) * fraction + family->m_minScale;
-
-    if (scale < grown || this->m_unit->petNumber != 0) {
-        return grown;
-    }
-
-    return scale;
+    return this->GetModelScale(display, modelData);
 }
 
 // ref: FUN_0072cbb0
@@ -10700,4 +11042,731 @@ void CGUnit_C::SetActiveMover(WOWGUID guid) {
     if (unit && (unit->m_localMove.m_moveFlags & 0xc0100f)) {
         unit->m_localMove.ScheduleHeartbeat(static_cast<int32_t>(now));
     }
+}
+
+// ------------------------------------------------------------------------------------------------
+// The field-change bodies the descriptor handlers of FUN_00741d00 call (Unit_C.cpp).
+// ------------------------------------------------------------------------------------------------
+
+// ref: FUN_0071c110
+// The scale a display draws at: the race's native scale times the display's and the model's, and
+// for a creature of a family (a pet) the family's scale grown with its level between the family's
+// two levels -- taken when it is the larger, or always for a pet.
+float CGUnit_C::GetModelScale(const CreatureDisplayInfoRec* display, const CreatureModelDataRec* modelData) {
+    float scale = GetNativeRaceModelScale(display) * display->m_creatureModelScale * modelData->m_modelScale;
+
+    if (!(0.0f < scale)) {
+        scale = 1.0f;
+    }
+
+    auto family = this->m_creatureStats ? g_creatureFamilyDB.GetRecord(this->m_creatureStats->m_family) : nullptr;
+
+    if (!family) {
+        return scale;
+    }
+
+    int32_t span = family->m_maxScaleLevel - family->m_minScaleLevel;
+    int32_t into = this->m_unit->level < family->m_minScaleLevel ? 0 : this->m_unit->level - family->m_minScaleLevel;
+
+    if (span < into) {
+        into = span;
+    }
+
+    float fraction = span != 0 ? static_cast<float>(into) / static_cast<float>(span) : 0.0f;
+    float grown = (family->m_maxScale - family->m_minScale) * fraction + family->m_minScale;
+
+    if (scale < grown || this->m_unit->petNumber != 0) {
+        return grown;
+    }
+
+    return scale;
+}
+
+// ref: FUN_006cf350
+// The scale the collision box is built at: the model's scale (also returned in `modelScale`)
+// times the object's own, never less than one.
+float CGUnit_C::GetCollisionScale(const CreatureDisplayInfoRec* display, const CreatureModelDataRec* modelData,
+                                  float* modelScale) {
+    float base = this->GetBaseScale();
+
+    if (base < 1.0f) {
+        base = 1.0f;
+    }
+
+    float scale = this->GetModelScale(display, modelData);
+
+    if (modelScale) {
+        *modelScale = scale;
+    }
+
+    return scale * base;
+}
+
+// ref: FUN_006d78c0
+// A player's collision box from its native display's model data. A model without a box, or a unit
+// scaled to nothing, keeps the one it has.
+//
+// PARTIAL: the active player growing into a space it does not fit (FUN_006e8ff0, a hull query
+// through FUN_0075e500) is refused there; that query is the collision port's, so the box is
+// always taken.
+int32_t CGUnit_C::UpdatePlayerCollision(int32_t skipFit, int32_t force) {
+    (void)skipFit;
+
+    auto display = g_creatureDisplayInfoDB.GetRecord(this->m_unit->nativeDisplayID);
+    auto modelData = display ? g_creatureModelDataDB.GetRecord(display->m_modelID) : nullptr;
+
+    if (!modelData) {
+        return 1;
+    }
+
+    float modelScale = 1.0f;
+    float scale = this->GetCollisionScale(display, modelData, &modelScale);
+
+    if (std::fabs(modelData->m_collisionWidth) < 9.53674e-07f || std::fabs(modelData->m_collisionHeight) < 9.53674e-07f) {
+        return 1;
+    }
+
+    if (std::fabs(scale) < 9.53674e-07f) {
+        return 1;
+    }
+
+    this->m_localMove.SetCollisionBox(modelData->m_collisionWidth, modelData->m_collisionHeight, scale, modelScale, force);
+
+    return 1;
+}
+
+// ref: FUN_006d7720
+// A mounted player's box: as tall as half the rider plus the mount's height at the mount's scale,
+// or the rider's own height when that is taller, and as wide as it already is.
+//
+// PARTIAL: as UpdatePlayerCollision, the active player's fit test (FUN_0075e480) is the collision
+// port's; the box is always taken.
+int32_t CGUnit_C::UpdateMountedCollision(float mountHeight, int32_t skipFit) {
+    auto display = g_creatureDisplayInfoDB.GetRecord(this->m_unit->nativeDisplayID);
+    auto modelData = display ? g_creatureModelDataDB.GetRecord(display->m_modelID) : nullptr;
+
+    if (!modelData) {
+        return 1;
+    }
+
+    float modelScale = 1.0f;
+    float scale = this->GetCollisionScale(display, modelData, &modelScale);
+    float height = modelData->m_collisionHeight * 0.5f + this->m_mountScale * mountHeight;
+
+    if (height < modelData->m_collisionHeight) {
+        height = modelData->m_collisionHeight;
+    }
+
+    float radius = this->m_localMove.m_collisionRadius;
+
+    this->m_localMove.SetCollisionBox(radius + radius, height, scale, modelScale, skipFit);
+
+    return 1;
+}
+
+// ref: FUN_00725f50
+// The unit's collision box: a player's from its model (UpdatePlayerCollision), a creature whose
+// template asks for one (type flag 0x20000) from its native display's model data, and everything
+// else the default two-thirds-by-two-yards box.
+int32_t CGUnit_C::UpdateCollisionBox(int32_t skipFit, int32_t force) {
+    if (this->IsA(TYPE_PLAYER)) {
+        return this->UpdatePlayerCollision(skipFit, force);
+    }
+
+    if (this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x20000)) {
+        auto display = g_creatureDisplayInfoDB.GetRecord(this->m_unit->nativeDisplayID);
+
+        if (display) {
+            auto modelData = g_creatureModelDataDB.GetRecord(display->m_modelID);
+            float width = 0.6666666865348816f;
+            float height = 2.027777671813965f;
+            float scale = 1.0f;
+            float displayScale = 1.0f;
+
+            if (modelData) {
+                float base = this->GetBaseScale();
+
+                if (base < 1.0f) {
+                    base = 1.0f;
+                }
+
+                displayScale = this->GetDisplayScale(this->m_unit->nativeDisplayID);
+                scale = displayScale * base;
+                width = modelData->m_collisionWidth;
+                height = modelData->m_collisionHeight;
+            }
+
+            this->m_localMove.SetCollisionBox(width, height, scale, displayScale, 0);
+
+            return 1;
+        }
+    }
+
+    this->m_localMove.SetCollisionBox(0.6666666865348816f, 2.027777671813965f, 1.0f, 1.0f, 0);
+
+    return 1;
+}
+
+// ref: FUN_0072a560
+// OBJECT_FIELD_SCALE_X moved: the collision box is rebuilt (on the mount's model data for a
+// mounted player), and a box that will not fit growing cancels the growth aura that grew it.
+// Then the quest marker, the shadow and the effect attachments follow the new scale.
+void CGUnit_C::OnScaleChanged(float oldScale) {
+    bool growing = oldScale <= this->GetBaseScale();
+    int32_t fits = 1;
+    auto mountDisplay = this->m_unit->mountDisplayID;
+
+    if (mountDisplay < 1 || !this->IsA(TYPE_PLAYER)) {
+        fits = this->UpdateCollisionBox(growing ? 1 : 0, 0);
+    } else {
+        auto display = g_creatureDisplayInfoDB.GetRecord(mountDisplay);
+        auto modelData = display ? g_creatureModelDataDB.GetRecord(display->m_modelID) : nullptr;
+
+        fits = modelData ? this->UpdateMountedCollision(modelData->m_mountHeight, growing ? 1 : 0) : 0;
+    }
+
+    if (!fits) {
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(CMSG_CANCEL_GROWTH_AURA));
+        msg.Finalize();
+        ClientServices::Send(&msg);
+    }
+
+    this->ScaleQuestMarker();
+    this->UpdateShadowRadius();
+    this->UpdateEffectAttachments();
+}
+
+// ref: FUN_0072e3a0
+// UNIT_FIELD_LEVEL moved: the level-up flash (hard-coded effect 5, kept running), and the display
+// scale again, which a pet's grows with its level.
+//
+// PARTIAL: a player's own refresh (FUN_006d66e0) and the name plate's level (FUN_0098ef10) are the
+// Player_C and name plate ports'.
+void CGUnit_C::OnLevelChanged() {
+    void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+    auto effect = mem ? new (mem) CEffect() : nullptr;
+
+    if (effect) {
+        effect->InitializeHardcoded(5, this->GetGUID(), &CGObject_C::KitEffectOneShot);
+        effect->m_flags |= CEffect::EFFECT_NO_EXPIRE;
+        effect->Release();
+    }
+
+    if (!this->IsA(TYPE_PLAYER)) {
+        this->UpdateDisplayScale(0);
+    }
+}
+
+// ref: FUN_0071f8f0
+// The unit's reaction to the player may have changed (faction, flags, charm, PvP): its name plate
+// is redrawn, the unit frames hear UNIT_FACTION, and it re-evaluates what it shows the player.
+//
+// PARTIAL: the name plate colour (FUN_0098ee30), the active player's own re-check of every visible
+// unit (FUN_006dc5a0 and the FUN_00718e50 / FUN_00718f00 walks) are the name plate and Player_C
+// ports'.
+void CGUnit_C::UpdateReaction(int32_t refreshOthers) {
+    (void)refreshOthers;
+
+    if (this->m_nameDesc) {
+        // FUN_007e50f0: the name plate is marked for a redraw.
+        PlayerNameInvalidateReaction(this->m_nameDesc);
+    }
+
+    ScriptEventsSignalUnitEvent(this->GetGUID(), 0x31);
+
+    if (this->GetGUID() != ClntObjMgrGetActivePlayer()) {
+        this->OnReenable();
+    }
+}
+
+// ref: FUN_00728f70
+// The active player's own UNIT_FIELD_FLAGS changes: a stun (0x40000) re-runs its movement, and
+// losing or gaining 0x100000 (fleeing / confused) stops click-to-move.
+//
+// PARTIAL: the action bar refreshes (FUN_0053cf10), the pacified state's spell bar (FUN_00524600)
+// and the "you are no longer under control" prompt (FUN_00508090) are the UI ports'.
+void CGUnit_C::OnActivePlayerFlagsChanged(uint32_t changed) {
+    if (changed & 0x40000) {
+        if (auto input = InputControlGetActive()) {
+            input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+        }
+    }
+
+    if ((changed & 0x100000) && (this->m_unit->flags & 0x100000)) {
+        this->CancelClickToMove(0, 1);
+    }
+}
+
+// ref: FUN_0073c330
+// UNIT_FIELD_FLAGS changed from `old`. Another unit's change to 0x400 (in combat) re-chooses its
+// animation; a change to 0x200000 (disarmed) puts the melee weapons back in or out of the hands;
+// 0x180 (PvP attackable) re-checks the reaction; 0x800 (the player's pet attacking) tells the pet
+// bar.
+//
+// PARTIAL: the tooltip's level line (FUN_00512ab0), the UNIT_FLAGS script event and the
+// party-member refresh (FUN_00524350) for 0x2000000 are the UI ports'; the missiles a disarm
+// drops (FUN_00703730) are the missile port's.
+void CGUnit_C::OnFlagsChanged(uint32_t old) {
+    uint32_t now = this->m_unit->flags;
+    uint32_t changed = now ^ old;
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        this->OnActivePlayerFlagsChanged(changed);
+    } else if (0 < this->m_unit->health && (changed & 0x400)) {
+        this->UpdateAnimation(0, 0xFFFFFFFF);
+    }
+
+    if (changed & 0x200000) {
+        auto main = this->GetWeaponInfo(0, 1);
+
+        if (main && main->m_class == 2) {
+            auto again = this->GetWeaponInfo(0, 1);
+
+            if ((this->m_unit->flags & 0x200000) && again && again->m_class == 2
+                && (this->m_sheathState == 1 || this->m_sheathState == 0)) {
+                CCharacterComponent::RemoveHandItemLinks(this->m_model, static_cast<INVENTORY_SLOTS>(0xF),
+                                                         this->m_sheathState == 0 ? main->m_sheathType : 0, false);
+            } else {
+                this->AttachHandItem(0);
+            }
+        }
+
+        auto off = this->GetWeaponInfo(1, 1);
+
+        if (off && off->m_class == 2) {
+            bool unlink = false;
+
+            if (this->m_unit->flags & 0x200000) {
+                this->GetWeaponInfo(0, 1);
+                auto again = this->GetWeaponInfo(1, 1);
+
+                unlink = !this->IsHandHidden(0) && again && again->m_class == 2;
+            }
+
+            if (!unlink && (this->m_unit->flags2 & 0x80)) {
+                unlink = true;
+            }
+
+            if (unlink && this->m_sheathState == 1) {
+                CCharacterComponent::RemoveHandItemLinks(this->m_model, static_cast<INVENTORY_SLOTS>(0x10), 0, false);
+            } else {
+                this->AttachHandItem(1);
+            }
+        }
+    }
+
+    if (changed & 0x180) {
+        this->UpdateReaction(0);
+    }
+
+    if (changed & 0x800) {
+        const WOWGUID& owner = this->m_unit->charmedBy != 0 ? this->m_unit->charmedBy : this->m_unit->summonedBy;
+
+        if (owner == ClntObjMgrGetActivePlayer()) {
+            CGPetInfo::SetAttacking(static_cast<int32_t>((old >> 11) & 1));
+        }
+    }
+
+    if (changed & 0x8000000) {
+        ScriptEventsQueueUnitEvent(this->GetGUID(), 0x8E);
+    }
+}
+
+// ref: FUN_0073c5d0
+// UNIT_FIELD_FLAGS_2 changed from `old`: feign death (0x1) entered or left, the regeneration
+// lock (0x10) re-runs the model, disarming the off hand (0x80) and the ranged weapon (0x400)
+// move those weapons, and the active player's 0x40 re-runs its movement.
+//
+// PARTIAL: the pet's sound on feigning (FUN_007474b0) and the action bar refreshes (FUN_0053cf10,
+// FUN_004fb530's script event 0xf0 is sent) are the pet-sound and UI ports'.
+void CGUnit_C::OnFlags2Changed(uint32_t old) {
+    uint32_t now = this->m_unit->flags2;
+    uint32_t changed = now ^ old;
+    bool isActive = this->GetGUID() == ClntObjMgrGetActivePlayer();
+
+    if (changed & 0x1) {
+        if (!(now & 0x1)) {
+            this->UpdateMountSound();
+            this->UpdateAnimation(0, 0xFFFFFFFF);
+        } else {
+            if (isActive) {
+                if (auto input = InputControlGetActive()) {
+                    input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 0);
+                }
+            }
+
+            this->UpdateMountSound();
+            this->PlayDeathPose(1);
+        }
+    }
+
+    if ((changed & 0x8) && isActive) {
+        FrameScript_SignalEvent(0xF0, nullptr);
+    }
+
+    if ((changed & 0x10) && !(now & 0x10)) {
+        this->UpdateModel(1);
+    }
+
+    if (changed & 0x80) {
+        auto off = this->GetWeaponInfo(1, 1);
+
+        if (off) {
+            bool unlink = false;
+
+            if (this->m_unit->flags & 0x200000) {
+                this->GetWeaponInfo(0, 1);
+                auto again = this->GetWeaponInfo(1, 1);
+
+                unlink = !this->IsHandHidden(0) && again && again->m_class == 2;
+            }
+
+            if (!unlink && (this->m_unit->flags2 & 0x80)) {
+                unlink = true;
+            }
+
+            if (unlink && (this->m_sheathState == 1 || this->m_sheathState == 0)) {
+                CCharacterComponent::RemoveHandItemLinks(this->m_model, static_cast<INVENTORY_SLOTS>(0x10),
+                                                         this->m_sheathState == 0 ? off->m_sheathType : 0,
+                                                         off->m_inventoryType == 0xE);
+            } else {
+                this->AttachHandItem(1);
+            }
+        }
+    }
+
+    if (changed & 0x400) {
+        if (!(this->m_unit->flags2 & 0x400) || this->m_sheathState != 2) {
+            this->AttachHandItem(2);
+        } else if (auto ranged = this->GetWeaponInfo(2, 1)) {
+            if (this->m_model) {
+                bool thrown = ranged->m_inventoryType == 0x1A || ranged->m_inventoryType == 0x19;
+
+                this->m_model->DetachAllChildrenById(thrown ? 1 : 2);
+            }
+        }
+    }
+
+    if ((changed & 0x40) && isActive) {
+        if (auto input = InputControlGetActive()) {
+            input->UpdatePlayerMovement(static_cast<uint32_t>(OsGetAsyncTimeMs()), 1);
+        }
+    }
+}
+
+// ref: FUN_0073c830
+// UNIT_FIELD_BYTES_1 byte 2 changed from `old`: stealth (0x2) re-chooses the animation, and it or
+// the 0x1 bit redraws the name.
+//
+// PARTIAL: the name plate's text (FUN_0098e580) and the action bar refresh (FUN_0053cf10) are the
+// name plate and UI ports'.
+void CGUnit_C::OnVisibilityChanged(uint8_t old) {
+    uint8_t changed = static_cast<uint8_t>(this->m_unit->bytes1 >> 16) ^ old;
+
+    if (changed & 0x2) {
+        this->UpdateAnimation(0, 0xFFFFFFFF);
+
+        if (this->m_nameDesc) {
+            PlayerNameInvalidate(this->m_nameDesc);
+        }
+
+        if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            FrameScript_SignalEvent(0x20A, nullptr);
+        }
+    }
+
+    if ((changed & 0x1) && this->m_nameDesc) {
+        PlayerNameInvalidate(this->m_nameDesc);
+    }
+}
+
+// ref: FUN_00724d90
+// UNIT_FIELD_BYTES_2 byte 1 (the PvP flags) changed: the reaction is re-checked.
+//
+// PARTIAL: the active player's first PvP flag shows tutorial 0x1f (FUN_00530840), the tutorial
+// frame's port.
+void CGUnit_C::OnPvpFlagsChanged(uint8_t old) {
+    if (old != static_cast<uint8_t>(this->m_unit->bytes2 >> 8)) {
+        this->UpdateReaction(0);
+    }
+}
+
+// ref: FUN_0071a0b0
+// UNIT_NPC_FLAGS changed from `old`: losing gossip (0x1), quest giver (0x2), trainer (0x10),
+// vendor-type (0x2000), banker, auctioneer or stable bits closes the window the player has open
+// with this NPC, and a change to the quest-giver bits re-evaluates what the NPC shows.
+//
+// PARTIAL: the windows themselves (gossip FUN_0058a550, quests FUN_0058ca70, merchants
+// FUN_00590ba0, trainers FUN_005940e0, bank FUN_0057b8d0, stable FUN_005a4270, auction
+// FUN_0056da60) are the UI ports'; none of them opens, so none is open to close.
+void CGUnit_C::OnNpcFlagsChanged(uint32_t old) {
+    uint32_t changed = this->m_unit->npcFlags ^ old;
+
+    if (changed & 0x2) {
+        this->OnReenable();
+    }
+
+    if (changed & 0x2000) {
+        this->OnReenable();
+    }
+}
+
+// ref: FUN_00717c20
+// The loot sparkle ends.
+void CGUnit_C::HideLootSparkle() {
+    for (auto effect = this->m_effects; effect; effect = effect->m_linkNext) {
+        if (effect->m_flags & CEffect::EFFECT_LOOT_ART) {
+            effect->Finish();
+            return;
+        }
+    }
+}
+
+// ref: FUN_0073af80
+// The pose a dead or feigning unit lies in: 0x1d2, or 0x83 (floating dead) in water or hovering
+// over liquid within half its height and a tenth. A unit already in a death animation keeps it
+// unless `force`.
+void CGUnit_C::PlayDeathPose(int32_t force) {
+    if (!force && IsDeathAnimation(static_cast<int32_t>(this->GetCurrentAnimationId()))) {
+        return;
+    }
+
+    uint32_t animID = 0x1D2;
+
+    if (this->m_move->m_moveFlags & 0x200000) {
+        animID = 0x83;
+    } else if (this->m_move->m_spline && this->m_move->IsUnsupportedOrHovering()) {
+        // FUN_00716110: where the spline ends, or the unit's position without one.
+        C3Vector at = this->m_move->m_spline ? this->m_move->m_spline->vector1F8 : this->m_move->m_position;
+        float height = this->GetModelHeight();
+        float liquid = 0.0f;
+        uint32_t type = 0;
+
+        // FUN_0077f360
+        if (CMap::GetLiquidAt(at, &type, &liquid, nullptr, 0)
+            && !(liquid - height * 0.5f + 0.1f < at.z)) {
+            animID = 0x83;
+        }
+    }
+
+    this->SetAnimation(animID, 0);
+}
+
+// ref: FUN_0073d530
+// The unit lives again: the alive bit (state 0x1) and the death time clear, its sequence runs at
+// normal speed again, the mount sound and the animation come back, and the name redraws.
+//
+// PARTIAL: the active player's own revival -- re-checking every visible unit (FUN_006dc5a0), the
+// spirit-healer UI (FUN_00520e40) and PLAYER_ALIVE (0x101) -- is the Player_C port's, as is the
+// name plate's text (FUN_0098ee30).
+void CGUnit_C::OnResurrect(int32_t silent) {
+    this->m_stateFlags &= 0xFFFFFFFE;
+    this->UpdateMountSound();
+    this->m_deathTime = 0;
+    this->SetBoneSequenceSpeed(this->m_model, 0xFFFFFFFF, 1.0f, 0);
+    this->UpdateAnimation(0, 0xFFFFFFFF);
+
+    if (this->m_nameDesc) {
+        PlayerNameInvalidateReaction(this->m_nameDesc);
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer() && !silent) {
+        FrameScript_SignalEvent(0x101, nullptr);
+    }
+}
+
+// ref: FUN_00729220
+// The unit died: it stops attacking, its model stops lifting, it lies down (unless a seat holds
+// its rider's pose), its quest marker goes, its effects and sounds stop, and click-to-move ends.
+//
+// PARTIAL, each the subsystem's own: the player's death UI (FUN_006dc0f0), the corpse spell
+// visuals (FUN_008063e0), the target and party refreshes (FUN_0071ee70, InPartyOrRaid), the
+// missiles it fired (FUN_00703730), the name plate (FUN_0098ee30), the interaction window it had
+// open (FUN_00518d50), and the creature-type pieces of the death pose (FUN_00752ed0, FUN_00746340,
+// the pet's death sound FUN_007474b0).
+void CGUnit_C::OnDeath() {
+    this->m_attackTarget = 0;
+
+    if (this->m_model && this->m_model->IsLoaded(0, 0)) {
+        this->m_model->m_animationHeldTime = 0;
+    }
+
+    if (!this->m_vehiclePassenger || this->m_vehiclePassenger->m_state != 3 || (this->m_unit->flags2 & 0x20000)) {
+        // FUN_007561e0
+        this->PlayDeathPose(0);
+    }
+
+    if (!this->m_creatureStats || !(this->m_creatureStats->m_typeFlags & 0x80)) {
+        this->ReleaseQuestMarker();
+    }
+
+    if (this->m_nameDesc) {
+        PlayerNameInvalidateReaction(this->m_nameDesc);
+    }
+
+    this->StopAllEffects(0);
+    // The two sounds the reference stops here (+0x8f4 / +0x934) are ones frozen does not keep.
+    this->CancelClickToMove(0, 1);
+}
+
+// ref: FUN_00740570
+// UNIT_DYNAMIC_FLAGS changed from `old`: becoming unlootable ends the loot sparkle; a change to
+// 0x20 (dead, as a corpse shows it) is a death or a resurrection; a dead unit that is lootable
+// shows the sparkle.
+//
+// PARTIAL: the first lootable corpse's tutorial (6, FUN_00530840) is the tutorial frame's.
+void CGUnit_C::OnDynamicFlagsUpdate(uint32_t old) {
+    uint32_t now = this->m_unit->dynamicFlags;
+
+    if ((old & 0x1) && !(now & 0x1)) {
+        this->HideLootSparkle();
+    }
+
+    if ((now ^ old) & 0x20) {
+        ScriptEventsSignalUnitEvent(this->GetGUID(), 0x12);
+        ScriptEventsSignalUnitEvent(this->GetGUID(), static_cast<int32_t>(this->m_unit->bytes0 >> 24) + 0x13);
+
+        if (now & 0x20) {
+            this->OnDeath();
+        } else {
+            this->OnResurrect(1);
+        }
+    }
+
+    if (this->m_unit->health < 1 && (this->m_unit->dynamicFlags & 0x1)) {
+        if (this->m_deathTime != 0) {
+            this->StopAllEffects(0);
+        }
+
+        this->ShowLootSparkle();
+    }
+
+    if ((now ^ old) & 0x4) {
+        ScriptEventsSignalUnitEvent(this->GetGUID(), 0x31);
+    }
+}
+
+// ref: FUN_007221d0
+// A unit channelling at a fishing bobber (a game object of type 17) draws the line to it from
+// its rod (the model's attachment chain with an attachment of id 1).
+void CGUnit_C::UpdateFishingLine() {
+    auto bobber = static_cast<CGGameObject_C*>(
+        ClntObjMgrObjectPtr(this->m_unit->channelObject, TYPE_GAMEOBJECT, __FILE__, __LINE__));
+
+    if (!bobber || this->m_unit->channelSpell == 0 || bobber->GameObject()->type != 17 || !this->m_model) {
+        return;
+    }
+
+    auto rod = this->m_model->m_attachList;
+
+    while (rod && rod->m_attachId != 1) {
+        rod = rod->m_attachNext;
+    }
+
+    if (!rod || this->m_fishingLine) {
+        return;
+    }
+
+    void* mem = SMemAlloc(sizeof(CEffect), __FILE__, __LINE__, 0);
+    this->m_fishingLine = mem ? new (mem) CEffect() : nullptr;
+
+    if (this->m_fishingLine) {
+        this->m_fishingLine->AttachFishingLine(this, this->m_unit->channelObject);
+    }
+}
+
+// ref: FUN_0073a520
+// UNIT_FIELD_CHANNEL_OBJECT / _SPELL changed (the old object and spell given): the old channel's
+// kits stop on what it was aimed at, the fishing line goes, and a new channel at a bobber draws
+// the rod out and the line.
+//
+// PARTIAL: a channel with attribute 0x4000 aimed at a unit by the active player re-targets the
+// cast bar (FUN_0072b4a0), the spell-cast port's.
+void CGUnit_C::OnChannelObjectChanged(WOWGUID oldObject, int32_t oldSpell) {
+    auto target = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(oldObject, TYPE_OBJECT, __FILE__, __LINE__));
+
+    if (target && oldSpell != 0) {
+        target->StopKitEffects(oldSpell, 2, 0, 0, 0);
+        target->StopKitEffects(oldSpell, 1, 0, 0, 0);
+        target->StopKitEffects(oldSpell, 5, 0, 0, 0);
+        target->StopKitEffects(oldSpell, 6, 0, 0, 0);
+    }
+
+    if (this->m_fishingLine) {
+        this->m_fishingLine->Release();
+        this->m_fishingLine = nullptr;
+    }
+
+    auto bobber = static_cast<CGGameObject_C*>(
+        ClntObjMgrObjectPtr(this->m_unit->channelObject, TYPE_GAMEOBJECT, __FILE__, __LINE__));
+
+    if (bobber && this->m_unit->channelSpell != 0 && bobber->GameObject()->type == 17) {
+        if (this->m_sheathState == 1) {
+            this->UpdateFishingLine();
+        } else {
+            this->SetSheathState(1, 1, 0);
+        }
+    }
+}
+
+// ref: FUN_0073eb50
+// UNIT_FIELD_CHANNEL_SPELL changed from `oldSpell`. The old spell's transparency, colour and
+// effects come off (and its entries in the aura-visual list); then a channel that ended stops its
+// effects and the fishing line and re-chooses the animation, and one that began shows its visual.
+void CGUnit_C::OnChannelSpellChanged(int32_t oldSpell) {
+    if (oldSpell != 0) {
+        this->RemoveAlphaEffects(oldSpell);
+
+        float alpha = this->GetFadeInAlpha();
+        uint32_t duration = 1000;
+
+        if (this->m_alphaEffects) {
+            alpha *= this->m_alphaEffects->m_alpha;
+
+            if (this->m_alphaEffects->m_param != 0) {
+                duration = this->m_alphaEffects->m_param;
+            }
+        }
+
+        this->SetAlpha(alpha, duration);
+        this->RemoveColorEffects(oldSpell);
+        this->StopEffects(oldSpell, 1);
+
+        if (this->m_fishingLine) {
+            this->m_fishingLine->Release();
+            this->m_fishingLine = nullptr;
+        }
+
+        for (uint32_t i = 0; i < this->m_auraVisualSpells.Count(); i++) {
+            if (this->m_auraVisualSpells[i] == oldSpell) {
+                this->m_auraVisualSpells[i] = 0;
+            }
+        }
+    }
+
+    if (this->m_unit->channelSpell == 0) {
+        auto spell = g_spellDB.GetRecord(oldSpell);
+
+        if (spell && (spell->m_attributes & 0x4000)) {
+            // FUN_00721fc0(2): the active player's click-to-move is in state 1.
+            if (this->GetGUID() == ClntObjMgrGetActivePlayer() && s_clickToMoveState != 13
+                && (2u & (1u << (s_clickToMoveState & 0x1F)))) {
+                this->CancelClickToMove(0, 1);
+            }
+        }
+
+        this->StopEffects(oldSpell, 1);
+
+        if (this->m_fishingLine) {
+            this->m_fishingLine->Release();
+            this->m_fishingLine = nullptr;
+        }
+
+        this->UpdateAnimation(0, 0xFFFFFFFF);
+
+        return;
+    }
+
+    this->UpdateChannelVisual();
 }

@@ -758,6 +758,29 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         void PlayBoneFollowUpAnimation(CM2Model* model, uint32_t boneId, int32_t behavior);
         void ShowLootSparkle();
         void ReturnSwingWeapon(const C3Vector* position, int32_t hand, uint32_t drawnBit);
+        float GetModelScale(const CreatureDisplayInfoRec* display, const CreatureModelDataRec* modelData);
+        float GetCollisionScale(const CreatureDisplayInfoRec* display, const CreatureModelDataRec* modelData,
+                                float* modelScale);
+        int32_t UpdatePlayerCollision(int32_t skipFit, int32_t force);
+        int32_t UpdateMountedCollision(float mountHeight, int32_t skipFit);
+        int32_t UpdateCollisionBox(int32_t skipFit, int32_t force);
+        void OnScaleChanged(float oldScale);
+        void OnLevelChanged();
+        void UpdateReaction(int32_t refreshOthers);
+        void OnActivePlayerFlagsChanged(uint32_t changed);
+        void OnFlagsChanged(uint32_t old);
+        void OnFlags2Changed(uint32_t old);
+        void OnVisibilityChanged(uint8_t old);
+        void OnPvpFlagsChanged(uint8_t old);
+        void OnNpcFlagsChanged(uint32_t old);
+        void HideLootSparkle();
+        void PlayDeathPose(int32_t force);
+        void OnResurrect(int32_t silent);
+        void OnDeath();
+        void OnDynamicFlagsUpdate(uint32_t old);
+        void UpdateFishingLine();
+        void OnChannelObjectChanged(WOWGUID oldObject, int32_t oldSpell);
+        void OnChannelSpellChanged(int32_t oldSpell);
         bool FacesTarget() const;
         WOWGUID GetActiveLootTarget() const;
         void OnModelAnimationFinished(CM2Model* model, uint32_t boneId, int32_t animID, int32_t interrupted);
@@ -1070,6 +1093,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         float m_smoothFacingStep = 0.0f;
         // +0xaa8: the last four turns the facing average took, newest first; [0] == 0 starts over.
         float m_smoothFacingHistory[4] = {};
+        // +0x980: the line from a fishing rod to its bobber while the unit channels at one.
+        CEffect* m_fishingLine = nullptr;
         // +0xab8: the facing a unit with state flag 0x1 holds while standing. Nothing writes it yet.
         float m_heldFacing = 0.0f;
         // +0xabc: when the active player last stood still with nothing steering it.

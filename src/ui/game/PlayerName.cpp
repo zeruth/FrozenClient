@@ -274,6 +274,14 @@ void PlayerNameInvalidate(void* desc) {
     }
 }
 
+// ref: FUN_007e50f0
+// The name's colour is out of date (the unit's reaction to the player changed).
+void PlayerNameInvalidateReaction(void* desc) {
+    if (desc) {
+        static_cast<PLAYERNAMEDESC*>(desc)->m_flags |= 0x2;
+    }
+}
+
 // ref: FUN_007e5150
 bool PlayerNameIsHighlighted(void* desc) {
     return desc && (static_cast<PLAYERNAMEDESC*>(desc)->m_flags & 0x8);

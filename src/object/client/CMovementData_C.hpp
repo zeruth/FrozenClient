@@ -228,6 +228,7 @@ class CMovementData_C : public CMovementShared {
         int32_t SetPitchEvent(int32_t time, const CPlayerMoveEvent* event);
         // ref: FUN_006e9600
         void SetCollisionHeight(float height);
+        void SetCollisionBox(float width, float height, float scale, float modelScale, int32_t force);
         // ref: FUN_006e9920
         void SetHoverState(int32_t hover, int32_t land);
         // ref: FUN_006e9980
