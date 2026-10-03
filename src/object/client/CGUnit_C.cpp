@@ -1,4 +1,5 @@
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/CVehicleCamera_C.hpp"
 #include "object/client/UnitVehicle_C.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include <new>
@@ -264,6 +265,7 @@ CGUnit_C::~CGUnit_C() {
     // own ride with it.
     this->m_stateFlags &= 0xfeffffff;
     UnitDestroyVehicle(this, 0);
+    UnitDestroyVehicleCamera(this);
 
     if (this->m_vehiclePassenger) {
         this->m_vehiclePassenger->Free();
@@ -9744,9 +9746,11 @@ void CGUnit_C::AddFacingOffset(float delta) {
 }
 
 // ref: FUN_0071c4d0
-// PARTIAL: a unit with a vehicle camera follows the camera's vehicle (FUN_007599d0), the vehicle
-// camera port's.
 WOWGUID CGUnit_C::GetCameraTransportGUID() {
+    if (this->m_vehicleCamera && this->m_vehicleCamera->m_state != 0) {
+        return this->m_vehicleCamera->GetRelativeGUID();
+    }
+
     return this->GetTransportGUID();
 }
 

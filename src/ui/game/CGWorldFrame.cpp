@@ -33,6 +33,7 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "object/client/UnitVehicle_C.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/GameObjectTypes.hpp"
 #include "ui/simple/CSimpleTop.hpp"
@@ -979,10 +980,15 @@ void CGWorldFrame::OnWorldUpdate() {
     // commentator mode first (FUN_006de980: descriptor flags 0x80000 with 0x400000 or a PvP state
     // of 4) and hands the camera to the commentator view (FUN_005689a0) instead; it also checks a
     // second camera target (+0x90) and, when the player is in a vehicle, re-seats the camera
-    // (FUN_006e2880, FUN_0074ce40).
+    // (FUN_006e2880).
     if (!target && player) {
         this->m_camera->SetTarget(ClntObjMgrGetActivePlayer());
         target = player;
+    }
+
+    // FUN_0074ce40: a riding player the camera follows gets its seat's camera.
+    if (target && target->IsA(TYPE_PLAYER)) {
+        UnitUpdateVehicleCamera(static_cast<CGUnit_C*>(target));
     }
 
     // What the camera follows, as the world knows it (FUN_00780500 at 0x004fa7a0).

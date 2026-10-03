@@ -42,8 +42,8 @@ bool VehicleSeatRec::Read(SFile* f, const char* stringBuffer) {
     this->m_enterPreDelay = *reinterpret_cast<float*>(&columns[6]);
     this->m_enterSpeed = *reinterpret_cast<float*>(&columns[7]);
     this->m_enterGravity = *reinterpret_cast<float*>(&columns[8]);
-    this->m_enterMinDuration = static_cast<int32_t>(columns[9]);
-    this->m_enterMaxDuration = static_cast<int32_t>(columns[10]);
+    this->m_enterMinDuration = *reinterpret_cast<float*>(&columns[9]);
+    this->m_enterMaxDuration = *reinterpret_cast<float*>(&columns[10]);
     this->m_enterMinArcHeight = *reinterpret_cast<float*>(&columns[11]);
     this->m_enterMaxArcHeight = *reinterpret_cast<float*>(&columns[12]);
     this->m_enterAnimStart = static_cast<int32_t>(columns[13]);
@@ -55,8 +55,8 @@ bool VehicleSeatRec::Read(SFile* f, const char* stringBuffer) {
     this->m_exitPreDelay = *reinterpret_cast<float*>(&columns[19]);
     this->m_exitSpeed = *reinterpret_cast<float*>(&columns[20]);
     this->m_exitGravity = *reinterpret_cast<float*>(&columns[21]);
-    this->m_exitMinDuration = static_cast<int32_t>(columns[22]);
-    this->m_exitMaxDuration = static_cast<int32_t>(columns[23]);
+    this->m_exitMinDuration = *reinterpret_cast<float*>(&columns[22]);
+    this->m_exitMaxDuration = *reinterpret_cast<float*>(&columns[23]);
     this->m_exitMinArcHeight = *reinterpret_cast<float*>(&columns[24]);
     this->m_exitMaxArcHeight = *reinterpret_cast<float*>(&columns[25]);
     this->m_exitAnimStart = static_cast<int32_t>(columns[26]);

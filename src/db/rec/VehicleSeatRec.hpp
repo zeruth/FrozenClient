@@ -25,8 +25,8 @@ class VehicleSeatRec {
         float m_enterPreDelay;
         float m_enterSpeed;
         float m_enterGravity;
-        int32_t m_enterMinDuration;
-        int32_t m_enterMaxDuration;
+        float m_enterMinDuration;
+        float m_enterMaxDuration;
         float m_enterMinArcHeight;
         float m_enterMaxArcHeight;
         int32_t m_enterAnimStart;
@@ -38,8 +38,8 @@ class VehicleSeatRec {
         float m_exitPreDelay;
         float m_exitSpeed;
         float m_exitGravity;
-        int32_t m_exitMinDuration;
-        int32_t m_exitMaxDuration;
+        float m_exitMinDuration;
+        float m_exitMaxDuration;
         float m_exitMinArcHeight;
         float m_exitMaxArcHeight;
         int32_t m_exitAnimStart;

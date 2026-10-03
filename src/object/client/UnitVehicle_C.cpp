@@ -8,6 +8,10 @@
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/CVehicle_C.hpp"
+#include "object/client/CVehicleCamera_C.hpp"
+#include "ui/game/CGCamera.hpp"
+#include "ui/game/CGWorldFrame.hpp"
+#include <cstring>
 #include "object/client/ObjMgr.hpp"
 #include "sound/SI2.hpp"
 #include "ui/FrameScript.hpp"
@@ -16,6 +20,8 @@
 #include "world/CWorld.hpp"
 #include <common/DataStore.hpp>
 #include <cmath>
+
+float NormalizeAngle(float angle);
 
 namespace {
 
@@ -677,8 +683,6 @@ void UnitVehicleExitIfSeatEjects(CGUnit_C* unit) {
 }
 
 // ref: FUN_0074cf30
-// PARTIAL: the vehicle camera that follows the ride (FUN_0074ce40, FUN_0075aac0, FUN_0074cd60) is
-// the vehicle camera port's.
 void VehicleOnTransportChanged(CGUnit_C* unit, WOWGUID transport, uint8_t seat, int32_t force) {
     if (!(unit->m_stateFlags & 0x80000) && !force) {
         return;
@@ -715,6 +719,294 @@ void VehicleOnTransportChanged(CGUnit_C* unit, WOWGUID transport, uint8_t seat, 
     }
 
     unit->m_vehiclePassenger->OnTransportChanged(transport, seat, vehicle, force);
+
+    if (!unit->m_vehicleCamera) {
+        UnitUpdateVehicleCamera(unit);
+        return;
+    }
+
+    unit->m_vehicleCamera->BeginTransition(CWorld::GetCurTimeMs());
+
+    if (unit->m_vehicleCamera->m_state == 0) {
+        UnitDestroyVehicleCamera(unit);
+    }
+}
+
+namespace {
+
+// DAT_00ca1370 .. DAT_00ca1378: the seat, row and riding state the camera blend was last set for.
+const VehicleSeatRec* s_blendSeat = nullptr;
+const VehicleRec* s_blendRec = nullptr;
+int32_t s_blendRiding = 0;
+
+uint32_t FloatBits(float value) {
+    uint32_t bits;
+    std::memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+} // namespace
+
+// ref: FUN_0074b880
+void VehicleResetCameraBlend() {
+    s_blendRiding = 0;
+    s_blendRec = nullptr;
+    s_blendSeat = nullptr;
+}
+
+// ref: FUN_0074c0e0
+void VehicleSetCameraBlend(CGUnit_C* unit, const VehicleRec* rec, const VehicleSeatRec* seat, uint32_t start, uint32_t end) {
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (!camera) {
+        return;
+    }
+
+    auto ride = unit->m_vehiclePassenger;
+    int32_t riding = ride && (ride->m_state == 1 || ride->m_state == 2 || ride->m_state == 3) ? 1 : 0;
+
+    if (s_blendRiding == riding && s_blendRec == rec && s_blendSeat == seat) {
+        return;
+    }
+
+    s_blendRec = rec;
+    s_blendSeat = seat;
+    s_blendRiding = riding;
+
+    uint32_t overridden = camera->m_flags2 & 0x20;
+    float time = static_cast<float>(static_cast<int32_t>(end - start)) * 0.001f;
+    bool clearMin = true;
+    bool clearMax = true;
+    uint32_t restore = overridden;
+    uint32_t follow = 0;
+
+    if (riding) {
+        restore = overridden;
+
+        if (!seat || (!(seat->m_flags & 0x1000000) && !(seat->m_flagsB & 0x400))) {
+            camera->SetVehicleDistanceMode(0.0f, time, overridden == 0);
+        } else if (!(seat->m_flags & 0x1000000)) {
+            camera->SetVehicleDistanceMode(0.0f, time, 0);
+
+            float current = camera->m_distance;
+            bool hasMin = (seat->m_flagsB & 0x4000) != 0;
+            bool hasMax = (seat->m_flagsB & 0x8000) != 0;
+            float minimum = hasMin ? seat->m_cameraSeatZoomMin : 0.0f;
+            float maximum = hasMax ? seat->m_cameraSeatZoomMax : CGCamera::GetMaxDistance();
+            float target = current;
+
+            if (seat->m_flagsB & 0x800) {
+                float zoom = seat->m_cameraEnteringZoom;
+
+                if (current < zoom && !(seat->m_flagsB & 0x1000)) {
+                    target = zoom;
+                }
+
+                if (zoom < target && !(seat->m_flagsB & 0x2000)) {
+                    target = zoom;
+                }
+
+                if (!hasMin && zoom < minimum) {
+                    minimum = zoom;
+                    hasMin = true;
+                }
+
+                if (!hasMax && maximum < zoom) {
+                    maximum = zoom;
+                    hasMax = true;
+                }
+            }
+
+            if (hasMin) {
+                clearMin = false;
+                camera->SetMinDistance(minimum);
+
+                if (target < minimum) {
+                    target = minimum;
+                }
+            }
+
+            if (hasMax) {
+                clearMax = false;
+                camera->SetMaxDistance(maximum);
+
+                if (maximum < target) {
+                    target = maximum;
+                }
+            }
+
+            restore = 0;
+
+            // FUN_004828c0
+            if (0.001f <= std::fabs(current - target)) {
+                if (overridden == 0) {
+                    camera->SetOverride2D0(current);
+                }
+
+                camera->ZoomTo(target, static_cast<int32_t>(start), time, 1);
+            }
+        } else {
+            camera->SetVehicleDistanceMode(1.0f, time, 1);
+            restore = 0;
+        }
+
+        camera->SetBlendA(rec ? FloatBits(rec->m_cameraYawOffset) : 0, static_cast<int32_t>(start), static_cast<int32_t>(end));
+        camera->SetBlendB(rec ? FloatBits(rec->m_cameraPitchOffset) : 0, static_cast<int32_t>(start), static_cast<int32_t>(end));
+        follow = (seat && (seat->m_flags & 0x800) && (seat->m_flagsB & 0x80001)) ? 1 : 2;
+    } else {
+        camera->SetVehicleDistanceMode(0.0f, time, overridden == 0);
+        camera->SetBlendA(0, static_cast<int32_t>(start), static_cast<int32_t>(end));
+        camera->SetBlendB(0, static_cast<int32_t>(start), static_cast<int32_t>(end));
+        follow = 0;
+    }
+
+    camera->SetUnk2FC(follow);
+
+    if (restore) {
+        camera->ZoomTo(camera->m_unk2D0, static_cast<int32_t>(start), time, 1);
+        camera->ClearOverride2D0();
+    }
+
+    if (clearMin) {
+        camera->ClearMinDistance();
+    }
+
+    if (clearMax) {
+        camera->ClearMaxDistance();
+    }
+}
+
+// ref: FUN_0074c4a0
+void VehicleRefreshCameraBlend(CGUnit_C* unit) {
+    uint32_t now = CWorld::GetCurTimeMs();
+    auto ride = unit->m_vehiclePassenger;
+
+    if (ride) {
+        VehicleSetCameraBlend(unit, ride->m_vehicleRec, ride->m_seat, now, now);
+        return;
+    }
+
+    VehicleSetCameraBlend(unit, nullptr, nullptr, now, now);
+}
+
+// ref: FUN_0074c4e0
+// A camera no other camera's chain leads through any more is let go.
+void UnitReleaseVehicleCamera(CGUnit_C* unit) {
+    auto mine = unit->m_vehicleCamera;
+
+    if (!mine || (mine->m_flags & 0x80)) {
+        return;
+    }
+
+    if (auto active = CGWorldFrame::GetActiveCamera()) {
+        for (auto camera = active->m_vehicleCamera; camera;) {
+            if (camera == mine) {
+                return;
+            }
+
+            if (!camera->m_relativeGUID) {
+                break;
+            }
+
+            auto next = UnitPtr(camera->m_relativeGUID, 0x39d);
+
+            if (!next) {
+                break;
+            }
+
+            camera = next->m_vehicleCamera;
+        }
+    }
+
+    UnitDestroyVehicleCamera(unit);
+}
+
+// ref: FUN_0074c550
+void UnitGetVehicleCameraFacing(CGUnit_C* unit, float* facing) {
+    if (!unit->m_vehicleCamera) {
+        return;
+    }
+
+    auto relative = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(unit->m_vehicleCamera->GetRelativeGUID(), TYPE_OBJECT, ".\\UnitVehicle_C.cpp", 0x3c8));
+    CVehicleCamera_C::ConvertSmoothFacingFromWorldToRaw(*facing, relative);
+    *facing = NormalizeAngle(*facing);
+}
+
+// ref: FUN_0074cd60
+void UnitDestroyVehicleCamera(CGUnit_C* unit) {
+    auto camera = unit->m_vehicleCamera;
+
+    if (!camera) {
+        return;
+    }
+
+    auto relative = UnitPtr(camera->m_relativeGUID, 0x342);
+
+    camera->Free();
+    unit->m_vehicleCamera = nullptr;
+
+    auto active = CGWorldFrame::GetActiveCamera();
+
+    if (active && active->m_vehicleCamera == camera) {
+        active->ClearVehicle();
+    }
+
+    if (relative) {
+        UnitReleaseVehicleCamera(relative);
+    }
+}
+
+// ref: FUN_0074cdf0
+CVehicleCamera_C* UnitCreateVehicleCamera(CGUnit_C* unit) {
+    UnitDestroyVehicleCamera(unit);
+
+    unit->m_vehicleCamera = CVehicleCamera_C::Create(unit, CWorld::GetCurTimeMs());
+
+    if (!unit->m_vehicleCamera) {
+        return nullptr;
+    }
+
+    if (unit->m_vehicleCamera->m_state == 0) {
+        UnitDestroyVehicleCamera(unit);
+        return nullptr;
+    }
+
+    if (auto active = CGWorldFrame::GetActiveCamera()) {
+        active->UpdateVehicle();
+    }
+
+    return unit->m_vehicleCamera;
+}
+
+// ref: FUN_0074ce40
+// A riding unit gets a camera when the camera follows it, the player, or what either rides.
+void UnitUpdateVehicleCamera(CGUnit_C* unit) {
+    if (!unit->m_vehiclePassenger || unit->m_vehiclePassenger->m_state == 0 || unit->m_vehicleCamera) {
+        return;
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (!camera) {
+        return;
+    }
+
+    auto chain = camera->m_vehicleCamera;
+    auto player = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.h", 0xa0));
+
+    bool wanted = unit->GetGUID() == ClntObjMgrGetActivePlayer() || camera->m_target == unit->GetGUID()
+        || (player && UnitGetRideChainTop(player, unit) == unit)
+        || (chain && chain->m_unit && chain->m_unit != player && UnitGetRideChainTop(chain->m_unit, unit) == unit);
+
+    if (!wanted) {
+        return;
+    }
+
+    UnitCreateVehicleCamera(unit);
+
+    if (unit->m_vehicleCamera && unit->m_vehicleCamera != camera->m_vehicleCamera && !unit->m_vehicleCamera->AttachToActiveCamera()) {
+        UnitDestroyVehicleCamera(unit);
+    }
 }
 
 // ref: FUN_007561e0

@@ -405,7 +405,7 @@ float CGCamera::GetMaxDistance() {
 // ref: FUN_005fec50
 // The world geometry the camera collides with: terrain, buildings, doodads, and water when
 // cameraWaterCollision asks.
-static uint32_t CameraCollisionFlags() {
+uint32_t CameraCollisionFlags() {
     return (Int(s_waterCollision) ? 0x20000u : 0u) + 0x100171u;
 }
 

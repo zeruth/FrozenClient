@@ -5,6 +5,7 @@
 #include "model/CM2Model.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CVehicle_C.hpp"
+#include "object/client/CVehicleCamera_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/UnitVehicle_C.hpp"
 #include "ui/FrameScript.hpp"
@@ -1174,8 +1175,7 @@ C3Vector CVehiclePassenger_C::GetTransitionTarget(CGUnit_C* vehicle, const Vehic
 // facing to blend toward, how long it takes (the seat's pre-delay, or its speed over the distance
 // clamped to its duration range), and the arc it follows (its gravity, scaled to stay inside the
 // seat's arc heights).
-//
-// PARTIAL: the vehicle camera's transition time (FUN_0075af00) is the vehicle camera port's.
+
 void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec* seat, uint32_t time, C3Vector* target) {
     this->m_flags |= 0x1;
 
@@ -1238,15 +1238,15 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
 
     if (state == 2) {
         gravity = seat->m_enterGravity;
-        minDuration = static_cast<float>(seat->m_enterMinDuration);
-        maxDuration = static_cast<float>(seat->m_enterMaxDuration);
+        minDuration = seat->m_enterMinDuration;
+        maxDuration = seat->m_enterMaxDuration;
         speed = seat->m_enterSpeed;
         minArc = seat->m_enterMinArcHeight;
         maxArc = seat->m_enterMaxArcHeight;
     } else {
         gravity = seat->m_exitGravity;
-        minDuration = static_cast<float>(seat->m_exitMinDuration);
-        maxDuration = static_cast<float>(seat->m_exitMaxDuration);
+        minDuration = seat->m_exitMinDuration;
+        maxDuration = seat->m_exitMaxDuration;
         speed = seat->m_exitSpeed;
         minArc = seat->m_exitMinArcHeight;
         maxArc = seat->m_exitMaxArcHeight;
@@ -1257,11 +1257,13 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
 
     float duration;
 
-    if (0.0001f <= minDuration) {
-        duration = 10.0f < minDuration ? 10.0f : minDuration;
+    if (0.0001f <= maxDuration) {
+        duration = 10.0f < maxDuration ? 10.0f : maxDuration;
     } else {
         duration = 1.5f;
     }
+
+    float cap = duration;
 
     if (state == 2 && vehicle) {
         // Into a seat on a moving vehicle: the distance closes along the vehicle's direction.
@@ -1280,7 +1282,7 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
             if (0.0001f < closing) {
                 float t = distance / closing;
                 // FUN_00497a90: clamped to the seat's duration range.
-                duration = t < minDuration ? minDuration : (maxDuration <= t ? maxDuration : t);
+                duration = t < minDuration ? minDuration : (cap <= t ? cap : t);
             }
 
             this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::nearbyint(duration * -1000.0f));
@@ -1292,7 +1294,7 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
         float dz = here.z - this->m_startPosition.z;
         float t = std::sqrt(dz * dz + dy * dy + dx * dx) / seat->m_exitSpeed;
 
-        duration = t < minDuration ? minDuration : (maxDuration <= t ? maxDuration : t);
+        duration = t < minDuration ? minDuration : (cap <= t ? cap : t);
         this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::nearbyint(duration * -1000.0f));
     }
 
@@ -1316,9 +1318,13 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
 
     this->m_arcScale = scale;
 
+    // The rider's camera moves over the same time.
+    if (this->m_unit->m_vehicleCamera) {
+        this->m_unit->m_vehicleCamera->SetTransitionTime(time, static_cast<int32_t>(std::nearbyint(duration * 1000.0f)));
+    }
+
     this->UpdateProgress(time, seat);
 
-    // PARTIAL: the vehicle camera's transition (FUN_0075af00) waits on the vehicle camera port.
     // A rider coming in fades in while it moves.
     if (vehicle && vehicle->m_fadeDuration != 0 && this->IsMoving()) {
         int32_t span = static_cast<int32_t>(this->m_transitionEnd - this->m_transitionStart);

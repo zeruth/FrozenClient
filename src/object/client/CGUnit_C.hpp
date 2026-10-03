@@ -32,6 +32,7 @@ class FactionTemplateRec;
 class CGGameObject_C;
 class CVehicle_C;
 class CVehiclePassenger_C;
+class CVehicleCamera_C;
 class VehicleRec;
 class VehicleSeatRec;
 struct M2BoneSequenceState;
@@ -1115,6 +1116,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The unit's ride, while it is aboard a vehicle (reference +0xf60). Null means not riding,
         // which is always, until something creates one.
         CVehiclePassenger_C* m_vehiclePassenger = nullptr;
+        // +0xf64: the camera point the unit's seat gives, while it rides.
+        CVehicleCamera_C* m_vehicleCamera = nullptr;
         // TODO
         float m_smoothFacing;
         // +0xaa4: the smoothing step the turn is taking (0 when it is not smoothing).

@@ -77,6 +77,22 @@ void VehicleOnTransportChanged(CGUnit_C* unit, WOWGUID transport, uint8_t seat, 
 void UnitSetRideAlpha(CGUnit_C* unit, float alpha);
 // FUN_005fb560
 int32_t InputControlSeatAllows(uint32_t flag);
+// FUN_0074c0e0
+// The camera's distance, pitch and yaw blends set for the seat the unit takes (or cleared), between
+// `start` and `end`.
+void VehicleSetCameraBlend(CGUnit_C* unit, const VehicleRec* rec, const VehicleSeatRec* seat, uint32_t start, uint32_t end);
+// FUN_0074c4a0
+void VehicleRefreshCameraBlend(CGUnit_C* unit);
+// FUN_0074c4e0
+void UnitReleaseVehicleCamera(CGUnit_C* unit);
+// FUN_0074c550
+void UnitGetVehicleCameraFacing(CGUnit_C* unit, float* facing);
+// FUN_0074cd60
+void UnitDestroyVehicleCamera(CGUnit_C* unit);
+// FUN_0074cdf0
+class CVehicleCamera_C* UnitCreateVehicleCamera(CGUnit_C* unit);
+// FUN_0074ce40
+void UnitUpdateVehicleCamera(CGUnit_C* unit);
 // FUN_007561e0
 void UnitOnLeftVehicle(CGUnit_C* unit);
 

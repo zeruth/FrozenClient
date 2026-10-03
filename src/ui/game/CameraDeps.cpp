@@ -1,3 +1,4 @@
+#include "object/client/UnitVehicle_C.hpp"
 #include "ui/game/CameraDeps.hpp"
 #include "object/client/CGObject_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
@@ -99,18 +100,17 @@ uint32_t InputControlGetFlags(CInputControl* input) {
     return input ? input->m_unk04 : 0;
 }
 
-// Vehicles: frozen creates no CVehicle_C, CVehiclePassenger_C or CVehicleCamera_C yet, so each of
-// these gives the reference's answer for a unit that is not on one.
+// FUN_0074ba40: the unit's vehicle holds the camera.
 int32_t UnitIsRidingControlledVehicle(CGUnit_C* unit) {
-    return 0;
+    return UnitVehicleHoldsControl(unit);
 }
 
 CVehicleCamera_C* UnitGetVehicleCamera(CGUnit_C* unit) {
-    return nullptr;
+    return unit ? unit->m_vehicleCamera : nullptr;
 }
 
 int32_t UnitHasVehicleCamera(CGUnit_C* unit) {
-    return 0;
+    return unit && unit->m_vehicleCamera ? 1 : 0;
 }
 
 int32_t UnitVehicleCameraActive(CGUnit_C* unit) {
