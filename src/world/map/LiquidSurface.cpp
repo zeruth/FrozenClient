@@ -288,9 +288,9 @@ int32_t CChunkGeomFactory::SetPlacement(const C44Matrix& placement) {
     return 1;
 }
 
-void CClientEnvironment::AddRef() {
-}
-
+// ref: FUN_007d4f20
+// The environment's slot 1: destroy and give the memory back. DIVERGED in the allocator only: the
+// reference returns it to a CDataAllocator; frozen made it with SMemAlloc (CreateEnvironment).
 void CClientEnvironment::Release() {
     this->~CClientEnvironment();
 

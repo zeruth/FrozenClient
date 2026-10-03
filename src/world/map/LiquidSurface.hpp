@@ -500,7 +500,8 @@ class CClientEnvironment {
         // reference builds once and keeps. CreateSurface passes 0. +0x08
         uint32_t m_fixedLight = 0;
 
-        void AddRef();
+        // The reference's vtable (0x00a404e8) has no AddRef: a destructor, Release, the indoor
+        // setter and SetupLighting.
         void Release();
 
         // Fill a lighting block for this surface: the fog, one light, and then whatever the scene
