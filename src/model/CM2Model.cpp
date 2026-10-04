@@ -8830,8 +8830,11 @@ void CM2Model::CollectShadowCasters(M2ShadowCasterList* lists) {
             alpha *= this->m_textureWeights[weight].weightTrack.currentValue;
         }
 
+        // The list is the MATERIAL's blend mode (0x008347bb tests +0x2 of the material, not of
+        // the batch): opaque goes to the untextured list, alpha-keyed to the textured one drawn
+        // with the alpha test. Choosing by batch.shader drew leaves and fences as solid quads.
         if (alpha >= SHADOW_CASTER_MIN_ALPHA) {
-            lists[batch.shader == 0 ? 0 : 1].Add(this, i);
+            lists[material.blendMode == 0 ? 0 : 1].Add(this, i);
         }
     }
 
