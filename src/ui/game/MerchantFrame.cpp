@@ -47,3 +47,16 @@ int32_t MerchantIsBuybackItem(WOWGUID guid) {
 
     return 0;
 }
+
+// ref: FUN_00584150
+MerchantItem* MerchantFindItem(int32_t itemID) {
+    if (s_merchantGuid != 0 && s_merchantItemCount != 0) {
+        for (auto& item : s_merchantItems) {
+            if (item.m_unk04 == itemID) {
+                return &item;
+            }
+        }
+    }
+
+    return nullptr;
+}

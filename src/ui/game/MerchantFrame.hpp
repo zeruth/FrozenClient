@@ -17,6 +17,9 @@ int32_t MerchantCanRepair();
 
 MerchantItem* MerchantGetItem(int32_t index);
 
+// The open vendor's entry for an item, or null.
+MerchantItem* MerchantFindItem(int32_t itemID);
+
 int32_t MerchantIsBuybackItem(WOWGUID guid);
 
 #endif

@@ -1701,3 +1701,36 @@ void SpellGetEffectSkillValue(const SpellRec* spell, int32_t effectIndex, int32_
     auto twiceMax = maxPoints < 0.0f ? maxPoints + maxPoints + 0.5f : maxPoints + maxPoints - 0.5f;
     *maxValue = static_cast<int32_t>(std::nearbyint(twiceMax)) >> 1;
 }
+
+// The cast waiting for the player to pick a target; its spell is at +0x20. The spell cast port
+// creates it; nothing does until then.
+struct SPELL_TARGETING_CAST {
+    uint8_t unk00[0x20];
+    int32_t spellID;            // +0x20
+};
+
+static SPELL_TARGETING_CAST* s_targetingCast;       // ref: DAT_00d3f4e4
+
+// ref: FUN_007fd620
+bool Spell_C_IsTargeting() {
+    return s_targetingCast != nullptr;
+}
+
+// ref: FUN_007fd630
+int32_t Spell_C_GetTargetingSpellID() {
+    return s_targetingCast ? s_targetingCast->spellID : 0;
+}
+
+// ref: FUN_00719980
+// The reference reads the current map from DAT_00bd088c; frozen's is the object manager's.
+bool SpellIsUsableInArena(const SpellRec* spell) {
+    auto map = g_mapDB.GetRecord(static_cast<int32_t>(ClntObjMgrGetMapID()));
+
+    if (map && map->m_instanceType == 4) {
+        if (!(spell->m_attributesEx4 & 0x20000) && (spell->m_recoveryTime > 900000 || spell->m_categoryRecoveryTime > 900000 || (spell->m_attributesEx4 & 0x10000))) {
+            return false;
+        }
+    }
+
+    return true;
+}

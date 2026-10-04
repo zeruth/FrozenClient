@@ -127,6 +127,13 @@ int32_t Spell_C_ClassifyCodePair(uint32_t code, uint8_t* second, uint32_t subCod
 // Whether a spell is waiting for its target to be picked.
 bool Spell_C_IsTargeting();
 
+// The spell waiting for the player to pick its target, or 0.
+int32_t Spell_C_GetTargetingSpellID();
+
+// False for a spell with a cooldown over fifteen minutes (or flagged SPELL_ATTR4 0x10000) inside
+// an arena, unless SPELL_ATTR4 0x20000 allows it.
+bool SpellIsUsableInArena(const SpellRec* spell);
+
 // ref: FUN_007fd760
 // Whether the pending target flags include 0x10 (an item) or 0x4000.
 bool Spell_C_TargetingWantsItem();

@@ -33,6 +33,7 @@
 #include "gx/CGxDevice.hpp"
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
+#include "object/client/Spell_C.hpp"
 #include "object/client/GameObjectTypes.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "object/client/CGCorpse_C.hpp"
@@ -1105,12 +1106,9 @@ void CGWorldFrame::UpdateDayNight(float elapsedSec) {
 
 namespace {
 
-// ref: FUN_007fd620
-// Whether a spell is waiting for the player to pick its target (Spell_C's DAT_00d3f4e4). The spell
-// cast port keeps that pending spell; until it does none ever waits, so the pick never takes the
-// spell-targeting branches below.
+// Whether a spell is waiting for the player to pick its target (Spell_C_IsTargeting, FUN_007fd620).
 bool SpellIsTargeting() {
-    return false;
+    return Spell_C_IsTargeting();
 }
 
 // ref: FUN_00721f50

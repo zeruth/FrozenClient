@@ -33,3 +33,27 @@ void ItemSocketInfoSendGems() {
         ClientServices::Send(&msg);
     }
 }
+
+#include "db/Db.hpp"
+#include "object/client/DBCacheInstances.hpp"
+
+// ref: FUN_005c48d0
+bool ItemSocketInfoGemFits(const ItemStats_C* item, const ItemStats_C* gem, int32_t socket) {
+    if (!item || !gem) {
+        return false;
+    }
+
+    auto color = static_cast<uint32_t>(item->socketColor[socket]);
+
+    if (color == 0) {
+        return true;
+    }
+
+    auto properties = g_gemPropertiesDB.GetRecord(gem->gemProperties);
+
+    if (!properties) {
+        return false;
+    }
+
+    return (properties->m_type & color & 0xF) != 0;
+}

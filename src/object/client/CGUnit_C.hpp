@@ -8,6 +8,8 @@
 #include "object/client/CMovement_C.hpp"
 #include "object/Types.hpp"
 #include "util/GUID.hpp"
+
+class SkillLineAbilityRec;
 #include <storm/Array.hpp>
 #include <tempest/Box.hpp>
 
@@ -509,6 +511,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // ref: FUN_007260e0
         bool KnowsSpell(uint32_t spellID) const;
+        const SkillLineAbilityRec* FindSkillLineAbility(int32_t spellID) const;
+        bool KnowsHigherRank(int32_t spellID) const;
 
         // ref: FUN_00556e10
         // The aura in `slot`, or null past the end.

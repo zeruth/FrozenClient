@@ -287,6 +287,23 @@ void SpellBookClear() {
     s_highestToKnown.clear();
 }
 
+// The learned spell that lets the player dual wield (SPELL_EFFECT_DUAL_WIELD as its first effect),
+// as the reference's learn and unlearn paths record it (FUN_006e7b00 / FUN_006e71d0).
+static int32_t s_dualWieldSpell;                    // ref: DAT_00c9eac8
+
+static void SpellBookNoteLearned(uint32_t spellId) {
+    auto spell = g_spellDB.GetRecord(static_cast<int32_t>(spellId));
+
+    if (spell && spell->m_effect[0] == 40) {
+        s_dualWieldSpell = static_cast<int32_t>(spellId);
+    }
+}
+
+// ref: FUN_006ceb00
+bool SpellBookCanDualWield() {
+    return s_dualWieldSpell != 0;
+}
+
 // SMSG_INITIAL_SPELLS: uint8 unused, uint16 count, count x { uint32 spellId, uint16 unused }, then
 // the cooldown list: uint16 count, count x { uint32 spell, uint16 item, uint16 category, int32
 // cooldown, uint32 category cooldown with the held flag in its top bit } (FUN_006df050's second
@@ -317,6 +334,7 @@ int32_t ReceiveInitialSpells(void* param, NETMESSAGE msgId, uint32_t time, CData
 
         if (spellId) {
             s_known.push_back(spellId);
+            SpellBookNoteLearned(spellId);
         }
     }
 
@@ -358,6 +376,7 @@ int32_t ReceiveLearnedSpell(void* param, NETMESSAGE msgId, uint32_t time, CDataS
 
     if (spellId && !SpellBookKnows(spellId)) {
         s_known.push_back(spellId);
+        SpellBookNoteLearned(spellId);
         Rebuild();
     }
 
@@ -372,6 +391,10 @@ int32_t ReceiveRemovedSpell(void* param, NETMESSAGE msgId, uint32_t time, CDataS
 
     uint32_t spellId = 0;
     msg->Get(spellId);
+
+    if (static_cast<int32_t>(spellId) == s_dualWieldSpell) {
+        s_dualWieldSpell = 0;
+    }
 
     auto it = std::find(s_known.begin(), s_known.end(), spellId);
 

@@ -13071,3 +13071,35 @@ UNIT_SEX CGUnit_C::GetClassDisplaySex(const CGUnit_C* unit, const NameCacheRec* 
 
     return displaySex;
 }
+
+// ref: FUN_0071a670
+// A creature's spell is looked up in its family's two skill lines; a player's by race and class.
+const SkillLineAbilityRec* CGUnit_C::FindSkillLineAbility(int32_t spellID) const {
+    if (!this->m_creatureStats) {
+        return SkillLineAbilityFindForRaceClass(this->Unit()->bytes0 & 0xFF, (this->Unit()->bytes0 >> 8) & 0xFF, spellID);
+    }
+
+    auto family = g_creatureFamilyDB.GetRecord(this->m_creatureStats->m_family);
+
+    if (family) {
+        for (int32_t i = 0; i < 2; i++) {
+            if (auto ability = SkillLineAbilityFind(family->m_skillLine[i], spellID)) {
+                return ability;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00726160
+// Whether the unit knows a rank of the spell above this one.
+bool CGUnit_C::KnowsHigherRank(int32_t spellID) const {
+    for (auto ability = this->FindSkillLineAbility(spellID); ability && ability->m_supercededBySpell > 0; ability = this->FindSkillLineAbility(ability->m_supercededBySpell)) {
+        if (this->KnowsSpell(ability->m_supercededBySpell)) {
+            return true;
+        }
+    }
+
+    return false;
+}

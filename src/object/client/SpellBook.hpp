@@ -46,6 +46,9 @@ int32_t SpellBookKnownSlotFromHighestRankSlot(int32_t slot);
 
 bool SpellBookKnows(uint32_t spellId);
 
+// Whether the player has learned to dual wield.
+bool SpellBookCanDualWield();
+
 // Companion type of a spell: 0 CRITTER (its first effect is SUMMON), 1 MOUNT (its first aura is
 // MOUNTED), 2 neither.
 class SpellRec;

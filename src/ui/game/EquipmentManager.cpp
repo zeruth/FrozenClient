@@ -40,3 +40,41 @@ EQUIPMENT_SET* EquipmentManagerGetSetByName(const char* name) {
 
     return nullptr;
 }
+
+#include "ui/FrameScript.hpp"
+#include <cstring>
+
+// ref: FUN_005ae380
+bool EquipmentManagerGetSetNames(char* dest, uint32_t destSize, const WOWGUID& item) {
+    auto left = destSize - 1;
+    const char* separator = "";
+    auto delimiter = FrameScript_GetText("PLAYER_LIST_DELIMITER", -1, GENDER_NOT_APPLICABLE);
+    auto cursor = dest;
+
+    for (auto node = s_equipmentSets.Head(); node; node = s_equipmentSets.Next(node)) {
+        auto set = node->set;
+
+        for (int32_t slot = 0; slot < 19; slot++) {
+            if (set->items[slot] != item) {
+                continue;
+            }
+
+            auto nameLength = SStrLen(set->name);
+            auto separatorLength = SStrLen(separator);
+
+            if (left < separatorLength + nameLength) {
+                break;
+            }
+
+            memcpy(cursor, separator, separatorLength);
+            memcpy(cursor + separatorLength, set->name, nameLength);
+            cursor += separatorLength + nameLength;
+            left -= separatorLength + nameLength;
+            separator = delimiter;
+        }
+    }
+
+    *cursor = '\0';
+
+    return cursor != dest;
+}

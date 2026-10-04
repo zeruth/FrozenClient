@@ -14,4 +14,10 @@ extern WOWGUID s_socketItem;
 // ref: FUN_005c4ff0
 void ItemSocketInfoSendGems();
 
+class ItemStats_C;
+
+// Whether a gem fits the item's socket: an empty socket colour takes anything, otherwise the gem
+// must share a colour bit with it.
+bool ItemSocketInfoGemFits(const ItemStats_C* item, const ItemStats_C* gem, int32_t socket);
+
 #endif
