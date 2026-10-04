@@ -127,7 +127,7 @@ TEST_CASE("CBLPFile palettized decode", "[gx]") {
         CHECK(out[15] == 0xFF);
     }
 
-    SECTION("rejects 16 bit destination formats for now") {
+    SECTION("decodes to 16 bit destination formats") {
         auto file = MakePalettizedBlp(0, nullptr, 0);
 
         CBLPFile image;
@@ -135,6 +135,6 @@ TEST_CASE("CBLPFile palettized decode", "[gx]") {
 
         unsigned char out[16];
         uint32_t stride = 0;
-        CHECK(image.Lock2("test", PIXEL_RGB565, 0, out, stride) == 0);
+        CHECK(image.Lock2("test", PIXEL_RGB565, 0, out, stride) == 1);
     }
 }

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+  workflow_dispatch:
+
+# A newer push to the same branch or PR supersedes the run in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows / Release / MSVC
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The tests need assets that cannot be committed (see test/fixture/README.md).
+      - name: Download test fixtures
+        shell: bash
+        working-directory: test/fixture
+        run: |
+          curl -fsSL -o whoa-fixture.tgz https://whoa.reliquaryhq.com/whoa-fixture.tgz
+          tar -xzf whoa-fixture.tgz
+
+      - name: Configure
+        run: cmake -S . -B build -A x64
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        working-directory: test/fixture
+        run: ..\..\build\bin\Release\FrozenTest.exe
+
+      # Always ship the PDB with the exe: a stale or missing one symbolizes crashes wrongly.
+      - name: Upload client
+        uses: actions/upload-artifact@v4
+        with:
+          name: Frozen-windows-x64
+          path: |
+            build/bin/Release/Frozen.exe
+            build/bin/Release/Frozen.pdb
+          if-no-files-found: error
+          retention-days: 14

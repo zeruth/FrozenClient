@@ -56,8 +56,16 @@ TEST_CASE("CStatus", "[util]") {
 }
 
 TEST_CASE("CWOWClientStatus", "[util]") {
+#if defined(WHOA_SYSTEM_WIN)
+    // Storm puts a bare file name beside the exe; a path with a directory is used as given.
+    const char* path = ".\\cstatus-test.log";
+#else
     const char* path = "cstatus-test.log";
+#endif
     remove(path);
+
+    // The client does this at startup (StormInitialize); SLog's bucket locks are not usable before.
+    SLogInitialize();
 
     {
         CWOWClientStatus status;
@@ -66,7 +74,6 @@ TEST_CASE("CWOWClientStatus", "[util]") {
         status.Add(STATUS_WARNING, "second line");
     }
 
-    // Text mode, so the platform's line ending reads back as a newline
     FILE* file = fopen(path, "r");
     REQUIRE(file != nullptr);
 
@@ -74,7 +81,11 @@ TEST_CASE("CWOWClientStatus", "[util]") {
     fread(contents, 1, sizeof(contents) - 1, file);
     fclose(file);
 
-    CHECK(strcmp(contents, "Couldn't open Interface\\Missing.xml\nsecond line\n") == 0);
+    // Storm's SLog stamps each line with the time, so the messages are looked for in order rather
+    // than compared byte for byte.
+    const char* first = strstr(contents, "Couldn't open Interface\\Missing.xml");
+    REQUIRE(first != nullptr);
+    CHECK(strstr(first, "second line") != nullptr);
 
     remove(path);
 }
