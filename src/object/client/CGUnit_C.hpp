@@ -9,6 +9,8 @@
 #include "object/Types.hpp"
 #include "util/GUID.hpp"
 #include <storm/Array.hpp>
+#include <storm/Hash.hpp>
+#include "util/guid/CHashKeyGUID.hpp"
 #include <tempest/Box.hpp>
 
 class CCharacterComponent;
@@ -71,6 +73,20 @@ struct UNIT_WEAPON_INFO {
 struct CAuraSlotState {
     uint32_t m_value = 0x100;
     uint32_t m_extra = 0;
+};
+
+// One unit on a creature's threat table (Unit_C.cpp; FUN_0072cd90 allocates it, FUN_0073f200
+// links it). The reference keeps the key's guid at +0x20; frozen's CHashKeyGUID hides it, so the
+// entry carries its own copy.
+class CThreatEntry : public TSHashObject<CThreatEntry, CHashKeyGUID> {
+    public:
+        WOWGUID m_guid = 0;         // +0x20
+        // +0x28: 1 not tanking and below the tank, 2 not tanking and above it, 3 tanking but
+        // another is above, 4 tanking securely -- UnitThreatSituation's answer plus one.
+        uint8_t m_status = 1;
+        // +0x29: the threat as a percentage of the tank's, capped at 250 (0xff until computed).
+        uint8_t m_percent = 0xff;
+        int32_t m_threat = 0;       // +0x2c
 };
 
 class CGUnit_C : public CGObject_C, public CGUnit {
@@ -392,6 +408,27 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_00716f10
         // Ask the server for a mirror image's appearance (CMSG_GET_MIRRORIMAGE_DATA).
         void RequestMirrorImageData();
+        void ReceiveMirrorImageData(CDataStore* msg);
+
+        // The threat table (Unit_C.cpp).
+        CThreatEntry* AddThreatEntry(const WOWGUID& guid);
+        bool UpdateThreatPercent(CThreatEntry* entry, int32_t topThreat, bool notify);
+        void UpdateThreatTargetStatus();
+        void ReceiveThreatUpdate(CDataStore* msg, bool highest);
+        void RemoveThreatEntry(const WOWGUID& guid);
+        void ClearThreatList();
+        int32_t GetThreatSituation(const WOWGUID& guid, uint8_t* status, uint8_t* percent, float* rawPercent,
+                                   int32_t* threat);
+        void ShowThreatWorldText(int32_t oldStatus, int32_t newStatus);
+
+        // Control (Unit_C.cpp).
+        void SetHasControl(bool hasControl);
+        void OnControlUpdate(WOWGUID guid, bool hasControl);
+        static void ChangeActiveMover(WOWGUID guid);
+        static void StorePendingControl(WOWGUID guid, bool hasControl);
+
+        // The pet's voice (UnitSound_C.cpp).
+        void PlayPetSound(int32_t type);
 
         // ref: FUN_00715670 / FUN_00715690
         // The mount transition the unit is playing, and the effect that plays it.
@@ -1118,6 +1155,16 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         CVehiclePassenger_C* m_vehiclePassenger = nullptr;
         // +0xf64: the camera point the unit's seat gives, while it rides.
         CVehicleCamera_C* m_vehicleCamera = nullptr;
+        // +0xfd8: the unit the threat table holds highest (SMSG_HIGHEST_THREAT_UPDATE), 0 for none.
+        WOWGUID m_threatTarget = 0;
+        // +0xfe0: everyone the unit holds threat against.
+        TSHashTable<CThreatEntry, CHashKeyGUID> m_threatList;
+        // +0x908: the pet's voice, +0x91c a spoken line, both owned by the unit (by pointer, as
+        // m_mountSound is, to keep the sound engine out of this header); +0x930 the kind of pet
+        // sound last played, which a lower kind does not interrupt.
+        SOUNDKITOBJECT* m_petSound = nullptr;
+        SOUNDKITOBJECT* m_speechSound = nullptr;
+        int32_t m_petSoundType = 0;
         // TODO
         float m_smoothFacing;
         // +0xaa4: the smoothing step the turn is taking (0 when it is not smoothing).

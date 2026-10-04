@@ -36,6 +36,7 @@
 #include "object/client/DBCacheInstances.hpp"
 #include "object/client/CEffect.hpp"
 #include "object/client/CGGameObject_C.hpp"
+#include "object/client/GameObjectTypes.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CVehicle_C.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
@@ -225,6 +226,8 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
     , m_localMove(objCreate.move.status.position28, objCreate.move.status.facing34, this->m_obj->m_guid, this)
 {
     this->m_mountSound = STORM_NEW(SOUNDKITOBJECT);
+    this->m_petSound = STORM_NEW(SOUNDKITOBJECT);
+    this->m_speechSound = STORM_NEW(SOUNDKITOBJECT);
 
     // What each hand holds, from the virtual items (0x0073fbd3 .. 0x0073fc88); later changes come
     // through OnVirtualItemChanged.
@@ -278,6 +281,17 @@ CGUnit_C::~CGUnit_C() {
         STORM_FREE(this->m_mountSound);
         this->m_mountSound = nullptr;
     }
+
+    for (auto sound : { &this->m_petSound, &this->m_speechSound }) {
+        if (*sound) {
+            SI2::StopOrFadeOut(*sound, 1, 0.0f, 1);
+            (*sound)->~SOUNDKITOBJECT();
+            STORM_FREE(*sound);
+            *sound = nullptr;
+        }
+    }
+
+    this->m_threatList.Clear();
 
     // Free the composited body built for a humanoid NPC (players keep their own component in
     // CGPlayer_C, so this only ever fires for NPCs). Units stream in and out with the tiles, so a
@@ -434,6 +448,15 @@ WOWGUID CGUnit_C::GetTransportGUID() const {
     return this->m_localMove.GetTransportGUID();
 }
 
+namespace {
+
+// DAT_00ca1248 / DAT_00ca1250: an SMSG_CONTROL_UPDATE for a unit not yet in view, which its
+// PostInit takes up (FUN_00716060 stores it).
+WOWGUID s_pendingControl = 0;
+bool s_pendingControlHas = false;
+
+} // namespace
+
 // ref: FUN_0073fcc0
 // PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
 // party and raid slots (FUN_005139b0, FUN_0054d1c0), the vehicle and passenger starts and the
@@ -497,6 +520,12 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_lowerBodyFacing = this->GetRawFacing();
     this->m_lowerBodyFacingStep = 0.0f;
     this->m_lowerBodyBlend = 1.0f;
+
+    // 0x007401c5: an SMSG_CONTROL_UPDATE that arrived before the unit did.
+    if (s_pendingControl == this->GetGUID()) {
+        this->OnControlUpdate(s_pendingControl, s_pendingControlHas);
+        s_pendingControl = 0;
+    }
 
     // TODO
 }
@@ -7241,7 +7270,7 @@ int32_t CGUnit_C::OnSplineFlagMessage(int32_t opcode) {
 // ref: FUN_0072d1b0
 // SMSG_MOVE_KNOCK_BACK: the local player is thrown. PARTIAL: an open loot window closes first
 // (MovementStartPrologue(1, 1, 0), the loot port's); a unit that is not the active mover becomes
-// it through FUN_00729010, which is SetActiveMover here.
+// it through FUN_00729010 (ChangeActiveMover).
 void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg) {
     if (this->IsActiveMover()) {
         this->CancelClickToMove(0, 1);
@@ -7257,7 +7286,7 @@ void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg)
     msg->Get(vertical);
 
     if (this->GetGUID() != CGUnit_C::s_activeMover) {
-        CGUnit_C::SetActiveMover(this->GetGUID());
+        CGUnit_C::ChangeActiveMover(this->GetGUID());
     }
 
     this->m_localMove.QueueForcedKnockback(time, counter, direction, horizontal, vertical);
@@ -7266,7 +7295,7 @@ void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg)
 // ref: FUN_0072d2d0
 // MSG_MOVE_TELEPORT_ACK from the server: a normal player turns the camera to the new facing and
 // takes the teleport (answered when the event runs); anything else answers at once. PARTIAL: as
-// ReceiveKnockback, the loot window and FUN_00729010.
+// ReceiveKnockback, the loot window.
 void CGUnit_C::ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* msg) {
     CMovementStatus status;
     *msg >> status;
@@ -7277,7 +7306,7 @@ void CGUnit_C::ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* ms
         }
 
         if (this->GetGUID() != CGUnit_C::s_activeMover) {
-            CGUnit_C::SetActiveMover(this->GetGUID());
+            CGUnit_C::ChangeActiveMover(this->GetGUID());
         }
 
         if (this->IsActiveMover()) {
@@ -8358,8 +8387,7 @@ int32_t UnitLootListHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataS
 }
 
 // ref: FUN_00716b10
-// SMSG_AI_REACTION: a creature noticing the player plays its aggro sound. PARTIAL: reaction 2,
-// the pet's (FUN_007474b0), is the unit sound port's.
+// SMSG_AI_REACTION: a creature noticing the player plays its aggro sound, a pet its own.
 int32_t UnitAIReactionHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     WOWGUID guid;
     uint32_t reaction;
@@ -8369,7 +8397,133 @@ int32_t UnitAIReactionHandler(void* param, NETMESSAGE msgId, uint32_t time, CDat
     if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x625))) {
         if (reaction == 0) {
             unit->PlayUnitSound(8, 0);
+        } else if (reaction == 2) {
+            unit->PlayPetSound(0);
         }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716b90
+// SMSG_PET_ACTION_SOUND: the pet acknowledges an order (0) or an attack (1).
+int32_t UnitPetActionSoundHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    uint32_t action;
+    msg->Get(guid);
+    msg->Get(action);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x636))) {
+        if (action == 0) {
+            unit->PlayPetSound(1);
+        } else if (action == 1) {
+            unit->PlayPetSound(2);
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716c00
+// SMSG_PET_DISMISS_SOUND: a model's dismiss sound at a point, the pet itself already gone.
+int32_t UnitPetDismissSoundHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    uint32_t modelID;
+    msg->Get(modelID);
+
+    C3Vector position = { 0.0f, 0.0f, 0.0f };
+    msg->Get(position.x);
+    msg->Get(position.y);
+    msg->Get(position.z);
+
+    auto model = g_creatureModelDataDB.GetRecord(static_cast<int32_t>(modelID));
+    auto sounds = model ? g_creatureSoundDataDB.GetRecord(model->m_soundID) : nullptr;
+
+    if (sounds && sounds->m_soundPetDismissID) {
+        position.z += 1.0f;
+        SI2::PlaySoundKit(sounds->m_soundPetDismissID, &position, nullptr, nullptr, 0, nullptr, 1, 0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072d0b0
+// SMSG_CONTROL_UPDATE: whether the player may move this unit. One not in view keeps it for its
+// PostInit.
+int32_t UnitControlUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    uint8_t hasControl;
+    msg->Get(hasControl);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x5bc))) {
+        unit->OnControlUpdate(guid, hasControl != 0);
+        return 1;
+    }
+
+    CGUnit_C::StorePendingControl(guid, hasControl != 0);
+
+    return 1;
+}
+
+// ref: FUN_007324b0
+// SMSG_MIRROR_IMAGE_COMPONENTED_DATA: the appearance a mirror image asked for.
+int32_t UnitMirrorImageDataHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    msg->Get(guid);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x684))) {
+        unit->ReceiveMirrorImageData(msg);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00741c90
+// SMSG_HIGHEST_THREAT_UPDATE (with the new top) and SMSG_THREAT_UPDATE.
+int32_t UnitThreatUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6e8))) {
+        unit->ReceiveThreatUpdate(msg, msgId == SMSG_HIGHEST_THREAT_UPDATE);
+        return 1;
+    }
+
+    msg->Seek(msg->Size());
+
+    return 1;
+}
+
+// ref: FUN_00737b20
+// SMSG_THREAT_REMOVE: one unit leaves a creature's threat table.
+int32_t UnitThreatRemoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6f9))) {
+        SmartGUID victim;
+        *msg >> victim;
+
+        WOWGUID removed = victim;
+        unit->RemoveThreatEntry(removed);
+
+        return 1;
+    }
+
+    msg->Seek(msg->Size());
+
+    return 1;
+}
+
+// ref: FUN_00734b00
+// SMSG_THREAT_CLEAR: a creature forgets everyone.
+int32_t UnitThreatClearHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x70b))) {
+        unit->ClearThreatList();
     }
 
     return 1;
@@ -8394,6 +8548,14 @@ void RegisterUnitMiscHandlers() {
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x2fb), &UnitCompressedMovesHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x51e), &UnitMultipleMovesHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x13c), &UnitAIReactionHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_PET_ACTION_SOUND, &UnitPetActionSoundHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_PET_DISMISS_SOUND, &UnitPetDismissSoundHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_CONTROL_UPDATE, &UnitControlUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_MIRROR_IMAGE_COMPONENTED_DATA, &UnitMirrorImageDataHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_HIGHEST_THREAT_UPDATE, &UnitThreatUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_THREAT_UPDATE, &UnitThreatUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_THREAT_REMOVE, &UnitThreatRemoveHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_THREAT_CLEAR, &UnitThreatClearHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x403), &UnitForceDisplayUpdateHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x47f), &UnitHealthUpdateHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x3f9), &UnitLootListHandler, nullptr);
@@ -11094,8 +11256,6 @@ int32_t CGUnit_C::GetFloorHeight(float* height) {
 }
 
 // ref: FUN_00717c50
-// PARTIAL: a transport's own movement hook (FUN_006e8f70, through the transport game object's
-// type slot 0xa8) and the vehicle's (FUN_00747f40) are the transport and vehicle ports'.
 void CGUnit_C::SetActiveMover(WOWGUID guid) {
     CGUnit_C::s_activeMover = guid;
 
@@ -11116,6 +11276,19 @@ void CGUnit_C::SetActiveMover(WOWGUID guid) {
     if (unit && (unit->m_localMove.m_moveFlags & 0xc0100f)) {
         unit->m_localMove.ScheduleHeartbeat(static_cast<int32_t>(now));
     }
+
+    if (unit) {
+        // A passenger's mover takes the transport's clock.
+        if (WOWGUID transport = unit->GetTransportGUID()) {
+            auto object = static_cast<CGGameObject_C*>(ClntObjMgrObjectPtr(transport, TYPE_GAMEOBJECT, ".\\Unit_C.cpp", 0x1f6e));
+
+            if (object && object->m_type) {
+                MovementSetTransportTime(static_cast<uint32_t>(object->m_type->Virtual0A8()));
+            }
+        }
+    }
+
+    VehicleOnActiveMoverChanged(unit);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -11452,8 +11625,8 @@ void CGUnit_C::OnFlagsChanged(uint32_t old) {
 // lock (0x10) re-runs the model, disarming the off hand (0x80) and the ranged weapon (0x400)
 // move those weapons, and the active player's 0x40 re-runs its movement.
 //
-// PARTIAL: the pet's sound on feigning (FUN_007474b0) and the action bar refreshes (FUN_0053cf10,
-// FUN_004fb530's script event 0xf0 is sent) are the pet-sound and UI ports'.
+// PARTIAL: the action bar refreshes (FUN_0053cf10, FUN_004fb530's script event 0xf0 is sent) are
+// the UI's.
 void CGUnit_C::OnFlags2Changed(uint32_t old) {
     uint32_t now = this->m_unit->flags2;
     uint32_t changed = now ^ old;
@@ -11657,8 +11830,7 @@ void CGUnit_C::OnResurrect(int32_t silent) {
 // PARTIAL, each the subsystem's own: the player's death UI (FUN_006dc0f0), the corpse spell
 // visuals (FUN_008063e0), the target and party refreshes (FUN_0071ee70, InPartyOrRaid), the
 // missiles it fired (FUN_00703730), the name plate (FUN_0098ee30), the interaction window it had
-// open (FUN_00518d50), and the creature-type pieces of the death pose (FUN_00752ed0, FUN_00746340,
-// the pet's death sound FUN_007474b0).
+// open (FUN_00518d50).
 void CGUnit_C::OnDeath() {
     this->m_attackTarget = 0;
 
@@ -11667,8 +11839,7 @@ void CGUnit_C::OnDeath() {
     }
 
     if (!this->m_vehiclePassenger || this->m_vehiclePassenger->m_state != 3 || (this->m_unit->flags2 & 0x20000)) {
-        // FUN_007561e0
-        this->PlayDeathPose(0);
+        UnitOnLeftVehicle(this);
     }
 
     if (!this->m_creatureStats || !(this->m_creatureStats->m_typeFlags & 0x80)) {
@@ -13038,4 +13209,757 @@ void CGUnit_C::AnimEventCallback(CM2Model* model, uint32_t boneId, uint32_t even
     }
 
     unit->OnAnimEvent(model, eventId, eventData, position);
+}
+
+// ref: FUN_00730290
+// A mirror image's appearance: for the display it still wears, either the creature's own baked
+// look (race 0) or a whole character -- race, sex, class, the five appearance choices, the guild
+// and the eleven visible items -- built as a player's would be.
+//
+// PARTIAL: a guild tabard's emblem (FUN_007eada0 through the guild cache, then FUN_004ec1c0) is the
+// guild cache's, which frozen does not have yet; the tabard itself is dressed.
+void CGUnit_C::ReceiveMirrorImageData(CDataStore* msg) {
+    ComponentData data;
+
+    this->m_stateFlags &= ~0x20000u;
+
+    if (!this->m_model || !this->m_model->IsLoaded(0, 0)) {
+        return;
+    }
+
+    uint32_t displayID;
+    msg->Get(displayID);
+
+    if (static_cast<int32_t>(displayID) != this->m_unit->displayID) {
+        msg->Seek(msg->Size());
+        return;
+    }
+
+    uint8_t value;
+    msg->Get(value);
+    data.raceID = value;
+
+    if (data.raceID == 0) {
+        if (auto extra = this->m_displayInfoExtra) {
+            this->m_characterComponent = CCharacterComponent::AllocComponent();
+
+            // FUN_00715930
+            const char* bake = extra->m_bakeName;
+
+            if (!bake || !bake[0]) {
+                return;
+            }
+
+            data.raceID = extra->m_displayRaceID;
+            data.sexID = extra->m_displaySexID;
+            data.classID = 0;
+            data.skinColorID = extra->m_skinID;
+            data.faceID = extra->m_faceID;
+            data.hairStyleID = extra->m_hairStyleID;
+            data.hairColorID = extra->m_hairColorID;
+            data.facialHairStyleID = extra->m_facialHairID;
+            data.flags |= 0x1;
+            SStrPrintf(data.npcBakedTexturePath, sizeof(data.npcBakedTexturePath), "%s%s", "Textures\\BakedNpcTextures\\", bake);
+            data.model = this->m_model;
+            data.model->m_refCount++;
+
+            this->m_characterComponent->Init(&data, nullptr);
+
+            if (this->m_characterComponent && this->m_displayInfoExtra) {
+                for (int32_t slot = 0; slot < 11; slot++) {
+                    int32_t item = this->m_displayInfoExtra->m_npcitemDisplay[slot];
+
+                    if (item) {
+                        this->m_characterComponent->AddItem(static_cast<ITEM_SLOT>(slot), item, 0);
+                    }
+                }
+            }
+        }
+    } else {
+        msg->Get(value);
+        data.sexID = value;
+        msg->Get(value);
+        data.classID = value;
+        msg->Get(value);
+        data.skinColorID = value;
+        msg->Get(value);
+        data.faceID = value;
+        msg->Get(value);
+        data.hairStyleID = value;
+        msg->Get(value);
+        data.hairColorID = value;
+        msg->Get(value);
+        data.facialHairStyleID = value;
+
+        uint32_t guildID;
+        msg->Get(guildID);
+
+        this->m_characterComponent = CCharacterComponent::AllocComponent();
+        data.model = this->m_model;
+
+        if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            data.flags |= 0x2;
+        } else {
+            data.flags &= ~0x2u;
+        }
+
+        data.model->m_refCount++;
+
+        CCharacterComponent::ValidateComponentData(&data, static_cast<COMPONENT_CONTEXT>(1));
+        this->m_characterComponent->Init(&data, nullptr);
+
+        // The visible slots, in the order the server writes them (FUN_004f2880 maps each to its
+        // section).
+        static const INVENTORY_SLOTS s_slots[] = {
+            static_cast<INVENTORY_SLOTS>(0), static_cast<INVENTORY_SLOTS>(2), static_cast<INVENTORY_SLOTS>(3),
+            static_cast<INVENTORY_SLOTS>(4), static_cast<INVENTORY_SLOTS>(5), static_cast<INVENTORY_SLOTS>(6),
+            static_cast<INVENTORY_SLOTS>(7), static_cast<INVENTORY_SLOTS>(8), static_cast<INVENTORY_SLOTS>(9),
+            static_cast<INVENTORY_SLOTS>(0xe), static_cast<INVENTORY_SLOTS>(0x12),
+        };
+
+        for (auto slot : s_slots) {
+            uint32_t item;
+            msg->Get(item);
+
+            if (item) {
+                this->m_characterComponent->AddItemBySlot(slot, static_cast<int32_t>(item), 0);
+            }
+        }
+
+        // TODO(GuildCache): the tabard's emblem for `guildID` (FUN_007eada0 / FUN_004ec1c0).
+        (void)guildID;
+    }
+
+    this->AttachHandItem(0);
+    this->AttachHandItem(1);
+    this->AttachHandItem(2);
+    this->ApplyItemVisualEffects();
+
+    // FUN_00512b50
+    PortraitRefresh(this->GetGUID(), 3);
+
+    this->m_stateFlags &= ~0x400000u;
+}
+
+// ---- threat (Unit_C.cpp) --------------------------------------------------------------------
+
+// ref: FUN_007416f0
+// The entry for `guid`, made when there is none: a new one starts below the tank with no percent
+// yet, and the game UI learns that this unit holds threat against it.
+CThreatEntry* CGUnit_C::AddThreatEntry(const WOWGUID& guid) {
+    CHashKeyGUID key(guid);
+    auto entry = this->m_threatList.Ptr(static_cast<uint32_t>(guid), key);
+
+    if (entry) {
+        return entry;
+    }
+
+    // FUN_0072cd90 / FUN_0073f200
+    entry = this->m_threatList.New(static_cast<uint32_t>(guid), key, 0, 0);
+    entry->m_guid = guid;
+    entry->m_status = 1;
+    entry->m_percent = 0xff;
+    entry->m_threat = 0;
+
+    if (guid == ClntObjMgrGetActivePlayer()) {
+        this->m_stateFlags |= 0x8;
+    }
+
+    GameUIAddThreatUnit(this->GetGUID(), guid);
+
+    return entry;
+}
+
+// ref: FUN_0071c3b0
+// An entry's percentage of `topThreat` (capped at 250), and the low/high status that follows from
+// it. When `notify` -- the entry is the player -- crossing over plays the warning and floats the
+// world text. True when the status changed.
+//
+// PARTIAL: the tooltip's refresh for this unit (FUN_00512ab0) is the tooltip's.
+bool CGUnit_C::UpdateThreatPercent(CThreatEntry* entry, int32_t topThreat, bool notify) {
+    uint8_t percent;
+
+    if (topThreat == 0) {
+        percent = 100;
+    } else if (entry->m_threat < 1) {
+        percent = 0;
+    } else {
+        int64_t scaled = static_cast<int64_t>(entry->m_threat) * 100 / topThreat;
+        percent = 249 < scaled ? 250 : static_cast<uint8_t>(scaled);
+    }
+
+    if (percent == entry->m_percent) {
+        return false;
+    }
+
+    entry->m_percent = percent;
+
+    uint8_t status = percent < 100 ? 1 : 2;
+    bool changed = false;
+
+    if (status != entry->m_status) {
+        if (notify) {
+            auto sounds = CGGameUI::s_threatPlaySoundsCvar;
+
+            if (sounds && sounds->GetInt() != 0 && status == 2 && entry->m_status == 1) {
+                SI2::PlayUISound(0x3b9e);
+            }
+
+            if (!(this->m_stateFlags & 0x8)) {
+                this->ShowThreatWorldText(entry->m_status, status);
+            }
+        }
+
+        entry->m_status = status;
+        ScriptEventsQueueUnitEvent(entry->m_guid, 0x262);
+        changed = true;
+    }
+
+    if (notify) {
+        this->m_stateFlags &= ~0x8u;
+    }
+
+    return changed;
+}
+
+// ref: FUN_00737620
+// The tank's own status: secure (4), or insecure (3) while anyone else is above it.
+//
+// PARTIAL: the tooltip's refresh for this unit (FUN_00512ab0) is the tooltip's.
+void CGUnit_C::UpdateThreatTargetStatus() {
+    CHashKeyGUID key(this->m_threatTarget);
+    auto top = this->m_threatList.Ptr(static_cast<uint32_t>(this->m_threatTarget), key);
+
+    if (!top) {
+        return;
+    }
+
+    uint8_t status = 4;
+
+    for (auto entry = this->m_threatList.Head(); entry; entry = this->m_threatList.Next(entry)) {
+        if (entry->m_guid != this->m_threatTarget && entry->m_status == 2) {
+            status = 3;
+        }
+    }
+
+    WOWGUID player = ClntObjMgrGetActivePlayer();
+
+    if (status != top->m_status) {
+        if (this->m_threatTarget == player && !(this->m_stateFlags & 0x8)) {
+            this->ShowThreatWorldText(top->m_status, status);
+
+            auto sounds = CGGameUI::s_threatPlaySoundsCvar;
+
+            if (sounds && sounds->GetInt() != 0) {
+                SI2::PlayUISound(0x3b9f);
+            }
+        }
+
+        top->m_status = status;
+        ScriptEventsQueueUnitEvent(this->m_threatTarget, 0x262);
+    }
+
+    if (this->m_threatTarget != player) {
+        return;
+    }
+
+    this->m_stateFlags &= ~0x8u;
+}
+
+// ref: FUN_007417a0
+// SMSG_THREAT_UPDATE's body: each (guid, threat) pair, with SMSG_HIGHEST_THREAT_UPDATE's new top
+// first. Every percentage is retaken against the top's threat -- the whole table when the top
+// moved or was named, otherwise just the entries the message carried.
+void CGUnit_C::ReceiveThreatUpdate(CDataStore* msg, bool highest) {
+    WOWGUID player = ClntObjMgrGetActivePlayer();
+    bool everyone = highest;
+
+    if (highest) {
+        SmartGUID top;
+        *msg >> top;
+
+        this->m_threatTarget = top;
+
+        if (this->m_threatTarget) {
+            this->AddThreatEntry(this->m_threatTarget);
+        }
+    }
+
+    uint32_t count;
+    msg->Get(count);
+
+    TSGrowableArray<CThreatEntry*> updated;
+    updated.SetCount(count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        SmartGUID guid;
+        *msg >> guid;
+
+        uint32_t threat;
+        msg->Get(threat);
+
+        WOWGUID id = guid;
+        auto entry = this->AddThreatEntry(id);
+        entry->m_threat = static_cast<int32_t>(threat);
+
+        if (id == this->m_threatTarget) {
+            everyone = true;
+        }
+
+        updated[i] = entry;
+    }
+
+    CHashKeyGUID key(this->m_threatTarget);
+    auto top = this->m_threatList.Ptr(static_cast<uint32_t>(this->m_threatTarget), key);
+    bool changed = false;
+
+    if (this->m_threatTarget && top) {
+        int32_t topThreat = top->m_threat;
+
+        if (everyone) {
+            for (auto entry = this->m_threatList.Head(); entry; entry = this->m_threatList.Next(entry)) {
+                if (entry->m_guid != this->m_threatTarget && this->UpdateThreatPercent(entry, topThreat, player == entry->m_guid)) {
+                    changed = true;
+                }
+            }
+        } else {
+            for (uint32_t i = 0; i < count; i++) {
+                auto entry = updated[i];
+
+                if (entry->m_guid != this->m_threatTarget && this->UpdateThreatPercent(entry, topThreat, player == entry->m_guid)) {
+                    changed = true;
+                }
+            }
+        }
+    }
+
+    if (highest || changed) {
+        this->UpdateThreatTargetStatus();
+    }
+
+    ScriptEventsQueueUnitEvent(this->GetGUID(), 0x261);
+}
+
+// ref: FUN_00737750
+// SMSG_THREAT_REMOVE's body: `guid` leaves the table. Losing anyone but the tank above it may
+// leave the tank secure again.
+//
+// PARTIAL: the tooltip's refresh when the player left (FUN_00512ab0) is the tooltip's.
+void CGUnit_C::RemoveThreatEntry(const WOWGUID& guid) {
+    CHashKeyGUID key(guid);
+    auto entry = this->m_threatList.Ptr(static_cast<uint32_t>(guid), key);
+
+    if (!entry) {
+        return;
+    }
+
+    bool retake = false;
+
+    if (guid == this->m_threatTarget) {
+        this->m_threatTarget = 0;
+    } else if (1 < entry->m_status) {
+        retake = true;
+    }
+
+    WOWGUID removed = guid;
+
+    GameUIRemoveThreatUnit(this->GetGUID(), removed);
+
+    // FUN_00723270 / ObjectFree
+    this->m_threatList.Delete(entry);
+
+    ScriptEventsQueueUnitEvent(removed, 0x262);
+
+    if (retake) {
+        this->UpdateThreatTargetStatus();
+    }
+
+    ScriptEventsQueueUnitEvent(this->GetGUID(), 0x261);
+}
+
+// ref: FUN_007345c0
+// SMSG_THREAT_CLEAR's body: the table empties and there is no top.
+//
+// PARTIAL: the tooltip's refresh for this unit (FUN_00512ab0) is the tooltip's.
+void CGUnit_C::ClearThreatList() {
+    if (!this->m_threatList.Head()) {
+        return;
+    }
+
+    while (auto entry = this->m_threatList.Head()) {
+        WOWGUID guid = entry->m_guid;
+
+        ScriptEventsQueueUnitEvent(guid, 0x262);
+        GameUIRemoveThreatUnit(this->GetGUID(), guid);
+        this->m_threatList.Delete(entry);
+    }
+
+    this->m_threatTarget = 0;
+
+    ScriptEventsQueueUnitEvent(this->GetGUID(), 0x261);
+}
+
+// ref: FUN_007374c0
+// What this unit's table says about `guid`: its status, its percentage of the tank's, the raw
+// percentage of the pull threshold (110% in melee range, 130% beyond it; 100 for the tank) and its
+// threat. Without a tank or an entry everything is zero but the status, which is 1 when the entry
+// is there. Zero when it is not on the table.
+int32_t CGUnit_C::GetThreatSituation(const WOWGUID& guid, uint8_t* status, uint8_t* percent, float* rawPercent,
+                                     int32_t* threat) {
+    CHashKeyGUID key(guid);
+    auto entry = this->m_threatList.Ptr(static_cast<uint32_t>(guid), key);
+
+    if (!this->m_threatTarget || !entry) {
+        if (status) {
+            *status = entry ? 1 : 0;
+        }
+
+        if (percent) {
+            *percent = 0;
+        }
+
+        if (rawPercent) {
+            *rawPercent = 0.0f;
+        }
+
+        if (threat) {
+            *threat = 0;
+        }
+
+        return 0;
+    }
+
+    if (status) {
+        *status = entry->m_status;
+    }
+
+    if (percent) {
+        *percent = entry->m_percent;
+    }
+
+    if (rawPercent) {
+        if (guid == this->m_threatTarget) {
+            *rawPercent = 100.0f;
+        } else {
+            auto other = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x5b35));
+            bool inMelee = false;
+
+            if (other) {
+                // FUN_004f5f40: the melee range between the two, never under 5 yards.
+                float range = other->m_unit->combatReach + this->m_unit->combatReach + 1.3333334f;
+
+                if (range < 5.0f) {
+                    range = 5.0f;
+                }
+
+                // FUN_004f61d0
+                C3Vector at = other->GetPosition();
+                C3Vector here = this->GetPosition();
+                float dx = here.x - at.x;
+                float dy = here.y - at.y;
+                float dz = here.z - at.z;
+
+                inMelee = dy * dy + dz * dz + dx * dx <= range * range;
+            }
+
+            *rawPercent = static_cast<float>(entry->m_percent) * (inMelee ? 0.90909094f : 0.7692308f);
+        }
+    }
+
+    if (threat) {
+        *threat = entry->m_threat;
+    }
+
+    return 1;
+}
+
+// ref: FUN_00719220
+// The floater a status change raises over this unit ("COMBAT_THREAT_INCREASE_2" and so on) while
+// threat warnings are on -- except falling from high to low, or from insecure to secure.
+//
+// PHASE4(PlayerName): the text goes to the unit's name plate (+0xb0) as world text 10 through
+// FUN_007e5100 / FUN_007e6030; frozen's name plates do not carry world text yet.
+void CGUnit_C::ShowThreatWorldText(int32_t oldStatus, int32_t newStatus) {
+    if (!GameUIThreatWarningActive()) {
+        return;
+    }
+
+    auto worldText = CGGameUI::s_threatWorldTextCvar;
+
+    if (!worldText || worldText->GetInt() == 0) {
+        return;
+    }
+
+    bool quiet;
+
+    if (oldStatus == 2) {
+        quiet = newStatus == 1;
+    } else if (oldStatus == 3) {
+        quiet = newStatus == 4;
+    } else {
+        quiet = false;
+    }
+
+    if (quiet) {
+        return;
+    }
+
+    char token[32];
+    SStrPrintf(token, sizeof(token), "COMBAT_THREAT_%s_%d", newStatus <= oldStatus ? "DECREASE" : "INCREASE", newStatus);
+
+    const char* text = FrameScript_GetText(token, -1, GENDER_NOT_APPLICABLE);
+
+    if (!text || !text[0]) {
+        return;
+    }
+}
+
+// ---- control (Unit_C.cpp) -------------------------------------------------------------------
+
+// ref: FUN_0071c930
+// Whether the player controls this unit. Losing control stops a fall in progress and remembers a
+// charm (0x1000); gaining it sets 0xc000400. For the player itself the game UI hears of it, and a
+// rider's camera blends to its seat.
+void CGUnit_C::SetHasControl(bool hasControl) {
+    if (!hasControl) {
+        this->m_stateFlags &= ~0x400u;
+
+        if (this->m_unit->charm) {
+            this->m_stateFlags |= 0x1000;
+        }
+
+        // FUN_006e9a60
+        if (this->m_localMove.m_moveFlags & 0x100000) {
+            this->m_localMove.StopFallAndMoving();
+        }
+    } else {
+        this->m_stateFlags |= 0xc000400;
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        GameUISetPlayerControl((this->m_stateFlags >> 10) & 1);
+
+        if (this->m_stateFlags & 0x400) {
+            VehicleRefreshCameraBlend(this);
+        }
+    }
+}
+
+// ref: FUN_0072cca0
+// SMSG_CONTROL_UPDATE for this unit: who the input moves follows -- the camera's unit when it may
+// be moved, else nobody.
+void CGUnit_C::OnControlUpdate(WOWGUID guid, bool hasControl) {
+    this->SetHasControl(hasControl);
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+    WOWGUID target = camera ? camera->m_target : 0;
+
+    if (target == guid) {
+        if (this->m_stateFlags & 0x400) {
+            CGUnit_C::ChangeActiveMover(guid);
+            return;
+        }
+
+        if (this->GetGUID() != CGUnit_C::s_activeMover) {
+            return;
+        }
+    } else {
+        if (this->GetGUID() != CGUnit_C::s_activeMover || (this->m_stateFlags & 0x400)) {
+            return;
+        }
+
+        auto object = ClntObjMgrObjectPtr(target, TYPE_OBJECT, ".\\Unit_C.cpp", 0x5c8f);
+
+        if (object && object->IsA(TYPE_UNIT) && (static_cast<CGUnit_C*>(object)->m_stateFlags & 0x400)) {
+            CGUnit_C::ChangeActiveMover(target);
+            return;
+        }
+    }
+
+    CGUnit_C::ChangeActiveMover(0);
+}
+
+// ref: FUN_00729010
+// The input moves `guid` (0 for nothing). The old mover lets go -- its click-to-move ends, and a
+// unit without a spline holding it reports CMSG_MOVE_NOT_ACTIVE_MOVER -- and the new one takes over
+// from where it is, with the player's flight bit, and the vehicle controls follow.
+void CGUnit_C::ChangeActiveMover(WOWGUID guid) {
+    if (CGUnit_C::s_activeMover == guid) {
+        return;
+    }
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    WOWGUID player = ClntObjMgrGetActivePlayer();
+
+    if (auto old = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, ".\\Unit_C.cpp", 0x1f7d))) {
+        if (old->GetGUID() == CGUnit_C::s_activeMover && s_clickToMoveState != 13) {
+            old->CancelClickToMove(0, 1);
+        }
+
+        old->m_localMove.m_moveFlags &= 0x7fffffff;
+
+        if (player != CGUnit_C::s_activeMover) {
+            old->m_localMove.m_moveFlags &= ~0x200u;
+        }
+
+        auto spline = old->m_localMove.m_spline;
+
+        if (!spline || (spline->flags & 0x400)) {
+            old->m_localMove.OnLostActiveMover();
+
+            if (old->GetGUID() == player) {
+                // FUN_00724e70
+                old->SendMovementStatus(MovementGetGlobals()->m_stepTime, CMSG_MOVE_NOT_ACTIVE_MOVER, 0.0f, 0, 0, 0xff);
+            }
+        }
+    }
+
+    CGUnit_C::s_activeMover = guid;
+
+    if (guid) {
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(CMSG_SET_ACTIVE_MOVER));
+        msg.Put(guid);
+        msg.Finalize();
+        ClientServices::Send(&msg);
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, ".\\Unit_C.cpp", 0x1f99));
+
+    if (unit) {
+        if (player != CGUnit_C::s_activeMover) {
+            auto self = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(player, TYPE_PLAYER, __FILE__, __LINE__));
+
+            if (self && (self->m_localMove.m_moveFlags & 0x200)) {
+                unit->m_localMove.m_moveFlags |= 0x200;
+            }
+        }
+
+        unit->m_localMove.OnBecameActiveMover();
+
+        if (auto input = InputControlGetActive()) {
+            input->UpdatePlayerMovement(now, 1);
+        }
+    }
+
+    VehicleOnActiveMoverChanged(unit);
+}
+
+// ref: FUN_00716060
+// Keep an SMSG_CONTROL_UPDATE for a unit not yet in view: a new one replaces it when nothing is
+// kept, when it is for the same unit, when the kept one was a loss, or when the new one is a gain.
+void CGUnit_C::StorePendingControl(WOWGUID guid, bool hasControl) {
+    if (!s_pendingControl || s_pendingControl == guid || !s_pendingControlHas || hasControl) {
+        s_pendingControl = guid;
+        s_pendingControlHas = hasControl;
+    }
+}
+
+// ---- pet sounds (UnitSound_C.cpp) -----------------------------------------------------------
+
+namespace {
+
+// ref: FUN_004cda20
+// The voice a Death Knight's sounds pick: "Death Knight <race> <sex>".
+void SoundGetDeathKnightVoice(CGPlayer_C* player, char* buffer, uint32_t size) {
+    static const char* const s_raceNames[] = {
+        nullptr, "Human", "Orc", "Dwarf", "NightElf", "Scourge", "Tauren", "Gnome", "Troll", "Goblin",
+        "BloodElf", "Draenei",
+    };
+
+    uint32_t bytes0 = player->Unit()->bytes0;
+    uint32_t race = bytes0 & 0xff;
+    const char* raceName = race < sizeof(s_raceNames) / sizeof(s_raceNames[0]) ? s_raceNames[race] : nullptr;
+
+    SStrPrintf(buffer, size, "Death Knight %s %s", raceName ? raceName : "", ((bytes0 >> 16) & 0xff) ? "Female" : "Male");
+}
+
+} // namespace
+
+// ref: FUN_007474b0
+// The pet's voice: 0 aggro, 1 an order taken, 2 an attack, 4 its death (not for a creature whose
+// template mutes it). A spoken line is never cut, nor a louder pet sound by a quieter one. A pet's
+// voice waits on Sound_EnablePetSounds; anything else speaks regardless.
+void CGUnit_C::PlayPetSound(int32_t type) {
+    if (type == 4 && this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x1000000)) {
+        return;
+    }
+
+    if (!this->m_soundData) {
+        return;
+    }
+
+    if (SI2::IsPlaying(this->m_speechSound)) {
+        return;
+    }
+
+    if (SI2::IsPlaying(this->m_petSound) && type <= this->m_petSoundType) {
+        return;
+    }
+
+    this->m_petSoundType = type;
+
+    static CVar* s_enablePetSounds = CVar::Lookup("Sound_EnablePetSounds");
+    bool voiced = !s_enablePetSounds || s_enablePetSounds->GetInt() != 0 || this->m_unit->petNumber == 0;
+    int32_t soundID;
+
+    switch (this->m_petSoundType) {
+        case 0:
+            if (!voiced) {
+                return;
+            }
+
+            soundID = this->m_soundData->m_soundAggroID;
+            break;
+
+        case 1:
+            if (!voiced) {
+                return;
+            }
+
+            soundID = this->m_soundData->m_soundPetOrderID;
+            break;
+
+        case 2:
+            if (!voiced) {
+                return;
+            }
+
+            soundID = this->m_soundData->m_soundPetAttackID;
+            break;
+
+        case 4:
+            soundID = this->m_soundData->m_soundDeathID;
+            break;
+
+        default:
+            return;
+    }
+
+    C3Vector position;
+    this->GetAttachmentPosition(position, 0x11, nullptr);
+
+    static CVar* s_listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+    bool isMover = CGUnit_C::s_activeMover == this->GetGUID();
+    bool atCharacter = isMover && s_listenerAtCharacter && s_listenerAtCharacter->GetInt() != 0;
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    if (isMover) {
+        properties.int20 = 0x6e;
+
+        auto player = CGPlayer_C::GetActivePtr();
+
+        if (player && ((player->Unit()->bytes0 >> 8) & 0xff) == 6) {
+            properties.uint60 = 1;
+            SoundGetDeathKnightVoice(player, properties.m_voiceName, sizeof(properties.m_voiceName));
+        }
+
+        if (atCharacter) {
+            properties.m_fadeOutTime = 0.65f;
+        }
+    }
+
+    SI2::PlaySoundKit(soundID, atCharacter ? nullptr : &position, this->m_petSound, &properties, 0, nullptr, 1, 0);
 }

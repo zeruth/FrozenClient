@@ -205,6 +205,8 @@ class CMovementData_C : public CMovementShared {
                            int32_t fromServer, uint8_t seat);
         void RunServerEvent(CPlayerMoveEvent* event, int32_t clearSpline);
         void FlushEvents(int32_t clearSpline, int32_t stopAll);
+        void OnBecameActiveMover();
+        void OnLostActiveMover();
         void SplineUnroot();
         void SplineSetHover(int32_t hover);
         void SplineRoot();

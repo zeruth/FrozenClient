@@ -1,4 +1,10 @@
 #include "ui/game/CGGameUI.hpp"
+#include <storm/Array.hpp>
+#include <storm/Hash.hpp>
+#include "util/guid/CHashKeyGUID.hpp"
+#include "db/Db.hpp"
+#include "ui/game/CGRaidInfo.hpp"
+#include "ui/game/CGPartyInfo.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "sound/SI2.hpp"
 #include "ui/game/PlayerName.hpp"
@@ -55,6 +61,12 @@
 #include "util/Log.hpp"
 #include <common/MD5.hpp>
 
+namespace {
+
+bool ThreatWarningCallback(CVar* var, const char* oldValue, const char* value, void* arg);
+
+} // namespace
+
 WOWGUID CGGameUI::s_currentObjectTrack;
 CVar* CGGameUI::s_currencyTokensUnused1Cvar;
 CVar* CGGameUI::s_currencyTokensUnused2Cvar;
@@ -77,6 +89,10 @@ WOWGUID CGGameUI::s_interactTarget;
 WOWGUID CGGameUI::s_previousTarget;
 CVar* CGGameUI::s_predictedHealthCvar;
 CVar* CGGameUI::s_predictedPowerCvar;
+CVar* CGGameUI::s_threatWarningCvar;
+CVar* CGGameUI::s_threatWorldTextCvar;
+CVar* CGGameUI::s_threatShowNumericCvar;
+CVar* CGGameUI::s_threatPlaySoundsCvar;
 int32_t CGGameUI::s_inCinematic;
 bool CGGameUI::s_loggingIn;
 CSimpleTop* CGGameUI::s_simpleTop;
@@ -553,7 +569,7 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("rotateMinimap", "Rotate the minimap", 0x10, "0", nullptr, GAME);
     CVar::Register("showTutorials", "Show tutorials", 0x10, "1", nullptr, GAME);
     CVar::Register("targetOfTargetMode", "Target of target mode", 0x10, "5", nullptr, GAME);
-    CVar::Register("threatWarning", "Threat warning mode", 0x10, "3", nullptr, GAME);
+    CGGameUI::s_threatWarningCvar = CVar::Register("threatWarning", "Threat warning mode", 0x10, "3", &ThreatWarningCallback, GAME);
     CVar::Register("useUiScale", "Use the UI scale", 0x10, "0", nullptr, GAME);
     CVar::Register("uiScale", "UI scale", 0x10, "1", nullptr, GAME);
     CVar::Register("UnitNameNPC", "Show NPC names", 0x10, "1", nullptr, GAME);
@@ -740,9 +756,9 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("showTokenFrameHonor", "The token UI has shown Honor", 0x20, "0", nullptr, GAME);
     CGGameUI::s_predictedHealthCvar = CVar::Register("predictedHealth", "Whether or not to use predicted health values in the UI", 0x10, "1", nullptr, GAME);
     CGGameUI::s_predictedPowerCvar = CVar::Register("predictedPower", "Whether or not to use predicted power values in the UI", 0x10, "1", nullptr, GAME);
-    CVar::Register("threatWorldText", "Whether or not to show threat floaters in combat", 0x10, "1", nullptr, GAME);
-    CVar::Register("threatShowNumeric", "Whether or not to show numeric threat on the target and focus frames", 0x10, "0", nullptr, GAME);
-    CVar::Register("threatPlaySounds", "Whether or not to sounds when certain threat transitions occur", 0x10, "1", nullptr, GAME);
+    CGGameUI::s_threatWorldTextCvar = CVar::Register("threatWorldText", "Whether or not to show threat floaters in combat", 0x10, "1", nullptr, GAME);
+    CGGameUI::s_threatShowNumericCvar = CVar::Register("threatShowNumeric", "Whether or not to show numeric threat on the target and focus frames", 0x10, "0", nullptr, GAME);
+    CGGameUI::s_threatPlaySoundsCvar = CVar::Register("threatPlaySounds", "Whether or not to sounds when certain threat transitions occur", 0x10, "1", nullptr, GAME);
     CVar::Register("ShowAllSpellRanks", "show either all spell ranks, or only the highest rank", 0x10, "1", nullptr, GAME);
     CVar::Register("ShowClassColorInNameplate", "use this to display the class color in the nameplate health bar", 0x20, "0", nullptr, GAME); // TODO callback FUN_00512770
     CVar::Register("lfgSelectedRoles", "Stores what roles the player is willing to take on.", 0x120, "0", nullptr, GAME);
@@ -900,6 +916,204 @@ void CGGameUI::SetTarget(WOWGUID guid) {
 
     SendSetSelection(guid);
     FrameScript_SignalEvent(0x9D, nullptr);
+}
+
+
+// ---- threat (GameUI.cpp) -----------------------------------------------------------------------
+
+namespace {
+
+// DAT_00bd08c0: whether threat warnings show where the player is (threatWarning).
+int32_t s_threatWarningActive = 0;
+
+// DAT_00bcfb8c: whether the player controls its character.
+int32_t s_playerHasControl = 0;
+
+// One entry of the table at 0x00bd0bd4: for a unit that is held threat against, the units whose
+// threat tables carry it. A dropped unit leaves a zero slot that the next one reuses.
+class CThreatUnits : public TSHashObject<CThreatUnits, CHashKeyGUID> {
+    public:
+        TSGrowableArray<WOWGUID> m_units;
+
+        // ref: FUN_005256a0
+        void Add(const WOWGUID& unit) {
+            WOWGUID* empty = nullptr;
+
+            for (uint32_t i = this->m_units.Count(); i != 0; i--) {
+                auto& slot = this->m_units[i - 1];
+
+                if (slot == unit) {
+                    return;
+                }
+
+                if (!slot) {
+                    empty = &slot;
+                }
+            }
+
+            if (!empty) {
+                // FUN_00524930
+                empty = this->m_units.New();
+            }
+
+            *empty = unit;
+        }
+
+        // ref: FUN_00519cf0
+        void Remove(const WOWGUID& unit) {
+            for (uint32_t i = this->m_units.Count(); i != 0; i--) {
+                if (this->m_units[i - 1] == unit) {
+                    this->m_units[i - 1] = 0;
+                    return;
+                }
+            }
+        }
+
+        // ref: FUN_00519d50
+        // The worst any of these units thinks of `guid`: the highest status below 3, except that
+        // one insecure tank (3) outranks a secure one (4). Units gone from view are dropped.
+        uint8_t GetStatus(const WOWGUID& guid) {
+            uint8_t worst = 0;
+
+            for (uint32_t i = this->m_units.Count(); i != 0; i--) {
+                auto& slot = this->m_units[i - 1];
+
+                if (!slot) {
+                    continue;
+                }
+
+                auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(slot, TYPE_UNIT, ".\\GameUI.cpp", 0x3926));
+
+                if (!unit) {
+                    slot = 0;
+                    continue;
+                }
+
+                uint8_t status = 0;
+                unit->GetThreatSituation(guid, &status, nullptr, nullptr, nullptr);
+
+                if (worst < 3) {
+                    if (worst < status) {
+                        worst = status;
+                    }
+                } else if (worst == 4 && status == 3) {
+                    worst = 3;
+                }
+            }
+
+            return worst;
+        }
+};
+
+TSHashTable<CThreatUnits, CHashKeyGUID> s_threatUnits;
+
+// ref: FUN_0051d990
+bool ThreatWarningCallback(CVar* var, const char* oldValue, const char* value, void* arg) {
+    GameUIUpdateThreatWarning(SStrToInt(value));
+    return true;
+}
+
+} // namespace
+
+// ref: FUN_00519df0
+// Whether threat warnings show: never (0), in a dungeon or raid instance (1), in a party or raid
+// (2), or always.
+//
+// PARTIAL: the zone and party changes that re-run this (FUN_00521b00, FUN_00528010's callers)
+// are their own ports'; the cvar's callback is here.
+void GameUIUpdateThreatWarning(int32_t mode) {
+    bool active;
+
+    if (mode == 0) {
+        active = false;
+    } else if (mode == 1) {
+        auto map = g_mapDB.GetRecord(static_cast<int32_t>(ClntObjMgrGetMapID()));
+        active = map && (map->m_instanceType == 1 || map->m_instanceType == 2);
+    } else if (mode == 2) {
+        active = CGPartyInfo::GetMember(0) || CGRaidInfo::NumMembers() != 0;
+    } else {
+        active = true;
+    }
+
+    s_threatWarningActive = active ? 1 : 0;
+
+    FrameScript_SignalEvent(0x262, nullptr);
+    FrameScript_SignalEvent(0x261, nullptr);
+}
+
+int32_t GameUIThreatWarningActive() {
+    return s_threatWarningActive;
+}
+
+// ref: FUN_0052b370
+// `unit` holds threat against `target`.
+//
+// PARTIAL: the first-threat tutorial (0x35, FUN_00530840) for a player over level 13 is the
+// tutorial frame's.
+void GameUIAddThreatUnit(const WOWGUID& unit, const WOWGUID& target) {
+    CHashKeyGUID key(target);
+    auto entry = s_threatUnits.Ptr(static_cast<uint32_t>(target), key);
+
+    if (!entry) {
+        entry = s_threatUnits.New(static_cast<uint32_t>(target), key, 0, 0);
+    }
+
+    entry->Add(unit);
+}
+
+// ref: FUN_0052a160
+void GameUIRemoveThreatUnit(const WOWGUID& unit, const WOWGUID& target) {
+    CHashKeyGUID key(target);
+
+    if (auto entry = s_threatUnits.Ptr(static_cast<uint32_t>(target), key)) {
+        entry->Remove(unit);
+    }
+}
+
+// ref: FUN_0052a1a0
+// UnitThreatSituation(unit) with no mob: the worst status any unit holding threat against `guid`
+// gives it, 0 when none does.
+uint8_t GameUIGetThreatStatus(const WOWGUID& guid) {
+    CHashKeyGUID key(guid);
+
+    if (auto entry = s_threatUnits.Ptr(static_cast<uint32_t>(guid), key)) {
+        return entry->GetStatus(guid);
+    }
+
+    return 0;
+}
+
+// ref: FUN_00520fe0
+// PLAYER_CONTROL_GAINED (0xa0) or PLAYER_CONTROL_LOST (0x9f), losing it dropping what the cursor
+// holds.
+//
+// PARTIAL: the spell book and action bar refresh (FUN_0053cf10) and the targeting cancel
+// (FUN_00809ac0) are the spell UI's.
+void GameUISetPlayerControl(int32_t hasControl) {
+    if (hasControl == s_playerHasControl) {
+        return;
+    }
+
+    s_playerHasControl = hasControl;
+
+    if (hasControl) {
+        FrameScript_SignalEvent(0xa0, nullptr);
+        return;
+    }
+
+    GameUIClearCursor(1, 1);
+    FrameScript_SignalEvent(0x9f, nullptr);
+}
+
+int32_t GameUIPlayerHasControl() {
+    return s_playerHasControl;
+}
+
+// ref: FUN_00513880
+// Entering the world: the player has control, and `mover` is what it moves.
+void GameUIInitPlayerControl(WOWGUID mover) {
+    s_playerHasControl = 1;
+    CGUnit_C::SetActiveMover(mover);
 }
 
 // ref: FUN_00519280

@@ -2,6 +2,8 @@
 #include "model/CM2Model.hpp"
 #include "object/client/CClientMoveUpdate.hpp"
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/CGGameObject_C.hpp"
+#include "object/client/GameObjectTypes.hpp"
 #include "object/client/CVehicle_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "object/client/CMovement_C.hpp"
@@ -3289,4 +3291,39 @@ void CMovementData_C::SetSplineTransport(WOWGUID transport, uint8_t seat, int32_
         auto globals = MovementGetGlobals();
         this->m_owner->SendMovementStatus(globals->m_lastTime, 0x38d, 0.0f, 0, 0, 0xff);
     }
+}
+
+// ref: FUN_006ee870
+// The unit becomes the active mover: its queued events run now, a passenger takes its transport's
+// clock, a spline that hands control back (0x400) ends, and an unsupported unit starts to fall.
+void CMovementData_C::OnBecameActiveMover() {
+    this->FlushEvents(0, 0);
+
+    auto globals = MovementGetGlobals();
+    WOWGUID transport = this->GetTransportGUID();
+
+    if (transport) {
+        auto object = static_cast<CGGameObject_C*>(ClntObjMgrObjectPtr(transport, TYPE_GAMEOBJECT, ".\\Movement.cpp", 0xd66));
+
+        if (object && object->m_type) {
+            MovementSetTransportTime(static_cast<uint32_t>(object->m_type->Virtual0A8()));
+        }
+    }
+
+    if (this->m_spline && (this->m_spline->flags & 0x400)) {
+        this->EndSpline(static_cast<int32_t>(globals->m_lastTime));
+    }
+
+    this->m_moveFlags &= 0x7fffffff;
+
+    if (!this->m_spline || (this->m_spline->flags & 0x400)) {
+        this->QueueFallIfUnsupported(static_cast<int32_t>(globals->m_lastTime));
+    }
+}
+
+// ref: FUN_006ee920
+// The unit stops being the active mover: everything it was doing stops.
+void CMovementData_C::OnLostActiveMover() {
+    this->FlushEvents(1, 1);
+    this->m_moveFlags &= 0x7fffffff;
 }

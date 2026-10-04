@@ -15,6 +15,7 @@
 #include "object/client/ObjMgr.hpp"
 #include "sound/SI2.hpp"
 #include "ui/FrameScript.hpp"
+#include "object/client/CGPlayer_C.hpp"
 #include "ui/InputControl.hpp"
 #include "ui/game/ScriptEvents.hpp"
 #include "world/CWorld.hpp"
@@ -374,6 +375,24 @@ void UnitSignalVehicleEnd(CGUnit_C* unit) {
     for (int32_t i = 0; i < count; i++) {
         FrameScript_SignalEvent(0x251, "%s", tokens[i]);
     }
+}
+
+// ref: FUN_00747f40
+// PHASE4(Missile_C): the vehicle's aim arc (FUN_006fe9b0 for a vehicle, FUN_006fbf00 to clear it)
+// is the missile port's.
+void VehicleOnActiveMoverChanged(CGUnit_C* unit) {
+    if (unit) {
+        const VehicleRec* rec = unit->m_vehicle ? unit->m_vehicle->m_rec : nullptr;
+
+        FrameScript_SignalEvent(0x290, nullptr);
+
+        if (rec) {
+            VehicleUpdateAngleEvents(unit, rec);
+            return;
+        }
+    }
+
+    VehicleUpdateAngleEvents(unit, nullptr);
 }
 
 // ref: FUN_0074c5a0
@@ -1013,11 +1032,15 @@ void UnitUpdateVehicleCamera(CGUnit_C* unit) {
 // A ride that ends in death: the death's combat log line and pose, the pet's death sound, the mount
 // sound stopped, and the player's death events.
 //
-// PARTIAL: the combat log entry (FUN_00752ed0) and the pet death sound (FUN_007474b0) are the
-// combat log and pet sound ports'; the corpse release prompt after PLAYER_DEAD (FUN_00519280) is
-// the UI's.
+// PARTIAL: the combat log entry (FUN_00752ed0) is the combat log's; the corpse release prompt
+// after PLAYER_DEAD (FUN_00519280) is the UI's.
 void UnitOnLeftVehicle(CGUnit_C* unit) {
     unit->PlayDeathPose(0);
+
+    // A player released as a ghost (0x4000) makes no death sound.
+    if (!unit->IsA(TYPE_PLAYER) || !(static_cast<CGPlayer_C*>(unit)->Player()->flags & 0x4000)) {
+        unit->PlayPetSound(4);
+    }
 
     if (unit->m_mountSound) {
         SI2::StopOrFadeOut(unit->m_mountSound, 0, 0.5f, 1);

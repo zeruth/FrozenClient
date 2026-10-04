@@ -48,6 +48,10 @@ void UnitSignalVehicleBegin(CGUnit_C* unit);
 void UnitSignalVehicleEnd(CGUnit_C* unit);
 // FUN_0074c5a0
 void VehicleUpdateAngleEvents(CGUnit_C* unit, const VehicleRec* rec);
+// FUN_00747f40
+// The active mover changed to `unit` (null for none): VEHICLE_UPDATE, and the vehicle controls
+// follow the vehicle it is, if any.
+void VehicleOnActiveMoverChanged(CGUnit_C* unit);
 // FUN_0074bcb0
 // Whether the move to `transport` at `seat` plays a vehicle animation first.
 int32_t UnitSeatMoveAnimates(CGUnit_C* unit, WOWGUID transport, uint8_t seat);

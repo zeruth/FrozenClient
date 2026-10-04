@@ -2,6 +2,7 @@
 #include "component/ComponentData.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include "ui/game/CGGameUI.hpp"
 #include <common/Time.hpp>
 #include "db/Db.hpp"
 #include "object/Types.hpp"
@@ -632,9 +633,9 @@ void CGPlayer_C::PostInitActivePlayer() {
     if (ClntObjMgrGetPlayerType() == PLAYER_NORMAL) {
         // TODO
 
-        // FUN_00513880: the player is the active mover -- or the vehicle it controls, which the
-        // vehicle port brings in.
-        CGUnit_C::SetActiveMover(this->GetGUID());
+        // The player is the active mover -- or the vehicle it controls, which the vehicle port
+        // brings in.
+        GameUIInitPlayerControl(this->GetGUID());
 
         // TODO
 

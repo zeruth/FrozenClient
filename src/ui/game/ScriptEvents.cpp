@@ -2833,13 +2833,82 @@ int32_t Script_GetVehicleUIIndicatorSeat(lua_State* L) {
 }
 
 int32_t Script_UnitThreatSituation(lua_State* L) {
-    lua_pushnil(L);
+    WOWGUID guid = 0;
+
+    if (!Script_GetGUIDFromToken(lua_tostring(L, 1), guid, false)) {
+        luaL_error(L, "Usage: UnitThreatSituation(\"unit\" [, \"mob\"])");
+        return 0;
+    }
+
+    if (!guid) {
+        return 0;
+    }
+
+    uint8_t status = 0;
+
+    if (!lua_isstring(L, 2)) {
+        status = GameUIGetThreatStatus(guid);
+    } else {
+        // FUN_0060b060
+        WOWGUID mobGuid = 0;
+
+        if (!Script_GetGUIDFromToken(lua_tostring(L, 2), mobGuid, false)) {
+            luaL_error(L, "Usage: UnitThreatSituation(\"unit\" [, \"mob\"])");
+            return 0;
+        }
+
+        if (auto mob = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(mobGuid, TYPE_UNIT, ".\\ScriptEvents.cpp", 0x148))) {
+            mob->GetThreatSituation(guid, &status, nullptr, nullptr, nullptr);
+        }
+    }
+
+    if (status == 0) {
+        return 0;
+    }
+
+    lua_pushnumber(L, static_cast<double>(status - 1));
 
     return 1;
 }
 
 int32_t Script_UnitDetailedThreatSituation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    WOWGUID guid = 0;
+    WOWGUID mobGuid = 0;
+
+    if (!Script_GetGUIDFromToken(lua_tostring(L, 1), guid, false)
+        || !Script_GetGUIDFromToken(lua_tostring(L, 2), mobGuid, false)) {
+        luaL_error(L, "Usage: UnitDetailedThreatSituation(\"unit\" [, \"mob\"])");
+        return 0;
+    }
+
+    auto mob = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(mobGuid, TYPE_UNIT, ".\\ScriptEvents.cpp", 0x148));
+
+    if (!mob) {
+        return 0;
+    }
+
+    uint8_t status = 0;
+    uint8_t percent = 0;
+    float rawPercent = 0.0f;
+    int32_t threat = 0;
+    mob->GetThreatSituation(guid, &status, &percent, &rawPercent, &threat);
+
+    if (status == 0) {
+        return 0;
+    }
+
+    if (mob->m_threatTarget == guid) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    lua_pushnumber(L, static_cast<double>(status - 1));
+    lua_pushnumber(L, static_cast<double>(rawPercent));
+    lua_pushnumber(L, static_cast<double>(percent));
+    lua_pushnumber(L, static_cast<double>(threat));
+
+    return 5;
 }
 
 int32_t Script_UnitIsControlling(lua_State* L) {
