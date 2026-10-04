@@ -703,12 +703,11 @@ void CWorldParam::Initialize() {
         false
     );
 
-    // FROZEN-ONLY: the shadow dump needs the colour-format maps, so it defaults PCF off.
     CWorldParam::cvar_hwPCF = CVar::Register(
         "hwPCF",
         "Hardware PCF Filtering",
         0x1,
-        getenv("FROZEN_SHADOW_DUMP") ? "0" : "1",
+        "1",
         &CWorldParam::HwPCFCallback,
         GRAPHICS,
         false,

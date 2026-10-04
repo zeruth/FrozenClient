@@ -4356,68 +4356,6 @@ void CGxDeviceD3d::IEnsureCaptureTarget() {
         format, D3DMULTISAMPLE_NONE, 0, TRUE, &this->m_captureSurface, nullptr);
 }
 
-// FROZEN-ONLY debug readback, for the shadow-map dump. GetRenderTargetData copies a render
-// target's top level into a system-memory twin, which can then be locked. Depth formats cannot be
-// read this way in D3D9, which is why the dump runs with hardware PCF off.
-int32_t CGxDeviceD3d::IDebugReadTexture(CGxTex* tex, TSGrowableArray<float>& texels, uint32_t& width, uint32_t& height) {
-    if (!tex || !tex->m_apiSpecificData || !this->m_d3dDevice) {
-        return 0;
-    }
-
-    LPDIRECT3DSURFACE9 source = nullptr;
-
-    if (FAILED(static_cast<LPDIRECT3DTEXTURE9>(tex->m_apiSpecificData)->GetSurfaceLevel(0, &source))) {
-        return 0;
-    }
-
-    D3DSURFACE_DESC desc;
-    source->GetDesc(&desc);
-
-    if (desc.Format != D3DFMT_R32F && desc.Format != D3DFMT_A8R8G8B8 && desc.Format != D3DFMT_X8R8G8B8) {
-        source->Release();
-        return 0;
-    }
-
-    LPDIRECT3DSURFACE9 copy = nullptr;
-
-    if (FAILED(this->m_d3dDevice->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &copy, nullptr))) {
-        source->Release();
-        return 0;
-    }
-
-    int32_t ok = 0;
-
-    if (SUCCEEDED(this->m_d3dDevice->GetRenderTargetData(source, copy))) {
-        D3DLOCKED_RECT locked;
-
-        if (SUCCEEDED(copy->LockRect(&locked, nullptr, D3DLOCK_READONLY))) {
-            width = desc.Width;
-            height = desc.Height;
-            texels.SetCount(width * height);
-
-            for (uint32_t y = 0; y < height; y++) {
-                auto row = static_cast<const uint8_t*>(locked.pBits) + y * locked.Pitch;
-
-                for (uint32_t x = 0; x < width; x++) {
-                    if (desc.Format == D3DFMT_R32F) {
-                        texels[y * width + x] = reinterpret_cast<const float*>(row)[x];
-                    } else {
-                        texels[y * width + x] = row[x * 4 + 2] / 255.0f;
-                    }
-                }
-            }
-
-            copy->UnlockRect();
-            ok = 1;
-        }
-    }
-
-    copy->Release();
-    source->Release();
-
-    return ok;
-}
-
 // ref: FUN_0068fed0
 // Reads the back buffer, clipped to the window, into `bits` as 32-bit ARGB: X8R8G8B8 and A8R8G8B8
 // row for row, R5G6B5 and X1R5G5B5 / A1R5G5B5 widened, anything else white.

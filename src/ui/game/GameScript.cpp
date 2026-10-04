@@ -1,5 +1,4 @@
 #include "ui/InputControl.hpp"
-#include "world/ShadowMap.hpp"
 #include "ui/AddOn.hpp"
 #include <storm/String.hpp>
 #include "ui/game/GameScript.hpp"
@@ -280,7 +279,6 @@ int32_t Script_SetConsoleKey(lua_State* L) {
 
 int32_t Script_Screenshot(lua_State* L) {
     ScreenshotRequest();
-    ShadowMapRequestDump();
 
     return 0;
 }
