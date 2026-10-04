@@ -6,12 +6,17 @@
 #include "object/client/CGUnit_C.hpp"
 #include "net/Types.hpp"
 #include <cstdint>
+#include "object/client/CGBag_C.hpp"
 
 class CreatureModelDataRec;
 class CCharacterComponent;
 
 class CGPlayer_C : public CGUnit_C, public CGPlayer {
     public:
+        // +0x18f0: the player's inventory, all 150 slots for the active player and none for anyone
+        // else, walked in section order with the bank's sections gated on the bank being open.
+        CGBag_C m_bag;
+
         // +0x1920: the stand state the server last set for the active player (FUN_006e2b30).
         uint32_t m_requestedStandState = 0;
 

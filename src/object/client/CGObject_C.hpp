@@ -12,6 +12,7 @@
 #include <tempest/Quaternion.hpp>
 #include <tempest/Vector.hpp>
 
+class CGBag_C;
 class CEffect;
 class CGWorldFrame;
 class CM2Model;
@@ -117,7 +118,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         virtual void UpdateModel(int32_t a2) {}                                 // 0x01c
         virtual C3Vector GetHeadPosition() const;                               // 0x020
         virtual void* Virtual024() { return nullptr; }                          // 0x024
-        virtual void* Virtual028() { return nullptr; }                          // 0x028
+        virtual CGBag_C* GetBag() { return nullptr; }                           // 0x028, a container's slots
         virtual C3Vector GetPosition() const;                                   // 0x02c
         virtual C3Vector GetRawPosition() const { return this->GetPosition(); } // 0x030
         virtual float GetFacing() const;                                        // 0x034

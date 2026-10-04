@@ -13,6 +13,7 @@
 #include <storm/Error.hpp>
 #include "net/Connection.hpp"
 #include "object/client/Spell_C.hpp"
+#include <cstddef>
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
 uint32_t CGPlayer_C::s_itemProficiency[17];  // ref: DAT_00c9d4f0
@@ -473,8 +474,17 @@ CGPlayer_C* CGPlayer_C::GetActivePtr() {
     );
 }
 
+// ref: FUN_006e6b40
 CGPlayer_C::CGPlayer_C(uint32_t time, CClientObjCreate& objCreate) : CGUnit_C(time, objCreate) {
-    // TODO
+    // TODO the rest of the constructor
+
+    // The inventory is the descriptor's slot block, invSlots through currencyTokenSlots
+    static_assert(offsetof(CGPlayerData, currencyTokenSlots) - offsetof(CGPlayerData, invSlots) == 118 * sizeof(WOWGUID), "the inventory slots must be contiguous");
+
+    this->m_bag.m_owner = this->GetGUID();
+    this->m_bag.m_hasBankSlots = 1;
+    this->m_bag.m_numSlots = this->GetGUID() == ClntObjMgrGetActivePlayer() ? 150 : 0;
+    this->m_bag.m_slots = this->Player()->invSlots;
 }
 
 CGPlayer_C::~CGPlayer_C() {
