@@ -107,6 +107,12 @@ class CGTooltip : public CSimpleFrame {
         void RunOnTooltipAddMoneyScript(int32_t cost, int32_t maxCost);
         void SetAnchor(int32_t force);
         void SetOwner(CSimpleFrame* owner, TOOLTIP_ANCHORPOINT anchorType, float offsetX, float offsetY);
+
+        // ref: FUN_006238a0
+        int32_t SetSpell(int32_t spellID, int32_t compact, uint32_t cooldown, int32_t pet, int32_t showRank, int32_t inspect, int32_t talentGroup, int32_t talent, int32_t talentTab, int32_t append, int32_t talentPreview, int32_t unk34, int32_t rank, int32_t maxRank, int32_t talentNext);
+
+        // ref: FUN_0061dd60
+        static void OnSpellItemArrived(uint32_t id, const WOWGUID* guid, void* param, bool found);
 };
 
 class ItemStats_C;

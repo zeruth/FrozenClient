@@ -8,6 +8,10 @@
 #include <cstdint>
 #include "object/client/CGBag_C.hpp"
 
+class SpellRec;
+
+class CGItem_C;
+
 class CreatureModelDataRec;
 class CCharacterComponent;
 
@@ -219,6 +223,9 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         uint32_t GetXP() const;
         void PostInit(uint32_t time, const CClientObjCreate& init, bool a4);
         void PostInitActivePlayer();
+
+        // ref: FUN_006de230
+        CGItem_C* GetEquippedItemForSpell(const SpellRec* spell, uint32_t slots);
         void SetStorage(uint32_t* storage, uint32_t* saved);
         void UpdatePartyMemberState();
         // ref: FUN_006e04d0 / FUN_006dc7e0 / FUN_006e05d0

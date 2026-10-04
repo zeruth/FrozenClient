@@ -244,17 +244,14 @@ const char* TooltipUnitName(CGUnit_C* unit) {
     return unit->GetUnitName(nullptr, 1);
 }
 
-// Fill the tooltip for a spell: its name, and its rank on the right. A stand-in for the
-// reference's spell filler (FUN_006238a0), which is ported with the spell tooltips.
+// Fill the tooltip for a spell through the spell builder with no cooldown, pet or talent. The
+// setters that still call this pass the reference's own arguments once each is ported on its own.
 int32_t TooltipSetSpellRec(lua_State* L, CGTooltip* tooltip, const SpellRec* spell) {
-    if (!spell || !spell->m_name || !*spell->m_name) {
+    if (!spell) {
         return 0;
     }
 
-    tooltip->ClearTooltip();
-    tooltip->m_spellID = spell->m_ID;
-    tooltip->AddLine(spell->m_name, spell->m_rank, 0);
-    tooltip->Show();
+    tooltip->SetSpell(spell->m_ID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0);
 
     return 0;
 }
@@ -790,27 +787,76 @@ int32_t CGTooltip_SetTracking(lua_State* L) {
     return 0;
 }
 
-// SetSpell(slot, bookType): a spellbook entry.
+// ref: FUN_006259e0
+// SetSpell(slot, bookType): a spellbook entry, the player's or ("pet") the pet's. Returns 1 when a
+// line will change as time passes, otherwise nil.
+// PARTIAL: the spellbook is frozen's stand-in (the reference reads its slot array through
+// FUN_0053b4a0, and the pet's is not ported), and the cooldown left needs the spell cooldown
+// tracking (FUN_00809000), which is not ported, so none is shown.
 int32_t CGTooltip_SetSpell(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    if (!lua_isnumber(L, 2)) {
-        return 0;
+    if (lua_isnumber(L, 2) && lua_isstring(L, 3)) {
+        auto slot = static_cast<int32_t>(lua_tonumber(L, 2));
+
+        if (slot >= 0 && slot < 0x400) {
+            auto pet = !SStrCmpI("pet", lua_tostring(L, 3), STORM_MAX_STR) ? 1 : 0;
+            auto spellID = pet ? 0 : static_cast<int32_t>(SpellBookSpellAt(slot - 1));
+
+            if (spellID > 0) {
+                uint32_t cooldown = 0;
+
+                if (tooltip->SetSpell(spellID, 0, cooldown, pet, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0)) {
+                    lua_pushnumber(L, 1.0);
+
+                    return 1;
+                }
+            }
+
+            lua_pushnil(L);
+
+            return 1;
+        }
     }
 
-    uint32_t id = SpellBookSpellAt(static_cast<int32_t>(lua_tonumber(L, 2)) - 1);
+    luaL_error(L, "Invalid spell slot in %s:SetSpell", tooltip->GetDisplayName());
 
-    return TooltipSetSpellRec(L, tooltip, id ? g_spellDB.GetRecord(static_cast<int32_t>(id)) : nullptr);
+    return 0;
 }
 
+// ref: FUN_00625b90
+// SetSpellByID(id, isPet, showRank): a spell the player (or the pet) knows.
+// PARTIAL: as SetSpell -- the spellbook stand-in decides what is known (FUN_0053b930), the pet's
+// spells answer no, and no cooldown is shown.
 int32_t CGTooltip_SetSpellByID(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
-    if (!lua_isnumber(L, 2)) {
-        return 0;
+    if (lua_isnumber(L, 2)) {
+        auto spellID = static_cast<int32_t>(lua_tointeger(L, 2));
+
+        if (spellID >= 0) {
+            auto pet = StringToBOOL(L, 3, 0);
+            auto showRank = StringToBOOL(L, 4, 0);
+
+            if (!pet && SpellBookKnows(static_cast<uint32_t>(spellID))) {
+                uint32_t cooldown = 0;
+
+                if (tooltip->SetSpell(spellID, 0, cooldown, pet, showRank, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0)) {
+                    lua_pushnumber(L, 1.0);
+
+                    return 1;
+                }
+            }
+
+            lua_pushnil(L);
+
+            return 1;
+        }
     }
 
-    return TooltipSetSpellRec(L, tooltip, g_spellDB.GetRecord(static_cast<int32_t>(lua_tonumber(L, 2))));
+    luaL_error(L, "Invalid spell ID in %s:SetSpellByID", tooltip->GetDisplayName());
+
+    return 0;
 }
 
 int32_t CGTooltip_SetGlyph(lua_State* L) {

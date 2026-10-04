@@ -14,6 +14,7 @@
 #include "net/Connection.hpp"
 #include "object/client/Spell_C.hpp"
 #include <cstddef>
+#include "object/client/CGItem_C.hpp"
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
 uint32_t CGPlayer_C::s_itemProficiency[17];  // ref: DAT_00c9d4f0
@@ -783,4 +784,48 @@ void PlayerReadBindPoint(CDataStore* msg) {
 // ref: FUN_006cef10
 int32_t PlayerGetBindAreaID() {
     return static_cast<int32_t>(s_bindAreaID);
+}
+
+// ref: FUN_006de230
+// The equipped item, in the slots the mask allows, of the class and subclass the spell needs; a
+// broken one does not count. A hidden hand's slot is left out, as is the ranged slot for a spell
+// marked AttributesEx2 0x400. The reference keeps this on the player.
+CGItem_C* CGPlayer_C::GetEquippedItemForSpell(const SpellRec* spell, uint32_t slots) {
+    auto data = this->Unit();
+
+    if ((data->flags & 0x200000) || (data->flags2 & 0x80)) {
+        if (this->IsHandHidden(0)) {
+            slots &= ~0x8000u;
+        }
+
+        if (this->IsHandHidden(1)) {
+            slots &= ~0x10000u;
+        }
+    }
+
+    if (data->flags2 & 0x400) {
+        slots &= ~0x20000u;
+    }
+
+    for (uint32_t slot = 0; slot < 23; slot++) {
+        if (!(slots & (1u << slot))) {
+            continue;
+        }
+
+        auto item = this->m_bag.GetItem(slot);
+
+        if (!item) {
+            continue;
+        }
+
+        auto itemData = item->Item();
+
+        if (((itemData->flags & 0x8) || itemData->maxDurability == 0 || itemData->durability != 0) && !(itemData->flags & 0x10)) {
+            if (spell->m_equippedItemClass == item->GetClassID() && (spell->m_equippedItemSubclass & (1u << (item->GetSubclassID() & 0x1F)))) {
+                return item;
+            }
+        }
+    }
+
+    return nullptr;
 }
