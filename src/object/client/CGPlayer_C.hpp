@@ -200,6 +200,8 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
 
         // Virtual public member functions
         virtual ~CGPlayer_C();
+        void* Virtual024() override;                // 0x024, the same bag as GetBag
+        CGBag_C* GetBag() override;                 // 0x028, the player's own bag (+0x18f0)
 
         // Public member functions
         CGPlayer_C(uint32_t time, CClientObjCreate& objCreate);

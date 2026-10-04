@@ -1220,3 +1220,13 @@ int32_t PlayerOnFieldBytesChanged(WOWGUID guid, uint32_t offset, uint32_t size, 
 }
 
 static_assert(offsetof(CGPlayerData, field_bytes_2_4) == 0x10E7, "PLAYER_FIELD_BYTES byte 3 sits at 0x10e7");
+
+// The reference fills both slots 0x24 and 0x28 with FUN_006e6fd0, tagged on GetBag below.
+void* CGPlayer_C::Virtual024() {
+    return &this->m_bag;
+}
+
+// ref: FUN_006e6fd0
+CGBag_C* CGPlayer_C::GetBag() {
+    return &this->m_bag;
+}
