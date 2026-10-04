@@ -1,3 +1,4 @@
+#include "world/map/MapFootprints.hpp"
 #include "object/client/CGDynamicObject_C.hpp"
 #include "model/CM2Model.hpp"
 #include <vector>
@@ -820,8 +821,10 @@ void CGWorldFrame::OnWorldRender() {
 
     CWorldScene::s_viewUpdated = false;
 
-    // TODO FUN_0079fcc0 (a map pass with no other caller), then the per-unit visitor
-    // ClntObjMgrEnumVisibleObjects(FUN_004f6a40) and the unit flag resets FUN_00715380 /
+    // The footprints (FUN_0077f070 -> FUN_0079fcc0).
+    FootprintsRender();
+
+    // TODO the per-unit visitor ClntObjMgrEnumVisibleObjects(FUN_004f6a40) and the unit flag resets FUN_00715380 /
     // FUN_007153a0 / FUN_007153c0(0), and when the frame's +0xb10 bit 1 is set FUN_00615890(0)
     // and FUN_00725890 -- phase 4.
 

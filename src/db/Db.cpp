@@ -59,6 +59,7 @@ WowClientDB<TransportAnimationRec> g_transportAnimationDB;
 WowClientDB<TransportRotationRec> g_transportRotationDB;
 WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
 WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
+WowClientDB<FootprintTexturesRec> g_footprintTexturesDB;
 WowClientDB<ObjectEffectRec> g_objectEffectDB;
 WowClientDB<ObjectEffectGroupRec> g_objectEffectGroupDB;
 WowClientDB<ObjectEffectModifierRec> g_objectEffectModifierDB;
@@ -153,6 +154,7 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_transportRotationDB, __FILE__, __LINE__);
     loadFn(&g_taxiPathNodeDB, __FILE__, __LINE__);
     loadFn(&g_transportPhysicsDB, __FILE__, __LINE__);
+    loadFn(&g_footprintTexturesDB, __FILE__, __LINE__);
     loadFn(&g_objectEffectDB, __FILE__, __LINE__);
     loadFn(&g_objectEffectGroupDB, __FILE__, __LINE__);
     loadFn(&g_objectEffectModifierDB, __FILE__, __LINE__);

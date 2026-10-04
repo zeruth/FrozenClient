@@ -1,3 +1,4 @@
+#include "world/map/MapFootprints.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CVehicleCamera_C.hpp"
 #include "object/client/UnitVehicle_C.hpp"
@@ -13191,8 +13192,6 @@ void CGUnit_C::GetFootprint(int32_t* texture, C2Vector* size) {
 // shake, and within twenty-five yards, walking or running forward, the terrain's spray -- or a
 // splash in water shallower than half the unit's height.
 //
-// PARTIAL: the footprint itself (FUN_0077f040 -> FUN_0079fa70, the map's decal list) is phase 2's
-// footprint port; with it unported nothing is laid down.
 void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
     if (this->m_unit->petNumber != 0 || (this->m_move->m_moveFlags & 0x40000000)
         || (static_cast<uint8_t>(this->m_unit->bytes1 >> 16) & 0x2) || this->GetTransportGUID() != 0) {
@@ -13219,7 +13218,15 @@ void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
         return;
     }
 
-    (void)left;
+    // The footprint (FUN_0077f040 -> FUN_0079fa70), unless the model leaves none (flag 0x20).
+    if ((CWorld::s_enables & CWorld::Enable_Footprints) && !(this->m_modelData && (this->m_modelData->m_flags & 0x20))) {
+        int32_t texture = 0;
+        C2Vector size = { 0.0f, 0.0f };
+        this->GetFootprint(&texture, &size);
+
+        FootprintAdd(static_cast<uint32_t>(texture), size, *position, this->GetFacing(), left == 0, this->m_terrainType,
+                     this->GetGUID() == ClntObjMgrGetActivePlayer());
+    }
 
     auto modelData = this->m_modelData;
 

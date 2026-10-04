@@ -1,3 +1,4 @@
+#include "world/map/MapFootprints.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include "model/CM2Shared.hpp"
 #include <tempest/Rect.hpp>
@@ -198,7 +199,7 @@ void CMap::LoadTextureBlob() {
 // ref: FUN_007bfce0
 // Names the map's files, tears the previous map down, reads the WDT and starts the tiles round
 // the target loading. The light block (FUN_007d9bd0 / FUN_007d9d50 / FUN_007da100), the map
-// object cache flush (FUN_007b0040), FUN_0079fa10, the WDL low-detail load (FUN_007cc310), the
+// object cache flush (FUN_007b0040), the WDL low-detail load (FUN_007cc310), the
 // the per-map day/night setup (FUN_007f2790) and the final
 // AsyncFileReadWaitAll (FUN_004bae10) are not ported yet.
 void CMap::Load(const char* mapName, int32_t mapID) {
@@ -216,7 +217,8 @@ void CMap::Load(const char* mapName, int32_t mapID) {
 
     CMap::UnloadAll();
 
-    // TODO FUN_007b0040(1); FUN_0079fa10()
+    // TODO FUN_007b0040(1)
+    FootprintsClear();
 
     CMap::s_mapID = mapID;
     CMap::s_mapLoaded = 1;
@@ -512,7 +514,9 @@ void CMap::MapMemInitialize() {
     VBBList::InitializeLists();
     DetailDoodad::Initialize();
 
-    // TODO FUN_007afee0, FUN_007cb990, FUN_007a03c0; the two 0x2c-byte records at
+    FootprintsInitialize();
+
+    // TODO FUN_007afee0, FUN_007cb990 (before the footprints); the two 0x2c-byte records at
     // DAT_00d253d0 / DAT_00d253a4
 
     for (int32_t i = 0; i < 64 * 64; i++) {

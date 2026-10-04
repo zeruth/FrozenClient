@@ -60,6 +60,7 @@
 #include "db/rec/TransportRotationRec.hpp"
 #include "db/rec/TaxiPathNodeRec.hpp"
 #include "db/rec/TransportPhysicsRec.hpp"
+#include "db/rec/FootprintTexturesRec.hpp"
 #include "db/rec/ObjectEffectRec.hpp"
 #include "db/rec/ObjectEffectGroupRec.hpp"
 #include "db/rec/ObjectEffectModifierRec.hpp"
@@ -149,6 +150,7 @@ extern WowClientDB<TransportAnimationRec> g_transportAnimationDB;
 extern WowClientDB<TransportRotationRec> g_transportRotationDB;
 extern WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
 extern WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
+extern WowClientDB<FootprintTexturesRec> g_footprintTexturesDB;
 extern WowClientDB<ObjectEffectRec> g_objectEffectDB;
 extern WowClientDB<ObjectEffectGroupRec> g_objectEffectGroupDB;
 extern WowClientDB<ObjectEffectModifierRec> g_objectEffectModifierDB;
