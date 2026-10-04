@@ -89,6 +89,31 @@ class CThreatEntry : public TSHashObject<CThreatEntry, CHashKeyGUID> {
         int32_t m_threat = 0;       // +0x2c
 };
 
+// A melee hit as SMSG_ATTACKER_STATE_UPDATE reports it (UnitCombat_C.cpp, 0xa0 bytes), which the
+// attacker keeps until its swing lands it.
+struct CombatInfo {
+    WOWGUID attacker = 0;               // +0x00
+    WOWGUID target = 0;                 // +0x08
+    uint32_t hitInfo = 0;               // +0x10
+    int32_t damage = 0;                 // +0x14
+    int32_t overkill = 0;               // +0x18
+    uint32_t schoolMask[6] = {};        // +0x1c (two read; the last four take the 0x1 block)
+    float floatDamage[2] = {};          // +0x34
+    int32_t intDamage[2] = {};          // +0x3c
+    int32_t absorb[2] = {};             // +0x44
+    int32_t resist[2] = {};             // +0x4c
+    // +0x54: 0 unaffected, 1 wounded, 2 dodged, 3 parried, 4 interrupted, 5 blocked, 6 evaded,
+    // 7 immune, 8 deflected.
+    int32_t victimState = 0;
+    int32_t unk58 = 0;                  // +0x58
+    int32_t spellID = 0;                // +0x5c
+    int32_t blocked = 0;                // +0x60
+    int32_t rage = 0;                   // +0x64
+    uint32_t unk68[9] = {};             // +0x68
+    uint32_t unk8c = 0;                 // +0x8c
+    uint32_t pad90[4] = {};
+};
+
 class CGUnit_C : public CGObject_C, public CGUnit {
     // Vehicle_C.cpp reads the owner unit's animation state inline (m_animFlags and the pending flag
     // at +0xfa4), so CVehicle_C reaches them directly here rather than through accessors the
@@ -1165,6 +1190,16 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // sound last played, which a lower kind does not interrupt.
         // +0x958: the ObjectEffect state each of the three bone sequences put the unit in.
         int32_t m_objectEffectAnimStates[3] = {};
+        // +0xb98: the hit the unit's swing is about to land.
+        CombatInfo m_combatInfo;
+        // +0xa28: cleared whenever the unit swings or starts or stops attacking; +0xa2c set when
+        // the player has asked to stop attacking (CMSG_ATTACKSTOP).
+        int32_t m_combatIdle = 0;
+        int32_t m_attackStopSent = 0;
+        // +0xab8: the facing a stopped attack left the unit at, toward its victim.
+        float m_attackFacing = 0.0f;
+        // +0x934: the unit's voice (UnitPlayVoiceSound).
+        SOUNDKITOBJECT* m_voiceSound = nullptr;
         SOUNDKITOBJECT* m_petSound = nullptr;
         SOUNDKITOBJECT* m_speechSound = nullptr;
         int32_t m_petSoundType = 0;

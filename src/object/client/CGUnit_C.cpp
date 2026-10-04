@@ -43,6 +43,7 @@
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/ObjectEffect.hpp"
+#include "object/client/UnitCombat_C.hpp"
 #include "ui/Game.hpp"
 #include "ui/InputControl.hpp"
 #include "object/client/Spell_C.hpp"
@@ -229,6 +230,7 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 {
     this->m_mountSound = STORM_NEW(SOUNDKITOBJECT);
     this->m_petSound = STORM_NEW(SOUNDKITOBJECT);
+    this->m_voiceSound = STORM_NEW(SOUNDKITOBJECT);
     this->m_speechSound = STORM_NEW(SOUNDKITOBJECT);
 
     // What each hand holds, from the virtual items (0x0073fbd3 .. 0x0073fc88); later changes come
@@ -284,7 +286,7 @@ CGUnit_C::~CGUnit_C() {
         this->m_mountSound = nullptr;
     }
 
-    for (auto sound : { &this->m_petSound, &this->m_speechSound }) {
+    for (auto sound : { &this->m_petSound, &this->m_speechSound, &this->m_voiceSound }) {
         if (*sound) {
             SI2::StopOrFadeOut(*sound, 1, 0.0f, 1);
             (*sound)->~SOUNDKITOBJECT();
@@ -8755,6 +8757,8 @@ void UnitInitialize() {
     }
 
     UnitSoundInitialize();
+    UnitCombatInitialize();
+    WeaponSoundsInitialize();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -13382,13 +13386,27 @@ void CGUnit_C::SetMissileLaunchPoint(const C3Vector& point) {
 // The animation event dispatch.
 //
 // PARTIAL, each the subsystem's own port: the missile a bow or gun releases ("$BWR", "$CSL",
-// "$CSR", "$CST" with a held missile at +0x9ec), the combat events ("$AH#", "$CAH", "$DTH",
-// "$BWP", "$CPP", "$CSS", FUN_00756240, UnitCombat_C), the spell cast sound ("$CSD",
-// FUN_00746d60), the trade-skill event ("$TRD", FUN_00763570), and the vehicle's ("$VG#",
-// FUN_00757060; "$VT#", FUN_007570f0).
+// "$CSR", "$CST" with a held missile at +0x9ec), the trade-skill event ("$TRD", FUN_00763570),
+// and the vehicle's ("$VG#", FUN_00757060; "$VT#", FUN_007570f0).
 void CGUnit_C::OnAnimEvent(CM2Model* model, uint32_t eventId, uint32_t eventData, const C3Vector* position) {
     (void)model;
-    (void)eventData;
+
+    // The combat events (FUN_00756240) and the spell cast sound ("$CSD", FUN_00746d60).
+    static const char* const s_combatEvents[] = {
+        "$AH0", "$AH1", "$AH2", "$AH3", "$CAH", "$DTH", "$BWP", "$CPP", "$CSS",
+    };
+
+    for (auto tag : s_combatEvents) {
+        if (eventId == EventId(tag)) {
+            UnitCombatAnimEvent(this, eventId, eventData, position);
+            return;
+        }
+    }
+
+    if (eventId == EventId("$CSD")) {
+        UnitPlayVoiceSound(this, static_cast<int32_t>(eventData), 1, 0xffffffff);
+        return;
+    }
 
     int32_t left = 0;
 

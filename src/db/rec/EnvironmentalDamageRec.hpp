@@ -1,0 +1,27 @@
+// EnvironmentalDamage.dbc -- the visual kit each kind of environmental damage (falling, drowning,
+// fatigue, lava, slime, fire) plays on its victim.
+//
+// Three columns of 12 bytes.
+#ifndef DB_REC_ENVIRONMENTAL_DAMAGE_REC_HPP
+#define DB_REC_ENVIRONMENTAL_DAMAGE_REC_HPP
+
+#include <cstdint>
+
+class SFile;
+
+class EnvironmentalDamageRec {
+    public:
+        int32_t m_ID;
+        int32_t m_enumID;
+        int32_t m_visualKitID;
+
+        static const char* GetFilename();
+        static uint32_t GetNumColumns();
+        static uint32_t GetRowSize();
+        static bool NeedIDAssigned();
+        int32_t GetID();
+        void SetID(int32_t id);
+        bool Read(SFile* f, const char* stringBuffer);
+};
+
+#endif

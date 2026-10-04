@@ -60,6 +60,10 @@
 #include "db/rec/TransportRotationRec.hpp"
 #include "db/rec/TaxiPathNodeRec.hpp"
 #include "db/rec/TransportPhysicsRec.hpp"
+#include "db/rec/EnvironmentalDamageRec.hpp"
+#include "db/rec/WeaponImpactSoundsRec.hpp"
+#include "db/rec/WeaponSwingSounds2Rec.hpp"
+#include "db/rec/UnitBloodRec.hpp"
 #include "db/rec/FootprintTexturesRec.hpp"
 #include "db/rec/ObjectEffectRec.hpp"
 #include "db/rec/ObjectEffectGroupRec.hpp"
@@ -150,6 +154,10 @@ extern WowClientDB<TransportAnimationRec> g_transportAnimationDB;
 extern WowClientDB<TransportRotationRec> g_transportRotationDB;
 extern WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
 extern WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
+extern WowClientDB<EnvironmentalDamageRec> g_environmentalDamageDB;
+extern WowClientDB<WeaponImpactSoundsRec> g_weaponImpactSoundsDB;
+extern WowClientDB<WeaponSwingSounds2Rec> g_weaponSwingSounds2DB;
+extern WowClientDB<UnitBloodRec> g_unitBloodDB;
 extern WowClientDB<FootprintTexturesRec> g_footprintTexturesDB;
 extern WowClientDB<ObjectEffectRec> g_objectEffectDB;
 extern WowClientDB<ObjectEffectGroupRec> g_objectEffectGroupDB;
