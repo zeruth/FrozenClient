@@ -24,10 +24,10 @@ TSGrowableArray<SpellVariables> s_spellVariables;
 // ref: FUN_005773b0
 int32_t RoundToInt(float value) {
     if (value > 0.0f) {
-        return static_cast<int32_t>(llrint(static_cast<double>(value) + 0.5));
+        return static_cast<int32_t>(static_cast<int64_t>(static_cast<double>(value) + 0.5));
     }
 
-    return static_cast<int32_t>(llrint(static_cast<double>(value) - 0.5));
+    return static_cast<int32_t>(static_cast<int64_t>(static_cast<double>(value) - 0.5));
 }
 
 // Reads a "form0:form1:...;" group at *cursor, appends the form FrameScript_GetPluralIndex picks

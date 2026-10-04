@@ -686,7 +686,7 @@ void CEffect::HoldOwnerAnimation(uint32_t endTime, float holdSeconds, int32_t sp
         held = model->m_animationHeldTime == 0 ? 1 : 0;
 
         if (0.0f < holdSeconds) {
-            uint32_t time = static_cast<uint32_t>(llrintf(holdSeconds * 1000.0f));
+            uint32_t time = static_cast<uint32_t>(static_cast<int64_t>(holdSeconds * 1000.0f));
             uint32_t anim = unit->GetCurrentAnimationId();
 
             M2SequenceInfo info;
@@ -1230,7 +1230,7 @@ void CEffect::DrawFishingLine(CM2Model* model, CM2Lighting* lighting, void* arg)
             return 0;
         }
 
-        return static_cast<uint32_t>(static_cast<int32_t>(lrintf(v < 1.0f ? v * 255.0f + 0.5f : 255.0f))) & 0xFF;
+        return static_cast<uint32_t>(static_cast<int32_t>(static_cast<int32_t>(v < 1.0f ? v * 255.0f + 0.5f : 255.0f))) & 0xFF;
     };
 
     const C3Vector& ambient = lighting->m_sunAmbient;

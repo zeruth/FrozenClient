@@ -1892,7 +1892,7 @@ void CGGameObjectDestructible::ChangeState() {
             this->m_rising = 1;
             this->m_riseStart = CWorld::GetCurTimeMs();
             this->m_riseDuration = static_cast<uint32_t>(static_cast<int64_t>(
-                std::nearbyint(this->m_riseDepth / (speed * 0.33333334f) * 1000.0f)));
+                std::trunc(this->m_riseDepth / (speed * 0.33333334f) * 1000.0f)));
 
             if (this->m_prevState != -1 && heal != 3) {
                 auto prevObject = this->m_states[this->m_prevState].m_object;
@@ -2917,7 +2917,7 @@ int32_t CGGameObjectAnimated::PlayAnimState(CM2Model* model) {
         remaining += 4294967296.0f;
     }
 
-    this->m_animEndTime = static_cast<int32_t>(llroundf(remaining / speed) + now);
+    this->m_animEndTime = static_cast<int32_t>(static_cast<int64_t>(remaining / speed) + now);
 
     return 1;
 }

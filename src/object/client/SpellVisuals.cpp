@@ -290,7 +290,7 @@ void LightningObject::SetChain(const WOWGUID* targets, int32_t count, int32_t fr
             this->m_endTime = bolt.m_endTime;
         }
 
-        t += static_cast<uint32_t>(lrintf(this->m_rec->m_delayBetweenEffects));
+        t += static_cast<uint32_t>(static_cast<int32_t>(this->m_rec->m_delayBetweenEffects));
 
         bolt.m_param = i == 0 ? param : -1;
 

@@ -625,7 +625,7 @@ static void CloudsInitialize(DNClouds* clouds) {
     CloudsBuildMesh(clouds, 1.0f);
 
     float density = clouds->density != 0.0f ? clouds->density : 0.6f;
-    clouds->threshold = static_cast<uint8_t>(lrintf((1.0f - density) * 255.0f));
+    clouds->threshold = static_cast<uint8_t>(static_cast<int32_t>((1.0f - density) * 255.0f));
     CloudsSetExponent(clouds, 0.96f);
     clouds->enabled = 1;
 }
@@ -870,7 +870,7 @@ static void CloudsGenerate(DNClouds* clouds) {
                 }
             }
 
-            int32_t n = static_cast<int32_t>(lrintf(value * 64.0f + 128.0f));
+            int32_t n = static_cast<int32_t>(value * 64.0f + 128.0f);
             int32_t idx = (n & 0xFF) - clouds->threshold;
             uint8_t alpha = 0 <= idx ? s_cloudAlpha[idx] : 0;
             coverRow[x] = alpha;
@@ -936,7 +936,7 @@ static void CloudsGenerate(DNClouds* clouds) {
     clouds->rowStart += clouds->rows;
 
     if (clouds->size <= clouds->rowStart) {
-        uint16_t time = static_cast<uint16_t>(lrintf(clouds->speed * clouds->clock));
+        uint16_t time = static_cast<uint16_t>(static_cast<int32_t>(clouds->speed * clouds->clock));
 
         if (time == clouds->time) {
             if (clouds->restart) {
@@ -1216,8 +1216,8 @@ static float CloudDensityAt(const DNClouds* clouds, const C3Vector& pos) {
     CloudSheetCoords(clouds, pos, &u, &v);
 
     uint32_t last = clouds->size - 1;
-    int32_t iu = static_cast<int32_t>(llrintf(u));
-    int32_t iv = static_cast<int32_t>(llrintf(v));
+    int32_t iu = static_cast<int32_t>(static_cast<int64_t>(u));
+    int32_t iv = static_cast<int32_t>(static_cast<int64_t>(v));
     uint32_t cu = static_cast<uint32_t>(iu) > last ? (iu < 0 ? 0 : last) : static_cast<uint32_t>(iu);
     uint32_t cv = static_cast<uint32_t>(iv) > last ? (iv < 0 ? 0 : last) : static_cast<uint32_t>(iv);
 
@@ -1414,7 +1414,7 @@ static void SkyModelAnimate(DNSkyModel* sky, uint32_t minutes) {
 
     if (1 < (delta < 0 ? -delta : delta) && (sky->m_flags & 1)) {
         float duration = static_cast<float>(sky->m_duration);
-        uint32_t time = static_cast<uint32_t>(llrintf(static_cast<float>(minutes) * 0.00069444446f * duration));
+        uint32_t time = static_cast<uint32_t>(static_cast<int64_t>(static_cast<float>(minutes) * 0.00069444446f * duration));
         sky->m_model->SetBoneSequence(0xFFFFFFFF, 0, 0xFFFFFFFF, time, 1.1574074e-08f * duration, 1, 1);
     }
 

@@ -569,7 +569,7 @@ static void NoiseTexCallback(EGxTexCommand cmd, uint32_t width, uint32_t height,
 
             for (uint32_t x = 0; x < width; x++) {
                 float value = NoiseOctaves(static_cast<float>(x) * s_stepX, noiseY, 5);
-                auto alpha = static_cast<uint32_t>(static_cast<int32_t>(lrintf((value + 3.0f) * 0.25f * 255.0f + 0.5f))) & 0xff;
+                auto alpha = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int32_t>((value + 3.0f) * 0.25f * 255.0f + 0.5f))) & 0xff;
 
                 s_noiseTexels[y * width + x] = alpha << 24 | 0x00ffffff;
             }

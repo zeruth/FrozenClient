@@ -302,7 +302,7 @@ int32_t CGMinimapFrame_SetZoom(lua_State* L) {
 
     // The reference rounds on the x87 stack, which rounds half to even, then truncates the result
     // to 32 bits.
-    auto level = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(lua_tonumber(L, 2))));
+    auto level = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(lua_tonumber(L, 2))));
 
     CGMinimapFrame::SetZoom(level);
 

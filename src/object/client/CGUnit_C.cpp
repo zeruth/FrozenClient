@@ -12732,7 +12732,7 @@ void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
                 blink = 1.0f - blink;
             }
 
-            CGUnit_C::s_attackBlinkColor.g = static_cast<uint8_t>(static_cast<int32_t>(std::lrint(blink * 128.0f)));
+            CGUnit_C::s_attackBlinkColor.g = static_cast<uint8_t>(static_cast<int32_t>(static_cast<int32_t>(blink * 128.0f)));
             PlayerNameInvalidateReaction(this->m_nameDesc);
         }
     } else if (this->m_stateFlags & 0x10) {

@@ -713,7 +713,7 @@ void CLightning::BuildJoints(float length, float radius) {
     int32_t count;
 
     if ((rec->m_flags & 0x1) == 0) {
-        count = static_cast<int32_t>(lrintf(length / rec->m_avgSegLen)) + 2;
+        count = static_cast<int32_t>(static_cast<int32_t>(length / rec->m_avgSegLen)) + 2;
     } else {
         count = rec->m_jointCount;
     }

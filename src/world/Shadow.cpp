@@ -131,7 +131,7 @@ void ShadowAddCallback(EGxTexCommand cmd, uint32_t width, uint32_t height, uint3
 
     for (uint32_t y = 0; y < height; y++) {
         for (uint32_t x = 0; x < width; x++) {
-            uint32_t alpha = static_cast<uint32_t>(lroundf(RampValue(x, width) * 255.0f));
+            uint32_t alpha = static_cast<uint32_t>(static_cast<int32_t>(RampValue(x, width) * 255.0f));
 
             s_rampPixels[y * width + x] = (alpha << 24) | 0x00ffffff;
         }

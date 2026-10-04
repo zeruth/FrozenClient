@@ -735,7 +735,7 @@ void CGTooltip::OnLayerUpdate(float elapsedSec) {
             remaining = 1.0f;
         }
 
-        this->SetFrameAlpha(static_cast<uint8_t>(static_cast<int32_t>(std::lround(remaining * 255.0f)) & 0xFF));
+        this->SetFrameAlpha(static_cast<uint8_t>(static_cast<int32_t>(static_cast<int32_t>(remaining * 255.0f)) & 0xFF));
 
         return;
     }

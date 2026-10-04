@@ -181,7 +181,7 @@ uint8_t RaidIconAlpha(const C3Vector& position) {
     }
 
     if (4.0f < distance) {
-        return static_cast<uint8_t>(static_cast<int32_t>(std::lrint((distance - 4.0f) * 55.25f + 34.0f)));
+        return static_cast<uint8_t>(static_cast<int32_t>(static_cast<int32_t>((distance - 4.0f) * 55.25f + 34.0f)));
     }
 
     return 0x22;

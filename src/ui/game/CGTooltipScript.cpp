@@ -1047,7 +1047,7 @@ int32_t CGTooltip_SetMerchantItem(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<int32_t>(llrint(lua_tonumber(L, 2) - 1.0));
+    auto index = static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 2) - 1.0));
     auto item = MerchantGetItem(index);
 
     if (item && item->m_unk04) {

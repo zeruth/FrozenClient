@@ -108,7 +108,7 @@ int32_t Script_SetTradeMoney(lua_State* L) {
         return 0;
     }
 
-    CGTradeInfo::SetPlayerTradeMoney(static_cast<uint32_t>(llrint(lua_tonumber(L, 1))));
+    CGTradeInfo::SetPlayerTradeMoney(static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1))));
 
     return 0;
 }

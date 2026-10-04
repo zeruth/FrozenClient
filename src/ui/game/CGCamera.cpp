@@ -653,11 +653,11 @@ void CGCamera::ZoomIn(float distance, int32_t time, float duration) {
     int32_t length;
 
     if (!(duration <= 0.0f)) {
-        length = static_cast<int32_t>(lrintf(duration * 1000.0f));
-        int32_t amount = static_cast<int32_t>(lrintf(distance * 1000.0f));
+        length = static_cast<int32_t>(static_cast<int32_t>(duration * 1000.0f));
+        int32_t amount = static_cast<int32_t>(static_cast<int32_t>(distance * 1000.0f));
         rate = Elapsed(amount) / (Float(s_distanceMoveSpeed) * duration * 1000.0f);
     } else {
-        length = static_cast<int32_t>(lrintf((distance / Float(s_distanceMoveSpeed)) * 1000.0f));
+        length = static_cast<int32_t>(static_cast<int32_t>((distance / Float(s_distanceMoveSpeed)) * 1000.0f));
     }
 
     if (this->m_timedBits & 0x4) {
@@ -683,11 +683,11 @@ void CGCamera::ZoomOut(float distance, int32_t time, float duration) {
     int32_t length;
 
     if (!(duration <= 0.0f)) {
-        length = static_cast<int32_t>(lrintf(duration * 1000.0f));
-        int32_t amount = static_cast<int32_t>(lrintf(distance * 1000.0f));
+        length = static_cast<int32_t>(static_cast<int32_t>(duration * 1000.0f));
+        int32_t amount = static_cast<int32_t>(static_cast<int32_t>(distance * 1000.0f));
         rate = Elapsed(amount) / (Float(s_distanceMoveSpeed) * duration * 1000.0f);
     } else {
-        length = static_cast<int32_t>(lrintf((distance / Float(s_distanceMoveSpeed)) * 1000.0f));
+        length = static_cast<int32_t>(static_cast<int32_t>((distance / Float(s_distanceMoveSpeed)) * 1000.0f));
     }
 
     if (this->m_timedBits & 0x1) {
@@ -1124,7 +1124,7 @@ int32_t CGCamera::SmoothDistance(float target, float delay, float factor, int32_
     this->m_distanceBlend.m_delay = delay;
     this->m_distanceBlend.m_factor = factor;
 
-    int32_t lead = static_cast<int32_t>(lrintf(delay * -1000.0f));
+    int32_t lead = static_cast<int32_t>(delay * -1000.0f);
 
     return this->StartDistanceBlend(target, factor * (std::fabs(target - this->m_distance) / Float(s_distanceSmoothSpeed)), time - lead);
 }
@@ -1150,7 +1150,7 @@ int32_t CGCamera::name(float target, float delay, float factor, int32_t time) { 
     this->blend.m_delay = delay;                                                                           \
     this->blend.m_factor = factor;                                                                           \
                                                                                                             \
-    int32_t lead = static_cast<int32_t>(lrintf(delay * -1000.0f));                                         \
+    int32_t lead = static_cast<int32_t>(lrintf(delay * -1000.0f));                                                        \
                                                                                                             \
     return this->start(target, (std::fabs(target - current) / (Float(speed) * CMath::DEG2RAD)) * factor, time - lead); \
 }
@@ -1182,7 +1182,7 @@ int32_t CGCamera::SmoothMountHeight(float target, float delay, float factor, int
     this->m_mountHeightBlend.m_delay = delay;
     this->m_mountHeightBlend.m_factor = factor;
 
-    int32_t lead = static_cast<int32_t>(lrintf(delay * -1000.0f));
+    int32_t lead = static_cast<int32_t>(delay * -1000.0f);
 
     return this->StartMountHeightBlend(target, factor * (std::fabs(target - this->m_mountHeight) / Float(s_flyingMountHeightSmoothSpeed)), time - lead);
 }
@@ -1214,7 +1214,7 @@ int32_t CGCamera::SmoothFov(float target, float delay, float factor, int32_t tim
         duration = 0.5f;
     }
 
-    int32_t lead = static_cast<int32_t>(lrintf(delay * -1000.0f));
+    int32_t lead = static_cast<int32_t>(delay * -1000.0f);
 
     return this->StartFovBlend(target, duration, time - lead);
 }
@@ -1235,7 +1235,7 @@ int32_t CGCamera::SmoothHeight(float target, float delay, float factor, int32_t 
     this->m_heightBlend.m_delay = delay;
     this->m_heightBlend.m_factor = factor;
 
-    int32_t lead = static_cast<int32_t>(lrintf(delay * -1000.0f));
+    int32_t lead = static_cast<int32_t>(delay * -1000.0f);
 
     return this->StartHeightBlend(target, factor * (std::fabs(target - this->m_height) / Float(s_heightSmoothSpeed)), time - lead);
 }
@@ -4408,7 +4408,7 @@ void CGCamera::UpdateTargetCamera(CGObject_C* target, int32_t time) {
             }
 
             float t = (span - fadeNear) / (fadeFar - fadeNear);
-            uint8_t value = static_cast<uint8_t>(lrintf(CosineInterp(0.0f, 255.0f, t)));
+            uint8_t value = static_cast<uint8_t>(static_cast<int32_t>(CosineInterp(0.0f, 255.0f, t)));
 
             if (value < alpha) {
                 alpha = value;
@@ -4447,7 +4447,7 @@ void CGCamera::UpdateTargetCamera(CGObject_C* target, int32_t time) {
                 t = 1.0f - t;
             }
 
-            uint8_t value = static_cast<uint8_t>(lrintf(t * 255.0f));
+            uint8_t value = static_cast<uint8_t>(static_cast<int32_t>(t * 255.0f));
 
             if (value <= alpha) {
                 alpha = value;

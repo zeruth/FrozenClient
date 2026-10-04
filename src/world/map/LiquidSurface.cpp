@@ -2087,7 +2087,7 @@ void* MapObjPolyFoldByte(const void* a, const void* b, float t) {
     float value = (static_cast<float>(pb[0]) - static_cast<float>(pa[0])) * t
                 + static_cast<float>(pa[0]);
 
-    slot[0] = static_cast<uint8_t>(std::lrint(value));
+    slot[0] = static_cast<uint8_t>(static_cast<int32_t>(value));
 
     return slot;
 }
@@ -2115,8 +2115,8 @@ void* MapObjPolyFoldShortPair(const void* a, const void* b, float t) {
 
     auto out = reinterpret_cast<uint16_t*>(slot);
 
-    out[0] = static_cast<uint16_t>(std::lrint(first));
-    out[1] = static_cast<uint16_t>(std::lrint(second));
+    out[0] = static_cast<uint16_t>(static_cast<int32_t>(first));
+    out[1] = static_cast<uint16_t>(static_cast<int32_t>(second));
 
     return slot;
 }

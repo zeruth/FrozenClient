@@ -713,7 +713,7 @@ int32_t CGxString::SetGradient(int32_t startCharacter, int32_t length) {
     uint8_t alpha = this->m_fontColor.a;
     int32_t count = static_cast<int32_t>(this->m_glyphVertices.Count());
     int32_t startVertex = startCharacter * 4;
-    auto step = static_cast<uint8_t>(lrintf(static_cast<float>(alpha) / static_cast<float>(length)));
+    auto step = static_cast<uint8_t>(static_cast<int32_t>(static_cast<float>(alpha) / static_cast<float>(length)));
 
     for (int32_t i = 0; i < count; i++) {
         const auto& ref = this->m_glyphVertices[i];

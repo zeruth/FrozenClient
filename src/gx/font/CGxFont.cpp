@@ -995,7 +995,7 @@ float CGxFont::ComputeStepFixedWidth(uint32_t currentCode, uint32_t nextCode) {
     if (activeChar) {
         uint32_t cell = this->m_cellHeight;
         uint32_t step = cell;
-        auto width = static_cast<uint32_t>(lrintf(this->GlyphAdvance(currentCode)));
+        auto width = static_cast<uint32_t>(static_cast<int32_t>(this->GlyphAdvance(currentCode)));
 
         if (width < cell) {
             uint32_t slack = cell - width;
@@ -1006,7 +1006,7 @@ float CGxFont::ComputeStepFixedWidth(uint32_t currentCode, uint32_t nextCode) {
 
             step = cell - (slack >> 1);
 
-            auto nextWidth = static_cast<uint32_t>(lrintf(this->GlyphAdvance(nextCode)));
+            auto nextWidth = static_cast<uint32_t>(static_cast<int32_t>(this->GlyphAdvance(nextCode)));
 
             if (nextWidth < cell) {
                 uint32_t nextSlack = cell - nextWidth;

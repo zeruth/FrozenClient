@@ -19,8 +19,8 @@ int32_t CGCooldown_SetCooldown(lua_State* L) {
 
     // Seconds to milliseconds, rounded to nearest as the reference's fistp does, then cut to the
     // 32 bits the frame keeps.
-    auto start = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(lua_tonumber(L, 2) * 1000.0)));
-    auto duration = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(lua_tonumber(L, 3) * 1000.0)));
+    auto start = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(lua_tonumber(L, 2) * 1000.0)));
+    auto duration = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(lua_tonumber(L, 3) * 1000.0)));
     cooldown->SetCooldown(start, duration);
 
     return 0;

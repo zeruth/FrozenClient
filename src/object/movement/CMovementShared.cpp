@@ -1979,7 +1979,7 @@ uint32_t CMovementShared::EvaluateSpline(int32_t time, C3Vector* position) {
             spline->float204 = spline->float208;
             spline->float208 = 1.0f;
 
-            duration = static_cast<uint32_t>(std::nearbyint(this->GetSplineDuration() + 0.5f));
+            duration = static_cast<uint32_t>(std::trunc(this->GetSplineDuration() + 0.5f));
 
             if (duration == 0) {
                 t = 1.0f;
@@ -2115,7 +2115,7 @@ void CMovementShared::SyncSplineProgress(float progress) {
                 behind += 1.0f;
             }
 
-            int32_t ahead = static_cast<int32_t>(std::nearbyint(duration * behind));
+            int32_t ahead = static_cast<int32_t>(std::trunc(duration * behind));
             float stretch = static_cast<float>(static_cast<int32_t>(spline->uint2C) - ahead) / duration;
 
             spline->float208 = std::min(std::max(stretch, 0.5f), 2.0f);

@@ -2305,7 +2305,7 @@ void CGxDeviceD3d::IRsSendToHw(EGxRenderState which) {
 
     // The constant blend colour, a grey: one byte, rounded from 0..1, in all four channels.
     case GxRs_BlendFactor: {
-        uint32_t grey = static_cast<uint32_t>(static_cast<int32_t>(roundf(static_cast<float>(state->m_value) * 255.0f))) & 0xFF;
+        uint32_t grey = static_cast<uint32_t>(static_cast<int32_t>(truncf(static_cast<float>(state->m_value) * 255.0f))) & 0xFF;
         this->m_d3dDevice->SetRenderState(D3DRS_BLENDFACTOR, (((grey << 8) | grey) << 8 | grey) << 8 | grey);
         break;
     }

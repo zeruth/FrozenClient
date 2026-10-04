@@ -868,7 +868,7 @@ void CVehiclePassenger_C::SetPending(WOWGUID target, uint8_t seat, const Vehicle
 
     if (static_cast<uint32_t>(seatRec->m_flags) & mask) {
         float delay = exiting ? seatRec->m_vehicleExitAnimDelay : seatRec->m_vehicleEnterAnimDelay;
-        uint32_t ms = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(delay * 1000.0f)));
+        uint32_t ms = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(delay * 1000.0f)));
 
         if (3000 < ms) {
             ms = 3000;
@@ -1225,7 +1225,7 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
             delay = 10.0f;
         }
 
-        this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::nearbyint(delay * -1000.0f));
+        this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::trunc(delay * -1000.0f));
         return;
     }
 
@@ -1285,7 +1285,7 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
                 duration = t < minDuration ? minDuration : (cap <= t ? cap : t);
             }
 
-            this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::nearbyint(duration * -1000.0f));
+            this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::trunc(duration * -1000.0f));
         }
     } else {
         C3Vector here = this->m_unit->GetPosition();
@@ -1295,7 +1295,7 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
         float t = std::sqrt(dz * dz + dy * dy + dx * dx) / seat->m_exitSpeed;
 
         duration = t < minDuration ? minDuration : (cap <= t ? cap : t);
-        this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::nearbyint(duration * -1000.0f));
+        this->m_transitionEnd = this->m_transitionStart - static_cast<int32_t>(std::trunc(duration * -1000.0f));
     }
 
     if (std::fabs(this->m_gravity) < 0.0001f) {
@@ -1320,7 +1320,7 @@ void CVehiclePassenger_C::PlanTransition(CGUnit_C* vehicle, const VehicleSeatRec
 
     // The rider's camera moves over the same time.
     if (this->m_unit->m_vehicleCamera) {
-        this->m_unit->m_vehicleCamera->SetTransitionTime(time, static_cast<int32_t>(std::nearbyint(duration * 1000.0f)));
+        this->m_unit->m_vehicleCamera->SetTransitionTime(time, static_cast<int32_t>(std::trunc(duration * 1000.0f)));
     }
 
     this->UpdateProgress(time, seat);

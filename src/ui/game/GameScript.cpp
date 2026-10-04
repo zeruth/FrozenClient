@@ -1279,7 +1279,7 @@ int32_t Script_GuildInfo(lua_State* L) {
 // ref: FUN_00515cc0
 int32_t Script_ArenaTeamInviteByName(lua_State* L) {
     if (lua_isnumber(L, 1) && lua_isstring(L, 2)) {
-        auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+        auto index = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1;
         auto name = lua_tostring(L, 2);
         auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
 
@@ -1314,7 +1314,7 @@ int32_t Script_ArenaTeamLeave(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1;
     auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
 
     CDataStore msg;
@@ -1334,7 +1334,7 @@ int32_t Script_ArenaTeamUninviteByName(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1;
     auto name = lua_tostring(L, 2);
 
     if (name && SStrLen(name) >= 0x31) {
@@ -1363,7 +1363,7 @@ int32_t Script_ArenaTeamSetLeaderByName(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1;
     auto name = lua_tostring(L, 2);
 
     if (name && SStrLen(name) >= 0x31) {
@@ -1392,7 +1392,7 @@ int32_t Script_ArenaTeamDisband(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 1))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1;
     auto teamID = index < NUM_ARENA_TEAMS ? CGArenaTeamInfo::s_teams[index].teamID : 0;
 
     CDataStore msg;
@@ -2930,7 +2930,7 @@ int32_t Script_SetDungeonDifficulty(lua_State* L) {
     }
 
     // Rounded, not truncated: the reference converts with fistp under the default rounding mode
-    auto difficulty = static_cast<uint32_t>(llrint(lua_tonumber(L, 1) - 1.0));
+    auto difficulty = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1) - 1.0));
 
     if (difficulty > 1) {
         return 0;
@@ -2991,7 +2991,7 @@ int32_t Script_SetRaidDifficulty(lua_State* L) {
     }
 
     // Rounded, not truncated: the reference converts with fistp under the default rounding mode
-    auto difficulty = static_cast<uint32_t>(llrint(lua_tonumber(L, 1) - 1.0));
+    auto difficulty = static_cast<uint32_t>(static_cast<int64_t>(lua_tonumber(L, 1) - 1.0));
 
     if (difficulty >= 4) {
         return 0;

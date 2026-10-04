@@ -36,7 +36,7 @@ int32_t Script_GetBattlefieldInstanceInfo(lua_State* L) {
     auto player = ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, __FILE__, __LINE__);
 
     if (player) {
-        auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+        auto index = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
 
         if (index < CGBattlefieldInfo::s_numInstances) {
             lua_pushnumber(L, CGBattlefieldInfo::s_instanceIDs[index]);
@@ -73,7 +73,7 @@ int32_t Script_SetSelectedBattlefield(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
 
     if (index < CGBattlefieldInfo::s_numInstances) {
         CGBattlefieldInfo::s_selectedInstance = CGBattlefieldInfo::s_instanceIDs[index];
@@ -125,7 +125,7 @@ int32_t Script_GetBattlefieldPortExpiration(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
     auto slot = index < 2 ? &CGBattlefieldInfo::s_queueSlots[index] : nullptr;
 
     if (slot && slot->m_portExpireTime) {
@@ -190,7 +190,7 @@ int32_t Script_GetBattlefieldEstimatedWaitTime(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
     auto slot = index < 2 ? &CGBattlefieldInfo::s_queueSlots[index] : nullptr;
 
     if (slot) {
@@ -210,7 +210,7 @@ int32_t Script_GetBattlefieldTimeWaited(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
     auto slot = index < 2 ? &CGBattlefieldInfo::s_queueSlots[index] : nullptr;
 
     if (slot && slot->m_queueJoinTime) {
@@ -284,11 +284,11 @@ int32_t Script_GetBattlefieldStatData(lua_State* L) {
         return 0;
     }
 
-    auto playerIndex = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto playerIndex = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
     CGBattlefieldInfo::ScoreEntry* score;
 
     if (playerIndex < CGBattlefieldInfo::s_scoreListCount && (score = CGBattlefieldInfo::s_scoreList[playerIndex])) {
-        auto statIndex = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 2)))) - 1;
+        auto statIndex = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 2)))) - 1;
 
         if (statIndex < 9) {
             lua_pushnumber(L, score->m_stats[statIndex]);
@@ -377,7 +377,7 @@ int32_t Script_GetBattlefieldTeamInfo(lua_State* L) {
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1))));
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1))));
 
     lua_pushstring(L, index < 2 ? CGBattlefieldInfo::s_teamNames[index] : nullptr);
     lua_pushnumber(L, index < 2 ? CGBattlefieldInfo::s_teamOldRating[index] : 0);

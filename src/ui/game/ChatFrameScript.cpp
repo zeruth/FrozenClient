@@ -372,13 +372,13 @@ int32_t Script_SetChatWindowDocked(lua_State* L) {
         return 0;
     }
 
-    auto window = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1))) - 1);
+    auto window = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1);
 
     if (window < 10) {
         int32_t docked = 0;
 
         if (lua_isnumber(L, 2)) {
-            docked = static_cast<int32_t>(llrint(lua_tonumber(L, 2)));
+            docked = static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 2)));
         }
 
         s_chatWindows[window].docked = docked;
@@ -390,7 +390,7 @@ int32_t Script_SetChatWindowDocked(lua_State* L) {
 // ref: FUN_004fc9a0
 int32_t Script_SetChatWindowSavedDimensions(lua_State* L) {
     if (lua_isnumber(L, 1) && lua_isnumber(L, 2) && lua_isnumber(L, 3)) {
-        auto window = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1))) - 1);
+        auto window = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1))) - 1);
 
         if (window > 9) {
             return 0;

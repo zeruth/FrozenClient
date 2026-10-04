@@ -5893,7 +5893,7 @@ int32_t CM2Model::QueueAnimEvents(uint32_t boneIndex, uint32_t sequenceIndex, in
         do {
             for (uint32_t k = 0; k < timeCount; k++) {
                 int32_t key = static_cast<int32_t>(times[k] - bone.sequence.uint1C);
-                int32_t time = static_cast<int32_t>(lrintf(static_cast<float>(key) * bone.sequence.float18))
+                int32_t time = static_cast<int32_t>(static_cast<int32_t>(static_cast<float>(key) * bone.sequence.float18))
                     + static_cast<int32_t>(bone.sequence.uintC) + offset;
 
                 if (time - from > 0 && time - cursor <= 0) {
@@ -7616,7 +7616,7 @@ int32_t CM2Model::GetBoneSequenceState(uint32_t boneId, M2BoneSequenceState* sta
     state->uint90 = bone.uint90;
     state->uint94 = bone.uint94;
 
-    int32_t elapsed = static_cast<int32_t>(llrint(
+    int32_t elapsed = static_cast<int32_t>(static_cast<int64_t>(
         static_cast<float>(static_cast<int32_t>(this->m_scene->m_time - bone.sequence.uintC)) * bone.sequence.float14
     ));
 
@@ -7794,7 +7794,7 @@ void CM2Model::SetBoneSequenceSpeed(uint32_t boneId, float speed) {
     }
 
     int32_t time = static_cast<int32_t>(this->m_scene->m_time);
-    int32_t elapsed = static_cast<int32_t>(llrint(
+    int32_t elapsed = static_cast<int32_t>(static_cast<int64_t>(
         static_cast<float>(time - static_cast<int32_t>(sequence.uintC)) * sequence.float14
     ));
     uint32_t length = data->sequences[sequence.uint8].duration * sequence.uint20;
@@ -7807,13 +7807,13 @@ void CM2Model::SetBoneSequenceSpeed(uint32_t boneId, float speed) {
         inverse = 1.0f / speed;
     }
 
-    elapsed = static_cast<int32_t>(llrint(
+    elapsed = static_cast<int32_t>(static_cast<int64_t>(
         static_cast<float>(elapsed + static_cast<int32_t>(sequence.uint1C)) * fabsf(inverse)
     ));
 
     int32_t start = time - elapsed;
     sequence.uintC = start;
-    sequence.uint10 = static_cast<int32_t>(llrint(static_cast<float>(length) * fabsf(inverse))) + start;
+    sequence.uint10 = static_cast<int32_t>(static_cast<int64_t>(static_cast<float>(length) * fabsf(inverse))) + start;
     sequence.float14 = speed;
     sequence.float18 = inverse;
 }

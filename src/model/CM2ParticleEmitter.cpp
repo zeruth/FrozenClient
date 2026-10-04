@@ -742,7 +742,7 @@ void CM2ParticleEmitter::Emit(float dt, C44Matrix& placement) {
 
     // A burst: everything at once, at age zero, and the bit clears itself so it fires once.
     if ((this->m_flags & 0x40) && (this->m_flags & 0x2)) {
-        int32_t n = static_cast<int32_t>(nearbyintf(rate));
+        int32_t n = static_cast<int32_t>(truncf(rate));
 
         while (this->m_freeIndices.Count() && n) {
             this->SpawnParticle(0.0f, placement);
@@ -759,7 +759,7 @@ void CM2ParticleEmitter::Emit(float dt, C44Matrix& placement) {
     this->m_emitCarry += rate * dt;
 
     int32_t spawned = 0;
-    int32_t n = static_cast<int32_t>(nearbyintf(this->m_emitCarry + 0.5f));
+    int32_t n = static_cast<int32_t>(truncf(this->m_emitCarry + 0.5f));
 
     if (!(this->m_flags & 0x2000)) {
         while (this->m_freeIndices.Count() && n) {

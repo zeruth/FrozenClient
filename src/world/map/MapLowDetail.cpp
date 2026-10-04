@@ -420,7 +420,7 @@ void CMapAreaLow::Draw() {
 void CMapLowDetail::QueueVisible(const C3Vector& cameraPos) {
     int32_t cx = static_cast<int32_t>(lrintf(-(cameraPos.x - 17066.666f) * 0.03f - 0.5f));
     int32_t cy = static_cast<int32_t>(lrintf(-(cameraPos.y - 17066.666f) * 0.03f - 0.5f));
-    int32_t reach = static_cast<int32_t>(llrintf(CWorld::GetHorizonDistance() * 0.030000001f));
+    int32_t reach = static_cast<int32_t>(static_cast<int64_t>(CWorld::GetHorizonDistance() * 0.030000001f));
 
     int32_t minCol = ((cy - reach) >> 4) - 2;
     int32_t minRow = ((cx - reach) >> 4) - 2;

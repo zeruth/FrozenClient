@@ -612,7 +612,7 @@ void StreamColored(uint32_t count, const C3Vector* positions, const C2Vector* te
     for (uint32_t i = 0; i < count; i++, data += 0x18) {
         memcpy(data, &positions[i], sizeof(C3Vector));
 
-        uint8_t grey = static_cast<uint8_t>(lrintf((values[i] + 1.0f) * 127.5f));
+        uint8_t grey = static_cast<uint8_t>(static_cast<int32_t>((values[i] + 1.0f) * 127.5f));
         data[0xc] = grey;
         data[0xd] = grey;
         data[0xe] = grey;

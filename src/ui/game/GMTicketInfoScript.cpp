@@ -103,12 +103,12 @@ int32_t Script_GMSurveyAnswerSubmit(lua_State* L) {
         return 0;
     }
 
-    auto question = static_cast<uint32_t>(static_cast<int32_t>(llrint(lua_tonumber(L, 1)))) - 1;
+    auto question = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)))) - 1;
     auto rank = lua_tonumber(L, 2);
     auto comment = lua_tostring(L, 3);
 
     if (question < 10) {
-        SetSurveyAnswer(question, static_cast<uint8_t>(llrint(rank)), comment);
+        SetSurveyAnswer(question, static_cast<uint8_t>(static_cast<int64_t>(rank)), comment);
 
         return 0;
     }

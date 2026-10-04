@@ -3032,7 +3032,7 @@ void CMap::UpdateEntity(CMapEntity* entity) {
                 return 0;
             }
 
-            return static_cast<uint8_t>(lrintf(value < 1.0f ? value * 255.0f + 0.5f : 255.0f));
+            return static_cast<uint8_t>(static_cast<int32_t>(value < 1.0f ? value * 255.0f + 0.5f : 255.0f));
         };
 
         // The outdoor light's ambient (0x00ce04a8 + 0x58, its colour at +0x88), which UpdateDayNight

@@ -257,7 +257,7 @@ void ShipPath::Bob(uint32_t time, float speed, float turn, C3Vector* position, f
     const float twoPi = 6.2831855f;
 
     if (2.384185791015625e-07f <= std::fabs(physics->m_waveTimeScale)) {
-        uint32_t period = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(6283.1855f / physics->m_waveTimeScale)));
+        uint32_t period = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(6283.1855f / physics->m_waveTimeScale)));
         float phase = static_cast<float>(time % period);
         position->z = std::sin(phase * twoPi / static_cast<float>(period)) * physics->m_waveAmp * damp + position->z;
     }
@@ -271,7 +271,7 @@ void ShipPath::Bob(uint32_t time, float speed, float turn, C3Vector* position, f
     if (std::fabs(physics->m_rollTimeScale) < 2.384185791015625e-07f) {
         *roll = 0.0f;
     } else {
-        uint32_t period = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(6283.1855f / physics->m_rollTimeScale)));
+        uint32_t period = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(6283.1855f / physics->m_rollTimeScale)));
         float phase = static_cast<float>(time % period);
         *roll = (std::sin(phase * twoPi / static_cast<float>(period) + 0.5f) * physics->m_rollAmp
                  + (physics->m_maxBank / physics->m_maxBankTurnSpeed) * turn) * damp;
@@ -282,7 +282,7 @@ void ShipPath::Bob(uint32_t time, float speed, float turn, C3Vector* position, f
         return;
     }
 
-    uint32_t period = static_cast<uint32_t>(static_cast<int64_t>(std::nearbyint(6283.1855f / physics->m_pitchTimeScale)));
+    uint32_t period = static_cast<uint32_t>(static_cast<int64_t>(std::trunc(6283.1855f / physics->m_pitchTimeScale)));
     float phase = static_cast<float>(time % period);
     *pitch = std::sin(phase * twoPi / static_cast<float>(period) + 0.2f) * physics->m_pitchAmp * damp;
 }

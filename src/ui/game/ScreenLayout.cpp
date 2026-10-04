@@ -128,8 +128,8 @@ int32_t CellCount(const CRect& rect) {
     float width = NDCToDDCWidth(1.0f);
     float height = NDCToDDCHeight(1.0f);
 
-    int32_t columns = static_cast<int32_t>(std::lrint(width / (rect.maxX - rect.minX))) + 1;
-    int32_t rows = static_cast<int32_t>(std::lrint(height / (rect.minY - rect.maxY)));
+    int32_t columns = static_cast<int32_t>(static_cast<int32_t>(width / (rect.maxX - rect.minX))) + 1;
+    int32_t rows = static_cast<int32_t>(static_cast<int32_t>(height / (rect.minY - rect.maxY)));
 
     return columns * (rows + 1);
 }

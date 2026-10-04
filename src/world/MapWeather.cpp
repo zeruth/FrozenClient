@@ -1601,7 +1601,7 @@ void Mists::Init(Mist& mist, uint32_t time) {
     float stepY = inv * mist.velocity.y * cellSize;
     float stepZ = inv * 0.0f * cellSize;
 
-    int32_t steps = static_cast<int32_t>(std::nearbyint((speed * duration) / sqrtf(stepX * stepX + stepY * stepY)));
+    int32_t steps = static_cast<int32_t>(std::trunc((speed * duration) / sqrtf(stepX * stepX + stepY * stepY)));
     mist.steps = steps;
 
     if (0x3F < steps) {

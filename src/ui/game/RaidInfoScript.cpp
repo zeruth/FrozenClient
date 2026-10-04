@@ -48,7 +48,7 @@ int32_t Script_SetRaidRosterSelection(lua_State* L) {
         return 0;
     }
 
-    int32_t index = static_cast<int32_t>(llrint(lua_tonumber(L, 1)));
+    int32_t index = static_cast<int32_t>(static_cast<int64_t>(lua_tonumber(L, 1)));
 
     if (static_cast<uint32_t>(index - 1) < CGRaidInfo::NumMembers()) {
         CGRaidInfo::s_selection = CGRaidInfo::GetMember(index);

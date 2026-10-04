@@ -146,8 +146,8 @@ void WorldTextSetupPixelProjection() {
     CRect window = { 0.0f, 0.0f, 0.0f, 0.0f };
     g_theGxDevicePtr->CapsWindowSize(window);
 
-    float width = static_cast<float>(static_cast<int32_t>(std::lrint(window.maxX - window.minX)));
-    float height = static_cast<float>(static_cast<int32_t>(std::lrint(window.maxY - window.minY)));
+    float width = static_cast<float>(static_cast<int32_t>(static_cast<int32_t>(window.maxX - window.minX)));
+    float height = static_cast<float>(static_cast<int32_t>(static_cast<int32_t>(window.maxY - window.minY)));
 
     C44Matrix projection;
     GxuXformCreateOrtho(
@@ -212,13 +212,13 @@ void WORLDTEXTSTRING::UpdateFade(uint32_t elapsed) {
 
     if (elapsed < style.fadeInTime) {
         // The reference measures the fade-in against the whole life, not the fade-in time.
-        int64_t a = std::llrint(255.0f * (t / duration));
+        int64_t a = static_cast<int64_t>(255.0f * (t / duration));
 
         if (static_cast<uint32_t>(a) < 0x100) {
             alpha = static_cast<uint8_t>(a);
         }
 
-        shadow = static_cast<uint32_t>(std::llrint((t / duration) * 127.0f));
+        shadow = static_cast<uint32_t>(static_cast<int64_t>((t / duration) * 127.0f));
 
         if (shadow > 0x7f) {
             shadow = 0x7f;
@@ -233,11 +233,11 @@ void WORLDTEXTSTRING::UpdateFade(uint32_t elapsed) {
 
         float a = f * 255.0f;
         a = a < 0.0f ? 0.0f : (255.0f < a ? 255.0f : a);
-        alpha = static_cast<uint8_t>(static_cast<int32_t>(std::lrint(255.0f - a)));
+        alpha = static_cast<uint8_t>(static_cast<int32_t>(static_cast<int32_t>(255.0f - a)));
 
         float s = f * 127.0f;
         s = s < 0.0f ? 0.0f : (127.0f < s ? 127.0f : s);
-        shadow = static_cast<uint32_t>(static_cast<int32_t>(std::lrint(255.0f - s))) & 0xff;
+        shadow = static_cast<uint32_t>(static_cast<int32_t>(static_cast<int32_t>(255.0f - s))) & 0xff;
     }
 
     this->m_color.a = alpha;
