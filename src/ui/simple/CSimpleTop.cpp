@@ -376,12 +376,16 @@ int32_t CSimpleTop::OnMouseUp(const EVENT_DATA_MOUSE* pMouseData, void* param) {
     return 0;
 }
 
+// ref: FUN_00494890
 int32_t CSimpleTop::OnMouseWheel(const EVENT_DATA_MOUSE* pMouseData, void* param) {
     CSimpleTop* top = static_cast<CSimpleTop*>(param);
 
     CMouseEvent mouseEvent;
     mouseEvent = *pMouseData;
-    mouseEvent.id = 0x400500CC;
+    // 0x400500CD (0x004948e3), the id CGWorldFrame's binding lookup (FUN_0055e340) takes as
+    // the wheel. This was 0x400500CC, which no reader recognises, so the wheel over the world
+    // never found MOUSEWHEELUP / MOUSEWHEELDOWN and the camera could not zoom.
+    mouseEvent.id = 0x400500CD;
 
     // Deliver to the frame under the cursor
     if (top->m_mouseFocus) {
