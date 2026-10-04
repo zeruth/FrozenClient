@@ -309,8 +309,10 @@ void Draw() {
         C44Matrix view;
         GxXformView(view);
 
+        // The native projection, as the reference reads it (+0xfc8 at 0x0079da50): the
+        // application one has its depth on [-1, 1] and put the ripples at the wrong depth.
         C44Matrix projection;
-        GxXformProjection(projection);
+        g_theGxDevicePtr->XformProjNative(projection);
 
         // OpenGL's depth runs the other way: its projection's third row is turned round.
         if (g_theGxDevicePtr->m_api == GxApi_OpenGl) {

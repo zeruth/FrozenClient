@@ -796,6 +796,8 @@ void StoreVector(C4Vector* dst, const C3Vector& v, float w) {
     dst->w = w;
 }
 
+} // namespace
+
 // ref: FUN_008a32f0
 // The projection, the world-view and the combined transform.
 //
@@ -804,13 +806,17 @@ void StoreVector(C4Vector* dst, const C3Vector& v, float w) {
 // frozen's CCamera builds its view matrix with the camera at the origin, which is the same
 // rotation-only convention the reference uses.
 //
-// DIVERGED, and SETTLED 2026-09-27: the reference negates the projection's third row when the
-// device's flag at +0x1b4 is clear -- a depth-range convention -- and frozen's CGxDevice has no such
-// flag, so the negation is skipped. That is CORRECT, and this note used to offer it as "the one
-// knob" to turn if water sat at the wrong depth. It is not. vsLiquidWater, disassembled out of
-// patch.MPQ, computes oPos.z = z*c2.z + c3.z and oPos.w = z*c2.w from c0..c3 as ROWS; with frozen's
-// projection that is the standard D3D mapping for near 0.4 / far 4000, and negating the third row
-// would make oPos.z negative for everything in front of the camera. See docs/ref/parity-liquid-shaders.md.
+// THE PROJECTION IS THE NATIVE ONE. The reference copies it from the device's +0xfc8 (0x008a33df),
+// which is m_projNative -- the matrix XformSetProjection derives with its depth remapped to D3D's
+// [0, 1] -- and not the application projection at +0xf88 beside it. Until 2026-10-04 this read
+// XformProjection(), the application matrix, whose depth runs over [-1, 1] (GxuXformCreateProjection
+// builds it OpenGL-style). Every other pass draws through the native one, so water came out at
+// depth 1 - 2n/z where the scene has about 1 - n/z: as if it were half as far away. That is the
+// "water bleeds through anything above its plane, more when looking along it" defect.
+//
+// The negation of the third row is the reference's too, and it is taken when GxDevApi() is 0
+// (OpenGL). Neither frozen backend reports that -- D3D9 is 1 and both GL backends report GLL -- so it
+// never fires here, as in the reference on D3D.
 void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
     C44Matrix view;
     g_theGxDevicePtr->XformView(view);
@@ -828,7 +834,14 @@ void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
     StoreMatrix(&s_constants.vs[VS_WORLD_VIEW], worldView);
 
     C44Matrix projection;
-    g_theGxDevicePtr->XformProjection(projection);
+    g_theGxDevicePtr->XformProjNative(projection);
+
+    if (GxDevApi() == GxApi_OpenGl) {
+        projection.c0 = -projection.c0;
+        projection.c1 = -projection.c1;
+        projection.c2 = -projection.c2;
+        projection.c3 = -projection.c3;
+    }
 
     StoreMatrix(&s_constants.vs[VS_PROJECTION], projection);
     StoreMatrix(&s_constants.psMvp[PS_MVP], worldView * projection);
@@ -838,6 +851,12 @@ void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement) {
     s_constants.psMvp[PS_CAMERA].z = cameraPos.z;
     s_constants.psMvp[PS_CAMERA].w = 1.0f;
 }
+
+const C4Vector* VertexConstants() {
+    return s_constants.vs;
+}
+
+namespace {
 
 // ref: FUN_008a38b0
 // The sun, the local lights and the fog, as the VERTEX program wants them -- the sun direction
@@ -1243,7 +1262,7 @@ C44Matrix MagmaScrollMatrix(float rateX, float rateY) {
     C44Matrix m(1.0f);
 
     if (rateX != 0.0f) {
-        uint32_t period = static_cast<uint32_t>(nearbyintf(SCROLL_PERIOD_BASE / rateX));
+        uint32_t period = static_cast<uint32_t>(truncf(SCROLL_PERIOD_BASE / rateX));
 
         if (period) {
             m.d0 = static_cast<float>(now % period) / static_cast<float>(period);
@@ -1251,7 +1270,7 @@ C44Matrix MagmaScrollMatrix(float rateX, float rateY) {
     }
 
     if (rateY != 0.0f) {
-        uint32_t period = static_cast<uint32_t>(nearbyintf(SCROLL_PERIOD_BASE / rateY));
+        uint32_t period = static_cast<uint32_t>(truncf(SCROLL_PERIOD_BASE / rateY));
 
         if (period) {
             m.d1 = static_cast<float>(now % period) / static_cast<float>(period);

@@ -324,6 +324,7 @@ def report(process, thread_id, rec, exe, base, image_size):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--exe', default=EXE)
+    ap.add_argument('--args', default='', help='command-line arguments for the program (e.g. a test filter)')
     ap.add_argument('--cwd', default=CWD)
     ap.add_argument('--attach', type=int, help='attach to this pid instead of launching')
     ap.add_argument('--timeout', type=int, default=0, help='stop waiting after N seconds (0 = forever)')
@@ -357,8 +358,9 @@ def main():
         print('client output -> %s' % out_path)
 
         pi = ctypes.create_string_buffer(24)
+        command = ctypes.create_unicode_buffer('"%s" %s' % (opts.exe, opts.args)) if opts.args else None
         ok = k32.CreateProcessW(
-            ctypes.c_wchar_p(opts.exe), None, None, None, True,
+            ctypes.c_wchar_p(opts.exe), command, None, None, True,
             DEBUG_ONLY_THIS_PROCESS, None, ctypes.c_wchar_p(opts.cwd),
             ctypes.byref(si), ctypes.byref(pi),
         )

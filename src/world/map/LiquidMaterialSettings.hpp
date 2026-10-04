@@ -231,6 +231,14 @@ void RestoreLiquidTextures();
 // Drop every record the bank holds. ref: part of FUN_008a2380
 void ReleaseMaterialSettings();
 
+// The liquid shaders' transforms for a surface at `placement`: the world-view and the device's
+// NATIVE projection into the vertex block (c5..c8 and c0..c3, rows), and their product for the
+// pixel program.
+void SetupTransforms(const C3Vector& cameraPos, const C44Matrix& placement);
+
+// The vertex program's constant block as the setup functions last left it, for inspection.
+const C4Vector* VertexConstants();
+
 }
 
 #endif
