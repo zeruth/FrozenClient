@@ -141,6 +141,10 @@ uint8_t GameUIGetThreatStatus(const WOWGUID& guid);
 void GameUISetPlayerControl(int32_t hasControl);
 int32_t GameUIPlayerHasControl();
 void GameUIInitPlayerControl(WOWGUID mover);
+
+// The player's own corpse, which the minimap points to (GameUI.cpp).
+void GameUISetCorpseGUID(WOWGUID guid);
+WOWGUID GameUIGetCorpseGUID();
 int32_t GameUIWorldRightPress(const CMouseEvent& evt);
 int32_t GameUITargetAndInteract(WOWGUID guid);
 int32_t GameUISelectObject(WOWGUID guid);

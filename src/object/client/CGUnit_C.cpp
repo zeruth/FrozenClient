@@ -7631,21 +7631,6 @@ float DistanceSq(const C3Vector& a, const C3Vector& b) {
     return dz * dz + dy * dy + dx * dx;
 }
 
-// ref: FUN_004f5130
-// The world angle from `from` to `to`.
-float AngleTo(const C3Vector& from, const C3Vector& to) {
-    float dy = to.y - from.y;
-
-    if (std::fabs(to.x - from.x) < 2.384185791015625e-07f) {
-        return dy < 0.0f ? 1.5f * 3.1415927410125732f : 0.5f * 3.1415927410125732f;
-    }
-
-    if (2.384185791015625e-07f <= std::fabs(dy)) {
-        return std::atan2(dy, to.x - from.x);
-    }
-
-    return to.x < from.x ? 3.1415927410125732f : 0.0f;
-}
 
 } // namespace
 
@@ -7788,7 +7773,7 @@ void CGUnit_C::FaceSplineTarget(WOWGUID target, int32_t flush) {
         return;
     }
 
-    this->m_localMove.FaceForSpline(AngleTo(this->GetPosition(), object->GetPosition()), flush);
+    this->m_localMove.FaceForSpline(FacingBetween(this->GetPosition(), object->GetPosition()), flush);
 }
 
 // ref: FUN_0073af00
@@ -8090,7 +8075,7 @@ void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport,
                 world = spot * matrix;
             }
 
-            move.FaceForSpline(AngleTo(this->GetPosition(), world), flush);
+            move.FaceForSpline(FacingBetween(this->GetPosition(), world), flush);
         } else if (type == 3) {
             this->FaceSplineTarget(target, flush);
         } else if (type == 4) {

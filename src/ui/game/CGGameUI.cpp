@@ -1109,6 +1109,22 @@ int32_t GameUIPlayerHasControl() {
     return s_playerHasControl;
 }
 
+namespace {
+
+// DAT_00bd0828
+WOWGUID s_corpseGUID = 0;
+
+} // namespace
+
+// ref: FUN_00512c20
+void GameUISetCorpseGUID(WOWGUID guid) {
+    s_corpseGUID = guid;
+}
+
+WOWGUID GameUIGetCorpseGUID() {
+    return s_corpseGUID;
+}
+
 // ref: FUN_00513880
 // Entering the world: the player has control, and `mover` is what it moves.
 void GameUIInitPlayerControl(WOWGUID mover) {

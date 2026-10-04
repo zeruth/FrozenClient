@@ -1,3 +1,4 @@
+#include "object/client/CGCorpse_C.hpp"
 #include "object/client/ObjectEffect.hpp"
 #include "world/Shadow.hpp"
 #include "world/MapWeather.hpp"
@@ -279,6 +280,11 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     GameObjectInitialize();
     // The player module's start (FUN_006e8ee0 at 0x00405635).
     PlayerInitialize();
+
+    // TODO(Item_C): FUN_00709440, the item module's start.
+
+    // The corpse module's start (FUN_007062c0).
+    CorpseInitialize();
 
     // TODO
 

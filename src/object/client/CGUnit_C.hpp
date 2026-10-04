@@ -1344,4 +1344,7 @@ bool IsSpellCastOrRangedAttackAnimation(int32_t animID);
 // set, tested inline for the same reason.
 bool IsCombatOrReadyAnimation(int32_t animID);
 
+// ref: FUN_004f5130 -- see the definition in CGUnit_C.cpp.
+float FacingBetween(const C3Vector& from, const C3Vector& to);
+
 #endif
