@@ -63,10 +63,12 @@ struct ShadowCascade {
     float recenterDistanceSq;               // +0x0c: from DAT_00b1d52c
     C3Vector center;                        // +0x10: what the visible map was drawn around
     C3Vector pending;                       // +0x1c: what the hidden one is being drawn around
-    // The look-at's up vector. NOTHING EVER WRITES IT, in the reference either: the look-at sees a
-    // zero up, gives up, and leaves the identity, so every cascade is a straight top-down
-    // projection. Kept as a field because that is where the reference reads it from.
-    C3Vector up;                            // +0x28
+    // The look-at's up vector: (1, 0, 0), from the array's static initializer (0x009d0e60, the
+    // fld1 it stores at +0x28 of each entry). No code writes it after that -- the reset leaves
+    // it alone -- which is why it once looked unwritten. Left zero, the look-at (FUN_006c0050)
+    // refuses the zero up and returns the identity, putting every cascade around the world
+    // origin, so no building or doodad ever overlapped one and none cast a shadow.
+    C3Vector up = { 1.0f, 0.0f, 0.0f };     // +0x28
     uint32_t tile;                          // +0x34: the next sub-tile of the hidden map
     uint32_t visible;                       // +0x38: which of the two maps the shaders sample
 };
