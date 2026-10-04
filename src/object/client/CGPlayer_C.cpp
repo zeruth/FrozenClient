@@ -753,3 +753,24 @@ int32_t PlayerTimeSyncRequestHandler(void* param, NETMESSAGE msgId, uint32_t tim
 void PlayerInitialize() {
     ClientServices::SetMessageHandler(SMSG_TIME_SYNC_REQUEST, PlayerTimeSyncRequestHandler, nullptr);
 }
+
+// Where the player's hearthstone returns them, from SMSG_BIND_POINT_UPDATE.
+static C3Vector s_bindPosition;                         // ref: DAT_00c9eb2c
+static uint32_t s_bindMapID;                            // ref: DAT_00c9d538
+static uint32_t s_bindAreaID;                           // ref: DAT_00c9d534
+static int32_t s_bindPointKnown;                        // ref: DAT_00c9d53c
+
+// ref: FUN_006ceec0
+void PlayerReadBindPoint(CDataStore* msg) {
+    msg->Get(s_bindPosition.x);
+    msg->Get(s_bindPosition.y);
+    msg->Get(s_bindPosition.z);
+    msg->Get(s_bindMapID);
+    msg->Get(s_bindAreaID);
+    s_bindPointKnown = 1;
+}
+
+// ref: FUN_006cef10
+int32_t PlayerGetBindAreaID() {
+    return static_cast<int32_t>(s_bindAreaID);
+}

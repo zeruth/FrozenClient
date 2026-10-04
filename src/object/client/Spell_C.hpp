@@ -118,8 +118,9 @@ bool Spell_C_HasAttributeMask(const SpellRec* spell);
 const char* Spell_C_GetFailedReasonToken(uint32_t reason);
 
 // ref: FUN_007fd440
-// Two flags for a code pair, both cleared first. Returns 1 for the codes that set the first flag
-// alone or both, 0 otherwise (including the codes that set the first flag and still answer 0).
+// Two flags for an effect and its aura, both cleared first: the first says the points are whole
+// numbers, the second that the periodic damage modifier applies. Returns 1 when a damage modifier
+// applies at all.
 int32_t Spell_C_ClassifyCodePair(uint32_t code, uint8_t* second, uint32_t subCode, uint8_t* first);
 
 // ref: FUN_007fd620
@@ -180,5 +181,20 @@ bool SpellIgnoresReagents(CGPlayer_C* player, const SpellRec* spell);
 
 // ref: FUN_008012f0
 int32_t SpellGetPowerCost(const SpellRec* spell, CGUnit_C* caster);
+
+// ref: FUN_007fdec0
+bool SpellIsAffectedByEffect(const SpellRec* spell, const SpellRec* aura, int32_t effectIndex);
+
+// ref: FUN_007fdbe0
+void SpellApplyModifierSoft(const SpellRec* spell, uint32_t* value, int32_t op);
+
+// ref: FUN_007ff770
+void SpellGetEffectPoints(const SpellRec* spell, int32_t effectIndex, float* minPoints, float* maxPoints, int32_t level, int32_t pet, int32_t inspect, int32_t noModifiers);
+
+// ref: FUN_00800a70
+int32_t SpellGetDuration(const SpellRec* spell, int32_t pet, int32_t inspect, int32_t noModifiers, int32_t applyHaste);
+
+// ref: FUN_00802850
+int32_t SpellGetDifficultySpellID(int32_t spellID);
 
 #endif

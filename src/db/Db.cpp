@@ -1,5 +1,7 @@
 #include "db/Db.hpp"
 #include "db/WowClientDB_Base.hpp"
+#include "console/Console.hpp"
+#include <storm/Array.hpp>
 
 WowClientDB<AchievementRec> g_achievementDB;
 WowClientDB<AreaTableRec> g_areaTableDB;
@@ -34,6 +36,11 @@ WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+WowClientDB<SpellDescriptionVariablesRec> g_spellDescriptionVariablesDB;
+WowClientDB<ResistancesRec> g_resistancesDB;
+WowClientDB<SpellDifficultyRec> g_spellDifficultyDB;
+WowClientDB<SpellDurationRec> g_spellDurationDB;
+WowClientDB<SpellRadiusRec> g_spellRadiusDB;
 WowClientDB<SpellCategoryRec> g_spellCategoryDB;
 WowClientDB<ItemSubClassMaskRec> g_itemSubClassMaskDB;
 WowClientDB<TotemCategoryRec> g_totemCategoryDB;
@@ -128,6 +135,11 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_spellVisualKitAreaModelDB, __FILE__, __LINE__);
     loadFn(&g_spellEffectCameraShakesDB, __FILE__, __LINE__);
     loadFn(&g_spellCastTimesDB, __FILE__, __LINE__);
+    loadFn(&g_spellDescriptionVariablesDB, __FILE__, __LINE__);
+    loadFn(&g_resistancesDB, __FILE__, __LINE__);
+    loadFn(&g_spellDifficultyDB, __FILE__, __LINE__);
+    loadFn(&g_spellDurationDB, __FILE__, __LINE__);
+    loadFn(&g_spellRadiusDB, __FILE__, __LINE__);
     loadFn(&g_spellCategoryDB, __FILE__, __LINE__);
     loadFn(&g_itemSubClassMaskDB, __FILE__, __LINE__);
     loadFn(&g_totemCategoryDB, __FILE__, __LINE__);
@@ -185,12 +197,50 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_unitBloodLevelsDB, __FILE__, __LINE__);
 };
 
+// The schools by index, and which one armor stands for (-1 until the table is read).
+static TSFixedArray<ResistancesRec*> s_resistances;    // ref: DAT_00c5d668
+static int32_t s_physicalResistance = -1;              // ref: DAT_00ad2f90
+
 void ClientDBInitialize() {
     // TODO
 
     StaticDBLoadAll(LoadDB);
 
-    // TODO
+    // TODO the rest of the post-load steps (0x00634e00..0x00634e34)
+
+    ResistancesInitialize();
+}
+
+// ref: FUN_00634ae0
+// Indexes the seven schools by row and remembers the one flagged as physical.
+void ResistancesInitialize() {
+    uint32_t count = g_resistancesDB.GetNumRecords();
+    s_physicalResistance = -1;
+
+    if (count != 7) {
+        ConsolePrintf("Warning: The Resistances table has the wrong number of entries");
+
+        if (count > 7) {
+            count = 7;
+        }
+    }
+
+    s_resistances.SetCount(count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto rec = g_resistancesDB.GetRecordByIndex(static_cast<int32_t>(i));
+
+        if (rec->m_flags & 0x1) {
+            s_physicalResistance = static_cast<int32_t>(i);
+        }
+
+        s_resistances[i] = rec;
+    }
+}
+
+// ref: FUN_006337a0
+int32_t ResistancesGetPhysicalIndex() {
+    return s_physicalResistance;
 }
 
 // ref: FUN_004cfbb0

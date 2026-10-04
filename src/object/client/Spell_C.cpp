@@ -15,6 +15,10 @@
 #include "ui/game/CharacterInfoScript.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include <cmath>
+#include "math/SoftFloat.hpp"
+#include "ui/game/CGPartyInfo.hpp"
+#include "ui/game/GameScript.hpp"
+#include <cstring>
 
 // Written by the cast and combat code, none of which is ported yet; the reference
 // zero-initialises all of it.
@@ -1066,4 +1070,348 @@ int32_t SpellGetPowerCost(const SpellRec* spell, CGUnit_C* caster) {
     // TODO the NPC scaling by gtNPCManaCostScaler and the totem bar's summed cost (see above).
 
     return cost < 1 ? 0 : cost;
+}
+
+// ref: FUN_007fdec0
+// Whether an aura's effect reaches a spell: the same spell family, and the effect's class mask
+// meeting the spell's.
+bool SpellIsAffectedByEffect(const SpellRec* spell, const SpellRec* aura, int32_t effectIndex) {
+    if (!spell || !aura || spell->m_spellClassSet != aura->m_spellClassSet) {
+        return false;
+    }
+
+    auto mask = SpellGetEffectClassMask(aura, effectIndex);
+
+    for (uint32_t i = 0; i < 3; i++) {
+        if (spell->m_spellClassMask[i] & mask[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_007fd440
+// Sorts an effect (and, for the aura-applying effects, its aura) by how its points read. The first
+// flag says the points are whole numbers -- the range is floored and ceiled -- and the answer says
+// the damage modifiers apply; the second flag picks the periodic damage modifier over the direct
+// one. The reference passes first in EAX, second in EDX and code in ECX.
+int32_t Spell_C_ClassifyCodePair(uint32_t code, uint8_t* second, uint32_t subCode, uint8_t* first) {
+    *first = 0;
+    *second = 0;
+
+    switch (code) {
+        case 2:
+        case 9:
+        case 10:
+        case 17:
+        case 31:
+        case 58:
+        case 67:
+        case 75:
+        case 121:
+            *first = 1;
+
+            return 1;
+
+        case 8:
+        case 30:
+        case 62:
+        case 146:
+            *first = 1;
+
+            return 0;
+
+        case 6:
+        case 27:
+        case 35:
+        case 65:
+        case 119:
+        case 128:
+        case 129:
+        case 143:
+            switch (subCode) {
+                case 15:
+                case 43:
+                    *first = 1;
+
+                    return 1;
+
+                case 3:
+                case 8:
+                case 20:
+                case 53:
+                case 62:
+                case 89:
+                    *first = 1;
+                    *second = 1;
+
+                    return 1;
+
+                case 21:
+                case 24:
+                case 63:
+                case 64:
+                case 162:
+                    *first = 1;
+
+                    return 0;
+            }
+
+            return 0;
+    }
+
+    return 0;
+}
+
+// ref: FUN_007fdbe0
+// The modifier applied to a value held as a float bit pattern, in the same soft arithmetic the
+// effect points are computed in: (value + flat) * pct * 0.01.
+void SpellApplyModifierSoft(const SpellRec* spell, uint32_t* value, int32_t op) {
+    int32_t flat;
+    int32_t pct;
+
+    if (!SpellGetModifier(spell, op, &flat, &pct)) {
+        return;
+    }
+
+    uint32_t pctBits;
+    SoftFloatFromInt(&pctBits, pct);
+
+    uint32_t flatBits;
+    SoftFloatFromInt(&flatBits, flat);
+
+    uint32_t sum;
+    SoftFloatAdd(&sum, value, &flatBits);
+
+    uint32_t scaled;
+    SoftFloatMultiply(&scaled, &sum, &pctBits);
+
+    uint32_t result;
+    SoftFloatMultiply(&result, &scaled, &g_softFloatHundredth);
+
+    *value = result;
+}
+
+// Rounds a soft float to the nearest 1/128: scaled up by 2^7 (a zero stays zero), rounded half
+// up, and scaled back down, flushing to zero when that would underflow. Inline in the reference,
+// once for each end of the range.
+static uint32_t SpellPointsQuantize(uint32_t bits) {
+    bits += (bits & 0x7F800000) ? 0x3800000 : 0;
+
+    uint32_t rounded;
+    SoftFloatRound(&rounded, &bits);
+
+    uint32_t underflow = static_cast<uint32_t>(static_cast<int32_t>((rounded - 0x4000000) ^ rounded) >> 31);
+
+    return ~underflow & (rounded - 0x3800000);
+}
+
+// ref: FUN_007ff770
+// The range an effect's points fall in at the caster's level: base + 1 to base + die sides, each
+// grown by the per-level points over the levels above the spell's base level. Unless noModifiers,
+// the spell modifiers then apply -- all effects, this effect index, damage or periodic damage for
+// the effects that deal it, and the aura's own for three aura types. A level of 0 means the
+// caster's. Computed in the reference's soft float arithmetic so it agrees bit for bit.
+void SpellGetEffectPoints(const SpellRec* spell, int32_t effectIndex, float* minPoints, float* maxPoints, int32_t level, int32_t pet, int32_t inspect, int32_t noModifiers) {
+    *minPoints = 0.0f;
+    *maxPoints = 0.0f;
+
+    if (!spell) {
+        return;
+    }
+
+    uint8_t wholeNumbers;
+    uint8_t periodic;
+    auto damage = Spell_C_ClassifyCodePair(spell->m_effect[effectIndex], &periodic, spell->m_effectAura[effectIndex], &wholeNumbers);
+
+    if (!level) {
+        level = SpellGetCasterLevel(spell, pet, inspect);
+    }
+
+    if (spell->m_baseLevel > 0) {
+        level -= spell->m_baseLevel;
+    }
+
+    if (level < 0) {
+        level = 0;
+    }
+
+    uint32_t perLevel;
+    memcpy(&perLevel, &spell->m_effectRealPointsPerLevel[effectIndex], sizeof(perLevel));
+
+    uint32_t levelBits;
+    uint32_t growth;
+
+    uint32_t low;
+    SoftFloatFromInt(&low, spell->m_effectBasePoints[effectIndex] + 1);
+    SoftFloatFromInt(&levelBits, level);
+    SoftFloatMultiply(&growth, &perLevel, &levelBits);
+
+    uint32_t sum;
+    SoftFloatAdd(&sum, &low, &growth);
+    low = sum;
+
+    uint32_t high;
+    SoftFloatFromInt(&high, spell->m_effectDieSides[effectIndex] + spell->m_effectBasePoints[effectIndex]);
+    SoftFloatFromInt(&levelBits, level);
+    SoftFloatMultiply(&growth, &perLevel, &levelBits);
+
+    SoftFloatAdd(&sum, &high, &growth);
+    high = sum;
+
+    if (!noModifiers) {
+        SpellApplyModifierSoft(spell, &low, 8);
+        SpellApplyModifierSoft(spell, &high, 8);
+
+        switch (effectIndex) {
+            case 0:
+                SpellApplyModifierSoft(spell, &low, 3);
+                SpellApplyModifierSoft(spell, &high, 3);
+                break;
+
+            case 1:
+                SpellApplyModifierSoft(spell, &low, 12);
+                SpellApplyModifierSoft(spell, &high, 12);
+                break;
+
+            case 2:
+                SpellApplyModifierSoft(spell, &low, 23);
+                SpellApplyModifierSoft(spell, &high, 23);
+                break;
+        }
+
+        if (damage) {
+            if (periodic) {
+                SpellApplyModifierSoft(spell, &low, 22);
+                SpellApplyModifierSoft(spell, &high, 22);
+            } else {
+                SpellApplyModifierSoft(spell, &low, 0);
+                SpellApplyModifierSoft(spell, &high, 0);
+            }
+        }
+
+        auto aura = spell->m_effectAura[effectIndex];
+
+        if (aura == 10 || aura == 103 || aura == 183) {
+            SpellApplyModifierSoft(spell, &low, 2);
+            SpellApplyModifierSoft(spell, &high, 2);
+        }
+    }
+
+    low = SpellPointsQuantize(low);
+    high = SpellPointsQuantize(high);
+
+    if (wholeNumbers) {
+        uint32_t bits;
+
+        SoftFloatFloor(&bits, &low);
+        memcpy(minPoints, &bits, sizeof(bits));
+
+        SoftFloatCeil(&bits, &high);
+        memcpy(maxPoints, &bits, sizeof(bits));
+    } else {
+        memcpy(minPoints, &low, sizeof(low));
+        memcpy(maxPoints, &high, sizeof(high));
+    }
+}
+
+// ref: FUN_00800a70
+// Milliseconds an aura lasts at the caster's level, capped by the duration row, through the
+// duration modifiers unless noModifiers. With applyHaste, a periodic aura that is hasted -- by
+// AttributesEx5 0x2000, or by a periodic haste aura (316) on the player reaching it -- is scaled
+// by the player's cast speed, unless AttributesEx3 0x20000000 exempts it.
+int32_t SpellGetDuration(const SpellRec* spell, int32_t pet, int32_t inspect, int32_t noModifiers, int32_t applyHaste) {
+    if (!spell) {
+        return 0;
+    }
+
+    auto row = g_spellDurationDB.GetRecord(spell->m_durationIndex);
+
+    if (!row) {
+        return 0;
+    }
+
+    int32_t grown = (SpellGetCasterLevel(spell, pet, inspect) - spell->m_baseLevel) * row->m_durationPerLevel + row->m_duration;
+    int32_t duration = row->m_maxDuration;
+
+    if (grown < row->m_maxDuration) {
+        duration = grown;
+    }
+
+    if (!noModifiers) {
+        SpellApplyModifier(spell, &duration, 1);
+    }
+
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, "d:\\BuildServer\\WoW\\1\\work\\WoW-code\\branches\\wow-patch-3_3_5_A-BNet\\WoW\\Source\\Object/ObjectClient/Player_C.h", 0xa0));
+
+    if (!player || !applyHaste) {
+        return duration;
+    }
+
+    uint32_t i = 0;
+
+    while (spell->m_effectAuraPeriod[i] == 0) {
+        if (++i > 2) {
+            return duration;
+        }
+    }
+
+    if (!(spell->m_attributesEx5 & 0x2000) && !player->HasAuraAffectingSpell(316, spell)) {
+        return duration;
+    }
+
+    if (!(spell->m_attributesEx3 & 0x20000000)) {
+        auto speed = player->Unit()->modCastingSpeed;
+
+        if (speed >= 0.001f) {
+            duration = static_cast<int32_t>(std::nearbyint(static_cast<float>(duration) * speed));
+        }
+    }
+
+    return duration;
+}
+
+// ref: FUN_00802850
+// The spell cast in this one's place at the current dungeon or raid difficulty, from its
+// SpellDifficulty row: the row's normal spell when the difficulty has none (the 25-player heroic
+// first trying the 25-player normal), and the spell itself outside an instance.
+int32_t SpellGetDifficultySpellID(int32_t spellID) {
+    auto spell = g_spellDB.GetRecord(spellID);
+
+    if (!spell || !spell->m_difficulty) {
+        return spellID;
+    }
+
+    auto row = g_spellDifficultyDB.GetRecord(spell->m_difficulty);
+
+    if (!row) {
+        return spellID;
+    }
+
+    auto map = g_mapDB.GetRecord(s_instanceMapID);
+
+    if (!map) {
+        return spellID;
+    }
+
+    uint32_t difficulty;
+
+    if (map->m_instanceType == 2) {
+        difficulty = CGPartyInfo::GetEffectiveMapRaidDifficulty();
+    } else if (map->m_instanceType == 1) {
+        difficulty = CGPartyInfo::GetEffectiveDungeonDifficulty();
+    } else {
+        return spellID;
+    }
+
+    auto id = row->m_difficultySpellID[difficulty];
+
+    if (id == 0 && (difficulty != 3 || (id = row->m_difficultySpellID[1]) == 0)) {
+        id = row->m_difficultySpellID[0];
+
+        return id ? id : spellID;
+    }
+
+    return id;
 }

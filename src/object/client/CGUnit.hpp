@@ -137,6 +137,9 @@ class CGUnit {
         float GetRawFacing() const;
         int32_t GetStatNonNegative(int32_t index) const;
 
+        // ref: FUN_004f54d0
+        void GetResistanceBreakdown(int32_t index, int32_t* base, int32_t* total, int32_t* effective, int32_t* positive, int32_t* negative) const;
+
         // ref: FUN_005ee050
         // The smallest cost modifier among the schools in the mask; 0 when the mask is empty.
         int32_t GetPowerCostModifier(uint32_t schoolMask) const;

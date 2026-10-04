@@ -910,3 +910,65 @@ void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char
 
     SStrPrintf(dest, destSize, FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE), value);
 }
+
+// ref: FUN_0061a960
+// Whether a time in milliseconds is, within epsilon, a whole number of the largest unit it reaches
+// (days, hours, minutes or seconds).
+bool TimeIsWholeUnit(float milliseconds, float epsilon) {
+    if (milliseconds >= 86400000.0f) {
+        milliseconds *= 1.1574074143538837e-08f;
+    } else if (milliseconds >= 3600000.0f) {
+        milliseconds *= 2.7777778655035945e-07f;
+    } else if (milliseconds >= 60000.0f) {
+        milliseconds *= 1.6666666851961054e-05f;
+    } else {
+        milliseconds *= 0.001f;
+    }
+
+    return static_cast<double>(milliseconds) - floor(static_cast<double>(milliseconds)) < static_cast<double>(epsilon);
+}
+
+// ref: FUN_0061aee0
+// FormatTimeInterval for a fractional count: the time in the largest unit it reaches, through the
+// <prefix>_DAYS/_HOURS/_MIN/_SEC string, or displayValue in its place when that is non-zero.
+void FormatTimeIntervalFloat(char* dest, uint32_t destSize, float milliseconds, const char* prefix, int32_t displayValue) {
+    if (!dest || !prefix) {
+        return;
+    }
+
+    static float s_hour = 3600000.0f;               // ref: DAT_00c5d37c
+    static float s_day = 24.0f * s_hour;            // ref: DAT_00c5d378
+
+    *dest = '\0';
+
+    const char* unit;
+
+    if (milliseconds >= s_day) {
+        unit = "%s_DAYS";
+        milliseconds = milliseconds / s_day;
+    } else if (milliseconds >= s_hour) {
+        unit = "%s_HOURS";
+        milliseconds = milliseconds / s_hour;
+    } else if (milliseconds >= 60000.0f) {
+        unit = "%s_MIN";
+        milliseconds = milliseconds * 1.6666666851961054e-05f;
+    } else {
+        unit = "%s_SEC";
+        milliseconds = milliseconds * 0.001f;
+    }
+
+    char token[256];
+    SStrPrintf(token, sizeof(token), unit, prefix);
+
+    if (milliseconds <= 0.0f) {
+        milliseconds = 0.0f;
+    }
+
+    if (displayValue) {
+        SStrPrintf(dest, destSize, FrameScript_GetText(token, -1, GENDER_NOT_APPLICABLE), displayValue);
+
+        return;
+    }
+
+    SStrPrintf(dest, destSize, FrameScript_GetText(token, -1, GENDER_NOT_APPLICABLE), static_cast<double>(milliseconds));
+}

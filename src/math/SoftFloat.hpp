@@ -13,4 +13,23 @@ int32_t CountLeadingZeros(uint32_t value);
 // the mantissa product is truncated, and a result whose exponent underflows is flushed to zero.
 void SoftFloatMultiply(uint32_t* out, const uint32_t* a, const uint32_t* b);
 
+// The sum of two floats as bit patterns. An operand with a zero exponent is taken as zero, and one
+// more than 23 binary places smaller than the other is dropped.
+void SoftFloatAdd(uint32_t* out, const uint32_t* a, const uint32_t* b);
+
+void SoftFloatFloor(uint32_t* out, const uint32_t* a);
+
+void SoftFloatCeil(uint32_t* out, const uint32_t* a);
+
+void SoftFloatRound(uint32_t* out, const uint32_t* a);
+
+// The float nearest an integer, truncating the bits past the mantissa.
+void SoftFloatFromInt(uint32_t* out, int32_t value);
+
+extern uint32_t g_softFloatMinusOne;
+extern uint32_t g_softFloatZero;
+extern uint32_t g_softFloatOne;
+extern uint32_t g_softFloatHalf;
+extern uint32_t g_softFloatHundredth;
+
 #endif

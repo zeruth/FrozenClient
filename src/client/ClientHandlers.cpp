@@ -20,6 +20,7 @@
 #include <tempest/Vector.hpp>
 #include "client/ClientServices.hpp"
 #include "net/Connection.hpp"
+#include "object/client/CGPlayer_C.hpp"
 
 static float s_newFacing;
 static C3Vector s_newPosition;
@@ -283,6 +284,13 @@ uint32_t InventoryResultToError(uint8_t result) {
     default:
         return 11;
     }
+}
+
+// The SMSG_BIND_POINT_UPDATE case of the reference's player message dispatcher (FUN_006e2e90).
+int32_t BindPointUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    PlayerReadBindPoint(msg);
+
+    return 1;
 }
 
 // The SMSG_INVENTORY_CHANGE_FAILURE case of the reference's player message dispatcher

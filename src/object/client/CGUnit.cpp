@@ -54,6 +54,29 @@ int32_t CGUnit::GetStatNonNegative(int32_t index) const {
     return stat < 0 ? 0 : stat;
 }
 
+// ref: FUN_004f54d0
+// Splits a resistance into what it would be without buffs and what it is now. The base is computed
+// BEFORE the total is clamped, so a resistance debuffed below zero still reports the base it came
+// from rather than a base derived from the clamped zero.
+//
+// FIVE outputs, not four. An earlier pass here wrote it with four, which was enough for
+// UnitResistance and wrong as a port: the reference also fills an "effective" value, clamped
+// together with the total and equal to it at every point in this function. UnitArmor is what
+// needs it -- it returns effective and total as separate values even though nothing here makes
+// them differ.
+void CGUnit::GetResistanceBreakdown(int32_t index, int32_t* base, int32_t* total, int32_t* effective, int32_t* positive, int32_t* negative) const {
+    *effective = this->m_unit->resistance[index];
+    *total = *effective;
+    *positive = this->m_unit->resistanceBuffModsPositive[index];
+    *negative = this->m_unit->resistanceBuffModsNegative[index];
+    *base = (*total - *positive) - *negative;
+
+    if (*total < 0) {
+        *effective = 0;
+        *total = 0;
+    }
+}
+
 CGUnitData* CGUnit::Unit() const {
     return this->m_unit;
 }

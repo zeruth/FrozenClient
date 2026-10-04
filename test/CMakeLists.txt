@@ -34,6 +34,7 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
         "gx/*.cpp"
         "gx/font/*.cpp"
         "lua/*.cpp"
+        "ui/*.cpp"
         "util/*.cpp"
     )
 

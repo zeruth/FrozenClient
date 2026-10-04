@@ -54,6 +54,7 @@
 #include <tempest/Math.hpp>
 #include <cstring>
 #include <cmath>
+#include "object/client/SpellBook.hpp"
 
 WOWGUID CGUnit_C::s_activeMover;
 
@@ -6029,6 +6030,30 @@ const CAuraState* CGUnit_C::GetAura(uint32_t slot) const {
 // ref: FUN_005a1120
 bool CGUnit_C::HasAuraType(uint32_t auraType) const {
     return (this->m_auraTypeMask[auraType >> 3] >> (auraType & 7)) & 1;
+}
+
+// ref: FUN_007283a0
+// Whether one of the unit's auras applies an effect of this aura type that reaches the spell. The
+// reference reads the aura count through FUN_004f8850 before each pass.
+bool CGUnit_C::HasAuraAffectingSpell(uint32_t auraType, const SpellRec* spell) const {
+    for (uint32_t slot = 0; slot < this->m_auras.Count(); slot++) {
+        auto aura = &this->m_auras[slot];
+        auto auraSpell = g_spellDB.GetRecord(aura->m_spellID);
+
+        if (!auraSpell) {
+            continue;
+        }
+
+        for (uint32_t effect = 0; effect < 3; effect++) {
+            if (auraSpell->m_effectAura[effect] == static_cast<int32_t>(auraType)
+                && (aura->m_flags & (1 << effect))
+                && SpellIsAffectedByEffect(spell, auraSpell, effect)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 // ref: FUN_00727e70
@@ -12916,4 +12941,133 @@ void CGUnit_C::AnimEventCallback(CM2Model* model, uint32_t boneId, uint32_t even
     }
 
     unit->OnAnimEvent(model, eventId, eventData, position);
+}
+
+// ref: FUN_007282a0
+// Whether one of the unit's auras comes from this spell. The reference reads the aura count
+// through FUN_004f8850.
+bool CGUnit_C::HasAuraFromSpell(int32_t spellID) const {
+    for (uint32_t slot = 0; slot < this->m_auras.Count(); slot++) {
+        if (this->m_auras[slot].m_spellID == spellID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_007260e0
+// Whether the unit knows the spell: the active player from its spellbook, the pet from its own.
+// PARTIAL: the reference reads the player's known-spell bitmask (DAT_00be8dc4) where frozen's
+// spellbook stand-in keeps a list, and the pet's spell list (DAT_00be7d98, FUN_0053b900) is not
+// ported, so a pet answers false.
+bool CGUnit_C::KnowsSpell(uint32_t spellID) const {
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        if (spellID <= static_cast<uint32_t>(g_spellDB.m_maxID)) {
+            return SpellBookKnows(spellID);
+        }
+    } else if (this->GetGUID() == CGPetInfo::GetPet(0)) {
+        return false;
+    }
+
+    return false;
+}
+
+// ref: FUN_0071a4b0
+// The race name a unit (or, with no unit, a name cache entry) is shown with, and the sex that name
+// is written for. With no race row the sex is written only when *displaySex is already non-zero:
+// the reference's callers pass the slot that held the unit pointer. The reference passes unit in
+// EAX, entry in EDX and displaySex in ESI.
+const char* CGUnit_C::GetDisplayRaceName(const CGUnit_C* unit, const NameCacheRec* entry, UNIT_SEX* displaySex) {
+    UNIT_SEX sex = UNITSEX_NONE;
+    const ChrRacesRec* race;
+
+    if (unit) {
+        race = g_chrRacesDB.GetRecord(unit->Unit()->bytes0 & 0xFF);
+        sex = static_cast<UNIT_SEX>((unit->Unit()->bytes0 >> 16) & 0xFF);
+    } else {
+        if (!entry) {
+            goto missing;
+        }
+
+        race = g_chrRacesDB.GetRecord(static_cast<int32_t>(entry->m_race));
+        sex = static_cast<UNIT_SEX>(entry->m_sex);
+    }
+
+    if (race) {
+        return CGUnit_C::GetDisplayRaceNameFromRecord(race, sex, displaySex);
+    }
+
+missing:
+    if (*displaySex) {
+        *displaySex = sex;
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0071a590
+// As GetDisplayRaceName, for the class.
+const char* CGUnit_C::GetDisplayClassName(const CGUnit_C* unit, const NameCacheRec* entry, UNIT_SEX* displaySex) {
+    UNIT_SEX sex = UNITSEX_NONE;
+    const ChrClassesRec* classRec;
+
+    if (unit) {
+        classRec = g_chrClassesDB.GetRecord((unit->Unit()->bytes0 >> 8) & 0xFF);
+        sex = static_cast<UNIT_SEX>((unit->Unit()->bytes0 >> 16) & 0xFF);
+    } else {
+        if (!entry) {
+            goto missing;
+        }
+
+        classRec = g_chrClassesDB.GetRecord(static_cast<int32_t>(entry->m_class));
+        sex = static_cast<UNIT_SEX>(entry->m_sex);
+    }
+
+    if (classRec) {
+        return CGUnit_C::GetDisplayClassNameFromRecord(classRec, sex, displaySex);
+    }
+
+missing:
+    if (*displaySex) {
+        *displaySex = sex;
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_0071a540
+// The sex the unit's race name is written for: its own sex for a creature, NONE for nothing at
+// all, and for a player (or a name cache entry) the sex of the race name it is shown with.
+UNIT_SEX CGUnit_C::GetRaceDisplaySex(const CGUnit_C* unit, const NameCacheRec* entry) {
+    if (!unit) {
+        if (!entry) {
+            return UNITSEX_NONE;
+        }
+    } else if (!unit->IsA(TYPE_PLAYER)) {
+        return static_cast<UNIT_SEX>((unit->Unit()->bytes0 >> 16) & 0xFF);
+    }
+
+    // The reference's out slot is the argument that held the unit pointer
+    auto displaySex = unit ? UNITSEX_LAST : UNITSEX_MALE;
+    CGUnit_C::GetDisplayRaceName(unit, entry, &displaySex);
+
+    return displaySex;
+}
+
+// ref: FUN_0071a620
+// As GetRaceDisplaySex, for the class name.
+UNIT_SEX CGUnit_C::GetClassDisplaySex(const CGUnit_C* unit, const NameCacheRec* entry) {
+    if (!unit) {
+        if (!entry) {
+            return UNITSEX_NONE;
+        }
+    } else if (!unit->IsA(TYPE_PLAYER)) {
+        return static_cast<UNIT_SEX>((unit->Unit()->bytes0 >> 16) & 0xFF);
+    }
+
+    auto displaySex = unit ? UNITSEX_LAST : UNITSEX_MALE;
+    CGUnit_C::GetDisplayClassName(unit, entry, &displaySex);
+
+    return displaySex;
 }

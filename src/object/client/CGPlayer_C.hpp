@@ -254,4 +254,10 @@ bool InventorySlotInLocations(uint32_t slot, uint32_t mask);
 // ref: FUN_006e8ee0
 void PlayerInitialize();
 
+// ref: FUN_006ceec0
+void PlayerReadBindPoint(CDataStore* msg);
+
+// ref: FUN_006cef10
+int32_t PlayerGetBindAreaID();
+
 #endif

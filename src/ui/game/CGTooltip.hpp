@@ -129,4 +129,10 @@ struct ItemStatTotals {
 
 void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char* prefix, int32_t displayValue, int32_t roundUp, bool inSeconds);
 
+// ref: FUN_0061a960
+bool TimeIsWholeUnit(float milliseconds, float epsilon);
+
+// ref: FUN_0061aee0
+void FormatTimeIntervalFloat(char* dest, uint32_t destSize, float milliseconds, const char* prefix, int32_t displayValue);
+
 #endif

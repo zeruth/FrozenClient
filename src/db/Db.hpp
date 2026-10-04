@@ -36,6 +36,11 @@
 #include "db/rec/SpellVisualKitAreaModelRec.hpp"
 #include "db/rec/SpellEffectCameraShakesRec.hpp"
 #include "db/rec/SpellCastTimesRec.hpp"
+#include "db/rec/SpellDescriptionVariablesRec.hpp"
+#include "db/rec/ResistancesRec.hpp"
+#include "db/rec/SpellDifficultyRec.hpp"
+#include "db/rec/SpellDurationRec.hpp"
+#include "db/rec/SpellRadiusRec.hpp"
 #include "db/rec/SpellCategoryRec.hpp"
 #include "db/rec/ItemSubClassMaskRec.hpp"
 #include "db/rec/TotemCategoryRec.hpp"
@@ -124,6 +129,11 @@ extern WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 extern WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 extern WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 extern WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+extern WowClientDB<SpellDescriptionVariablesRec> g_spellDescriptionVariablesDB;
+extern WowClientDB<ResistancesRec> g_resistancesDB;
+extern WowClientDB<SpellDifficultyRec> g_spellDifficultyDB;
+extern WowClientDB<SpellDurationRec> g_spellDurationDB;
+extern WowClientDB<SpellRadiusRec> g_spellRadiusDB;
 extern WowClientDB<SpellCategoryRec> g_spellCategoryDB;
 extern WowClientDB<ItemSubClassMaskRec> g_itemSubClassMaskDB;
 extern WowClientDB<TotemCategoryRec> g_totemCategoryDB;
@@ -181,6 +191,12 @@ extern WowClientDB<SoundEntriesAdvancedRec> g_soundEntriesAdvancedDB;
 extern WowClientDB<UnitBloodLevelsRec> g_unitBloodLevelsDB;
 
 void ClientDBInitialize();
+
+// ref: FUN_00634ae0
+void ResistancesInitialize();
+
+// ref: FUN_006337a0
+int32_t ResistancesGetPhysicalIndex();
 
 void DbUnpackRecord(const char* src, int32_t size, char* dst);
 

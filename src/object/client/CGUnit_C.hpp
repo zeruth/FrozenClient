@@ -21,6 +21,7 @@ class SOUNDKITOBJECT;
 class MountTransitionObject;
 class ChrClassesRec;
 class ChrRacesRec;
+class NameCacheRec;
 class CreatureDisplayInfoRec;
 class CreatureDisplayInfoExtraRec;
 class CreatureModelDataRec;
@@ -86,6 +87,18 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // Public static functions
         static const char* GetDisplayClassNameFromRecord(const ChrClassesRec* classRec, UNIT_SEX sex, UNIT_SEX* displaySex);
         static const char* GetDisplayRaceNameFromRecord(const ChrRacesRec* raceRec, UNIT_SEX sex, UNIT_SEX* displaySex);
+
+        // ref: FUN_0071a4b0
+        static const char* GetDisplayRaceName(const CGUnit_C* unit, const NameCacheRec* entry, UNIT_SEX* displaySex);
+
+        // ref: FUN_0071a590
+        static const char* GetDisplayClassName(const CGUnit_C* unit, const NameCacheRec* entry, UNIT_SEX* displaySex);
+
+        // ref: FUN_0071a540
+        static UNIT_SEX GetRaceDisplaySex(const CGUnit_C* unit, const NameCacheRec* entry);
+
+        // ref: FUN_0071a620
+        static UNIT_SEX GetClassDisplaySex(const CGUnit_C* unit, const NameCacheRec* entry);
 
         // How the faction template on the left regards the one on the right, on the client's
         // internal 1..4 scale: 1 hostile, 3 neutral, 4 friendly. The Lua side reports this plus one.
@@ -487,6 +500,15 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // ref: FUN_005a1120
         bool HasAuraType(uint32_t auraType) const;
+
+        // ref: FUN_007283a0
+        bool HasAuraAffectingSpell(uint32_t auraType, const SpellRec* spell) const;
+
+        // ref: FUN_007282a0
+        bool HasAuraFromSpell(int32_t spellID) const;
+
+        // ref: FUN_007260e0
+        bool KnowsSpell(uint32_t spellID) const;
 
         // ref: FUN_00556e10
         // The aura in `slot`, or null past the end.

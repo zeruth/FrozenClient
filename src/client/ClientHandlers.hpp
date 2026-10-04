@@ -12,6 +12,8 @@ int32_t NewWorldHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore
 
 int32_t InventoryChangeFailureHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 
+int32_t BindPointUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+
 int32_t NotifyHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 
 int32_t PlayedTimeHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
