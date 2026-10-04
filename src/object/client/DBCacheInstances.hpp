@@ -252,18 +252,73 @@ class PetNameRec {
         uint32_t m_timestamp = 0;           // +0x58
 };
 
+// ItemName.cpp: SMSG_ITEM_NAME_QUERY_RESPONSE's record, keyed by the item id. 8 bytes and version
+// 1 in the WDB header (the save at 0x0066a767): the reference holds the name as an SStrDupA'd
+// pointer, read into a 400-character buffer first (FUN_0098d8c0).
+class ItemNameRec {
+    public:
+        static const uint32_t RECORD_SIZE = 0x8;
+        static const uint32_t RECORD_VERSION = 1;
+
+        static void PutQueryId(CDataStore* msg, const DBCACHEKEY32& id);
+
+        void Read(CDataStore* msg);
+        void Write(CDataStore* msg) const;
+
+        std::string m_name;                 // +0x00
+        uint32_t m_inventoryType = 0;       // +0x04
+};
+
+// PetitionCache.h: SMSG_PETITION_QUERY_RESPONSE's record, keyed by the petition's id. 0x13c8 bytes
+// and version 1 in the WDB header (the save at 0x0066bf47), never persisted. Cleared by
+// FUN_00599fd0 and read by FUN_0098d090; the field names are the server's.
+class PetitionRec {
+    public:
+        static const uint32_t RECORD_SIZE = 0x13c8;
+        static const uint32_t RECORD_VERSION = 1;
+
+        static void PutQueryId(CDataStore* msg, const DBCACHEKEY32& id);
+
+        void Read(CDataStore* msg);
+        void Write(CDataStore* msg) const;
+
+        int32_t m_id = 0;                   // +0x00, <= 0 when the server has no such petition
+        WOWGUID m_creator = 0;              // +0x08
+        char m_title[256] = {};             // +0x10
+        char m_body[4096] = {};             // +0x110
+        uint32_t m_flags = 0;               // +0x1110
+        uint32_t m_minSignatures = 0;       // +0x1114
+        uint32_t m_maxSignatures = 0;       // +0x1118
+        uint32_t m_deadline = 0;            // +0x111c
+        uint32_t m_issueDate = 0;           // +0x1120
+        uint32_t m_allowedGuildID = 0;      // +0x1124
+        uint32_t m_allowedClasses = 0;      // +0x1128
+        uint16_t m_allowedRaces = 0;        // +0x112c
+        uint32_t m_allowedGenders = 0;      // +0x1130
+        uint32_t m_allowedMinLevel = 0;     // +0x1134
+        char m_choiceText[10][64] = {};     // +0x1138
+        uint32_t m_allowedMaxLevel = 0;     // +0x13b8
+        // +0x13bc: 0 for a guild charter, else the arena team's size.
+        uint32_t m_type = 0;
+        uint32_t m_muid = 0;                // +0x13c0
+};
+
 typedef DBCache<CreatureStats_C, DBCACHEKEY32> CreatureStatsCache;
 typedef DBCache<GameObjectStats_C, DBCACHEKEY32> GameObjectStatsCache;
+typedef DBCache<ItemNameRec, DBCACHEKEY32> ItemNameCache;
 typedef DBCache<ItemStats_C, DBCACHEKEY32> ItemStatsCache;
 typedef DBCache<NameCacheRec, DBCACHEKEY64> NameCache;
 typedef DBCache<PetNameRec, DBCACHEKEY32> PetNameCache;
+typedef DBCache<PetitionRec, DBCACHEKEY32> PetitionCache;
 
 // The instances, constructed with the reference's arguments (FUN_009cb680 and its neighbours).
 extern CreatureStatsCache g_creatureCache;      // 0x00c5d690, 'WMOB', creaturecache.wdb
 extern GameObjectStatsCache g_gameObjectCache;  // 0x00c5d718, 'WGOB', gameobjectcache.wdb
+extern ItemNameCache g_itemNameCache;           // 0x00c5d7a0, 'WNDB', itemnamecache.wdb
 extern ItemStatsCache g_itemCache;              // 0x00c5d828, 'WIDB', itemcache.wdb
 extern NameCache g_nameCache;                   // 0x00c5d938, 'NAMW', namecache.wdb
 extern PetNameCache g_petNameCache;             // 0x00c5db58, 'MNPW', petnamecache.wdb
+extern PetitionCache g_petitionCache;           // 0x00c5dbe0, 'WPTN', petitioncache.wdb
 
 // ref: FUN_00635b40
 void DBCacheRegisterHandlers();
@@ -287,6 +342,8 @@ int32_t ReceiveGameObjectQueryResponse(void* param, NETMESSAGE msgId, uint32_t t
 int32_t ReceiveItemQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 int32_t ReceiveNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 int32_t ReceivePetNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+int32_t ReceiveItemNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
+int32_t ReceivePetitionQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 // ref: FUN_00464730
 int32_t ReceiveClientCacheVersion(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg);
 

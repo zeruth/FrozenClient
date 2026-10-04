@@ -14,9 +14,11 @@
 // a guid, whether the cache persists, and the query rate.
 CreatureStatsCache g_creatureCache(0x574D4F42, "creaturecache.wdb", CMSG_QUERY_CREATURE, 0, true, true, 0);
 GameObjectStatsCache g_gameObjectCache(0x57474F42, "gameobjectcache.wdb", CMSG_QUERY_GAME_OBJECT, 0, true, true, 0);
+ItemNameCache g_itemNameCache(0x574E4442, "itemnamecache.wdb", CMSG_ITEM_NAME_QUERY, 0, true, true, 0);
 ItemStatsCache g_itemCache(0x57494442, "itemcache.wdb", CMSG_ITEM_QUERY_SINGLE, 0x57, false, true, 0x200);
 NameCache g_nameCache(0x574E414D, "namecache.wdb", CMSG_NAME_QUERY, 0, false, false, 0x100);
 PetNameCache g_petNameCache(0x57504E4D, "petnamecache.wdb", CMSG_QUERY_PET_NAME, 0, true, false, 0);
+PetitionCache g_petitionCache(0x5750544E, "petitioncache.wdb", CMSG_PETITION_QUERY, 0, true, false, 0);
 
 // ------------------------------------------------------------------------------------------------
 // The WDB file
@@ -631,6 +633,81 @@ void PetNameRec::Write(CDataStore* msg) const {
     }
 }
 
+void ItemNameRec::PutQueryId(CDataStore* msg, const DBCACHEKEY32& id) {
+    msg->Put(id.m_id);
+}
+
+// ref: FUN_0098d8c0
+void ItemNameRec::Read(CDataStore* msg) {
+    char name[400];
+    msg->GetString(name, sizeof(name));
+    this->m_name = name;
+
+    msg->Get(this->m_inventoryType);
+}
+
+void ItemNameRec::Write(CDataStore* msg) const {
+    msg->PutString(this->m_name.c_str());
+    msg->Put(this->m_inventoryType);
+}
+
+void PetitionRec::PutQueryId(CDataStore* msg, const DBCACHEKEY32& id) {
+    msg->Put(id.m_id);
+}
+
+// ref: FUN_0098d090
+void PetitionRec::Read(CDataStore* msg) {
+    uint32_t id = 0;
+    msg->Get(id);
+    this->m_id = static_cast<int32_t>(id);
+    msg->Get(this->m_creator);
+    msg->GetString(this->m_title, sizeof(this->m_title));
+    msg->GetString(this->m_body, sizeof(this->m_body));
+    msg->Get(this->m_flags);
+    msg->Get(this->m_minSignatures);
+    msg->Get(this->m_maxSignatures);
+    msg->Get(this->m_deadline);
+    msg->Get(this->m_issueDate);
+    msg->Get(this->m_allowedGuildID);
+    msg->Get(this->m_allowedClasses);
+    msg->Get(this->m_allowedRaces);
+    msg->Get(this->m_allowedGenders);
+    msg->Get(this->m_allowedMinLevel);
+    msg->Get(this->m_allowedMaxLevel);
+
+    for (auto& text : this->m_choiceText) {
+        msg->GetString(text, sizeof(text));
+    }
+
+    msg->Get(this->m_muid);
+    msg->Get(this->m_type);
+}
+
+void PetitionRec::Write(CDataStore* msg) const {
+    msg->Put(static_cast<uint32_t>(this->m_id));
+    msg->Put(this->m_creator);
+    msg->PutString(this->m_title);
+    msg->PutString(this->m_body);
+    msg->Put(this->m_flags);
+    msg->Put(this->m_minSignatures);
+    msg->Put(this->m_maxSignatures);
+    msg->Put(this->m_deadline);
+    msg->Put(this->m_issueDate);
+    msg->Put(this->m_allowedGuildID);
+    msg->Put(this->m_allowedClasses);
+    msg->Put(this->m_allowedRaces);
+    msg->Put(this->m_allowedGenders);
+    msg->Put(this->m_allowedMinLevel);
+    msg->Put(this->m_allowedMaxLevel);
+
+    for (auto& text : this->m_choiceText) {
+        msg->PutString(text);
+    }
+
+    msg->Put(this->m_muid);
+    msg->Put(this->m_type);
+}
+
 // ------------------------------------------------------------------------------------------------
 // Handlers and lifecycle
 // ------------------------------------------------------------------------------------------------
@@ -734,6 +811,29 @@ int32_t ReceivePetNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time
     return 1;
 }
 
+// ref: FUN_006351d0
+int32_t ReceiveItemNameQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    g_itemNameCache.Response(msg, true);
+
+    return 1;
+}
+
+// ref: FUN_00635390
+// The record carries its own id: a positive one is stored (FUN_0067f110), and anything else is
+// the server's "no such petition" for the negated id (FUN_0067a9b0).
+int32_t ReceivePetitionQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    PetitionRec record;
+    record.Read(msg);
+
+    if (record.m_id > 0) {
+        g_petitionCache.Store(DBCACHEKEY32(record.m_id), record);
+    } else {
+        g_petitionCache.NotFound(DBCACHEKEY32(-record.m_id));
+    }
+
+    return 1;
+}
+
 // ref: FUN_00464730
 int32_t ReceiveClientCacheVersion(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     uint32_t session = 0;
@@ -751,6 +851,8 @@ void DBCacheRegisterHandlers() {
     ClientServices::SetMessageHandler(SMSG_ITEM_QUERY_SINGLE_RESPONSE, &ReceiveItemQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE, &ReceiveNameQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_QUERY_PET_NAME_RESPONSE, &ReceivePetNameQueryResponse, nullptr);
+    ClientServices::SetMessageHandler(SMSG_ITEM_NAME_QUERY_RESPONSE, &ReceiveItemNameQueryResponse, nullptr);
+    ClientServices::SetMessageHandler(SMSG_PETITION_QUERY_RESPONSE, &ReceivePetitionQueryResponse, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x39B), &ReceiveItemQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_CACHE_VERSION, &ReceiveClientCacheVersion, nullptr);
 }
@@ -762,6 +864,8 @@ void DBCacheUnregisterHandlers() {
     ClientServices::ClearMessageHandler(SMSG_ITEM_QUERY_SINGLE_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_QUERY_PET_NAME_RESPONSE);
+    ClientServices::ClearMessageHandler(SMSG_ITEM_NAME_QUERY_RESPONSE);
+    ClientServices::ClearMessageHandler(SMSG_PETITION_QUERY_RESPONSE);
     ClientServices::ClearMessageHandler(static_cast<NETMESSAGE>(0x39B));
     ClientServices::ClearMessageHandler(SMSG_CACHE_VERSION);
 }
@@ -770,43 +874,53 @@ void DBCacheUnregisterHandlers() {
 void DBCacheLoadAll() {
     g_creatureCache.Load();
     g_gameObjectCache.Load();
+    g_itemNameCache.Load();
     g_itemCache.Load();
     g_nameCache.Load();
     g_petNameCache.Load();
+    g_petitionCache.Load();
 }
 
 // ref: FUN_00635100
 void DBCacheUpdateAll() {
     g_creatureCache.Update();
     g_gameObjectCache.Update();
+    g_itemNameCache.Update();
     g_itemCache.Update();
     g_nameCache.Update();
     g_petNameCache.Update();
+    g_petitionCache.Update();
 }
 
 // ref: FUN_00635540
 void DBCacheShutdownAll() {
     g_creatureCache.Shutdown();
     g_gameObjectCache.Shutdown();
+    g_itemNameCache.Shutdown();
     g_itemCache.Shutdown();
     g_nameCache.Shutdown();
     g_petNameCache.Shutdown();
+    g_petitionCache.Shutdown();
 }
 
 // ref: FUN_00635680
 void DBCacheClearUnloadedAll() {
     g_creatureCache.ClearUnloaded();
     g_gameObjectCache.ClearUnloaded();
+    g_itemNameCache.ClearUnloaded();
     g_itemCache.ClearUnloaded();
     g_nameCache.ClearUnloaded();
     g_petNameCache.ClearUnloaded();
+    g_petitionCache.ClearUnloaded();
 }
 
 // ref: FUN_00635710
 void DBCacheSetSessionAll(uint32_t session) {
     g_creatureCache.SetSession(session);
     g_gameObjectCache.SetSession(session);
+    g_itemNameCache.SetSession(session);
     g_itemCache.SetSession(session);
     g_nameCache.SetSession(session);
     g_petNameCache.SetSession(session);
+    g_petitionCache.SetSession(session);
 }

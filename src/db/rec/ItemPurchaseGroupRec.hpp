@@ -1,0 +1,26 @@
+#ifndef DB_REC_ITEM_PURCHASE_GROUP_REC_HPP
+#define DB_REC_ITEM_PURCHASE_GROUP_REC_HPP
+
+#include <cstdint>
+
+class SFile;
+
+// ItemPurchaseGroup.dbc: items of which owning one lets a purchase go ahead.
+class ItemPurchaseGroupRec {
+    public:
+        static const int32_t COLUMN_COUNT = 26;
+
+        int32_t m_ID;
+        int32_t m_itemID[8];
+        const char* m_name;
+
+        static const char* GetFilename();
+        static uint32_t GetNumColumns();
+        static uint32_t GetRowSize();
+        static bool NeedIDAssigned();
+        int32_t GetID();
+        void SetID(int32_t id);
+        bool Read(SFile* f, const char* stringBuffer);
+};
+
+#endif

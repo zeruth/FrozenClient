@@ -1,0 +1,30 @@
+#ifndef DB_REC_ITEM_SET_REC_HPP
+#define DB_REC_ITEM_SET_REC_HPP
+
+#include <cstdint>
+
+class SFile;
+
+// ItemSet.dbc: an item set's pieces and the bonuses so many of them grant.
+class ItemSetRec {
+    public:
+        static const int32_t COLUMN_COUNT = 53;
+
+        int32_t m_ID;
+        const char* m_name;
+        int32_t m_itemID[17];
+        int32_t m_setSpellID[8];
+        int32_t m_setThreshold[8];
+        int32_t m_requiredSkill;
+        int32_t m_requiredSkillRank;
+
+        static const char* GetFilename();
+        static uint32_t GetNumColumns();
+        static uint32_t GetRowSize();
+        static bool NeedIDAssigned();
+        int32_t GetID();
+        void SetID(int32_t id);
+        bool Read(SFile* f, const char* stringBuffer);
+};
+
+#endif

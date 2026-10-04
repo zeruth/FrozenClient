@@ -1,0 +1,55 @@
+#include "db/rec/ItemExtendedCostRec.hpp"
+#include "util/Locale.hpp"
+#include "util/SFile.hpp"
+
+const char* ItemExtendedCostRec::GetFilename() {
+    return "DBFilesClient\\ItemExtendedCost.dbc";
+}
+
+uint32_t ItemExtendedCostRec::GetNumColumns() {
+    return ItemExtendedCostRec::COLUMN_COUNT;
+}
+
+uint32_t ItemExtendedCostRec::GetRowSize() {
+    return 64;
+}
+
+bool ItemExtendedCostRec::NeedIDAssigned() {
+    return false;
+}
+
+int32_t ItemExtendedCostRec::GetID() {
+    return this->m_ID;
+}
+
+void ItemExtendedCostRec::SetID(int32_t id) {
+    this->m_ID = id;
+}
+
+bool ItemExtendedCostRec::Read(SFile* f, const char* stringBuffer) {
+
+    if (
+        !SFile::Read(f, &this->m_ID, sizeof(this->m_ID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_honorPoints, sizeof(this->m_honorPoints), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_arenaPoints, sizeof(this->m_arenaPoints), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_arenaBracket, sizeof(this->m_arenaBracket), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemID[0], sizeof(this->m_itemID[0]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemID[1], sizeof(this->m_itemID[1]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemID[2], sizeof(this->m_itemID[2]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemID[3], sizeof(this->m_itemID[3]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemID[4], sizeof(this->m_itemID[4]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemCount[0], sizeof(this->m_itemCount[0]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemCount[1], sizeof(this->m_itemCount[1]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemCount[2], sizeof(this->m_itemCount[2]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemCount[3], sizeof(this->m_itemCount[3]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemCount[4], sizeof(this->m_itemCount[4]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_requiredArenaRating, sizeof(this->m_requiredArenaRating), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_itemPurchaseGroup, sizeof(this->m_itemPurchaseGroup), nullptr, nullptr, nullptr)
+    ) {
+        return false;
+    }
+
+
+
+    return true;
+}

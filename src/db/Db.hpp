@@ -36,6 +36,23 @@
 #include "db/rec/SpellVisualKitAreaModelRec.hpp"
 #include "db/rec/SpellEffectCameraShakesRec.hpp"
 #include "db/rec/SpellCastTimesRec.hpp"
+#include "db/rec/ItemLimitCategoryRec.hpp"
+#include "db/rec/ItemRandomPropertiesRec.hpp"
+#include "db/rec/ItemRandomSuffixRec.hpp"
+#include "db/rec/StringLookupsRec.hpp"
+#include "db/rec/HolidayNamesRec.hpp"
+#include "db/rec/HolidaysRec.hpp"
+#include "db/rec/DurabilityQualityRec.hpp"
+#include "db/rec/DurabilityCostsRec.hpp"
+#include "db/rec/GlyphPropertiesRec.hpp"
+#include "db/rec/ItemPurchaseGroupRec.hpp"
+#include "db/rec/ItemExtendedCostRec.hpp"
+#include "db/rec/ItemSetRec.hpp"
+#include "db/rec/ScalingStatValuesRec.hpp"
+#include "db/rec/ScalingStatDistributionRec.hpp"
+#include "db/rec/GemPropertiesRec.hpp"
+#include "db/rec/SpellItemEnchantmentConditionRec.hpp"
+#include "db/rec/SpellItemEnchantmentRec.hpp"
 #include "db/rec/SkillCostsDataRec.hpp"
 #include "db/rec/SkillRaceClassInfoRec.hpp"
 #include "db/rec/SpellDescriptionVariablesRec.hpp"
@@ -131,6 +148,23 @@ extern WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 extern WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 extern WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 extern WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+extern WowClientDB<ItemLimitCategoryRec> g_itemLimitCategoryDB;
+extern WowClientDB<ItemRandomPropertiesRec> g_itemRandomPropertiesDB;
+extern WowClientDB<ItemRandomSuffixRec> g_itemRandomSuffixDB;
+extern WowClientDB<StringLookupsRec> g_stringLookupsDB;
+extern WowClientDB<HolidayNamesRec> g_holidayNamesDB;
+extern WowClientDB<HolidaysRec> g_holidaysDB;
+extern WowClientDB<DurabilityQualityRec> g_durabilityQualityDB;
+extern WowClientDB<DurabilityCostsRec> g_durabilityCostsDB;
+extern WowClientDB<GlyphPropertiesRec> g_glyphPropertiesDB;
+extern WowClientDB<ItemPurchaseGroupRec> g_itemPurchaseGroupDB;
+extern WowClientDB<ItemExtendedCostRec> g_itemExtendedCostDB;
+extern WowClientDB<ItemSetRec> g_itemSetDB;
+extern WowClientDB<ScalingStatValuesRec> g_scalingStatValuesDB;
+extern WowClientDB<ScalingStatDistributionRec> g_scalingStatDistributionDB;
+extern WowClientDB<GemPropertiesRec> g_gemPropertiesDB;
+extern WowClientDB<SpellItemEnchantmentConditionRec> g_spellItemEnchantmentConditionDB;
+extern WowClientDB<SpellItemEnchantmentRec> g_spellItemEnchantmentDB;
 extern WowClientDB<SkillCostsDataRec> g_skillCostsDataDB;
 extern WowClientDB<SkillRaceClassInfoRec> g_skillRaceClassInfoDB;
 extern WowClientDB<SpellDescriptionVariablesRec> g_spellDescriptionVariablesDB;
