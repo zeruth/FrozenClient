@@ -419,6 +419,16 @@ float CGUnit_C::GetFacing() const {
     return this->CGUnit::GetFacing();
 }
 
+// ref: FUN_007156a0
+// The facing the model is drawn with: the LOWER BODY's, through the movement's transport (vtable
+// slot 0x94 of both the unit and player vtables). The spine and head bones twist the upper body
+// back toward the unit's facing, so placing the model with the ordinary facing (the base
+// version, which frozen's units inherited until 2026-10-04) turned the upper body the wrong
+// way while strafing.
+float CGUnit_C::GetRenderFacing() const {
+    return this->m_localMove.GetFacing(this->m_lowerBodyFacing);
+}
+
 int32_t CGUnit_C::GetLocalDisplayID() const {
     return this->m_localDisplayID;
 }

@@ -203,6 +203,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // TODO
         virtual float GetFacing() const;
         virtual float GetRawFacing() const;
+        float GetRenderFacing() const override;
         // TODO
         virtual WOWGUID GetTransportGUID() const;
         // ref: FUN_007370d0
