@@ -123,6 +123,59 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // at exalted, none for a faction without a reputation.
         float GetReputationDiscount(CGUnit_C* other);
 
+        // ref: FUN_00514080
+        // This unit is hostile to `other`: its reaction to it is hostile or worse.
+        bool IsHostileTo(CGUnit_C* other);
+
+        // ref: FUN_00514050
+        // This unit is friendly to `other`, or its creature type flag 26 says to treat it so.
+        bool IsFriendlyTo(CGUnit_C* other);
+
+        // ref: FUN_007293d0
+        // Whether this unit may help `other` -- heal it, buff it, raise it. `ignoreFlags` skips the
+        // test of the two units' "immune to players" and "immune to creatures" flags.
+        bool CanAssist(CGUnit_C* other, bool ignoreFlags);
+
+        // ref: FUN_00729740
+        // Whether this unit may attack `other`.
+        bool CanAttack(CGUnit_C* other);
+
+        // ref: FUN_0074c650
+        // Walks up the vehicles this unit rides and returns `other` when it is one of them, or the
+        // unit at the top of the chain; a vehicle that rides nothing answers itself. Null when the
+        // walk leaves the objects the client has.
+        CGUnit_C* GetVehicleRoot(CGUnit_C* other);
+
+        // ref: FUN_00715d70
+        // The creature template's boss flag (type flag 0x4): the level shows as "??" and the
+        // tooltip says "Boss".
+        bool IsBoss() const;
+
+        // ref: FUN_00715dd0
+        // Whether the tooltip names the unit's faction: true unless the template's type flag 0x10
+        // hides it. A unit with no template shows it.
+        bool ShowsFaction() const;
+
+        // ref: FUN_0071b680
+        // A racial leader the player may fight: flagged for PvP and marked a leader in its template.
+        bool IsRacialLeader() const;
+
+        // ref: FUN_0072a290
+        // The player's name as its title writes it ("Grand Marshal %s"), followed on a second line
+        // by the PvP rank when it has one. Writes into `buffer` and returns it; `lines`, when
+        // given, is set to the number of lines written. A unit that is not a player, or one asked
+        // for without its title, gets its plain name.
+        char* GetPVPName(char* buffer, uint32_t size, bool withTitle, int32_t* lines);
+
+        // ref: FUN_0072aa70
+        // The race name for a unit or, with no unit, a name cache entry. A creature answers with
+        // its own name, as the reference does; null when there is neither.
+        static const char* GetRaceNameFor(CGUnit_C* unit, const NameCacheRec* entry);
+
+        // ref: FUN_0072aab0
+        // As GetRaceNameFor, for the class.
+        static const char* GetClassNameFor(CGUnit_C* unit, const NameCacheRec* entry);
+
         // Virtual public member functions
         virtual ~CGUnit_C();
         // TODO
@@ -279,6 +332,11 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         uint32_t GetCreatureTypeFlag12() const;
         uint32_t GetCreatureTypeFlag26() const;
         int32_t GetCreatureSkinningType() const;
+
+        // The number of aura slots the unit has (FUN_004f8850).
+        uint32_t GetAuraCount() const {
+            return this->m_auras.Count();
+        }
         void PlayEmote(uint32_t emoteID);
 
         // ref: FUN_0074b8b0
@@ -1330,4 +1388,20 @@ bool IsSpellCastOrRangedAttackAnimation(int32_t animID);
 // set, tested inline for the same reason.
 bool IsCombatOrReadyAnimation(int32_t animID);
 
+// ref: FUN_00719900
+// The CharTitles row whose bit index is `maskID`, by id; 0 when there is none.
+int32_t CharTitlesGetIDByMask(int32_t maskID);
+
+// ref: FUN_0074d750
+// The name a guid goes by in the combat log: a player's from the name cache, a creature's,
+// vehicle's or pet's from its object or its template, a game object's from its template.
+// "Unknown" when none of those has it yet.
+const char* GetGUIDName(const WOWGUID& guid);
+
+// ref: FUN_0074d120
+// A guid written as up to sixteen hex digits, with or without "0x" in front.
+WOWGUID StringToGUID(const char* string);
+
 #endif
+
+

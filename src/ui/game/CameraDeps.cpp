@@ -75,8 +75,7 @@ void UnitUpdateSmoothFacing(CGUnit_C* unit, int32_t immediate) {
 }
 
 float PlayerGetSwimDepth(CGPlayer_C* player) {
-    // TODO port FUN_004f7290 (reads a descriptor byte and +0x2b8, scaled by 0x009f1968)
-    return 0.0f;
+    return player ? player->GetDrunkenness() : 0.0f;
 }
 
 void WorldFrameSetPlayerAlpha(uint8_t alpha) {

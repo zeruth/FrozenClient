@@ -7,10 +7,11 @@
 
 struct CQuestLogData {
     int32_t questID;
-    uint32_t field2;
-    uint32_t field3;
-    uint32_t field4;
-    uint32_t field5;
+    // 0x1 complete, 0x2 failed.
+    uint32_t state;
+    // What each of the quest's four creature or game object objectives has counted so far.
+    uint16_t counts[4];
+    uint32_t time;
 };
 
 // TODO is this VisibleItem_C?

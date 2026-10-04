@@ -249,6 +249,11 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         uint16_t GetSkillLineID(uint32_t index) const;
         WOWGUID GetFarsightObject() const;
         uint32_t GetMoney() const;
+
+        // ref: FUN_004f7290
+        // How drunk the player is, 0 to 1: the larger of the server's drunk state and the faked
+        // one, capped at a hundred.
+        float GetDrunkenness() const;
         // The rank in one skill-info slot plus its permanent bonus; a rank of 0 stays 0. The
         // active player's copy only, like GetSkillLineID.
         uint32_t GetSkillRank(uint32_t index) const;

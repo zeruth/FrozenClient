@@ -18,6 +18,7 @@
 #include "object/client/CGCorpse_C.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CMovement_C.hpp"
+#include "object/client/Mirror.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/SpellVisuals.hpp"
 #include "sound/SI2.hpp"
@@ -120,6 +121,8 @@ CGObject_C::CGObject_C(uint32_t time, CClientObjCreate& objCreate)
 
 // ref: FUN_00745f90
 CGObject_C::~CGObject_C() {
+    MirrorFreeObjectHandlers(this);
+
     if (this->m_worldObject) {
         CWorld::RemoveObject(this->m_worldObject);
         this->m_worldObject = 0;

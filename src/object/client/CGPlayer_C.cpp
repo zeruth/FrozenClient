@@ -1031,3 +1031,22 @@ void CGPlayer_C::ApplyPendingItemExpirations(CGItem_C* item) {
         pending = next;
     }
 }
+
+// ref: FUN_004f7290
+float CGPlayer_C::GetDrunkenness() const {
+    auto data = this->Player();
+
+    int32_t drunk = data->bytes_3_2;
+    int32_t fake = data->fakeInebriation;
+    int32_t larger = drunk <= fake ? fake : drunk;
+
+    uint32_t value;
+
+    if (larger < 100) {
+        value = fake < drunk ? static_cast<uint32_t>(drunk) : static_cast<uint32_t>(fake);
+    } else {
+        value = 100;
+    }
+
+    return static_cast<float>(value & 0xFF) * 0.01f;
+}

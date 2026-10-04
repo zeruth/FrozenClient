@@ -16,6 +16,7 @@
 #include "ui/game/ScriptUtil.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/Types.hpp"
+#include <map>
 #include <vector>
 #include <cstring>
 #include <storm/List.hpp>
@@ -226,6 +227,24 @@ uint32_t TypeBase(uint32_t type) {
     }
 }
 
+// One object's own watchers, by the storage block their field starts at. The reference keeps a
+// list per block inside the object (FUN_004d3d40); frozen keeps only the blocks that have one.
+struct OBJECT_HANDLERS {
+    std::map<uint32_t, HANDLER_LIST> blocks;
+};
+
+HANDLER_LIST* ObjectHandlers(CGObject_C* object, uint32_t block) {
+    auto handlers = static_cast<OBJECT_HANDLERS*>(object->m_mirrorHandlers);
+
+    if (!handlers) {
+        return nullptr;
+    }
+
+    auto it = handlers->blocks.find(block);
+
+    return it != handlers->blocks.end() ? &it->second : nullptr;
+}
+
 uint32_t FindSaved(const uint32_t* table, uint32_t count, uint32_t field, uint32_t missing) {
     for (uint32_t i = 0; i < count; i++) {
         if (table[i] == field) {
@@ -394,11 +413,111 @@ void Dispatch(PENDING_LIST& pending, WOWGUID guid, CGObject_C* object, uint32_t 
         }
 
         handler->m_firing = 0;
+
+        // Taken off while it ran (MirrorUnregisterObjectHandler).
+        if (handler->m_delete) {
+            handler->m_link.Unlink();
+            handler->m_pending.Unlink();
+            delete handler;
+        }
+
         handler = next;
     }
 }
 
 } // namespace
+
+// ref: FUN_004d5a80
+void MirrorRegisterObjectHandler(WOWGUID guid, OBJECT_TYPE_ID type, uint32_t offset, uint32_t size,
+                                 MIRRORHANDLER handler, void* param, int32_t a6, int32_t always) {
+    // FUN_004d4bb0
+    auto object = FindActiveObject(guid);
+
+    if (!object) {
+        return;
+    }
+
+    uint32_t base = TypeBase(type);
+
+    auto handlers = static_cast<OBJECT_HANDLERS*>(object->m_mirrorHandlers);
+
+    if (!handlers) {
+        handlers = new OBJECT_HANDLERS();
+        object->m_mirrorHandlers = handlers;
+    }
+
+    // FUN_004d5850
+    auto mirror = new CMirrorHandler();
+    mirror->m_offset = base + offset;
+    mirror->m_size = size;
+    mirror->m_handler = handler;
+    mirror->m_param = param;
+    mirror->m_a6 = a6;
+    mirror->m_always = always != 0;
+    mirror->m_typeBase = base;
+
+    handlers->blocks[(base + offset) >> 2].LinkToTail(mirror);
+}
+
+// ref: FUN_004d5b40
+void MirrorUnregisterObjectHandler(WOWGUID guid, OBJECT_TYPE_ID type, uint32_t offset, MIRRORHANDLER handler,
+                                   void* param) {
+    auto object = FindActiveObject(guid);
+
+    if (!object) {
+        return;
+    }
+
+    auto list = ObjectHandlers(object, (TypeBase(type) + offset) >> 2);
+
+    if (!list) {
+        return;
+    }
+
+    // FUN_004d5900
+    for (auto mirror = list->Head(); mirror; mirror = list->Next(mirror)) {
+        if (mirror->m_handler != handler || mirror->m_param != param) {
+            continue;
+        }
+
+        if (mirror->m_firing) {
+            mirror->m_delete = 1;
+            return;
+        }
+
+        mirror->m_link.Unlink();
+
+        if (mirror->m_pending.IsLinked()) {
+            mirror->m_pending.Unlink();
+        }
+
+        delete mirror;
+        return;
+    }
+}
+
+void MirrorFreeObjectHandlers(CGObject_C* object) {
+    auto handlers = static_cast<OBJECT_HANDLERS*>(object->m_mirrorHandlers);
+
+    if (!handlers) {
+        return;
+    }
+
+    for (auto& block : handlers->blocks) {
+        while (auto mirror = block.second.Head()) {
+            mirror->m_link.Unlink();
+
+            if (mirror->m_pending.IsLinked()) {
+                mirror->m_pending.Unlink();
+            }
+
+            delete mirror;
+        }
+    }
+
+    delete handlers;
+    object->m_mirrorHandlers = nullptr;
+}
 
 // ref: FUN_004d5ba0
 void MirrorRegisterHandler(OBJECT_TYPE_ID type, uint32_t offset, uint32_t size, MIRRORHANDLER handler,
@@ -685,8 +804,10 @@ int32_t CallMirrorHandlers(CDataStore* msg, bool a2, WOWGUID guid) {
         AgePending(pending);
         AddPending(Handlers(typeID, block - blockOffset), pending);
 
-        // The reference also adds the object's own watchers here (FUN_004d3d40: the lists at
-        // +0x44 onwards); frozen objects carry none, since nothing registers one.
+        // The object's own watchers (FUN_004d3d40: the lists at +0x44 onwards).
+        if (auto own = ObjectHandlers(object, block)) {
+            AddPending(*own, pending);
+        }
 
         if (IsMaskBitSet(changeMasks, block)) {
             // Read past it. The value is already stored; see the note above.
@@ -741,6 +862,10 @@ int32_t FillInPartialObjectData(CGObject_C* object, WOWGUID guid, CDataStore* ms
 
             if (handlers.Head()) {
                 SaveFields(handlers, object, guid == ClntObjMgrGetActivePlayer(), typeID);
+            }
+
+            if (auto own = ObjectHandlers(object, block)) {
+                SaveFields(*own, object, guid == ClntObjMgrGetActivePlayer(), typeID);
             }
         }
 

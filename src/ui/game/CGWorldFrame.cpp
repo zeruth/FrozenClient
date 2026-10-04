@@ -288,25 +288,8 @@ void CGWorldFrame::UpdateScreenEffect() {
     CGWorldFrame::SetScreenEffect(0);
 }
 
-// ref: FUN_004f7290
-// How drunk the player is, 0 to 1: the larger of the server's drunk state and the faked one,
-// capped at a hundred.
 static float PlayerDrunkenness(CGPlayer_C* player) {
-    auto data = player->Player();
-
-    uint32_t drunk = data->bytes_3_2;
-    uint32_t fake = static_cast<uint32_t>(data->fakeInebriation);
-    uint32_t larger = static_cast<int32_t>(drunk) <= static_cast<int32_t>(fake) ? fake : drunk;
-
-    if (static_cast<int32_t>(larger) < 100) {
-        if (static_cast<int32_t>(fake) < static_cast<int32_t>(drunk)) {
-            return static_cast<float>(drunk) * 0.01f;
-        }
-    } else {
-        fake = 100;
-    }
-
-    return static_cast<float>(fake & 0xff) * 0.01f;
+    return player->GetDrunkenness();
 }
 
 // ref: FUN_004f8770

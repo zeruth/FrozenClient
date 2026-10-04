@@ -18,6 +18,21 @@ typedef int32_t (*MIRRORHANDLER)(WOWGUID guid, uint32_t offset, uint32_t size, c
 void MirrorRegisterHandler(OBJECT_TYPE_ID type, uint32_t offset, uint32_t size, MIRRORHANDLER handler,
                            void* param, int32_t a6, int32_t always);
 
+// ref: FUN_004d5a80
+// As MirrorRegisterHandler, but for the one object `guid` names, and only while it exists. Nothing
+// happens when the object is not there. The handler stays until the object is destroyed.
+void MirrorRegisterObjectHandler(WOWGUID guid, OBJECT_TYPE_ID type, uint32_t offset, uint32_t size,
+                                 MIRRORHANDLER handler, void* param, int32_t a6, int32_t always);
+
+// ref: FUN_004d5b40
+// Take the first watcher with this handler and parameter off the object's field again. One that is
+// running at the time is only marked, and goes once it returns (FUN_004d5900).
+void MirrorUnregisterObjectHandler(WOWGUID guid, OBJECT_TYPE_ID type, uint32_t offset, MIRRORHANDLER handler,
+                                   void* param);
+
+// Free the watchers MirrorRegisterObjectHandler put on `object`. Called as the object is destroyed.
+void MirrorFreeObjectHandlers(CGObject_C* object);
+
 void MirrorBeginUpdate();
 void MirrorNoteChange(WOWGUID guid, uint32_t block);
 

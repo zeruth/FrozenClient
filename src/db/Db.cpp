@@ -36,6 +36,8 @@ WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+WowClientDB<ItemPetFoodRec> g_itemPetFoodDB;
+WowClientDB<SummonPropertiesRec> g_summonPropertiesDB;
 WowClientDB<RandPropPointsRec> g_randPropPointsDB;
 WowClientDB<ItemLimitCategoryRec> g_itemLimitCategoryDB;
 WowClientDB<ItemRandomPropertiesRec> g_itemRandomPropertiesDB;
@@ -155,6 +157,8 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_spellVisualKitAreaModelDB, __FILE__, __LINE__);
     loadFn(&g_spellEffectCameraShakesDB, __FILE__, __LINE__);
     loadFn(&g_spellCastTimesDB, __FILE__, __LINE__);
+    loadFn(&g_itemPetFoodDB, __FILE__, __LINE__);
+    loadFn(&g_summonPropertiesDB, __FILE__, __LINE__);
     loadFn(&g_randPropPointsDB, __FILE__, __LINE__);
     loadFn(&g_itemLimitCategoryDB, __FILE__, __LINE__);
     loadFn(&g_itemRandomPropertiesDB, __FILE__, __LINE__);

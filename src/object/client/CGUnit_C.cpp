@@ -40,6 +40,7 @@
 #include "object/client/CGGameObject_C.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CVehicle_C.hpp"
+#include "db/rec/VehicleRec.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "ui/Game.hpp"
@@ -13284,4 +13285,451 @@ float CGUnit_C::GetReputationDiscount(CGUnit_C* other) {
     }
 
     return 0.0f;
+}
+
+// ref: FUN_00514080
+bool CGUnit_C::IsHostileTo(CGUnit_C* other) {
+    return this->GetUnitReaction(other) <= 1;
+}
+
+// ref: FUN_00514050
+bool CGUnit_C::IsFriendlyTo(CGUnit_C* other) {
+    return this->GetUnitReaction(other) >= 4 || this->GetCreatureTypeFlag26();
+}
+
+// ref: FUN_007293d0
+bool CGUnit_C::CanAssist(CGUnit_C* other, bool ignoreFlags) {
+    auto mine = this->Unit();
+    auto theirs = other->Unit();
+
+    // 0x2000000: not selectable.
+    if (theirs->flags & 0x2000000) {
+        return false;
+    }
+
+    if (!ignoreFlags) {
+        // 0x8 is "controlled by a player"; 0x100 and 0x200 make a unit immune to players and to
+        // creatures.
+        bool playerControlled = (mine->flags & 0x8) != 0;
+
+        if (playerControlled && (theirs->flags & 0x100)) {
+            return false;
+        }
+
+        if (!playerControlled && (theirs->flags & 0x200)) {
+            return false;
+        }
+    }
+
+    if (this->GetUnitReaction(other) < 4 && !(this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x4000000))) {
+        return false;
+    }
+
+    if (theirs->flags & 0x8) {
+        auto mineController = this->GetControllingPlayer();
+        auto theirController = other->GetControllingPlayer();
+
+        // Two players in a duel cannot help one another across it.
+        if (mineController && theirController) {
+            auto a = static_cast<CGPlayer_C*>(mineController)->Player();
+            auto b = static_cast<CGPlayer_C*>(theirController)->Player();
+
+            if (b->duelTeam && (a->duelArbiter != b->duelArbiter || a->duelTeam != b->duelTeam)) {
+                return false;
+            }
+        }
+
+        // UNIT_FIELD_BYTES_2 byte 1: 0x1 PvP, 0x4 free-for-all PvP, 0x8 sanctuary.
+        auto theirPvp = static_cast<uint8_t>(theirs->bytes2 >> 8);
+        auto minePvp = static_cast<uint8_t>(mine->bytes2 >> 8);
+
+        if ((theirPvp & 0x4) && !(minePvp & 0x4)) {
+            return false;
+        }
+
+        if ((minePvp & 0x8) && !(theirPvp & 0x8) && (theirPvp & 0x1)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    if ((mine->flags & 0x8) && !ignoreFlags && !(static_cast<uint8_t>(theirs->bytes2 >> 8) & 0x1)
+        && !other->GetCreatureTypeFlag12() && !other->GetCreatureTypeFlag26()) {
+        return false;
+    }
+
+    return true;
+}
+
+// ref: FUN_00729740
+bool CGUnit_C::CanAttack(CGUnit_C* other) {
+    auto mine = this->Unit();
+    auto theirs = other->Unit();
+
+    // A player on a taxi (player flag 0x80000) attacks nothing.
+    if (this->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(this)->Player()->flags & 0x80000)) {
+        return false;
+    }
+
+    // Two players who are both ghosts (player flag 0x10), unless this unit's template lets a ghost
+    // be seen (type flag 0x2).
+    if (other->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(other)->Player()->flags & 0x10)
+        && !(this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x2))) {
+        return false;
+    }
+
+    // Not attackable (0x2), not selectable (0x2000000), and three more flags that rule the unit out
+    // as a target: 0x80 (pacified), 0x10000 (in combat with nothing it may touch), 0x100000.
+    auto flags = theirs->flags;
+
+    if ((flags & 0x2) || (flags & 0x100000) || (flags & 0x80) || (flags & 0x10000) || (flags & 0x2000000)) {
+        return false;
+    }
+
+    flags = mine->flags;
+
+    if ((flags & 0x8) && (theirs->flags & 0x100)) {
+        return false;
+    }
+
+    if (!(flags & 0x8) && (theirs->flags & 0x200)) {
+        return false;
+    }
+
+    if ((theirs->flags & 0x8) && (flags & 0x100)) {
+        return false;
+    }
+
+    if (!(theirs->flags & 0x8) && (flags & 0x200)) {
+        return false;
+    }
+
+    // A vehicle whose row says so (0x20000000) cannot be attacked by what rides it, nor attack it.
+    if ((mine->flags2 & 0x10000) || (theirs->flags2 & 0x10000)) {
+        auto myRec = this->m_vehicle ? this->m_vehicle->m_rec : nullptr;
+        auto theirRec = other->m_vehicle ? other->m_vehicle->m_rec : nullptr;
+
+        if (myRec && (myRec->m_flags & 0x20000000) && other->GetVehicleRoot(this) == this) {
+            return false;
+        }
+
+        if (theirRec && (theirRec->m_flags & 0x20000000) && this->GetVehicleRoot(other) == other) {
+            return false;
+        }
+    }
+
+    bool minePlayer = (mine->flags & 0x8) != 0;
+    bool theirPlayer = (theirs->flags & 0x8) != 0;
+
+    if (!minePlayer && !theirPlayer) {
+        return this->IsHostileTo(other) || other->IsHostileTo(this);
+    }
+
+    auto minePvp = static_cast<uint8_t>(mine->bytes2 >> 8);
+    auto theirPvp = static_cast<uint8_t>(theirs->bytes2 >> 8);
+
+    if (minePlayer && theirPlayer) {
+        if (this->IsFriendlyTo(other)) {
+            return false;
+        }
+
+        auto mineController = this->GetControllingPlayer();
+        auto theirController = other->GetControllingPlayer();
+
+        if (!mineController || !theirController) {
+            if (minePvp & 0x8) {
+                return false;
+            }
+
+            return !(theirPvp & 0x8);
+        }
+
+        auto a = static_cast<CGPlayer_C*>(mineController)->Player();
+        auto b = static_cast<CGPlayer_C*>(theirController)->Player();
+
+        // Duelling each other.
+        if (a->duelTeam && b->duelTeam && a->duelArbiter == b->duelArbiter) {
+            return true;
+        }
+
+        if (theirPvp & 0x1) {
+            if (minePvp & 0x8) {
+                return false;
+            }
+
+            return !(theirPvp & 0x8);
+        }
+
+        if ((minePvp & 0x4) && (theirPvp & 0x4)) {
+            return true;
+        }
+
+        if (!(minePvp & 0x2) && !(theirPvp & 0x2)) {
+            return false;
+        }
+
+        if (minePvp & 0x8) {
+            return false;
+        }
+
+        return !(theirPvp & 0x8);
+    }
+
+    if (minePlayer && (theirPvp & 0x8)) {
+        return false;
+    }
+
+    if (theirPlayer && (minePvp & 0x8)) {
+        return false;
+    }
+
+    return !this->IsFriendlyTo(other);
+}
+
+// ref: FUN_0074c650
+CGUnit_C* CGUnit_C::GetVehicleRoot(CGUnit_C* other) {
+    if (this == other && this->m_vehicle && this->m_vehicle->m_rec) {
+        return this;
+    }
+
+    // A transport guid that is a vehicle's (0xF05) or a player's.
+    auto ridesUnit = [](WOWGUID guid) {
+        auto high = static_cast<uint32_t>(guid >> 32);
+
+        if ((high & 0xF0F00000) == 0xF0500000) {
+            return true;
+        }
+
+        return (high & 0xF0000000) == 0 && (static_cast<uint32_t>(guid) != 0 || (high & 0xF07FFFFF) != 0);
+    };
+
+    auto transport = this->GetTransportGUID();
+
+    if (!ridesUnit(transport)) {
+        if (this->m_vehicle && this->m_vehicle->m_rec) {
+            return this;
+        }
+
+        return nullptr;
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(transport, TYPE_UNIT, __FILE__, __LINE__));
+
+    while (unit) {
+        if (unit == other) {
+            return unit;
+        }
+
+        transport = unit->GetTransportGUID();
+
+        if (!ridesUnit(transport)) {
+            return unit;
+        }
+
+        unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(transport, TYPE_UNIT, __FILE__, __LINE__));
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00715d70
+bool CGUnit_C::IsBoss() const {
+    return this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x4);
+}
+
+// ref: FUN_00715dd0
+bool CGUnit_C::ShowsFaction() const {
+    if (this->m_creatureStats) {
+        return !(this->m_creatureStats->m_typeFlags & 0x10);
+    }
+
+    return true;
+}
+
+// ref: FUN_0071b680
+bool CGUnit_C::IsRacialLeader() const {
+    return (static_cast<uint8_t>(this->Unit()->bytes2 >> 8) & 0x1) && this->m_creatureStats
+        && this->m_creatureStats->m_racialLeader;
+}
+
+// ref: FUN_00719900
+int32_t CharTitlesGetIDByMask(int32_t maskID) {
+    for (int32_t i = 0; i < g_charTitlesDB.GetNumRecords(); i++) {
+        auto title = g_charTitlesDB.GetRecordByIndex(i);
+
+        if (title && title->m_maskID == maskID) {
+            return title->m_ID;
+        }
+    }
+
+    return 0;
+}
+
+// ref: FUN_0072a290
+char* CGUnit_C::GetPVPName(char* buffer, uint32_t size, bool withTitle, int32_t* lines) {
+    if (lines) {
+        *lines = 1;
+    }
+
+    if (!this->IsA(TYPE_PLAYER) || !withTitle) {
+        SStrCopy(buffer, this->GetUnitName(nullptr, 1), size);
+
+        return buffer;
+    }
+
+    auto player = static_cast<CGPlayer_C*>(this)->Player();
+
+    if (player->chosenTitle < 1) {
+        SStrCopy(buffer, this->GetUnitName(nullptr, 1), size);
+
+        return buffer;
+    }
+
+    auto title = g_charTitlesDB.GetRecord(CharTitlesGetIDByMask(player->chosenTitle));
+
+    if (!title) {
+        return buffer;
+    }
+
+    // The title in the player's own gender, falling back on the other when that one is empty. The
+    // active player's gender comes from its player fields, anyone else's from its unit fields.
+    uint8_t sex = this->GetGUID() == ClntObjMgrGetActivePlayer()
+        ? player->bytes_3_1
+        : static_cast<uint8_t>(this->Unit()->bytes0 >> 16);
+
+    const char* format;
+
+    if (sex == 1) {
+        format = title->m_name1 && *title->m_name1 ? title->m_name1 : title->m_name;
+    } else {
+        format = title->m_name && *title->m_name ? title->m_name : title->m_name1;
+    }
+
+    char text[400];
+    SStrCopy(text, format ? format : "", sizeof(text));
+
+    SStrPrintf(buffer, size, text, this->GetUnitName(nullptr, 1));
+
+    // UNIT_FIELD_BYTES_3 byte 2, the PvP rank, adds a second line.
+    if (player->bytes_3_3) {
+        char key[32];
+        SStrPrintf(key, sizeof(key), "PVP_MEDAL%d", player->bytes_3_3);
+
+        SStrPack(buffer, "\n", size);
+        SStrPack(buffer, FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE), size);
+
+        if (lines) {
+            *lines = 2;
+        }
+    }
+
+    return buffer;
+}
+
+// ref: FUN_0072aa70
+const char* CGUnit_C::GetRaceNameFor(CGUnit_C* unit, const NameCacheRec* entry) {
+    if (!unit) {
+        if (!entry) {
+            return nullptr;
+        }
+    } else if (!unit->IsA(TYPE_PLAYER)) {
+        return unit->GetUnitName(nullptr, 1);
+    }
+
+    UNIT_SEX displaySex = UNITSEX_MALE;
+
+    return CGUnit_C::GetDisplayRaceName(unit, entry, &displaySex);
+}
+
+// ref: FUN_0072aab0
+const char* CGUnit_C::GetClassNameFor(CGUnit_C* unit, const NameCacheRec* entry) {
+    if (!unit) {
+        if (!entry) {
+            return nullptr;
+        }
+    } else if (!unit->IsA(TYPE_PLAYER)) {
+        return unit->GetUnitName(nullptr, 1);
+    }
+
+    UNIT_SEX displaySex = UNITSEX_MALE;
+
+    return CGUnit_C::GetDisplayClassName(unit, entry, &displaySex);
+}
+
+// ref: FUN_0074d750
+// DIVERGENCE: the reference copies a player's name into one of two rotating 0x131-byte buffers
+// (FUN_004fd220, the name with its realm) so two calls in one expression stay distinct; the name
+// cache record's own string is returned here.
+const char* GetGUIDName(const WOWGUID& guid) {
+    auto high = static_cast<uint32_t>(guid >> 32);
+    auto low = static_cast<uint32_t>(guid);
+    auto entry = static_cast<uint32_t>((guid >> 24) & 0xFFFFFFF);
+    const char* name = nullptr;
+
+    if ((high & 0xF0000000) == 0 && (low != 0 || (high & 0xF07FFFFF) != 0)) {
+        auto record = g_nameCache.GetRecord(DBCACHEKEY64(guid), &guid, nullptr, nullptr, true);
+
+        if (record) {
+            name = record->m_name;
+        }
+    } else {
+        auto type = high & 0xF0F00000;
+
+        if (type == 0xF0300000 || type == 0xF0500000) {
+            auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, __FILE__, __LINE__));
+
+            if (unit) {
+                name = unit->GetUnitName(nullptr, 1);
+            } else {
+                auto creature = g_creatureCache.GetRecord(DBCACHEKEY32(entry), &guid, nullptr, nullptr, true);
+                name = creature ? creature->m_names[0] : nullptr;
+            }
+        } else if (type == 0xF0400000) {
+            auto pet = g_petNameCache.GetRecord(DBCACHEKEY32(entry), &guid, nullptr, nullptr, true);
+            name = pet ? pet->m_name : nullptr;
+        } else if (type == 0xF0100000) {
+            auto object = g_gameObjectCache.GetRecord(DBCACHEKEY32(entry), &guid, nullptr, nullptr, true);
+            name = object ? object->m_names[0] : nullptr;
+        }
+    }
+
+    if (!name || !*name) {
+        name = FrameScript_GetText("UNKNOWNOBJECT", -1, GENDER_NOT_APPLICABLE);
+    }
+
+    if (!name || !*name) {
+        // The reference's own spelling.
+        name = "UKNOWNOBJECT";
+    }
+
+    return name;
+}
+
+// ref: FUN_0074d120
+WOWGUID StringToGUID(const char* string) {
+    WOWGUID guid = 0;
+
+    if (!SStrCmpI(string, "0x", 2)) {
+        string += 2;
+    }
+
+    for (int32_t i = 0; i < 16; i++) {
+        auto c = *string++;
+        uint32_t digit;
+
+        if (c >= '0' && c <= '9') {
+            digit = c - '0';
+        } else if (c >= 'a' && c <= 'f') {
+            digit = c - 'a' + 10;
+        } else if (c >= 'A' && c <= 'F') {
+            digit = c - 'A' + 10;
+        } else {
+            break;
+        }
+
+        guid = (guid << 4) | digit;
+    }
+
+    return guid;
 }

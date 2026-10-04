@@ -43,8 +43,8 @@ int32_t UnitConvertFacingToRaw(CGUnit_C* unit, float* facing);
 // ref: FUN_00735f60
 void UnitUpdateSmoothFacing(CGUnit_C* unit, int32_t immediate);
 
-// ref: FUN_004f7290
-// The field of view offset the player's state asks for (degrees).
+// How drunk the player is (CGPlayer_C::GetDrunkenness, FUN_004f7290). The camera widens its field
+// of view by it.
 float PlayerGetSwimDepth(CGPlayer_C* player);
 
 // ref: FUN_004f8660

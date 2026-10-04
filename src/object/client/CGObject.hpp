@@ -42,6 +42,9 @@ class CGObject {
         CGObjectData* m_obj;
         uint32_t* m_objSaved;
         OBJECT_TYPE_ID m_typeID;
+        // The watchers registered on this object alone (the reference's lists at +0x44 onwards,
+        // FUN_004d3d40). Owned by Mirror.cpp, which frees them when the object goes.
+        void* m_mirrorHandlers = nullptr;
 
     protected:
         // Protected member functions

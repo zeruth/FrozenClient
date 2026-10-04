@@ -19,6 +19,8 @@ ItemStatsCache g_itemCache(0x57494442, "itemcache.wdb", CMSG_ITEM_QUERY_SINGLE, 
 NameCache g_nameCache(0x574E414D, "namecache.wdb", CMSG_NAME_QUERY, 0, false, false, 0x100);
 PetNameCache g_petNameCache(0x57504E4D, "petnamecache.wdb", CMSG_QUERY_PET_NAME, 0, true, false, 0);
 PetitionCache g_petitionCache(0x5750544E, "petitioncache.wdb", CMSG_PETITION_QUERY, 0, true, false, 0);
+GuildCache g_guildCache(0x57474C44, "guildcache.wdb", CMSG_QUERY_GUILD_INFO, 0, false, false, 0);
+QuestCache g_questCache(0x57515354, "questcache.wdb", CMSG_QUERY_QUEST_INFO, 0, false, true, 0);
 
 // ------------------------------------------------------------------------------------------------
 // The WDB file
@@ -709,6 +711,251 @@ void PetitionRec::Write(CDataStore* msg) const {
 }
 
 // ------------------------------------------------------------------------------------------------
+// GuildCacheRec
+// ------------------------------------------------------------------------------------------------
+
+void GuildCacheRec::PutQueryId(CDataStore* msg, const DBCACHEKEY32& id) {
+    msg->Put(id.m_id);
+}
+
+// ref: FUN_0075b3e0
+void GuildCacheRec::Read(CDataStore* msg) {
+    msg->Get(this->m_guildID);
+    msg->GetString(this->m_name, sizeof(this->m_name));
+
+    for (auto& rank : this->m_rankNames) {
+        msg->GetString(rank, sizeof(rank));
+    }
+
+    msg->Get(this->m_emblemStyle);
+    msg->Get(this->m_emblemColor);
+    msg->Get(this->m_borderStyle);
+    msg->Get(this->m_borderColor);
+    msg->Get(this->m_backgroundColor);
+    msg->Get(this->m_rankCount);
+}
+
+// The guild cache is never saved, so the reference has no writer; this mirrors Read for the
+// template.
+void GuildCacheRec::Write(CDataStore* msg) const {
+    msg->Put(this->m_guildID);
+    msg->PutString(this->m_name);
+
+    for (auto& rank : this->m_rankNames) {
+        msg->PutString(rank);
+    }
+
+    msg->Put(this->m_emblemStyle);
+    msg->Put(this->m_emblemColor);
+    msg->Put(this->m_borderStyle);
+    msg->Put(this->m_borderColor);
+    msg->Put(this->m_backgroundColor);
+    msg->Put(this->m_rankCount);
+}
+
+// ------------------------------------------------------------------------------------------------
+// QuestCacheRec
+// ------------------------------------------------------------------------------------------------
+
+void QuestCacheRec::PutQueryId(CDataStore* msg, const DBCACHEKEY32& id) {
+    msg->Put(id.m_id);
+}
+
+// ref: FUN_007f70e0
+// The completed text and the four objective texts are read without a bound in the reference
+// (0x7fffffff); here each is bounded by its own buffer, which the reference's layout gives.
+void QuestCacheRec::Read(CDataStore* msg) {
+    auto get = [msg](auto& field) {
+        uint32_t value = 0;
+        msg->Get(value);
+        std::memcpy(&field, &value, sizeof(value));
+    };
+
+    get(this->m_questID);
+    get(this->m_method);
+    get(this->m_level);
+    get(this->m_minLevel);
+    get(this->m_zoneOrSort);
+    get(this->m_type);
+    get(this->m_suggestedPlayers);
+    get(this->m_repObjectiveFaction);
+    get(this->m_repObjectiveValue);
+    get(this->m_repObjectiveFaction2);
+    get(this->m_repObjectiveValue2);
+    get(this->m_nextQuestInChain);
+    get(this->m_rewXPID);
+    get(this->m_rewOrReqMoney);
+    get(this->m_rewMoneyMaxLevel);
+    get(this->m_rewSpell);
+    get(this->m_rewSpellCast);
+    get(this->m_rewHonor);
+    get(this->m_rewHonorMultiplier);
+    get(this->m_srcItemID);
+    get(this->m_flags);
+    get(this->m_charTitleID);
+    get(this->m_playersSlain);
+    get(this->m_bonusTalents);
+    get(this->m_rewArenaPoints);
+    get(this->m_unk28e0);
+
+    for (int32_t i = 0; i < 4; i++) {
+        get(this->m_rewItemID[i]);
+        get(this->m_rewItemCount[i]);
+    }
+
+    for (int32_t i = 0; i < 6; i++) {
+        get(this->m_rewChoiceItemID[i]);
+        get(this->m_rewChoiceItemCount[i]);
+    }
+
+    for (auto& faction : this->m_rewRepFaction) {
+        get(faction);
+    }
+
+    for (auto& valueID : this->m_rewRepValueID) {
+        get(valueID);
+    }
+
+    for (auto& value : this->m_rewRepValue) {
+        get(value);
+    }
+
+    get(this->m_pointMapID);
+    get(this->m_pointX);
+    get(this->m_pointY);
+    get(this->m_pointOpt);
+
+    msg->GetString(this->m_title, sizeof(this->m_title));
+    msg->GetString(this->m_objectives, sizeof(this->m_objectives));
+    msg->GetString(this->m_details, sizeof(this->m_details));
+    msg->GetString(this->m_endText, sizeof(this->m_endText));
+    msg->GetString(this->m_completedText, sizeof(this->m_completedText));
+
+    for (int32_t i = 0; i < 4; i++) {
+        get(this->m_reqCreatureOrGOID[i]);
+        get(this->m_reqCreatureOrGOCount[i]);
+        get(this->m_reqSourceID[i]);
+        get(this->m_reqSourceCount[i]);
+    }
+
+    for (int32_t i = 0; i < 6; i++) {
+        get(this->m_reqItemID[i]);
+        get(this->m_reqItemCount[i]);
+    }
+
+    for (auto& text : this->m_objectiveText) {
+        msg->GetString(text, sizeof(text));
+    }
+}
+
+// ref: FUN_007f6d60
+// The mirror of Read, except that the reward and required item lists are packed: the filled
+// slots first, then zero pairs for the rest.
+void QuestCacheRec::Write(CDataStore* msg) const {
+    auto put = [msg](const auto& field) {
+        uint32_t value = 0;
+        std::memcpy(&value, &field, sizeof(value));
+        msg->Put(value);
+    };
+
+    put(this->m_questID);
+    put(this->m_method);
+    put(this->m_level);
+    put(this->m_minLevel);
+    put(this->m_zoneOrSort);
+    put(this->m_type);
+    put(this->m_suggestedPlayers);
+    put(this->m_repObjectiveFaction);
+    put(this->m_repObjectiveValue);
+    put(this->m_repObjectiveFaction2);
+    put(this->m_repObjectiveValue2);
+    put(this->m_nextQuestInChain);
+    put(this->m_rewXPID);
+    put(this->m_rewOrReqMoney);
+    put(this->m_rewMoneyMaxLevel);
+    put(this->m_rewSpell);
+    put(this->m_rewSpellCast);
+    put(this->m_rewHonor);
+    put(this->m_rewHonorMultiplier);
+    put(this->m_srcItemID);
+    put(this->m_flags);
+    put(this->m_charTitleID);
+    put(this->m_playersSlain);
+    put(this->m_bonusTalents);
+    put(this->m_rewArenaPoints);
+    put(this->m_unk28e0);
+
+    uint32_t written = 0;
+
+    for (int32_t i = 0; i < 4; i++) {
+        if (this->m_rewItemID[i]) {
+            put(this->m_rewItemID[i]);
+            put(this->m_rewItemCount[i]);
+            written++;
+        }
+    }
+
+    for (; written < 4; written++) {
+        msg->Put(static_cast<uint32_t>(0));
+        msg->Put(static_cast<uint32_t>(0));
+    }
+
+    written = 0;
+
+    for (int32_t i = 0; i < 6; i++) {
+        if (this->m_rewChoiceItemID[i]) {
+            put(this->m_rewChoiceItemID[i]);
+            put(this->m_rewChoiceItemCount[i]);
+            written++;
+        }
+    }
+
+    for (; written < 6; written++) {
+        msg->Put(static_cast<uint32_t>(0));
+        msg->Put(static_cast<uint32_t>(0));
+    }
+
+    for (auto& faction : this->m_rewRepFaction) {
+        put(faction);
+    }
+
+    for (auto& valueID : this->m_rewRepValueID) {
+        put(valueID);
+    }
+
+    for (auto& value : this->m_rewRepValue) {
+        put(value);
+    }
+
+    put(this->m_pointMapID);
+    put(this->m_pointX);
+    put(this->m_pointY);
+    put(this->m_pointOpt);
+
+    msg->PutString(this->m_title);
+    msg->PutString(this->m_objectives);
+    msg->PutString(this->m_details);
+    msg->PutString(this->m_endText);
+    msg->PutString(this->m_completedText);
+
+    for (int32_t i = 0; i < 4; i++) {
+        put(this->m_reqCreatureOrGOID[i]);
+        put(this->m_reqCreatureOrGOCount[i]);
+        put(this->m_reqSourceID[i]);
+        put(this->m_reqSourceCount[i]);
+    }
+
+    for (int32_t i = 0; i < 6; i++) {
+        put(this->m_reqItemID[i]);
+        put(this->m_reqItemCount[i]);
+    }
+
+    for (auto& text : this->m_objectiveText) {
+        msg->PutString(text);
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
 // Handlers and lifecycle
 // ------------------------------------------------------------------------------------------------
 
@@ -834,6 +1081,40 @@ int32_t ReceivePetitionQueryResponse(void* param, NETMESSAGE msgId, uint32_t tim
     return 1;
 }
 
+// ref: FUN_006359e0
+// The record carries its own id; an empty name is the server's "no such guild" (FUN_0067a4f0),
+// anything else is stored (FUN_0067dad0).
+int32_t ReceiveGuildQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    GuildCacheRec record;
+    record.Read(msg);
+
+    if (record.m_name[0] != '\0') {
+        g_guildCache.Store(DBCACHEKEY32(record.m_guildID), record);
+    } else {
+        g_guildCache.NotFound(DBCACHEKEY32(record.m_guildID));
+    }
+
+    return 1;
+}
+
+// ref: FUN_00635230
+// As for guilds: an empty title is "no such quest" (FUN_0067a660), anything else is stored
+// (FUN_0067e030). The record is cleared first (FUN_00634e70), which the constructor does here.
+int32_t ReceiveQuestQueryResponse(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    auto record = new QuestCacheRec();
+    record->Read(msg);
+
+    if (record->m_title[0] != '\0') {
+        g_questCache.Store(DBCACHEKEY32(record->m_questID), *record);
+    } else {
+        g_questCache.NotFound(DBCACHEKEY32(record->m_questID));
+    }
+
+    delete record;
+
+    return 1;
+}
+
 // ref: FUN_00464730
 int32_t ReceiveClientCacheVersion(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     uint32_t session = 0;
@@ -852,6 +1133,8 @@ void DBCacheRegisterHandlers() {
     ClientServices::SetMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE, &ReceiveNameQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_QUERY_PET_NAME_RESPONSE, &ReceivePetNameQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_ITEM_NAME_QUERY_RESPONSE, &ReceiveItemNameQueryResponse, nullptr);
+    ClientServices::SetMessageHandler(SMSG_QUERY_GUILD_INFO_RESPONSE, &ReceiveGuildQueryResponse, nullptr);
+    ClientServices::SetMessageHandler(SMSG_QUERY_QUEST_INFO_RESPONSE, &ReceiveQuestQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_PETITION_QUERY_RESPONSE, &ReceivePetitionQueryResponse, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x39B), &ReceiveItemQueryResponse, nullptr);
     ClientServices::SetMessageHandler(SMSG_CACHE_VERSION, &ReceiveClientCacheVersion, nullptr);
@@ -865,6 +1148,8 @@ void DBCacheUnregisterHandlers() {
     ClientServices::ClearMessageHandler(SMSG_QUERY_PLAYER_NAME_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_QUERY_PET_NAME_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_ITEM_NAME_QUERY_RESPONSE);
+    ClientServices::ClearMessageHandler(SMSG_QUERY_GUILD_INFO_RESPONSE);
+    ClientServices::ClearMessageHandler(SMSG_QUERY_QUEST_INFO_RESPONSE);
     ClientServices::ClearMessageHandler(SMSG_PETITION_QUERY_RESPONSE);
     ClientServices::ClearMessageHandler(static_cast<NETMESSAGE>(0x39B));
     ClientServices::ClearMessageHandler(SMSG_CACHE_VERSION);
@@ -879,6 +1164,8 @@ void DBCacheLoadAll() {
     g_nameCache.Load();
     g_petNameCache.Load();
     g_petitionCache.Load();
+    g_guildCache.Load();
+    g_questCache.Load();
 }
 
 // ref: FUN_00635100
@@ -890,6 +1177,8 @@ void DBCacheUpdateAll() {
     g_nameCache.Update();
     g_petNameCache.Update();
     g_petitionCache.Update();
+    g_guildCache.Update();
+    g_questCache.Update();
 }
 
 // ref: FUN_00635540
@@ -901,6 +1190,8 @@ void DBCacheShutdownAll() {
     g_nameCache.Shutdown();
     g_petNameCache.Shutdown();
     g_petitionCache.Shutdown();
+    g_guildCache.Shutdown();
+    g_questCache.Shutdown();
 }
 
 // ref: FUN_00635680
@@ -912,6 +1203,8 @@ void DBCacheClearUnloadedAll() {
     g_nameCache.ClearUnloaded();
     g_petNameCache.ClearUnloaded();
     g_petitionCache.ClearUnloaded();
+    g_guildCache.ClearUnloaded();
+    g_questCache.ClearUnloaded();
 }
 
 // ref: FUN_00635710
@@ -923,4 +1216,6 @@ void DBCacheSetSessionAll(uint32_t session) {
     g_nameCache.SetSession(session);
     g_petNameCache.SetSession(session);
     g_petitionCache.SetSession(session);
+    g_guildCache.SetSession(session);
+    g_questCache.SetSession(session);
 }

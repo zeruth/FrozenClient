@@ -303,6 +303,99 @@ class PetitionRec {
         uint32_t m_muid = 0;                // +0x13c0
 };
 
+// GuildCache.h: SMSG_QUERY_GUILD_INFO_RESPONSE's record, keyed by the guild id. 0x300 bytes, never
+// persisted (the instance is built with persist = false). The reader is FUN_0075b3e0; an empty
+// name is the server saying it has no such guild.
+class GuildCacheRec {
+    public:
+        static const uint32_t RECORD_SIZE = 0x300;
+        static const uint32_t RECORD_VERSION = 1;
+
+        static void PutQueryId(CDataStore* msg, const DBCACHEKEY32& id);
+
+        // ref: FUN_0075b3e0
+        void Read(CDataStore* msg);
+        void Write(CDataStore* msg) const;
+
+        uint32_t m_guildID = 0;             // +0x00
+        char m_name[96] = {};               // +0x04
+        char m_rankNames[10][64] = {};      // +0x64
+        uint32_t m_emblemStyle = 0;         // +0x2e4
+        uint32_t m_emblemColor = 0;         // +0x2e8
+        uint32_t m_borderStyle = 0;         // +0x2ec
+        uint32_t m_borderColor = 0;         // +0x2f0
+        uint32_t m_backgroundColor = 0;     // +0x2f4
+        uint32_t m_rankCount = 0;           // +0x2f8
+};
+
+// QuestCache.h: SMSG_QUERY_QUEST_INFO_RESPONSE's record, keyed by the quest id. 0x28e8 bytes, saved
+// to questcache.wdb. Cleared by FUN_00634e70, read by FUN_007f70e0 and written by FUN_007f6d60;
+// an empty title is the server saying it has no such quest. The names are the server's.
+class QuestCacheRec {
+    public:
+        static const uint32_t RECORD_SIZE = 0x28e8;
+        static const uint32_t RECORD_VERSION = 1;
+
+        static void PutQueryId(CDataStore* msg, const DBCACHEKEY32& id);
+
+        // ref: FUN_007f70e0
+        void Read(CDataStore* msg);
+        // ref: FUN_007f6d60
+        void Write(CDataStore* msg) const;
+
+        int32_t m_questID = 0;                  // +0x00
+        int32_t m_method = 0;                   // +0x04
+        int32_t m_level = 0;                    // +0x08
+        int32_t m_minLevel = 0;                 // +0x0c
+        int32_t m_zoneOrSort = 0;               // +0x10
+        int32_t m_type = 0;                     // +0x14
+        int32_t m_suggestedPlayers = 0;         // +0x18
+        int32_t m_repObjectiveFaction = 0;      // +0x1c
+        int32_t m_repObjectiveValue = 0;        // +0x20
+        int32_t m_repObjectiveFaction2 = 0;     // +0x24
+        int32_t m_repObjectiveValue2 = 0;       // +0x28
+        int32_t m_nextQuestInChain = 0;         // +0x2c
+        int32_t m_rewXPID = 0;                  // +0x30
+        // +0x34: money the quest gives, or when negative the money it takes.
+        int32_t m_rewOrReqMoney = 0;
+        int32_t m_rewMoneyMaxLevel = 0;         // +0x38
+        int32_t m_rewSpell = 0;                 // +0x3c
+        int32_t m_rewSpellCast = 0;             // +0x40
+        int32_t m_rewHonor = 0;                 // +0x44
+        float m_rewHonorMultiplier = 0.0f;      // +0x48
+        int32_t m_srcItemID = 0;                // +0x4c
+        uint32_t m_flags = 0;                   // +0x50
+        int32_t m_rewItemID[4] = {};            // +0x54
+        int32_t m_rewItemCount[4] = { 1, 1, 1, 1 };             // +0x64
+        int32_t m_rewChoiceItemID[6] = {};      // +0x74
+        int32_t m_rewChoiceItemCount[6] = { 1, 1, 1, 1, 1, 1 }; // +0x8c
+        int32_t m_pointMapID = 0;               // +0xa4
+        float m_pointX = 0.0f;                  // +0xa8
+        float m_pointY = 0.0f;                  // +0xac
+        int32_t m_pointOpt = 0;                 // +0xb0
+        char m_title[0x200] = {};               // +0xb4
+        char m_objectives[3000] = {};           // +0x2b4
+        char m_details[3000] = {};              // +0xe6c
+        char m_endText[0x200] = {};             // +0x1a24
+        // +0x1c24: a creature id, or a game object id with the top bit set.
+        int32_t m_reqCreatureOrGOID[4] = {};
+        int32_t m_reqCreatureOrGOCount[4] = {}; // +0x1c34
+        int32_t m_reqItemID[6] = {};            // +0x1c44
+        int32_t m_reqItemCount[6] = {};         // +0x1c5c
+        int32_t m_reqSourceID[4] = {};          // +0x1c74
+        int32_t m_reqSourceCount[4] = {};       // +0x1c84
+        char m_objectiveText[4][0x100] = {};    // +0x1c94
+        int32_t m_charTitleID = 0;              // +0x2094
+        int32_t m_playersSlain = 0;             // +0x2098
+        int32_t m_bonusTalents = 0;             // +0x209c
+        int32_t m_rewArenaPoints = 0;           // +0x20a0
+        char m_completedText[0x800] = {};       // +0x20a4
+        int32_t m_rewRepFaction[5] = {};        // +0x28a4
+        int32_t m_rewRepValueID[5] = {};        // +0x28b8
+        int32_t m_rewRepValue[5] = {};          // +0x28cc
+        int32_t m_unk28e0 = 0;                  // +0x28e0
+};
+
 typedef DBCache<CreatureStats_C, DBCACHEKEY32> CreatureStatsCache;
 typedef DBCache<GameObjectStats_C, DBCACHEKEY32> GameObjectStatsCache;
 typedef DBCache<ItemNameRec, DBCACHEKEY32> ItemNameCache;
@@ -310,6 +403,8 @@ typedef DBCache<ItemStats_C, DBCACHEKEY32> ItemStatsCache;
 typedef DBCache<NameCacheRec, DBCACHEKEY64> NameCache;
 typedef DBCache<PetNameRec, DBCACHEKEY32> PetNameCache;
 typedef DBCache<PetitionRec, DBCACHEKEY32> PetitionCache;
+typedef DBCache<GuildCacheRec, DBCACHEKEY32> GuildCache;
+typedef DBCache<QuestCacheRec, DBCACHEKEY32> QuestCache;
 
 // The instances, constructed with the reference's arguments (FUN_009cb680 and its neighbours).
 extern CreatureStatsCache g_creatureCache;      // 0x00c5d690, 'WMOB', creaturecache.wdb
@@ -319,6 +414,8 @@ extern ItemStatsCache g_itemCache;              // 0x00c5d828, 'WIDB', itemcache
 extern NameCache g_nameCache;                   // 0x00c5d938, 'NAMW', namecache.wdb
 extern PetNameCache g_petNameCache;             // 0x00c5db58, 'MNPW', petnamecache.wdb
 extern PetitionCache g_petitionCache;           // 0x00c5dbe0, 'WPTN', petitioncache.wdb
+extern GuildCache g_guildCache;                 // 0x00c5d9c0, 'WGLD', guildcache.wdb
+extern QuestCache g_questCache;                 // 0x00c5da48, 'WQST', questcache.wdb
 
 // ref: FUN_00635b40
 void DBCacheRegisterHandlers();
