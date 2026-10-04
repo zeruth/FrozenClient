@@ -994,7 +994,7 @@ static float DNCosPi(float x) {
 // ref: FUN_007eea90
 // The outdoor light's direction: azimuth pinned at 225 degrees, elevation wobbling twice a day
 // between 37 and 20 degrees above the horizon. It points AWAY from the light.
-static void DNUpdateDirection() {
+void DNUpdateDirection() {
     float theta = InterpBodyBand(s_sunThetaKeys, 4, s_block.timeOfDay);
     float phi = InterpBodyBand(s_sunPhiKeys, 4, s_block.timeOfDay);
 

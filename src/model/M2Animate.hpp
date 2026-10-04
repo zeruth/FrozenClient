@@ -16,7 +16,7 @@ void M2SetValue(const T1& sourceValue, T2& destValue) {
 }
 
 template<>
-void M2SetValue(const M2CompQuat& sourceValue, C4Quaternion& destValue) {
+inline void M2SetValue(const M2CompQuat& sourceValue, C4Quaternion& destValue) {
     destValue.x = (sourceValue.auCompQ[0] & 0xFFFF) * 0.000030518044f - 1.0f;
     destValue.y = (sourceValue.auCompQ[0] >> 16)    * 0.000030518044f - 1.0f;
     destValue.z = (sourceValue.auCompQ[1] & 0xFFFF) * 0.000030518044f - 1.0f;
@@ -24,21 +24,21 @@ void M2SetValue(const M2CompQuat& sourceValue, C4Quaternion& destValue) {
 }
 
 template<>
-void M2SetValue(const fixed16& sourceValue, float& destValue) {
+inline void M2SetValue(const fixed16& sourceValue, float& destValue) {
     destValue = static_cast<float>(sourceValue);
 }
 
-void M2InterpolateLinear(const C3Vector& startValue, const C3Vector& endValue, float ratio, C3Vector& value) {
+inline void M2InterpolateLinear(const C3Vector& startValue, const C3Vector& endValue, float ratio, C3Vector& value) {
     value.x = startValue.x + (ratio * (endValue.x - startValue.x));
     value.y = startValue.y + (ratio * (endValue.y - startValue.y));
     value.z = startValue.z + (ratio * (endValue.z - startValue.z));
 }
 
-void M2InterpolateLinear(float startValue, float endValue, float ratio, float& value) {
+inline void M2InterpolateLinear(float startValue, float endValue, float ratio, float& value) {
     value = startValue + (ratio * (endValue - startValue));
 }
 
-void M2InterpolateLinear(fixed16 startValue, fixed16 endValue, float ratio, float& value) {
+inline void M2InterpolateLinear(fixed16 startValue, fixed16 endValue, float ratio, float& value) {
     value = static_cast<float>(startValue) + (ratio * (static_cast<float>(endValue) - static_cast<float>(startValue)));
 }
 
@@ -48,11 +48,11 @@ inline void M2InterpolateLinear(uint16_t startValue, uint16_t, float, uint16_t& 
     value = startValue;
 }
 
-void M2InterpolateLinear(uint8_t startValue, uint8_t endValue, float ratio, uint8_t& value) {
+inline void M2InterpolateLinear(uint8_t startValue, uint8_t endValue, float ratio, uint8_t& value) {
     value = startValue + (ratio * (endValue - startValue));
 }
 
-void M2InterpolateLinear(const M2CompQuat& startValue, const M2CompQuat& endValue, float ratio, C4Quaternion& value) {
+inline void M2InterpolateLinear(const M2CompQuat& startValue, const M2CompQuat& endValue, float ratio, C4Quaternion& value) {
     C4Quaternion quat1;
     C4Quaternion quat2;
     M2SetValue(startValue, quat1);
@@ -79,7 +79,7 @@ void M2InterpolateLinear(const M2CompQuat& startValue, const M2CompQuat& endValu
 // which is what is written below. The open question that note carried -- whether the reference
 // premultiplies the tangents by the key interval -- is answered NO: the tangents enter the sum
 // raw, with nothing but the polynomial weight on them.
-void M2InterpolateCubicBezier(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
+inline void M2InterpolateCubicBezier(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
     float t = ratio;
     float u = 1.0f - t;
     float w0 = u * u * u;
@@ -92,7 +92,7 @@ void M2InterpolateCubicBezier(const M2SplineKey<C3Vector>& startKey, const M2Spl
     value.z = w0 * startKey.value.z + w1 * startKey.outTan.z + w2 * endKey.inTan.z + w3 * endKey.value.z;
 }
 
-void M2InterpolateCubicBezier(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
+inline void M2InterpolateCubicBezier(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
     float t = ratio;
     float u = 1.0f - t;
 
@@ -102,7 +102,7 @@ void M2InterpolateCubicBezier(const M2SplineKey<float>& startKey, const M2Spline
         + t * t * t * endKey.value;
 }
 
-void M2InterpolateCubicHermite(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
+inline void M2InterpolateCubicHermite(const M2SplineKey<C3Vector>& startKey, const M2SplineKey<C3Vector>& endKey, float ratio, C3Vector& value) {
     float t = ratio;
     float t2 = t * t;
     float t3 = t2 * t;
@@ -116,7 +116,7 @@ void M2InterpolateCubicHermite(const M2SplineKey<C3Vector>& startKey, const M2Sp
     value.z = h00 * startKey.value.z + h10 * startKey.outTan.z + h01 * endKey.value.z + h11 * endKey.inTan.z;
 }
 
-void M2InterpolateCubicHermite(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
+inline void M2InterpolateCubicHermite(const M2SplineKey<float>& startKey, const M2SplineKey<float>& endKey, float ratio, float& value) {
     float t = ratio;
     float t2 = t * t;
     float t3 = t2 * t;

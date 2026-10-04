@@ -280,6 +280,10 @@ void DayNightUpdateFog();
 
 // The interpolation primitives the sky shares.
 float InterpBodyBand(const float* keys, int32_t count, float t);
+// The outdoor light's direction for the block's time of day, into the block (FUN_007eea90).
+void DNUpdateDirection();
+// The gradient dome's seven rings of vertices and its strip indices (FUN_007f2470).
+void DomeBuild(DNDome* dome, float radius);
 CImVector SkyLerp(const CImVector& a, const CImVector& b, float t);
 CImVector DayNightScaleSaturation(uint32_t color, float scale);
 

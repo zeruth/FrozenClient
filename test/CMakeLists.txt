@@ -34,8 +34,11 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
         "gx/*.cpp"
         "gx/font/*.cpp"
         "lua/*.cpp"
+        "model/*.cpp"
         "ui/*.cpp"
         "util/*.cpp"
+        "util/time/*.cpp"
+        "world/*.cpp"
     )
 
     add_executable(FrozenTest ${PRIVATE_SOURCES})
@@ -46,7 +49,10 @@ if(WHOA_SYSTEM_WIN OR WHOA_SYSTEM_LINUX)
             event
             gx
             lua-5.1
+            model
+            ui
             util
+            world
             stormlib-9.31
     )
 endif()

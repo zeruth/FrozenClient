@@ -196,7 +196,7 @@ static void StarsDraw(DNStars* stars) {
 // ref: FUN_007f2470
 // Seven rings of a unit sphere sunk by cos(45 degrees), so its 45-degree ring sits on the horizon.
 // The zenith and the nadir are single points; the bands between rings are triangle strips.
-static void DomeBuild(DNDome* dome, float radius) {
+void DomeBuild(DNDome* dome, float radius) {
     dome->segments = 24;
 
     float sink = static_cast<float>(cos(0.7853981633974483));
