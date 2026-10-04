@@ -354,14 +354,21 @@ float CosineInterp(float from, float to, float t) {
 
 // ref: FUN_005fe800
 // `value` split into whole and fraction, flooring toward minus infinity.
+//
+// The reference TRUNCATES: it ORs 0xc00 (round toward zero) into the x87 control word around
+// both fistp instructions, then subtracts one for anything not above zero. The decompiler prints
+// ROUND() for that, and this used lrintf (round to nearest) until 2026-10-04 -- so 0.7 split into
+// 1 and -0.3 and every polynomial sine and cosine built on it (the camera's easing, the sky dome,
+// the sun's direction) was evaluated outside the [0, 1) range it is fitted for. Zero itself takes
+// the second branch, as in the reference: whole -1, fraction 1.
 void CameraSplitFloor(float value, float* fraction, int32_t* whole) {
     if (0.0f < value) {
-        *whole = static_cast<int32_t>(lrintf(value));
+        *whole = static_cast<int32_t>(value);
         *fraction = value - static_cast<float>(*whole);
         return;
     }
 
-    *whole = static_cast<int32_t>(lrintf(value)) - 1;
+    *whole = static_cast<int32_t>(value) - 1;
     *fraction = value - static_cast<float>(*whole);
 }
 
