@@ -1,3 +1,4 @@
+#include "object/client/ObjectEffect.hpp"
 #include "world/Shadow.hpp"
 #include "world/MapWeather.hpp"
 #include "ui/game/RaidTarget.hpp"
@@ -980,8 +981,7 @@ void WowClientInit() {
     FrameScript_Initialize(scriptProfile ? scriptProfile->m_intValue : 0);
     SI2::Init(0);
 
-    // TODO
-    // sub_6F66B0();
+    ObjectEffectInitialize();
 
     FrameXML_RegisterDefault();
     GlueScriptEventsInitialize();

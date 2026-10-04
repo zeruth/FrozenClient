@@ -414,6 +414,7 @@ class CGGameObjectTransport : public CGGameObjectTransportBase {
 // stopping sequences as it goes. +0x38 holds the sequence playing (-1 before the first step).
 class CGGameObjectMOTransport : public CGGameObjectTransportBase {
     public:
+        void SetSequenceEffects(uint32_t sequence);
         // ref: FUN_007141d0
         CGGameObjectMOTransport(CGGameObject_C* owner) : CGGameObjectTransportBase(owner) {}
 

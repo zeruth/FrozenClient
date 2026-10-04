@@ -507,6 +507,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_0071e5b0
         // The unit's ObjectEffect package follows the three sequences it is playing.
         void UpdateObjectEffects();
+        void UpdateObjectEffectPackage();
 
         // The aura layer.
 
@@ -1162,6 +1163,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // +0x908: the pet's voice, +0x91c a spoken line, both owned by the unit (by pointer, as
         // m_mountSound is, to keep the sound engine out of this header); +0x930 the kind of pet
         // sound last played, which a lower kind does not interrupt.
+        // +0x958: the ObjectEffect state each of the three bone sequences put the unit in.
+        int32_t m_objectEffectAnimStates[3] = {};
         SOUNDKITOBJECT* m_petSound = nullptr;
         SOUNDKITOBJECT* m_speechSound = nullptr;
         int32_t m_petSoundType = 0;

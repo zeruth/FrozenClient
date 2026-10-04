@@ -41,6 +41,7 @@
 #include "object/client/CVehicle_C.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
+#include "object/client/ObjectEffect.hpp"
 #include "ui/Game.hpp"
 #include "ui/InputControl.hpp"
 #include "object/client/Spell_C.hpp"
@@ -459,8 +460,8 @@ bool s_pendingControlHas = false;
 
 // ref: FUN_0073fcc0
 // PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
-// party and raid slots (FUN_005139b0, FUN_0054d1c0), the vehicle and passenger starts and the
-// ObjectEffect package (FUN_00725df0) are the Movement, PlayerName, party and ObjectEffect ports'.
+// party and raid slots (FUN_005139b0, FUN_0054d1c0) and the vehicle and passenger starts are the
+// Movement, PlayerName and party ports'.
 void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
 
@@ -520,6 +521,8 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_lowerBodyFacing = this->GetRawFacing();
     this->m_lowerBodyFacingStep = 0.0f;
     this->m_lowerBodyBlend = 1.0f;
+
+    this->UpdateObjectEffectPackage();
 
     // 0x007401c5: an SMSG_CONTROL_UPDATE that arrived before the unit did.
     if (s_pendingControl == this->GetGUID()) {
@@ -5542,7 +5545,6 @@ const CreatureSoundDataRec* CGUnit_C::GetSoundData() const {
 
 // ref: FUN_00740450
 // A vehicle with riders keeps its mount (m_stateFlags 0x10000000) until they are off.
-// PHASE4(ObjectEffect): the reference ends with FUN_00725df0, the unit's ObjectEffect package.
 void CGUnit_C::SetMountDisplay(int32_t displayID) {
     if (displayID == this->m_mountDisplayID) {
         return;
@@ -5580,6 +5582,7 @@ void CGUnit_C::SetMountDisplay(int32_t displayID) {
     this->UpdateMountSound();
     this->AttachQuestMarker();
     PlayerNameInvalidate(this->m_nameDesc);
+    this->UpdateObjectEffectPackage();
 }
 
 // ref: FUN_0073d5d0
@@ -5875,7 +5878,6 @@ void CGUnit_C::PlayDismountSound() {
 }
 
 // ref: FUN_007412e0
-// PHASE4(ObjectEffect): FUN_00725df0 at the end, as in SetMountDisplay.
 void CGUnit_C::RequestDismount() {
     if (this->GetGUID() != ClntObjMgrGetActivePlayer() || (this->m_unit->flags >> 20) & 1) {
         return;
@@ -5895,17 +5897,175 @@ void CGUnit_C::RequestDismount() {
         this->UpdateMountSound();
         this->AttachQuestMarker();
         PlayerNameInvalidate(this->m_nameDesc);
+        this->UpdateObjectEffectPackage();
     }
 }
 
+namespace {
+
+// The states a death (0xf) or a feign (0x51) ends: standing and moving, flying and swimming, and
+// every pace and direction of movement.
+void ClearMovementObjectEffectStates(CObjectEffect* effects) {
+    static const uint32_t s_states[] = {
+        0x25, 0x26, 6, 7, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
+        0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42,
+    };
+
+    for (auto state : s_states) {
+        effects->ClearState(state, 1);
+    }
+}
+
+} // namespace
+
 // ref: FUN_0071e5b0
-// PHASE4(ObjectEffect): everything past the first test drives the unit's ObjectEffect manager
-// (+0xcc), which nothing creates until ObjectEffect.cpp is ported; with none, the reference
-// returns here too.
+// The unit's ObjectEffect states follow its three bone sequences (the mount's, the body's and the
+// upper body's): a sequence's new state goes on -- a death ends the movement states -- and one no
+// sequence plays any longer goes off.
 void CGUnit_C::UpdateObjectEffects() {
-    if (!this->m_objectEffects) {
+    auto effects = this->m_objectEffects;
+
+    if (!effects) {
         return;
     }
+
+    M2BoneSequenceState sequences[3];
+    this->GetBoneSequenceStates(&sequences[0], &sequences[1], &sequences[2], 1);
+
+    if (this->m_mountModel) {
+        if (!this->m_mountModel->IsLoaded(0, 0)) {
+            return;
+        }
+
+        if (sequences[0].uint90 < 0x1fa) {
+            sequences[0].uint90 = this->m_mountModel->ResolveSequenceFallback(sequences[0].uint90);
+        }
+    }
+
+    if (this->m_model) {
+        if (!this->m_model->IsLoaded(0, 0)) {
+            return;
+        }
+
+        if (sequences[1].uint90 < 0x1fa) {
+            sequences[1].uint90 = this->m_model->ResolveSequenceFallback(sequences[1].uint90);
+        }
+
+        if (sequences[2].uint90 < 0x1fa) {
+            sequences[2].uint90 = this->m_model->ResolveSequenceFallback(sequences[2].uint90);
+        }
+    }
+
+    int32_t states[3];
+    int32_t slots[3];
+    int32_t count = 0;
+
+    for (int32_t slot = 0; slot < 3; slot++) {
+        if (sequences[slot].uint90 != 0xffffffff) {
+            states[count] = ObjectEffectGetAnimState(sequences[slot].uint90, sequences[slot].uint94);
+            slots[count] = slot;
+            count++;
+        }
+    }
+
+    int32_t previous[3] = {
+        this->m_objectEffectAnimStates[0], this->m_objectEffectAnimStates[1], this->m_objectEffectAnimStates[2],
+    };
+
+    auto playing = [&](int32_t state) {
+        for (int32_t i = 0; i < count; i++) {
+            if (states[i] == state) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    for (auto& held : this->m_objectEffectAnimStates) {
+        if (held && !playing(held)) {
+            held = 0;
+        }
+    }
+
+    for (int32_t i = 0; i < count; i++) {
+        int32_t state = states[i];
+        bool held = false;
+
+        for (auto current : this->m_objectEffectAnimStates) {
+            if (current == state) {
+                held = true;
+                break;
+            }
+        }
+
+        if (held) {
+            continue;
+        }
+
+        if (state) {
+            effects->SetState(static_cast<uint32_t>(state), 1, 0);
+
+            if (state == 0xf || state == 0x51) {
+                ClearMovementObjectEffectStates(effects);
+            }
+        }
+
+        this->m_objectEffectAnimStates[slots[i]] = state;
+    }
+
+    for (auto state : previous) {
+        if (state && !playing(state)) {
+            effects->ClearState(static_cast<uint32_t>(state), 1);
+        }
+    }
+}
+
+// ref: FUN_00725df0
+// The unit's ObjectEffect package is its display's -- the mount's while it rides, or a local
+// display that still matches the native one -- and the manager is remade when that changes,
+// starting in the movement states it is in.
+void CGUnit_C::UpdateObjectEffectPackage() {
+    int32_t displayID = this->m_mountDisplayID;
+
+    if (!displayID) {
+        displayID = this->m_localDisplayID;
+
+        if (!displayID || this->m_unit->nativeDisplayID != this->m_unit->displayID) {
+            displayID = this->m_unit->displayID;
+        }
+    }
+
+    auto display = g_creatureDisplayInfoDB.GetRecord(displayID);
+    int32_t packageID = display ? display->m_objectEffectPackageID : 0;
+
+    if (this->m_objectEffects && this->m_objectEffects->m_packageID != packageID) {
+        this->m_objectEffectAnimStates[0] = 0;
+        this->m_objectEffectAnimStates[1] = 0;
+        this->m_objectEffectAnimStates[2] = 0;
+
+        delete this->m_objectEffects;
+        this->m_objectEffects = nullptr;
+    }
+
+    if (!packageID || this->m_objectEffects) {
+        return;
+    }
+
+    this->m_objectEffects = new CObjectEffect();
+
+    if (this->m_objectEffects->Init(display->m_objectEffectPackageID, this)) {
+        this->m_objectEffectAnimStates[0] = 0;
+        this->m_objectEffectAnimStates[1] = 0;
+        this->m_objectEffectAnimStates[2] = 0;
+
+        this->UpdateMovementEffects();
+
+        return;
+    }
+
+    delete this->m_objectEffects;
+    this->m_objectEffects = nullptr;
 }
 
 
@@ -8339,8 +8499,6 @@ int32_t UnitStandStateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDat
 
 // ref: FUN_00741a40
 // SMSG_DISMOUNT. A unit carrying passengers waits (state 0x10000000) until they are off.
-// PARTIAL: the name plate refresh (PlayerNameInvalidate) and the ObjectEffect update
-// (FUN_00725df0) are the PlayerName and ObjectEffect ports'.
 int32_t UnitDismountHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
@@ -8351,14 +8509,19 @@ int32_t UnitDismountHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataS
         return 1;
     }
 
-    // A vehicle with passengers aboard (its list at +0x178) holds the dismount; frozen creates no
-    // vehicle, so none holds it.
+    // A vehicle with passengers aboard holds the dismount until they are off.
+    if (unit->m_vehicle && unit->m_vehicle->m_passengers.Head()) {
+        unit->m_stateFlags |= 0x10000000;
+        return 1;
+    }
 
     unit->m_stateFlags &= 0xefffffff;
     unit->Dismount(1);
     unit->m_mountDisplayID = 0;
     unit->UpdateMountSound();
     unit->AttachQuestMarker();
+    PlayerNameInvalidate(unit->m_nameDesc);
+    unit->UpdateObjectEffectPackage();
 
     return 1;
 }
@@ -9764,7 +9927,6 @@ float CGUnit_C::GetAnimationProgress() {
 
 // ref: FUN_0073e410
 // TODO(PlayerName): the name plate is rebuilt for the new model (FUN_007e6320, FUN_00719050).
-// PHASE4(ObjectEffect): the ObjectEffect package follows (FUN_00725df0).
 void CGUnit_C::UpdateModel(int32_t force) {
     if (!force && !this->NeedsModelUpdate()) {
         return;
@@ -9898,6 +10060,7 @@ void CGUnit_C::UpdateModel(int32_t force) {
         this->m_model->AttachToParent(this->m_mountModel, 0, nullptr, 0);
     }
 
+    this->UpdateObjectEffectPackage();
     this->m_animFlags &= ~0x8000000u;
 }
 
@@ -11046,10 +11209,126 @@ posted:
 }
 
 // ref: FUN_00721300
-// NOT PORTED: the ObjectEffect movement states (FUN_006f7270 / FUN_006f61d0 switch states 0x25 ..
-// 0x42 on and off by how the unit moves). ObjectEffect.cpp is not ported, so there is nothing for
-// the states to drive yet.
+// The ObjectEffect states of how the unit moves: moving (0x25) or still (0x26), swimming (6) or
+// flying (7), turning (0x2f) or not (0x30), and the pace -- fast (0x31..0x36), walking
+// (0x37..0x3c) or backwards (0x3d..0x42) -- with its forward, backward and strafe variants. Each
+// goes on as the flags call for it and off when they no longer do.
 void CGUnit_C::UpdateMovementEffects() {
+    auto effects = this->m_objectEffects;
+
+    if (!effects) {
+        return;
+    }
+
+    auto flags = [this]() { return this->m_move->m_moveFlags; };
+    auto set = [effects](uint32_t state) { effects->SetState(state, 1, 0); };
+    auto clear = [effects](uint32_t state) { effects->ClearState(state, 1); };
+
+    set((flags() & 0xf) ? 0x25 : 0x26);
+
+    if (flags() & 0x400000) {
+        set(6);
+    } else if (flags() & 0x800000) {
+        set(7);
+    }
+
+    set((flags() & 0x30) ? 0x2f : 0x30);
+
+    // The pace: backwards (0x2000000 is the reference's walk-backward test), fast, or walking.
+    auto setPace = [&](uint32_t base) {
+        set(base);
+
+        if (flags() & 0x1) {
+            set(base + 1);
+        }
+
+        if (flags() & 0x2) {
+            set(base + 2);
+        }
+
+        if (flags() & 0xc) {
+            set(base + 5);
+
+            if (flags() & 0x4) {
+                set(base + 3);
+            }
+
+            if (flags() & 0x8) {
+                set(base + 4);
+            }
+        }
+    };
+
+    if (flags() & 0x2000000) {
+        setPace(0x3d);
+    } else if (this->IsMovingFasterThanWalkPace()) {
+        setPace(0x31);
+    } else if (this->IsMovingAtWalkPace()) {
+        setPace(0x37);
+    }
+
+    // Forward and backward: off for every pace but the one moving.
+    if ((flags() & 0x3) == 0) {
+        for (uint32_t state : { 0x31u, 0x32u, 0x33u, 0x37u, 0x38u, 0x39u, 0x3du, 0x3eu, 0x3fu }) {
+            clear(state);
+        }
+    } else if (flags() & 0x2000000) {
+        for (uint32_t state : { 0x37u, 0x38u, 0x39u, 0x31u, 0x32u, 0x33u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x1) ? 0x3f : 0x3e);
+    } else if (this->IsMovingFasterThanWalkPace()) {
+        for (uint32_t state : { 0x37u, 0x38u, 0x39u, 0x3du, 0x3eu, 0x3fu }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x1) ? 0x33 : 0x32);
+    } else if (this->IsMovingAtWalkPace()) {
+        for (uint32_t state : { 0x3du, 0x3eu, 0x3fu, 0x31u, 0x32u, 0x33u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x1) ? 0x39 : 0x38);
+    }
+
+    // Strafing, the same way.
+    if ((flags() & 0xc) == 0) {
+        for (uint32_t state : { 0x34u, 0x35u, 0x36u, 0x3au, 0x3bu, 0x3cu, 0x40u, 0x41u }) {
+            clear(state);
+        }
+
+        clear(0x42);
+    } else if (flags() & 0x2000000) {
+        for (uint32_t state : { 0x34u, 0x35u, 0x36u, 0x3au, 0x3bu, 0x3cu }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x4) ? 0x41 : 0x40);
+    } else if (this->IsMovingFasterThanWalkPace()) {
+        for (uint32_t state : { 0x3au, 0x3bu, 0x3cu, 0x40u, 0x41u, 0x42u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x4) ? 0x35 : 0x34);
+    } else if (this->IsMovingAtWalkPace()) {
+        for (uint32_t state : { 0x34u, 0x35u, 0x36u, 0x40u, 0x41u, 0x42u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x4) ? 0x3b : 0x3a);
+    }
+
+    clear((flags() & 0xf) ? 0x26 : 0x25);
+    clear((flags() & 0x30) ? 0x30 : 0x2f);
+
+    if (!(flags() & 0x400000)) {
+        clear(6);
+    }
+
+    if (!(flags() & 0x800000)) {
+        clear(7);
+    }
 }
 
 // ref: FUN_0073ed10

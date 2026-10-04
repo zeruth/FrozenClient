@@ -60,6 +60,11 @@
 #include "db/rec/TransportRotationRec.hpp"
 #include "db/rec/TaxiPathNodeRec.hpp"
 #include "db/rec/TransportPhysicsRec.hpp"
+#include "db/rec/ObjectEffectRec.hpp"
+#include "db/rec/ObjectEffectGroupRec.hpp"
+#include "db/rec/ObjectEffectModifierRec.hpp"
+#include "db/rec/ObjectEffectPackageRec.hpp"
+#include "db/rec/ObjectEffectPackageElemRec.hpp"
 #include "db/rec/MapDifficultyRec.hpp"
 #include "db/rec/DestructibleModelDataRec.hpp"
 #include "db/rec/VehicleRec.hpp"
@@ -144,6 +149,11 @@ extern WowClientDB<TransportAnimationRec> g_transportAnimationDB;
 extern WowClientDB<TransportRotationRec> g_transportRotationDB;
 extern WowClientDB<TaxiPathNodeRec> g_taxiPathNodeDB;
 extern WowClientDB<TransportPhysicsRec> g_transportPhysicsDB;
+extern WowClientDB<ObjectEffectRec> g_objectEffectDB;
+extern WowClientDB<ObjectEffectGroupRec> g_objectEffectGroupDB;
+extern WowClientDB<ObjectEffectModifierRec> g_objectEffectModifierDB;
+extern WowClientDB<ObjectEffectPackageRec> g_objectEffectPackageDB;
+extern WowClientDB<ObjectEffectPackageElemRec> g_objectEffectPackageElemDB;
 extern WowClientDB<MapDifficultyRec> g_mapDifficultyDB;
 extern WowClientDB<DestructibleModelDataRec> g_destructibleModelDataDB;
 extern WowClientDB<VehicleRec> g_vehicleDB;

@@ -101,6 +101,7 @@ class SESound {
         static void UpdateObjectSounds();
         void SetUserData(SEUserData* userData);
         void SetVolume(float volume);
+        void SetFrequencyScale(float scale);
         void StopOrFadeOut(int32_t stop, float fadeOutTime);
 
     private:

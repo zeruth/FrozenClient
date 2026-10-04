@@ -1,4 +1,5 @@
 #include "object/client/CGGameObject_C.hpp"
+#include "object/client/ObjectEffect.hpp"
 #include "client/ClientServices.hpp"
 #include "db/Db.hpp"
 #include "gx/Texture.hpp"
@@ -417,8 +418,8 @@ void CGGameObject_C::OnStatsLoaded(const GameObjectStats_C* stats) {
     auto display = g_gameObjectDisplayInfoDB.GetRecord(stats->m_displayID);
 
     if (display && display->m_objectEffectPackageID) {
-        // PHASE4(ObjectEffect): the display's ObjectEffect package gets a manager at +0xcc
-        // (FUN_006f5900, FUN_006f7420); ObjectEffect.cpp is not ported.
+        this->m_objectEffects = new CObjectEffect();
+        this->m_objectEffects->Init(display->m_objectEffectPackageID, this);
     }
 
     this->UpdateHighlightModel();

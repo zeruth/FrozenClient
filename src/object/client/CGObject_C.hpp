@@ -50,6 +50,7 @@ struct SPELLVISUALKITPARAMS {
 //
 // Slots whose purpose is not established yet are named for their offset rather than guessed at;
 // their bodies are the reference base's own, which for most of them is a constant.
+class CObjectEffect;
 class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID> {
     public:
         // Public static variables
@@ -104,7 +105,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         uint8_t m_alphaTo = 0;
         uint8_t m_alphaScale = 0xFF;
         // +0xcc: the object's ObjectEffect manager (ObjectEffect.cpp), when it has one.
-        void* m_objectEffects = nullptr;
+        CObjectEffect* m_objectEffects = nullptr;
 
         // Virtual public member functions, in the reference's slot order.
         virtual ~CGObject_C();                                                  // 0x000

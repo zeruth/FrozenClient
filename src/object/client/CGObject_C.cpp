@@ -1,4 +1,5 @@
 #include "object/client/CGObject_C.hpp"
+#include "object/client/ObjectEffect.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "console/CVar.hpp"
 #include "db/Db.hpp"
@@ -137,8 +138,10 @@ CGObject_C::~CGObject_C() {
         this->m_questMarker = nullptr;
     }
 
-    // PHASE4(ObjectEffect): the ObjectEffect manager at +0xcc is deleted here (FUN_006f7370);
-    // nothing creates one until ObjectEffect.cpp is ported.
+    if (this->m_objectEffects) {
+        delete this->m_objectEffects;
+        this->m_objectEffects = nullptr;
+    }
     this->m_objectEffects = nullptr;
 }
 
@@ -1622,9 +1625,24 @@ void ObjectsUpdateWorldObjects() {
     ClntObjMgrEnumVisibleObjects(&UpdateVisibleWorldObject, nullptr);
 }
 
+namespace {
+
+// ref: FUN_00744100
+int32_t UpdateVisibleObjectEffects(WOWGUID guid, void* param) {
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\Object_C.cpp", 0x44f);
+
+    if (object && object->m_objectEffects) {
+        object->m_objectEffects->Update();
+    }
+
+    return 1;
+}
+
+} // namespace
+
 // ref: FUN_00744140
-// PHASE4(ObjectEffect): each object's manager updates through FUN_006f39b0; none exist yet.
 void ObjectsUpdateObjectEffects() {
+    ClntObjMgrEnumVisibleObjects(&UpdateVisibleObjectEffects, nullptr);
 }
 
 // ref: FUN_007450b0
