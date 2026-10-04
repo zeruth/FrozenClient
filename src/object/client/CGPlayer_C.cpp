@@ -16,6 +16,7 @@
 #include <cstddef>
 #include "object/client/CGItem_C.hpp"
 #include "object/client/DBCacheInstances.hpp"
+#include "ui/game/RuneInfo.hpp"
 #include <storm/String.hpp>
 #include <cstring>
 #include <ctime>
@@ -773,6 +774,9 @@ void PlayerInitialize() {
     ClientServices::SetMessageHandler(SMSG_ITEM_ENCHANT_TIME_UPDATE, ItemTimeUpdateHandler, nullptr);
     ClientServices::SetMessageHandler(SMSG_SOCKET_GEMS_RESULT, ItemTimeUpdateHandler, nullptr);
     ClientServices::SetMessageHandler(SMSG_ITEM_REFUND_INFO_RESPONSE, ItemRefundInfoHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_CONVERT_RUNE, RuneConvertHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_RESYNC_RUNES, RuneResyncHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_ADD_RUNE_POWER, RuneAddPowerHandler, nullptr);
 }
 
 // Where the player's hearthstone returns them, from SMSG_BIND_POINT_UPDATE.

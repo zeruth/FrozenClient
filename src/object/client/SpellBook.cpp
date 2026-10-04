@@ -1,4 +1,5 @@
 #include "object/client/SpellBook.hpp"
+#include "object/client/SpellHistory.hpp"
 #include "client/ClientServices.hpp"
 #include "db/Db.hpp"
 #include "ui/FrameScript.hpp"
@@ -287,7 +288,9 @@ void SpellBookClear() {
 }
 
 // SMSG_INITIAL_SPELLS: uint8 unused, uint16 count, count x { uint32 spellId, uint16 unused }, then
-// the cooldown list, which is not read yet. Format from AzerothCore Player::SendInitialSpells.
+// the cooldown list: uint16 count, count x { uint32 spell, uint16 item, uint16 category, int32
+// cooldown, uint32 category cooldown with the held flag in its top bit } (FUN_006df050's second
+// loop, into FUN_00805b10).
 int32_t ReceiveInitialSpells(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     if (!msg || msg->Tell() + 3 > msg->Size()) {
         return 1;
@@ -318,6 +321,28 @@ int32_t ReceiveInitialSpells(void* param, NETMESSAGE msgId, uint32_t time, CData
     }
 
     Rebuild();
+
+    uint16_t cooldowns = 0;
+    msg->Get(cooldowns);
+
+    for (uint16_t i = 0; i < cooldowns; i++) {
+        uint32_t spellID = 0;
+        uint16_t itemID = 0;
+        uint16_t category = 0;
+        uint32_t cooldown = 0;
+        uint32_t categoryCooldown = 0;
+
+        msg->Get(spellID);
+        msg->Get(itemID);
+        msg->Get(category);
+        msg->Get(cooldown);
+        msg->Get(categoryCooldown);
+
+        bool held = categoryCooldown >> 31;
+        categoryCooldown &= 0x7FFFFFFF;
+
+        g_spellHistory[0].AddServerCooldown(static_cast<int32_t>(spellID), itemID, category, static_cast<int32_t>(cooldown), static_cast<int32_t>(categoryCooldown), held, 0);
+    }
 
     return 1;
 }
@@ -362,4 +387,6 @@ void SpellBookRegisterHandlers() {
     ClientServices::SetMessageHandler(SMSG_SEND_KNOWN_SPELLS, &ReceiveInitialSpells, nullptr);
     ClientServices::SetMessageHandler(SMSG_LEARNED_SPELL, &ReceiveLearnedSpell, nullptr);
     ClientServices::SetMessageHandler(SMSG_UNLEARNED_SPELLS, &ReceiveRemovedSpell, nullptr);
+
+    SpellHistoryRegisterHandlers();
 }

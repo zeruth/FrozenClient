@@ -3,6 +3,7 @@
 #include "glue/CharacterSelectionDisplay.hpp"
 #include "glue/CCharacterSelection.hpp"
 #include "ui/game/ScriptEvents.hpp"
+#include "ui/game/RuneInfo.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "ui/game/CGRaidInfo.hpp"
 #include <cmath>
@@ -77,25 +78,6 @@ static_assert(offsetof(CGUnitData, rangedAttackPower) == 0x1e0, "CGUnitData layo
 static_assert(offsetof(CGUnitData, rangedAttackPowerMods) == 0x1e4, "CGUnitData layout");
 static_assert(offsetof(CGUnitData, rangedAttackPowerMultiplier) == 0x1e8, "CGUnitData layout");
 static_assert(offsetof(CGPlayerData, modTargetResistance) == 0x105c, "CGPlayerData layout");
-
-// ref: DAT_00c24388
-// One bit per rune slot, set while that rune is ready. Written by the rune packet handlers, which
-// frozen does not have yet, so every rune reads as not ready.
-static uint32_t s_runesReady;
-
-// ref: DAT_00c24344
-// When each rune slot last started its cooldown. Written by the same unported handlers.
-static uint32_t s_runeCooldownStart[16];
-
-// ref: FUN_005ee1f0
-// The cooldown start of a rune that is not ready; 0 for a ready one or without a player.
-uint32_t RuneGetCooldownStart(int32_t rune) {
-    if (CGPlayer_C::GetActivePtr() && !(s_runesReady & (1 << rune))) {
-        return s_runeCooldownStart[rune];
-    }
-
-    return 0;
-}
 
 // The player's own data, or null. Every function below answers 0.0 without it, which is what the
 // reference pushes -- the character sheet shows a zero rather than going blank.
@@ -2573,10 +2555,36 @@ int32_t Script_GetPowerRegen(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
+// ref: FUN_00613020
+// The rune's regeneration start in seconds, its regeneration time, and whether it is ready.
 int32_t Script_GetRuneCooldown(lua_State* L) {
-    lua_pushnumber(L, 0.0);
-    lua_pushnumber(L, 0.0);
-    lua_pushnumber(L, 1.0);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: GetRuneCooldown(slot)");
+
+        return 0;
+    }
+
+    auto slot = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
+
+    if (slot >= 8) {
+        luaL_error(L, "Invalid slot");
+
+        return 0;
+    }
+
+    auto player = CGPlayer_C::GetActivePtr();
+
+    if (!player) {
+        return 0;
+    }
+
+    auto start = RuneGetRegenStart(slot);
+    auto rate = player->Player()->runeRegen[RuneGetType(slot, false)];
+    auto duration = rate <= 0.01f ? 0.0f : 1.0f / rate;
+
+    lua_pushnumber(L, static_cast<double>(start) * 0.001);
+    lua_pushnumber(L, static_cast<double>(duration));
+    lua_pushboolean(L, start == 0);
 
     return 3;
 }
@@ -2596,7 +2604,7 @@ int32_t Script_GetRuneCount(lua_State* L) {
     auto slot = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
 
     if (slot < 8) {
-        lua_pushnumber(L, static_cast<double>(((1u << slot) & s_runesReady) != 0));
+        lua_pushnumber(L, static_cast<double>(((1u << slot) & RuneGetReadyMask()) != 0));
 
         return 1;
     }
@@ -2604,12 +2612,23 @@ int32_t Script_GetRuneCount(lua_State* L) {
     return 0;
 }
 
+// ref: FUN_00613207
 int32_t Script_GetRuneType(lua_State* L) {
-    // 1 blood, 2 unholy, 3 frost, 4 death; runes 1-2 blood, 3-4 unholy, 5-6 frost
-    int32_t rune = lua_isnumber(L, 1) ? static_cast<int32_t>(lua_tonumber(L, 1)) : 1;
-    lua_pushnumber(L, rune <= 2 ? 1 : rune <= 4 ? 2 : 3);
+    if (!lua_isnumber(L, 1)) {
+        luaL_error(L, "Usage: Script_GetRuneType(slot)");
 
-    return 1;
+        return 0;
+    }
+
+    auto slot = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 1)) - 1);
+
+    if (slot < 8 && RuneIsValid(slot)) {
+        lua_pushnumber(L, static_cast<double>(static_cast<int32_t>(RuneGetType(slot, false)) + 1));
+
+        return 1;
+    }
+
+    return 0;
 }
 
 int32_t Script_ReportPlayerIsPVPAFK(lua_State* L) {

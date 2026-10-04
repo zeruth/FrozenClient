@@ -6,8 +6,6 @@
 
 extern const char* g_scriptEvents[];
 
-uint32_t RuneGetCooldownStart(int32_t rune);
-
 void ScriptEventsInitialize();
 
 void ScriptEventsRegisterEvents();
