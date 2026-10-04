@@ -254,6 +254,20 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         // How drunk the player is, 0 to 1: the larger of the server's drunk state and the faked
         // one, capped at a hundred.
         float GetDrunkenness() const;
+
+        // ref: FUN_006e0fd0
+        // PLAYER_FLAGS moved from `oldFlags`: name plates, portraits, the PvP timer and toggle
+        // messages, the interface events the flags drive, and for the active player the move into
+        // or out of the ghost state.
+        void OnFlagsChanged(uint32_t oldFlags);
+
+        // ref: FUN_006de750
+        // Arm or clear the PvP flag's timer for a change of PLAYER_FLAGS from `oldFlags`.
+        void UpdatePvPFlagTimer(uint32_t oldFlags);
+
+        // ref: FUN_006df710
+        // The active player became a ghost or came back to life.
+        void OnGhostChanged();
         // The rank in one skill-info slot plus its permanent bonus; a rank of 0 stays 0. The
         // active player's copy only, like GetSkillLineID.
         uint32_t GetSkillRank(uint32_t index) const;
@@ -301,6 +315,8 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
 
         // +0x194c: the played time SMSG_PLAYED_TIME last reported, -1 before it has, and the
         // time() at which it arrived.
+        // +0x1940: when the player's PvP flag lapses (the world clock), 0 while PvP is on by choice.
+        uint32_t m_pvpFlagExpire = 0;
         int32_t m_playedTime = -1;
         int32_t m_playedTimeReceived = 0;
 
@@ -324,6 +340,14 @@ bool InventorySlotInLocations(uint32_t slot, uint32_t mask);
 
 // ref: FUN_006e8ee0
 void PlayerInitialize();
+
+// ref: FUN_006e45d0
+// The player descriptor's field handlers.
+void PlayerRegisterFieldHandlers();
+
+// ref: FUN_006da770
+// The active player's watcher on PLAYER_FIELD_BYTES byte 3 (the invisibility glow).
+int32_t PlayerOnFieldBytesChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param);
 
 // ref: FUN_006ceec0
 void PlayerReadBindPoint(CDataStore* msg);

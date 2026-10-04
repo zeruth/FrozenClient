@@ -249,6 +249,11 @@ DNBodies* DayNightGetBodies();
 DNStars* DayNightGetStars();
 DNDome* DayNightGetDome();
 DNClouds* DayNightGetClouds();
+// ref: FUN_007eb060
+// Bring every positional Light.dbc row into world space, once, as the client database finishes
+// loading. With `convert` false nothing changes.
+void DayNightConvertLights(int32_t convert);
+
 int32_t DayNightSkyReady();
 CM2Scene* DayNightGetSkyScene();
 uint32_t DayNightGetSkySceneTime();

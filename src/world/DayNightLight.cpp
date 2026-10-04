@@ -6,6 +6,7 @@
 #include "ui/game/CGCamera.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldScene.hpp"
+#include "world/map/CMap.hpp"
 #include "world/map/CMapObj.hpp"
 #include <common/Time.hpp>
 #include <storm/Memory.hpp>
@@ -750,6 +751,12 @@ static void DNGatherLights(DNInfo* dst, int32_t underwater) {
         LightRec** slot = &s_mapLights.data[i];
         const LightRec* light = *slot;
 
+        // A light reaching less than three yards is skipped (DAT_00af4a68, always set, against
+        // the 3.0 at 0x009ebbc4).
+        if (light->m_falloffEnd < 3.0f) {
+            continue;
+        }
+
         float dx = s_block.queryPos.x - light->m_x;
         float dy = s_block.queryPos.y - light->m_y;
         float dz = s_block.queryPos.z - light->m_z;
@@ -1457,6 +1464,51 @@ void DayNightUpdateCamera() {
     DNUpdateLight();
     DNUpdateDirection();
     DNUpdateBodies();
+}
+
+// ref: FUN_007eaf60
+// Light.dbc keeps a positional light's place and radii in the map's file units (36 to a yard) and
+// on the file's axes. Converted in place: scaled to yards, then turned onto the world's axes about
+// the map's centre -- or about the origin when the loaded map is a single global building, which
+// at the one call (the end of the client database's load) it never is.
+static void DNConvertLight(LightRec* light, bool convert) {
+    const float scale = 0.027777778f;
+
+    if (light->m_x == 0.0f && light->m_y == 0.0f && light->m_z == 0.0f) {
+        return;
+    }
+
+    if (!convert) {
+        return;
+    }
+
+    light->m_x *= scale;
+    light->m_y *= scale;
+    light->m_z *= scale;
+    light->m_falloffStart *= scale;
+    light->m_falloffEnd *= scale;
+
+    // FUN_0077ec80
+    float half = CMap::s_globalMapObj ? 0.0f : 17066.666f;
+
+    float x = light->m_x;
+    float y = light->m_y;
+
+    light->m_x = -(light->m_z - half);
+    light->m_y = -(x - half);
+    light->m_z = y;
+}
+
+// ref: FUN_007eb010
+static void DNConvertLights(bool convert) {
+    for (int32_t i = 0; i < g_lightDB.GetNumRecords(); i++) {
+        DNConvertLight(g_lightDB.GetRecordByIndex(i), convert);
+    }
+}
+
+// ref: FUN_007eb060
+void DayNightConvertLights(int32_t convert) {
+    DNConvertLights(convert != 0);
 }
 
 // ref: FUN_007ecb30

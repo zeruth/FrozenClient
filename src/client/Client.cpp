@@ -326,6 +326,7 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     GameObjectInitialize();
     // The player module's start (FUN_006e8ee0 at 0x00405635).
     PlayerInitialize();
+    PlayerRegisterFieldHandlers();
 
     // TODO(Item_C): FUN_00709440, the item module's start.
 

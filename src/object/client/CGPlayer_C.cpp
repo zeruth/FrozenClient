@@ -3,6 +3,13 @@
 #include "component/CCharacterComponent.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "ui/game/CGGameUI.hpp"
+#include "object/client/CGGameObject_C.hpp"
+#include "object/client/Mirror.hpp"
+#include "ui/game/CGWorldFrame.hpp"
+#include "ui/game/PlayerName.hpp"
+#include "ui/game/PortraitButton.hpp"
+#include "ui/game/ScriptEvents.hpp"
+#include "world/CWorld.hpp"
 #include <common/Time.hpp>
 #include "db/Db.hpp"
 #include "object/Types.hpp"
@@ -14,6 +21,7 @@
 #include <storm/Error.hpp>
 #include "net/Connection.hpp"
 #include "object/client/Spell_C.hpp"
+#include "object/client/SpellHistory.hpp"
 #include <cstddef>
 #include "object/client/CGItem_C.hpp"
 #include "object/client/DBCacheInstances.hpp"
@@ -668,6 +676,12 @@ void CGPlayer_C::PostInitActivePlayer() {
     // The player's class decides which spells take the spell modifiers (0x006e81e3).
     SpellSetClassSet((this->m_unit->bytes0 >> 8) & 0xFF);
 
+    // FUN_006e5180's watcher on the invisibility glow (PARTIAL: the rest of that function's
+    // per-object watchers are not ported), then the screen effect a ghost or an aura logs in with.
+    MirrorRegisterObjectHandler(this->GetGUID(), ID_PLAYER, offsetof(CGPlayerData, field_bytes_2_4), 1,
+                                &PlayerOnFieldBytesChanged, nullptr, 0, 0);
+    CGWorldFrame::UpdateScreenEffect();
+
     // TODO
 }
 
@@ -1051,3 +1065,158 @@ float CGPlayer_C::GetDrunkenness() const {
 
     return static_cast<float>(value & 0xFF) * 0.01f;
 }
+
+// ref: FUN_006de750
+void CGPlayer_C::UpdatePvPFlagTimer(uint32_t oldFlags) {
+    uint32_t flags = this->Player()->flags;
+
+    // 0x200: PvP turned on by the player, which never lapses.
+    if (flags & 0x200) {
+        this->m_pvpFlagExpire = 0;
+        return;
+    }
+
+    // 0x40000: the flag is on its timer already, and stays on the one it has.
+    if (!(flags & 0x40000) || !(oldFlags & 0x40000)) {
+        this->m_pvpFlagExpire = CWorld::GetCurTimeMs() + 300000;
+    }
+}
+
+namespace {
+
+// ref: FUN_006d5290
+// A game object whose highlight depends on the player's state takes the new one.
+int32_t PlayerUpdateObjectHighlight(WOWGUID guid, void* param) {
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, __FILE__, __LINE__);
+
+    if (object && object->IsA(TYPE_GAMEOBJECT)) {
+        static_cast<CGGameObject_C*>(object)->UpdateHighlightModel();
+    }
+
+    return 1;
+}
+
+}
+
+// ref: FUN_006df710
+// PARTIAL: the corpse half is not ported -- clearing the spirit healer the player was talking to
+// (FUN_00523eb0, CMSG 0x2e2), forgetting the corpse's map position (FUN_0051f690), the resurrect
+// request and its CMSG 0x216 (FUN_00524a30), and the corpse query with its CMSG 0x417
+// (FUN_006dc5a0). The screen effect, the object highlights, the reactions and the interface event
+// are here.
+void CGPlayer_C::OnGhostChanged() {
+    if (!(this->Player()->flags & 0x10)) {
+        FrameScript_SignalEvent(SCRIPT_PLAYER_UNGHOST, nullptr);
+    }
+
+    // The ghost's sky and grey come from the screen effect (ScreenEffect 1, which forces the
+    // light's death params and their skybox).
+    CGWorldFrame::UpdateScreenEffect();
+
+    ClntObjMgrEnumVisibleObjects(&PlayerUpdateObjectHighlight, nullptr);
+
+    PlayerNameInvalidateAllReactions();
+    this->UpdateReaction(0);
+}
+
+// ref: FUN_006e0fd0
+// PARTIAL: four arms are not ported -- the AFK flag the chat frame keeps (DAT_00bcefec), the helm
+// and cloak showing toggles (FUN_006dd0f0 / FUN_006e0e00 and FUN_006dd1b0 / FUN_006e0ef0, which
+// redress the model and send CMSG 0x2b9 / 0x2ba), the resting flag's two GetGUID calls, and the
+// PvP toggle's line in the chat frame (FUN_00509dd0). The PvP toggle's error text is shown.
+void CGPlayer_C::OnFlagsChanged(uint32_t oldFlags) {
+    uint32_t flags = this->Player()->flags;
+    uint32_t changed = flags ^ oldFlags;
+    WOWGUID guid = this->GetGUID();
+
+    if (changed & 0x800E) {
+        PlayerNameInvalidate(this->m_nameDesc);
+    }
+
+    if (changed & 0x40300) {
+        this->UpdatePvPFlagTimer(oldFlags);
+    }
+
+    if (changed & 0xC00) {
+        PortraitRefresh(guid, 3);
+    }
+
+    ScriptEventsSignalUnitEvent(guid, SCRIPT_PLAYER_FLAGS_CHANGED);
+
+    if (guid != ClntObjMgrGetActivePlayer()) {
+        return;
+    }
+
+    if (changed & 0x10) {
+        this->OnGhostChanged();
+    }
+
+    if (changed & 0x20) {
+        FrameScript_SignalEvent(SCRIPT_PLAYER_UPDATE_RESTING, nullptr);
+    }
+
+    if (changed & 0x200) {
+        CGGameUI::DisplayError((flags & 0x200) ? 0x1DA : 0x1DB);
+    }
+
+    if (changed & 0x3000) {
+        FrameScript_SignalEvent(SCRIPT_PLAYTIME_CHANGED, nullptr);
+    }
+
+    if (changed & 0x20000) {
+        FrameScript_SignalEvent((flags & 0x20000) ? SCRIPT_ENABLE_TAXI_BENCHMARK : SCRIPT_DISABLE_TAXI_BENCHMARK, nullptr);
+    }
+
+    if (changed & 0x1800000) {
+        SpellSignalUsableUpdate();
+    }
+
+    if (changed & 0x2000000) {
+        FrameScript_SignalEvent((flags & 0x2000000) ? SCRIPT_DISABLE_XP_GAIN : SCRIPT_ENABLE_XP_GAIN, nullptr);
+    }
+
+    if (changed & 0x10000) {
+        FrameScript_SignalEvent((flags & 0x10000) ? SCRIPT_ENABLE_LOW_LEVEL_RAID : SCRIPT_DISABLE_LOW_LEVEL_RAID, nullptr);
+    }
+}
+
+namespace {
+
+// ref: FUN_006e1c20
+int32_t PlayerOnFlagsField(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(guid, TYPE_PLAYER, __FILE__, __LINE__));
+
+    if (player) {
+        player->OnFlagsChanged(*static_cast<const uint32_t*>(old));
+    }
+
+    return 1;
+}
+
+}
+
+// ref: FUN_006e45d0
+// PARTIAL: the reference registers some forty player field handlers here; this is the flags one.
+void PlayerRegisterFieldHandlers() {
+    MirrorRegisterHandler(ID_PLAYER, offsetof(CGPlayerData, flags), 4, &PlayerOnFlagsField, nullptr, 0, 0);
+}
+
+// ref: FUN_006da770
+// PLAYER_FIELD_BYTES byte 3 moved: bit 0x40, the glow of an invisible player, picks the screen
+// effect. PARTIAL: the walk over the visible units after it (FUN_006d7030 -> FUN_00727a70, the
+// units' invisibility shading) is not ported.
+int32_t PlayerOnFieldBytesChanged(WOWGUID guid, uint32_t offset, uint32_t size, const void* old, void* param) {
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(guid, TYPE_PLAYER, __FILE__, __LINE__));
+
+    if (player) {
+        uint8_t changed = player->Player()->field_bytes_2_4 ^ *static_cast<const uint8_t*>(old);
+
+        if (changed & 0x40) {
+            CGWorldFrame::UpdateScreenEffect();
+        }
+    }
+
+    return 1;
+}
+
+static_assert(offsetof(CGPlayerData, field_bytes_2_4) == 0x10E7, "PLAYER_FIELD_BYTES byte 3 sits at 0x10e7");

@@ -1,6 +1,7 @@
 #include "db/Db.hpp"
 #include "db/WowClientDB_Base.hpp"
 #include "console/Console.hpp"
+#include "world/DayNightLight.hpp"
 #include <storm/Array.hpp>
 
 WowClientDB<AchievementRec> g_achievementDB;
@@ -272,9 +273,14 @@ void ClientDBInitialize() {
 
     StaticDBLoadAll(LoadDB);
 
-    // TODO the rest of the post-load steps (0x00634e00..0x00634e34)
+    // TODO the rest of the post-load steps (0x00634e00..0x00634e48): the DBClient tables
+    // (FUN_006337d0), FUN_007f6a80, and the item subclass tables (FUN_00634ba0, FUN_00634cc0,
+    // FUN_006810c0)
 
     ResistancesInitialize();
+
+    // FUN_007eb060
+    DayNightConvertLights(1);
 }
 
 // ref: FUN_00634ae0
