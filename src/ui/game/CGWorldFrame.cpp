@@ -1,3 +1,4 @@
+#include "object/client/CGDynamicObject_C.hpp"
 #include "model/CM2Model.hpp"
 #include <vector>
 #include "model/CM2Shared.hpp"
@@ -947,8 +948,7 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
     }
 
     if (object->IsA(TYPE_DYNAMICOBJECT)) {
-        // TODO(DynamicObject_C): FUN_007051b0, the spell's effect model starting once its spell
-        // has gone (FUN_00804cc0, FUN_00704f60).
+        static_cast<CGDynamicObject_C*>(object)->UpdateForFrame(CWorld::GetCurTimeMs());
     }
 
     return 1;
