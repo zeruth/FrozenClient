@@ -774,6 +774,16 @@ static void ShadowMapRenderCascades(ShadowView& view) {
 // hardware-PCF maps are depth textures D3D9 cannot read back.
 int32_t g_shadowDumpFrame = 0;
 static int32_t s_dumpCountdown = 400;
+// Each dump's files carry its number, so a screenshot-triggered series does not overwrite itself.
+static int32_t s_dumpIndex = 0;
+
+// FROZEN-ONLY: the in-game Screenshot command asks for a dump on the next frame, so a map can be
+// caught at the moment something looks wrong instead of on the fixed countdown.
+void ShadowMapRequestDump() {
+    if (getenv("FROZEN_SHADOW_DUMP")) {
+        s_dumpCountdown = 1;
+    }
+}
 
 static void ShadowDumpTexture(const char* name, HTEXTURE texture) {
     const char* dir = getenv("FROZEN_SHADOW_DUMP");
@@ -805,7 +815,7 @@ static void ShadowDumpTexture(const char* name, HTEXTURE texture) {
     }
 
     char path[512];
-    snprintf(path, sizeof(path), "%s/shadow_%s.pgm", dir, name);
+    snprintf(path, sizeof(path), "%s/shadow%d_%s.pgm", dir, s_dumpIndex, name);
 
     FILE* file = fopen(path, "wb");
 
@@ -877,6 +887,19 @@ int32_t ShadowMapRender(const C3Vector& focus, int32_t lit) {
 
     if (s_dumpCountdown > 0 && getenv("FROZEN_SHADOW_DUMP") && --s_dumpCountdown == 0) {
         g_shadowDumpFrame = 1;
+        s_dumpIndex++;
+
+        // The log goes beside the maps, so it does not depend on the shell's redirection.
+        static bool redirected = false;
+
+        if (!redirected) {
+            redirected = true;
+            char log[512];
+            snprintf(log, sizeof(log), "%s/shadow.txt", getenv("FROZEN_SHADOW_DUMP"));
+            freopen(log, "w", stderr);
+        }
+
+        fprintf(stderr, "[shadow dump] ===== dump %d =====\n", s_dumpIndex);
     }
 
     ShadowView view;

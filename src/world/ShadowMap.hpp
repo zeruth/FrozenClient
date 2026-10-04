@@ -84,6 +84,8 @@ extern int32_t g_shadowMapQuality;
 extern int32_t g_shadowMapRealloc;
 // FROZEN-ONLY: set for the one frame FROZEN_SHADOW_DUMP captures (ShadowMap.cpp).
 extern int32_t g_shadowDumpFrame;
+// FROZEN-ONLY: with FROZEN_SHADOW_DUMP set, dump the maps on the next frame (the Screenshot command).
+void ShadowMapRequestDump();
 // The fog scale the terrain fog constant is multiplied by (DAT_00d4300c)
 extern float g_shadowMapFogScale;
 // The map edge in texels (DAT_00d43150), from the quality.
