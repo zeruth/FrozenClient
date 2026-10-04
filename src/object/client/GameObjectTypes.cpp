@@ -1326,6 +1326,16 @@ void CGGameObjectDungeonDifficulty::OnAnimEvent(uint32_t eventId, uint32_t data,
     }
 }
 
+// ref: FUN_007109d0
+int32_t CGGameObjectDungeonDifficulty::GetMapID() const {
+    return this->GetData(GO_DATA_DIFFICULTY_MAP);
+}
+
+// ref: FUN_00710a10
+int32_t CGGameObjectDungeonDifficulty::GetDifficulty() const {
+    return this->GetData(GO_DATA_DIFFICULTY);
+}
+
 // ref: FUN_00710a50
 // Shown only at its own difficulty: a raid map's against the raid difficulty in force (on a map
 // with dynamic difficulty, the map's form of it; otherwise also a heroic raid falling back to its
@@ -1334,8 +1344,8 @@ void CGGameObjectDungeonDifficulty::UpdateFrame(uint32_t time) {
     (void)time;
 
     int32_t hide = 1;
-    int32_t mapID = this->GetData(GO_DATA_DIFFICULTY_MAP);
-    int32_t difficulty = this->GetData(GO_DATA_DIFFICULTY);
+    int32_t mapID = this->GetMapID();
+    int32_t difficulty = this->GetDifficulty();
     auto map = mapID ? g_mapDB.GetRecord(mapID) : nullptr;
 
     if (map && map->m_instanceType == 2) {
@@ -2187,6 +2197,16 @@ int32_t CGGameObjectType::GetCursor() {
     return canUse ? 5 : 0x1F;
 }
 
+// ref: FUN_0070c510
+CGGameObjectTypeUnknown::CGGameObjectTypeUnknown(CGGameObject_C* owner) : CGGameObjectType(owner, 5.0f) {
+}
+
+// ref: FUN_00710410
+// GO_DATA onlyCreatorUse (meaning 0x5e): only the one who made it may use it.
+bool CGGameObjectType::IsCreatorOnly() const {
+    return this->GetData(0x5e) != 0;
+}
+
 // ref: FUN_007112a0
 bool CGGameObjectType::CanUse() {
     auto player = ActivePlayer();
@@ -2234,9 +2254,8 @@ bool CGGameObjectType::CanUse() {
                 ffa = !grouped;
             }
 
-            // TODO(Unit_C): FUN_0071f5c0, whether the maker may attack the player, also lets it
-            // through; it is not ported, so only UNIT_BYTE2_FLAG_PVP and free-for-all do.
-            if (!((maker->Unit()->bytes2 >> 8) & 0x1) && !ffa) {
+            // A maker flagged for PvP, in a duel with the player, or free-for-all lets it through.
+            if (!((maker->Unit()->bytes2 >> 8) & 0x1) && !maker->IsDuelingWith(player) && !ffa) {
                 return false;
             }
         }
@@ -2251,8 +2270,7 @@ bool CGGameObjectType::CanUse() {
         return false;
     }
 
-    // GO_DATA onlyCreatorUse.
-    if (this->GetData(94) && player->GetGUID() != data->createdBy) {
+    if (this->IsCreatorOnly() && player->GetGUID() != data->createdBy) {
         return false;
     }
 
@@ -2263,9 +2281,8 @@ bool CGGameObjectType::CanUse() {
 bool CGGameObjectType::CanUseNow(int32_t* error, float* range, const char** spellName) {
     auto player = ActivePlayer();
 
-    // TODO(Unit_C): the reference refuses (0x87) when the player's slot 0x128 says so (dead);
-    // frozen's CGUnit_C has no such slot.
-    if (!player) {
+    // A dead player can use nothing (0x87).
+    if (!player || player->IsDead()) {
         if (error) {
             *error = 0x87;
         }

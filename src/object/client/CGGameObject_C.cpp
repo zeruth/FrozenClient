@@ -52,6 +52,52 @@ void ReleaseAttachedModel(CM2Model*& model) {
     model = nullptr;
 }
 
+// The type constructors the factory picks between that frozen keeps as one class and a setting.
+
+// ref: FUN_00712560
+// A button: animated, refused with error 0xec.
+CGGameObjectType* NewButtonType(CGGameObject_C* object) {
+    auto button = STORM_NEW(CGGameObjectAnimated)(object);
+    button->m_useError = 0xEC;
+
+    return button;
+}
+
+// ref: FUN_00712770
+CGGameObjectType* NewAnimatedType(CGGameObject_C* object) {
+    return STORM_NEW(CGGameObjectAnimated)(object);
+}
+
+// ref: FUN_0070c4e0
+// A binder, used from ten yards.
+CGGameObjectType* NewBinderType(CGGameObject_C* object) {
+    return STORM_NEW(CGGameObjectType)(object, 10.0f);
+}
+
+// ref: FUN_00712590
+// An area damage object, used from anywhere.
+CGGameObjectType* NewAreaDamageType(CGGameObject_C* object) {
+    auto area = STORM_NEW(CGGameObjectAnimated)(object);
+    area->m_useRange = 0.0f;
+
+    return area;
+}
+
+// ref: FUN_0070c9a0
+// A camera, used from five yards.
+CGGameObjectType* NewCameraType(CGGameObject_C* object) {
+    return STORM_NEW(CGGameObjectType)(object, 5.0f);
+}
+
+// ref: FUN_007127b0
+// Flag stands, flag drops and mini games: five and five ninths yards.
+CGGameObjectType* NewFlagType(CGGameObject_C* object) {
+    auto flag = STORM_NEW(CGGameObjectAnimated)(object);
+    flag->m_useRange = 5.5555553f;
+
+    return flag;
+}
+
 // The type behaviour the constructor makes for each GAMEOBJECT_TYPE_* (0x00714370 ..).
 CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
     CGGameObjectType* behaviour = nullptr;
@@ -61,13 +107,9 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             behaviour = STORM_NEW(CGGameObjectDoor)(object);
             break;
 
-        case 1: {
-            // FUN_00712560: a button.
-            auto button = STORM_NEW(CGGameObjectAnimated)(object);
-            button->m_useError = 0xEC;
-            behaviour = button;
+        case 1:
+            behaviour = NewButtonType(object);
             break;
-        }
 
         case 2:
             behaviour = STORM_NEW(CGGameObjectQuestGiver)(object);
@@ -77,13 +119,12 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
         case 6:
         case 10:
         case 22:
-            // FUN_00712770: chests, traps, goobers, spell casters.
-            behaviour = STORM_NEW(CGGameObjectAnimated)(object);
+            // Chests, traps, goobers, spell casters.
+            behaviour = NewAnimatedType(object);
             break;
 
         case 4:
-            // FUN_0070c4e0: a binder.
-            behaviour = STORM_NEW(CGGameObjectType)(object, 10.0f);
+            behaviour = NewBinderType(object);
             break;
 
         case 5:
@@ -105,17 +146,12 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             behaviour = STORM_NEW(CGGameObjectText)(object);
             break;
 
-        case 12: {
-            // FUN_00712590: an area damage object, used from anywhere.
-            auto area = STORM_NEW(CGGameObjectAnimated)(object);
-            area->m_useRange = 0.0f;
-            behaviour = area;
+        case 12:
+            behaviour = NewAreaDamageType(object);
             break;
-        }
 
         case 13:
-            // FUN_0070c9a0: a camera.
-            behaviour = STORM_NEW(CGGameObjectType)(object, 5.0f);
+            behaviour = NewCameraType(object);
             break;
 
         case 17:
@@ -136,13 +172,10 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
 
         case 24:
         case 26:
-        case 27: {
-            // FUN_007127b0: flag stands, flag drops and mini games.
-            auto flag = STORM_NEW(CGGameObjectAnimated)(object);
-            flag->m_useRange = 5.5555553f;
-            behaviour = flag;
+        case 27:
+            // Flag stands, flag drops and mini games.
+            behaviour = NewFlagType(object);
             break;
-        }
 
         case 29:
             behaviour = STORM_NEW(CGGameObjectCapturePoint)(object);
