@@ -119,8 +119,12 @@ bool TimeReached(uint32_t time) {
 // ref: FUN_004f5930
 // The handler a placed effect's world object gets: the map's visibility walk tells the effect
 // whether it is drawn this frame.
+//
+// Diverged: the reference hands the effect over as the 32-bit context (param32), which cannot
+// hold a 64-bit pointer, so Play also passes it as the pointer-sized handler parameter and this
+// reads it from there. param32 is still nonzero exactly when the reference's is.
 int32_t PlacedEffectHandler(void* param, int32_t flags, uint32_t guidLow, uint32_t guidHigh, uint32_t param32) {
-    auto effect = reinterpret_cast<CEffect*>(static_cast<uintptr_t>(param32));
+    auto effect = param32 ? static_cast<CEffect*>(param) : nullptr;
 
     if (effect) {
         auto frame = CGWorldFrame::s_currentWorldFrame;
@@ -1523,7 +1527,7 @@ void CEffect::Play() {
         this->m_model->matrixB4 = matrix;
 
         this->m_worldObject = CWorldAddPlacedObject(this->m_model, this->m_model->matrixB4,
-                                                    reinterpret_cast<void*>(&PlacedEffectHandler), nullptr,
+                                                    reinterpret_cast<void*>(&PlacedEffectHandler), this,
                                                     static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)));
 
         CAaBox box;

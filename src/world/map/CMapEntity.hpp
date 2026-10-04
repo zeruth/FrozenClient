@@ -34,6 +34,10 @@ class CMapEntity : public CMapStaticEntity {
         void* m_handlerParam = nullptr;
         uint64_t m_param64 = 0;
         uint32_t m_param32 = 0;
+        // Reference +0xa4: the last argument of CWorld::UpdateObject (FUN_00780240 stores it
+        // here). It is NOT the handler's context at +0xa0 (m_param32); writing it there turned
+        // every placed effect's context into 0xFFFFFFFF on its first update.
+        uint32_t m_updateParam = 0;
         // TODO
         CImVector m_ambientTarget = { 0xFF, 0x00, 0x00, 0x00 };
         float m_dirLightScaleTarget = 0.0f;

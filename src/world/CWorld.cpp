@@ -1080,7 +1080,7 @@ void CWorld::UpdateObject(HWORLDOBJECT object, const C44Matrix& matrix, const CA
     entity->m_scale = scale;
     entity->m_bounds = placedBox;
     entity->m_sphere = placedSphere;
-    entity->m_param32 = param;
+    entity->m_updateParam = param;
 
     if (noRelink) {
         return;
