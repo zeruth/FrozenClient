@@ -8766,21 +8766,24 @@ void CM2Model::CollectShadowCasters(M2ShadowCasterList* lists) {
     auto data = this->m_shared->m_data;
     auto skin = this->m_shared->skinProfile;
 
-    // THE OPTIMIZED-GEOMETRY BRANCH IS NOT WRITTEN. The reference takes its batches from ptr2D0
-    // when that is set, and skips the skin-section test below because the optimized list is
-    // already filtered. frozen never builds ptr2D0 -- M2OptimizedGeometry is a forward
-    // declaration with no definition, so it cannot even be dereferenced here -- and every other
-    // path in this file takes the unoptimized branch for the same reason. Whoever lands that
-    // type lands this branch with it.
-    if (this->ptr2D0 || !skin) {
+    // A model with merged geometry casts from its merged batches (ptr2D0, +0x2d0), which are
+    // already filtered to the sections it shows, so only the skin profile's batches take the
+    // section test. Until 2026-10-04 this returned early whenever ptr2D0 was set: every model
+    // the batch merger had reached -- every character and creature once loaded -- cast nothing,
+    // which is why the player's shadow showed at login and vanished a moment later.
+    auto optimized = this->ptr2D0;
+
+    if (!optimized && !skin) {
         return;
     }
 
-    for (uint32_t i = 0; i < skin->batches.Count(); i++) {
-        M2Batch& batch = skin->batches[i];
+    uint32_t batchCount = optimized ? optimized->batchCount : skin->batches.Count();
+
+    for (uint32_t i = 0; i < batchCount; i++) {
+        M2Batch& batch = optimized ? optimized->batches[i] : skin->batches[i];
 
         // Only in the unoptimized path: the section this batch draws has to be present.
-        if (!this->m_skinSections[batch.skinSectionIndex]) {
+        if (!optimized && !this->m_skinSections[batch.skinSectionIndex]) {
             continue;
         }
 
