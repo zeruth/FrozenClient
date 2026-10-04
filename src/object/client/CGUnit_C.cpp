@@ -8356,7 +8356,7 @@ int32_t UnitSetVehicleRecHandler(void* param, NETMESSAGE msgId, uint32_t time, C
     uint32_t recID = 0;
     msg->Get(recID);
 
-    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\Unit_C.cpp", 0x729));
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x729));
 
     if (unit) {
         if (recID != 0) {
