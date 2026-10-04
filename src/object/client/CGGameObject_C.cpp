@@ -1,4 +1,5 @@
 #include "object/client/CGGameObject_C.hpp"
+#include "object/client/ObjectEffect.hpp"
 #include "client/ClientServices.hpp"
 #include "db/Db.hpp"
 #include "gx/Texture.hpp"
@@ -17,6 +18,7 @@
 #include "ui/game/CGGameUI.hpp"
 #include "util/Log.hpp"
 #include "world/CWorld.hpp"
+#include "ui/game/PlayerName.hpp"
 #include <common/DataStore.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
@@ -51,6 +53,52 @@ void ReleaseAttachedModel(CM2Model*& model) {
     model = nullptr;
 }
 
+// The type constructors the factory picks between that frozen keeps as one class and a setting.
+
+// ref: FUN_00712560
+// A button: animated, refused with error 0xec.
+CGGameObjectType* NewButtonType(CGGameObject_C* object) {
+    auto button = STORM_NEW(CGGameObjectAnimated)(object);
+    button->m_useError = 0xEC;
+
+    return button;
+}
+
+// ref: FUN_00712770
+CGGameObjectType* NewAnimatedType(CGGameObject_C* object) {
+    return STORM_NEW(CGGameObjectAnimated)(object);
+}
+
+// ref: FUN_0070c4e0
+// A binder, used from ten yards.
+CGGameObjectType* NewBinderType(CGGameObject_C* object) {
+    return STORM_NEW(CGGameObjectType)(object, 10.0f);
+}
+
+// ref: FUN_00712590
+// An area damage object, used from anywhere.
+CGGameObjectType* NewAreaDamageType(CGGameObject_C* object) {
+    auto area = STORM_NEW(CGGameObjectAnimated)(object);
+    area->m_useRange = 0.0f;
+
+    return area;
+}
+
+// ref: FUN_0070c9a0
+// A camera, used from five yards.
+CGGameObjectType* NewCameraType(CGGameObject_C* object) {
+    return STORM_NEW(CGGameObjectType)(object, 5.0f);
+}
+
+// ref: FUN_007127b0
+// Flag stands, flag drops and mini games: five and five ninths yards.
+CGGameObjectType* NewFlagType(CGGameObject_C* object) {
+    auto flag = STORM_NEW(CGGameObjectAnimated)(object);
+    flag->m_useRange = 5.5555553f;
+
+    return flag;
+}
+
 // The type behaviour the constructor makes for each GAMEOBJECT_TYPE_* (0x00714370 ..).
 CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
     CGGameObjectType* behaviour = nullptr;
@@ -60,13 +108,9 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             behaviour = STORM_NEW(CGGameObjectDoor)(object);
             break;
 
-        case 1: {
-            // FUN_00712560: a button.
-            auto button = STORM_NEW(CGGameObjectAnimated)(object);
-            button->m_useError = 0xEC;
-            behaviour = button;
+        case 1:
+            behaviour = NewButtonType(object);
             break;
-        }
 
         case 2:
             behaviour = STORM_NEW(CGGameObjectQuestGiver)(object);
@@ -76,13 +120,12 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
         case 6:
         case 10:
         case 22:
-            // FUN_00712770: chests, traps, goobers, spell casters.
-            behaviour = STORM_NEW(CGGameObjectAnimated)(object);
+            // Chests, traps, goobers, spell casters.
+            behaviour = NewAnimatedType(object);
             break;
 
         case 4:
-            // FUN_0070c4e0: a binder.
-            behaviour = STORM_NEW(CGGameObjectType)(object, 10.0f);
+            behaviour = NewBinderType(object);
             break;
 
         case 5:
@@ -104,17 +147,12 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
             behaviour = STORM_NEW(CGGameObjectText)(object);
             break;
 
-        case 12: {
-            // FUN_00712590: an area damage object, used from anywhere.
-            auto area = STORM_NEW(CGGameObjectAnimated)(object);
-            area->m_useRange = 0.0f;
-            behaviour = area;
+        case 12:
+            behaviour = NewAreaDamageType(object);
             break;
-        }
 
         case 13:
-            // FUN_0070c9a0: a camera.
-            behaviour = STORM_NEW(CGGameObjectType)(object, 5.0f);
+            behaviour = NewCameraType(object);
             break;
 
         case 17:
@@ -135,13 +173,10 @@ CGGameObjectType* CreateType(CGGameObject_C* object, uint8_t type) {
 
         case 24:
         case 26:
-        case 27: {
-            // FUN_007127b0: flag stands, flag drops and mini games.
-            auto flag = STORM_NEW(CGGameObjectAnimated)(object);
-            flag->m_useRange = 5.5555553f;
-            behaviour = flag;
+        case 27:
+            // Flag stands, flag drops and mini games.
+            behaviour = NewFlagType(object);
             break;
-        }
 
         case 29:
             behaviour = STORM_NEW(CGGameObjectCapturePoint)(object);
@@ -337,7 +372,11 @@ CGGameObject_C::~CGGameObject_C() {
     this->m_flag22 = 0;
     ReleaseAttachedModel(this->m_highlightModel);
 
-    // TODO(PlayerName): a destructible building's name plate at +0xb0 is let go (FUN_007e6320).
+    // A destructible building's name plate (0x00712bea).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
     this->m_nameDesc = nullptr;
 
     if (this->m_type) {
@@ -418,8 +457,8 @@ void CGGameObject_C::OnStatsLoaded(const GameObjectStats_C* stats) {
     auto display = g_gameObjectDisplayInfoDB.GetRecord(stats->m_displayID);
 
     if (display && display->m_objectEffectPackageID) {
-        // PHASE4(ObjectEffect): the display's ObjectEffect package gets a manager at +0xcc
-        // (FUN_006f5900, FUN_006f7420); ObjectEffect.cpp is not ported.
+        this->m_objectEffects = new CObjectEffect();
+        this->m_objectEffects->Init(display->m_objectEffectPackageID, this);
     }
 
     this->UpdateHighlightModel();
@@ -444,7 +483,11 @@ void CGGameObject_C::Disable() {
 
     ReleaseAttachedModel(this->m_highlightModel);
 
-    // TODO(PlayerName): the name plate at +0xb0 (FUN_007e6320).
+    // The name plate (0x0071311a).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
     this->m_nameDesc = nullptr;
 }
 
@@ -458,9 +501,13 @@ void CGGameObject_C::Reenable() {
         this->m_type->OnReenable();
     }
 
+    // A destructible building's name plate is made again (0x0070ed9f).
     if (this->GameObject()->type == 33) {
-        // TODO(PlayerName): a destructible building's name plate is made again (FUN_007e6320,
-        // FUN_007e5fd0).
+        if (this->m_nameDesc) {
+            PlayerNameDestroy(this->m_nameDesc);
+        }
+
+        this->m_nameDesc = PlayerNameCreateAlways(this->GetGUID());
     }
 }
 

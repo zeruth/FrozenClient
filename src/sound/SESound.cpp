@@ -1158,6 +1158,26 @@ void SESound::SetVolume(float volume) {
     this->m_internal->UpdateVolume();
 }
 
+// ref: FUN_00878760
+// The sound plays at `scale` times the frequency it started at.
+void SESound::SetFrequencyScale(float scale) {
+    auto internal = this->m_internal;
+
+    if (!internal) {
+        return;
+    }
+
+    internal->m_frequencyScale = scale;
+
+    if (auto channel = internal->m_fmodChannel) {
+        if (internal->m_baseFrequency == 0.0f) {
+            channel->getFrequency(&internal->m_baseFrequency);
+        }
+
+        channel->setFrequency(internal->m_baseFrequency * scale);
+    }
+}
+
 void SESound::StopOrFadeOut(int32_t stop, float fadeOutTime) {
     if (!this->m_internal) {
         return;

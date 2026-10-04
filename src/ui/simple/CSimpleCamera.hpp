@@ -23,6 +23,7 @@ class CSimpleCamera {
         void SetFacing(const C3Vector& forward, const C3Vector& up);
         void SetFacing(float yaw, float pitch, float roll);
         void SetFarZ(float farZ);
+        float NearZ() const { return this->m_nearZ; }
         float FarZ() const { return this->m_farZ; }
         float Aspect() const { return this->m_aspect; }
         void SetFieldOfView(float fov);

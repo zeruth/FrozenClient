@@ -1,3 +1,7 @@
+#include "ui/game/PlayerName.hpp"
+#include "ui/game/WorldText.hpp"
+#include "object/client/CGCorpse_C.hpp"
+#include "object/client/ObjectEffect.hpp"
 #include "world/Shadow.hpp"
 #include "world/MapWeather.hpp"
 #include "ui/game/RaidTarget.hpp"
@@ -308,6 +312,10 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     ClntObjMgrInitializeShared();
     ClntObjMgrInitializeStd(mapId);
 
+    // The world text and the name plates (0x00405612, 0x00405617).
+    WorldTextInitialize();
+    PlayerNameInitialize();
+
     // The selection circle and quest marker models (0x00405621), then the unit module's start
     // (FUN_00742220 at 0x0040562b).
     ObjectsInitialize();
@@ -318,6 +326,11 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     GameObjectInitialize();
     // The player module's start (FUN_006e8ee0 at 0x00405635).
     PlayerInitialize();
+
+    // TODO(Item_C): FUN_00709440, the item module's start.
+
+    // The corpse module's start (FUN_007062c0).
+    CorpseInitialize();
 
     // TODO
 
@@ -1053,8 +1066,7 @@ void WowClientInit() {
     FrameScript_Initialize(scriptProfile ? scriptProfile->m_intValue : 0);
     SI2::Init(0);
 
-    // TODO
-    // sub_6F66B0();
+    ObjectEffectInitialize();
 
     FrameXML_RegisterDefault();
     GlueScriptEventsInitialize();

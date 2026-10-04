@@ -12,6 +12,9 @@ class CGObject_C;
 class CGUnit_C;
 class CM2Model;
 class CVehicleCamera_C;
+
+// FUN_005fec50: the world geometry the camera collides with.
+uint32_t CameraCollisionFlags();
 class CWFrustum;
 struct lua_State;
 

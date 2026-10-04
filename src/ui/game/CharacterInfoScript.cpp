@@ -101,8 +101,7 @@ static_assert(offsetof(CGItemData, flags) == 0x3c, "CGItemData layout");
 static_assert(offsetof(CGItemData, durability) == 0xd8, "CGItemData layout");
 static_assert(offsetof(CGItemData, maxDurability) == 0xdc, "CGItemData layout");
 
-// ref: FUN_00584ac0
-// Current durability, except that an item whose flags carry bit 3 reports none at all.
+// The test CGItem::GetDurability (FUN_00584ac0) makes, on the descriptor alone. Current durability, except that an item whose flags carry bit 3 reports none at all.
 static int32_t ItemDurability(const CGItemData* data) {
     if (data->flags & 0x8) {
         return 0;

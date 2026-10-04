@@ -2190,10 +2190,10 @@ void CMovementShared::TransformState(const C44Matrix& matrix, float facing, cons
 }
 
 // ref: FUN_0098b9a0
-// PHASE4(Vehicle_C): a unit transport's seat lets the passenger go (FUN_0074b670 -> FUN_00757ef0).
 float CMovementShared::LeaveTransportState(const C44Matrix& matrix, float facing, const C3Vector& position) {
     this->TransformState(matrix, facing, position);
     this->m_transportLink.Unlink();
+    MovementVehicleRecountSeats(this->m_transportGUID);
     this->m_moveFlags &= ~0x8000000u;
 
     return facing;

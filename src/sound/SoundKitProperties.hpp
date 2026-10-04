@@ -47,7 +47,10 @@ class SoundKitProperties {
         float float54;              // +0x54
         uint32_t uint58;            // +0x58
         int32_t m_streaming;        // +0x5c
-        uint32_t uint60;            // +0x60
+        uint32_t uint60;            // +0x60, 1 when m_voiceName picks the voice
+        // +0x64: the voice a Death Knight's sounds use ("Death Knight Human Male", FUN_004cda20).
+        // PlaySoundKit does not read it yet.
+        char m_voiceName[0x80] = {};
         uint32_t uinte4;            // +0xe4, and PlaySoundKit gates a whole block on it
 
         // Member functions

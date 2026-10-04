@@ -1,4 +1,5 @@
 #include "object/client/CGObject_C.hpp"
+#include "object/client/ObjectEffect.hpp"
 #include "component/CCharacterComponent.hpp"
 #include "console/CVar.hpp"
 #include "db/Db.hpp"
@@ -67,8 +68,6 @@ QuestMarker s_questMarkers[12] = {
 // Which marker each quest-giver status shows (0x00a34f5c).
 const int32_t s_questStatusMarker[11] = { 0, 6, 1, 2, 3, 5, 10, 11, 4, 9, 9 };
 
-// The marker the frame shows quest markers with (0x00ac80a8).
-int32_t s_showQuestMarkers = 1;
 
 // The selection circle (0x00ca12c4) and its CVar (0x00ca12c8).
 HTEXTURE s_selectionTexture;
@@ -106,6 +105,10 @@ int32_t ScaleEaseFinished(WOWGUID guid, void* param) {
 
 } // namespace
 
+// Whether the world's floating markers show (0x00ac80a8): the quest markers and the raid target
+// icons, both hidden while the UI is.
+int32_t s_showQuestMarkers = 1;
+
 // ------------------------------------------------------------------------------------------------
 // Construction
 // ------------------------------------------------------------------------------------------------
@@ -140,8 +143,10 @@ CGObject_C::~CGObject_C() {
         this->m_questMarker = nullptr;
     }
 
-    // PHASE4(ObjectEffect): the ObjectEffect manager at +0xcc is deleted here (FUN_006f7370);
-    // nothing creates one until ObjectEffect.cpp is ported.
+    if (this->m_objectEffects) {
+        delete this->m_objectEffects;
+        this->m_objectEffects = nullptr;
+    }
     this->m_objectEffects = nullptr;
 }
 
@@ -1625,9 +1630,24 @@ void ObjectsUpdateWorldObjects() {
     ClntObjMgrEnumVisibleObjects(&UpdateVisibleWorldObject, nullptr);
 }
 
+namespace {
+
+// ref: FUN_00744100
+int32_t UpdateVisibleObjectEffects(WOWGUID guid, void* param) {
+    auto object = ClntObjMgrObjectPtr(guid, TYPE_OBJECT, ".\\Object_C.cpp", 0x44f);
+
+    if (object && object->m_objectEffects) {
+        object->m_objectEffects->Update();
+    }
+
+    return 1;
+}
+
+} // namespace
+
 // ref: FUN_00744140
-// PHASE4(ObjectEffect): each object's manager updates through FUN_006f39b0; none exist yet.
 void ObjectsUpdateObjectEffects() {
+    ClntObjMgrEnumVisibleObjects(&UpdateVisibleObjectEffects, nullptr);
 }
 
 // ref: FUN_007450b0

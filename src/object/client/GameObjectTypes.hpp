@@ -52,6 +52,7 @@ class CGGameObjectType {
         virtual int32_t NoHighlight() { return 0; }                                     // 0x10
         virtual int32_t GetCursor();                                                    // 0x14
         virtual bool CanUse();                                                          // 0x18
+        bool IsCreatorOnly() const;
         virtual bool CanUseNow(int32_t* error, float* range, const char** spellName);   // 0x1c
         virtual bool IsInUseRange();                                                    // 0x20
         virtual int32_t Use();                                                          // 0x24
@@ -117,7 +118,7 @@ class CGGameObjectType {
 // What a type the client does not know gets (0x00a33618).
 class CGGameObjectTypeUnknown : public CGGameObjectType {
     public:
-        CGGameObjectTypeUnknown(CGGameObject_C* owner) : CGGameObjectType(owner, 5.0f) {}
+        CGGameObjectTypeUnknown(CGGameObject_C* owner);
 
         bool CanUse() override { return false; }                                        // 0x18
         // ref: FUN_0070c340
@@ -414,6 +415,7 @@ class CGGameObjectTransport : public CGGameObjectTransportBase {
 // stopping sequences as it goes. +0x38 holds the sequence playing (-1 before the first step).
 class CGGameObjectMOTransport : public CGGameObjectTransportBase {
     public:
+        void SetSequenceEffects(uint32_t sequence);
         // ref: FUN_007141d0
         CGGameObjectMOTransport(CGGameObject_C* owner) : CGGameObjectTransportBase(owner) {}
 
@@ -460,6 +462,9 @@ class CGGameObjectDungeonDifficulty : public CGGameObjectType {
         float GetFadeInAlpha() override;                                                 // 0x3c
         void OnAnimEvent(uint32_t eventId, uint32_t data, const C3Vector* position, uint32_t a6) override; // 0x40
         void UpdateFrame(uint32_t time) override;                                        // 0x90
+
+        int32_t GetMapID() const;
+        int32_t GetDifficulty() const;
 
         SOUNDKITOBJECT* m_sound = nullptr;  // +0x10
 };

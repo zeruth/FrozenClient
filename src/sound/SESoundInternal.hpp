@@ -37,6 +37,10 @@ class SESoundInternal : public TSLinkedNode<SESoundInternal> {
         float m_fadeVolume = 0.0f;
         float m_fadeInTime = 0.0f;
         float m_fadeOutTime = 0.0f;
+        // +0x70: the channel's frequency when it started, taken on the first change; +0x74 the
+        // scale on it (SetFrequencyScale).
+        float m_baseFrequency = 0.0f;
+        float m_frequencyScale = 1.0f;
         uint8_t m_fadeIn = 0;
         uint8_t m_fadeOut = 0;
         // TODO

@@ -14,6 +14,7 @@
 
 class CGBag_C;
 class CEffect;
+struct PLAYERNAMEDESC;
 class CGWorldFrame;
 class CM2Model;
 class CPassenger;
@@ -51,6 +52,7 @@ struct SPELLVISUALKITPARAMS {
 //
 // Slots whose purpose is not established yet are named for their offset rather than guessed at;
 // their bodies are the reference base's own, which for most of them is a constant.
+class CObjectEffect;
 class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID> {
     public:
         // Public static variables
@@ -78,7 +80,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         // +0xac: the object's height in model units, which the name and marker sit above.
         float m_height = 0.0f;
         // +0xb0: the object's name plate, owned by PlayerName.cpp.
-        void* m_nameDesc = nullptr;
+        PLAYERNAMEDESC* m_nameDesc = nullptr;
         // +0xb4
         CM2Model* m_model = nullptr;
         // +0xb8
@@ -105,7 +107,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         uint8_t m_alphaTo = 0;
         uint8_t m_alphaScale = 0xFF;
         // +0xcc: the object's ObjectEffect manager (ObjectEffect.cpp), when it has one.
-        void* m_objectEffects = nullptr;
+        CObjectEffect* m_objectEffects = nullptr;
 
         // Virtual public member functions, in the reference's slot order.
         virtual ~CGObject_C();                                                  // 0x000

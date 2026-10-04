@@ -11,6 +11,8 @@
 
 class SkillLineAbilityRec;
 #include <storm/Array.hpp>
+#include <storm/Hash.hpp>
+#include "util/guid/CHashKeyGUID.hpp"
 #include <tempest/Box.hpp>
 
 class CCharacterComponent;
@@ -35,6 +37,7 @@ class FactionTemplateRec;
 class CGGameObject_C;
 class CVehicle_C;
 class CVehiclePassenger_C;
+class CVehicleCamera_C;
 class VehicleRec;
 class VehicleSeatRec;
 struct M2BoneSequenceState;
@@ -75,6 +78,45 @@ struct CAuraSlotState {
     uint32_t m_extra = 0;
 };
 
+// One unit on a creature's threat table (Unit_C.cpp; FUN_0072cd90 allocates it, FUN_0073f200
+// links it). The reference keeps the key's guid at +0x20; frozen's CHashKeyGUID hides it, so the
+// entry carries its own copy.
+class CThreatEntry : public TSHashObject<CThreatEntry, CHashKeyGUID> {
+    public:
+        WOWGUID m_guid = 0;         // +0x20
+        // +0x28: 1 not tanking and below the tank, 2 not tanking and above it, 3 tanking but
+        // another is above, 4 tanking securely -- UnitThreatSituation's answer plus one.
+        uint8_t m_status = 1;
+        // +0x29: the threat as a percentage of the tank's, capped at 250 (0xff until computed).
+        uint8_t m_percent = 0xff;
+        int32_t m_threat = 0;       // +0x2c
+};
+
+// A melee hit as SMSG_ATTACKER_STATE_UPDATE reports it (UnitCombat_C.cpp, 0xa0 bytes), which the
+// attacker keeps until its swing lands it.
+struct CombatInfo {
+    WOWGUID attacker = 0;               // +0x00
+    WOWGUID target = 0;                 // +0x08
+    uint32_t hitInfo = 0;               // +0x10
+    int32_t damage = 0;                 // +0x14
+    int32_t overkill = 0;               // +0x18
+    uint32_t schoolMask[6] = {};        // +0x1c (two read; the last four take the 0x1 block)
+    float floatDamage[2] = {};          // +0x34
+    int32_t intDamage[2] = {};          // +0x3c
+    int32_t absorb[2] = {};             // +0x44
+    int32_t resist[2] = {};             // +0x4c
+    // +0x54: 0 unaffected, 1 wounded, 2 dodged, 3 parried, 4 interrupted, 5 blocked, 6 evaded,
+    // 7 immune, 8 deflected.
+    int32_t victimState = 0;
+    int32_t unk58 = 0;                  // +0x58
+    int32_t spellID = 0;                // +0x5c
+    int32_t blocked = 0;                // +0x60
+    int32_t rage = 0;                   // +0x64
+    uint32_t unk68[9] = {};             // +0x68
+    uint32_t unk8c = 0;                 // +0x8c
+    uint32_t pad90[4] = {};
+};
+
 class CGUnit_C : public CGObject_C, public CGUnit {
     // Vehicle_C.cpp reads the owner unit's animation state inline (m_animFlags and the pending flag
     // at +0xfa4), so CVehicle_C reaches them directly here rather than through accessors the
@@ -112,12 +154,14 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // How this unit's faction template regards another.
         int32_t GetReaction(const CGUnit_C* other) const;
-
-        // How this unit regards another, duels, groups and free-for-all PvP included.
-        int32_t GetUnitReaction(CGUnit_C* other);
-
-        // Whether this unit and another (or their controlling players) are dueling each other.
-        bool IsInDuelWith(CGUnit_C* other);
+        bool IsDuelingWith(const CGUnit_C* other) const;
+        int32_t UnitReaction(const CGUnit_C* other) const;
+        bool CanAttack(const CGUnit_C* other) const;
+        bool IsFriendlyTo(const CGUnit_C* other) const;
+        bool CanAssist(const CGUnit_C* other, bool ignorePvP) const;
+        bool CanCooperate(const CGUnit_C* other) const;
+        void RebuildNamePlate();
+        const char* GetNameWithTitle(char* buffer, uint32_t size, bool withTitle, int32_t* lines);
 
         // The price cut this unit's faction gives `other` for its standing: 5% at friendly up to 20%
         // at exalted, none for a faction without a reputation.
@@ -125,26 +169,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // ref: FUN_00514080
         // This unit is hostile to `other`: its reaction to it is hostile or worse.
-        bool IsHostileTo(CGUnit_C* other);
-
-        // ref: FUN_00514050
-        // This unit is friendly to `other`, or its creature type flag 26 says to treat it so.
-        bool IsFriendlyTo(CGUnit_C* other);
-
-        // ref: FUN_007293d0
-        // Whether this unit may help `other` -- heal it, buff it, raise it. `ignoreFlags` skips the
-        // test of the two units' "immune to players" and "immune to creatures" flags.
-        bool CanAssist(CGUnit_C* other, bool ignoreFlags);
-
-        // ref: FUN_00729740
-        // Whether this unit may attack `other`.
-        bool CanAttack(CGUnit_C* other);
-
-        // ref: FUN_0074c650
-        // Walks up the vehicles this unit rides and returns `other` when it is one of them, or the
-        // unit at the top of the chain; a vehicle that rides nothing answers itself. Null when the
-        // walk leaves the objects the client has.
-        CGUnit_C* GetVehicleRoot(CGUnit_C* other);
+        bool IsHostileTo(const CGUnit_C* other) const;
 
         // ref: FUN_00715d70
         // The creature template's boss flag (type flag 0x4): the level shows as "??" and the
@@ -160,13 +185,6 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // A racial leader the player may fight: flagged for PvP and marked a leader in its template.
         bool IsRacialLeader() const;
 
-        // ref: FUN_0072a290
-        // The player's name as its title writes it ("Grand Marshal %s"), followed on a second line
-        // by the PvP rank when it has one. Writes into `buffer` and returns it; `lines`, when
-        // given, is set to the number of lines written. A unit that is not a player, or one asked
-        // for without its title, gets its plain name.
-        char* GetPVPName(char* buffer, uint32_t size, bool withTitle, int32_t* lines);
-
         // ref: FUN_0072aa70
         // The race name for a unit or, with no unit, a name cache entry. A creature answers with
         // its own name, as the reference does; null when there is neither.
@@ -178,6 +196,8 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // Virtual public member functions
         virtual ~CGUnit_C();
+        virtual void Disable();
+        virtual void Reenable();
         // TODO
         virtual C3Vector GetPosition() const;
         // TODO
@@ -209,6 +229,9 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_00715b50
         // The display's opacity (CreatureDisplayInfo column 5) over 255, or fully opaque.
         virtual float GetFadeInAlpha();
+        int32_t Virtual078(int32_t* out) override;                              // 0x078
+        int32_t GetNameText(int32_t flags, char* buffer, uint32_t size) override; // 0x0cc
+        int32_t Virtual0D0(uint32_t mask) override;                             // 0x0d0
 
         // The unit's own slots, past the base's, in the reference's order (0x00a34d90).
         virtual void Virtual108() {}                                                    // 0x108
@@ -252,6 +275,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         virtual int32_t GetSpellCastTime(const SpellRec* spell);                        // 0x148
         // ref: FUN_006e6fc0
         virtual float GetMovementPitch() const;                                         // 0x14c
+        int32_t Virtual0F4(CPassenger* passenger, int32_t mode) override;              // 0x0f4
         // ref: FUN_0071c0e0
         // The display's scale times the object's, and the mount's while the unit rides.
         virtual float GetScale() const;
@@ -477,6 +501,27 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_00716f10
         // Ask the server for a mirror image's appearance (CMSG_GET_MIRRORIMAGE_DATA).
         void RequestMirrorImageData();
+        void ReceiveMirrorImageData(CDataStore* msg);
+
+        // The threat table (Unit_C.cpp).
+        CThreatEntry* AddThreatEntry(const WOWGUID& guid);
+        bool UpdateThreatPercent(CThreatEntry* entry, int32_t topThreat, bool notify);
+        void UpdateThreatTargetStatus();
+        void ReceiveThreatUpdate(CDataStore* msg, bool highest);
+        void RemoveThreatEntry(const WOWGUID& guid);
+        void ClearThreatList();
+        int32_t GetThreatSituation(const WOWGUID& guid, uint8_t* status, uint8_t* percent, float* rawPercent,
+                                   int32_t* threat);
+        void ShowThreatWorldText(int32_t oldStatus, int32_t newStatus);
+
+        // Control (Unit_C.cpp).
+        void SetHasControl(bool hasControl);
+        void OnControlUpdate(WOWGUID guid, bool hasControl);
+        static void ChangeActiveMover(WOWGUID guid);
+        static void StorePendingControl(WOWGUID guid, bool hasControl);
+
+        // The pet's voice (UnitSound_C.cpp).
+        void PlayPetSound(int32_t type);
 
         // ref: FUN_00715670 / FUN_00715690
         // The mount transition the unit is playing, and the effect that plays it.
@@ -555,6 +600,7 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_0071e5b0
         // The unit's ObjectEffect package follows the three sequences it is playing.
         void UpdateObjectEffects();
+        void UpdateObjectEffectPackage();
 
         // The aura layer.
 
@@ -1195,6 +1241,14 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         int32_t m_intFA4 = -1;
         // +0xac0: when the unit's death animation first finished (the world clock), 0 before.
         uint32_t m_deathTime = 0;
+        // The locked target's attack blink (DAT_00adaa98, DAT_00ca12bc, DAT_00ca12c0): the name
+        // colour, which way its green is swinging, and when it last turned.
+        static CImVector s_attackBlinkColor;
+        static int32_t s_attackBlinkOn;
+        static uint32_t s_attackBlinkTime;
+        // +0xc38: the unit's nameplate frame (CGNamePlateFrame, FUN_007254e0). TODO(NamePlate): the
+        // nameplate frames are not ported, so no unit has one.
+        void* m_namePlate = nullptr;
         // +0xc40 / +0xc48: the unit's master looter and the looter whose turn it is (SMSG_LOOT_LIST).
         WOWGUID m_masterLooter = 0;
         WOWGUID m_roundRobinLooter = 0;
@@ -1212,6 +1266,30 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // The unit's ride, while it is aboard a vehicle (reference +0xf60). Null means not riding,
         // which is always, until something creates one.
         CVehiclePassenger_C* m_vehiclePassenger = nullptr;
+        // +0xf64: the camera point the unit's seat gives, while it rides.
+        CVehicleCamera_C* m_vehicleCamera = nullptr;
+        // +0xfd8: the unit the threat table holds highest (SMSG_HIGHEST_THREAT_UPDATE), 0 for none.
+        WOWGUID m_threatTarget = 0;
+        // +0xfe0: everyone the unit holds threat against.
+        TSHashTable<CThreatEntry, CHashKeyGUID> m_threatList;
+        // +0x908: the pet's voice, +0x91c a spoken line, both owned by the unit (by pointer, as
+        // m_mountSound is, to keep the sound engine out of this header); +0x930 the kind of pet
+        // sound last played, which a lower kind does not interrupt.
+        // +0x958: the ObjectEffect state each of the three bone sequences put the unit in.
+        int32_t m_objectEffectAnimStates[3] = {};
+        // +0xb98: the hit the unit's swing is about to land.
+        CombatInfo m_combatInfo;
+        // +0xa28: cleared whenever the unit swings or starts or stops attacking; +0xa2c set when
+        // the player has asked to stop attacking (CMSG_ATTACKSTOP).
+        int32_t m_combatIdle = 0;
+        int32_t m_attackStopSent = 0;
+        // +0xab8: the facing a stopped attack left the unit at, toward its victim.
+        float m_attackFacing = 0.0f;
+        // +0x934: the unit's voice (UnitPlayVoiceSound).
+        SOUNDKITOBJECT* m_voiceSound = nullptr;
+        SOUNDKITOBJECT* m_petSound = nullptr;
+        SOUNDKITOBJECT* m_speechSound = nullptr;
+        int32_t m_petSoundType = 0;
         // TODO
         float m_smoothFacing;
         // +0xaa4: the smoothing step the turn is taking (0 when it is not smoothing).
@@ -1401,6 +1479,8 @@ const char* GetGUIDName(const WOWGUID& guid);
 // ref: FUN_0074d120
 // A guid written as up to sixteen hex digits, with or without "0x" in front.
 WOWGUID StringToGUID(const char* string);
+// ref: FUN_004f5130 -- see the definition in CGUnit_C.cpp.
+float FacingBetween(const C3Vector& from, const C3Vector& to);
 
 #endif
 

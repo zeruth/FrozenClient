@@ -2,8 +2,13 @@
 #include "model/CM2Model.hpp"
 #include "object/client/CClientMoveUpdate.hpp"
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/CGGameObject_C.hpp"
+#include "object/client/GameObjectTypes.hpp"
+#include "object/client/CVehicle_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "object/client/CMovement_C.hpp"
+#include "object/client/CVehiclePassenger_C.hpp"
+#include "object/client/UnitVehicle_C.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/movement/CMovementStatus.hpp"
 #include "object/movement/CMoveSpline.hpp"
@@ -1302,6 +1307,11 @@ int32_t CMovementData_C::ProcessEvents(int32_t time) {
                 break;
             }
 
+            case 0x37:
+                this->StopAllForTeleport();
+                sent = unit->SendMovement(time, 0x49b, send, 0, 0, event->transport, event->seat);
+                break;
+
             case 0x36: {
                 int32_t up = this->QueuePitchStop(time, event->pitch);
                 this->SetPitch(up);
@@ -1632,12 +1642,27 @@ void CMovementData_C::Knockback(const C2Vector& direction, float horizontalSpeed
 
 // ---- transports and the server's view -------------------------------------------------------
 
+// A unit's guid as a transport: a vehicle's (high 0xf05.) or a player's, whose seats the vehicle
+// code keeps rather than the transport's own space.
+static bool GuidIsUnitTransport(WOWGUID guid) {
+    uint32_t low = static_cast<uint32_t>(guid);
+    uint32_t high = static_cast<uint32_t>(guid >> 32);
+
+    if ((high & 0xf0f00000) == 0xf0500000) {
+        return true;
+    }
+
+    return (high & 0xf0000000) == 0 && !(low == 0 && (high & 0xf07fffff) == 0);
+}
+
 // ref: FUN_006ea1d0
-// PARTIAL: the vehicle passenger bookkeeping on either side of the change (FUN_0074cf30,
-// FUN_00757ef0) is the vehicle port's.
 int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
     if (this->m_transportGUID == transport && this->m_transportSeat == seat) {
         return 1;
+    }
+
+    if (GuidIsUnitTransport(this->m_transportGUID) || GuidIsUnitTransport(transport)) {
+        VehicleOnTransportChanged(this->m_owner, transport, seat, 0);
     }
 
     this->m_transportSeat = seat;
@@ -1662,6 +1687,14 @@ int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
         float oldFacing = MovementGetTransportFacing(this->m_transportGUID);
         // FUN_0079f820
         this->m_transportLink.Unlink();
+
+        if (GuidIsUnitTransport(this->m_transportGUID)) {
+            auto vehicle = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(this->m_transportGUID, TYPE_UNIT, ".\\Movement.cpp", 0x9c3));
+
+            if (vehicle && vehicle->m_vehicle) {
+                vehicle->m_vehicle->UpdateFreeSeats();
+            }
+        }
         this->m_transportGUID = 0;
         this->ClearSplineEnabled();
 
@@ -1724,19 +1757,6 @@ int32_t CMovementData_C::SetTransport(WOWGUID transport, uint8_t seat) {
     return 1;
 }
 
-// A unit's guid as a transport: a vehicle's (high 0xf05.) or a player's, whose seats the vehicle
-// code keeps rather than the transport's own space.
-static bool GuidIsUnitTransport(WOWGUID guid) {
-    uint32_t low = static_cast<uint32_t>(guid);
-    uint32_t high = static_cast<uint32_t>(guid >> 32);
-
-    if ((high & 0xf0f00000) == 0xf0500000) {
-        return true;
-    }
-
-    return (high & 0xf0000000) == 0 && !(low == 0 && (high & 0xf07fffff) == 0);
-}
-
 // ref: FUN_006ec3b0
 void CMovementData_C::RotateQueuedEvents(float facing) {
     for (auto event = this->m_events.Head(); event; event = this->m_events.Next(event)) {
@@ -1747,8 +1767,6 @@ void CMovementData_C::RotateQueuedEvents(float facing) {
 }
 
 // ref: FUN_006ec400
-// PHASE4(Vehicle_C): the seat bookkeeping when either guid is a unit's (FUN_0074cf30) and a
-// vehicle letting the passenger go (FUN_00757ef0).
 int32_t CMovementData_C::ForceSetTransport(WOWGUID transport, uint8_t seat, int32_t force) {
     if (transport == this->m_transportGUID && seat == this->m_transportSeat) {
         return 0;
@@ -1768,6 +1786,10 @@ int32_t CMovementData_C::ForceSetTransport(WOWGUID transport, uint8_t seat, int3
         this->m_transportGUID = 0;
 
         return 0;
+    }
+
+    if (GuidIsUnitTransport(this->m_transportGUID) || GuidIsUnitTransport(transport)) {
+        VehicleOnTransportChanged(this->m_owner, transport, seat, 0);
     }
 
     this->m_transportSeat = seat;
@@ -1790,7 +1812,13 @@ int32_t CMovementData_C::ForceSetTransport(WOWGUID transport, uint8_t seat, int3
         owner->AddFacingOffset(facing);
         owner->CarryClickToMove(matrix, facing);
 
-        if (!GuidIsUnitTransport(this->m_transportGUID)) {
+        if (GuidIsUnitTransport(this->m_transportGUID)) {
+            auto vehicle = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(this->m_transportGUID, TYPE_UNIT, ".\\Movement.cpp", 0x5af));
+
+            if (vehicle && vehicle->m_vehicle) {
+                vehicle->m_vehicle->UpdateFreeSeats();
+            }
+        } else {
             this->RotateQueuedEvents(facing);
         }
     }
@@ -2767,6 +2795,27 @@ void CMovementData_C::QueueForcedKnockback(int32_t time, uint32_t counter, const
     LinkIfIdle(this);
 }
 
+// ref: FUN_006ef5a0
+// ref: FUN_006ecae0
+void CMovementData_C::QueueSeatChange(int32_t time, WOWGUID vehicle, uint8_t seat) {
+    auto event = MoveEventAllocate(time, 0x37);
+
+    if (!event) {
+        return;
+    }
+
+    event->facing = 0.0f;
+    event->pitch = 0.0f;
+    event->transport = vehicle;
+    event->send = 1;
+    event->seat = seat;
+    event->counter = 0;
+    event->moveFlags2 = 0;
+
+    MoveEventQueueInsert(&this->m_events, event);
+    LinkIfIdle(this);
+}
+
 // ref: FUN_006eca00
 // The server teleports the local player (event 0x2c with the destination status). PARTIAL: a
 // destination seat (move-flags-2 0x2000) boards it through FUN_0074be10, the vehicle port's.
@@ -2991,11 +3040,15 @@ void CMovementData_C::RunServerEvent(CPlayerMoveEvent* event, int32_t clearSplin
 
 // ref: FUN_006ed7e0
 // Before a spline takes the unit over: every queued event now, then everything the unit was doing
-// stops. PARTIAL: a passenger's seat is told first (FUN_00747910 / FUN_00748230), the vehicle
-// port's.
+// stops; a riding unit's queued move and pending seat change go first.
 void CMovementData_C::FlushEvents(int32_t clearSpline, int32_t stopAll) {
     if (s_flushingEvents) {
         return;
+    }
+
+    if (auto ride = this->m_owner->m_vehiclePassenger) {
+        ride->FreeQueuedMove();
+        ride->ReleaseSlot();
     }
 
     this->m_moveFlags2 &= 0xe3ff;
@@ -3238,4 +3291,39 @@ void CMovementData_C::SetSplineTransport(WOWGUID transport, uint8_t seat, int32_
         auto globals = MovementGetGlobals();
         this->m_owner->SendMovementStatus(globals->m_lastTime, 0x38d, 0.0f, 0, 0, 0xff);
     }
+}
+
+// ref: FUN_006ee870
+// The unit becomes the active mover: its queued events run now, a passenger takes its transport's
+// clock, a spline that hands control back (0x400) ends, and an unsupported unit starts to fall.
+void CMovementData_C::OnBecameActiveMover() {
+    this->FlushEvents(0, 0);
+
+    auto globals = MovementGetGlobals();
+    WOWGUID transport = this->GetTransportGUID();
+
+    if (transport) {
+        auto object = static_cast<CGGameObject_C*>(ClntObjMgrObjectPtr(transport, TYPE_GAMEOBJECT, ".\\Movement.cpp", 0xd66));
+
+        if (object && object->m_type) {
+            MovementSetTransportTime(static_cast<uint32_t>(object->m_type->Virtual0A8()));
+        }
+    }
+
+    if (this->m_spline && (this->m_spline->flags & 0x400)) {
+        this->EndSpline(static_cast<int32_t>(globals->m_lastTime));
+    }
+
+    this->m_moveFlags &= 0x7fffffff;
+
+    if (!this->m_spline || (this->m_spline->flags & 0x400)) {
+        this->QueueFallIfUnsupported(static_cast<int32_t>(globals->m_lastTime));
+    }
+}
+
+// ref: FUN_006ee920
+// The unit stops being the active mover: everything it was doing stops.
+void CMovementData_C::OnLostActiveMover() {
+    this->FlushEvents(1, 1);
+    this->m_moveFlags &= 0x7fffffff;
 }

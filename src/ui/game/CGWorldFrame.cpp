@@ -1,3 +1,5 @@
+#include "world/map/MapFootprints.hpp"
+#include "object/client/CGDynamicObject_C.hpp"
 #include "model/CM2Model.hpp"
 #include <vector>
 #include "model/CM2Shared.hpp"
@@ -34,6 +36,8 @@
 #include "gx/RenderState.hpp"
 #include "ui/game/CGWorldFrame.hpp"
 #include "object/client/Spell_C.hpp"
+#include "object/client/UnitVehicle_C.hpp"
+#include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/GameObjectTypes.hpp"
 #include "ui/simple/CSimpleTop.hpp"
 #include "object/client/CGCorpse_C.hpp"
@@ -52,6 +56,7 @@
 #include "object/Client.hpp"
 #include "ui/game/CGCamera.hpp"
 #include "event/CEvent.hpp"
+#include "ui/game/ScreenLayout.hpp"
 #include "ui/game/PlayerName.hpp"
 #include "world/World.hpp"
 #include "db/Db.hpp"
@@ -785,8 +790,11 @@ void CGWorldFrame::OnWorldRender() {
         0.94f
     );
 
-    // TODO FUN_004f2db0 (clears a character-component counter, DAT_00b6ba50), FUN_007e5120 (the
-    // projected-texture frame stamp), and FUN_00715380(1) when the frame's +0xb10 bit 2 is set.
+    // TODO FUN_004f2db0 (clears a character-component counter, DAT_00b6ba50) and FUN_00715380(1)
+    // when the frame's +0xb10 bit 2 is set.
+
+    // The name plates' frame stamp (FUN_007e5120, 0x004f9067).
+    PlayerNameNewFrame();
 
     CShaderEffect::UpdateProjMatrix();
 
@@ -801,8 +809,10 @@ void CGWorldFrame::OnWorldRender() {
 
     CWorldScene::s_viewUpdated = false;
 
-    // TODO FUN_0079fcc0 (a map pass with no other caller), then the per-unit visitor
-    // ClntObjMgrEnumVisibleObjects(FUN_004f6a40) and the unit flag resets FUN_00715380 /
+    // The footprints (FUN_0077f070 -> FUN_0079fcc0).
+    FootprintsRender();
+
+    // TODO the per-unit visitor ClntObjMgrEnumVisibleObjects(FUN_004f6a40) and the unit flag resets FUN_00715380 /
     // FUN_007153a0 / FUN_007153c0(0), and when the frame's +0xb10 bit 1 is set FUN_00615890(0)
     // and FUN_00725890 -- phase 4.
 
@@ -888,7 +898,8 @@ void CGWorldFrame::OnWorldRender() {
     // The sun's and the moon's glare over everything (FUN_007f0870, 0x004f9213), inside the push.
     DayNightGlareRender();
 
-    // TODO FUN_007e5580: release the projected textures nothing used this frame.
+    // The texts of objects nothing updated this frame go (FUN_007e5580, 0x004f9218).
+    PlayerNameExpireWorldText();
 
     if (CWorld::s_enables & CWorld::Enable_20000000) {
         g_theGxDevicePtr->DeviceOverride(8, 1);
@@ -896,7 +907,10 @@ void CGWorldFrame::OnWorldRender() {
 
     GxRsPop();
 
-    // TODO FUN_00615890(1) (empty deferred list 1) and FUN_0056c7a0 (the UI's pending layout).
+    // This frame's world text places are let go (FUN_00615890(1), 0x004f9242).
+    ScreenLayoutClear(1);
+
+    // TODO FUN_0056c7a0 (the UI's pending layout).
 
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 
@@ -929,8 +943,7 @@ static int32_t UpdateVisibleObject(WOWGUID guid, void* param) {
     }
 
     if (object->IsA(TYPE_DYNAMICOBJECT)) {
-        // TODO(DynamicObject_C): FUN_007051b0, the spell's effect model starting once its spell
-        // has gone (FUN_00804cc0, FUN_00704f60).
+        static_cast<CGDynamicObject_C*>(object)->UpdateForFrame(CWorld::GetCurTimeMs());
     }
 
     return 1;
@@ -962,10 +975,15 @@ void CGWorldFrame::OnWorldUpdate() {
     // commentator mode first (FUN_006de980: descriptor flags 0x80000 with 0x400000 or a PvP state
     // of 4) and hands the camera to the commentator view (FUN_005689a0) instead; it also checks a
     // second camera target (+0x90) and, when the player is in a vehicle, re-seats the camera
-    // (FUN_006e2880, FUN_0074ce40).
+    // (FUN_006e2880).
     if (!target && player) {
         this->m_camera->SetTarget(ClntObjMgrGetActivePlayer());
         target = player;
+    }
+
+    // FUN_0074ce40: a riding player the camera follows gets its seat's camera.
+    if (target && target->IsA(TYPE_PLAYER)) {
+        UnitUpdateVehicleCamera(static_cast<CGUnit_C*>(target));
     }
 
     // What the camera follows, as the world knows it (FUN_00780500 at 0x004fa7a0).
@@ -973,7 +991,7 @@ void CGWorldFrame::OnWorldUpdate() {
         ? reinterpret_cast<CMapStaticEntity*>(target->m_worldObject)
         : nullptr;
 
-    // TODO FUN_0074b130(time): the vehicle passenger update.
+    CVehiclePassenger_C::UpdateAll(CWorld::GetCurTimeMs());
 
     CGCamera::UpdateCallback(nullptr, this->m_camera);
 
@@ -1013,8 +1031,17 @@ void CGWorldFrame::OnWorldUpdate() {
 
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
-    // TODO the view-projection change test (FUN_004c1830 against +0x340) that marks the frame
-    // (+0xb10 bit 2) for OnWorldRender's FUN_00715380, then FUN_00405130, the sound updates
+    // The view-projection kept for the screen projection, and the frame marked when it changed
+    // (0x004fab37).
+    C44Matrix viewProjection;
+    GxXformViewProj(viewProjection);
+
+    if (!(viewProjection == this->m_viewProjection)) {
+        this->m_renderFlags |= 0x2;
+        this->m_viewProjection = viewProjection;
+    }
+
+    // TODO FUN_00405130, the sound updates
     // (FUN_004d0110, FUN_004cdc80), the active mover's FUN_006fe7e0, FUN_00739630 and the world
     // map's FUN_005488f0.
 
@@ -1312,6 +1339,56 @@ bool FrustumRay(float u, float v, C3Vector* start, C3Vector* end) {
 }
 
 } // namespace
+
+// ref: FUN_004f6d20
+// Where a point of the world lands on the screen, in DDC across the frame, its depth in z. `flags`
+// gets which of the frame's edges it is inside: 1 left, 2 bottom, 4 right, 8 top. Nonzero when it is
+// inside all four, and 0 for a point behind the near plane.
+int32_t CGWorldFrame::GetScreenCoordinates(const C3Vector& world, C3Vector* screen, uint32_t* flags) {
+    const C3Vector& camera = this->m_camera->Position();
+
+    // The view carries no translation, so the point is taken relative to the camera with w 0.
+    C4Vector relative = { world.x - camera.x, world.y - camera.y, world.z - camera.z, 0.0f };
+    C4Vector clip;
+    TransformVector4(&clip, relative, this->m_viewProjection);
+
+    if (clip.z < this->m_camera->NearZ()) {
+        return 0;
+    }
+
+    screen->z = clip.z;
+
+    float inv = 1.0f / clip.w;
+    float u = (clip.x * inv + 1.0f) * 0.5f;
+    float v = (clip.y * inv + 1.0f) * 0.5f;
+
+    float x;
+    float y;
+    NDCToDDC((this->m_viewport.maxX - this->m_viewport.minX) * u, (this->m_viewport.maxY - this->m_viewport.minY) * v, &x, &y);
+
+    if (this->m_rect.minX < 0.0f) {
+        x -= this->m_rect.minX;
+    }
+
+    if (this->m_rect.minY < 0.0f) {
+        y -= this->m_rect.minY;
+    }
+
+    screen->x = x;
+    screen->y = y;
+
+    uint32_t inside = (y <= this->m_rect.maxY - this->m_rect.minY ? 0x8 : 0)
+        | (x <= this->m_rect.maxX - this->m_rect.minX ? 0x4 : 0)
+        | (0.0f < y ? 0x2 : 0)
+        | (0.0f <= x ? 0x1 : 0);
+
+    if (flags) {
+        *flags = inside;
+        return inside == 0xf;
+    }
+
+    return inside == 0xf;
+}
 
 // ref: FUN_004f6450
 // The cursor's ray in the world: the point's place across the frame's rect, through the frustum,

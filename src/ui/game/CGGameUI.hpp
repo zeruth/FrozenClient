@@ -57,6 +57,15 @@ class CGGameUI {
         static CVar* s_currencyTokensBackpack2Cvar; // ref: DAT_00bd0a00
         static CVar* s_predictedHealthCvar;         // ref: DAT_00bd0a04
         static CVar* s_predictedPowerCvar;          // ref: DAT_00bd0a08
+        static CVar* s_threatWarningCvar;           // ref: DAT_00bd0a0c
+        static CVar* s_threatWorldTextCvar;         // ref: DAT_00bd0a10
+        static CVar* s_threatShowNumericCvar;       // ref: DAT_00bd0a14
+        static CVar* s_threatPlaySoundsCvar;        // ref: DAT_00bd0a18
+        static CVar* s_combatDamageCvar;            // ref: DAT_00bd0980
+        static CVar* s_combatLogPeriodicSpellsCvar; // ref: DAT_00bd0984
+        static CVar* s_petMeleeDamageCvar;          // ref: DAT_00bd0988
+        static CVar* s_petSpellDamageCvar;          // ref: DAT_00bd098c
+        static CVar* s_combatHealingCvar;           // ref: DAT_00bd0990
         static CScriptObject* s_gameTooltip;
         static CSimpleTop* s_simpleTop;
 
@@ -65,6 +74,7 @@ class CGGameUI {
         static WOWGUID& GetCurrentObjectTrack();
         static uint32_t GetCursorMoney();
         static WOWGUID& GetLockedTarget();
+        static void OnObjectDisabled(WOWGUID guid);
         static WOWGUID GetInteractTarget();
         static uint32_t GetCursorHolding();
         static void SetPreviousTarget(WOWGUID guid);
@@ -133,6 +143,26 @@ struct WORLDCLICK {
 };
 
 void GameUIClearCursor(int32_t restore, int32_t signal);
+
+// Threat (GameUI.cpp).
+void GameUIUpdateThreatWarning(int32_t mode);
+int32_t GameUIThreatWarningActive();
+void GameUIAddThreatUnit(const WOWGUID& unit, const WOWGUID& target);
+void GameUIRemoveThreatUnit(const WOWGUID& unit, const WOWGUID& target);
+uint8_t GameUIGetThreatStatus(const WOWGUID& guid);
+
+// Whether the player controls its character (GameUI.cpp).
+void GameUISetPlayerControl(int32_t hasControl);
+int32_t GameUIPlayerHasControl();
+void GameUIInitPlayerControl(WOWGUID mover);
+
+// The player's own corpse, which the minimap points to (GameUI.cpp).
+void GameUISetCorpseGUID(WOWGUID guid);
+
+// The colour a unit's name (or bar, with `forName` 0) takes (CGUnit_CName.cpp).
+class CImVector;
+void GameUIGetUnitColor(WOWGUID guid, CImVector* out, int32_t forName);
+WOWGUID GameUIGetCorpseGUID();
 int32_t GameUIWorldRightPress(const CMouseEvent& evt);
 int32_t GameUITargetAndInteract(WOWGUID guid);
 int32_t GameUISelectObject(WOWGUID guid);

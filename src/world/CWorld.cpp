@@ -1166,6 +1166,137 @@ int32_t CWorld::GetEntityAreaID(CMapStaticEntity* entity, uint32_t* areaID) {
     return 1;
 }
 
+namespace {
+
+// The building the entity stands in: the first of its placements whose group is indoors (no MOGP
+// flag 0x8), or any group when `anyGroup`, unless the placement passes indoor tests on (def
+// flag 0x400). A chunk link means it is outdoors.
+template <class F>
+int32_t WalkEntityBuildings(CMapStaticEntity* entity, F visit) {
+    for (auto link = entity->m_parentLinkList.Head(); link; link = entity->m_parentLinkList.Next(link)) {
+        auto ref = link->ref;
+
+        if (!ref || (ref->m_type & CMapBaseObj::Type_Chunk)) {
+            return 0;
+        }
+
+        auto defGroup = static_cast<CMapObjDefGroup*>(ref);
+        auto defLink = defGroup->m_parentLinkList.Head();
+        auto def = defLink ? static_cast<CMapObjDef*>(defLink->ref) : nullptr;
+
+        if (!def || !def->m_mapObj) {
+            continue;
+        }
+
+        auto group = def->m_mapObj->GetGroup(defGroup->m_groupIndex, 0);
+
+        if (group) {
+            int32_t result = visit(def, group);
+
+            if (result >= 0) {
+                return result;
+            }
+        }
+    }
+
+    return 0;
+}
+
+} // namespace
+
+// ref: FUN_0077f090 (with FUN_007a1480)
+// Whether the entity is inside a building: in a group not marked outdoors.
+int32_t CWorld::IsEntityIndoors(CMapStaticEntity* entity) {
+    if (!entity) {
+        return 0;
+    }
+
+    return WalkEntityBuildings(entity, [](CMapObjDef* def, CMapObjGroup* group) -> int32_t {
+        if (!(group->m_flags & 0x8)) {
+            return 1;
+        }
+
+        if (!(def->m_flags & 0x400)) {
+            return 0;
+        }
+
+        return -1;
+    });
+}
+
+// ref: FUN_0077f1b0 (with FUN_007a1640)
+// The WMOAreaTable rows of the building the entity is in: its group's and the building's own.
+int32_t CWorld::GetEntityWMOAreas(CMapStaticEntity* entity, const WMOAreaTableRec** groupArea,
+                                  const WMOAreaTableRec** rootArea, uint32_t* groupID) {
+    if (!entity) {
+        return 0;
+    }
+
+    return WalkEntityBuildings(entity, [&](CMapObjDef* def, CMapObjGroup* group) -> int32_t {
+        if ((group->m_flags & 0x8) && (def->m_flags & 0x400)) {
+            return -1;
+        }
+
+        int32_t wmoID = def->m_mapObj->m_mohd ? def->m_mapObj->m_mohd->wmoID : 0;
+
+        *groupID = group->m_groupID;
+        *groupArea = FindWMOArea(wmoID, def->m_nameSet, group->m_groupID);
+        *rootArea = FindWMOArea(wmoID, def->m_nameSet, -1);
+
+        return *groupArea && *rootArea ? 1 : 0;
+    });
+}
+
+// ref: FUN_0078f1f0
+// Whether the entity's area is a snowy one (AreaTable flag 0x1): the building's area indoors,
+// the ground's outdoors; an area without its own flags (0x2 clear) takes its parent's.
+int32_t CWorld::IsEntityInSnow(CMapStaticEntity* entity) {
+    const AreaTableRec* area = nullptr;
+
+    if (!CWorld::IsEntityIndoors(entity)) {
+        uint32_t areaID = 0;
+
+        if (!CWorld::GetEntityAreaID(entity, &areaID)) {
+            return 0;
+        }
+
+        area = g_areaTableDB.GetRecord(static_cast<int32_t>(areaID));
+    } else {
+        const WMOAreaTableRec* groupArea = nullptr;
+        const WMOAreaTableRec* rootArea = nullptr;
+        uint32_t groupID = 0;
+
+        if (!CWorld::GetEntityWMOAreas(entity, &groupArea, &rootArea, &groupID)) {
+            return 0;
+        }
+
+        if (groupArea) {
+            area = g_areaTableDB.GetRecord(groupArea->m_areaTableID);
+        }
+
+        if (!area) {
+            if (!rootArea) {
+                return 0;
+            }
+
+            area = g_areaTableDB.GetRecord(rootArea->m_areaTableID);
+        }
+    }
+
+    if (!area) {
+        return 0;
+    }
+
+    auto parent = g_areaTableDB.GetRecord(area->m_parentAreaID);
+    uint32_t flags = area->m_flags;
+
+    if (!(flags & 0x2) && parent) {
+        flags = parent->m_flags;
+    }
+
+    return flags & 0x1;
+}
+
 // ref: FUN_009905c0
 const LiquidTypeRec* CWorld::GetAreaLiquidType(uint32_t areaID, uint32_t liquidType) {
     if (liquidType == 0) {

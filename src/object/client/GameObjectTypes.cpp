@@ -1,4 +1,6 @@
 #include "object/client/GameObjectTypes.hpp"
+#include "object/client/ObjectEffect.hpp"
+#include "object/client/CVehicle_C.hpp"
 #include <cstring>
 #include <algorithm>
 #include "util/Log.hpp"
@@ -24,6 +26,7 @@
 #include "ui/game/CGRaidInfo.hpp"
 #include "ui/game/Cursor.hpp"
 #include "world/CWorld.hpp"
+#include "ui/game/PlayerName.hpp"
 #include <common/DataStore.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
@@ -568,12 +571,47 @@ uint32_t CGGameObjectTransport::ResetPath(uint32_t time) {
     return 0;
 }
 
+namespace {
+
+// The states a death (0xf) or a feign (0x51) ends, as a unit's (FUN_0071e5b0).
+const uint32_t s_movementEffectStates[] = {
+    0x25, 0x26, 6, 7, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
+    0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42,
+};
+
+// ref: FUN_0070bb10
+// A transport's ObjectEffect state follows the sequence its path key plays (+0x214 holds it).
+void TransportSetSequenceEffects(CGGameObject_C* owner, uint32_t sequence) {
+    auto effects = owner->m_objectEffects;
+
+    if (!effects) {
+        return;
+    }
+
+    int32_t state = ObjectEffectGetAnimState(sequence, 0);
+
+    if (!state || state == owner->m_field214) {
+        return;
+    }
+
+    effects->ClearState(static_cast<uint32_t>(owner->m_field214), 1);
+    effects->SetState(static_cast<uint32_t>(state), 1, 0);
+
+    if (state == 0xf || state == 0x51) {
+        for (auto clear : s_movementEffectStates) {
+            effects->ClearState(clear, 1);
+        }
+    }
+
+    owner->m_field214 = state;
+}
+
+} // namespace
+
 // ref: FUN_0070daa0
 // The offset at a path time: the two keys around it lerped and turned by the object's own
 // rotation. A key's sequence starts on the building as the path reaches it.
 //
-// PARTIAL: the owner's effect kit for the sequence (FUN_0070bb10, through FUN_006f17f0 and the
-// CEffect list) is the ObjectEffect port's.
 C3Vector CGGameObjectTransport::EvaluatePosition(uint32_t time) {
     if (this->m_animCount < 2) {
         return { 0.0f, 0.0f, 0.0f };
@@ -602,6 +640,7 @@ C3Vector CGGameObjectTransport::EvaluatePosition(uint32_t time) {
     if (this->m_mapObject && a->m_sequenceID != this->m_sequence) {
         this->m_sequence = a->m_sequenceID;
         CWorld::SetDynamicObjectSequence(this->m_mapObject, a->m_sequenceID, 0, 0);
+        TransportSetSequenceEffects(this->m_owner, a->m_sequenceID);
     }
 
     auto parent = this->m_owner->GameObject()->parentRotation;
@@ -781,14 +820,20 @@ void CGGameObjectTransport::OnPostReenable() {
 // The step from the transport's place to `to` over `elapsed` ms: its length, its direction, and
 // the speed it implies.
 //
-// PARTIAL: a change of speed tells the owner's effects (FUN_006f3910, the ObjectEffect port's).
+// A change of speed tells the owner's effects that read it (input 1).
 float CGGameObjectTransportBase::StepTo(uint32_t elapsed, const C3Vector& to, C3Vector* direction) {
     float dx = to.x - this->m_position.x;
     float dy = to.y - this->m_position.y;
     float dz = to.z - this->m_position.z;
     float length = std::sqrt(dz * dz + dy * dy + dx * dx);
 
-    this->m_speed = length / (static_cast<float>(elapsed) * 0.001f);
+    float speed = length / (static_cast<float>(elapsed) * 0.001f);
+
+    if (this->m_speed != speed && this->m_owner->m_objectEffects) {
+        this->m_owner->m_objectEffects->ApplyInput(1);
+    }
+
+    this->m_speed = speed;
 
     if (direction && 2.384185791015625e-07f <= std::fabs(length)) {
         float inv = 1.0f / length;
@@ -802,8 +847,6 @@ float CGGameObjectTransportBase::StepTo(uint32_t elapsed, const C3Vector& to, C3
 // Everyone riding it follows: the building is placed, each passenger's world entry re-placed in
 // the transport's space, and the active player's movement takes the path time when it rides.
 // `cameraRides` reports whether the camera's target is aboard.
-//
-// PHASE4(Vehicle_C): a vehicle riding it carries its own passengers along (FUN_00757be0).
 void CGGameObjectTransportBase::MovePassengers(int32_t* cameraRides) {
     *cameraRides = 0;
 
@@ -830,6 +873,14 @@ void CGGameObjectTransportBase::MovePassengers(int32_t* cameraRides) {
         }
 
         auto object = static_cast<CGObject_C*>(ClntObjMgrObjectPtr(passenger->m_guid, TYPE_OBJECT, ".\\GameObject_C.cpp", 0x68d));
+
+        if (object->IsA(TYPE_UNIT)) {
+            auto unit = static_cast<CGUnit_C*>(object);
+
+            if (unit->m_vehicle && unit->m_vehicle->m_rec) {
+                unit->m_vehicle->UpdateMatrix(world);
+            }
+        }
 
         object->UpdateWorldObject((object == player || !isMapObj) ? 0 : 1);
         object->SetParticleRelative(world);
@@ -999,14 +1050,58 @@ void CGGameObjectMOTransport::SyncPath() {
     this->UpdateTransport(now, 0);
 }
 
+
+// ref: FUN_0070b390
+// A ship's ObjectEffect states by the sequence it plays: docked (0, state 2), leaving (0xa2, 3),
+// sailing (0xa3, 4) and arriving (0xa4, 5), each ending the others.
+void CGGameObjectMOTransport::SetSequenceEffects(uint32_t sequence) {
+    auto effects = this->m_owner->m_objectEffects;
+
+    if (!effects) {
+        return;
+    }
+
+    switch (sequence) {
+        case 0:
+            effects->SetState(2, 1, 0);
+            effects->ClearState(3, 1);
+            effects->ClearState(4, 1);
+            effects->ClearState(5, 1);
+            break;
+
+        case 0xa2:
+            effects->SetState(3, 1, 0);
+            effects->ClearState(2, 1);
+            effects->ClearState(4, 1);
+            effects->ClearState(5, 1);
+            break;
+
+        case 0xa3:
+            effects->SetState(4, 1, 0);
+            effects->ClearState(3, 1);
+            effects->ClearState(2, 1);
+            effects->ClearState(5, 1);
+            break;
+
+        case 0xa4:
+            effects->SetState(5, 1, 0);
+            effects->ClearState(3, 1);
+            effects->ClearState(4, 1);
+            effects->ClearState(2, 1);
+            break;
+
+        default:
+            break;
+    }
+}
+
 // ref: FUN_007134a0
 // One movement poll: the path evaluated at the server's time; on another map only the active
 // player's path time is kept. Otherwise the ship is placed by the path's point, heading, pitch and
 // roll, its building follows (and once in, answers its sequences and plays the path's), and its
 // passengers are carried.
 //
-// PARTIAL: the sequence's effect kit (FUN_0070b390, the ObjectEffect port's); and when the camera
-// rides it onto another leg, the reference shows the path's loading screen (FUN_0040ae30) and
+// PARTIAL: when the camera rides it onto another leg, the reference shows the path's loading screen (FUN_0040ae30) and
 // reloads the world round the camera's target (FUN_00781500 -> FUN_007bd9f0, CWorld's synchronous
 // reload), neither ported.
 void CGGameObjectMOTransport::UpdateTransport(uint32_t time, int32_t elapsed) {
@@ -1066,6 +1161,7 @@ void CGGameObjectMOTransport::UpdateTransport(uint32_t time, int32_t elapsed) {
         if (this->m_arrived && static_cast<uint32_t>(this->m_animState) != sequence) {
             CWorld::SetDynamicObjectSequence(this->m_mapObject, sequence, 0, 0);
             this->m_animState = static_cast<int32_t>(sequence);
+            this->SetSequenceEffects(sequence);
         }
     }
 
@@ -1230,6 +1326,16 @@ void CGGameObjectDungeonDifficulty::OnAnimEvent(uint32_t eventId, uint32_t data,
     }
 }
 
+// ref: FUN_007109d0
+int32_t CGGameObjectDungeonDifficulty::GetMapID() const {
+    return this->GetData(GO_DATA_DIFFICULTY_MAP);
+}
+
+// ref: FUN_00710a10
+int32_t CGGameObjectDungeonDifficulty::GetDifficulty() const {
+    return this->GetData(GO_DATA_DIFFICULTY);
+}
+
 // ref: FUN_00710a50
 // Shown only at its own difficulty: a raid map's against the raid difficulty in force (on a map
 // with dynamic difficulty, the map's form of it; otherwise also a heroic raid falling back to its
@@ -1238,8 +1344,8 @@ void CGGameObjectDungeonDifficulty::UpdateFrame(uint32_t time) {
     (void)time;
 
     int32_t hide = 1;
-    int32_t mapID = this->GetData(GO_DATA_DIFFICULTY_MAP);
-    int32_t difficulty = this->GetData(GO_DATA_DIFFICULTY);
+    int32_t mapID = this->GetMapID();
+    int32_t difficulty = this->GetDifficulty();
     auto map = mapID ? g_mapDB.GetRecord(mapID) : nullptr;
 
     if (map && map->m_instanceType == 2) {
@@ -1532,8 +1638,7 @@ void CGGameObjectDestructible::PostInit(int32_t a4) {
 // each placed with its three effect sets and hidden, the current state's shown; the repair effect
 // and the colliding intact copy.
 //
-// PARTIAL: the destructible's name plate (FUN_007e6320 / FUN_007e5fd0, the PlayerName port's), and
-// the map's proxy (see PostInit).
+// PARTIAL: the map's proxy (see PostInit).
 void CGGameObjectDestructible::OnStatsLoaded() {
     auto owner = this->m_owner;
 
@@ -1630,6 +1735,13 @@ void CGGameObjectDestructible::OnStatsLoaded() {
             CWorld::SetDynamicObjectCollides(this->m_collisionProxy, 0);
         }
     }
+
+    // The building's name plate, which its damage numbers float off (0x00710fe0).
+    if (owner->m_nameDesc) {
+        PlayerNameDestroy(owner->m_nameDesc);
+    }
+
+    owner->m_nameDesc = PlayerNameCreateAlways(owner->GetGUID());
 }
 
 // ref: FUN_0070b6e0
@@ -2085,6 +2197,16 @@ int32_t CGGameObjectType::GetCursor() {
     return canUse ? 5 : 0x1F;
 }
 
+// ref: FUN_0070c510
+CGGameObjectTypeUnknown::CGGameObjectTypeUnknown(CGGameObject_C* owner) : CGGameObjectType(owner, 5.0f) {
+}
+
+// ref: FUN_00710410
+// GO_DATA onlyCreatorUse (meaning 0x5e): only the one who made it may use it.
+bool CGGameObjectType::IsCreatorOnly() const {
+    return this->GetData(0x5e) != 0;
+}
+
 // ref: FUN_007112a0
 bool CGGameObjectType::CanUse() {
     auto player = ActivePlayer();
@@ -2132,9 +2254,8 @@ bool CGGameObjectType::CanUse() {
                 ffa = !grouped;
             }
 
-            // TODO(Unit_C): FUN_0071f5c0, whether the maker may attack the player, also lets it
-            // through; it is not ported, so only UNIT_BYTE2_FLAG_PVP and free-for-all do.
-            if (!((maker->Unit()->bytes2 >> 8) & 0x1) && !ffa) {
+            // A maker flagged for PvP, in a duel with the player, or free-for-all lets it through.
+            if (!((maker->Unit()->bytes2 >> 8) & 0x1) && !maker->IsDuelingWith(player) && !ffa) {
                 return false;
             }
         }
@@ -2149,8 +2270,7 @@ bool CGGameObjectType::CanUse() {
         return false;
     }
 
-    // GO_DATA onlyCreatorUse.
-    if (this->GetData(94) && player->GetGUID() != data->createdBy) {
+    if (this->IsCreatorOnly() && player->GetGUID() != data->createdBy) {
         return false;
     }
 
@@ -2161,9 +2281,8 @@ bool CGGameObjectType::CanUse() {
 bool CGGameObjectType::CanUseNow(int32_t* error, float* range, const char** spellName) {
     auto player = ActivePlayer();
 
-    // TODO(Unit_C): the reference refuses (0x87) when the player's slot 0x128 says so (dead);
-    // frozen's CGUnit_C has no such slot.
-    if (!player) {
+    // A dead player can use nothing (0x87).
+    if (!player || player->IsDead()) {
         if (error) {
             *error = 0x87;
         }
@@ -2740,8 +2859,13 @@ int32_t CGGameObjectAnimated::PlayAnimState(CM2Model* model) {
     uint32_t current = model->GetBoneUint90(0xFFFFFFFF);
 
     if (owner->m_objectEffects && current != sequence) {
-        // PHASE4(ObjectEffect): the effects tied to the old animation stop and the new one's start
-        // (FUN_006f17f0, FUN_006f61d0, FUN_006f7270); nothing creates the manager yet.
+        if (int32_t state = ObjectEffectGetAnimState(current, 0)) {
+            owner->m_objectEffects->ClearState(static_cast<uint32_t>(state), 1);
+        }
+
+        if (int32_t state = ObjectEffectGetAnimState(sequence, 0)) {
+            owner->m_objectEffects->SetState(static_cast<uint32_t>(state), 1, 0);
+        }
     }
 
     M2SequenceInfo info;

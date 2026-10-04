@@ -448,8 +448,8 @@ int32_t Script_UnitFactionGroup(lua_State* L) {
 }
 
 // ref: FUN_0060d280
-// Takes TWO units and reports how the first regards the second. The reference resolves both and
-// answers nil unless both resolve, then pushes its internal reaction plus one.
+// Takes TWO units and reports how the first regards the second: its reaction plus one, or nil
+// unless both resolve.
 int32_t Script_UnitReaction(lua_State* L) {
     if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
         luaL_error(L, "Usage: UnitReaction(\"unit\", \"otherUnit\")");
@@ -465,7 +465,7 @@ int32_t Script_UnitReaction(lua_State* L) {
         return 1;
     }
 
-    lua_pushnumber(L, unit->GetReaction(other) + 1);
+    lua_pushnumber(L, unit->UnitReaction(other) + 1);
 
     return 1;
 }
@@ -480,7 +480,39 @@ int32_t Script_UnitIsEnemy(lua_State* L) {
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
     auto other = Script_GetUnitFromName(lua_tostring(L, 2));
 
-    if (unit && other && unit->GetReaction(other) < 2) {
+    if (unit && other && unit->UnitReaction(other) < 2) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static bool InPartyOrRaid(WOWGUID guid);
+
+// The shape UnitIsFriend and UnitCanCooperate share: the test between the two units, or else
+// either one being the player and the other in its party or raid.
+static int32_t ScriptUnitPartyTest(lua_State* L, const char* usage, bool (CGUnit_C::*test)(const CGUnit_C*) const) {
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, usage);
+        return 0;
+    }
+
+    auto token = lua_tostring(L, 1);
+    auto otherToken = lua_tostring(L, 2);
+
+    WOWGUID guid = 0;
+    Script_GetGUIDFromToken(token, guid, false);
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\ScriptEvents.cpp", 0x5b0));
+
+    WOWGUID otherGuid = 0;
+    Script_GetGUIDFromToken(otherToken, otherGuid, false);
+    auto other = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(otherGuid, TYPE_UNIT, ".\\ScriptEvents.cpp", 0x5b2));
+
+    if ((unit && other && (unit->*test)(other))
+        || (!SStrCmpI(token, "player", STORM_MAX_STR) && InPartyOrRaid(otherGuid))
+        || (!SStrCmpI(otherToken, "player", STORM_MAX_STR) && InPartyOrRaid(guid))) {
         lua_pushnumber(L, 1.0);
     } else {
         lua_pushnil(L);
@@ -491,21 +523,25 @@ int32_t Script_UnitIsEnemy(lua_State* L) {
 
 // ref: FUN_0060d3d0
 int32_t Script_UnitIsFriend(lua_State* L) {
+    return ScriptUnitPartyTest(L, "Usage: UnitIsFriend(\"unit\", \"otherUnit\")", &CGUnit_C::IsFriendlyTo);
+}
+
+// ref: FUN_0060d530
+int32_t Script_UnitCanCooperate(lua_State* L) {
+    return ScriptUnitPartyTest(L, "Usage: UnitCanCooperate(\"unit\", \"otherUnit\")", &CGUnit_C::CanCooperate);
+}
+
+// ref: FUN_0060d690
+int32_t Script_UnitCanAssist(lua_State* L) {
     if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
-        luaL_error(L, "Usage: UnitIsFriend(\"unit\", \"otherUnit\")");
+        luaL_error(L, "Usage: UnitCanAssist(\"unit\", \"otherUnit\")");
         return 0;
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
     auto other = Script_GetUnitFromName(lua_tostring(L, 2));
 
-    if (!unit || !other) {
-        lua_pushnil(L);
-
-        return 1;
-    }
-
-    if (unit->GetReaction(other) > 3) {
+    if (unit && other && unit->CanAssist(other, false)) {
         lua_pushnumber(L, 1.0);
     } else {
         lua_pushnil(L);
@@ -514,30 +550,21 @@ int32_t Script_UnitIsFriend(lua_State* L) {
     return 1;
 }
 
-int32_t Script_UnitCanCooperate(lua_State* L) {
-    lua_pushnumber(L, 1.0);
-
-    return 1;
-}
-
-int32_t Script_UnitCanAssist(lua_State* L) {
-    // Not implemented, so it can never be true. Stated rather than left as an implicit nil.
-    lua_pushboolean(L, 0);
-
-    return 1;
-}
-
+// ref: FUN_0060d730
 int32_t Script_UnitCanAttack(lua_State* L) {
-    if (!lua_isstring(L, 1)) {
-        luaL_error(L, "Usage: UnitCanAttack(\"unit\")");
+    if (!lua_isstring(L, 1) || !lua_isstring(L, 2)) {
+        luaL_error(L, "Usage: UnitCanAttack(\"unit\", \"otherUnit\")");
         return 0;
     }
 
     auto unit = Script_GetUnitFromName(lua_tostring(L, 1));
-    auto data = unit ? unit->Unit() : nullptr;
+    auto other = Script_GetUnitFromName(lua_tostring(L, 2));
 
-    // TODO faction reactions
-    lua_pushnil(L);
+    if (unit && other && unit->CanAttack(other)) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
@@ -2821,13 +2848,82 @@ int32_t Script_GetVehicleUIIndicatorSeat(lua_State* L) {
 }
 
 int32_t Script_UnitThreatSituation(lua_State* L) {
-    lua_pushnil(L);
+    WOWGUID guid = 0;
+
+    if (!Script_GetGUIDFromToken(lua_tostring(L, 1), guid, false)) {
+        luaL_error(L, "Usage: UnitThreatSituation(\"unit\" [, \"mob\"])");
+        return 0;
+    }
+
+    if (!guid) {
+        return 0;
+    }
+
+    uint8_t status = 0;
+
+    if (!lua_isstring(L, 2)) {
+        status = GameUIGetThreatStatus(guid);
+    } else {
+        // FUN_0060b060
+        WOWGUID mobGuid = 0;
+
+        if (!Script_GetGUIDFromToken(lua_tostring(L, 2), mobGuid, false)) {
+            luaL_error(L, "Usage: UnitThreatSituation(\"unit\" [, \"mob\"])");
+            return 0;
+        }
+
+        if (auto mob = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(mobGuid, TYPE_UNIT, ".\\ScriptEvents.cpp", 0x148))) {
+            mob->GetThreatSituation(guid, &status, nullptr, nullptr, nullptr);
+        }
+    }
+
+    if (status == 0) {
+        return 0;
+    }
+
+    lua_pushnumber(L, static_cast<double>(status - 1));
 
     return 1;
 }
 
 int32_t Script_UnitDetailedThreatSituation(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    WOWGUID guid = 0;
+    WOWGUID mobGuid = 0;
+
+    if (!Script_GetGUIDFromToken(lua_tostring(L, 1), guid, false)
+        || !Script_GetGUIDFromToken(lua_tostring(L, 2), mobGuid, false)) {
+        luaL_error(L, "Usage: UnitDetailedThreatSituation(\"unit\" [, \"mob\"])");
+        return 0;
+    }
+
+    auto mob = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(mobGuid, TYPE_UNIT, ".\\ScriptEvents.cpp", 0x148));
+
+    if (!mob) {
+        return 0;
+    }
+
+    uint8_t status = 0;
+    uint8_t percent = 0;
+    float rawPercent = 0.0f;
+    int32_t threat = 0;
+    mob->GetThreatSituation(guid, &status, &percent, &rawPercent, &threat);
+
+    if (status == 0) {
+        return 0;
+    }
+
+    if (mob->m_threatTarget == guid) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    lua_pushnumber(L, static_cast<double>(status - 1));
+    lua_pushnumber(L, static_cast<double>(rawPercent));
+    lua_pushnumber(L, static_cast<double>(percent));
+    lua_pushnumber(L, static_cast<double>(threat));
+
+    return 5;
 }
 
 int32_t Script_UnitIsControlling(lua_State* L) {

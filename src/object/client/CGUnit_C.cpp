@@ -2,7 +2,10 @@
 #include "ui/game/ReputationInfo.hpp"
 #include "ui/game/CGPartyInfo.hpp"
 #include "ui/game/CGRaidInfo.hpp"
+#include "world/map/MapFootprints.hpp"
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/CVehicleCamera_C.hpp"
+#include "object/client/UnitVehicle_C.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include <new>
 #include <storm/Memory.hpp>
@@ -38,11 +41,14 @@
 #include "object/client/DBCacheInstances.hpp"
 #include "object/client/CEffect.hpp"
 #include "object/client/CGGameObject_C.hpp"
+#include "object/client/GameObjectTypes.hpp"
 #include "object/client/CGPlayer_C.hpp"
 #include "object/client/CVehicle_C.hpp"
 #include "db/rec/VehicleRec.hpp"
 #include "object/client/CVehiclePassenger_C.hpp"
 #include "object/client/ObjMgr.hpp"
+#include "object/client/ObjectEffect.hpp"
+#include "object/client/UnitCombat_C.hpp"
 #include "ui/Game.hpp"
 #include "ui/InputControl.hpp"
 #include "object/client/Spell_C.hpp"
@@ -266,6 +272,9 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
     , m_localMove(objCreate.move.status.position28, objCreate.move.status.facing34, this->m_obj->m_guid, this)
 {
     this->m_mountSound = STORM_NEW(SOUNDKITOBJECT);
+    this->m_petSound = STORM_NEW(SOUNDKITOBJECT);
+    this->m_voiceSound = STORM_NEW(SOUNDKITOBJECT);
+    this->m_speechSound = STORM_NEW(SOUNDKITOBJECT);
 
     // What each hand holds, from the virtual items (0x0073fbd3 .. 0x0073fc88); later changes come
     // through OnVirtualItemChanged.
@@ -302,11 +311,39 @@ CGUnit_C::CGUnit_C(uint32_t time, CClientObjCreate& objCreate)
 }
 
 CGUnit_C::~CGUnit_C() {
+    // FUN_00734b50: the vehicle this unit is goes (its passengers kept where they are), and its
+    // own ride with it.
+    this->m_stateFlags &= 0xfeffffff;
+    UnitDestroyVehicle(this, 0);
+    UnitDestroyVehicleCamera(this);
+
+    if (this->m_vehiclePassenger) {
+        this->m_vehiclePassenger->Free();
+        this->m_vehiclePassenger = nullptr;
+    }
+
     if (this->m_mountSound) {
         SI2::StopOrFadeOut(this->m_mountSound, 1, 0.0f, 1);
         this->m_mountSound->~SOUNDKITOBJECT();
         STORM_FREE(this->m_mountSound);
         this->m_mountSound = nullptr;
+    }
+
+    for (auto sound : { &this->m_petSound, &this->m_speechSound, &this->m_voiceSound }) {
+        if (*sound) {
+            SI2::StopOrFadeOut(*sound, 1, 0.0f, 1);
+            (*sound)->~SOUNDKITOBJECT();
+            STORM_FREE(*sound);
+            *sound = nullptr;
+        }
+    }
+
+    this->m_threatList.Clear();
+
+    // The name plate (0x00734c2d).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+        this->m_nameDesc = nullptr;
     }
 
     // Free the composited body built for a humanoid NPC (players keep their own component in
@@ -330,6 +367,18 @@ int32_t CGUnit_C::CanHighlight() {
 
 int32_t CGUnit_C::CanBeTargetted() {
     return this->CanHighlight();
+}
+
+// ref: FUN_0074b810
+// A passenger aboard this unit joins its vehicle's passengers.
+int32_t CGUnit_C::Virtual0F4(CPassenger* passenger, int32_t mode) {
+    (void)mode;
+
+    if (!this->m_vehicle) {
+        return 0;
+    }
+
+    return this->m_vehicle->AddPassenger(passenger);
 }
 
 // ref: FUN_004d43c0
@@ -452,10 +501,149 @@ WOWGUID CGUnit_C::GetTransportGUID() const {
     return this->m_localMove.GetTransportGUID();
 }
 
+namespace {
+// Defined with the movement code below.
+extern int32_t s_clickToMoveState;
+} // namespace
+
+// ref: FUN_00734fd0
+// The unit leaves view: the object's part, its vehicle camera and passengers, its sounds and
+// object effects, its threat table and name plate, the game UI's hold on it (target and the rest),
+// and the active mover when it was this.
+//
+// PARTIAL, each the subsystem's own port: the loot roll's release (FUN_006fc0f0), the world map's
+// vehicle icon (FUN_00549740, vehicle flag 0x10000000), the +0xb60 array ("._K"), the nameplate
+// frame (+0xc38) and chat bubble (+0xc3c), the movement globals (FUN_006ec390), the spell
+// module's (FUN_00806390), the cast and channel bars (+0xa60, +0xa80, FUN_00720e50 /
+// FUN_0060bf60), and the party and raid frames' SMSG for a member (FUN_0052d210, FUN_00573150).
+void CGUnit_C::Disable() {
+    this->CGObject_C::Disable();
+
+    UnitDestroyVehicleCamera(this);
+
+    if (this->m_vehicle) {
+        this->m_vehicle->EjectAllPassengers();
+    }
+
+    // FUN_00746340
+    SI2::StopOrFadeOut(this->m_mountSound, 0, 0.5f, 1);
+
+    if (this->m_objectEffects) {
+        for (int32_t state = 1; state < 0x52; state++) {
+            this->m_objectEffects->ClearState(state, 0);
+        }
+    }
+
+    this->m_stateFlags &= ~0x2u;
+    this->ClearThreatList();
+
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = nullptr;
+
+    // The game UI lets go of the unit unless it is a party or raid member not in a duel with the
+    // player (FUN_00524350).
+    auto player = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.h", 0xa0));
+    bool member = CGPartyInfo::IsPlayerOrMemberOrPet(this->GetGUID()) || CGRaidInfo::IsMemberOrPet(this->GetGUID());
+
+    if (!member || (player && player->IsDuelingWith(this))) {
+        CGGameUI::OnObjectDisabled(this->GetGUID());
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (camera && camera->GetTarget() == this->GetGUID()) {
+        camera->SetRelativeTo(0);
+    }
+
+    if (this->GetGUID() == CGUnit_C::s_activeMover) {
+        if (s_clickToMoveState != 13) {
+            this->CancelClickToMove(0, 1);
+        }
+
+        CGUnit_C::s_activeMover = 0;
+    }
+}
+
+// ref: FUN_007237f0
+// The unit comes back into view: a new name plate, its facing settled where it stands, its
+// health and powers taken as reported, its effects stopped and its loot sparkle back, what its
+// hands hold read again, and its movement effects.
+//
+// PARTIAL, each the subsystem's own port: the missiles still in flight (+0x9ec / +0x9f0,
+// FUN_00703730), the low-health state (bit 0x2, which needs +0x97c), the model's +0x64 word, and
+// the world map's vehicle icon (FUN_0054aba0).
+void CGUnit_C::Reenable() {
+    this->CGObject_C::Reenable();
+
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = PlayerNameCreate(this->GetGUID());
+
+    float facing = this->GetRawFacing();
+    this->m_smoothFacing = CMath::normalizeangle0to2pi(facing);
+    this->m_smoothFacingStep = 0.0f;
+    this->m_smoothFacingHistory[0] = 0.0f;
+    this->m_smoothFacingHistory[1] = 0.0f;
+    this->m_smoothFacingHistory[2] = 0.0f;
+    this->m_smoothFacingHistory[3] = 0.0f;
+    this->m_lowerBodyFacing = facing;
+    this->m_lowerBodyFacingStep = 0.0f;
+    this->m_lowerBodyBlend = 1.0f;
+
+    this->m_reportedHealth = this->m_unit->health;
+
+    // FUN_0071c320
+    for (int32_t i = 0; i < 7; i++) {
+        this->m_reportedPower[i] = this->m_unit->power[i];
+    }
+
+    this->m_animFlags &= ~0x2400u;
+
+    this->StopAllEffects(3);
+    this->ShowLootSparkle();
+
+    for (int32_t hand = 0; hand < 3; hand++) {
+        auto item = g_itemDB.GetRecord(this->m_unit->virtualItemSlotID[hand]);
+
+        UNIT_WEAPON_INFO info;
+
+        if (item) {
+            this->m_weaponDisplays[hand] = item->m_displayInfoID;
+            info.m_class = static_cast<uint8_t>(item->m_classID);
+            info.m_subclass = static_cast<uint8_t>(item->m_subclassID);
+            info.m_soundOverride = static_cast<uint8_t>(item->m_soundOverrideSubclassID);
+            info.m_material = static_cast<uint8_t>(item->m_material);
+            info.m_inventoryType = static_cast<uint8_t>(item->m_inventoryType);
+            info.m_sheathType = static_cast<uint8_t>(item->m_sheatheType);
+        } else {
+            this->m_weaponDisplays[hand] = 0;
+        }
+
+        this->m_weaponInfo[hand] = info;
+    }
+
+    this->m_previousSheathState = this->m_sheathState;
+    this->UpdateMovementEffects();
+}
+
+namespace {
+
+// DAT_00ca1248 / DAT_00ca1250: an SMSG_CONTROL_UPDATE for a unit not yet in view, which its
+// PostInit takes up (FUN_00716060 stores it).
+WOWGUID s_pendingControl = 0;
+bool s_pendingControlHas = false;
+
+} // namespace
+
 // ref: FUN_0073fcc0
-// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
-// party and raid slots (FUN_005139b0, FUN_0054d1c0), the vehicle and passenger starts and the
-// ObjectEffect package (FUN_00725df0) are the Movement, PlayerName, party and ObjectEffect ports'.
+// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the
+// party and raid slots (FUN_005139b0, FUN_0054d1c0) and the vehicle and passenger starts are the
+// Movement and party ports'.
 void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
 
@@ -516,6 +704,21 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_lowerBodyFacingStep = 0.0f;
     this->m_lowerBodyBlend = 1.0f;
 
+    this->UpdateObjectEffectPackage();
+
+    // The name plate, made again for this unit (0x0073ffb4).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = PlayerNameCreate(this->GetGUID());
+
+    // 0x007401c5: an SMSG_CONTROL_UPDATE that arrived before the unit did.
+    if (s_pendingControl == this->GetGUID()) {
+        this->OnControlUpdate(s_pendingControl, s_pendingControlHas);
+        s_pendingControl = 0;
+    }
+
     // TODO
 }
 
@@ -523,9 +726,13 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
 // A movement block from the server: the create's, or SMSG_MOVE_UPDATE's for a unit someone else
 // moves. The active mover keeps its own prediction and takes nothing from it.
 // NOT PORTED: FUN_0098e560 (the block's guid at +0x2b8 copied into a target the decompiler lost),
-// the vehicle start for update flag 0x80 (FUN_0074c750, UnitVehicle_C), and the active player's
-// position copied into DAT_00cd7544 +0x17c for update flag 1.
+// and the active player's position copied into DAT_00cd7544 +0x17c for update flag 1.
 void CGUnit_C::PostMovementUpdate(const CClientObjCreate& init, int32_t activeMover) {
+    // Update flag 0x80: the unit is a vehicle.
+    if (init.flags & 0x80) {
+        UnitCreateVehicle(this, &init, static_cast<int32_t>(init.uint2C4));
+    }
+
     if (activeMover) {
         return;
     }
@@ -5272,10 +5479,26 @@ void CGUnit_C::PlayWoundAnimation(int32_t critical) {
     this->UpdateObjectEffects();
 }
 
+// The riders of this vehicle whose animation it drives, while `model` is the vehicle's own: the walk
+// the passenger variants below repeat their change over.
+template <class F>
+static void ForEachAnimatedRider(CGUnit_C* unit, CM2Model* model, int32_t line, F f) {
+    auto vehicle = unit->m_vehicle;
+
+    if (!vehicle || !vehicle->m_rec || !vehicle->HasStateBits() || model != unit->GetObjectModel()) {
+        return;
+    }
+
+    for (auto passenger = vehicle->m_passengers.Head(); passenger; passenger = vehicle->m_passengers.Next(passenger)) {
+        auto rider = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(passenger->m_guid, TYPE_UNIT, ".\\Unit_C.cpp", line));
+
+        if (rider && rider->m_vehiclePassenger && rider->m_vehiclePassenger->IsRidingLiveVehicle()) {
+            f(rider);
+        }
+    }
+}
+
 // ref: FUN_00735bb0
-// PHASE4(Vehicle_C): the reference repeats the change on every passenger in the vehicle's seat
-// list (+0x170/+0x178), which CVehicle_C does not carry yet; nothing creates a vehicle, so the walk
-// has nothing to reach.
 void CGUnit_C::SetBoneSequenceTimeOnPassengers(CM2Model* model, uint32_t boneId, int32_t time, int32_t fromPassenger) {
     if (!model) {
         return;
@@ -5286,10 +5509,13 @@ void CGUnit_C::SetBoneSequenceTimeOnPassengers(CM2Model* model, uint32_t boneId,
     }
 
     model->SetBoneSequenceTime(boneId, time);
+
+    ForEachAnimatedRider(this, model, 0x1a25, [&](CGUnit_C* rider) {
+        rider->SetBoneSequenceTimeOnPassengers(rider->GetObjectModel(), boneId, time, 1);
+    });
 }
 
 // ref: FUN_00735dd0
-// PHASE4(Vehicle_C): the passenger walk, as in SetBoneSequenceTimeOnPassengers.
 void CGUnit_C::SetAnimationHoldOnPassengers(CM2Model* model, int32_t hold, int32_t fromPassenger) {
     if (!model) {
         return;
@@ -5305,6 +5531,10 @@ void CGUnit_C::SetAnimationHoldOnPassengers(CM2Model* model, int32_t hold, int32
     } else {
         model->m_animationHeldTime = 0;
     }
+
+    ForEachAnimatedRider(this, model, 0x1a6e, [&](CGUnit_C* rider) {
+        rider->SetAnimationHoldOnPassengers(rider->GetObjectModel(), hold, 1);
+    });
 }
 
 // ref: FUN_007202c0
@@ -5503,11 +5733,14 @@ const CreatureSoundDataRec* CGUnit_C::GetSoundData() const {
 }
 
 // ref: FUN_00740450
-// PHASE4(Vehicle_C): a vehicle with passengers keeps its mount (m_stateFlags 0x10000000) while
-// its seat list is not empty; CVehicle_C carries no seat list yet, so that test reads empty.
-// PHASE4(ObjectEffect): the reference ends with FUN_00725df0, the unit's ObjectEffect package.
+// A vehicle with riders keeps its mount (m_stateFlags 0x10000000) until they are off.
 void CGUnit_C::SetMountDisplay(int32_t displayID) {
     if (displayID == this->m_mountDisplayID) {
+        return;
+    }
+
+    if (displayID == 0 && this->m_vehicle && this->m_vehicle->m_passengers.Head()) {
+        this->m_stateFlags |= 0x10000000;
         return;
     }
 
@@ -5538,6 +5771,7 @@ void CGUnit_C::SetMountDisplay(int32_t displayID) {
     this->UpdateMountSound();
     this->AttachQuestMarker();
     PlayerNameInvalidate(this->m_nameDesc);
+    this->UpdateObjectEffectPackage();
 }
 
 // ref: FUN_0073d5d0
@@ -5833,8 +6067,6 @@ void CGUnit_C::PlayDismountSound() {
 }
 
 // ref: FUN_007412e0
-// PHASE4(Vehicle_C): the seat-list test, as in SetMountDisplay.
-// PHASE4(ObjectEffect): FUN_00725df0 at the end, as in SetMountDisplay.
 void CGUnit_C::RequestDismount() {
     if (this->GetGUID() != ClntObjMgrGetActivePlayer() || (this->m_unit->flags >> 20) & 1) {
         return;
@@ -5845,24 +6077,184 @@ void CGUnit_C::RequestDismount() {
     msg.Finalize();
     ClientServices::Send(&msg);
 
-    if (this->m_mountDisplayID) {
+    if (this->m_mountDisplayID && this->m_vehicle && this->m_vehicle->m_passengers.Head()) {
+        this->m_stateFlags |= 0x10000000;
+    } else if (this->m_mountDisplayID) {
         this->m_stateFlags &= ~0x10000000u;
         this->Dismount(1);
         this->m_mountDisplayID = 0;
         this->UpdateMountSound();
         this->AttachQuestMarker();
         PlayerNameInvalidate(this->m_nameDesc);
+        this->UpdateObjectEffectPackage();
     }
 }
 
+namespace {
+
+// The states a death (0xf) or a feign (0x51) ends: standing and moving, flying and swimming, and
+// every pace and direction of movement.
+void ClearMovementObjectEffectStates(CObjectEffect* effects) {
+    static const uint32_t s_states[] = {
+        0x25, 0x26, 6, 7, 0x2f, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b,
+        0x3c, 0x3d, 0x3e, 0x3f, 0x40, 0x41, 0x42,
+    };
+
+    for (auto state : s_states) {
+        effects->ClearState(state, 1);
+    }
+}
+
+} // namespace
+
 // ref: FUN_0071e5b0
-// PHASE4(ObjectEffect): everything past the first test drives the unit's ObjectEffect manager
-// (+0xcc), which nothing creates until ObjectEffect.cpp is ported; with none, the reference
-// returns here too.
+// The unit's ObjectEffect states follow its three bone sequences (the mount's, the body's and the
+// upper body's): a sequence's new state goes on -- a death ends the movement states -- and one no
+// sequence plays any longer goes off.
 void CGUnit_C::UpdateObjectEffects() {
-    if (!this->m_objectEffects) {
+    auto effects = this->m_objectEffects;
+
+    if (!effects) {
         return;
     }
+
+    M2BoneSequenceState sequences[3];
+    this->GetBoneSequenceStates(&sequences[0], &sequences[1], &sequences[2], 1);
+
+    if (this->m_mountModel) {
+        if (!this->m_mountModel->IsLoaded(0, 0)) {
+            return;
+        }
+
+        if (sequences[0].uint90 < 0x1fa) {
+            sequences[0].uint90 = this->m_mountModel->ResolveSequenceFallback(sequences[0].uint90);
+        }
+    }
+
+    if (this->m_model) {
+        if (!this->m_model->IsLoaded(0, 0)) {
+            return;
+        }
+
+        if (sequences[1].uint90 < 0x1fa) {
+            sequences[1].uint90 = this->m_model->ResolveSequenceFallback(sequences[1].uint90);
+        }
+
+        if (sequences[2].uint90 < 0x1fa) {
+            sequences[2].uint90 = this->m_model->ResolveSequenceFallback(sequences[2].uint90);
+        }
+    }
+
+    int32_t states[3];
+    int32_t slots[3];
+    int32_t count = 0;
+
+    for (int32_t slot = 0; slot < 3; slot++) {
+        if (sequences[slot].uint90 != 0xffffffff) {
+            states[count] = ObjectEffectGetAnimState(sequences[slot].uint90, sequences[slot].uint94);
+            slots[count] = slot;
+            count++;
+        }
+    }
+
+    int32_t previous[3] = {
+        this->m_objectEffectAnimStates[0], this->m_objectEffectAnimStates[1], this->m_objectEffectAnimStates[2],
+    };
+
+    auto playing = [&](int32_t state) {
+        for (int32_t i = 0; i < count; i++) {
+            if (states[i] == state) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    for (auto& held : this->m_objectEffectAnimStates) {
+        if (held && !playing(held)) {
+            held = 0;
+        }
+    }
+
+    for (int32_t i = 0; i < count; i++) {
+        int32_t state = states[i];
+        bool held = false;
+
+        for (auto current : this->m_objectEffectAnimStates) {
+            if (current == state) {
+                held = true;
+                break;
+            }
+        }
+
+        if (held) {
+            continue;
+        }
+
+        if (state) {
+            effects->SetState(static_cast<uint32_t>(state), 1, 0);
+
+            if (state == 0xf || state == 0x51) {
+                ClearMovementObjectEffectStates(effects);
+            }
+        }
+
+        this->m_objectEffectAnimStates[slots[i]] = state;
+    }
+
+    for (auto state : previous) {
+        if (state && !playing(state)) {
+            effects->ClearState(static_cast<uint32_t>(state), 1);
+        }
+    }
+}
+
+// ref: FUN_00725df0
+// The unit's ObjectEffect package is its display's -- the mount's while it rides, or a local
+// display that still matches the native one -- and the manager is remade when that changes,
+// starting in the movement states it is in.
+void CGUnit_C::UpdateObjectEffectPackage() {
+    int32_t displayID = this->m_mountDisplayID;
+
+    if (!displayID) {
+        displayID = this->m_localDisplayID;
+
+        if (!displayID || this->m_unit->nativeDisplayID != this->m_unit->displayID) {
+            displayID = this->m_unit->displayID;
+        }
+    }
+
+    auto display = g_creatureDisplayInfoDB.GetRecord(displayID);
+    int32_t packageID = display ? display->m_objectEffectPackageID : 0;
+
+    if (this->m_objectEffects && this->m_objectEffects->m_packageID != packageID) {
+        this->m_objectEffectAnimStates[0] = 0;
+        this->m_objectEffectAnimStates[1] = 0;
+        this->m_objectEffectAnimStates[2] = 0;
+
+        delete this->m_objectEffects;
+        this->m_objectEffects = nullptr;
+    }
+
+    if (!packageID || this->m_objectEffects) {
+        return;
+    }
+
+    this->m_objectEffects = new CObjectEffect();
+
+    if (this->m_objectEffects->Init(display->m_objectEffectPackageID, this)) {
+        this->m_objectEffectAnimStates[0] = 0;
+        this->m_objectEffectAnimStates[1] = 0;
+        this->m_objectEffectAnimStates[2] = 0;
+
+        this->UpdateMovementEffects();
+
+        return;
+    }
+
+    delete this->m_objectEffects;
+    this->m_objectEffects = nullptr;
 }
 
 
@@ -5878,12 +6270,17 @@ float CGUnit_C::GetScale() const {
 }
 
 // ref: FUN_0071fd80
-// PHASE4(Vehicle_C): a passenger is placed by its seat (FUN_0074a7f0).
 // PHASE4(Unit_C): a swimming or flying unit pitches with its movement (FUN_00719b80 for the active
 // mover, FUN_00719a90 for the rest), a unit leading a mount transition is placed along it
 // (FUN_007193f0), and the transition's model follows the unit (FUN_0071fbf0). Those land with the
 // movement smoothing they read; until then every unit takes the ground placement below.
 int32_t CGUnit_C::PlaceModel(float elapsed) {
+    // A rider is placed by its seat.
+    if (this->m_vehiclePassenger) {
+        this->m_vehiclePassenger->PlaceModel();
+        return 1;
+    }
+
     // FUN_007197d0: the lean eases toward the movement's up vector while that is not too steep.
     C3Vector up = this->m_localMove.GetWorldUp();
 
@@ -7246,7 +7643,7 @@ int32_t CGUnit_C::OnSplineFlagMessage(int32_t opcode) {
 // ref: FUN_0072d1b0
 // SMSG_MOVE_KNOCK_BACK: the local player is thrown. PARTIAL: an open loot window closes first
 // (MovementStartPrologue(1, 1, 0), the loot port's); a unit that is not the active mover becomes
-// it through FUN_00729010, which is SetActiveMover here.
+// it through FUN_00729010 (ChangeActiveMover).
 void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg) {
     if (this->IsActiveMover()) {
         this->CancelClickToMove(0, 1);
@@ -7262,7 +7659,7 @@ void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg)
     msg->Get(vertical);
 
     if (this->GetGUID() != CGUnit_C::s_activeMover) {
-        CGUnit_C::SetActiveMover(this->GetGUID());
+        CGUnit_C::ChangeActiveMover(this->GetGUID());
     }
 
     this->m_localMove.QueueForcedKnockback(time, counter, direction, horizontal, vertical);
@@ -7271,7 +7668,7 @@ void CGUnit_C::ReceiveKnockback(int32_t time, uint32_t counter, CDataStore* msg)
 // ref: FUN_0072d2d0
 // MSG_MOVE_TELEPORT_ACK from the server: a normal player turns the camera to the new facing and
 // takes the teleport (answered when the event runs); anything else answers at once. PARTIAL: as
-// ReceiveKnockback, the loot window and FUN_00729010.
+// ReceiveKnockback, the loot window.
 void CGUnit_C::ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* msg) {
     CMovementStatus status;
     *msg >> status;
@@ -7282,7 +7679,7 @@ void CGUnit_C::ReceiveTeleportAck(int32_t time, uint32_t counter, CDataStore* ms
         }
 
         if (this->GetGUID() != CGUnit_C::s_activeMover) {
-            CGUnit_C::SetActiveMover(this->GetGUID());
+            CGUnit_C::ChangeActiveMover(this->GetGUID());
         }
 
         if (this->IsActiveMover()) {
@@ -7447,21 +7844,6 @@ float DistanceSq(const C3Vector& a, const C3Vector& b) {
     return dz * dz + dy * dy + dx * dx;
 }
 
-// ref: FUN_004f5130
-// The world angle from `from` to `to`.
-float AngleTo(const C3Vector& from, const C3Vector& to) {
-    float dy = to.y - from.y;
-
-    if (std::fabs(to.x - from.x) < 2.384185791015625e-07f) {
-        return dy < 0.0f ? 1.5f * 3.1415927410125732f : 0.5f * 3.1415927410125732f;
-    }
-
-    if (2.384185791015625e-07f <= std::fabs(dy)) {
-        return std::atan2(dy, to.x - from.x);
-    }
-
-    return to.x < from.x ? 3.1415927410125732f : 0.0f;
-}
 
 } // namespace
 
@@ -7604,7 +7986,7 @@ void CGUnit_C::FaceSplineTarget(WOWGUID target, int32_t flush) {
         return;
     }
 
-    this->m_localMove.FaceForSpline(AngleTo(this->GetPosition(), object->GetPosition()), flush);
+    this->m_localMove.FaceForSpline(FacingBetween(this->GetPosition(), object->GetPosition()), flush);
 }
 
 // ref: FUN_0073af00
@@ -7906,7 +8288,7 @@ void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport,
                 world = spot * matrix;
             }
 
-            move.FaceForSpline(AngleTo(this->GetPosition(), world), flush);
+            move.FaceForSpline(FacingBetween(this->GetPosition(), world), flush);
         } else if (type == 3) {
             this->FaceSplineTarget(target, flush);
         } else if (type == 4) {
@@ -7925,8 +8307,8 @@ void CGUnit_C::OnMonsterMove(CDataStore* msg, int32_t opcode, WOWGUID transport,
 namespace {
 
 // ref: FUN_0073f590
-// SMSG_MONSTER_MOVE and SMSG_MONSTER_MOVE_TRANSPORT (with the transport and the seat). PARTIAL: a
-// passenger's seat (FUN_0074c040) decides a vehicle move first, the vehicle port's.
+// SMSG_MONSTER_MOVE and SMSG_MONSTER_MOVE_TRANSPORT (with the transport and the seat). A move onto
+// or off a seat that waits on the vehicle's animation is queued on the ride instead.
 int32_t UnitMonsterMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
@@ -7953,7 +8335,37 @@ int32_t UnitMonsterMoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDa
     msg->Get(carried);
     unit->m_localMove.SetMoveFlags2Bit40(carried);
 
-    unit->OnMonsterMove(msg, msgId, transport, seat, 1);
+    if (!UnitQueueVehicleMove(unit, msg, transport, seat)) {
+        unit->OnMonsterMove(msg, msgId, transport, seat, 1);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716db0
+// SMSG_SET_VEHICLE_REC_ID: the unit becomes the vehicle the row names, or stops being one (its
+// passengers put off).
+int32_t UnitSetVehicleRecHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    (void)param;
+    (void)msgId;
+    (void)time;
+
+    SmartGUID guid;
+    *msg >> guid;
+
+    uint32_t recID = 0;
+    msg->Get(recID);
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\Unit_C.cpp", 0x729));
+
+    if (unit) {
+        if (recID != 0) {
+            UnitCreateVehicle(unit, nullptr, static_cast<int32_t>(recID));
+            return 1;
+        }
+
+        UnitDestroyVehicle(unit, 1);
+    }
 
     return 1;
 }
@@ -8285,8 +8697,6 @@ int32_t UnitStandStateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDat
 
 // ref: FUN_00741a40
 // SMSG_DISMOUNT. A unit carrying passengers waits (state 0x10000000) until they are off.
-// PARTIAL: the name plate refresh (PlayerNameInvalidate) and the ObjectEffect update
-// (FUN_00725df0) are the PlayerName and ObjectEffect ports'.
 int32_t UnitDismountHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     SmartGUID guid;
     *msg >> guid;
@@ -8297,14 +8707,19 @@ int32_t UnitDismountHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataS
         return 1;
     }
 
-    // A vehicle with passengers aboard (its list at +0x178) holds the dismount; frozen creates no
-    // vehicle, so none holds it.
+    // A vehicle with passengers aboard holds the dismount until they are off.
+    if (unit->m_vehicle && unit->m_vehicle->m_passengers.Head()) {
+        unit->m_stateFlags |= 0x10000000;
+        return 1;
+    }
 
     unit->m_stateFlags &= 0xefffffff;
     unit->Dismount(1);
     unit->m_mountDisplayID = 0;
     unit->UpdateMountSound();
     unit->AttachQuestMarker();
+    PlayerNameInvalidate(unit->m_nameDesc);
+    unit->UpdateObjectEffectPackage();
 
     return 1;
 }
@@ -8333,8 +8748,7 @@ int32_t UnitLootListHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataS
 }
 
 // ref: FUN_00716b10
-// SMSG_AI_REACTION: a creature noticing the player plays its aggro sound. PARTIAL: reaction 2,
-// the pet's (FUN_007474b0), is the unit sound port's.
+// SMSG_AI_REACTION: a creature noticing the player plays its aggro sound, a pet its own.
 int32_t UnitAIReactionHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
     WOWGUID guid;
     uint32_t reaction;
@@ -8344,7 +8758,133 @@ int32_t UnitAIReactionHandler(void* param, NETMESSAGE msgId, uint32_t time, CDat
     if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x625))) {
         if (reaction == 0) {
             unit->PlayUnitSound(8, 0);
+        } else if (reaction == 2) {
+            unit->PlayPetSound(0);
         }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716b90
+// SMSG_PET_ACTION_SOUND: the pet acknowledges an order (0) or an attack (1).
+int32_t UnitPetActionSoundHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    uint32_t action;
+    msg->Get(guid);
+    msg->Get(action);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x636))) {
+        if (action == 0) {
+            unit->PlayPetSound(1);
+        } else if (action == 1) {
+            unit->PlayPetSound(2);
+        }
+    }
+
+    return 1;
+}
+
+// ref: FUN_00716c00
+// SMSG_PET_DISMISS_SOUND: a model's dismiss sound at a point, the pet itself already gone.
+int32_t UnitPetDismissSoundHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    uint32_t modelID;
+    msg->Get(modelID);
+
+    C3Vector position = { 0.0f, 0.0f, 0.0f };
+    msg->Get(position.x);
+    msg->Get(position.y);
+    msg->Get(position.z);
+
+    auto model = g_creatureModelDataDB.GetRecord(static_cast<int32_t>(modelID));
+    auto sounds = model ? g_creatureSoundDataDB.GetRecord(model->m_soundID) : nullptr;
+
+    if (sounds && sounds->m_soundPetDismissID) {
+        position.z += 1.0f;
+        SI2::PlaySoundKit(sounds->m_soundPetDismissID, &position, nullptr, nullptr, 0, nullptr, 1, 0);
+    }
+
+    return 1;
+}
+
+// ref: FUN_0072d0b0
+// SMSG_CONTROL_UPDATE: whether the player may move this unit. One not in view keeps it for its
+// PostInit.
+int32_t UnitControlUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    uint8_t hasControl;
+    msg->Get(hasControl);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x5bc))) {
+        unit->OnControlUpdate(guid, hasControl != 0);
+        return 1;
+    }
+
+    CGUnit_C::StorePendingControl(guid, hasControl != 0);
+
+    return 1;
+}
+
+// ref: FUN_007324b0
+// SMSG_MIRROR_IMAGE_COMPONENTED_DATA: the appearance a mirror image asked for.
+int32_t UnitMirrorImageDataHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    WOWGUID guid;
+    msg->Get(guid);
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x684))) {
+        unit->ReceiveMirrorImageData(msg);
+    }
+
+    return 1;
+}
+
+// ref: FUN_00741c90
+// SMSG_HIGHEST_THREAT_UPDATE (with the new top) and SMSG_THREAT_UPDATE.
+int32_t UnitThreatUpdateHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6e8))) {
+        unit->ReceiveThreatUpdate(msg, msgId == SMSG_HIGHEST_THREAT_UPDATE);
+        return 1;
+    }
+
+    msg->Seek(msg->Size());
+
+    return 1;
+}
+
+// ref: FUN_00737b20
+// SMSG_THREAT_REMOVE: one unit leaves a creature's threat table.
+int32_t UnitThreatRemoveHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x6f9))) {
+        SmartGUID victim;
+        *msg >> victim;
+
+        WOWGUID removed = victim;
+        unit->RemoveThreatEntry(removed);
+
+        return 1;
+    }
+
+    msg->Seek(msg->Size());
+
+    return 1;
+}
+
+// ref: FUN_00734b00
+// SMSG_THREAT_CLEAR: a creature forgets everyone.
+int32_t UnitThreatClearHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    SmartGUID guid;
+    *msg >> guid;
+
+    if (auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x70b))) {
+        unit->ClearThreatList();
     }
 
     return 1;
@@ -8369,6 +8909,14 @@ void RegisterUnitMiscHandlers() {
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x2fb), &UnitCompressedMovesHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x51e), &UnitMultipleMovesHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x13c), &UnitAIReactionHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_PET_ACTION_SOUND, &UnitPetActionSoundHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_PET_DISMISS_SOUND, &UnitPetDismissSoundHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_CONTROL_UPDATE, &UnitControlUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_MIRROR_IMAGE_COMPONENTED_DATA, &UnitMirrorImageDataHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_HIGHEST_THREAT_UPDATE, &UnitThreatUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_THREAT_UPDATE, &UnitThreatUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_THREAT_REMOVE, &UnitThreatRemoveHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_THREAT_CLEAR, &UnitThreatClearHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x403), &UnitForceDisplayUpdateHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x47f), &UnitHealthUpdateHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x3f9), &UnitLootListHandler, nullptr);
@@ -8378,6 +8926,7 @@ void RegisterUnitMiscHandlers() {
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x29c), &UnitCancelAutoRepeatHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x29d), &UnitStandStateHandler, nullptr);
     ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x3ac), &UnitDismountHandler, nullptr);
+    ClientServices::SetMessageHandler(static_cast<NETMESSAGE>(0x4a7), &UnitSetVehicleRecHandler, nullptr);
 }
 
 } // namespace
@@ -8418,6 +8967,8 @@ void UnitInitialize() {
     }
 
     UnitSoundInitialize();
+    UnitCombatInitialize();
+    WeaponSoundsInitialize();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -9083,7 +9634,6 @@ int32_t CGUnit_C::MoveHandItem(int32_t hand, int32_t toSheath) {
 }
 
 // ref: FUN_00736d30
-// PHASE4(Vehicle_C): an animated draw repeats its bone release on every live passenger.
 void CGUnit_C::SetSheathState(int32_t state, int32_t animate, int32_t fromServer) {
     if (this->IsFightingUnarmed()) {
         state = AdjustSheathState(state, reinterpret_cast<const uint8_t*>(this->GetWeaponInfo(0, 0)),
@@ -9112,12 +9662,14 @@ void CGUnit_C::SetSheathState(int32_t state, int32_t animate, int32_t fromServer
 
     if (animate) {
         if (!this->m_vehiclePassenger || !this->m_vehiclePassenger->IsRidingLiveVehicle()) {
-            if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(3)) {
-                this->m_model->UnsetBoneSequence(3, 1, 1);
-            }
+            for (uint32_t bone : { 3u, 2u }) {
+                if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(bone)) {
+                    this->m_model->UnsetBoneSequence(bone, 1, 1);
+                }
 
-            if (this->m_model->IsLoaded(0, 0) && this->m_model->BoneHasParent(2)) {
-                this->m_model->UnsetBoneSequence(2, 1, 1);
+                ForEachAnimatedRider(this, this->m_model, 0x19fd, [&](CGUnit_C* rider) {
+                    rider->UnsetBoneSequence(rider->GetObjectModel(), bone, 1, 1, 1);
+                });
             }
         }
     }
@@ -9474,7 +10026,6 @@ float CGUnit_C::GetDisplayScale(int32_t displayID) {
 }
 
 // ref: FUN_0072cbb0
-// PHASE4(Vehicle_C): a vehicle re-seats its passengers at the new scale (FUN_00757d10).
 void CGUnit_C::UpdateDisplayScale(int32_t keepScale) {
     float previous = this->m_displayScale;
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
@@ -9484,6 +10035,10 @@ void CGUnit_C::UpdateDisplayScale(int32_t keepScale) {
     this->SetScaleEase(scale);
     this->UpdateShadowRadius();
     this->UpdateEffectAttachments();
+
+    if (this->m_vehicle && this->m_vehicle->m_rec) {
+        this->m_vehicle->UpdatePassengerRadius();
+    }
 }
 
 // ref: FUN_00728e70
@@ -9570,9 +10125,17 @@ float CGUnit_C::GetAnimationProgress() {
     return progress < 1.0f ? progress : 1.0f;
 }
 
+// ref: FUN_00719050
+// The name plate made again, for a new model.
+void CGUnit_C::RebuildNamePlate() {
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = PlayerNameCreate(this->GetGUID());
+}
+
 // ref: FUN_0073e410
-// TODO(PlayerName): the name plate is rebuilt for the new model (FUN_007e6320, FUN_00719050).
-// PHASE4(ObjectEffect): the ObjectEffect package follows (FUN_00725df0).
 void CGUnit_C::UpdateModel(int32_t force) {
     if (!force && !this->NeedsModelUpdate()) {
         return;
@@ -9614,6 +10177,12 @@ void CGUnit_C::UpdateModel(int32_t force) {
 
     this->m_animFlags |= 0x8000000;
 
+    // The old model's name plate goes with it (0x0073e4ff).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+        this->m_nameDesc = nullptr;
+    }
+
     uint32_t current = this->GetCurrentAnimationId();
 
     model->SetSequenceDoneCallback(&CGUnit_C::OnModelSequenceDone, this->GetGUID());
@@ -9626,6 +10195,9 @@ void CGUnit_C::UpdateModel(int32_t force) {
     this->UpdateDisplayScale(previousModelData ? 1 : 0);
     this->PlaceModel(0.0f);
     model->ForceAnimate();
+
+    // 0x0073e58e
+    this->RebuildNamePlate();
 
     CCharacterComponent::ApplyMonsterGeosets(this->m_model, this->m_displayInfo);
     CCharacterComponent::ReplaceMonsterSkin(this->m_model, this->m_displayInfo, this->m_modelData);
@@ -9706,6 +10278,7 @@ void CGUnit_C::UpdateModel(int32_t force) {
         this->m_model->AttachToParent(this->m_mountModel, 0, nullptr, 0);
     }
 
+    this->UpdateObjectEffectPackage();
     this->m_animFlags &= ~0x8000000u;
 }
 
@@ -9716,14 +10289,15 @@ void CGUnit_C::AddFacingOffset(float delta) {
 }
 
 // ref: FUN_0071c4d0
-// PHASE4(Vehicle_C): a passenger's vehicle (FUN_007599d0) through its seat at +0xf64.
 WOWGUID CGUnit_C::GetCameraTransportGUID() {
+    if (this->m_vehicleCamera && this->m_vehicleCamera->m_state != 0) {
+        return this->m_vehicleCamera->GetRelativeGUID();
+    }
+
     return this->GetTransportGUID();
 }
 
 // ref: FUN_0073e840
-// PHASE4(Vehicle_C): a vehicle's or a passenger's seat follows the loaded model (FUN_00757d10,
-// FUN_00757e70, FUN_00748620).
 void CGUnit_C::OnModelLoaded(CM2Model* model) {
     this->CGObject_C::OnModelLoaded(model);
 
@@ -9772,6 +10346,19 @@ void CGUnit_C::OnModelLoaded(CM2Model* model) {
         this->UpdateBoneMask();
     }
 
+    // A rider's model in: its vehicle's reach grows, and the vehicle re-places it.
+    if (this->m_vehiclePassenger && this->m_vehiclePassenger->m_state == 3) {
+        auto vehicle = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(this->GetTransportGUID(), TYPE_UNIT, ".\\Unit_C.cpp", 0x40fa));
+
+        if (vehicle) {
+            if (vehicle->m_vehicle && vehicle->m_vehicle->m_rec) {
+                vehicle->m_vehicle->UpdatePassengerRadius();
+            }
+
+            vehicle->UpdateWorldObject(0);
+        }
+    }
+
     if (this->m_pendingStateKitSpell) {
         bool still = false;
 
@@ -9800,6 +10387,16 @@ void CGUnit_C::OnModelLoaded(CM2Model* model) {
         }
 
         this->m_pendingStateKitSpell = 0;
+    }
+
+    if (model == this->GetObjectModel()) {
+        if (this->m_vehicle && this->m_vehicle->m_rec && this->m_vehicle->HasStateBits()) {
+            this->m_vehicle->ResyncPassengerAnimations();
+        }
+
+        if (this->m_vehiclePassenger && this->m_vehiclePassenger->IsRidingLiveVehicle()) {
+            this->m_vehiclePassenger->SyncToVehicle();
+        }
     }
 }
 
@@ -9958,7 +10555,6 @@ int32_t CGUnit_C::BuildComponent() {
 }
 
 // ref: FUN_00730f30
-// PHASE4(VehiclePassenger_C): a passenger whose seat hides it stays hidden (+0xf60).
 void CGUnit_C::GetHidden(uint32_t flags, int32_t* hidden, int32_t* hiddenOther) {
     this->CGObject_C::GetHidden(flags, hidden, hiddenOther);
 
@@ -9982,6 +10578,13 @@ void CGUnit_C::GetHidden(uint32_t flags, int32_t* hidden, int32_t* hiddenOther) 
             if (!drawable) {
                 *hiddenOther = 1;
             }
+        }
+
+        // A rider whose seat keeps the camera (0x400) is not drawn.
+        auto ride = this->m_vehiclePassenger;
+
+        if (*hiddenOther == 0 && ride && ride->m_state != 0 && (ride->m_flags & 0x400)) {
+            *hiddenOther = 1;
         }
     } else if (this->m_characterComponent) {
         // FUN_004efed0: the geosets keep up while the unit is hidden.
@@ -10824,10 +11427,126 @@ posted:
 }
 
 // ref: FUN_00721300
-// NOT PORTED: the ObjectEffect movement states (FUN_006f7270 / FUN_006f61d0 switch states 0x25 ..
-// 0x42 on and off by how the unit moves). ObjectEffect.cpp is not ported, so there is nothing for
-// the states to drive yet.
+// The ObjectEffect states of how the unit moves: moving (0x25) or still (0x26), swimming (6) or
+// flying (7), turning (0x2f) or not (0x30), and the pace -- fast (0x31..0x36), walking
+// (0x37..0x3c) or backwards (0x3d..0x42) -- with its forward, backward and strafe variants. Each
+// goes on as the flags call for it and off when they no longer do.
 void CGUnit_C::UpdateMovementEffects() {
+    auto effects = this->m_objectEffects;
+
+    if (!effects) {
+        return;
+    }
+
+    auto flags = [this]() { return this->m_move->m_moveFlags; };
+    auto set = [effects](uint32_t state) { effects->SetState(state, 1, 0); };
+    auto clear = [effects](uint32_t state) { effects->ClearState(state, 1); };
+
+    set((flags() & 0xf) ? 0x25 : 0x26);
+
+    if (flags() & 0x400000) {
+        set(6);
+    } else if (flags() & 0x800000) {
+        set(7);
+    }
+
+    set((flags() & 0x30) ? 0x2f : 0x30);
+
+    // The pace: backwards (0x2000000 is the reference's walk-backward test), fast, or walking.
+    auto setPace = [&](uint32_t base) {
+        set(base);
+
+        if (flags() & 0x1) {
+            set(base + 1);
+        }
+
+        if (flags() & 0x2) {
+            set(base + 2);
+        }
+
+        if (flags() & 0xc) {
+            set(base + 5);
+
+            if (flags() & 0x4) {
+                set(base + 3);
+            }
+
+            if (flags() & 0x8) {
+                set(base + 4);
+            }
+        }
+    };
+
+    if (flags() & 0x2000000) {
+        setPace(0x3d);
+    } else if (this->IsMovingFasterThanWalkPace()) {
+        setPace(0x31);
+    } else if (this->IsMovingAtWalkPace()) {
+        setPace(0x37);
+    }
+
+    // Forward and backward: off for every pace but the one moving.
+    if ((flags() & 0x3) == 0) {
+        for (uint32_t state : { 0x31u, 0x32u, 0x33u, 0x37u, 0x38u, 0x39u, 0x3du, 0x3eu, 0x3fu }) {
+            clear(state);
+        }
+    } else if (flags() & 0x2000000) {
+        for (uint32_t state : { 0x37u, 0x38u, 0x39u, 0x31u, 0x32u, 0x33u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x1) ? 0x3f : 0x3e);
+    } else if (this->IsMovingFasterThanWalkPace()) {
+        for (uint32_t state : { 0x37u, 0x38u, 0x39u, 0x3du, 0x3eu, 0x3fu }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x1) ? 0x33 : 0x32);
+    } else if (this->IsMovingAtWalkPace()) {
+        for (uint32_t state : { 0x3du, 0x3eu, 0x3fu, 0x31u, 0x32u, 0x33u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x1) ? 0x39 : 0x38);
+    }
+
+    // Strafing, the same way.
+    if ((flags() & 0xc) == 0) {
+        for (uint32_t state : { 0x34u, 0x35u, 0x36u, 0x3au, 0x3bu, 0x3cu, 0x40u, 0x41u }) {
+            clear(state);
+        }
+
+        clear(0x42);
+    } else if (flags() & 0x2000000) {
+        for (uint32_t state : { 0x34u, 0x35u, 0x36u, 0x3au, 0x3bu, 0x3cu }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x4) ? 0x41 : 0x40);
+    } else if (this->IsMovingFasterThanWalkPace()) {
+        for (uint32_t state : { 0x3au, 0x3bu, 0x3cu, 0x40u, 0x41u, 0x42u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x4) ? 0x35 : 0x34);
+    } else if (this->IsMovingAtWalkPace()) {
+        for (uint32_t state : { 0x34u, 0x35u, 0x36u, 0x40u, 0x41u, 0x42u }) {
+            clear(state);
+        }
+
+        clear((flags() & 0x4) ? 0x3b : 0x3a);
+    }
+
+    clear((flags() & 0xf) ? 0x26 : 0x25);
+    clear((flags() & 0x30) ? 0x30 : 0x2f);
+
+    if (!(flags() & 0x400000)) {
+        clear(6);
+    }
+
+    if (!(flags() & 0x800000)) {
+        clear(7);
+    }
 }
 
 // ref: FUN_0073ed10
@@ -11034,8 +11753,6 @@ int32_t CGUnit_C::GetFloorHeight(float* height) {
 }
 
 // ref: FUN_00717c50
-// PARTIAL: a transport's own movement hook (FUN_006e8f70, through the transport game object's
-// type slot 0xa8) and the vehicle's (FUN_00747f40) are the transport and vehicle ports'.
 void CGUnit_C::SetActiveMover(WOWGUID guid) {
     CGUnit_C::s_activeMover = guid;
 
@@ -11056,6 +11773,19 @@ void CGUnit_C::SetActiveMover(WOWGUID guid) {
     if (unit && (unit->m_localMove.m_moveFlags & 0xc0100f)) {
         unit->m_localMove.ScheduleHeartbeat(static_cast<int32_t>(now));
     }
+
+    if (unit) {
+        // A passenger's mover takes the transport's clock.
+        if (WOWGUID transport = unit->GetTransportGUID()) {
+            auto object = static_cast<CGGameObject_C*>(ClntObjMgrObjectPtr(transport, TYPE_GAMEOBJECT, ".\\Unit_C.cpp", 0x1f6e));
+
+            if (object && object->m_type) {
+                MovementSetTransportTime(static_cast<uint32_t>(object->m_type->Virtual0A8()));
+            }
+        }
+    }
+
+    VehicleOnActiveMoverChanged(unit);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -11397,8 +12127,8 @@ void CGUnit_C::OnFlagsChanged(uint32_t old) {
 // lock (0x10) re-runs the model, disarming the off hand (0x80) and the ranged weapon (0x400)
 // move those weapons, and the active player's 0x40 re-runs its movement.
 //
-// PARTIAL: the pet's sound on feigning (FUN_007474b0) and the action bar refreshes (FUN_0053cf10,
-// FUN_004fb530's script event 0xf0 is sent) are the pet-sound and UI ports'.
+// PARTIAL: the action bar refreshes (FUN_0053cf10, FUN_004fb530's script event 0xf0 is sent) are
+// the UI's.
 void CGUnit_C::OnFlags2Changed(uint32_t old) {
     uint32_t now = this->m_unit->flags2;
     uint32_t changed = now ^ old;
@@ -11602,8 +12332,7 @@ void CGUnit_C::OnResurrect(int32_t silent) {
 // PARTIAL, each the subsystem's own: the player's death UI (FUN_006dc0f0), the corpse spell
 // visuals (FUN_008063e0), the target and party refreshes (FUN_0071ee70, InPartyOrRaid), the
 // missiles it fired (FUN_00703730), the name plate (FUN_0098ee30), the interaction window it had
-// open (FUN_00518d50), and the creature-type pieces of the death pose (FUN_00752ed0, FUN_00746340,
-// the pet's death sound FUN_007474b0).
+// open (FUN_00518d50).
 void CGUnit_C::OnDeath() {
     this->m_attackTarget = 0;
 
@@ -11612,8 +12341,7 @@ void CGUnit_C::OnDeath() {
     }
 
     if (!this->m_vehiclePassenger || this->m_vehiclePassenger->m_state != 3 || (this->m_unit->flags2 & 0x20000)) {
-        // FUN_007561e0
-        this->PlayDeathPose(0);
+        UnitOnLeftVehicle(this);
     }
 
     if (!this->m_creatureStats || !(this->m_creatureStats->m_typeFlags & 0x80)) {
@@ -11969,8 +12697,7 @@ void CGUnit_C::UpdateWheels() {
 // at most and the head the rest), the turn-in-place shuffle, the wheels, and the regeneration
 // lock's model flag.
 //
-// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the target's name plate blink (FUN_00729740) and the name
-// plate step (FUN_007e6390), the scripted alpha timer (+0xb28), the missiles in flight
+// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the scripted alpha timer (+0xb28), the missiles in flight
 // (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), a vehicle
 // seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
 // kits (FUN_00728140, +0xf4c).
@@ -11980,6 +12707,40 @@ void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
     if (static_cast<int32_t>(now - this->m_breathCheckTime) >= 0) {
         this->UpdateBreathState(now);
     }
+
+    // The locked target's name blinks while the player is attacking it (state 0x10): the shared
+    // highlight colour's green swings every half second (0x0073db0b).
+    if (this->GetGUID() == CGGameUI::GetLockedTarget()) {
+        auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.h", 0xa0));
+
+        if (!player || ((!(player->m_viewFlags & 0x2) && player->m_attackTarget == 0) || !player->CanAttack(this))) {
+            if (this->m_stateFlags & 0x10) {
+                this->m_stateFlags &= ~0x10u;
+                PlayerNameInvalidateReaction(this->m_nameDesc);
+            }
+        } else {
+            this->m_stateFlags |= 0x10;
+
+            if (static_cast<int32_t>(now - CGUnit_C::s_attackBlinkTime - 500) >= 0) {
+                CGUnit_C::s_attackBlinkOn = CGUnit_C::s_attackBlinkOn == 0;
+                CGUnit_C::s_attackBlinkTime = now;
+            }
+
+            float blink = static_cast<float>(static_cast<int32_t>(CGUnit_C::s_attackBlinkTime - now) + 500) * 0.002f;
+
+            if (CGUnit_C::s_attackBlinkOn) {
+                blink = 1.0f - blink;
+            }
+
+            CGUnit_C::s_attackBlinkColor.g = static_cast<uint8_t>(static_cast<int32_t>(std::lrint(blink * 128.0f)));
+            PlayerNameInvalidateReaction(this->m_nameDesc);
+        }
+    } else if (this->m_stateFlags & 0x10) {
+        this->m_stateFlags &= ~0x10u;
+        PlayerNameInvalidateReaction(this->m_nameDesc);
+    }
+
+    PlayerNameUpdate(this->m_nameDesc);
 
     this->UpdateModelColor();
 
@@ -12701,8 +13462,6 @@ void CGUnit_C::GetFootprint(int32_t* texture, C2Vector* size) {
 // shake, and within twenty-five yards, walking or running forward, the terrain's spray -- or a
 // splash in water shallower than half the unit's height.
 //
-// PARTIAL: the footprint itself (FUN_0077f040 -> FUN_0079fa70, the map's decal list) is phase 2's
-// footprint port; with it unported nothing is laid down.
 void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
     if (this->m_unit->petNumber != 0 || (this->m_move->m_moveFlags & 0x40000000)
         || (static_cast<uint8_t>(this->m_unit->bytes1 >> 16) & 0x2) || this->GetTransportGUID() != 0) {
@@ -12729,7 +13488,15 @@ void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
         return;
     }
 
-    (void)left;
+    // The footprint (FUN_0077f040 -> FUN_0079fa70), unless the model leaves none (flag 0x20).
+    if ((CWorld::s_enables & CWorld::Enable_Footprints) && !(this->m_modelData && (this->m_modelData->m_flags & 0x20))) {
+        int32_t texture = 0;
+        C2Vector size = { 0.0f, 0.0f };
+        this->GetFootprint(&texture, &size);
+
+        FootprintAdd(static_cast<uint32_t>(texture), size, *position, this->GetFacing(), left == 0, this->m_terrainType,
+                     this->GetGUID() == ClntObjMgrGetActivePlayer());
+    }
 
     auto modelData = this->m_modelData;
 
@@ -12809,10 +13576,7 @@ void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
 
 // ref: FUN_0071fa90
 // Every ten seconds: a unit deep under water (more than five yards past its own height) breathes
-// bubbles (state 0x20).
-//
-// PARTIAL: the cold-air breath (state 0x40, FUN_0078f1f0 over the area's WorldParam) is the
-// world parameters port's.
+// bubbles (state 0x20); otherwise one in a snowy area breathes cold air (state 0x40).
 void CGUnit_C::UpdateBreathState(uint32_t time) {
     this->m_stateFlags &= 0xFFFFFF9F;
 
@@ -12825,7 +13589,13 @@ void CGUnit_C::UpdateBreathState(uint32_t time) {
 
         if (height + 5.0f < surface - this->GetPosition().z) {
             this->m_stateFlags |= 0x20;
+            this->m_breathCheckTime = time + 10000;
+            return;
         }
+    }
+
+    if (CWorld::IsEntityInSnow(reinterpret_cast<CMapStaticEntity*>(this->m_worldObject))) {
+        this->m_stateFlags |= 0x40;
     }
 
     this->m_breathCheckTime = time + 10000;
@@ -12882,13 +13652,27 @@ void CGUnit_C::SetMissileLaunchPoint(const C3Vector& point) {
 // The animation event dispatch.
 //
 // PARTIAL, each the subsystem's own port: the missile a bow or gun releases ("$BWR", "$CSL",
-// "$CSR", "$CST" with a held missile at +0x9ec), the combat events ("$AH#", "$CAH", "$DTH",
-// "$BWP", "$CPP", "$CSS", FUN_00756240, UnitCombat_C), the spell cast sound ("$CSD",
-// FUN_00746d60), the trade-skill event ("$TRD", FUN_00763570), and the vehicle's ("$VG#",
-// FUN_00757060; "$VT#", FUN_007570f0).
+// "$CSR", "$CST" with a held missile at +0x9ec), the trade-skill event ("$TRD", FUN_00763570),
+// and the vehicle's ("$VG#", FUN_00757060; "$VT#", FUN_007570f0).
 void CGUnit_C::OnAnimEvent(CM2Model* model, uint32_t eventId, uint32_t eventData, const C3Vector* position) {
     (void)model;
-    (void)eventData;
+
+    // The combat events (FUN_00756240) and the spell cast sound ("$CSD", FUN_00746d60).
+    static const char* const s_combatEvents[] = {
+        "$AH0", "$AH1", "$AH2", "$AH3", "$CAH", "$DTH", "$BWP", "$CPP", "$CSS",
+    };
+
+    for (auto tag : s_combatEvents) {
+        if (eventId == EventId(tag)) {
+            UnitCombatAnimEvent(this, eventId, eventData, position);
+            return;
+        }
+    }
+
+    if (eventId == EventId("$CSD")) {
+        UnitPlayVoiceSound(this, static_cast<int32_t>(eventData), 1, 0xffffffff);
+        return;
+    }
 
     int32_t left = 0;
 
@@ -13146,136 +13930,13 @@ bool CGUnit_C::KnowsHigherRank(int32_t spellID) const {
     return false;
 }
 
-// ref: FUN_0071f5c0
-// Two PvP-flagged units are dueling when their controlling players share a duel arbiter on
-// opposite teams, or -- when only one side is player-controlled and that is the active player --
-// when the other is the duel opponent's pet or summon.
-bool CGUnit_C::IsInDuelWith(CGUnit_C* other) {
-    if (!other || !other->IsA(TYPE_UNIT)) {
-        return false;
-    }
-
-    if (!((this->Unit()->flags >> 3) & 1) || !((other->Unit()->flags >> 3) & 1)) {
-        return false;
-    }
-
-    auto mine = this->IsA(TYPE_PLAYER) ? this : this->GetControllingPlayer();
-    auto theirs = other->IsA(TYPE_PLAYER) ? other : other->GetControllingPlayer();
-
-    if (!mine || !theirs) {
-        WOWGUID owner;
-
-        if (this->GetGUID() == ClntObjMgrGetActivePlayer() && !theirs) {
-            owner = other->GetCharmerOrCreator();
-        } else if (other->GetGUID() == ClntObjMgrGetActivePlayer() && !mine) {
-            owner = this->GetCharmerOrCreator();
-        } else {
-            return false;
-        }
-
-        return owner != 0 && owner == DuelInfoGetOpponent();
-    }
-
-    auto mineData = static_cast<CGPlayer_C*>(mine)->Player();
-    auto theirData = static_cast<CGPlayer_C*>(theirs)->Player();
-
-    return mineData->duelTeam != 0 && theirData->duelTeam != 0 && mineData->duelArbiter == theirData->duelArbiter && mineData->duelTeam != theirData->duelTeam;
-}
-
-// ref: FUN_007251c0
-// The reaction the client colours and targets by. Between PvP-flagged units it is settled by
-// duels (hostile across a duel, friendly within one), by the same controlling player, and by the
-// active player's party and raid; then free-for-all PvP makes everyone hostile; then a unit the
-// active player controls sees the other's faction through the player's reputation; then the
-// faction templates, capped at exalted.
-int32_t CGUnit_C::GetUnitReaction(CGUnit_C* other) {
-    if (other == this) {
-        return 4;
-    }
-
-    auto data = this->Unit();
-
-    if (((data->flags >> 3) & 1) && ((other->Unit()->flags >> 3) & 1)) {
-        auto mine = this->GetControllingPlayer();
-        auto theirs = other->GetControllingPlayer();
-        bool settled = false;
-
-        if (!mine || !theirs) {
-            if (this->GetGUID() == ClntObjMgrGetActivePlayer() && !theirs) {
-                if (this->IsInDuelWith(other)) {
-                    return 1;
-                }
-            } else if (other->GetGUID() == ClntObjMgrGetActivePlayer() && !mine) {
-                if (other->IsInDuelWith(this)) {
-                    return 1;
-                }
-            }
-        } else {
-            auto mineData = static_cast<CGPlayer_C*>(mine)->Player();
-            auto theirData = static_cast<CGPlayer_C*>(theirs)->Player();
-
-            if (mineData->duelTeam != 0 && theirData->duelTeam != 0 && mineData->duelArbiter == theirData->duelArbiter) {
-                return mineData->duelTeam != theirData->duelTeam ? 1 : 4;
-            }
-
-            if (mine == theirs) {
-                return 4;
-            }
-
-            if (mine->GetGUID() == ClntObjMgrGetActivePlayer()
-                && (CGPartyInfo::IsPlayerOrMember(theirs->GetGUID()) || CGRaidInfo::IndexOf(theirs->GetGUID()) != 0)) {
-                settled = true;
-            } else if (theirs->GetGUID() == ClntObjMgrGetActivePlayer()
-                && (CGPartyInfo::IsPlayerOrMember(mine->GetGUID()) || CGRaidInfo::IndexOf(mine->GetGUID()) != 0)) {
-                settled = true;
-            }
-
-            if (settled) {
-                return CGUnit_C::GetReaction(data->factionTemplate, other);
-            }
-        }
-
-        if (((data->bytes2 >> 8) & 4) && ((other->Unit()->bytes2 >> 8) & 4)) {
-            return 1;
-        }
-    }
-
-    if ((data->flags >> 3) & 1) {
-        auto controller = this->GetControllingPlayer();
-
-        if (controller && controller->GetGUID() == ClntObjMgrGetActivePlayer()) {
-            auto theirTemplate = g_factionTemplateDB.GetRecord(other->Unit()->factionTemplate);
-
-            if (theirTemplate) {
-                int32_t forced;
-
-                if (ReputationGetForcedReaction(theirTemplate->m_faction, &forced)) {
-                    return forced;
-                }
-
-                if (!((controller->Unit()->flags2 >> 2) & 1) && FactionHasReputation(theirTemplate->m_faction)) {
-                    if ((theirTemplate->m_flags & 0x1000) && ((static_cast<CGPlayer_C*>(controller)->Player()->flags >> 8) & 1)) {
-                        return 1;
-                    }
-
-                    return ReputationIsAtWar(theirTemplate->m_faction) ? 1 : 4;
-                }
-            }
-        }
-    }
-
-    auto reaction = CGUnit_C::GetReaction(data->factionTemplate, other);
-
-    return reaction > 6 ? 7 : reaction;
-}
-
 // ref: FUN_007279a0
 float CGUnit_C::GetReputationDiscount(CGUnit_C* other) {
     auto factionTemplate = g_factionTemplateDB.GetRecord(this->Unit()->factionTemplate);
     auto faction = factionTemplate ? g_factionDB.GetRecord(factionTemplate->m_faction) : nullptr;
 
     if (faction && faction->m_reputationIndex >= 0) {
-        switch (this->GetUnitReaction(other)) {
+        switch (this->UnitReaction(other)) {
             case 4: return 0.05f;
             case 5: return 0.1f;
             case 6: return 0.15f;
@@ -13288,249 +13949,8 @@ float CGUnit_C::GetReputationDiscount(CGUnit_C* other) {
 }
 
 // ref: FUN_00514080
-bool CGUnit_C::IsHostileTo(CGUnit_C* other) {
-    return this->GetUnitReaction(other) <= 1;
-}
-
-// ref: FUN_00514050
-bool CGUnit_C::IsFriendlyTo(CGUnit_C* other) {
-    return this->GetUnitReaction(other) >= 4 || this->GetCreatureTypeFlag26();
-}
-
-// ref: FUN_007293d0
-bool CGUnit_C::CanAssist(CGUnit_C* other, bool ignoreFlags) {
-    auto mine = this->Unit();
-    auto theirs = other->Unit();
-
-    // 0x2000000: not selectable.
-    if (theirs->flags & 0x2000000) {
-        return false;
-    }
-
-    if (!ignoreFlags) {
-        // 0x8 is "controlled by a player"; 0x100 and 0x200 make a unit immune to players and to
-        // creatures.
-        bool playerControlled = (mine->flags & 0x8) != 0;
-
-        if (playerControlled && (theirs->flags & 0x100)) {
-            return false;
-        }
-
-        if (!playerControlled && (theirs->flags & 0x200)) {
-            return false;
-        }
-    }
-
-    if (this->GetUnitReaction(other) < 4 && !(this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x4000000))) {
-        return false;
-    }
-
-    if (theirs->flags & 0x8) {
-        auto mineController = this->GetControllingPlayer();
-        auto theirController = other->GetControllingPlayer();
-
-        // Two players in a duel cannot help one another across it.
-        if (mineController && theirController) {
-            auto a = static_cast<CGPlayer_C*>(mineController)->Player();
-            auto b = static_cast<CGPlayer_C*>(theirController)->Player();
-
-            if (b->duelTeam && (a->duelArbiter != b->duelArbiter || a->duelTeam != b->duelTeam)) {
-                return false;
-            }
-        }
-
-        // UNIT_FIELD_BYTES_2 byte 1: 0x1 PvP, 0x4 free-for-all PvP, 0x8 sanctuary.
-        auto theirPvp = static_cast<uint8_t>(theirs->bytes2 >> 8);
-        auto minePvp = static_cast<uint8_t>(mine->bytes2 >> 8);
-
-        if ((theirPvp & 0x4) && !(minePvp & 0x4)) {
-            return false;
-        }
-
-        if ((minePvp & 0x8) && !(theirPvp & 0x8) && (theirPvp & 0x1)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    if ((mine->flags & 0x8) && !ignoreFlags && !(static_cast<uint8_t>(theirs->bytes2 >> 8) & 0x1)
-        && !other->GetCreatureTypeFlag12() && !other->GetCreatureTypeFlag26()) {
-        return false;
-    }
-
-    return true;
-}
-
-// ref: FUN_00729740
-bool CGUnit_C::CanAttack(CGUnit_C* other) {
-    auto mine = this->Unit();
-    auto theirs = other->Unit();
-
-    // A player on a taxi (player flag 0x80000) attacks nothing.
-    if (this->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(this)->Player()->flags & 0x80000)) {
-        return false;
-    }
-
-    // Two players who are both ghosts (player flag 0x10), unless this unit's template lets a ghost
-    // be seen (type flag 0x2).
-    if (other->IsA(TYPE_PLAYER) && (static_cast<CGPlayer_C*>(other)->Player()->flags & 0x10)
-        && !(this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x2))) {
-        return false;
-    }
-
-    // Not attackable (0x2), not selectable (0x2000000), and three more flags that rule the unit out
-    // as a target: 0x80 (pacified), 0x10000 (in combat with nothing it may touch), 0x100000.
-    auto flags = theirs->flags;
-
-    if ((flags & 0x2) || (flags & 0x100000) || (flags & 0x80) || (flags & 0x10000) || (flags & 0x2000000)) {
-        return false;
-    }
-
-    flags = mine->flags;
-
-    if ((flags & 0x8) && (theirs->flags & 0x100)) {
-        return false;
-    }
-
-    if (!(flags & 0x8) && (theirs->flags & 0x200)) {
-        return false;
-    }
-
-    if ((theirs->flags & 0x8) && (flags & 0x100)) {
-        return false;
-    }
-
-    if (!(theirs->flags & 0x8) && (flags & 0x200)) {
-        return false;
-    }
-
-    // A vehicle whose row says so (0x20000000) cannot be attacked by what rides it, nor attack it.
-    if ((mine->flags2 & 0x10000) || (theirs->flags2 & 0x10000)) {
-        auto myRec = this->m_vehicle ? this->m_vehicle->m_rec : nullptr;
-        auto theirRec = other->m_vehicle ? other->m_vehicle->m_rec : nullptr;
-
-        if (myRec && (myRec->m_flags & 0x20000000) && other->GetVehicleRoot(this) == this) {
-            return false;
-        }
-
-        if (theirRec && (theirRec->m_flags & 0x20000000) && this->GetVehicleRoot(other) == other) {
-            return false;
-        }
-    }
-
-    bool minePlayer = (mine->flags & 0x8) != 0;
-    bool theirPlayer = (theirs->flags & 0x8) != 0;
-
-    if (!minePlayer && !theirPlayer) {
-        return this->IsHostileTo(other) || other->IsHostileTo(this);
-    }
-
-    auto minePvp = static_cast<uint8_t>(mine->bytes2 >> 8);
-    auto theirPvp = static_cast<uint8_t>(theirs->bytes2 >> 8);
-
-    if (minePlayer && theirPlayer) {
-        if (this->IsFriendlyTo(other)) {
-            return false;
-        }
-
-        auto mineController = this->GetControllingPlayer();
-        auto theirController = other->GetControllingPlayer();
-
-        if (!mineController || !theirController) {
-            if (minePvp & 0x8) {
-                return false;
-            }
-
-            return !(theirPvp & 0x8);
-        }
-
-        auto a = static_cast<CGPlayer_C*>(mineController)->Player();
-        auto b = static_cast<CGPlayer_C*>(theirController)->Player();
-
-        // Duelling each other.
-        if (a->duelTeam && b->duelTeam && a->duelArbiter == b->duelArbiter) {
-            return true;
-        }
-
-        if (theirPvp & 0x1) {
-            if (minePvp & 0x8) {
-                return false;
-            }
-
-            return !(theirPvp & 0x8);
-        }
-
-        if ((minePvp & 0x4) && (theirPvp & 0x4)) {
-            return true;
-        }
-
-        if (!(minePvp & 0x2) && !(theirPvp & 0x2)) {
-            return false;
-        }
-
-        if (minePvp & 0x8) {
-            return false;
-        }
-
-        return !(theirPvp & 0x8);
-    }
-
-    if (minePlayer && (theirPvp & 0x8)) {
-        return false;
-    }
-
-    if (theirPlayer && (minePvp & 0x8)) {
-        return false;
-    }
-
-    return !this->IsFriendlyTo(other);
-}
-
-// ref: FUN_0074c650
-CGUnit_C* CGUnit_C::GetVehicleRoot(CGUnit_C* other) {
-    if (this == other && this->m_vehicle && this->m_vehicle->m_rec) {
-        return this;
-    }
-
-    // A transport guid that is a vehicle's (0xF05) or a player's.
-    auto ridesUnit = [](WOWGUID guid) {
-        auto high = static_cast<uint32_t>(guid >> 32);
-
-        if ((high & 0xF0F00000) == 0xF0500000) {
-            return true;
-        }
-
-        return (high & 0xF0000000) == 0 && (static_cast<uint32_t>(guid) != 0 || (high & 0xF07FFFFF) != 0);
-    };
-
-    auto transport = this->GetTransportGUID();
-
-    if (!ridesUnit(transport)) {
-        if (this->m_vehicle && this->m_vehicle->m_rec) {
-            return this;
-        }
-
-        return nullptr;
-    }
-
-    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(transport, TYPE_UNIT, __FILE__, __LINE__));
-
-    while (unit) {
-        if (unit == other) {
-            return unit;
-        }
-
-        transport = unit->GetTransportGUID();
-
-        if (!ridesUnit(transport)) {
-            return unit;
-        }
-
-        unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(transport, TYPE_UNIT, __FILE__, __LINE__));
-    }
-
-    return nullptr;
+bool CGUnit_C::IsHostileTo(const CGUnit_C* other) const {
+    return this->UnitReaction(other) <= 1;
 }
 
 // ref: FUN_00715d70
@@ -13564,67 +13984,6 @@ int32_t CharTitlesGetIDByMask(int32_t maskID) {
     }
 
     return 0;
-}
-
-// ref: FUN_0072a290
-char* CGUnit_C::GetPVPName(char* buffer, uint32_t size, bool withTitle, int32_t* lines) {
-    if (lines) {
-        *lines = 1;
-    }
-
-    if (!this->IsA(TYPE_PLAYER) || !withTitle) {
-        SStrCopy(buffer, this->GetUnitName(nullptr, 1), size);
-
-        return buffer;
-    }
-
-    auto player = static_cast<CGPlayer_C*>(this)->Player();
-
-    if (player->chosenTitle < 1) {
-        SStrCopy(buffer, this->GetUnitName(nullptr, 1), size);
-
-        return buffer;
-    }
-
-    auto title = g_charTitlesDB.GetRecord(CharTitlesGetIDByMask(player->chosenTitle));
-
-    if (!title) {
-        return buffer;
-    }
-
-    // The title in the player's own gender, falling back on the other when that one is empty. The
-    // active player's gender comes from its player fields, anyone else's from its unit fields.
-    uint8_t sex = this->GetGUID() == ClntObjMgrGetActivePlayer()
-        ? player->bytes_3_1
-        : static_cast<uint8_t>(this->Unit()->bytes0 >> 16);
-
-    const char* format;
-
-    if (sex == 1) {
-        format = title->m_name1 && *title->m_name1 ? title->m_name1 : title->m_name;
-    } else {
-        format = title->m_name && *title->m_name ? title->m_name : title->m_name1;
-    }
-
-    char text[400];
-    SStrCopy(text, format ? format : "", sizeof(text));
-
-    SStrPrintf(buffer, size, text, this->GetUnitName(nullptr, 1));
-
-    // UNIT_FIELD_BYTES_3 byte 2, the PvP rank, adds a second line.
-    if (player->bytes_3_3) {
-        char key[32];
-        SStrPrintf(key, sizeof(key), "PVP_MEDAL%d", player->bytes_3_3);
-
-        SStrPack(buffer, "\n", size);
-        SStrPack(buffer, FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE), size);
-
-        if (lines) {
-            *lines = 2;
-        }
-    }
-
-    return buffer;
 }
 
 // ref: FUN_0072aa70
@@ -13732,4 +14091,757 @@ WOWGUID StringToGUID(const char* string) {
     }
 
     return guid;
+}
+
+// ref: FUN_00730290
+// A mirror image's appearance: for the display it still wears, either the creature's own baked
+// look (race 0) or a whole character -- race, sex, class, the five appearance choices, the guild
+// and the eleven visible items -- built as a player's would be.
+//
+// PARTIAL: a guild tabard's emblem (FUN_007eada0 through the guild cache, then FUN_004ec1c0) is the
+// guild cache's, which frozen does not have yet; the tabard itself is dressed.
+void CGUnit_C::ReceiveMirrorImageData(CDataStore* msg) {
+    ComponentData data;
+
+    this->m_stateFlags &= ~0x20000u;
+
+    if (!this->m_model || !this->m_model->IsLoaded(0, 0)) {
+        return;
+    }
+
+    uint32_t displayID;
+    msg->Get(displayID);
+
+    if (static_cast<int32_t>(displayID) != this->m_unit->displayID) {
+        msg->Seek(msg->Size());
+        return;
+    }
+
+    uint8_t value;
+    msg->Get(value);
+    data.raceID = value;
+
+    if (data.raceID == 0) {
+        if (auto extra = this->m_displayInfoExtra) {
+            this->m_characterComponent = CCharacterComponent::AllocComponent();
+
+            // FUN_00715930
+            const char* bake = extra->m_bakeName;
+
+            if (!bake || !bake[0]) {
+                return;
+            }
+
+            data.raceID = extra->m_displayRaceID;
+            data.sexID = extra->m_displaySexID;
+            data.classID = 0;
+            data.skinColorID = extra->m_skinID;
+            data.faceID = extra->m_faceID;
+            data.hairStyleID = extra->m_hairStyleID;
+            data.hairColorID = extra->m_hairColorID;
+            data.facialHairStyleID = extra->m_facialHairID;
+            data.flags |= 0x1;
+            SStrPrintf(data.npcBakedTexturePath, sizeof(data.npcBakedTexturePath), "%s%s", "Textures\\BakedNpcTextures\\", bake);
+            data.model = this->m_model;
+            data.model->m_refCount++;
+
+            this->m_characterComponent->Init(&data, nullptr);
+
+            if (this->m_characterComponent && this->m_displayInfoExtra) {
+                for (int32_t slot = 0; slot < 11; slot++) {
+                    int32_t item = this->m_displayInfoExtra->m_npcitemDisplay[slot];
+
+                    if (item) {
+                        this->m_characterComponent->AddItem(static_cast<ITEM_SLOT>(slot), item, 0);
+                    }
+                }
+            }
+        }
+    } else {
+        msg->Get(value);
+        data.sexID = value;
+        msg->Get(value);
+        data.classID = value;
+        msg->Get(value);
+        data.skinColorID = value;
+        msg->Get(value);
+        data.faceID = value;
+        msg->Get(value);
+        data.hairStyleID = value;
+        msg->Get(value);
+        data.hairColorID = value;
+        msg->Get(value);
+        data.facialHairStyleID = value;
+
+        uint32_t guildID;
+        msg->Get(guildID);
+
+        this->m_characterComponent = CCharacterComponent::AllocComponent();
+        data.model = this->m_model;
+
+        if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            data.flags |= 0x2;
+        } else {
+            data.flags &= ~0x2u;
+        }
+
+        data.model->m_refCount++;
+
+        CCharacterComponent::ValidateComponentData(&data, static_cast<COMPONENT_CONTEXT>(1));
+        this->m_characterComponent->Init(&data, nullptr);
+
+        // The visible slots, in the order the server writes them (FUN_004f2880 maps each to its
+        // section).
+        static const INVENTORY_SLOTS s_slots[] = {
+            static_cast<INVENTORY_SLOTS>(0), static_cast<INVENTORY_SLOTS>(2), static_cast<INVENTORY_SLOTS>(3),
+            static_cast<INVENTORY_SLOTS>(4), static_cast<INVENTORY_SLOTS>(5), static_cast<INVENTORY_SLOTS>(6),
+            static_cast<INVENTORY_SLOTS>(7), static_cast<INVENTORY_SLOTS>(8), static_cast<INVENTORY_SLOTS>(9),
+            static_cast<INVENTORY_SLOTS>(0xe), static_cast<INVENTORY_SLOTS>(0x12),
+        };
+
+        for (auto slot : s_slots) {
+            uint32_t item;
+            msg->Get(item);
+
+            if (item) {
+                this->m_characterComponent->AddItemBySlot(slot, static_cast<int32_t>(item), 0);
+            }
+        }
+
+        // TODO(GuildCache): the tabard's emblem for `guildID` (FUN_007eada0 / FUN_004ec1c0).
+        (void)guildID;
+    }
+
+    this->AttachHandItem(0);
+    this->AttachHandItem(1);
+    this->AttachHandItem(2);
+    this->ApplyItemVisualEffects();
+
+    // FUN_00512b50
+    PortraitRefresh(this->GetGUID(), 3);
+
+    this->m_stateFlags &= ~0x400000u;
+}
+
+// ---- threat (Unit_C.cpp) --------------------------------------------------------------------
+
+// ref: FUN_007416f0
+// The entry for `guid`, made when there is none: a new one starts below the tank with no percent
+// yet, and the game UI learns that this unit holds threat against it.
+CThreatEntry* CGUnit_C::AddThreatEntry(const WOWGUID& guid) {
+    CHashKeyGUID key(guid);
+    auto entry = this->m_threatList.Ptr(static_cast<uint32_t>(guid), key);
+
+    if (entry) {
+        return entry;
+    }
+
+    // FUN_0072cd90 / FUN_0073f200
+    entry = this->m_threatList.New(static_cast<uint32_t>(guid), key, 0, 0);
+    entry->m_guid = guid;
+    entry->m_status = 1;
+    entry->m_percent = 0xff;
+    entry->m_threat = 0;
+
+    if (guid == ClntObjMgrGetActivePlayer()) {
+        this->m_stateFlags |= 0x8;
+    }
+
+    GameUIAddThreatUnit(this->GetGUID(), guid);
+
+    return entry;
+}
+
+// ref: FUN_0071c3b0
+// An entry's percentage of `topThreat` (capped at 250), and the low/high status that follows from
+// it. When `notify` -- the entry is the player -- crossing over plays the warning and floats the
+// world text. True when the status changed.
+//
+// PARTIAL: the tooltip's refresh for this unit (FUN_00512ab0) is the tooltip's.
+bool CGUnit_C::UpdateThreatPercent(CThreatEntry* entry, int32_t topThreat, bool notify) {
+    uint8_t percent;
+
+    if (topThreat == 0) {
+        percent = 100;
+    } else if (entry->m_threat < 1) {
+        percent = 0;
+    } else {
+        int64_t scaled = static_cast<int64_t>(entry->m_threat) * 100 / topThreat;
+        percent = 249 < scaled ? 250 : static_cast<uint8_t>(scaled);
+    }
+
+    if (percent == entry->m_percent) {
+        return false;
+    }
+
+    entry->m_percent = percent;
+
+    uint8_t status = percent < 100 ? 1 : 2;
+    bool changed = false;
+
+    if (status != entry->m_status) {
+        if (notify) {
+            auto sounds = CGGameUI::s_threatPlaySoundsCvar;
+
+            if (sounds && sounds->GetInt() != 0 && status == 2 && entry->m_status == 1) {
+                SI2::PlayUISound(0x3b9e);
+            }
+
+            if (!(this->m_stateFlags & 0x8)) {
+                this->ShowThreatWorldText(entry->m_status, status);
+            }
+        }
+
+        entry->m_status = status;
+        ScriptEventsQueueUnitEvent(entry->m_guid, 0x262);
+        changed = true;
+    }
+
+    if (notify) {
+        this->m_stateFlags &= ~0x8u;
+    }
+
+    return changed;
+}
+
+// ref: FUN_00737620
+// The tank's own status: secure (4), or insecure (3) while anyone else is above it.
+//
+// PARTIAL: the tooltip's refresh for this unit (FUN_00512ab0) is the tooltip's.
+void CGUnit_C::UpdateThreatTargetStatus() {
+    CHashKeyGUID key(this->m_threatTarget);
+    auto top = this->m_threatList.Ptr(static_cast<uint32_t>(this->m_threatTarget), key);
+
+    if (!top) {
+        return;
+    }
+
+    uint8_t status = 4;
+
+    for (auto entry = this->m_threatList.Head(); entry; entry = this->m_threatList.Next(entry)) {
+        if (entry->m_guid != this->m_threatTarget && entry->m_status == 2) {
+            status = 3;
+        }
+    }
+
+    WOWGUID player = ClntObjMgrGetActivePlayer();
+
+    if (status != top->m_status) {
+        if (this->m_threatTarget == player && !(this->m_stateFlags & 0x8)) {
+            this->ShowThreatWorldText(top->m_status, status);
+
+            auto sounds = CGGameUI::s_threatPlaySoundsCvar;
+
+            if (sounds && sounds->GetInt() != 0) {
+                SI2::PlayUISound(0x3b9f);
+            }
+        }
+
+        top->m_status = status;
+        ScriptEventsQueueUnitEvent(this->m_threatTarget, 0x262);
+    }
+
+    if (this->m_threatTarget != player) {
+        return;
+    }
+
+    this->m_stateFlags &= ~0x8u;
+}
+
+// ref: FUN_007417a0
+// SMSG_THREAT_UPDATE's body: each (guid, threat) pair, with SMSG_HIGHEST_THREAT_UPDATE's new top
+// first. Every percentage is retaken against the top's threat -- the whole table when the top
+// moved or was named, otherwise just the entries the message carried.
+void CGUnit_C::ReceiveThreatUpdate(CDataStore* msg, bool highest) {
+    WOWGUID player = ClntObjMgrGetActivePlayer();
+    bool everyone = highest;
+
+    if (highest) {
+        SmartGUID top;
+        *msg >> top;
+
+        this->m_threatTarget = top;
+
+        if (this->m_threatTarget) {
+            this->AddThreatEntry(this->m_threatTarget);
+        }
+    }
+
+    uint32_t count;
+    msg->Get(count);
+
+    TSGrowableArray<CThreatEntry*> updated;
+    updated.SetCount(count);
+
+    for (uint32_t i = 0; i < count; i++) {
+        SmartGUID guid;
+        *msg >> guid;
+
+        uint32_t threat;
+        msg->Get(threat);
+
+        WOWGUID id = guid;
+        auto entry = this->AddThreatEntry(id);
+        entry->m_threat = static_cast<int32_t>(threat);
+
+        if (id == this->m_threatTarget) {
+            everyone = true;
+        }
+
+        updated[i] = entry;
+    }
+
+    CHashKeyGUID key(this->m_threatTarget);
+    auto top = this->m_threatList.Ptr(static_cast<uint32_t>(this->m_threatTarget), key);
+    bool changed = false;
+
+    if (this->m_threatTarget && top) {
+        int32_t topThreat = top->m_threat;
+
+        if (everyone) {
+            for (auto entry = this->m_threatList.Head(); entry; entry = this->m_threatList.Next(entry)) {
+                if (entry->m_guid != this->m_threatTarget && this->UpdateThreatPercent(entry, topThreat, player == entry->m_guid)) {
+                    changed = true;
+                }
+            }
+        } else {
+            for (uint32_t i = 0; i < count; i++) {
+                auto entry = updated[i];
+
+                if (entry->m_guid != this->m_threatTarget && this->UpdateThreatPercent(entry, topThreat, player == entry->m_guid)) {
+                    changed = true;
+                }
+            }
+        }
+    }
+
+    if (highest || changed) {
+        this->UpdateThreatTargetStatus();
+    }
+
+    ScriptEventsQueueUnitEvent(this->GetGUID(), 0x261);
+}
+
+// ref: FUN_00737750
+// SMSG_THREAT_REMOVE's body: `guid` leaves the table. Losing anyone but the tank above it may
+// leave the tank secure again.
+//
+// PARTIAL: the tooltip's refresh when the player left (FUN_00512ab0) is the tooltip's.
+void CGUnit_C::RemoveThreatEntry(const WOWGUID& guid) {
+    CHashKeyGUID key(guid);
+    auto entry = this->m_threatList.Ptr(static_cast<uint32_t>(guid), key);
+
+    if (!entry) {
+        return;
+    }
+
+    bool retake = false;
+
+    if (guid == this->m_threatTarget) {
+        this->m_threatTarget = 0;
+    } else if (1 < entry->m_status) {
+        retake = true;
+    }
+
+    WOWGUID removed = guid;
+
+    GameUIRemoveThreatUnit(this->GetGUID(), removed);
+
+    // FUN_00723270 / ObjectFree
+    this->m_threatList.Delete(entry);
+
+    ScriptEventsQueueUnitEvent(removed, 0x262);
+
+    if (retake) {
+        this->UpdateThreatTargetStatus();
+    }
+
+    ScriptEventsQueueUnitEvent(this->GetGUID(), 0x261);
+}
+
+// ref: FUN_007345c0
+// SMSG_THREAT_CLEAR's body: the table empties and there is no top.
+//
+// PARTIAL: the tooltip's refresh for this unit (FUN_00512ab0) is the tooltip's.
+void CGUnit_C::ClearThreatList() {
+    if (!this->m_threatList.Head()) {
+        return;
+    }
+
+    while (auto entry = this->m_threatList.Head()) {
+        WOWGUID guid = entry->m_guid;
+
+        ScriptEventsQueueUnitEvent(guid, 0x262);
+        GameUIRemoveThreatUnit(this->GetGUID(), guid);
+        this->m_threatList.Delete(entry);
+    }
+
+    this->m_threatTarget = 0;
+
+    ScriptEventsQueueUnitEvent(this->GetGUID(), 0x261);
+}
+
+// ref: FUN_007374c0
+// What this unit's table says about `guid`: its status, its percentage of the tank's, the raw
+// percentage of the pull threshold (110% in melee range, 130% beyond it; 100 for the tank) and its
+// threat. Without a tank or an entry everything is zero but the status, which is 1 when the entry
+// is there. Zero when it is not on the table.
+int32_t CGUnit_C::GetThreatSituation(const WOWGUID& guid, uint8_t* status, uint8_t* percent, float* rawPercent,
+                                     int32_t* threat) {
+    CHashKeyGUID key(guid);
+    auto entry = this->m_threatList.Ptr(static_cast<uint32_t>(guid), key);
+
+    if (!this->m_threatTarget || !entry) {
+        if (status) {
+            *status = entry ? 1 : 0;
+        }
+
+        if (percent) {
+            *percent = 0;
+        }
+
+        if (rawPercent) {
+            *rawPercent = 0.0f;
+        }
+
+        if (threat) {
+            *threat = 0;
+        }
+
+        return 0;
+    }
+
+    if (status) {
+        *status = entry->m_status;
+    }
+
+    if (percent) {
+        *percent = entry->m_percent;
+    }
+
+    if (rawPercent) {
+        if (guid == this->m_threatTarget) {
+            *rawPercent = 100.0f;
+        } else {
+            auto other = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(guid, TYPE_UNIT, ".\\Unit_C.cpp", 0x5b35));
+            bool inMelee = false;
+
+            if (other) {
+                // FUN_004f5f40: the melee range between the two, never under 5 yards.
+                float range = other->m_unit->combatReach + this->m_unit->combatReach + 1.3333334f;
+
+                if (range < 5.0f) {
+                    range = 5.0f;
+                }
+
+                // FUN_004f61d0
+                C3Vector at = other->GetPosition();
+                C3Vector here = this->GetPosition();
+                float dx = here.x - at.x;
+                float dy = here.y - at.y;
+                float dz = here.z - at.z;
+
+                inMelee = dy * dy + dz * dz + dx * dx <= range * range;
+            }
+
+            *rawPercent = static_cast<float>(entry->m_percent) * (inMelee ? 0.90909094f : 0.7692308f);
+        }
+    }
+
+    if (threat) {
+        *threat = entry->m_threat;
+    }
+
+    return 1;
+}
+
+// ref: FUN_00719220
+// The floater a status change raises over this unit ("COMBAT_THREAT_INCREASE_2" and so on) while
+// threat warnings are on -- except falling from high to low, or from insecure to secure.
+void CGUnit_C::ShowThreatWorldText(int32_t oldStatus, int32_t newStatus) {
+    if (!GameUIThreatWarningActive()) {
+        return;
+    }
+
+    auto worldText = CGGameUI::s_threatWorldTextCvar;
+
+    if (!worldText || worldText->GetInt() == 0) {
+        return;
+    }
+
+    bool quiet;
+
+    if (oldStatus == 2) {
+        quiet = newStatus == 1;
+    } else if (oldStatus == 3) {
+        quiet = newStatus == 4;
+    } else {
+        quiet = false;
+    }
+
+    if (quiet) {
+        return;
+    }
+
+    char token[32];
+    SStrPrintf(token, sizeof(token), "COMBAT_THREAT_%s_%d", newStatus <= oldStatus ? "DECREASE" : "INCREASE", newStatus);
+
+    const char* text = FrameScript_GetText(token, -1, GENDER_NOT_APPLICABLE);
+
+    if (!text || !text[0]) {
+        return;
+    }
+
+    PlayerNameClearWorldText(this->m_nameDesc, 10);
+    PlayerNameAddWorldText(this->m_nameDesc, 10, text, nullptr, nullptr);
+}
+
+// ---- control (Unit_C.cpp) -------------------------------------------------------------------
+
+// ref: FUN_0071c930
+// Whether the player controls this unit. Losing control stops a fall in progress and remembers a
+// charm (0x1000); gaining it sets 0xc000400. For the player itself the game UI hears of it, and a
+// rider's camera blends to its seat.
+void CGUnit_C::SetHasControl(bool hasControl) {
+    if (!hasControl) {
+        this->m_stateFlags &= ~0x400u;
+
+        if (this->m_unit->charm) {
+            this->m_stateFlags |= 0x1000;
+        }
+
+        // FUN_006e9a60
+        if (this->m_localMove.m_moveFlags & 0x100000) {
+            this->m_localMove.StopFallAndMoving();
+        }
+    } else {
+        this->m_stateFlags |= 0xc000400;
+    }
+
+    if (this->GetGUID() == ClntObjMgrGetActivePlayer()) {
+        GameUISetPlayerControl((this->m_stateFlags >> 10) & 1);
+
+        if (this->m_stateFlags & 0x400) {
+            VehicleRefreshCameraBlend(this);
+        }
+    }
+}
+
+// ref: FUN_0072cca0
+// SMSG_CONTROL_UPDATE for this unit: who the input moves follows -- the camera's unit when it may
+// be moved, else nobody.
+void CGUnit_C::OnControlUpdate(WOWGUID guid, bool hasControl) {
+    this->SetHasControl(hasControl);
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+    WOWGUID target = camera ? camera->m_target : 0;
+
+    if (target == guid) {
+        if (this->m_stateFlags & 0x400) {
+            CGUnit_C::ChangeActiveMover(guid);
+            return;
+        }
+
+        if (this->GetGUID() != CGUnit_C::s_activeMover) {
+            return;
+        }
+    } else {
+        if (this->GetGUID() != CGUnit_C::s_activeMover || (this->m_stateFlags & 0x400)) {
+            return;
+        }
+
+        auto object = ClntObjMgrObjectPtr(target, TYPE_OBJECT, ".\\Unit_C.cpp", 0x5c8f);
+
+        if (object && object->IsA(TYPE_UNIT) && (static_cast<CGUnit_C*>(object)->m_stateFlags & 0x400)) {
+            CGUnit_C::ChangeActiveMover(target);
+            return;
+        }
+    }
+
+    CGUnit_C::ChangeActiveMover(0);
+}
+
+// ref: FUN_00729010
+// The input moves `guid` (0 for nothing). The old mover lets go -- its click-to-move ends, and a
+// unit without a spline holding it reports CMSG_MOVE_NOT_ACTIVE_MOVER -- and the new one takes over
+// from where it is, with the player's flight bit, and the vehicle controls follow.
+void CGUnit_C::ChangeActiveMover(WOWGUID guid) {
+    if (CGUnit_C::s_activeMover == guid) {
+        return;
+    }
+
+    uint32_t now = static_cast<uint32_t>(OsGetAsyncTimeMs());
+    WOWGUID player = ClntObjMgrGetActivePlayer();
+
+    if (auto old = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, ".\\Unit_C.cpp", 0x1f7d))) {
+        if (old->GetGUID() == CGUnit_C::s_activeMover && s_clickToMoveState != 13) {
+            old->CancelClickToMove(0, 1);
+        }
+
+        old->m_localMove.m_moveFlags &= 0x7fffffff;
+
+        if (player != CGUnit_C::s_activeMover) {
+            old->m_localMove.m_moveFlags &= ~0x200u;
+        }
+
+        auto spline = old->m_localMove.m_spline;
+
+        if (!spline || (spline->flags & 0x400)) {
+            old->m_localMove.OnLostActiveMover();
+
+            if (old->GetGUID() == player) {
+                // FUN_00724e70
+                old->SendMovementStatus(MovementGetGlobals()->m_stepTime, CMSG_MOVE_NOT_ACTIVE_MOVER, 0.0f, 0, 0, 0xff);
+            }
+        }
+    }
+
+    CGUnit_C::s_activeMover = guid;
+
+    if (guid) {
+        CDataStore msg;
+        msg.Put(static_cast<uint32_t>(CMSG_SET_ACTIVE_MOVER));
+        msg.Put(guid);
+        msg.Finalize();
+        ClientServices::Send(&msg);
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(CGUnit_C::s_activeMover, TYPE_UNIT, ".\\Unit_C.cpp", 0x1f99));
+
+    if (unit) {
+        if (player != CGUnit_C::s_activeMover) {
+            auto self = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(player, TYPE_PLAYER, __FILE__, __LINE__));
+
+            if (self && (self->m_localMove.m_moveFlags & 0x200)) {
+                unit->m_localMove.m_moveFlags |= 0x200;
+            }
+        }
+
+        unit->m_localMove.OnBecameActiveMover();
+
+        if (auto input = InputControlGetActive()) {
+            input->UpdatePlayerMovement(now, 1);
+        }
+    }
+
+    VehicleOnActiveMoverChanged(unit);
+}
+
+// ref: FUN_00716060
+// Keep an SMSG_CONTROL_UPDATE for a unit not yet in view: a new one replaces it when nothing is
+// kept, when it is for the same unit, when the kept one was a loss, or when the new one is a gain.
+void CGUnit_C::StorePendingControl(WOWGUID guid, bool hasControl) {
+    if (!s_pendingControl || s_pendingControl == guid || !s_pendingControlHas || hasControl) {
+        s_pendingControl = guid;
+        s_pendingControlHas = hasControl;
+    }
+}
+
+// ---- pet sounds (UnitSound_C.cpp) -----------------------------------------------------------
+
+namespace {
+
+// ref: FUN_004cda20
+// The voice a Death Knight's sounds pick: "Death Knight <race> <sex>".
+void SoundGetDeathKnightVoice(CGPlayer_C* player, char* buffer, uint32_t size) {
+    static const char* const s_raceNames[] = {
+        nullptr, "Human", "Orc", "Dwarf", "NightElf", "Scourge", "Tauren", "Gnome", "Troll", "Goblin",
+        "BloodElf", "Draenei",
+    };
+
+    uint32_t bytes0 = player->Unit()->bytes0;
+    uint32_t race = bytes0 & 0xff;
+    const char* raceName = race < sizeof(s_raceNames) / sizeof(s_raceNames[0]) ? s_raceNames[race] : nullptr;
+
+    SStrPrintf(buffer, size, "Death Knight %s %s", raceName ? raceName : "", ((bytes0 >> 16) & 0xff) ? "Female" : "Male");
+}
+
+} // namespace
+
+// ref: FUN_007474b0
+// The pet's voice: 0 aggro, 1 an order taken, 2 an attack, 4 its death (not for a creature whose
+// template mutes it). A spoken line is never cut, nor a louder pet sound by a quieter one. A pet's
+// voice waits on Sound_EnablePetSounds; anything else speaks regardless.
+void CGUnit_C::PlayPetSound(int32_t type) {
+    if (type == 4 && this->m_creatureStats && (this->m_creatureStats->m_typeFlags & 0x1000000)) {
+        return;
+    }
+
+    if (!this->m_soundData) {
+        return;
+    }
+
+    if (SI2::IsPlaying(this->m_speechSound)) {
+        return;
+    }
+
+    if (SI2::IsPlaying(this->m_petSound) && type <= this->m_petSoundType) {
+        return;
+    }
+
+    this->m_petSoundType = type;
+
+    static CVar* s_enablePetSounds = CVar::Lookup("Sound_EnablePetSounds");
+    bool voiced = !s_enablePetSounds || s_enablePetSounds->GetInt() != 0 || this->m_unit->petNumber == 0;
+    int32_t soundID;
+
+    switch (this->m_petSoundType) {
+        case 0:
+            if (!voiced) {
+                return;
+            }
+
+            soundID = this->m_soundData->m_soundAggroID;
+            break;
+
+        case 1:
+            if (!voiced) {
+                return;
+            }
+
+            soundID = this->m_soundData->m_soundPetOrderID;
+            break;
+
+        case 2:
+            if (!voiced) {
+                return;
+            }
+
+            soundID = this->m_soundData->m_soundPetAttackID;
+            break;
+
+        case 4:
+            soundID = this->m_soundData->m_soundDeathID;
+            break;
+
+        default:
+            return;
+    }
+
+    C3Vector position;
+    this->GetAttachmentPosition(position, 0x11, nullptr);
+
+    static CVar* s_listenerAtCharacter = CVar::Lookup("Sound_ListenerAtCharacter");
+    bool isMover = CGUnit_C::s_activeMover == this->GetGUID();
+    bool atCharacter = isMover && s_listenerAtCharacter && s_listenerAtCharacter->GetInt() != 0;
+
+    SoundKitProperties properties;
+    properties.ResetToDefaults();
+
+    if (isMover) {
+        properties.int20 = 0x6e;
+
+        auto player = CGPlayer_C::GetActivePtr();
+
+        if (player && ((player->Unit()->bytes0 >> 8) & 0xff) == 6) {
+            properties.uint60 = 1;
+            SoundGetDeathKnightVoice(player, properties.m_voiceName, sizeof(properties.m_voiceName));
+        }
+
+        if (atCharacter) {
+            properties.m_fadeOutTime = 0.65f;
+        }
+    }
+
+    SI2::PlaySoundKit(soundID, atCharacter ? nullptr : &position, this->m_petSound, &properties, 0, nullptr, 1, 0);
 }

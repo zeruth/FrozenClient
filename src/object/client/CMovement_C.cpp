@@ -1,5 +1,6 @@
 #include "object/client/CGObject_C.hpp"
 #include "object/client/CGUnit_C.hpp"
+#include "object/client/CVehicle_C.hpp"
 #include "object/client/ClntObjMgr.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/CMovement_C.hpp"
@@ -229,6 +230,23 @@ int32_t MovementTransportContains(WOWGUID transport, const C3Vector& position) {
     }
 
     return object->Virtual0F0(&position);
+}
+
+// ref: FUN_0074b670
+void MovementVehicleRecountSeats(WOWGUID transport) {
+    uint32_t low = static_cast<uint32_t>(transport);
+    uint32_t high = static_cast<uint32_t>(transport >> 32);
+    bool unit = (high & 0xf0f00000) == 0xf0500000 || ((high & 0xf0000000) == 0 && !(low == 0 && (high & 0xf07fffff) == 0));
+
+    if (!unit) {
+        return;
+    }
+
+    auto vehicle = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(transport, TYPE_UNIT, ".\\Movement_C.cpp", 0x9f));
+
+    if (vehicle && vehicle->m_vehicle) {
+        vehicle->m_vehicle->UpdateFreeSeats();
+    }
 }
 
 // ref: FUN_0074b380
