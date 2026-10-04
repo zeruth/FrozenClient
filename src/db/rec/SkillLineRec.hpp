@@ -5,15 +5,10 @@
 
 class SFile;
 
-// SkillLine.dbc: the skill categories spells are filed under. A class's spellbook tabs are its
-// class skill lines (categoryID 7 -- Frost, Unholy and Blood for a death knight); the rest are
-// professions, weapon skills and languages.
+// SkillLine.dbc: the skill categories spells are filed under. A class's spellbook tabs are its class skill lines (categoryID 7); the rest are professions, weapon skills and languages.
 class SkillLineRec {
     public:
         static const int32_t COLUMN_COUNT = 56;
-        static const int32_t COLUMN_CATEGORY = 1;
-        static const int32_t COLUMN_DISPLAY_NAME = 3;   // 17 locale columns
-        static const int32_t COLUMN_ICON = 37;          // SpellIcon.dbc id
 
         enum {
             CATEGORY_CLASS = 7,
@@ -21,8 +16,12 @@ class SkillLineRec {
 
         int32_t m_ID;
         int32_t m_categoryID;
+        int32_t m_skillCostsID;
         const char* m_displayName;
+        const char* m_description;
         int32_t m_spellIconID;
+        const char* m_alternateVerb;
+        int32_t m_canLink;
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

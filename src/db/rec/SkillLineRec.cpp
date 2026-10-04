@@ -1,4 +1,5 @@
 #include "db/rec/SkillLineRec.hpp"
+#include "util/Locale.hpp"
 #include "util/SFile.hpp"
 
 const char* SkillLineRec::GetFilename() {
@@ -10,7 +11,7 @@ uint32_t SkillLineRec::GetNumColumns() {
 }
 
 uint32_t SkillLineRec::GetRowSize() {
-    return SkillLineRec::COLUMN_COUNT * 4;
+    return 224;
 }
 
 bool SkillLineRec::NeedIDAssigned() {
@@ -26,16 +27,25 @@ void SkillLineRec::SetID(int32_t id) {
 }
 
 bool SkillLineRec::Read(SFile* f, const char* stringBuffer) {
-    uint32_t columns[SkillLineRec::COLUMN_COUNT];
-
-    if (!SFile::Read(f, columns, sizeof(columns), nullptr, nullptr, nullptr)) {
+    uint32_t displayNameOfs[17];
+    uint32_t descriptionOfs[17];
+    uint32_t alternateVerbOfs[17];
+    if (
+        !SFile::Read(f, &this->m_ID, sizeof(this->m_ID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_categoryID, sizeof(this->m_categoryID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_skillCostsID, sizeof(this->m_skillCostsID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, displayNameOfs, sizeof(displayNameOfs), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, descriptionOfs, sizeof(descriptionOfs), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_spellIconID, sizeof(this->m_spellIconID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, alternateVerbOfs, sizeof(alternateVerbOfs), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_canLink, sizeof(this->m_canLink), nullptr, nullptr, nullptr)
+    ) {
         return false;
     }
 
-    this->m_ID = static_cast<int32_t>(columns[0]);
-    this->m_categoryID = static_cast<int32_t>(columns[SkillLineRec::COLUMN_CATEGORY]);
-    this->m_displayName = stringBuffer ? &stringBuffer[columns[SkillLineRec::COLUMN_DISPLAY_NAME]] : "";
-    this->m_spellIconID = static_cast<int32_t>(columns[SkillLineRec::COLUMN_ICON]);
+    this->m_displayName = stringBuffer ? &stringBuffer[displayNameOfs[CURRENT_LANGUAGE]] : "";
+    this->m_description = stringBuffer ? &stringBuffer[descriptionOfs[CURRENT_LANGUAGE]] : "";
+    this->m_alternateVerb = stringBuffer ? &stringBuffer[alternateVerbOfs[CURRENT_LANGUAGE]] : "";
 
     return true;
 }

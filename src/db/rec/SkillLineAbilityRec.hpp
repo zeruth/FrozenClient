@@ -5,8 +5,7 @@
 
 class SFile;
 
-// SkillLineAbility.dbc: which skill line each spell belongs to. This is how the spellbook decides
-// which tab a known spell goes on; a spell with no class skill line lands on General.
+// SkillLineAbility.dbc: which skill line each spell belongs to, for which races and classes, and what it trains into.
 class SkillLineAbilityRec {
     public:
         static const int32_t COLUMN_COUNT = 14;
@@ -16,6 +15,14 @@ class SkillLineAbilityRec {
         int32_t m_spell;
         int32_t m_raceMask;
         int32_t m_classMask;
+        int32_t m_excludeRace;
+        int32_t m_excludeClass;
+        int32_t m_minSkillLineRank;
+        int32_t m_supercededBySpell;
+        int32_t m_acquireMethod;
+        int32_t m_trivialSkillLineRankHigh;
+        int32_t m_trivialSkillLineRankLow;
+        int32_t m_characterPoints[2];
 
         static const char* GetFilename();
         static uint32_t GetNumColumns();

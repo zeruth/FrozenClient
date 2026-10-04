@@ -19,6 +19,8 @@
 #include "ui/game/CGPartyInfo.hpp"
 #include "ui/game/GameScript.hpp"
 #include <cstring>
+#include <storm/Hash.hpp>
+#include <storm/Array.hpp>
 
 // Written by the cast and combat code, none of which is ported yet; the reference
 // zero-initialises all of it.
@@ -1414,4 +1416,273 @@ int32_t SpellGetDifficultySpellID(int32_t spellID) {
     }
 
     return id;
+}
+
+// ------------------------------------------------------------------------------------------------
+// The skill caches: SkillRaceClassInfo and SkillCostsData grouped by their key, the run of
+// SkillLineAbility rows each linkable skill line starts, and the ability each spell is for a race
+// and class. Spell_C.cpp 0x00810370 .. 0x00812410.
+// ------------------------------------------------------------------------------------------------
+
+// A run of rows sharing one key: the first and how many follow it in the table.
+struct SKILLRUN : public TSHashObject<SKILLRUN, HASHKEY_NONE> {
+    const void* first;          // +0x18
+    int32_t count;              // +0x1c
+};
+
+// The ability a spell is for one race and class.
+struct SKILLABILITYKEY {
+    uint8_t race;
+    uint8_t classID;
+    int32_t spell;
+
+    bool operator==(const SKILLABILITYKEY& key) const {
+        return this->race == key.race && this->classID == key.classID && this->spell == key.spell;
+    }
+};
+
+struct SKILLABILITYENTRY : public TSHashObject<SKILLABILITYENTRY, SKILLABILITYKEY> {
+    const SkillLineAbilityRec* ability;     // +0x1c
+};
+
+// The first ability row of a linkable skill line and how many follow.
+struct SkillLineLinkInfo {
+    const SkillLineAbilityRec* first;
+    int32_t count;
+};
+
+static TSHashTable<SKILLRUN, HASHKEY_NONE> s_skillRaceClassInfo;           // ref: DAT_00d3f610
+static TSHashTable<SKILLRUN, HASHKEY_NONE> s_skillCosts;                   // ref: DAT_00d3f638
+static TSHashTable<SKILLABILITYENTRY, SKILLABILITYKEY> s_skillAbilities;   // ref: DAT_00d3f660
+static TSGrowableArray<SkillLineLinkInfo> s_skillLineLinks;                // ref: DAT_00d3f688
+static int32_t s_skillAbilitiesDirty;                                      // ref: DAT_00d3f60c
+
+// ref: FUN_00812200
+// Groups SkillRaceClassInfo by skill line and SkillCostsData by cost id. Both tables are sorted on
+// that key, so each group is a run.
+void SkillCachesInitialize() {
+    SKILLRUN* run = nullptr;
+    int32_t key = -1;
+
+    for (int32_t i = 0; i < g_skillRaceClassInfoDB.GetNumRecords(); i++) {
+        auto rec = g_skillRaceClassInfoDB.GetRecordByIndex(i);
+
+        if (rec->m_skillID == key) {
+            run->count++;
+            continue;
+        }
+
+        run = s_skillRaceClassInfo.New(static_cast<uint32_t>(rec->m_skillID), HASHKEY_NONE(), 0, 0);
+        run->first = rec;
+        run->count = 1;
+        key = rec->m_skillID;
+    }
+
+    run = nullptr;
+    key = -1;
+
+    for (int32_t i = 0; i < g_skillCostsDataDB.GetNumRecords(); i++) {
+        auto rec = g_skillCostsDataDB.GetRecordByIndex(i);
+
+        if (rec->m_skillCostsID == key) {
+            run->count++;
+            continue;
+        }
+
+        run = s_skillCosts.New(static_cast<uint32_t>(rec->m_skillCostsID), HASHKEY_NONE(), 0, 0);
+        run->first = rec;
+        run->count = 1;
+        key = rec->m_skillCostsID;
+    }
+
+    s_skillAbilitiesDirty = 1;
+}
+
+// ref: FUN_00810920
+// Empties the caches; the ability cache is rebuilt on its next use.
+void SkillCachesDestroy() {
+    s_skillRaceClassInfo.Clear();
+    s_skillAbilitiesDirty = 1;
+    s_skillCosts.Clear();
+    s_skillAbilities.Clear();
+    s_skillLineLinks.SetCount(0);
+}
+
+// ref: FUN_00810ed0
+// The SkillRaceClassInfo row that opens a skill line to a race and class (an empty mask opening it
+// to all).
+const SkillRaceClassInfoRec* SkillRaceClassInfoFind(uint8_t race, uint8_t classID, int32_t skillLine) {
+    auto run = s_skillRaceClassInfo.Ptr(static_cast<uint32_t>(skillLine), HASHKEY_NONE());
+
+    if (!run) {
+        return nullptr;
+    }
+
+    auto rec = static_cast<const SkillRaceClassInfoRec*>(run->first);
+
+    for (int32_t i = 0; i < run->count; i++, rec++) {
+        if (rec->m_raceMask == 0 || (rec->m_raceMask & (1u << ((race - 1u) & 0x1F)))) {
+            if (rec->m_classMask == 0 || (rec->m_classMask & (1u << ((classID - 1u) & 0x1F)))) {
+                return rec;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+// ref: FUN_00810f50
+// What training a skill line costs at a tier.
+int32_t SkillCostsGetCost(const SkillRaceClassInfoRec* info, int32_t tier) {
+    auto skillLine = g_skillLineDB.GetRecord(info->m_skillID);
+
+    if (!skillLine || !skillLine->m_skillCostsID) {
+        return 0;
+    }
+
+    auto run = s_skillCosts.Ptr(static_cast<uint32_t>(skillLine->m_skillCostsID), HASHKEY_NONE());
+
+    if (!run || tier > run->count) {
+        return 0;
+    }
+
+    // The reference indexes the run as a flat array of five-column rows
+    auto columns = reinterpret_cast<const int32_t*>(run->first);
+
+    return columns[tier * 5 + info->m_skillCostIndex - 3];
+}
+
+// ref: FUN_008104a0
+// The run of abilities a linkable skill line starts.
+bool SkillLineGetLinkInfo(int32_t skillLine, const SkillLineAbilityRec** first, int32_t* count) {
+    for (uint32_t i = 0; i < s_skillLineLinks.Count(); i++) {
+        if (s_skillLineLinks[i].first->m_skillLine == skillLine) {
+            *first = s_skillLineLinks[i].first;
+            *count = s_skillLineLinks[i].count;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ref: FUN_00811f20
+// Records what an ability is for a race and class, when that race or class is the player's and
+// both the skill line and the ability are open to it. The reference passes ability in EBX.
+static bool SkillAbilityCacheAdd(uint8_t race, uint8_t classID, const SkillLineAbilityRec* ability) {
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, "d:\\BuildServer\\WoW\\1\\work\\WoW-code\\branches\\wow-patch-3_3_5_A-BNet\\WoW\\Source\\Object/ObjectClient/Player_C.h", 0xa0));
+
+    if (player
+        && race != (player->Unit()->bytes0 & 0xFF)
+        && classID != ((player->Unit()->bytes0 >> 8) & 0xFF)) {
+        return false;
+    }
+
+    if (!SkillRaceClassInfoFind(race, classID, ability->m_skillLine)) {
+        return false;
+    }
+
+    if (!RaceClassMaskMatches(race, classID, ability->m_raceMask, ability->m_classMask, ability->m_excludeRace, ability->m_excludeClass)) {
+        return false;
+    }
+
+    SKILLABILITYKEY key = { race, classID, ability->m_spell };
+    auto entry = s_skillAbilities.New(static_cast<uint32_t>(ability->m_spell), key, 0, 0);
+    entry->ability = ability;
+
+    return true;
+}
+
+// ref: FUN_00812030
+// Builds the ability cache over every race and class combination CharBaseInfo lists, and on the
+// first combination the run of abilities each linkable skill line starts.
+static void SkillAbilityCacheBuild() {
+    SkillLineLinkInfo* link = nullptr;
+    int32_t skillLine = -1;
+    bool first = true;
+
+    for (int32_t i = 0; i < g_charBaseInfoDB.GetNumRecords(); i++) {
+        auto combo = g_charBaseInfoDB.GetRecordByIndex(i);
+        auto race = static_cast<uint8_t>(combo->m_raceID);
+        auto classID = static_cast<uint8_t>(combo->m_classID);
+
+        if (!g_chrRacesDB.GetRecord(race)) {
+            continue;
+        }
+
+        for (int32_t j = 0; j < g_skillLineAbilityDB.GetNumRecords(); j++) {
+            auto ability = g_skillLineAbilityDB.GetRecordByIndex(j);
+
+            SkillAbilityCacheAdd(race, classID, ability);
+
+            if (!first) {
+                continue;
+            }
+
+            if (ability->m_skillLine == skillLine) {
+                if (link) {
+                    link->count++;
+                }
+
+                continue;
+            }
+
+            auto line = g_skillLineDB.GetRecord(ability->m_skillLine);
+
+            if (!line || !line->m_canLink) {
+                link = nullptr;
+                continue;
+            }
+
+            link = s_skillLineLinks.New();
+            link->first = ability;
+            link->count = 1;
+            skillLine = ability->m_skillLine;
+        }
+
+        first = false;
+    }
+
+    s_skillAbilitiesDirty = 0;
+}
+
+// ref: FUN_00812410
+// The SkillLineAbility row a spell is for a race and class: from the cache, or for a combination
+// that shares neither with the player, by searching the table.
+const SkillLineAbilityRec* SkillLineAbilityFindForRaceClass(uint8_t race, uint8_t classID, int32_t spell) {
+    if (s_skillAbilitiesDirty) {
+        SkillAbilityCacheBuild();
+    }
+
+    SKILLABILITYKEY key = { race, classID, spell };
+    auto entry = s_skillAbilities.Ptr(static_cast<uint32_t>(spell), key);
+
+    if (entry) {
+        return entry->ability;
+    }
+
+    auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, "d:\\BuildServer\\WoW\\1\\work\\WoW-code\\branches\\wow-patch-3_3_5_A-BNet\\WoW\\Source\\Object/ObjectClient/Player_C.h", 0xa0));
+
+    if (!player) {
+        return nullptr;
+    }
+
+    auto data = player->Unit();
+
+    if ((data->bytes0 & 0xFF) == race && ((data->bytes0 >> 8) & 0xFF) == classID) {
+        return nullptr;
+    }
+
+    for (int32_t i = 0; i < g_skillLineAbilityDB.GetNumRecords(); i++) {
+        auto ability = g_skillLineAbilityDB.GetRecordByIndex(i);
+
+        if (ability->m_spell == spell
+            && SkillRaceClassInfoFind(race, classID, ability->m_skillLine)
+            && RaceClassMaskMatches(race, classID, ability->m_raceMask, ability->m_classMask, ability->m_excludeRace, ability->m_excludeClass)) {
+            return ability;
+        }
+    }
+
+    return nullptr;
 }

@@ -36,6 +36,8 @@ WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+WowClientDB<SkillCostsDataRec> g_skillCostsDataDB;
+WowClientDB<SkillRaceClassInfoRec> g_skillRaceClassInfoDB;
 WowClientDB<SpellDescriptionVariablesRec> g_spellDescriptionVariablesDB;
 WowClientDB<ResistancesRec> g_resistancesDB;
 WowClientDB<SpellDifficultyRec> g_spellDifficultyDB;
@@ -135,6 +137,8 @@ void StaticDBLoadAll(void (*loadFn)(WowClientDB_Base*, const char*, int32_t)) {
     loadFn(&g_spellVisualKitAreaModelDB, __FILE__, __LINE__);
     loadFn(&g_spellEffectCameraShakesDB, __FILE__, __LINE__);
     loadFn(&g_spellCastTimesDB, __FILE__, __LINE__);
+    loadFn(&g_skillCostsDataDB, __FILE__, __LINE__);
+    loadFn(&g_skillRaceClassInfoDB, __FILE__, __LINE__);
     loadFn(&g_spellDescriptionVariablesDB, __FILE__, __LINE__);
     loadFn(&g_resistancesDB, __FILE__, __LINE__);
     loadFn(&g_spellDifficultyDB, __FILE__, __LINE__);

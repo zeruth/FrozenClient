@@ -197,4 +197,24 @@ int32_t SpellGetDuration(const SpellRec* spell, int32_t pet, int32_t inspect, in
 // ref: FUN_00802850
 int32_t SpellGetDifficultySpellID(int32_t spellID);
 
+class SkillRaceClassInfoRec;
+
+// ref: FUN_00812200
+void SkillCachesInitialize();
+
+// ref: FUN_00810920
+void SkillCachesDestroy();
+
+// ref: FUN_00810ed0
+const SkillRaceClassInfoRec* SkillRaceClassInfoFind(uint8_t race, uint8_t classID, int32_t skillLine);
+
+// ref: FUN_00810f50
+int32_t SkillCostsGetCost(const SkillRaceClassInfoRec* info, int32_t tier);
+
+// ref: FUN_008104a0
+bool SkillLineGetLinkInfo(int32_t skillLine, const SkillLineAbilityRec** first, int32_t* count);
+
+// ref: FUN_00812410
+const SkillLineAbilityRec* SkillLineAbilityFindForRaceClass(uint8_t race, uint8_t classID, int32_t spell);
+
 #endif

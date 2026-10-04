@@ -1,4 +1,5 @@
 #include "db/rec/SkillLineAbilityRec.hpp"
+#include "util/Locale.hpp"
 #include "util/SFile.hpp"
 
 const char* SkillLineAbilityRec::GetFilename() {
@@ -10,7 +11,7 @@ uint32_t SkillLineAbilityRec::GetNumColumns() {
 }
 
 uint32_t SkillLineAbilityRec::GetRowSize() {
-    return SkillLineAbilityRec::COLUMN_COUNT * 4;
+    return 56;
 }
 
 bool SkillLineAbilityRec::NeedIDAssigned() {
@@ -26,17 +27,27 @@ void SkillLineAbilityRec::SetID(int32_t id) {
 }
 
 bool SkillLineAbilityRec::Read(SFile* f, const char* stringBuffer) {
-    uint32_t columns[SkillLineAbilityRec::COLUMN_COUNT];
 
-    if (!SFile::Read(f, columns, sizeof(columns), nullptr, nullptr, nullptr)) {
+    if (
+        !SFile::Read(f, &this->m_ID, sizeof(this->m_ID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_skillLine, sizeof(this->m_skillLine), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_spell, sizeof(this->m_spell), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_raceMask, sizeof(this->m_raceMask), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_classMask, sizeof(this->m_classMask), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_excludeRace, sizeof(this->m_excludeRace), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_excludeClass, sizeof(this->m_excludeClass), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_minSkillLineRank, sizeof(this->m_minSkillLineRank), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_supercededBySpell, sizeof(this->m_supercededBySpell), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_acquireMethod, sizeof(this->m_acquireMethod), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_trivialSkillLineRankHigh, sizeof(this->m_trivialSkillLineRankHigh), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_trivialSkillLineRankLow, sizeof(this->m_trivialSkillLineRankLow), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_characterPoints[0], sizeof(this->m_characterPoints[0]), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_characterPoints[1], sizeof(this->m_characterPoints[1]), nullptr, nullptr, nullptr)
+    ) {
         return false;
     }
 
-    this->m_ID = static_cast<int32_t>(columns[0]);
-    this->m_skillLine = static_cast<int32_t>(columns[1]);
-    this->m_spell = static_cast<int32_t>(columns[2]);
-    this->m_raceMask = static_cast<int32_t>(columns[3]);
-    this->m_classMask = static_cast<int32_t>(columns[4]);
+
 
     return true;
 }

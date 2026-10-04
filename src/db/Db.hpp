@@ -36,6 +36,8 @@
 #include "db/rec/SpellVisualKitAreaModelRec.hpp"
 #include "db/rec/SpellEffectCameraShakesRec.hpp"
 #include "db/rec/SpellCastTimesRec.hpp"
+#include "db/rec/SkillCostsDataRec.hpp"
+#include "db/rec/SkillRaceClassInfoRec.hpp"
 #include "db/rec/SpellDescriptionVariablesRec.hpp"
 #include "db/rec/ResistancesRec.hpp"
 #include "db/rec/SpellDifficultyRec.hpp"
@@ -129,6 +131,8 @@ extern WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 extern WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 extern WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 extern WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+extern WowClientDB<SkillCostsDataRec> g_skillCostsDataDB;
+extern WowClientDB<SkillRaceClassInfoRec> g_skillRaceClassInfoDB;
 extern WowClientDB<SpellDescriptionVariablesRec> g_spellDescriptionVariablesDB;
 extern WowClientDB<ResistancesRec> g_resistancesDB;
 extern WowClientDB<SpellDifficultyRec> g_spellDifficultyDB;

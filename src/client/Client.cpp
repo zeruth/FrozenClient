@@ -62,6 +62,7 @@
 #include <common/Time.hpp>
 #include "util/OsSystem.hpp"
 #include <storm/Error.hpp>
+#include "object/client/Spell_C.hpp"
 
 CVar* Client::g_accountNameVar;
 CVar* Client::g_readTOSVar;
@@ -310,6 +311,8 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
     // The selection circle and quest marker models (0x00405621), then the unit module's start
     // (FUN_00742220 at 0x0040562b).
     ObjectsInitialize();
+    // The skill caches (FUN_00812200 at 0x00405626).
+    SkillCachesInitialize();
     UnitInitialize();
     // The game object module's start (FUN_007140a0 at 0x00405630).
     GameObjectInitialize();
@@ -539,7 +542,10 @@ void ClientRegisterConsoleCommands() {
 //   LoadingScreenFinish; FUN_00532890 (party); then, with resumeGlue, CGlueMgr::Resume, glue
 //   status 11 when loginFailed, and SET_GLUE_SCREEN "charselect" or "login".
 void ClientDestroyGame(int32_t charSelect, int32_t resumeGlue, int32_t loginFailed) {
-    // TODO
+    // TODO the rest of the teardown
+
+    // The skill caches (FUN_00810920 at 0x004065d2).
+    SkillCachesDestroy();
 }
 
 // ref: FUN_004033c0

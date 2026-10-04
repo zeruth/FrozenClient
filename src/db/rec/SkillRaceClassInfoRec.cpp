@@ -1,0 +1,47 @@
+#include "db/rec/SkillRaceClassInfoRec.hpp"
+#include "util/Locale.hpp"
+#include "util/SFile.hpp"
+
+const char* SkillRaceClassInfoRec::GetFilename() {
+    return "DBFilesClient\\SkillRaceClassInfo.dbc";
+}
+
+uint32_t SkillRaceClassInfoRec::GetNumColumns() {
+    return SkillRaceClassInfoRec::COLUMN_COUNT;
+}
+
+uint32_t SkillRaceClassInfoRec::GetRowSize() {
+    return 32;
+}
+
+bool SkillRaceClassInfoRec::NeedIDAssigned() {
+    return false;
+}
+
+int32_t SkillRaceClassInfoRec::GetID() {
+    return this->m_ID;
+}
+
+void SkillRaceClassInfoRec::SetID(int32_t id) {
+    this->m_ID = id;
+}
+
+bool SkillRaceClassInfoRec::Read(SFile* f, const char* stringBuffer) {
+
+    if (
+        !SFile::Read(f, &this->m_ID, sizeof(this->m_ID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_skillID, sizeof(this->m_skillID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_raceMask, sizeof(this->m_raceMask), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_classMask, sizeof(this->m_classMask), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_flags, sizeof(this->m_flags), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_minLevel, sizeof(this->m_minLevel), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_skillTierID, sizeof(this->m_skillTierID), nullptr, nullptr, nullptr)
+        || !SFile::Read(f, &this->m_skillCostIndex, sizeof(this->m_skillCostIndex), nullptr, nullptr, nullptr)
+    ) {
+        return false;
+    }
+
+
+
+    return true;
+}
