@@ -20,6 +20,14 @@ MerchantItem* MerchantGetItem(int32_t index);
 // The open vendor's entry for an item, or null.
 MerchantItem* MerchantFindItem(int32_t itemID);
 
+// The vendor whose list is open, 0 when none is.
+WOWGUID MerchantGetGUID();
+
+class CGItem_C;
+
+// What the open vendor charges to repair an item, after the player's reputation discount.
+int32_t MerchantGetRepairCost(CGItem_C* item);
+
 int32_t MerchantIsBuybackItem(WOWGUID guid);
 
 #endif

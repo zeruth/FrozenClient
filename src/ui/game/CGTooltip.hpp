@@ -4,10 +4,14 @@
 #include "ui/simple/CSimpleFrame.hpp"
 #include "ui/Types.hpp"
 #include "util/guid/Types.hpp"
+#include "object/client/DBCache.hpp"
+#include "object/client/ItemLink.hpp"
+#include <cstdio>
 #include <storm/Array.hpp>
 #include <tempest/Vector.hpp>
 
 class CImVector;
+class SpellRec;
 class CRect;
 class CSimpleFontString;
 class CSimpleStatusBar;
@@ -60,7 +64,12 @@ class CGTooltip : public CSimpleFrame {
         int32_t m_questID = 0;                              // +0x368
         int32_t m_achievementID = 0;                        // +0x36c
         int32_t m_spellID2 = 0;                             // +0x370
-        // +0x374 .. +0x3c4: the achievement criteria and the rest, recovered with their fillers.
+        // +0x374 .. +0x3b0: the achievement criteria, recovered with their filler.
+        // What an item tooltip was asked for, kept so it can fill itself again (FUN_00626650).
+        int32_t m_itemNameOnly = 0;                         // +0x3b4
+        int32_t m_itemSocketPreview = 0;                    // +0x3b8
+        int32_t m_itemCompareSlot = 0;                      // +0x3bc
+        WOWGUID m_itemOwner = 0;                            // +0x3c0
         // A spell tooltip waiting on data counts down here before it is filled again (FUN_0061dd60).
         int32_t m_spellRefresh = 0;                         // +0x3c8
         // FadeOut starts this: the alpha falls over m_fadeTime seconds and the tooltip hides.
@@ -70,7 +79,14 @@ class CGTooltip : public CSimpleFrame {
         float m_minimumWidth = 0.0f;                        // +0x3d8
         int32_t m_minimumWidthForced = 0;                   // +0x3dc
         C2Vector m_anchorOffset;                            // +0x3e0
-        // +0x3e8 .. +0x4d0: the item link the tooltip was filled from, recovered with the item fillers.
+        // The item link the tooltip was filled from, read instead of an item object while
+        // m_useLinkInfo is set.
+        ITEMLINKINFO m_linkInfo = {};                       // +0x3e8
+        int32_t m_useLinkInfo = 0;                          // +0x4c0
+        int32_t m_noCharges = 0;                            // +0x4c4
+        int32_t m_levelOne = 0;                             // +0x4c8
+        int32_t m_noPrice = 0;                              // +0x4cc
+        int32_t m_scalingLevel = 0;                         // +0x4d0
         ScriptIx m_onTooltipSetDefaultAnchor;               // +0x4d4
         ScriptIx m_onTooltipCleared;                        // +0x4dc
         ScriptIx m_onTooltipAddMoney;                       // +0x4e4
@@ -113,6 +129,11 @@ class CGTooltip : public CSimpleFrame {
 
         // ref: FUN_0061dd60
         static void OnSpellItemArrived(uint32_t id, const WOWGUID* guid, void* param, bool found);
+
+        int32_t SetItem(int32_t itemID, const WOWGUID* requester, const WOWGUID* itemGUID, int32_t nameOnly, int32_t compareSlot, int32_t useLinkInfo, int32_t append, WOWGUID owner, int32_t socketPreview, FILE* dump, int32_t noCharges, const ITEMLINKINFO* linkInfo, int32_t levelOne, int32_t noLock, int32_t noPrice);
+        int32_t SetItemRetrieving();
+        void AddSpellReagents(const SpellRec* spell, const char* format, DBCACHECALLBACKFN callback);
+        static void OnItemArrived(uint32_t id, const WOWGUID* guid, void* param, bool found);
 };
 
 class ItemStats_C;
@@ -133,7 +154,14 @@ struct ItemStatTotals {
     void FoldStats(int32_t index, const int32_t* into, uint32_t count, int32_t collapse);
 };
 
-void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char* prefix, int32_t displayValue, int32_t roundUp, bool inSeconds);
+void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char* prefix, const char* display, int32_t roundUp, bool inSeconds);
+
+// A global string copied into dest; whether it was non-empty.
+bool TooltipCopyText(char* dest, uint32_t destSize, const char* name, int32_t count, FRAMESCRIPT_GENDER gender);
+
+// The item cache key a spell tooltip asks with: the spell id beside a high word that marks it as a
+// tooltip's request.
+WOWGUID TooltipSpellRequester(int32_t spellID);
 
 // ref: FUN_0061a960
 bool TimeIsWholeUnit(float milliseconds, float epsilon);

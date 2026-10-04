@@ -574,3 +574,55 @@ WOWGUID ContainerGetBagGuid(uint32_t index) {
 
     return 0;
 }
+
+#include "component/Texture.hpp"
+#include "util/Log.hpp"
+#include "world/CWorldParam.hpp"
+#include <map>
+#include <string>
+
+// The icon names found so far, by display id (the reference's hash at 0x00ca1130).
+static std::map<int32_t, std::string> s_displayIcons;
+
+// ref: FUN_0070a910
+// The second icon is the low-violence one, used when violence is turned down and it exists. A
+// .tga name is remembered as its .blp alternate.
+const char* ItemDisplayGetIcon(int32_t displayID) {
+    auto found = s_displayIcons.find(displayID);
+
+    if (found != s_displayIcons.end() && !found->second.empty()) {
+        return found->second.c_str();
+    }
+
+    auto rec = g_itemDisplayInfoDB.GetRecord(displayID);
+
+    if (rec) {
+        auto icon = rec->m_inventoryIcon[0];
+
+        if (CWorldParam::s_violenceLevel < 2 && rec->m_inventoryIcon[1] && rec->m_inventoryIcon[1][0]) {
+            icon = rec->m_inventoryIcon[1];
+        }
+
+        if (icon && icon[0]) {
+            char alternate[260];
+
+            if (TextureGetFileType(icon) == 1) {
+                TextureBuildAlternateName(icon, 1, alternate, sizeof(alternate));
+                icon = alternate;
+            }
+
+            // FUN_0070a850
+            s_displayIcons[displayID] = icon;
+
+            auto stored = s_displayIcons.find(displayID);
+
+            if (stored != s_displayIcons.end() && !stored->second.empty()) {
+                return stored->second.c_str();
+            }
+        }
+    }
+
+    SysMsgPrintf(SYSMSG_ERROR, "NOINVENTORYICON|%d", displayID);
+
+    return "INV_Misc_QuestionMark";
+}

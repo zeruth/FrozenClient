@@ -1,5 +1,6 @@
 #include "ui/game/CGTooltip.hpp"
 #include "ui/game/CGTooltipScript.hpp"
+#include "ui/game/TooltipColors.hpp"
 #include "gx/Coordinate.hpp"
 #include "object/client/DBCacheInstances.hpp"
 #include "object/client/ObjMgr.hpp"
@@ -846,10 +847,10 @@ void ItemStatTotals::FoldStats(int32_t index, const int32_t* into, uint32_t coun
 // Formats a time as "<n> days/hours/min/sec" through the <prefix>_DAYS, _HOURS, _MIN or _SEC
 // global string, choosing the largest unit the time reaches. time is milliseconds, or seconds when
 // inSeconds is set; roundUp rounds the count up instead of down, and a count that rounds up to a
-// whole next unit is shown as 1 of that unit. A non-zero displayValue is printed in place of the
-// count.
+// whole next unit is shown as 1 of that unit. A display string, when given, is printed before the
+// count (the "_TIME_LEFT" strings put the enchantment's name there).
 // ref: FUN_0061a9e0
-void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char* prefix, int32_t displayValue, int32_t roundUp, bool inSeconds) {
+void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char* prefix, const char* display, int32_t roundUp, bool inSeconds) {
     if (!dest || !prefix) {
         return;
     }
@@ -911,8 +912,8 @@ void FormatTimeInterval(char* dest, uint32_t destSize, uint64_t time, const char
     char key[256];
     SStrPrintf(key, sizeof(key), format, prefix);
 
-    if (displayValue) {
-        SStrPrintf(dest, destSize, FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE), displayValue);
+    if (display) {
+        SStrPrintf(dest, destSize, FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE), display, value);
         return;
     }
 
@@ -981,11 +982,6 @@ void FormatTimeIntervalFloat(char* dest, uint32_t destSize, float milliseconds, 
     SStrPrintf(dest, destSize, FrameScript_GetText(token, -1, GENDER_NOT_APPLICABLE), static_cast<double>(milliseconds));
 }
 
-// The tooltip colours: NORMAL_FONT_COLOR, HIGHLIGHT_FONT_COLOR, RED_FONT_COLOR and GRAY_FONT_COLOR.
-static const CImVector TOOLTIP_COLOR_NORMAL = { 0x00, 0xD2, 0xFF, 0xFF };          // ref: DAT_00ad2d2c
-static const CImVector TOOLTIP_COLOR_HIGHLIGHT = { 0xFF, 0xFF, 0xFF, 0xFF };       // ref: DAT_00ad2d30
-static const CImVector TOOLTIP_COLOR_RED = { 0x20, 0x20, 0xFF, 0xFF };             // ref: DAT_00ad2d34
-static const CImVector TOOLTIP_COLOR_GRAY = { 0x80, 0x80, 0x80, 0xFF };            // ref: DAT_00ad2d38
 
 // The colour code that marks what the player lacks, and its end.
 static const char* TOOLTIP_RED_CODE = "|cffff2020";                                // ref: PTR_DAT_00ad2a5c
@@ -1009,7 +1005,7 @@ static const int32_t s_standingThresholds[] = {                                 
 // ref: FUN_0061a190
 // A global string copied into dest; whether it was non-empty. The reference passes name in EDX,
 // count in ECX and gender in EAX.
-static bool TooltipCopyText(char* dest, uint32_t destSize, const char* name, int32_t count, FRAMESCRIPT_GENDER gender) {
+bool TooltipCopyText(char* dest, uint32_t destSize, const char* name, int32_t count, FRAMESCRIPT_GENDER gender) {
     auto text = FrameScript_GetText(name, count, gender);
     SStrCopy(dest, text, destSize);
 
@@ -1018,7 +1014,7 @@ static bool TooltipCopyText(char* dest, uint32_t destSize, const char* name, int
 
 // The item cache key a spell tooltip asks with: the spell id beside a high word that marks it as
 // a tooltip's request. Inline in the reference.
-static WOWGUID TooltipSpellRequester(int32_t spellID) {
+WOWGUID TooltipSpellRequester(int32_t spellID) {
     auto high = static_cast<uint32_t>(spellID >> 31) | 0x1FE00000;
 
     return (static_cast<WOWGUID>(high) << 32) | static_cast<uint32_t>(spellID);
@@ -1619,7 +1615,7 @@ rangeDone:
 
     // The cooldown left
     if (cooldown > 0) {
-        FormatTimeInterval(left, sizeof(left), cooldown, "ITEM_COOLDOWN_TIME", 0, 1, false);
+        FormatTimeInterval(left, sizeof(left), cooldown, "ITEM_COOLDOWN_TIME", nullptr, 1, false);
         this->AddLine(left, nullptr, TOOLTIP_COLOR_HIGHLIGHT, TOOLTIP_COLOR_HIGHLIGHT, 0);
         changing = 1;
     }
@@ -1682,8 +1678,14 @@ rangeDone:
 
         // TODO(talent): the next rank and its preview (FUN_00622800) for a talent shown with one
 
-        // TODO(item tooltip): what a trade skill creates (FUN_0050f590, FUN_006277f0)
-        (void)createsItem;
+        // What a trade skill creates: its first effect's item, appended below the spell.
+        if (createsItem && spell->m_effectItemType[0]) {
+            this->m_linkInfo.Reset();
+
+            WOWGUID requester = 0;
+            WOWGUID none = 0;
+            this->SetItem(spell->m_effectItemType[0], &requester, &none, 0, 0, 0, 1, 0, 0, nullptr, 0, nullptr, 0, 0, 1);
+        }
     }
 
     if (this->m_onTooltipSetSpell.luaRef) {

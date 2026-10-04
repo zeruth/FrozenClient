@@ -27,4 +27,7 @@ int32_t ReputationGetStanding(int32_t factionID);
 
 bool ReputationIsAtWar(int32_t factionID);
 
+// The reaction a faction's standing gives: 0 hated .. 7 exalted, 3 without a reputation.
+int32_t ReputationGetReaction(int32_t factionID);
+
 #endif

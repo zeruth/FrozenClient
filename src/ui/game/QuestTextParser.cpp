@@ -1959,7 +1959,7 @@ int32_t SpellDescriptionExpandToken(const SpellRec* spell, char* dest, uint32_t 
                 auto milliseconds = static_cast<float>(duration);
 
                 if (TimeIsWholeUnit(milliseconds, 0.01f)) {
-                    FormatTimeInterval(text, sizeof(text), static_cast<uint64_t>(static_cast<int64_t>(duration)), "INT_SPELL_DURATION", 0, 0, false);
+                    FormatTimeInterval(text, sizeof(text), static_cast<uint64_t>(static_cast<int64_t>(duration)), "INT_SPELL_DURATION", nullptr, 0, false);
                 } else {
                     FormatTimeIntervalFloat(text, sizeof(text), milliseconds, "SPELL_DURATION", 0);
                 }

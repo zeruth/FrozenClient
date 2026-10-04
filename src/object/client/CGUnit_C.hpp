@@ -106,8 +106,22 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // internal 1..4 scale: 1 hostile, 3 neutral, 4 friendly. The Lua side reports this plus one.
         static int32_t GetFactionTemplateReaction(const FactionTemplateRec* a, const FactionTemplateRec* b);
 
-        // How this unit regards another.
+        // How a faction template regards a unit: the player's reputation with it when the unit is
+        // the active player's, else the templates.
+        static int32_t GetReaction(int32_t factionTemplate, const CGUnit_C* other);
+
+        // How this unit's faction template regards another.
         int32_t GetReaction(const CGUnit_C* other) const;
+
+        // How this unit regards another, duels, groups and free-for-all PvP included.
+        int32_t GetUnitReaction(CGUnit_C* other);
+
+        // Whether this unit and another (or their controlling players) are dueling each other.
+        bool IsInDuelWith(CGUnit_C* other);
+
+        // The price cut this unit's faction gives `other` for its standing: 5% at friendly up to 20%
+        // at exalted, none for a faction without a reputation.
+        float GetReputationDiscount(CGUnit_C* other);
 
         // Virtual public member functions
         virtual ~CGUnit_C();

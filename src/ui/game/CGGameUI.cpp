@@ -1,5 +1,6 @@
 #include "ui/game/CGGameUI.hpp"
 #include "ui/game/RuneInfo.hpp"
+#include "ui/game/DuelInfo.hpp"
 #include "ui/FrameScript.hpp"
 #include "ui/game/Types.hpp"
 #include "util/Lua.hpp"
@@ -662,6 +663,7 @@ void CGGameUI::InitializeGame() {
 
     // The runes start out six, two of each type, all ready (FUN_005edef0).
     RuneReset();
+    DuelInfoRegisterHandlers();
 
     // TODO
 }

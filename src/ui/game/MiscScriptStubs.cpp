@@ -1,3 +1,4 @@
+#include "ui/game/DuelInfo.hpp"
 #include "ui/InputControl.hpp"
 #include "ui/game/MiscScriptStubs.hpp"
 
@@ -41,7 +42,6 @@ namespace {
         return 0;                                                                     \
     }
 
-WHOA_LUA_STUB(AcceptDuel)
 WHOA_LUA_STUB(AcceptProposal)
 WHOA_LUA_STUB(AcceptQuest)
 WHOA_LUA_STUB(AcceptSkillUps)
@@ -1112,7 +1112,7 @@ struct ScriptFunction {
 };
 
 const ScriptFunction s_stubs[] = {
-    { "AcceptDuel",                              &Script_Stub_AcceptDuel },
+    { "AcceptDuel",                              &Script_AcceptDuel },
     { "AcceptProposal",                          &Script_Stub_AcceptProposal },
     { "AcceptQuest",                             &Script_Stub_AcceptQuest },
     { "AcceptSkillUps",                          &Script_Stub_AcceptSkillUps },

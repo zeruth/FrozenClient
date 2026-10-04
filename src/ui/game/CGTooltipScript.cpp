@@ -8,6 +8,11 @@
 #include "gx/Coordinate.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "object/client/CGItem_C.hpp"
+#include "object/client/CGPlayer_C.hpp"
+#include "object/client/CGBag_C.hpp"
+#include "object/client/SpellHistory.hpp"
+#include "ui/game/CharacterInfoScript.hpp"
+#include <common/Time.hpp>
 #include "object/client/DBCacheInstances.hpp"
 #include "ui/game/ContainerFrameScript.hpp"
 #include "ui/game/AuctionHouse.hpp"
@@ -645,92 +650,114 @@ int32_t CGTooltip_FadeOut(lua_State* L) {
 }
 
 // ref: FUN_0062dae0
-// Defined below, next to the setters that are its other callers.
-void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t durability, int32_t maxDurability);
-
+// SetHyperlink(link): by the link's type. A shown tooltip asked for the item, spell, unit, quest
+// or achievement it already shows hides instead.
 int32_t CGTooltip_SetHyperlink(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isstring(L, 2)) {
-        return luaL_error(L, "Usage: %s:SetHyperlink(link)", tooltip->GetDisplayName());
+        luaL_error(L, "Usage: %s:SetHyperlink(link)", tooltip->GetDisplayName());
+
+        return 0;
     }
 
     const char* link = lua_tostring(L, 2);
 
-    // The reference tests the link types in this order, each by substring, and hands the id it
-    // parses out to that type's tooltip filler. Only the two spell-backed types can be filled here;
-    // the rest are named with the filler they would reach so they are not mistaken for missing
-    // cases, and they return quietly rather than falling through to the unknown-type error, which
-    // would put a Lua error on screen for a chat link the reference handles.
-    const char* item = SStrStr(link, "item:");
+    if (auto found = SStrStr(link, "item:")) {
+        auto itemID = SStrToInt(found + 5);
 
-    if (item) {
-        // The link carries the entry as the first field after "item:", with the enchant, the three
-        // gems and the rest following behind colons. Only the entry is read here; the suffix and
-        // the gems change what the reference draws, and neither is ported.
-        auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(SStrToInt(item + 5))), nullptr, &DBCacheIgnoreCallback, nullptr, true);
+        if (!tooltip->m_shown || itemID != tooltip->m_itemID) {
+            if (itemID < 1) {
+                return 0;
+            }
 
-        if (!info) {
+            tooltip->m_linkInfo.Reset();
+            tooltip->m_linkInfo.Parse(link);
+
+            WOWGUID requester = 0;
+            WOWGUID none = 0;
+            tooltip->SetItem(itemID, &requester, &none, 0, 0, 1, 0, 0, 0, nullptr, 1, &tooltip->m_linkInfo, 0, 0, 0);
+
             return 0;
         }
 
-        TooltipSetItemInfo(tooltip, info, 0, 0);
+        tooltip->Hide();
 
         return 0;
     }
 
-    const char* found = SStrStr(link, "enchant:");
+    if (auto found = SStrStr(link, "enchant:")) {
+        auto spellID = SStrToInt(found + 8);
 
-    if (found) {
-        // The reference gates this one on a flag in the spell record (a byte at +0x10 of the record
-        // it copies, tested against 0x20) that has not been identified, so the spell is shown
-        // whenever the record exists.
-        return TooltipSetSpellRec(L, tooltip, g_spellDB.GetRecord(SStrToInt(found + 8)));
+        if (!tooltip->m_shown || spellID != tooltip->m_spellID) {
+            auto spell = g_spellDB.GetRecord(spellID);
+
+            // Only a trade skill spell (SPELL_ATTR0 0x20) shows from an enchant link.
+            if (spell && (spell->m_attributes & 0x20)) {
+                tooltip->SetSpell(spellID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0);
+            }
+
+            return 0;
+        }
+
+        tooltip->Hide();
+
+        return 0;
     }
 
     if (SStrStr(link, "dance:")) {
-        // FUN_00575d70. Needs the dance/emote browser.
+        // PARTIAL: FUN_00575d70, the dance studio's tooltip; the dance studio is not ported.
         return 0;
     }
 
-    found = SStrStr(link, "spell:");
+    if (auto found = SStrStr(link, "spell:")) {
+        auto spellID = SStrToInt(found + 6);
 
-    if (found) {
-        return TooltipSetSpellRec(L, tooltip, g_spellDB.GetRecord(SStrToInt(found + 6)));
+        if (!tooltip->m_shown || spellID != tooltip->m_spellID) {
+            tooltip->SetSpell(spellID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0);
+
+            return 0;
+        }
+
+        tooltip->Hide();
+
+        return 0;
     }
 
     if (SStrStr(link, "unit:")) {
-        // FUN_00621070, the same unit filler SetUnit reaches. It takes the GUID the link carries,
-        // and Frozen's partial unit fill works from a unit token instead, so this is left alone.
+        // PARTIAL: FUN_00621070 through TooltipUnitLevelLine, the unit tooltip, which is ported with
+        // SetUnit's own builder.
         return 0;
     }
 
     if (SStrStr(link, "quest:")) {
-        // FUN_00622960. Needs the quest log.
+        // PARTIAL: FUN_00622960, the quest tooltip.
         return 0;
     }
 
     if (SStrStr(link, "talent:")) {
-        // FUN_00626e20. Needs the talent system.
+        // PARTIAL: FUN_00626e20, the talent tooltip.
         return 0;
     }
 
     if (SStrStr(link, "trade:")) {
-        // FUN_005de300. Needs the trade skill system.
+        // PARTIAL: FUN_005de300, a trade skill link opens the profession window; not ported.
         return 0;
     }
 
     if (SStrStr(link, "achievement:")) {
-        // FUN_00627220. Needs the achievement system.
+        // PARTIAL: FUN_00627220, the achievement tooltip.
         return 0;
     }
 
     if (SStrStr(link, "glyph:")) {
-        // FUN_00622ba0. Needs the glyph system.
+        // PARTIAL: FUN_00622ba0, the glyph tooltip.
         return 0;
     }
 
-    return luaL_error(L, "%s:SetHyperlink(): Unknown link type", tooltip->GetDisplayName());
+    luaL_error(L, "%s:SetHyperlink(): Unknown link type", tooltip->GetDisplayName());
+
+    return 0;
 }
 
 // SetAction(slot): the tooltip for an action button. Only spell actions resolve today.
@@ -863,354 +890,129 @@ int32_t CGTooltip_SetGlyph(lua_State* L) {
     WHOA_UNIMPLEMENTED(0);
 }
 
-// ref: FUN_006277f0, its leading lines.
-//
-// The reference's item tooltip body is one 3,200 line function that also covers petitions, glyphs,
-// keys, sockets, enchants, set bonuses, arena requirements, refund timers and disenchant skills.
-// This is its spine -- the lines an ordinary weapon or piece of armour shows -- emitted in the
-// order the reference emits them, which was recovered by reading where each global string is
-// fetched: the damage band, then SPEED, then DPS_TEMPLATE, then ARMOR_TEMPLATE, then (far below
-// the parts not ported) DURABILITY_TEMPLATE and the description.
-//
-// Every value here comes from the item record read in DBCacheInstances.cpp, whose field order was
-// verified against the reference's own itemcache.wdb. The formats come from GlobalStrings through
-// FrameScript_GetText rather than being spelled out, so a non-English client formats its own way.
-//
-// Not ported, and each one is a line an item can legitimately want: item level, bind and unique
-// lines, the stat block, resistances, sockets and their bonus, set bonuses, spell triggers,
-// requirements (level, skill, reputation), and the sell price.
-// The record's delay is in milliseconds; every line that shows a speed shows seconds
-// (_DAT_009e1134 in the reference).
-static const float DELAY_TO_SECONDS = 0.001f;
-
-// The order the stat block lists stats in, read out of the reference's DAT_00a262f0. This is a
-// display order, not the record's storage order, and the loop over it is what decides which stat
-// types appear at all: the rating stats (12 upward) are absent on purpose.
-static const int32_t STAT_DISPLAY_ORDER[] = { 4, 3, 7, 5, 6, 1, 0, 8, 9, 2, 10 };
-
-// The GlobalStrings key per stat type, from the reference's table at 00ad6640. Only the entries
-// the order above can reach are here; the full table runs to 48 and then continues into the socket
-// colour names. The empty ones are empty in the reference too and emit no line.
-static const char* const STAT_NAME_KEYS[] = {
-    "ITEM_MOD_MANA",      // 0
-    "ITEM_MOD_HEALTH",    // 1
-    "",                   // 2
-    "ITEM_MOD_AGILITY",   // 3
-    "ITEM_MOD_STRENGTH",  // 4
-    "ITEM_MOD_INTELLECT", // 5
-    "ITEM_MOD_SPIRIT",    // 6
-    "ITEM_MOD_STAMINA",   // 7
-    "",                   // 8
-    "",                   // 9
-    "",                   // 10
-};
-
-static const int32_t STAT_NAME_KEY_COUNT =
-    static_cast<int32_t>(sizeof(STAT_NAME_KEYS) / sizeof(STAT_NAME_KEYS[0]));
-
-// Inventory type 16. A cloak's subclass row reads "Cloth", which would say the wrong thing beside
-// the slot, so the reference leaves the right half of the type line empty for one.
-static const int32_t INVENTORY_TYPE_CLOAK = 16;
-
-// ItemSubClass has no id column -- a row is the (class, subclass) pair -- so this scans its 119.
-static const ItemSubClassRec* ItemSubClassRecord(int32_t itemClass, int32_t subClass) {
-    for (int32_t i = 0; i < g_itemSubClassDB.GetNumRecords(); i++) {
-        auto rec = g_itemSubClassDB.GetRecordByIndex(i);
-
-        if (rec && rec->m_classID == itemClass && rec->m_subClassID == subClass) {
-            return rec;
-        }
-    }
-
-    return nullptr;
-}
-
-// Item classes the tooltip gates lines on. The speed and damage-per-second lines want a weapon;
-// the item level line wants any of the four below.
-static const int32_t ITEM_CLASS_WEAPON = 2;
-static const int32_t ITEM_CLASS_ARMOR = 4;
-static const int32_t ITEM_CLASS_REAGENT = 5;
-static const int32_t ITEM_CLASS_PROJECTILE = 6;
-
-void TooltipSetItemInfo(CGTooltip* tooltip, const ItemStats_C* info, int32_t durability, int32_t maxDurability) {
-    tooltip->ClearTooltip();
-
-    char text[512];
-
-    // The name carries the quality colour as an escape rather than through a colour call: the
-    // reference colours the font string directly, which frozen's tooltip lines have no API for
-    // yet, and the escape reaches the same place through the text pass.
-    static const uint32_t s_qualityColors[] = {
-        0x9D9D9D, 0xFFFFFF, 0x1EFF00, 0x0070DD, 0xA335EE, 0xFF8000, 0xE6CC80, 0xE6CC80
-    };
-
-    auto quality = (info->quality >= 0 && info->quality <= 7) ? info->quality : 1;
-
-    SStrPrintf(text, sizeof(text), "|cff%06x%s|r", s_qualityColors[quality], info->name.c_str());
-    tooltip->AddLine(text, nullptr, 0);
-
-    // The equip slot on the left, the item's subtype on the right -- "Chest" / "Plate".
-    //
-    // The right half is the ItemSubClass row's display name, and the reference suppresses it in
-    // two cases: a cloak (inventory type 16), whose subclass would read "Cloth" and mislead, and
-    // any subclass whose flags carry bit 0. Both tests are the reference's.
-    //
-    // Not ported: class 6 (projectile) takes a different left half entirely, out of an ammo-slot
-    // table rather than the equip locations, so a quiver's arrows would name the wrong thing here.
-    {
-        const char* slotKey = (info->inventoryType > 0 && info->inventoryType < EQUIP_LOCATION_COUNT)
-            ? s_equipLocations[info->inventoryType]
-            : nullptr;
-
-        const char* left = (slotKey && *slotKey && info->itemClass != ITEM_CLASS_PROJECTILE)
-            ? FrameScript_GetText(slotKey, -1, GENDER_NOT_APPLICABLE)
-            : nullptr;
-
-        auto subClass = ItemSubClassRecord(info->itemClass, info->subClass);
-
-        const char* right = nullptr;
-
-        if (subClass && info->inventoryType != INVENTORY_TYPE_CLOAK && !(subClass->m_flags & 1)
-            && subClass->m_displayName && *subClass->m_displayName) {
-            right = subClass->m_displayName;
-        }
-
-        if ((left && *left) || right) {
-            tooltip->AddLine(left, right, 0);
-        }
-    }
-
-    // The damage band. delay is in milliseconds and the speed shown is seconds to one decimal.
-    if (info->delay > 0 && (info->damageMin[0] > 0.0f || info->damageMax[0] > 0.0f)) {
-        auto low = static_cast<int32_t>(info->damageMin[0]);
-        auto high = static_cast<int32_t>(info->damageMax[0]);
-
-        // The reference picks the single-value template when the band has no spread, rather than
-        // printing "5 - 5 Damage".
-        if (low == high) {
-            SStrPrintf(text, sizeof(text),
-                       FrameScript_GetText("SINGLE_DAMAGE_TEMPLATE", -1, GENDER_NOT_APPLICABLE), low);
-        } else {
-            SStrPrintf(text, sizeof(text),
-                       FrameScript_GetText("DAMAGE_TEMPLATE", -1, GENDER_NOT_APPLICABLE), low, high);
-        }
-
-        const char* speedText = nullptr;
-        char speed[64];
-
-        // Speed and damage-per-second are WEAPON lines, not damage lines: the reference gates both
-        // on itemClass == 2. A thrown potion or a wand-less caster offhand can carry a damage band
-        // without being a weapon, and showing it a speed would be wrong.
-        if (info->itemClass == ITEM_CLASS_WEAPON) {
-            SStrPrintf(speed, sizeof(speed), "%s %.2f",
-                       FrameScript_GetText("SPEED", -1, GENDER_NOT_APPLICABLE),
-                       info->delay * DELAY_TO_SECONDS);
-            speedText = speed;
-        }
-
-        tooltip->AddLine(text, speedText, 0);
-
-        if (info->itemClass == ITEM_CLASS_WEAPON) {
-            // The reference accumulates (min + max) * 0.5 across every damage band and divides the
-            // total by the speed, so a weapon with a second band counts both -- not just the one
-            // the line above prints.
-            float total = 0.0f;
-
-            for (int32_t i = 0; i < ItemStats_C::MAX_DAMAGES; i++) {
-                total += (info->damageMin[i] + info->damageMax[i]) * 0.5f;
-            }
-
-            SStrPrintf(text, sizeof(text),
-                       FrameScript_GetText("DPS_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
-                       total / (info->delay * DELAY_TO_SECONDS));
-            tooltip->AddLine(text, nullptr, 0);
-        }
-    }
-
-    if (info->armor) {
-        SStrPrintf(text, sizeof(text),
-                   FrameScript_GetText("ARMOR_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->armor);
-        tooltip->AddLine(text, nullptr, 0);
-    }
-
-    if (info->block) {
-        SStrPrintf(text, sizeof(text),
-                   FrameScript_GetText("SHIELD_BLOCK_TEMPLATE", -1, GENDER_NOT_APPLICABLE), info->block);
-        tooltip->AddLine(text, nullptr, 0);
-    }
-
-    // The stat block.
-    //
-    // Two things here are the reference's and would not survive being guessed from a screenshot.
-    //
-    // The stats are shown in a FIXED display order (DAT_00a262f0), not in the order the record
-    // carries them, so a chest with stamina stored before strength still lists strength first.
-    // And the order table only names eleven stat types, all of them primary -- the rating stats
-    // (types 12 upward: crit, haste, expertise and the rest) are not part of this block at all.
-    // Those appear as green "Equip:" lines out of the spell block, which is not ported.
-    //
-    // The whole block is skipped for an item with a scaling stat distribution, which computes its
-    // stats instead of storing them.
-    if (info->scalingStatValue == 0) {
-        for (auto wanted : STAT_DISPLAY_ORDER) {
-            for (int32_t i = 0; i < ItemStats_C::MAX_STATS; i++) {
-                if (info->statValue[i] == 0 || info->statType[i] == -1 || info->statType[i] != wanted) {
-                    continue;
-                }
-
-                auto key = (wanted >= 0 && wanted < STAT_NAME_KEY_COUNT) ? STAT_NAME_KEYS[wanted] : "";
-                auto format = *key ? FrameScript_GetText(key, -1, GENDER_NOT_APPLICABLE) : nullptr;
-
-                // Several entries in the reference's table are deliberately empty; it tests the
-                // resolved string and emits nothing rather than a line reading "%c%d".
-                if (format && *format) {
-                    auto value = info->statValue[i];
-
-                    // The format's leading %c is the sign and the %d after it is the magnitude, so
-                    // the value is split rather than printed signed.
-                    SStrPrintf(text, sizeof(text), format,
-                               value < 1 ? '-' : '+',
-                               value < 0 ? -value : value);
-                    tooltip->AddLine(text, nullptr, 1);
-                }
-
-                break;
-            }
-        }
-    }
-
-    // Resistances.
-    //
-    // The reference first asks whether all six are the same value and, if they are, prints one
-    // "to All Resistances" line instead of six. Otherwise it walks schools 2 through 6 -- fire,
-    // nature, frost, shadow, arcane -- and prints the non-zero ones.
-    //
-    // Holy (resistance[0], school 1) is never printed on its own. It takes part in the all-equal
-    // test and nothing else, which is why no 3.3.5 item shows a holy resistance line.
-    {
-        bool allEqual = true;
-
-        for (int32_t i = 1; i < 6; i++) {
-            if (info->resistance[i] != info->resistance[0]) {
-                allEqual = false;
-                break;
-            }
-        }
-
-        if (allEqual) {
-            if (info->resistance[0] != 0) {
-                auto value = info->resistance[0];
-
-                SStrPrintf(text, sizeof(text),
-                           FrameScript_GetText("ITEM_RESIST_ALL", -1, GENDER_NOT_APPLICABLE),
-                           value < 1 ? '-' : '+',
-                           value < 0 ? -value : value);
-                tooltip->AddLine(text, nullptr, 0);
-            }
-        } else {
-            for (int32_t school = 2; school < 7; school++) {
-                auto value = info->resistance[school - 1];
-
-                if (value == 0) {
-                    continue;
-                }
-
-                char schoolKey[32];
-                SStrPrintf(schoolKey, sizeof(schoolKey), "SPELL_SCHOOL%d_CAP", school);
-
-                SStrPrintf(text, sizeof(text),
-                           FrameScript_GetText("ITEM_RESIST_SINGLE", -1, GENDER_NOT_APPLICABLE),
-                           value < 1 ? '-' : '+',
-                           value < 0 ? -value : value,
-                           FrameScript_GetText(schoolKey, -1, GENDER_NOT_APPLICABLE));
-                tooltip->AddLine(text, nullptr, 0);
-            }
-        }
-    }
-
-    // Durability comes from the item instance, not the record, so it is passed in; an item with no
-    // durability at all shows no line rather than "0 / 0".
-    if (maxDurability > 0) {
-        SStrPrintf(text, sizeof(text),
-                   FrameScript_GetText("DURABILITY_TEMPLATE", -1, GENDER_NOT_APPLICABLE),
-                   durability, maxDurability);
-        tooltip->AddLine(text, nullptr, 0);
-    }
-
-    // "Requires Level N". The test is > 1, not > 0: an item anyone can use from the first level
-    // shows no line at all, and using > 0 would put "Requires Level 1" on half the starting gear.
-    if (info->requiredLevel > 1) {
-        SStrPrintf(text, sizeof(text),
-                   FrameScript_GetText("ITEM_MIN_LEVEL", -1, GENDER_NOT_APPLICABLE),
-                   info->requiredLevel);
-        tooltip->AddLine(text, nullptr, 0);
-    }
-
-    // "Item Level N" is off by default and is not shown for every item even when it is on: the
-    // reference gates it on the showItemLevel CVar AND on the item being a weapon, a piece of
-    // armour, a reagent or a projectile. A consumable never shows one however the CVar is set.
-    auto showItemLevel = CVar::Lookup("showItemLevel");
-
-    if (showItemLevel && showItemLevel->GetInt()
-        && (info->itemClass == ITEM_CLASS_WEAPON
-            || info->itemClass == ITEM_CLASS_ARMOR
-            || info->itemClass == ITEM_CLASS_REAGENT
-            || info->itemClass == ITEM_CLASS_PROJECTILE)) {
-        SStrPrintf(text, sizeof(text),
-                   FrameScript_GetText("ITEM_LEVEL", -1, GENDER_NOT_APPLICABLE), info->itemLevel);
-        tooltip->AddLine(text, nullptr, 0);
-    }
-
-    if (!info->description.empty()) {
-        // The reference shows the flavour text in quotes and lets it wrap.
-        SStrPrintf(text, sizeof(text), "\"%s\"", info->description.c_str());
-        tooltip->AddLine(text, nullptr, 1);
-    }
-
-    tooltip->Show();
-}
-
 // ref: FUN_0062e050
-//
-// SetInventoryItem(unit, slot [, nameOnly]) -> hasItem, hasCooldown, repairCost.
-//
-// Only the player's own slots resolve, which is what InventoryItem already enforces and what the
-// server actually sends. The reference also handles the bank bag slots, the equipment-set overlay
-// and a repair cost read from the merchant frame; none of those exist here, so the third return is
-// zero rather than a guess.
+// SetInventoryItem(unit, slot [, nameOnly]) -> hasItem, hasCooldown, repairCost. Slot -1 is the
+// ammo. An item cooling down is shown from link info carrying the cooldown and its charges; an
+// inspected player's gear with no item object, from the inspect record.
 int32_t CGTooltip_SetInventoryItem(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isstring(L, 2)) {
-        return luaL_error(L, "Usage: %s:SetInventoryItem(unit, slot [, nameOnly])",
-                          tooltip->GetDisplayName());
-    }
+        luaL_error(L, "Usage: %s:SetInventoryItem(unit, slot [, nameOnly])", tooltip->GetDisplayName());
 
-    if (!lua_isnumber(L, 3)) {
-        return luaL_error(L, "Invalid inventory slot in SetInventoryItem");
-    }
-
-    auto item = Script_GetInventoryItem(L, 2, 3);
-    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
-
-    // An item whose record has not arrived yet answers "no item" and leaves the tooltip alone. The
-    // cache has asked for it by now, so the next hover fills in -- which is why FrameXML re-runs
-    // these on every OnEnter rather than caching the answer.
-    if (!info) {
         return 0;
     }
 
-    // Durability is per-item, not per-record: an identical sword at half health shows a different
-    // line to a fresh one, so it comes off the object rather than the cache.
-    auto data = item->Item();
+    if (!lua_isnumber(L, 3)) {
+        luaL_error(L, "Invalid inventory slot in SetInventoryItem");
 
-    TooltipSetItemInfo(tooltip, info,
-                       data ? data->durability : 0,
-                       data ? data->maxDurability : 0);
+        return 0;
+    }
 
-    lua_pushboolean(L, 1);
-    lua_pushboolean(L, 0); // hasCooldown: item cooldowns are not tracked yet
-    lua_pushnumber(L, 0.0); // repairCost: needs the merchant frame
+    auto slot = static_cast<int32_t>(lua_tonumber(L, 3));
+
+    if ((slot < 0 || slot > 0x16) && (slot < 0x27 || slot > 0x42) && (slot < 0x43 || slot > 0x49)
+        && (slot < 0x56 || slot > 0x75) && (slot < 0x76 || slot > 0x95) && slot != -1) {
+        luaL_error(L, "Invalid inventory slot in SetInventoryItem");
+
+        return 0;
+    }
+
+    auto nameOnly = StringToBOOL(L, 4, 0);
+    auto unit = Script_GetUnitFromName(lua_tostring(L, 2));
+
+    if (IsActivePlayerOrInspectTarget(unit)) {
+        WOWGUID unitGUID = unit->GetGUID();
+
+        if (slot == -1) {
+            auto player = static_cast<CGPlayer_C*>(unit);
+            auto ammo = unit->GetGUID() == ClntObjMgrGetActivePlayer() ? static_cast<int32_t>(player->Player()->ammoID) : 0;
+
+            if (ammo) {
+                auto item = unit->GetBag()->FindItemByID(ammo, 0);
+
+                if (item) {
+                    WOWGUID itemGUID = item->GetGUID();
+                    tooltip->SetItem(ammo, &unitGUID, &itemGUID, 0, 0, 0, 0, unitGUID, 0, nullptr, 0, nullptr, 0, 0, 0);
+                    lua_pushnumber(L, 1.0);
+                    lua_pushnil(L);
+
+                    return 2;
+                }
+            }
+
+            lua_pushnil(L);
+            lua_pushnil(L);
+
+            return 2;
+        }
+
+        auto item = unit->GetBag()->GetItem(static_cast<uint32_t>(slot));
+
+        if (item) {
+            WOWGUID itemGUID = item->GetGUID();
+            int32_t useLinkInfo = 0;
+
+            if (item->GetMaxCharges() == 0 || item->GetCharges() != 0) {
+                int32_t duration = 0;
+                int32_t start = 0;
+                uint32_t enabled = 0;
+                ItemGetCooldown(item, &duration, &start, &enabled);
+
+                if (enabled && duration && start) {
+                    tooltip->m_linkInfo.Reset();
+                    tooltip->m_linkInfo.cooldown = duration + (start - static_cast<int32_t>(OsGetAsyncTimeMs()));
+                    tooltip->m_linkInfo.charges = item->GetCharges();
+                    useLinkInfo = 1;
+                }
+            }
+
+            auto changing = tooltip->SetItem(item->GetEntryID(), &unitGUID, &itemGUID, nameOnly, 0, useLinkInfo, 0, unitGUID, 0, nullptr, 0, nullptr, 0, 0, 0);
+
+            lua_pushnumber(L, 1.0);
+
+            if (changing) {
+                lua_pushnumber(L, 1.0);
+            } else {
+                lua_pushnil(L);
+            }
+
+            lua_pushnumber(L, static_cast<double>(static_cast<uint32_t>(MerchantGetRepairCost(item))));
+
+            return 3;
+        }
+
+        auto info = static_cast<CGPlayer_C*>(unit)->GetInventoryItemInfo(static_cast<uint32_t>(slot));
+
+        if (info && info->itemID) {
+            WOWGUID none = 0;
+            g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(info->itemID)), &none, &CGTooltip::OnItemArrived, tooltip, false);
+
+            tooltip->m_linkInfo.Reset();
+            tooltip->m_linkInfo.randomPropertyID = info->randomPropertyID;
+
+            for (int32_t i = 0; i < 12; i++) {
+                tooltip->m_linkInfo.enchant[i] = info->enchant[i];
+                tooltip->m_linkInfo.enchantDuration[i] = 0;
+                tooltip->m_linkInfo.enchantCharges[i] = 0;
+            }
+
+            tooltip->m_linkInfo.suffixFactor = info->suffixFactor;
+            tooltip->m_linkInfo.creator = info->creator;
+
+            tooltip->SetItem(info->itemID, &unitGUID, &none, nameOnly, 0, 1, 0, unitGUID, 0, nullptr, 0, nullptr, 0, 0, 0);
+
+            lua_pushnumber(L, 1.0);
+            lua_pushnil(L);
+            lua_pushnumber(L, 0.0);
+
+            return 3;
+        }
+    }
+
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_pushnumber(L, 0.0);
 
     return 3;
 }
@@ -1236,13 +1038,12 @@ int32_t CGTooltip_SetTradeSkillItem(lua_State* L) {
 }
 
 // ref: FUN_0062ed70
-// The reference hands TooltipSetItemInfo the entry, the vendor's GUID and a merchant flag; frozen's
-// filler takes the cached record, so the record is looked up here.
 int32_t CGTooltip_SetMerchantItem(lua_State* L) {
     auto tooltip = TooltipThis(L);
 
     if (!lua_isnumber(L, 2)) {
         luaL_error(L, "Invalid merchant slot in SetMerchantItem");
+
         return 0;
     }
 
@@ -1250,18 +1051,58 @@ int32_t CGTooltip_SetMerchantItem(lua_State* L) {
     auto item = MerchantGetItem(index);
 
     if (item && item->m_unk04) {
-        auto info = g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->m_unk04)), nullptr, &DBCacheIgnoreCallback, nullptr, true);
-
-        if (info) {
-            TooltipSetItemInfo(tooltip, info, 0, 0);
-        }
+        WOWGUID merchant = MerchantGetGUID();
+        WOWGUID none = 0;
+        tooltip->SetItem(item->m_unk04, &merchant, &none, 0, 0, 0, 0, 0, 0, nullptr, 0, nullptr, 0, 0, 1);
     }
 
     return 0;
 }
 
+// ref: FUN_0062ee70
+// SetMerchantCostItem(index, costIndex): the costIndex'th item the vendor's extended cost asks for.
 int32_t CGTooltip_SetMerchantCostItem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3)) {
+        luaL_error(L, "Invalid merchant slot in SetMerchantCostItem");
+
+        return 0;
+    }
+
+    auto index = static_cast<int32_t>(lua_tonumber(L, 2) - 1.0);
+    auto costIndex = static_cast<int32_t>(lua_tonumber(L, 3) - 1.0);
+    auto item = MerchantGetItem(index);
+
+    if (!item || !item->m_unk04) {
+        return 0;
+    }
+
+    auto cost = g_itemExtendedCostDB.GetRecord(item->m_extendedCostID);
+
+    if (!cost) {
+        return 0;
+    }
+
+    int32_t seen = 0;
+
+    for (int32_t i = 0; i < 5; i++) {
+        if (cost->m_itemID[i] == 0) {
+            continue;
+        }
+
+        if (seen == costIndex) {
+            WOWGUID merchant = MerchantGetGUID();
+            WOWGUID none = 0;
+            tooltip->SetItem(cost->m_itemID[i], &merchant, &none, 0, 0, 0, 0, 0, 0, nullptr, 0, nullptr, 0, 0, 1);
+
+            return 0;
+        }
+
+        seen++;
+    }
+
+    return 0;
 }
 
 int32_t CGTooltip_SetTradePlayerItem(lua_State* L) {
@@ -1273,36 +1114,101 @@ int32_t CGTooltip_SetTradeTargetItem(lua_State* L) {
 }
 
 // ref: FUN_0062f420
-//
-// SetBagItem(bag, slot) -> hasItem, hasCooldown, repairCost, same three as SetInventoryItem.
-//
-// The bag is 0-based and the slot 1-based, which is how FrameXML passes them and what the
-// container lookup expects.
+// SetBagItem(bag, slot) -> hasCooldown, repairCost. Bag 0 is the backpack, slots 1-based. The item
+// asks its own record; a cooling down item is shown through link info carrying the cooldown.
 int32_t CGTooltip_SetBagItem(lua_State* L) {
     auto tooltip = TooltipThis(L);
+    auto player = CGPlayer_C::GetActivePtr();
 
-    if (!lua_isnumber(L, 2) || !lua_isnumber(L, 3)) {
-        return luaL_error(L, "Usage: %s:SetBagItem(bag, slot)", tooltip->GetDisplayName());
-    }
-
-    auto item = Script_GetContainerItem(L, 2, 3);
-    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
-
-    if (!info) {
+    if (!player || !lua_isnumber(L, 2) || !lua_isnumber(L, 3)) {
         return 0;
     }
 
-    auto data = item->Item();
+    auto bagIndex = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 2)) - 1);
+    CGBag_C* bag;
 
-    TooltipSetItemInfo(tooltip, info,
-                       data ? data->durability : 0,
-                       data ? data->maxDurability : 0);
+    if (bagIndex == 0xFFFFFFFF) {
+        bag = &player->m_bag;
+    } else {
+        if (bagIndex > 10) {
+            return 0;
+        }
 
-    lua_pushboolean(L, 1);
-    lua_pushboolean(L, 0); // hasCooldown: item cooldowns are not tracked yet
-    lua_pushnumber(L, 0.0); // repairCost: needs the merchant frame
+        auto container = ClntObjMgrObjectPtr(ContainerGetBagGuid(bagIndex), TYPE_CONTAINER, ".\\Tooltip.cpp", 0x1ebd);
 
-    return 3;
+        if (!container) {
+            return 0;
+        }
+
+        bag = container->GetBag();
+    }
+
+    if (!bag) {
+        return 0;
+    }
+
+    auto slot = static_cast<int32_t>(lua_tonumber(L, 3));
+    auto index = slot - 1;
+
+    if (bag == &player->m_bag) {
+        index = slot + 0x16;
+    }
+
+    if (index < 0 || static_cast<uint32_t>(index) >= bag->m_numSlots) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    auto item = bag->GetItem(static_cast<uint32_t>(index));
+
+    if (!item) {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    WOWGUID itemGUID = item->GetGUID();
+    int32_t useLinkInfo = 0;
+
+    if (item->GetMaxCharges() == 0 || item->GetCharges() != 0) {
+        int32_t duration = 0;
+        int32_t start = 0;
+        uint32_t enabled = 0;
+        ItemGetCooldown(item, &duration, &start, &enabled);
+
+        if (enabled && duration && start) {
+            auto& link = tooltip->m_linkInfo;
+            link.Reset();
+
+            for (int32_t i = 0; i < 12; i++) {
+                link.enchant[i] = 0;
+                link.enchantDuration[i] = 0;
+                link.enchantCharges[i] = 0;
+            }
+
+            link.cooldown = start + duration - static_cast<int32_t>(OsGetAsyncTimeMs());
+            link.proposedEnchant = 0;
+            link.creator = item->Item()->creator;
+            link.wrapped = (item->Item()->flags >> 3) & 1;
+            link.giftCreator = item->Item()->giftCreator;
+            link.charges = item->GetCharges();
+            useLinkInfo = 1;
+        }
+    }
+
+    auto changing = tooltip->SetItem(item->GetEntryID(), &itemGUID, &itemGUID, 0, 0, useLinkInfo, 0, 0, 0, nullptr, 0, nullptr, 0, 0, 0);
+    auto repair = MerchantGetRepairCost(item);
+
+    if (changing) {
+        lua_pushnumber(L, 1.0);
+    } else {
+        lua_pushnil(L);
+    }
+
+    lua_pushnumber(L, static_cast<double>(static_cast<uint32_t>(repair)));
+
+    return 2;
 }
 
 // ref: FUN_00625e10
@@ -1429,20 +1335,12 @@ int32_t CGTooltip_SetInboxItem(lua_State* L) {
 // ref: FUN_0062fc20
 int32_t CGTooltip_SetAuctionSellItem(lua_State* L) {
     auto tooltip = TooltipThis(L);
-
     WOWGUID guid = AuctionHouse::s_sellItem;
 
     if (guid) {
-        auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
-        auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
+        auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, ".\\Tooltip.cpp", 0x1ff7));
 
-        if (info) {
-            auto data = item->Item();
-
-            TooltipSetItemInfo(tooltip, info,
-                               data ? data->durability : 0,
-                               data ? data->maxDurability : 0);
-
+        if (item && tooltip->SetItem(item->GetEntryID(), &guid, &guid, 0, 0, 0, 0, 0, 0, nullptr, 0, nullptr, 0, 0, 0)) {
             lua_pushnumber(L, 1.0);
 
             return 1;
@@ -1486,18 +1384,15 @@ int32_t CGTooltip_SetLootRollItem(lua_State* L) {
 }
 
 // ref: FUN_006301a0
+// The item in the socketing frame, as it will be with the gems placed.
 int32_t CGTooltip_SetSocketedItem(lua_State* L) {
     auto tooltip = TooltipThis(L);
+    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(s_socketItem, TYPE_ITEM, ".\\Tooltip.cpp", 0x20ff));
 
-    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(s_socketItem, TYPE_ITEM, __FILE__, __LINE__));
-    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
-
-    if (info) {
-        auto data = item->Item();
-
-        TooltipSetItemInfo(tooltip, info,
-                           data ? data->durability : 0,
-                           data ? data->maxDurability : 0);
+    if (item) {
+        WOWGUID itemGUID = item->GetGUID();
+        WOWGUID none = 0;
+        tooltip->SetItem(item->GetEntryID(), &none, &itemGUID, 0, 0, 0, 0, 0, 1, nullptr, 0, nullptr, 0, 0, 0);
     }
 
     return 0;
@@ -1509,28 +1404,53 @@ int32_t CGTooltip_SetSocketGem(lua_State* L) {
 
     if (!lua_isnumber(L, 2)) {
         luaL_error(L, "Usage: %s:SetSocketGem(index)", tooltip->GetDisplayName());
+
         return 0;
     }
 
-    auto index = static_cast<uint32_t>(llrint(lua_tonumber(L, 2))) - 1;
+    auto index = static_cast<uint32_t>(static_cast<int32_t>(lua_tonumber(L, 2)) - 1);
     WOWGUID guid = index < 3 ? s_socketGems[index] : 0;
+    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, ".\\Tooltip.cpp", 0x210f));
 
-    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(guid, TYPE_ITEM, __FILE__, __LINE__));
-    auto info = item ? g_itemCache.GetRecord(DBCACHEKEY32(static_cast<uint32_t>(item->GetEntryID())), nullptr, &DBCacheIgnoreCallback, nullptr, true) : nullptr;
-
-    if (info) {
-        auto data = item->Item();
-
-        TooltipSetItemInfo(tooltip, info,
-                           data ? data->durability : 0,
-                           data ? data->maxDurability : 0);
+    if (item) {
+        WOWGUID itemGUID = item->GetGUID();
+        WOWGUID none = 0;
+        tooltip->SetItem(item->GetEntryID(), &none, &itemGUID, 0, 0, 0, 0, 0, 0, nullptr, 0, nullptr, 0, 0, 0);
     }
 
     return 0;
 }
 
+// ref: FUN_00630370
+// SetExistingSocketGem(index [, toDestroy]): the gem already in a socket of the item being
+// socketed, under a "will be destroyed" header when asked.
 int32_t CGTooltip_SetExistingSocketGem(lua_State* L) {
-    WHOA_UNIMPLEMENTED(0);
+    auto tooltip = TooltipThis(L);
+
+    if (!lua_isnumber(L, 2)) {
+        luaL_error(L, "Usage: %s:SetSocketGem(index, [toDestroy])", tooltip->GetDisplayName());
+
+        return 0;
+    }
+
+    auto number = static_cast<int32_t>(lua_tonumber(L, 2));
+    auto index = static_cast<uint32_t>(number - 1);
+    auto toDestroy = StringToBOOL(L, 3, 0);
+    auto item = static_cast<CGItem_C*>(ClntObjMgrObjectPtr(s_socketItem, TYPE_ITEM, ".\\Tooltip.cpp", 0x2120));
+
+    if (item && index < 3) {
+        // FUN_00518b30: the enchantment in the socket's slot, none on a charter.
+        auto enchantID = item->IsCharter() ? 0 : item->Item()->enchantments[number + 1].id;
+        auto enchant = g_spellItemEnchantmentDB.GetRecord(enchantID);
+
+        if (enchant && enchant->m_srcItemID) {
+            WOWGUID none = 0;
+            WOWGUID noItem = 0;
+            tooltip->SetItem(enchant->m_srcItemID, &none, &noItem, 0, toDestroy, 0, 0, 0, 0, nullptr, 0, nullptr, 0, 0, 0);
+        }
+    }
+
+    return 0;
 }
 
 int32_t CGTooltip_SetGuildBankItem(lua_State* L) {

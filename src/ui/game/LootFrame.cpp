@@ -89,3 +89,7 @@ int32_t LootGetSlotField14(uint32_t slot) {
 int32_t LootGetType() {
     return s_lootType;
 }
+
+WOWGUID LootGetGUID() {
+    return s_lootGuid;
+}

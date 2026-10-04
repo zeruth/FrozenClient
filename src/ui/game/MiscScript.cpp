@@ -3,6 +3,7 @@
 // that calls them at load or on entering the world runs to completion instead of failing on a
 // missing global. They move to their subsystem files as those get ported.
 
+#include "ui/game/DuelInfo.hpp"
 #include "ui/game/MiscScript.hpp"
 #include "ui/game/ScriptUtil.hpp"
 #include "object/client/AuraCache.hpp"
@@ -826,7 +827,7 @@ FrameScript_Method s_ScriptFunctions[] = {
     // Cancel* are ACTIONS, not predicates: they return nothing.
     { "CancelAuction",                       &Script_ReturnNothing },
     { "CancelBarberShop",                    &Script_ReturnNothing },
-    { "CancelDuel",                          &Script_ReturnNothing },
+    { "CancelDuel",                          &Script_CancelDuel },
     { "CancelItemTempEnchantment",           &Script_ReturnNothing },
     { "CancelSell",                          &Script_ReturnNothing },
     { "CancelShapeshiftForm",                &Script_ReturnNothing },

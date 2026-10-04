@@ -41,3 +41,39 @@ bool ReputationGetForcedReaction(int32_t factionID, int32_t* reaction) {
 
     return false;
 }
+
+// ref: FUN_005d0600
+int32_t ReputationGetReaction(int32_t factionID) {
+    auto rec = g_factionDB.GetRecord(factionID);
+
+    if (rec && static_cast<uint32_t>(rec->m_reputationIndex) < NUM_REPUTATIONS) {
+        auto& reputation = s_reputations[rec->m_reputationIndex];
+        auto standing = reputation.value0C + reputation.value08;
+
+        if (standing > 41999) {
+            return 7;
+        }
+
+        if (standing > 20999) {
+            return 6;
+        }
+
+        if (standing > 8999) {
+            return 5;
+        }
+
+        if (standing > 2999) {
+            return 4;
+        }
+
+        if (standing < 0) {
+            if (standing > -3001) {
+                return 2;
+            }
+
+            return standing > -6001 ? 1 : 0;
+        }
+    }
+
+    return 3;
+}

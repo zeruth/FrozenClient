@@ -61,7 +61,7 @@ void ITEMLINKINFO::Reset() {
     this->giftCreator = 0;
     this->suffixFactor = 0;
     this->randomPropertyID = 0;
-    this->locked = 0;
+    this->wrapped = 0;
     this->lockID = 0;
     this->maxDurability = 0;
     this->durability = 0;

@@ -60,3 +60,25 @@ MerchantItem* MerchantFindItem(int32_t itemID) {
 
     return nullptr;
 }
+
+WOWGUID MerchantGetGUID() {
+    return s_merchantGuid;
+}
+
+#include "object/client/CGItem_C.hpp"
+#include <cmath>
+
+// ref: FUN_00584b20
+int32_t MerchantGetRepairCost(CGItem_C* item) {
+    float factor = 1.0f;
+    auto player = CGPlayer_C::GetActivePtr();
+    auto merchant = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(s_merchantGuid, TYPE_UNIT, ".\\MerchantFrame.cpp", 0xd3));
+
+    if (player && merchant) {
+        factor = 1.0f - merchant->GetReputationDiscount(player);
+    }
+
+    auto cost = static_cast<float>(static_cast<uint32_t>(item->GetRepairCost()));
+
+    return static_cast<int32_t>(std::nearbyint(cost * factor));
+}

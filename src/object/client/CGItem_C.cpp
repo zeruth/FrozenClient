@@ -829,3 +829,11 @@ int32_t ItemRefundInfoHandler(void* param, NETMESSAGE msgId, uint32_t time, CDat
 
     return 1;
 }
+
+// ref: FUN_00707180
+// The page text a readable item opens, never asking for the record.
+int32_t CGItem_C::GetPageText() const {
+    auto info = g_itemCache.Peek(DBCACHEKEY32(static_cast<uint32_t>(this->GetEntryID())));
+
+    return info ? info->pageText : 0;
+}

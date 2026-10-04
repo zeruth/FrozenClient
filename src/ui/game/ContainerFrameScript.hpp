@@ -25,4 +25,8 @@ class CGItem_C;
 // An item's inventory icon name, without directory or extension. ref: FUN_0070aa00
 const char* ItemDisplayIcon(CGItem_C* item);
 
+// The inventory icon name of an ItemDisplayInfo row, remembered once found;
+// "INV_Misc_QuestionMark" when it has none.
+const char* ItemDisplayGetIcon(int32_t displayID);
+
 #endif

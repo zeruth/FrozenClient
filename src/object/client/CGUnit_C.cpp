@@ -1,3 +1,7 @@
+#include "ui/game/DuelInfo.hpp"
+#include "ui/game/ReputationInfo.hpp"
+#include "ui/game/CGPartyInfo.hpp"
+#include "ui/game/CGRaidInfo.hpp"
 #include "object/client/CGUnit_C.hpp"
 #include "model/CM2ParticleEmitter.hpp"
 #include <new>
@@ -99,11 +103,48 @@ int32_t CGUnit_C::GetFactionTemplateReaction(const FactionTemplateRec* a, const 
 }
 
 // ref: FUN_0071f770
-// TODO the reference reaches for the reputation system first when the other unit is a player: an
-// explicitly set standing wins, and a faction at war is hostile regardless of the templates. None
-// of that is ported, so this is the faction-template answer alone, which is what the reference
-// itself falls back to for everything that is not a player with a reputation entry.
+// A unit controlled by the active player sees the faction through the player's reputation: a
+// faction flagged 0x1000 is hostile to a player flagged PLAYER_FLAGS 0x100, a forced reaction
+// wins, and a faction with a reputation answers from it (unless the unit's UNIT_FLAG2 0x4 says
+// otherwise). Everything else is the two templates.
+int32_t CGUnit_C::GetReaction(int32_t factionTemplate, const CGUnit_C* other) {
+    auto mine = g_factionTemplateDB.GetRecord(factionTemplate);
+    auto theirs = g_factionTemplateDB.GetRecord(other->Unit()->factionTemplate);
+
+    if (!mine || !theirs) {
+        return 3;
+    }
+
+    if ((other->Unit()->flags >> 3) & 1) {
+        auto controller = const_cast<CGUnit_C*>(other)->GetControllingPlayer();
+
+        if (controller && controller->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            auto player = static_cast<CGPlayer_C*>(controller);
+
+            if ((mine->m_flags & 0x1000) && ((player->Player()->flags >> 8) & 1)) {
+                return 1;
+            }
+
+            int32_t forced;
+
+            if (ReputationGetForcedReaction(mine->m_faction, &forced)) {
+                return forced;
+            }
+
+            if (!((other->Unit()->flags2 >> 2) & 1) && FactionHasReputation(mine->m_faction)) {
+                return ReputationGetReaction(mine->m_faction);
+            }
+        }
+    }
+
+    return CGUnit_C::GetFactionTemplateReaction(mine, theirs);
+}
+
 int32_t CGUnit_C::GetReaction(const CGUnit_C* other) const {
+    if (other && this != other) {
+        return CGUnit_C::GetReaction(this->Unit()->factionTemplate, other);
+    }
+
     if (!other) {
         return 3;
     }
@@ -13102,4 +13143,145 @@ bool CGUnit_C::KnowsHigherRank(int32_t spellID) const {
     }
 
     return false;
+}
+
+// ref: FUN_0071f5c0
+// Two PvP-flagged units are dueling when their controlling players share a duel arbiter on
+// opposite teams, or -- when only one side is player-controlled and that is the active player --
+// when the other is the duel opponent's pet or summon.
+bool CGUnit_C::IsInDuelWith(CGUnit_C* other) {
+    if (!other || !other->IsA(TYPE_UNIT)) {
+        return false;
+    }
+
+    if (!((this->Unit()->flags >> 3) & 1) || !((other->Unit()->flags >> 3) & 1)) {
+        return false;
+    }
+
+    auto mine = this->IsA(TYPE_PLAYER) ? this : this->GetControllingPlayer();
+    auto theirs = other->IsA(TYPE_PLAYER) ? other : other->GetControllingPlayer();
+
+    if (!mine || !theirs) {
+        WOWGUID owner;
+
+        if (this->GetGUID() == ClntObjMgrGetActivePlayer() && !theirs) {
+            owner = other->GetCharmerOrCreator();
+        } else if (other->GetGUID() == ClntObjMgrGetActivePlayer() && !mine) {
+            owner = this->GetCharmerOrCreator();
+        } else {
+            return false;
+        }
+
+        return owner != 0 && owner == DuelInfoGetOpponent();
+    }
+
+    auto mineData = static_cast<CGPlayer_C*>(mine)->Player();
+    auto theirData = static_cast<CGPlayer_C*>(theirs)->Player();
+
+    return mineData->duelTeam != 0 && theirData->duelTeam != 0 && mineData->duelArbiter == theirData->duelArbiter && mineData->duelTeam != theirData->duelTeam;
+}
+
+// ref: FUN_007251c0
+// The reaction the client colours and targets by. Between PvP-flagged units it is settled by
+// duels (hostile across a duel, friendly within one), by the same controlling player, and by the
+// active player's party and raid; then free-for-all PvP makes everyone hostile; then a unit the
+// active player controls sees the other's faction through the player's reputation; then the
+// faction templates, capped at exalted.
+int32_t CGUnit_C::GetUnitReaction(CGUnit_C* other) {
+    if (other == this) {
+        return 4;
+    }
+
+    auto data = this->Unit();
+
+    if (((data->flags >> 3) & 1) && ((other->Unit()->flags >> 3) & 1)) {
+        auto mine = this->GetControllingPlayer();
+        auto theirs = other->GetControllingPlayer();
+        bool settled = false;
+
+        if (!mine || !theirs) {
+            if (this->GetGUID() == ClntObjMgrGetActivePlayer() && !theirs) {
+                if (this->IsInDuelWith(other)) {
+                    return 1;
+                }
+            } else if (other->GetGUID() == ClntObjMgrGetActivePlayer() && !mine) {
+                if (other->IsInDuelWith(this)) {
+                    return 1;
+                }
+            }
+        } else {
+            auto mineData = static_cast<CGPlayer_C*>(mine)->Player();
+            auto theirData = static_cast<CGPlayer_C*>(theirs)->Player();
+
+            if (mineData->duelTeam != 0 && theirData->duelTeam != 0 && mineData->duelArbiter == theirData->duelArbiter) {
+                return mineData->duelTeam != theirData->duelTeam ? 1 : 4;
+            }
+
+            if (mine == theirs) {
+                return 4;
+            }
+
+            if (mine->GetGUID() == ClntObjMgrGetActivePlayer()
+                && (CGPartyInfo::IsPlayerOrMember(theirs->GetGUID()) || CGRaidInfo::IndexOf(theirs->GetGUID()) != 0)) {
+                settled = true;
+            } else if (theirs->GetGUID() == ClntObjMgrGetActivePlayer()
+                && (CGPartyInfo::IsPlayerOrMember(mine->GetGUID()) || CGRaidInfo::IndexOf(mine->GetGUID()) != 0)) {
+                settled = true;
+            }
+
+            if (settled) {
+                return CGUnit_C::GetReaction(data->factionTemplate, other);
+            }
+        }
+
+        if (((data->bytes2 >> 8) & 4) && ((other->Unit()->bytes2 >> 8) & 4)) {
+            return 1;
+        }
+    }
+
+    if ((data->flags >> 3) & 1) {
+        auto controller = this->GetControllingPlayer();
+
+        if (controller && controller->GetGUID() == ClntObjMgrGetActivePlayer()) {
+            auto theirTemplate = g_factionTemplateDB.GetRecord(other->Unit()->factionTemplate);
+
+            if (theirTemplate) {
+                int32_t forced;
+
+                if (ReputationGetForcedReaction(theirTemplate->m_faction, &forced)) {
+                    return forced;
+                }
+
+                if (!((controller->Unit()->flags2 >> 2) & 1) && FactionHasReputation(theirTemplate->m_faction)) {
+                    if ((theirTemplate->m_flags & 0x1000) && ((static_cast<CGPlayer_C*>(controller)->Player()->flags >> 8) & 1)) {
+                        return 1;
+                    }
+
+                    return ReputationIsAtWar(theirTemplate->m_faction) ? 1 : 4;
+                }
+            }
+        }
+    }
+
+    auto reaction = CGUnit_C::GetReaction(data->factionTemplate, other);
+
+    return reaction > 6 ? 7 : reaction;
+}
+
+// ref: FUN_007279a0
+float CGUnit_C::GetReputationDiscount(CGUnit_C* other) {
+    auto factionTemplate = g_factionTemplateDB.GetRecord(this->Unit()->factionTemplate);
+    auto faction = factionTemplate ? g_factionDB.GetRecord(factionTemplate->m_faction) : nullptr;
+
+    if (faction && faction->m_reputationIndex >= 0) {
+        switch (this->GetUnitReaction(other)) {
+            case 4: return 0.05f;
+            case 5: return 0.1f;
+            case 6: return 0.15f;
+            case 7: return 0.2f;
+            default: break;
+        }
+    }
+
+    return 0.0f;
 }

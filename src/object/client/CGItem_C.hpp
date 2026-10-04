@@ -70,6 +70,7 @@ class CGItem_C : public CGObject_C, public CGItem {
         int32_t GetPrismaticSocketCount() const;
         int32_t GetSocketCount() const;
         int32_t GetRepairCost() const;
+        int32_t GetPageText() const;
 
         void SetRefundInfo(ITEMREFUNDINFO* info);
         void RequestRefundInfo();

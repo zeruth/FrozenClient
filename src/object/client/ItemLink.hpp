@@ -30,7 +30,7 @@ struct ITEMLINKINFO {
     int32_t suffixFactor;           // +0xb0 the link's "seed"
     int32_t randomPropertyID;       // +0xb4 negative for an ItemRandomSuffix row
     int32_t charges;                // +0xb8 -1 when not known
-    int32_t locked;                 // +0xbc
+    int32_t wrapped;                // +0xbc gift-wrapped: the contents are hidden
     int32_t lockID;                 // +0xc0
     int32_t maxDurability;          // +0xc4 -1 means "take the item's own"
     int32_t durability;             // +0xc8

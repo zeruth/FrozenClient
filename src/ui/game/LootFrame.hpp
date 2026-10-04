@@ -1,6 +1,7 @@
 #ifndef UI_GAME_LOOT_FRAME_HPP
 #define UI_GAME_LOOT_FRAME_HPP
 
+#include "util/GUID.hpp"
 #include <cstdint>
 
 // The reference's LootFrame.cpp: one 0x20-byte record per loot slot of the open loot window. Only
@@ -25,5 +26,8 @@ int32_t LootGetSlotField10(uint32_t slot);
 int32_t LootGetSlotField14(uint32_t slot);
 
 int32_t LootGetType();
+
+// What the open loot window is looting, 0 when none is.
+WOWGUID LootGetGUID();
 
 #endif
