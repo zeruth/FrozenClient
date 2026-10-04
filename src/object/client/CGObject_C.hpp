@@ -13,6 +13,7 @@
 #include <tempest/Vector.hpp>
 
 class CEffect;
+struct PLAYERNAMEDESC;
 class CGWorldFrame;
 class CM2Model;
 class CPassenger;
@@ -78,7 +79,7 @@ class CGObject_C : public CGObject, public TSHashObject<CGObject_C, CHashKeyGUID
         // +0xac: the object's height in model units, which the name and marker sit above.
         float m_height = 0.0f;
         // +0xb0: the object's name plate, owned by PlayerName.cpp.
-        void* m_nameDesc = nullptr;
+        PLAYERNAMEDESC* m_nameDesc = nullptr;
         // +0xb4
         CM2Model* m_model = nullptr;
         // +0xb8

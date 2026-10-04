@@ -4,6 +4,7 @@
 #include "ui/simple/CSimpleFrame.hpp"
 #include "util/GUID.hpp"
 #include <storm/List.hpp>
+#include <tempest/Matrix.hpp>
 #include <cstdint>
 
 class CGCamera;
@@ -110,6 +111,7 @@ class CGWorldFrame : public CSimpleFrame {
         int32_t Intersect(float x, float y, uint32_t unused, CURSORHIT* hit);
         void UpdateCursorPick();
         int32_t OnWorldClick(int32_t button);
+        int32_t GetScreenCoordinates(const C3Vector& world, C3Vector* screen, uint32_t* flags);
 
         // +0x2d0: the object whose model the cursor is over; +0x2d8 what kind of thing the last
         // pick found (0 nothing, 1 terrain, 2 a model, 3 a map object), +0x2e0 the hit itself,
@@ -160,6 +162,10 @@ class CGWorldFrame : public CSimpleFrame {
     protected:
         // TODO
         CGCamera* m_camera;
+        // +0x340: the view-projection as it stood after the frame's update, which the screen
+        // projection works from; +0xb10 bit 2 marks a frame where it changed.
+        C44Matrix m_viewProjection;
+        uint32_t m_renderFlags = 0;
         // TODO
 };
 

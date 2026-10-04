@@ -297,6 +297,12 @@ CGUnit_C::~CGUnit_C() {
 
     this->m_threatList.Clear();
 
+    // The name plate (0x00734c2d).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+        this->m_nameDesc = nullptr;
+    }
+
     // Free the composited body built for a humanoid NPC (players keep their own component in
     // CGPlayer_C, so this only ever fires for NPCs). Units stream in and out with the tiles, so a
     // leak here would grow unbounded.
@@ -453,6 +459,136 @@ WOWGUID CGUnit_C::GetTransportGUID() const {
 }
 
 namespace {
+// Defined with the movement code below.
+extern int32_t s_clickToMoveState;
+} // namespace
+
+// ref: FUN_00734fd0
+// The unit leaves view: the object's part, its vehicle camera and passengers, its sounds and
+// object effects, its threat table and name plate, the game UI's hold on it (target and the rest),
+// and the active mover when it was this.
+//
+// PARTIAL, each the subsystem's own port: the loot roll's release (FUN_006fc0f0), the world map's
+// vehicle icon (FUN_00549740, vehicle flag 0x10000000), the +0xb60 array ("._K"), the nameplate
+// frame (+0xc38) and chat bubble (+0xc3c), the movement globals (FUN_006ec390), the spell
+// module's (FUN_00806390), the cast and channel bars (+0xa60, +0xa80, FUN_00720e50 /
+// FUN_0060bf60), and the party and raid frames' SMSG for a member (FUN_0052d210, FUN_00573150).
+void CGUnit_C::Disable() {
+    this->CGObject_C::Disable();
+
+    UnitDestroyVehicleCamera(this);
+
+    if (this->m_vehicle) {
+        this->m_vehicle->EjectAllPassengers();
+    }
+
+    // FUN_00746340
+    SI2::StopOrFadeOut(this->m_mountSound, 0, 0.5f, 1);
+
+    if (this->m_objectEffects) {
+        for (int32_t state = 1; state < 0x52; state++) {
+            this->m_objectEffects->ClearState(state, 0);
+        }
+    }
+
+    this->m_stateFlags &= ~0x2u;
+    this->ClearThreatList();
+
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = nullptr;
+
+    // The game UI lets go of the unit unless it is a party or raid member not in a duel with the
+    // player (FUN_00524350).
+    auto player = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.h", 0xa0));
+    bool member = CGPartyInfo::IsPlayerOrMemberOrPet(this->GetGUID()) || CGRaidInfo::IsMemberOrPet(this->GetGUID());
+
+    if (!member || (player && player->IsDuelingWith(this))) {
+        CGGameUI::OnObjectDisabled(this->GetGUID());
+    }
+
+    auto camera = CGWorldFrame::GetActiveCamera();
+
+    if (camera && camera->GetTarget() == this->GetGUID()) {
+        camera->SetRelativeTo(0);
+    }
+
+    if (this->GetGUID() == CGUnit_C::s_activeMover) {
+        if (s_clickToMoveState != 13) {
+            this->CancelClickToMove(0, 1);
+        }
+
+        CGUnit_C::s_activeMover = 0;
+    }
+}
+
+// ref: FUN_007237f0
+// The unit comes back into view: a new name plate, its facing settled where it stands, its
+// health and powers taken as reported, its effects stopped and its loot sparkle back, what its
+// hands hold read again, and its movement effects.
+//
+// PARTIAL, each the subsystem's own port: the missiles still in flight (+0x9ec / +0x9f0,
+// FUN_00703730), the low-health state (bit 0x2, which needs +0x97c), the model's +0x64 word, and
+// the world map's vehicle icon (FUN_0054aba0).
+void CGUnit_C::Reenable() {
+    this->CGObject_C::Reenable();
+
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = PlayerNameCreate(this->GetGUID());
+
+    float facing = this->GetRawFacing();
+    this->m_smoothFacing = CMath::normalizeangle0to2pi(facing);
+    this->m_smoothFacingStep = 0.0f;
+    this->m_smoothFacingHistory[0] = 0.0f;
+    this->m_smoothFacingHistory[1] = 0.0f;
+    this->m_smoothFacingHistory[2] = 0.0f;
+    this->m_smoothFacingHistory[3] = 0.0f;
+    this->m_lowerBodyFacing = facing;
+    this->m_lowerBodyFacingStep = 0.0f;
+    this->m_lowerBodyBlend = 1.0f;
+
+    this->m_reportedHealth = this->m_unit->health;
+
+    // FUN_0071c320
+    for (int32_t i = 0; i < 7; i++) {
+        this->m_reportedPower[i] = this->m_unit->power[i];
+    }
+
+    this->m_animFlags &= ~0x2400u;
+
+    this->StopAllEffects(3);
+    this->ShowLootSparkle();
+
+    for (int32_t hand = 0; hand < 3; hand++) {
+        auto item = g_itemDB.GetRecord(this->m_unit->virtualItemSlotID[hand]);
+
+        UNIT_WEAPON_INFO info;
+
+        if (item) {
+            this->m_weaponDisplays[hand] = item->m_displayInfoID;
+            info.m_class = static_cast<uint8_t>(item->m_classID);
+            info.m_subclass = static_cast<uint8_t>(item->m_subclassID);
+            info.m_soundOverride = static_cast<uint8_t>(item->m_soundOverrideSubclassID);
+            info.m_material = static_cast<uint8_t>(item->m_material);
+            info.m_inventoryType = static_cast<uint8_t>(item->m_inventoryType);
+            info.m_sheathType = static_cast<uint8_t>(item->m_sheatheType);
+        } else {
+            this->m_weaponDisplays[hand] = 0;
+        }
+
+        this->m_weaponInfo[hand] = info;
+    }
+
+    this->m_previousSheathState = this->m_sheathState;
+    this->UpdateMovementEffects();
+}
+
+namespace {
 
 // DAT_00ca1248 / DAT_00ca1250: an SMSG_CONTROL_UPDATE for a unit not yet in view, which its
 // PostInit takes up (FUN_00716060 stores it).
@@ -462,9 +598,9 @@ bool s_pendingControlHas = false;
 } // namespace
 
 // ref: FUN_0073fcc0
-// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the name plate (FUN_007e5f60), the
+// PARTIAL: the movement start (FUN_006ea520, FUN_0074d070, FUN_0074b380), the stand state's posture (FUN_006e9920), the
 // party and raid slots (FUN_005139b0, FUN_0054d1c0) and the vehicle and passenger starts are the
-// Movement, PlayerName and party ports'.
+// Movement and party ports'.
 void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_displayScale = this->GetDisplayScale(this->m_unit->displayID);
 
@@ -526,6 +662,13 @@ void CGUnit_C::PostInit(uint32_t time, const CClientObjCreate& init, bool a4) {
     this->m_lowerBodyBlend = 1.0f;
 
     this->UpdateObjectEffectPackage();
+
+    // The name plate, made again for this unit (0x0073ffb4).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = PlayerNameCreate(this->GetGUID());
 
     // 0x007401c5: an SMSG_CONTROL_UPDATE that arrived before the unit did.
     if (s_pendingControl == this->GetGUID()) {
@@ -9915,8 +10058,17 @@ float CGUnit_C::GetAnimationProgress() {
     return progress < 1.0f ? progress : 1.0f;
 }
 
+// ref: FUN_00719050
+// The name plate made again, for a new model.
+void CGUnit_C::RebuildNamePlate() {
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
+    this->m_nameDesc = PlayerNameCreate(this->GetGUID());
+}
+
 // ref: FUN_0073e410
-// TODO(PlayerName): the name plate is rebuilt for the new model (FUN_007e6320, FUN_00719050).
 void CGUnit_C::UpdateModel(int32_t force) {
     if (!force && !this->NeedsModelUpdate()) {
         return;
@@ -9958,6 +10110,12 @@ void CGUnit_C::UpdateModel(int32_t force) {
 
     this->m_animFlags |= 0x8000000;
 
+    // The old model's name plate goes with it (0x0073e4ff).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+        this->m_nameDesc = nullptr;
+    }
+
     uint32_t current = this->GetCurrentAnimationId();
 
     model->SetSequenceDoneCallback(&CGUnit_C::OnModelSequenceDone, this->GetGUID());
@@ -9970,6 +10128,9 @@ void CGUnit_C::UpdateModel(int32_t force) {
     this->UpdateDisplayScale(previousModelData ? 1 : 0);
     this->PlaceModel(0.0f);
     model->ForceAnimate();
+
+    // 0x0073e58e
+    this->RebuildNamePlate();
 
     CCharacterComponent::ApplyMonsterGeosets(this->m_model, this->m_displayInfo);
     CCharacterComponent::ReplaceMonsterSkin(this->m_model, this->m_displayInfo, this->m_modelData);
@@ -12464,8 +12625,7 @@ void CGUnit_C::UpdateWheels() {
 // at most and the head the rest), the turn-in-place shuffle, the wheels, and the regeneration
 // lock's model flag.
 //
-// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the target's name plate blink (FUN_00729740) and the name
-// plate step (FUN_007e6390), the scripted alpha timer (+0xb28), the missiles in flight
+// PARTIAL, each the subsystem's own port: the rider's seat timer (FUN_007490c0), the scripted alpha timer (+0xb28), the missiles in flight
 // (+0x9f0, FUN_00703730), the queued emotes (FUN_0073adc0, written by FUN_0071a260), a vehicle
 // seat's aim (seat flag 0x200, vtable 0x14c) and the delayed
 // kits (FUN_00728140, +0xf4c).
@@ -12475,6 +12635,40 @@ void CGUnit_C::UpdateForFrame(CGWorldFrame* frame) {
     if (static_cast<int32_t>(now - this->m_breathCheckTime) >= 0) {
         this->UpdateBreathState(now);
     }
+
+    // The locked target's name blinks while the player is attacking it (state 0x10): the shared
+    // highlight colour's green swings every half second (0x0073db0b).
+    if (this->GetGUID() == CGGameUI::GetLockedTarget()) {
+        auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Player_C.h", 0xa0));
+
+        if (!player || ((!(player->m_viewFlags & 0x2) && player->m_attackTarget == 0) || !player->CanAttack(this))) {
+            if (this->m_stateFlags & 0x10) {
+                this->m_stateFlags &= ~0x10u;
+                PlayerNameInvalidateReaction(this->m_nameDesc);
+            }
+        } else {
+            this->m_stateFlags |= 0x10;
+
+            if (static_cast<int32_t>(now - CGUnit_C::s_attackBlinkTime - 500) >= 0) {
+                CGUnit_C::s_attackBlinkOn = CGUnit_C::s_attackBlinkOn == 0;
+                CGUnit_C::s_attackBlinkTime = now;
+            }
+
+            float blink = static_cast<float>(static_cast<int32_t>(CGUnit_C::s_attackBlinkTime - now) + 500) * 0.002f;
+
+            if (CGUnit_C::s_attackBlinkOn) {
+                blink = 1.0f - blink;
+            }
+
+            CGUnit_C::s_attackBlinkColor.g = static_cast<uint8_t>(static_cast<int32_t>(std::lrint(blink * 128.0f)));
+            PlayerNameInvalidateReaction(this->m_nameDesc);
+        }
+    } else if (this->m_stateFlags & 0x10) {
+        this->m_stateFlags &= ~0x10u;
+        PlayerNameInvalidateReaction(this->m_nameDesc);
+    }
+
+    PlayerNameUpdate(this->m_nameDesc);
 
     this->UpdateModelColor();
 
@@ -13968,9 +14162,6 @@ int32_t CGUnit_C::GetThreatSituation(const WOWGUID& guid, uint8_t* status, uint8
 // ref: FUN_00719220
 // The floater a status change raises over this unit ("COMBAT_THREAT_INCREASE_2" and so on) while
 // threat warnings are on -- except falling from high to low, or from insecure to secure.
-//
-// PHASE4(PlayerName): the text goes to the unit's name plate (+0xb0) as world text 10 through
-// FUN_007e5100 / FUN_007e6030; frozen's name plates do not carry world text yet.
 void CGUnit_C::ShowThreatWorldText(int32_t oldStatus, int32_t newStatus) {
     if (!GameUIThreatWarningActive()) {
         return;
@@ -14004,6 +14195,9 @@ void CGUnit_C::ShowThreatWorldText(int32_t oldStatus, int32_t newStatus) {
     if (!text || !text[0]) {
         return;
     }
+
+    PlayerNameClearWorldText(this->m_nameDesc, 10);
+    PlayerNameAddWorldText(this->m_nameDesc, 10, text, nullptr, nullptr);
 }
 
 // ---- control (Unit_C.cpp) -------------------------------------------------------------------

@@ -135,9 +135,19 @@ class CGUnit_C : public CGObject_C, public CGUnit {
 
         // How this unit regards another.
         int32_t GetReaction(const CGUnit_C* other) const;
+        bool IsDuelingWith(const CGUnit_C* other) const;
+        int32_t UnitReaction(const CGUnit_C* other) const;
+        bool CanAttack(const CGUnit_C* other) const;
+        bool IsFriendlyTo(const CGUnit_C* other) const;
+        bool CanAssist(const CGUnit_C* other, bool ignorePvP) const;
+        bool CanCooperate(const CGUnit_C* other) const;
+        void RebuildNamePlate();
+        const char* GetNameWithTitle(char* buffer, uint32_t size, bool withTitle, int32_t* lines);
 
         // Virtual public member functions
         virtual ~CGUnit_C();
+        virtual void Disable();
+        virtual void Reenable();
         // TODO
         virtual C3Vector GetPosition() const;
         // TODO
@@ -169,6 +179,9 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         // ref: FUN_00715b50
         // The display's opacity (CreatureDisplayInfo column 5) over 255, or fully opaque.
         virtual float GetFadeInAlpha();
+        int32_t Virtual078(int32_t* out) override;                              // 0x078
+        int32_t GetNameText(int32_t flags, char* buffer, uint32_t size) override; // 0x0cc
+        int32_t Virtual0D0(uint32_t mask) override;                             // 0x0d0
 
         // The unit's own slots, past the base's, in the reference's order (0x00a34d90).
         virtual void Virtual108() {}                                                    // 0x108
@@ -1162,6 +1175,14 @@ class CGUnit_C : public CGObject_C, public CGUnit {
         int32_t m_intFA4 = -1;
         // +0xac0: when the unit's death animation first finished (the world clock), 0 before.
         uint32_t m_deathTime = 0;
+        // The locked target's attack blink (DAT_00adaa98, DAT_00ca12bc, DAT_00ca12c0): the name
+        // colour, which way its green is swinging, and when it last turned.
+        static CImVector s_attackBlinkColor;
+        static int32_t s_attackBlinkOn;
+        static uint32_t s_attackBlinkTime;
+        // +0xc38: the unit's nameplate frame (CGNamePlateFrame, FUN_007254e0). TODO(NamePlate): the
+        // nameplate frames are not ported, so no unit has one.
+        void* m_namePlate = nullptr;
         // +0xc40 / +0xc48: the unit's master looter and the looter whose turn it is (SMSG_LOOT_LIST).
         WOWGUID m_masterLooter = 0;
         WOWGUID m_roundRobinLooter = 0;

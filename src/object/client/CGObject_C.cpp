@@ -67,8 +67,6 @@ QuestMarker s_questMarkers[12] = {
 // Which marker each quest-giver status shows (0x00a34f5c).
 const int32_t s_questStatusMarker[11] = { 0, 6, 1, 2, 3, 5, 10, 11, 4, 9, 9 };
 
-// The marker the frame shows quest markers with (0x00ac80a8).
-int32_t s_showQuestMarkers = 1;
 
 // The selection circle (0x00ca12c4) and its CVar (0x00ca12c8).
 HTEXTURE s_selectionTexture;
@@ -105,6 +103,10 @@ int32_t ScaleEaseFinished(WOWGUID guid, void* param) {
 }
 
 } // namespace
+
+// Whether the world's floating markers show (0x00ac80a8): the quest markers and the raid target
+// icons, both hidden while the UI is.
+int32_t s_showQuestMarkers = 1;
 
 // ------------------------------------------------------------------------------------------------
 // Construction

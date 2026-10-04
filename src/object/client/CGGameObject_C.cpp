@@ -17,6 +17,7 @@
 #include "ui/game/CGGameUI.hpp"
 #include "util/Log.hpp"
 #include "world/CWorld.hpp"
+#include "ui/game/PlayerName.hpp"
 #include <common/DataStore.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
@@ -337,7 +338,11 @@ CGGameObject_C::~CGGameObject_C() {
     this->m_flag22 = 0;
     ReleaseAttachedModel(this->m_highlightModel);
 
-    // TODO(PlayerName): a destructible building's name plate at +0xb0 is let go (FUN_007e6320).
+    // A destructible building's name plate (0x00712bea).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
     this->m_nameDesc = nullptr;
 
     if (this->m_type) {
@@ -444,7 +449,11 @@ void CGGameObject_C::Disable() {
 
     ReleaseAttachedModel(this->m_highlightModel);
 
-    // TODO(PlayerName): the name plate at +0xb0 (FUN_007e6320).
+    // The name plate (0x0071311a).
+    if (this->m_nameDesc) {
+        PlayerNameDestroy(this->m_nameDesc);
+    }
+
     this->m_nameDesc = nullptr;
 }
 
@@ -458,9 +467,13 @@ void CGGameObject_C::Reenable() {
         this->m_type->OnReenable();
     }
 
+    // A destructible building's name plate is made again (0x0070ed9f).
     if (this->GameObject()->type == 33) {
-        // TODO(PlayerName): a destructible building's name plate is made again (FUN_007e6320,
-        // FUN_007e5fd0).
+        if (this->m_nameDesc) {
+            PlayerNameDestroy(this->m_nameDesc);
+        }
+
+        this->m_nameDesc = PlayerNameCreateAlways(this->GetGUID());
     }
 }
 

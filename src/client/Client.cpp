@@ -1,3 +1,5 @@
+#include "ui/game/PlayerName.hpp"
+#include "ui/game/WorldText.hpp"
 #include "object/client/CGCorpse_C.hpp"
 #include "object/client/ObjectEffect.hpp"
 #include "world/Shadow.hpp"
@@ -271,6 +273,10 @@ void ClientInitializeGame(uint32_t mapId, C3Vector position) {
 
     ClntObjMgrInitializeShared();
     ClntObjMgrInitializeStd(mapId);
+
+    // The world text and the name plates (0x00405612, 0x00405617).
+    WorldTextInitialize();
+    PlayerNameInitialize();
 
     // The selection circle and quest marker models (0x00405621), then the unit module's start
     // (FUN_00742220 at 0x0040562b).

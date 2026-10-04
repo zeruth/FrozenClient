@@ -55,6 +55,7 @@
 #include "object/Client.hpp"
 #include "ui/game/CGCamera.hpp"
 #include "event/CEvent.hpp"
+#include "ui/game/ScreenLayout.hpp"
 #include "ui/game/PlayerName.hpp"
 #include "world/World.hpp"
 #include "db/Db.hpp"
@@ -805,8 +806,11 @@ void CGWorldFrame::OnWorldRender() {
         0.94f
     );
 
-    // TODO FUN_004f2db0 (clears a character-component counter, DAT_00b6ba50), FUN_007e5120 (the
-    // projected-texture frame stamp), and FUN_00715380(1) when the frame's +0xb10 bit 2 is set.
+    // TODO FUN_004f2db0 (clears a character-component counter, DAT_00b6ba50) and FUN_00715380(1)
+    // when the frame's +0xb10 bit 2 is set.
+
+    // The name plates' frame stamp (FUN_007e5120, 0x004f9067).
+    PlayerNameNewFrame();
 
     CShaderEffect::UpdateProjMatrix();
 
@@ -910,7 +914,8 @@ void CGWorldFrame::OnWorldRender() {
     // The sun's and the moon's glare over everything (FUN_007f0870, 0x004f9213), inside the push.
     DayNightGlareRender();
 
-    // TODO FUN_007e5580: release the projected textures nothing used this frame.
+    // The texts of objects nothing updated this frame go (FUN_007e5580, 0x004f9218).
+    PlayerNameExpireWorldText();
 
     if (CWorld::s_enables & CWorld::Enable_20000000) {
         g_theGxDevicePtr->DeviceOverride(8, 1);
@@ -918,7 +923,10 @@ void CGWorldFrame::OnWorldRender() {
 
     GxRsPop();
 
-    // TODO FUN_00615890(1) (empty deferred list 1) and FUN_0056c7a0 (the UI's pending layout).
+    // This frame's world text places are let go (FUN_00615890(1), 0x004f9242).
+    ScreenLayoutClear(1);
+
+    // TODO FUN_0056c7a0 (the UI's pending layout).
 
     GxXformSetViewport(savedMinX, savedMaxX, savedMinY, savedMaxY, savedMinZ, savedMaxZ);
 
@@ -1039,8 +1047,17 @@ void CGWorldFrame::OnWorldUpdate() {
 
     CWorld::Update(this->m_camera->Position(), this->m_camera->Target(), targetPos);
 
-    // TODO the view-projection change test (FUN_004c1830 against +0x340) that marks the frame
-    // (+0xb10 bit 2) for OnWorldRender's FUN_00715380, then FUN_00405130, the sound updates
+    // The view-projection kept for the screen projection, and the frame marked when it changed
+    // (0x004fab37).
+    C44Matrix viewProjection;
+    GxXformViewProj(viewProjection);
+
+    if (!(viewProjection == this->m_viewProjection)) {
+        this->m_renderFlags |= 0x2;
+        this->m_viewProjection = viewProjection;
+    }
+
+    // TODO FUN_00405130, the sound updates
     // (FUN_004d0110, FUN_004cdc80), the active mover's FUN_006fe7e0, FUN_00739630 and the world
     // map's FUN_005488f0.
 
@@ -1341,6 +1358,56 @@ bool FrustumRay(float u, float v, C3Vector* start, C3Vector* end) {
 }
 
 } // namespace
+
+// ref: FUN_004f6d20
+// Where a point of the world lands on the screen, in DDC across the frame, its depth in z. `flags`
+// gets which of the frame's edges it is inside: 1 left, 2 bottom, 4 right, 8 top. Nonzero when it is
+// inside all four, and 0 for a point behind the near plane.
+int32_t CGWorldFrame::GetScreenCoordinates(const C3Vector& world, C3Vector* screen, uint32_t* flags) {
+    const C3Vector& camera = this->m_camera->Position();
+
+    // The view carries no translation, so the point is taken relative to the camera with w 0.
+    C4Vector relative = { world.x - camera.x, world.y - camera.y, world.z - camera.z, 0.0f };
+    C4Vector clip;
+    TransformVector4(&clip, relative, this->m_viewProjection);
+
+    if (clip.z < this->m_camera->NearZ()) {
+        return 0;
+    }
+
+    screen->z = clip.z;
+
+    float inv = 1.0f / clip.w;
+    float u = (clip.x * inv + 1.0f) * 0.5f;
+    float v = (clip.y * inv + 1.0f) * 0.5f;
+
+    float x;
+    float y;
+    NDCToDDC((this->m_viewport.maxX - this->m_viewport.minX) * u, (this->m_viewport.maxY - this->m_viewport.minY) * v, &x, &y);
+
+    if (this->m_rect.minX < 0.0f) {
+        x -= this->m_rect.minX;
+    }
+
+    if (this->m_rect.minY < 0.0f) {
+        y -= this->m_rect.minY;
+    }
+
+    screen->x = x;
+    screen->y = y;
+
+    uint32_t inside = (y <= this->m_rect.maxY - this->m_rect.minY ? 0x8 : 0)
+        | (x <= this->m_rect.maxX - this->m_rect.minX ? 0x4 : 0)
+        | (0.0f < y ? 0x2 : 0)
+        | (0.0f <= x ? 0x1 : 0);
+
+    if (flags) {
+        *flags = inside;
+        return inside == 0xf;
+    }
+
+    return inside == 0xf;
+}
 
 // ref: FUN_004f6450
 // The cursor's ray in the world: the point's place across the frame's rect, through the frustum,

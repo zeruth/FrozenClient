@@ -93,6 +93,11 @@ CVar* CGGameUI::s_threatWarningCvar;
 CVar* CGGameUI::s_threatWorldTextCvar;
 CVar* CGGameUI::s_threatShowNumericCvar;
 CVar* CGGameUI::s_threatPlaySoundsCvar;
+CVar* CGGameUI::s_combatDamageCvar;
+CVar* CGGameUI::s_combatLogPeriodicSpellsCvar;
+CVar* CGGameUI::s_petMeleeDamageCvar;
+CVar* CGGameUI::s_petSpellDamageCvar;
+CVar* CGGameUI::s_combatHealingCvar;
 int32_t CGGameUI::s_inCinematic;
 bool CGGameUI::s_loggingIn;
 CSimpleTop* CGGameUI::s_simpleTop;
@@ -259,6 +264,21 @@ uint32_t CGGameUI::GetCursorMoney() {
 // ref: FUN_005124d0
 int32_t CGGameUI::InCinematic() {
     return CGGameUI::s_inCinematic;
+}
+
+// ref: FUN_00524350
+// An object leaves view: the target lets go of it, and so does the remembered last target.
+//
+// PARTIAL, each the subsystem's own port: the auto-repeat spell's stop when it was the target
+// (FUN_00807560), the last friendly and hostile targets (DAT_00bd07c0 / DAT_00bd07c8, which frozen
+// does not keep), the world frame's held object (DAT_00bd07a0, FUN_004f5980), the focus
+// (DAT_00bd07d0, FUN_0051ff20) and DAT_00bd07d8.
+void CGGameUI::OnObjectDisabled(WOWGUID guid) {
+    CGGameUI::ClearTarget(guid, 1);
+
+    if (guid == CGGameUI::s_previousTarget) {
+        CGGameUI::s_previousTarget = 0;
+    }
 }
 
 WOWGUID& CGGameUI::GetLockedTarget() {
@@ -553,7 +573,6 @@ void CGGameUI::RegisterGameCVars() {
     // TODO
 
     // Interface option cvars read by the options panels
-    CVar::Register("UnitNameOwn", "Show your own name", 0x10, "0", nullptr, GAME);
     CVar::Register("assistAttack", "Attack on assist", 0x10, "0", nullptr, GAME);
     CVar::Register("buffDurations", "Show buff durations", 0x10, "1", nullptr, GAME);
     CVar::Register("cameraSmoothStyle", "Camera smoothing style", 0x10, "4", nullptr, GAME);
@@ -572,18 +591,6 @@ void CGGameUI::RegisterGameCVars() {
     CGGameUI::s_threatWarningCvar = CVar::Register("threatWarning", "Threat warning mode", 0x10, "3", &ThreatWarningCallback, GAME);
     CVar::Register("useUiScale", "Use the UI scale", 0x10, "0", nullptr, GAME);
     CVar::Register("uiScale", "UI scale", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameNPC", "Show NPC names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNamePlayerGuild", "Show player guild names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNamePlayerPVPTitle", "Show player PvP titles", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameFriendlyPlayerName", "Show friendly player names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameFriendlyPetName", "Show friendly pet names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameFriendlyGuardianName", "Show friendly guardian names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameFriendlyTotemName", "Show friendly totem names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameEnemyPlayerName", "Show enemy player names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameEnemyPetName", "Show enemy pet names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameEnemyGuardianName", "Show enemy guardian names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameEnemyTotemName", "Show enemy totem names", 0x10, "1", nullptr, GAME);
-    CVar::Register("UnitNameNonCombatCreatureName", "Show non-combat creature names", 0x10, "0", nullptr, GAME);
     CVar::Register("showDispelDebuffs", "Show dispellable debuffs", 0x10, "1", nullptr, GAME);
     CVar::Register("screenEdgeFlash", "Flash the screen edge in combat", 0x10, "1", nullptr, GAME);
     CVar::Register("previewTalents", "Preview talent changes", 0x10, "0", nullptr, GAME);
@@ -701,11 +708,14 @@ void CGGameUI::RegisterGameCVars() {
     CVar::Register("friendsSmallView", "Whether to use smaller buttons in the friends list", 0x20, "0", nullptr, GAME);
     CVar::Register("wholeChatWindowClickable", "Whether the user may click anywhere on a chat window to change EditBox focus (only works in IM style)", 0x10, "1", nullptr, GAME);
     CVar::Register("chatMouseScroll", "Whether the user can use the mouse wheel to scroll through chat", 0x10, "1", nullptr, GAME);
-    CVar::Register("CombatDamage", "Display damage numbers over hostile creatures when damaged", 0x10, "1", nullptr, GAME);
-    CVar::Register("CombatLogPeriodicSpells", "Display damage caused by periodic effects", 0x10, "1", nullptr, GAME);
-    CVar::Register("PetMeleeDamage", "Display pet melee damage in the world", 0x10, "1", nullptr, GAME);
-    CVar::Register("PetSpellDamage", "Display pet spell damage in the world", 0x10, "1", nullptr, GAME);
-    CVar::Register("CombatHealing", "Display amount of healing you did to the target", 0x10, "1", nullptr, GAME);
+    // The name plates' UnitName cvars (FUN_007e6150, 0x0051e3d3).
+    PlayerNameRegisterCVars();
+
+    CGGameUI::s_combatDamageCvar = CVar::Register("CombatDamage", "Display damage numbers over hostile creatures when damaged", 0x10, "1", nullptr, GAME);
+    CGGameUI::s_combatLogPeriodicSpellsCvar = CVar::Register("CombatLogPeriodicSpells", "Display damage caused by periodic effects", 0x10, "1", nullptr, GAME);
+    CGGameUI::s_petMeleeDamageCvar = CVar::Register("PetMeleeDamage", "Display pet melee damage in the world", 0x10, "1", nullptr, GAME);
+    CGGameUI::s_petSpellDamageCvar = CVar::Register("PetSpellDamage", "Display pet spell damage in the world", 0x10, "1", nullptr, GAME);
+    CGGameUI::s_combatHealingCvar = CVar::Register("CombatHealing", "Display amount of healing you did to the target", 0x10, "1", nullptr, GAME);
     CVar::Register("showCastableBuffs", "Show only Buffs the player can cast.  Only applies to raids.", 0x20, "0", nullptr, GAME);
     CVar::Register("consolidateBuffs", "Consolidates buffs displayed for the player.", 0x20, "0", nullptr, GAME);
     CVar::Register("showCastableDebuffs", "Show only debuffs the player can apply.", 0x20, "0", nullptr, GAME);

@@ -295,8 +295,9 @@ void CGxStringBatch::RenderBatch() {
             if (fontBatch->m_strings.Head()) {
                 fontBatch->RenderBatch();
 
+                // A batch made to be drawn once lets go of its strings (FUN_007cecd0).
                 if (this->m_flags & 0x2) {
-                    // TODO
+                    fontBatch->m_strings.UnlinkAll();
                 }
             } else {
                 this->m_fontBatch.Unlink(fontBatch);

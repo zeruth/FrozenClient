@@ -26,6 +26,7 @@
 #include "ui/game/CGRaidInfo.hpp"
 #include "ui/game/Cursor.hpp"
 #include "world/CWorld.hpp"
+#include "ui/game/PlayerName.hpp"
 #include <common/DataStore.hpp>
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
@@ -1627,8 +1628,7 @@ void CGGameObjectDestructible::PostInit(int32_t a4) {
 // each placed with its three effect sets and hidden, the current state's shown; the repair effect
 // and the colliding intact copy.
 //
-// PARTIAL: the destructible's name plate (FUN_007e6320 / FUN_007e5fd0, the PlayerName port's), and
-// the map's proxy (see PostInit).
+// PARTIAL: the map's proxy (see PostInit).
 void CGGameObjectDestructible::OnStatsLoaded() {
     auto owner = this->m_owner;
 
@@ -1725,6 +1725,13 @@ void CGGameObjectDestructible::OnStatsLoaded() {
             CWorld::SetDynamicObjectCollides(this->m_collisionProxy, 0);
         }
     }
+
+    // The building's name plate, which its damage numbers float off (0x00710fe0).
+    if (owner->m_nameDesc) {
+        PlayerNameDestroy(owner->m_nameDesc);
+    }
+
+    owner->m_nameDesc = PlayerNameCreateAlways(owner->GetGUID());
 }
 
 // ref: FUN_0070b6e0

@@ -23,6 +23,8 @@
 #include "util/Random.hpp"
 #include "world/CWorld.hpp"
 #include "world/CWorldParam.hpp"
+#include "ui/game/PlayerName.hpp"
+#include "db/rec/SpellRec.hpp"
 #include <storm/Memory.hpp>
 #include <storm/String.hpp>
 #include <tempest/random/CRandom.hpp>
@@ -343,34 +345,184 @@ void PlayBloodSpurt(CGUnit_C* victim, const WOWGUID& attackerGUID, int32_t criti
     effect->Release();
 }
 
+// ref: FUN_007190a0
+// Whether `attacker` is the player (`byPlayer` set) or one of the player's own -- its pet, or its
+// pet's -- (`byPlayer` clear). False for anyone else.
+bool IsPlayersAttack(const WOWGUID& attacker, bool* byPlayer) {
+    if (ClntObjMgrGetActivePlayer() == attacker) {
+        *byPlayer = true;
+        return true;
+    }
+
+    auto unit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(attacker, TYPE_UNIT, ".\\Unit_C.cpp", 0x2d83));
+
+    if (!unit) {
+        return false;
+    }
+
+    auto data = unit->Unit();
+    WOWGUID owner = data->charmedBy ? data->charmedBy : data->createdBy;
+
+    if (!owner) {
+        return false;
+    }
+
+    auto ownerUnit = static_cast<CGUnit_C*>(ClntObjMgrObjectPtr(owner, TYPE_UNIT, ".\\Unit_C.cpp", 0x2d85));
+
+    if (owner == ClntObjMgrGetActivePlayer()) {
+        *byPlayer = false;
+        return true;
+    }
+
+    if (ownerUnit) {
+        auto ownerData = ownerUnit->Unit();
+        WOWGUID master = ownerData->charmedBy ? ownerData->charmedBy : ownerData->createdBy;
+
+        if (master == ClntObjMgrGetActivePlayer()) {
+            *byPlayer = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // ref: FUN_0071f990
-// The floater a combat result raises over the unit -- "Dodge", "Parry", "Immune" and the rest.
-//
-// PHASE4(PlayerName): the text goes to the unit's name plate (+0xb0) through FUN_007e6030 with
-// the result's world text style (0x00a34c20); frozen's name plates do not carry world text yet,
-// so the text is looked up and goes nowhere.
-void ShowCombatText(CGUnit_C* unit, const WOWGUID& source, int32_t text) {
+// The floater a combat result raises over the unit -- "Dodge", "Parry", "Immune" and the rest --
+// when the player or one of its own caused it and the combat damage cvars allow it: white for the
+// player's swings, orange for its pet's, yellow for spells.
+void ShowCombatText(CGUnit_C* unit, const WOWGUID& source, int32_t text, const SpellRec* spell, bool periodic) {
     static const char* const s_texts[] = {
-        "COMBAT_TEXT_NONE", "COMBAT_TEXT_MISS", "COMBAT_TEXT_DODGE", "COMBAT_TEXT_PARRY", "COMBAT_TEXT_EVADE",
-        "COMBAT_TEXT_IMMUNE", "COMBAT_TEXT_DEFLECT", "COMBAT_TEXT_ABSORB", "COMBAT_TEXT_RESIST",
-        "COMBAT_TEXT_BLOCK", "COMBAT_TEXT_REFLECT",
+        "COMBAT_TEXT_NONE", "COMBAT_TEXT_MISS", "COMBAT_TEXT_RESIST", "COMBAT_TEXT_DODGE", "COMBAT_TEXT_PARRY",
+        "COMBAT_TEXT_BLOCK", "COMBAT_TEXT_EVADE", "COMBAT_TEXT_IMMUNE", "COMBAT_TEXT_IMMUNE",
+        "COMBAT_TEXT_DEFLECT", "COMBAT_TEXT_ABSORB",   // 0x00adbfdc
     };
 
-    (void)unit;
-    (void)source;
+    // The world text style each result takes (0x00a34c20).
+    static const int32_t s_textStyles[] = { 11, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1 };
+
+    // The colours of a pet's swing and of a spell (0x00adaa70, 0x00adaa6c).
+    static const CImVector s_petMeleeColor = { 0x00, 0x84, 0xff, 0xff };
+    static const CImVector s_spellColor = { 0x00, 0xde, 0xff, 0xff };
+
+    bool melee = !spell || (spell->m_attributesEx3 & 0x8000);
+    bool byPlayer = false;
+
+    if (unit->GetGUID() == CGUnit_C::s_activeMover || !IsPlayersAttack(source, &byPlayer)) {
+        return;
+    }
+
+    if (!CGGameUI::s_combatDamageCvar || !CGGameUI::s_combatDamageCvar->GetInt()) {
+        return;
+    }
+
+    if (periodic && (!CGGameUI::s_combatLogPeriodicSpellsCvar || !CGGameUI::s_combatLogPeriodicSpellsCvar->GetInt())) {
+        return;
+    }
+
+    const CImVector* color;
+
+    if (melee) {
+        if (!byPlayer) {
+            if (!CGGameUI::s_petMeleeDamageCvar || !CGGameUI::s_petMeleeDamageCvar->GetInt()) {
+                return;
+            }
+
+            color = &s_petMeleeColor;
+        } else {
+            color = nullptr;
+        }
+    } else {
+        if (!byPlayer && (!CGGameUI::s_petSpellDamageCvar || !CGGameUI::s_petSpellDamageCvar->GetInt())) {
+            return;
+        }
+
+        color = &s_spellColor;
+    }
 
     if (text < 0 || static_cast<size_t>(text) >= sizeof(s_texts) / sizeof(s_texts[0])) {
         return;
     }
 
-    FrameScript_GetText(s_texts[text], -1, GENDER_NOT_APPLICABLE);
+    auto string = FrameScript_GetText(s_texts[text], -1, GENDER_NOT_APPLICABLE);
+
+    if (string && *string) {
+        PlayerNameAddWorldText(unit->m_nameDesc, s_textStyles[text], string, color, nullptr);
+    }
+}
+
+// ref: FUN_00722340
+// The damage number over the unit, under the same rules: larger for a critical.
+void ShowDamageText(CGUnit_C* unit, const WOWGUID& attacker, int32_t damage, const SpellRec* spell, bool critical, bool periodic, bool tick) {
+    static const CImVector s_petMeleeColor = { 0x00, 0x84, 0xff, 0xff };
+    static const CImVector s_spellColor = { 0x00, 0xde, 0xff, 0xff };
+
+    bool melee = !tick && (!spell || (spell->m_attributesEx3 & 0x8000));
+    bool byPlayer = false;
+
+    if (!damage || unit->GetGUID() == CGUnit_C::s_activeMover || !IsPlayersAttack(attacker, &byPlayer)) {
+        return;
+    }
+
+    if (!CGGameUI::s_combatDamageCvar || !CGGameUI::s_combatDamageCvar->GetInt()) {
+        return;
+    }
+
+    if (periodic && (!CGGameUI::s_combatLogPeriodicSpellsCvar || !CGGameUI::s_combatLogPeriodicSpellsCvar->GetInt())) {
+        return;
+    }
+
+    char text[32];
+    SStrPrintf(text, sizeof(text), "%d", damage);
+
+    const CImVector* color;
+
+    if (melee) {
+        if (!byPlayer) {
+            if (!CGGameUI::s_petMeleeDamageCvar || !CGGameUI::s_petMeleeDamageCvar->GetInt()) {
+                return;
+            }
+
+            color = &s_petMeleeColor;
+        } else {
+            color = nullptr;
+        }
+    } else {
+        if (!byPlayer && (!CGGameUI::s_petSpellDamageCvar || !CGGameUI::s_petSpellDamageCvar->GetInt())) {
+            return;
+        }
+
+        color = &s_spellColor;
+    }
+
+    PlayerNameAddWorldText(unit->m_nameDesc, critical ? 2 : 0, text, color, nullptr);
+}
+
+// ref: FUN_00722440
+// The healing number over the unit, when the player or one of its own healed it.
+void ShowHealText(CGUnit_C* unit, const WOWGUID& healer, int32_t amount, bool critical) {
+    bool byPlayer = false;
+
+    if (!amount || unit->GetGUID() == CGUnit_C::s_activeMover || !IsPlayersAttack(healer, &byPlayer)) {
+        return;
+    }
+
+    if (!CGGameUI::s_combatHealingCvar || !CGGameUI::s_combatHealingCvar->GetInt()) {
+        return;
+    }
+
+    char text[32];
+    SStrPrintf(text, sizeof(text), "+%d", amount);
+
+    if (byPlayer) {
+        PlayerNameAddWorldText(unit->m_nameDesc, critical ? 7 : 6, text, nullptr, nullptr);
+    }
 }
 
 // ref: FUN_00755a60
 // What a resolved hit shows and sounds like: the miss or avoidance floater and the miss whoosh,
 // or the weapon's impact on the victim; then the combat log.
 //
-// PHASE4(PlayerName): the damage number (FUN_00722340) and the floaters go to name plates.
 // TODO(UnitCombatLog_C): the combat log entry (FUN_005133b0) is the combat log's.
 void ResolveHitFeedback(const CombatInfo& info) {
     WOWGUID player = ClntObjMgrGetActivePlayer();
@@ -394,28 +546,28 @@ void ResolveHitFeedback(const CombatInfo& info) {
 
     switch (info.victimState) {
         case 8:
-            if (target) ShowCombatText(target, info.attacker, 9);
+            if (target) ShowCombatText(target, info.attacker, 9, nullptr, false);
             return;
 
         case 3:
-            if (target) ShowCombatText(target, info.attacker, 4);
+            if (target) ShowCombatText(target, info.attacker, 4, nullptr, false);
             return;
 
         case 6:
-            if (target) ShowCombatText(target, info.attacker, 6);
+            if (target) ShowCombatText(target, info.attacker, 6, nullptr, false);
             return;
 
         case 2:
             missSound(UnitPtr(info.attacker, 0xd4));
-            if (target) ShowCombatText(target, info.attacker, 3);
+            if (target) ShowCombatText(target, info.attacker, 3, nullptr, false);
             return;
 
         case 5:
-            if (target) ShowCombatText(target, info.attacker, 5);
+            if (target) ShowCombatText(target, info.attacker, 5, nullptr, false);
             return;
 
         case 7:
-            if (target) ShowCombatText(target, info.attacker, 7);
+            if (target) ShowCombatText(target, info.attacker, 7, nullptr, false);
             return;
 
         default:
@@ -425,7 +577,7 @@ void ResolveHitFeedback(const CombatInfo& info) {
     if (info.damage == 0 && !(info.hitInfo & 0x1000000)) {
         if (player != info.target && !(info.hitInfo & 0x4000) && target) {
             int32_t text = (info.hitInfo & 0x20) ? 10 : ((info.hitInfo & 0x80) ? 2 : 1);
-            ShowCombatText(target, info.attacker, text);
+            ShowCombatText(target, info.attacker, text, nullptr, false);
         }
 
         missSound(UnitPtr(info.attacker, 0x109));
@@ -441,6 +593,11 @@ void ResolveHitFeedback(const CombatInfo& info) {
         auto weapon = GetSwingWeapon(attacker, (info.hitInfo >> 2) & 1, true);
 
         PlayWeaponFleshImpact(weapon, impactType, info.hitInfo & 0x200, &position, involves);
+    }
+
+    // The damage number (0x00755e26).
+    if (target) {
+        ShowDamageText(target, info.attacker, info.damage, nullptr, (info.hitInfo >> 9) & 1, false, false);
     }
 }
 
