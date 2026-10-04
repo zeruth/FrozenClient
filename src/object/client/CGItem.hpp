@@ -37,6 +37,7 @@ class CGItem {
         // ref: FUN_00584ae0
         // 0 for an item flagged indestructible (ITEM_FIELD_FLAGS bit 3).
         int32_t GetMaxDurability() const;
+        int32_t GetDurability() const;
 
         // Public static functions
         static uint32_t GetBaseOffset();

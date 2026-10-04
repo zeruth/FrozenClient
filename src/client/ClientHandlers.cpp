@@ -21,6 +21,10 @@
 #include "client/ClientServices.hpp"
 #include "net/Connection.hpp"
 #include "object/client/CGPlayer_C.hpp"
+#include "object/client/ObjMgr.hpp"
+#include "object/Types.hpp"
+#include "ui/FrameScript.hpp"
+#include <storm/String.hpp>
 
 static float s_newFacing;
 static C3Vector s_newPosition;
@@ -361,10 +365,47 @@ int32_t NotifyHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* 
     return 0;
 }
 
-int32_t PlayedTimeHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
-    // TODO
+// ref: FUN_004fba10
+static void FormatPlayedTime(char* dest, uint32_t destSize, int32_t seconds) {
+    auto days = seconds / 86400;
+    auto hours = (seconds % 86400) / 3600;
 
-    return 0;
+    SStrPrintf(dest, destSize, "%dd %dh %dm %ds", days, hours, (seconds - (hours + days * 24) * 3600) / 60, seconds % 60);
+}
+
+// ref: FUN_00401390
+// SMSG_PLAYED_TIME: the total and this level's played seconds, and whether to show them. The
+// player keeps the total as its played-time clock; shown, it goes to the console and to
+// TIME_PLAYED_MSG.
+int32_t PlayedTimeHandler(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {
+    uint32_t total = 0;
+    uint32_t level = 0;
+    uint8_t show = 0;
+    msg->Get(total);
+    msg->Get(level);
+    msg->Get(show);
+
+    if (ClntObjMgrGetActivePlayer()) {
+        auto player = static_cast<CGPlayer_C*>(ClntObjMgrObjectPtr(ClntObjMgrGetActivePlayer(), TYPE_PLAYER, ".\\Client.cpp", 0x4bc));
+
+        if (player) {
+            player->SetPlayedTime(static_cast<int32_t>(total));
+        }
+    }
+
+    if (show) {
+        char text[256];
+
+        ConsolePrintf("Time played:");
+        FormatPlayedTime(text, sizeof(text), static_cast<int32_t>(total));
+        ConsolePrintf("Total: %s", text);
+        FormatPlayedTime(text, sizeof(text), static_cast<int32_t>(level));
+        ConsolePrintf("Level: %s", text);
+
+        FrameScript_SignalEvent(241, "%d%d", total, level);
+    }
+
+    return 1;
 }
 
 int32_t ReceiveGameTimeUpdate(void* param, NETMESSAGE msgId, uint32_t time, CDataStore* msg) {

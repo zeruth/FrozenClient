@@ -855,6 +855,8 @@ enum NETMESSAGE {
     CMSG_OPENING_CINEMATIC              = 0x00F9,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID_ON    = 0x0508,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID_OFF   = 0x0509,
+    // Registered with the item time messages (FUN_006e6330): an item's four socket enchantments.
+    SMSG_SOCKET_GEMS_RESULT             = 0x050B,
     SMSG_JOINED_BATTLEGROUND_QUEUE      = 0x038A,
     SMSG_REALM_SPLIT                    = 0x038B,
     CMSG_REALM_SPLIT                    = 0x038C,

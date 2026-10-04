@@ -8,9 +8,42 @@
 #include <cstdint>
 #include "object/client/CGBag_C.hpp"
 
+#include <storm/List.hpp>
+
 class SpellRec;
 
 class CGItem_C;
+
+// An enchantment expiration for an item the client has not created yet (FUN_006e61b0), applied
+// when the item arrives (FUN_006e6250). 0x18 bytes.
+struct PlayerPendingItemExpiration {
+    TSLink<PlayerPendingItemExpiration> m_link;
+    WOWGUID item;
+    int32_t slot;
+    int32_t seconds;
+};
+
+// One equipped item of an inspected player, or of a player seen only through their visible items
+// (FUN_006de360). 0x48 bytes.
+struct INVENTORYITEMINFO {
+    WOWGUID creator;                // +0x00
+    int32_t itemID;                 // +0x08
+    int32_t enchant[12];            // +0x0c
+    int16_t randomPropertyID;       // +0x3c
+    uint8_t flags;                  // +0x3e bit 0: the visible item's id was negative
+    uint8_t pad3f;
+    int32_t suffixFactor;           // +0x40
+    int32_t unk44;
+};
+
+// The inspected player's gear, filled by SMSG_INSPECT_RESULTS: their guid, then the nineteen
+// equipped slots.
+struct INSPECTDATA {
+    WOWGUID guid;
+    INVENTORYITEMINFO items[19];
+};
+
+extern INSPECTDATA* g_inspectData;                  // ref: DAT_00c9eae0
 
 class CreatureModelDataRec;
 class CCharacterComponent;
@@ -244,6 +277,27 @@ class CGPlayer_C : public CGUnit_C, public CGPlayer {
         // ref: FUN_006de840
         // The active player sees others in their natural form (player flags byte 0xf42 bit 1).
         static bool ActivePlayerSeesNatural();
+
+        const char* GetPvpRankName(int32_t rank) const;
+        int32_t GetPlayedTime() const;
+        void SetPlayedTime(int32_t seconds);
+        int32_t GetSkillValue(uint32_t skillLine) const;
+        void UpdateGemColorCounts();
+        const INVENTORYITEMINFO* GetInventoryItemInfo(uint32_t slot) const;
+        void AddPendingItemExpiration(WOWGUID item, int32_t slot, int32_t seconds);
+        void ApplyPendingItemExpirations(CGItem_C* item);
+
+        // +0x18b0: enchantment expirations that arrived before their item object did.
+        STORM_EXPLICIT_LIST(PlayerPendingItemExpiration, m_link) m_pendingItemExpirations;
+
+        // +0x1924: the equipped gems of each colour (meta, red, yellow, blue) that meta gem
+        // conditions count.
+        int32_t m_gemColorCounts[4] = {};
+
+        // +0x194c: the played time SMSG_PLAYED_TIME last reported, -1 before it has, and the
+        // time() at which it arrived.
+        int32_t m_playedTime = -1;
+        int32_t m_playedTimeReceived = 0;
 
         // +0x1908: what each hand holds (GetWeaponInfo).
         UNIT_WEAPON_INFO m_handInfo[3];

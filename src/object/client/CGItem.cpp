@@ -37,3 +37,13 @@ int32_t CGItem::GetMaxDurability() const {
 
     return this->m_item->maxDurability;
 }
+
+// ref: FUN_00584ac0
+// 0 for an item flagged indestructible, as GetMaxDurability.
+int32_t CGItem::GetDurability() const {
+    if (this->m_item->flags >> 3 & 1) {
+        return 0;
+    }
+
+    return this->m_item->durability;
+}

@@ -2372,7 +2372,9 @@ int32_t Script_GetItemInfo(lua_State* L) {
         return 0;
     }
 
-    lua_pushstring(L, ItemNameFromEntry(entry, 0));
+    char name[1024];
+    ItemNameFromEntry(name, sizeof(name), entry, 0);
+    lua_pushstring(L, name);
 
     ITEM_LINK_GEMS gems;
     lua_pushstring(L, ItemLinkBuild(entry, info->quality, 0, gems, 0, 0));

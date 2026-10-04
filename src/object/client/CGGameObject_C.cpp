@@ -13,6 +13,7 @@
 #include "object/client/Mirror.hpp"
 #include "object/client/ObjMgr.hpp"
 #include "object/client/SpellBook.hpp"
+#include "object/client/Spell_C.hpp"
 #include "ui/game/CGGameUI.hpp"
 #include "util/Log.hpp"
 #include "world/CWorld.hpp"
@@ -1165,9 +1166,10 @@ bool CGGameObject_C::CheckLock(int32_t* spell, int32_t* skillValue, int32_t* ski
                             continue;
                         }
 
-                        // TODO(Spell_C): the effect's skill value (FUN_008016c0) is the player's
-                        // skill with the lock; frozen has no skill values yet, so it reads 0.
+                        // The effect's skill value is the player's skill with the lock.
                         int32_t value = 0;
+                        int32_t valueMax = 0;
+                        SpellGetEffectSkillValue(rec, e, &value, &valueMax, 0, 0, 0, 0);
 
                         if (spell) {
                             *spell = rec->m_ID;

@@ -191,6 +191,9 @@ void SpellApplyModifierSoft(const SpellRec* spell, uint32_t* value, int32_t op);
 // ref: FUN_007ff770
 void SpellGetEffectPoints(const SpellRec* spell, int32_t effectIndex, float* minPoints, float* maxPoints, int32_t level, int32_t pet, int32_t inspect, int32_t noModifiers);
 
+// The effect's points range rounded to whole numbers -- for an open-lock effect, the skill it opens with.
+void SpellGetEffectSkillValue(const SpellRec* spell, int32_t effectIndex, int32_t* minValue, int32_t* maxValue, int32_t level, int32_t pet, int32_t inspect, int32_t noModifiers);
+
 // ref: FUN_00800a70
 int32_t SpellGetDuration(const SpellRec* spell, int32_t pet, int32_t inspect, int32_t noModifiers, int32_t applyHaste);
 

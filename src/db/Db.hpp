@@ -36,6 +36,7 @@
 #include "db/rec/SpellVisualKitAreaModelRec.hpp"
 #include "db/rec/SpellEffectCameraShakesRec.hpp"
 #include "db/rec/SpellCastTimesRec.hpp"
+#include "db/rec/RandPropPointsRec.hpp"
 #include "db/rec/ItemLimitCategoryRec.hpp"
 #include "db/rec/ItemRandomPropertiesRec.hpp"
 #include "db/rec/ItemRandomSuffixRec.hpp"
@@ -148,6 +149,7 @@ extern WowClientDB<SpellVisualKitModelAttachRec> g_spellVisualKitModelAttachDB;
 extern WowClientDB<SpellVisualKitAreaModelRec> g_spellVisualKitAreaModelDB;
 extern WowClientDB<SpellEffectCameraShakesRec> g_spellEffectCameraShakesDB;
 extern WowClientDB<SpellCastTimesRec> g_spellCastTimesDB;
+extern WowClientDB<RandPropPointsRec> g_randPropPointsDB;
 extern WowClientDB<ItemLimitCategoryRec> g_itemLimitCategoryDB;
 extern WowClientDB<ItemRandomPropertiesRec> g_itemRandomPropertiesDB;
 extern WowClientDB<ItemRandomSuffixRec> g_itemRandomSuffixDB;

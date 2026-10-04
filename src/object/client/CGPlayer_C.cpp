@@ -15,6 +15,10 @@
 #include "object/client/Spell_C.hpp"
 #include <cstddef>
 #include "object/client/CGItem_C.hpp"
+#include "object/client/DBCacheInstances.hpp"
+#include <storm/String.hpp>
+#include <cstring>
+#include <ctime>
 
 CHARACTER_INFO CGPlayer_C::s_localPlayerInfo = {};
 uint32_t CGPlayer_C::s_itemProficiency[17];  // ref: DAT_00c9d4f0
@@ -760,9 +764,15 @@ int32_t PlayerTimeSyncRequestHandler(void* param, NETMESSAGE msgId, uint32_t tim
 
 // ref: FUN_006e8ee0
 // PARTIAL: the reference registers some ninety Player_C message handlers here (FUN_006e83b0);
-// the time sync is the one movement needs.
+// the time sync is the one movement needs, and the item time, socket and refund messages the item
+// tooltip reads. The refund answer reaches FUN_006d1650 through the reference's shared Player_C
+// dispatcher (the switch at 0x006defce); frozen registers it directly.
 void PlayerInitialize() {
     ClientServices::SetMessageHandler(SMSG_TIME_SYNC_REQUEST, PlayerTimeSyncRequestHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_ITEM_TIME_UPDATE, ItemTimeUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_ITEM_ENCHANT_TIME_UPDATE, ItemTimeUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_SOCKET_GEMS_RESULT, ItemTimeUpdateHandler, nullptr);
+    ClientServices::SetMessageHandler(SMSG_ITEM_REFUND_INFO_RESPONSE, ItemRefundInfoHandler, nullptr);
 }
 
 // Where the player's hearthstone returns them, from SMSG_BIND_POINT_UPDATE.
@@ -828,4 +838,192 @@ CGItem_C* CGPlayer_C::GetEquippedItemForSpell(const SpellRec* spell, uint32_t sl
     }
 
     return nullptr;
+}
+
+// The inspected player's gear. SMSG_INSPECT_RESULTS fills it; until that handler is ported nothing
+// does, and every other player's gear is read from their visible items instead.
+INSPECTDATA* g_inspectData;                         // ref: DAT_00c9eae0
+
+// The scratch record GetInventoryItemInfo builds from a visible item.
+static INVENTORYITEMINFO s_visibleItemInfo;         // ref: DAT_00c9ec78
+
+// ref: FUN_006d6f00
+const char* CGPlayer_C::GetPvpRankName(int32_t rank) const {
+    char key[32];
+    SStrPrintf(key, sizeof(key), "PVP_RANK_%d_%d", rank, this->GetFactionSide());
+
+    return this->GetGenderedText(key, -1);
+}
+
+// ref: FUN_006cf440
+// Seconds played: what the server last reported plus the time since. 0 before it has reported.
+int32_t CGPlayer_C::GetPlayedTime() const {
+    if (this->m_playedTime < 0) {
+        return 0;
+    }
+
+    return static_cast<int32_t>(std::time(nullptr)) - this->m_playedTimeReceived + this->m_playedTime;
+}
+
+// ref: FUN_006cf470
+void CGPlayer_C::SetPlayedTime(int32_t seconds) {
+    this->m_playedTime = seconds;
+    this->m_playedTimeReceived = static_cast<int32_t>(std::time(nullptr));
+}
+
+// ref: FUN_006dc2c0
+// The rank with the temporary bonus too (the active player's own skill block only), never negative.
+int32_t CGPlayer_C::GetSkillValue(uint32_t skillLine) const {
+    auto index = this->GetSkillIndex(skillLine);
+
+    if (index < 0) {
+        return 0;
+    }
+
+    int16_t bonus = this->GetGUID() == ClntObjMgrGetActivePlayer() ? this->Player()->skillInfo[index].skillTempModifier : 0;
+    auto value = static_cast<int32_t>(this->GetSkillRank(index)) + bonus;
+
+    return value >= 0 ? value : 0;
+}
+
+static void PlayerOnGemItemArrived(uint32_t id, const WOWGUID* guid, void* param, bool found) {
+    // ref: FUN_006de490
+    if (!found) {
+        return;
+    }
+
+    if (auto player = CGPlayer_C::GetActivePtr()) {
+        player->UpdateGemColorCounts();
+    }
+}
+
+// ref: FUN_006de4d0
+// Counts the gems socketed in the nineteen equipped slots by the colours they match. The active
+// player's own items are read for a broken one not to count; anyone else's from their inspect or
+// visible-item record.
+void CGPlayer_C::UpdateGemColorCounts() {
+    for (auto& count : this->m_gemColorCounts) {
+        count = 0;
+    }
+
+    bool active = ClntObjMgrGetActivePlayer() == this->GetGUID();
+
+    for (uint32_t slot = 0; slot < 19; slot++) {
+        CGItem_C* item = nullptr;
+        const INVENTORYITEMINFO* info = nullptr;
+
+        if (ClntObjMgrGetActivePlayer() == this->GetGUID()) {
+            item = this->m_bag.GetItem(slot);
+
+            if (!item) {
+                continue;
+            }
+
+            auto data = item->Item();
+
+            if (!(((data->flags >> 3) & 1) || data->maxDurability == 0 || data->durability != 0) || ((data->flags >> 4) & 1)) {
+                continue;
+            }
+        } else {
+            info = this->GetInventoryItemInfo(slot);
+
+            if (!info || !(info->flags & 1)) {
+                continue;
+            }
+        }
+
+        for (int32_t socket = 2; socket < 5; socket++) {
+            int32_t enchantID;
+
+            if (active) {
+                enchantID = item && !item->IsCharter() ? item->Item()->enchantments[socket].id : 0;
+            } else {
+                enchantID = info->enchant[socket];
+            }
+
+            auto enchant = g_spellItemEnchantmentDB.GetRecord(enchantID);
+
+            if (!enchant || !enchant->m_srcItemID) {
+                continue;
+            }
+
+            WOWGUID none = 0;
+            auto gem = g_itemCache.GetRecord(DBCACHEKEY32(enchant->m_srcItemID), &none, &PlayerOnGemItemArrived, nullptr, false);
+
+            if (!gem) {
+                continue;
+            }
+
+            auto properties = g_gemPropertiesDB.GetRecord(gem->gemProperties);
+
+            if (!properties || !properties->m_type) {
+                continue;
+            }
+
+            for (int32_t color = 0; color < 4; color++) {
+                if (properties->m_type & (1u << color)) {
+                    this->m_gemColorCounts[color]++;
+                }
+            }
+        }
+    }
+}
+
+// ref: FUN_006de360
+// The inspected player's record for the slot, or one built from the player's visible item (entry,
+// permanent and temporary enchantment) when this is not the inspected player.
+const INVENTORYITEMINFO* CGPlayer_C::GetInventoryItemInfo(uint32_t slot) const {
+    if (g_inspectData && g_inspectData->guid == this->GetGUID()) {
+        if (static_cast<int32_t>(slot) < 0) {
+            return nullptr;
+        }
+
+        if (slot < 19) {
+            return &g_inspectData->items[slot];
+        }
+    }
+
+    if (slot >= 19) {
+        return nullptr;
+    }
+
+    auto visible = &this->Player()->visibleItems[slot];
+
+    memset(&s_visibleItemInfo, 0, sizeof(s_visibleItemInfo));
+    s_visibleItemInfo.itemID = visible->entryID < 0 ? -visible->entryID : visible->entryID;
+    s_visibleItemInfo.enchant[0] = static_cast<uint16_t>(visible->enchantment);
+    s_visibleItemInfo.enchant[1] = static_cast<uint16_t>(visible->enchantment >> 16);
+
+    if (visible->entryID < 1) {
+        s_visibleItemInfo.flags |= 1;
+    }
+
+    return &s_visibleItemInfo;
+}
+
+// ref: FUN_006e61b0
+void CGPlayer_C::AddPendingItemExpiration(WOWGUID item, int32_t slot, int32_t seconds) {
+    auto pending = this->m_pendingItemExpirations.NewNode(2, 0, 0x8);
+
+    pending->item = item;
+    pending->slot = slot;
+    pending->seconds = seconds;
+}
+
+// ref: FUN_006e6250
+void CGPlayer_C::ApplyPendingItemExpirations(CGItem_C* item) {
+    if (!item) {
+        return;
+    }
+
+    for (auto pending = this->m_pendingItemExpirations.Head(); pending; ) {
+        auto next = this->m_pendingItemExpirations.Next(pending);
+
+        if (pending->item == item->GetGUID()) {
+            item->SetEnchantExpiration(pending->slot, pending->seconds);
+            this->m_pendingItemExpirations.DeleteNode(pending);
+        }
+
+        pending = next;
+    }
 }

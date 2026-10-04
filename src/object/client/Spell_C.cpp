@@ -1686,3 +1686,18 @@ const SkillLineAbilityRec* SkillLineAbilityFindForRaceClass(uint8_t race, uint8_
 
     return nullptr;
 }
+
+// ref: FUN_008016c0
+// Each end rounded the reference's way: (int)round(2v -/+ 0.5) >> 1, away from the half for a
+// negative value, under the FPU's round-to-nearest.
+void SpellGetEffectSkillValue(const SpellRec* spell, int32_t effectIndex, int32_t* minValue, int32_t* maxValue, int32_t level, int32_t pet, int32_t inspect, int32_t noModifiers) {
+    float minPoints;
+    float maxPoints;
+    SpellGetEffectPoints(spell, effectIndex, &minPoints, &maxPoints, level, pet, inspect, noModifiers);
+
+    auto twiceMin = minPoints < 0.0f ? minPoints + minPoints + 0.5f : minPoints + minPoints - 0.5f;
+    *minValue = static_cast<int32_t>(std::nearbyint(twiceMin)) >> 1;
+
+    auto twiceMax = maxPoints < 0.0f ? maxPoints + maxPoints + 0.5f : maxPoints + maxPoints - 0.5f;
+    *maxValue = static_cast<int32_t>(std::nearbyint(twiceMax)) >> 1;
+}
