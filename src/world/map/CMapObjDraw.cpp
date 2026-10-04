@@ -42,7 +42,8 @@ int32_t CMapObj::s_lightingMode = -1;               // DAT_00cfbeac
 uint32_t CMapObj::s_materialColor = 0xffffffff;     // DAT_00d1bef8
 int32_t CMapObj::s_shadowState = -1;                // DAT_00cfbea8
 uint32_t CMapObj::s_vertexPermuteBase = 0;          // DAT_00cfbeb4
-uint32_t CMapObj::s_shadowMode = 0;                 // DAT_00d43010
+// The shadow mode (DAT_00d43010) is CShaderEffect::s_shadowMode. Until 2026-10-04 this file kept
+// a second copy of it, which the shader permutation selection never read.
 CImVector CMapObj::s_instanceColor = { 0 };         // DAT_00d1befc
 int32_t CMapObj::s_interiorFog = 0;                 // DAT_00cfbeb8
 
@@ -284,7 +285,7 @@ void CMapObj::SelectShaders() {
         return;
     }
 
-    uint32_t shadow = CMapObj::s_shadowMode > 2 ? 2 : CMapObj::s_shadowMode;
+    uint32_t shadow = CShaderEffect::s_shadowMode > 2 ? 2 : CShaderEffect::s_shadowMode;
     uint32_t base = shadow * 15 + CMapObj::s_vertexPermuteBase;
     uint32_t lit = CMapObj::s_lightingMode != 0 ? 1 : 0;
 
@@ -422,7 +423,7 @@ void CMapObjGroup::DrawBatches(int32_t record) {
 
             ShadowMapBindMapObj(shadowed);
 
-            CMapObj::s_shadowMode = shadowed
+            CShaderEffect::s_shadowMode = shadowed
                 ? (ShadowMapGetShaderLevel() ? 1 : 0)
                 : ShadowMapGetShaderLevel();
         }
@@ -604,7 +605,7 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
 
                 ShadowMapBindMapObj(0);
 
-                CMapObj::s_shadowMode = ShadowMapGetShaderLevel();
+                CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel();
             }
 
             CMapObj::SetupLighting(this, exteriorMode);
@@ -626,7 +627,7 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
 
                 ShadowMapBindMapObj(1);
 
-                CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+                CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
             }
 
             GxRsSet(GxRs_BlendingMode, GxBlend_InvSrcAlphaAdd);
@@ -650,7 +651,7 @@ void CMapObjGroup::DrawBatchesSplit(int32_t record) {
 
             ShadowMapBindMapObj(1);
 
-            CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+            CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
         }
 
         GxRsSet(GxRs_BlendingMode, static_cast<int32_t>(material->blendMode));
@@ -830,7 +831,7 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
 
                 ShadowMapBindMapObj(0);
 
-                CMapObj::s_shadowMode = ShadowMapGetShaderLevel();
+                CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel();
             }
 
             int32_t skyMode = (material->flags & 0x1)
@@ -855,7 +856,7 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
 
                 ShadowMapBindMapObj(1);
 
-                CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+                CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
             }
 
             GxRsSet(GxRs_BlendingMode, GxBlend_InvSrcAlphaAdd);
@@ -876,7 +877,7 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
 
                 ShadowMapBindMapObj(1);
 
-                CMapObj::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
+                CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel() ? 1 : 0;
             }
 
             CMapObj::SetupFog(fogSet);
@@ -888,7 +889,7 @@ void CMapObjGroup::DrawBatchesOutdoor(int32_t record) {
 
                 ShadowMapBindMapObj(0);
 
-                CMapObj::s_shadowMode = ShadowMapGetShaderLevel();
+                CShaderEffect::s_shadowMode = ShadowMapGetShaderLevel();
             }
 
             // Straight to the second fog set, past the cache's usual selection.

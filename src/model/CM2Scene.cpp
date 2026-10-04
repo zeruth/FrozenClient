@@ -115,8 +115,9 @@ void CM2Scene::ComputeElementShaders(M2Element* element) {
     element->vertexPermute = shaded + 2 * (v11 + v10 + 2 * v11 + lightCount + 4 * (v11 + v10 + 2 * v11));
     element->pixelPermute = v8 + 4 * (CShaderEffect::s_usePcfFiltering + 2 * v9);
 
-    // TODO
-    // element->dword3C = v8;
+    // The element's shadow mode (0x0081f318), which the batch setup puts into DAT_00d43010.
+    // v8 is 0 until the shader-level TODO above lands, so models do not receive yet.
+    element->dword3c = static_cast<uint32_t>(v8);
 }
 
 int32_t CM2Scene::SortOpaque(uint32_t a, uint32_t b, const void* userArg) {

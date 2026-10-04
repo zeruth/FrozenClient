@@ -96,8 +96,6 @@ extern C3Vector g_shadowMapLightDirWorld;
 // The intensity and flag the reference stores and never reads (DAT_00b1d518, DAT_00d43168).
 extern float g_shadowMapIntensity;
 extern int32_t g_shadowMapFlag;
-// The shader level the last caster pass was drawn at (DAT_00d43010).
-extern int32_t g_shadowMapCasterLevel;
 // The cascades were drawn over map that has since been unloaded: clear and restart them on the
 // next render step (DAT_00d4314c).
 extern int32_t g_shadowMapCascadesStale;

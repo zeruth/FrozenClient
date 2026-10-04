@@ -305,7 +305,6 @@ C3Vector g_shadowMainCenter;
 float g_shadowMainExtent;
 C3Vector g_shadowMainUp;
 float g_shadowMainScissor[4];
-int32_t g_shadowMapCasterLevel;
 C4Plane g_mapShadowPlane = { { 0.0f, 0.0f, 0.0f }, 0.0f };
 C4Plane g_mapShadowPlaneCascade = { { 0.0f, 0.0f, 0.0f }, 0.0f };
 

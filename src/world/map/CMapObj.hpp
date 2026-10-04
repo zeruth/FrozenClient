@@ -324,7 +324,6 @@ class CMapObj : public TSHashObject<CMapObj, HASHKEY_NONE> {
         static uint32_t s_materialColor;        // DAT_00d1bef8
         static int32_t s_shadowState;           // DAT_00cfbea8
         static uint32_t s_vertexPermuteBase;    // DAT_00cfbeb4
-        static uint32_t s_shadowMode;           // DAT_00d43010
         // Added to every self-illuminated material's colour. The per-instance setup clears
         // it and nothing on the shader path writes it again.
         static CImVector s_instanceColor;       // DAT_00d1befc

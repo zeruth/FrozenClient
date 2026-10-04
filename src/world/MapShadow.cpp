@@ -959,7 +959,11 @@ static int32_t MapShadowRenderView(ShadowView& view, int32_t index, CGxTex* colo
     ShadowMapSetDepthScale(depthScale[3]);
     GxShaderConstantsSet(GxSh_Pixel, 0, depthScale, 1);
 
-    g_shadowMapCasterLevel = ShadowMapGetShaderLevel();
+    // Into the shadow mode itself (0x007bc141 stores DAT_00d43010): with it non-zero, an alpha-
+    // keyed caster takes the pixel permutation that samples its texture and texkills against
+    // c2.w. Until 2026-10-04 this went into a variable nothing read, the mode stayed 0, and
+    // every leaf card cast as a solid quad.
+    CShaderEffect::s_shadowMode = static_cast<uint32_t>(ShadowMapGetShaderLevel());
 
     GxXformSetProjection(view.projection[index]);
     CShaderEffect::UpdateProjMatrix();

@@ -180,7 +180,9 @@ struct M2Element {
     // are set to -1 and dword3c to 0.
     uint32_t dword34;
     uint32_t dword38;
-    uint32_t dword3c;
+    // Every reference builder stores 0 here (0x008219a5, 0x0082272d, 0x0082294a); only
+    // FUN_0081f1d0 writes a shadow mode. It reaches DAT_00d43010 per batch, so it must not be garbage.
+    uint32_t dword3c = 0;
 
     // +0x40, AND IT IS NO LONGER AN UNKNOWN. This comment used to say there was no second writer
     // to read these off; FUN_0081f9e0 is that writer, and it is now

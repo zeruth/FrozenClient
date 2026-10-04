@@ -66,7 +66,6 @@ EGxBlend CM2SceneRender::s_gxBlend[M2PASS_COUNT][M2BLEND_COUNT] = {
     }
 };
 
-uint32_t CM2SceneRender::s_curElementDword3c = 0;
 int32_t CM2SceneRender::s_shadedList[M2BLEND_COUNT] = {
     1,  // M2BLEND_OPAQUE
     1,  // M2BLEND_ALPHA_KEY
@@ -1123,7 +1122,9 @@ void CM2SceneRender::SetupLighting() {
 
     CShaderEffect::SetLocalLighting(this->m_curLighting, this->m_curShaded, 0);
 
-    CM2SceneRender::s_curElementDword3c = this->m_curElement->dword3c;
+    // The element's shadow mode into DAT_00d43010 (0x0081fb52), which is CShaderEffect's: every
+    // M2 batch sets it, so nothing drawn after a building inherits that building's mode.
+    CShaderEffect::s_shadowMode = this->m_curElement->dword3c;
 
     if ((this->m_curMaterial->flags & 0x2) || this->m_curLighting->m_fogScale <= 0.0f) {
         this->m_curFogMode = 0;
