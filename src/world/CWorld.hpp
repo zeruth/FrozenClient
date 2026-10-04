@@ -63,6 +63,7 @@ typedef void (*M2AnimEventCallback)(CM2Model* model, uint32_t boneId, uint32_t e
                                     uint32_t eventData, const C3Vector* position, uint32_t a6,
                                     WOWGUID owner);
 
+class WMOAreaTableRec;
 class CWorld {
     public:
         enum Enables {
@@ -191,6 +192,10 @@ class CWorld {
         // The zone an entity stands in: its building group's WMOAreaTable zone, or the chunk's.
         // ref: FUN_00782560
         static int32_t GetEntityAreaID(CMapStaticEntity* entity, uint32_t* areaID);
+        static int32_t IsEntityIndoors(CMapStaticEntity* entity);
+        static int32_t GetEntityWMOAreas(CMapStaticEntity* entity, const WMOAreaTableRec** groupArea,
+                                         const WMOAreaTableRec** rootArea, uint32_t* groupID);
+        static int32_t IsEntityInSnow(CMapStaticEntity* entity);
         // A liquid type as the zone overrides it (AreaTable LiquidTypeID, the parent zone's when
         // the zone has none). ref: FUN_009905c0
         static const LiquidTypeRec* GetAreaLiquidType(uint32_t areaID, uint32_t liquidType);

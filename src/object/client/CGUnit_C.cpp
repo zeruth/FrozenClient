@@ -13306,10 +13306,7 @@ void CGUnit_C::OnFootstep(const C3Vector* position, int32_t left) {
 
 // ref: FUN_0071fa90
 // Every ten seconds: a unit deep under water (more than five yards past its own height) breathes
-// bubbles (state 0x20).
-//
-// PARTIAL: the cold-air breath (state 0x40, FUN_0078f1f0 over the area's WorldParam) is the
-// world parameters port's.
+// bubbles (state 0x20); otherwise one in a snowy area breathes cold air (state 0x40).
 void CGUnit_C::UpdateBreathState(uint32_t time) {
     this->m_stateFlags &= 0xFFFFFF9F;
 
@@ -13322,7 +13319,13 @@ void CGUnit_C::UpdateBreathState(uint32_t time) {
 
         if (height + 5.0f < surface - this->GetPosition().z) {
             this->m_stateFlags |= 0x20;
+            this->m_breathCheckTime = time + 10000;
+            return;
         }
+    }
+
+    if (CWorld::IsEntityInSnow(reinterpret_cast<CMapStaticEntity*>(this->m_worldObject))) {
+        this->m_stateFlags |= 0x40;
     }
 
     this->m_breathCheckTime = time + 10000;
