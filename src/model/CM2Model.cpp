@@ -8616,8 +8616,15 @@ void CM2Model::AnimateAlphasOnly() {
         return;
     }
 
-    // The same assignment AnimateMTSimple makes, operand order included.
-    this->matrixF4 = this->matrixB4 * this->m_scene->m_view;
+    // The placement in the scene's CURRENT view goes into bone 0 (0x008319db loads the bone
+    // array at +0x98 as the destination), which is what the shadow caster draw uploads. Until
+    // 2026-10-04 this wrote matrixF4 instead, so a doodad the frame had not animated cast with
+    // the camera view it was last animated under, and the cascade shadows warped as the
+    // camera moved.
+    // The reference writes it unconditionally; a model with no bones has no slot to write.
+    if (this->m_shared->m_data->bones.Count()) {
+        this->m_boneMatrices[0] = this->matrixB4 * this->m_scene->m_view;
+    }
 
     auto data = this->m_shared->m_data;
 
